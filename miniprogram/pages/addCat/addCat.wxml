@@ -1,0 +1,73 @@
+<!--miniprogram/pages/addCat/addCat.wxml-->
+<!-- <text>miniprogram/pages/addCat/addCat.wxml</text> -->
+<block wx:if="{{auth}}">
+  <view class='label name'>名称：</view>
+  <input type='text' value='{{cat.name}}' bindinput="inputText" data-key='name'></input>
+  <view class='label nickname'>昵称：</view>
+  <input type='text' value='{{cat.nickname}}' bindinput="inputText" data-key='nickname'></input>
+  <view class='label campus'>校区：</view>
+  <picker mode="selector" range='{{pickers.campus}}' value='0' bindchange='pickerChange' data-key='campus'>{{cat.campus == undefined? '请选择': cat.campus}}</picker>
+  <view class='label area'>出没区域：</view>
+  <input type='text' value='{{cat.area}}' bindinput="inputText" data-key='area'></input>
+
+  <view class='label birthday'>出生信息：</view>
+  <!-- <input type='text' value='{{cat.birthday}}' bindinput="inputText" data-key='birthday'></input> -->
+  <picker mode='date' fields='month' bindchange='pickerDateChange' data-key='birthday'>{{cat.birthday == undefined? '请选择': cat.birthday}}</picker>
+
+  <view class='label colour'>花色：</view>
+  <picker mode="selector" range='{{pickers.colour}}' value='0' bindchange='pickerChange' data-key='colour'>{{cat.colour == undefined? '请选择': cat.colour}}</picker>
+  
+  <view class='label characteristics'>外貌特点：</view>
+  <input type='text' value='{{cat.characteristics}}' bindinput="inputText" data-key='characteristics'></input>
+
+  <view class='label tutorial'>撸猫指南：</view>
+  <textarea type='text' value='{{cat.tutorial}}' bindinput="inputText" data-key='tutorial'></textarea>
+  <!-- <checkbox-group bindchange="checkBoxChange">
+    <block wx:for="{{pickers.char}}" wx:key="{{item}}">
+      <checkbox value="{{item}}" checked="{{ charChecked[index] }}">{{item}}</checkbox>
+    </block>
+  </checkbox-group> -->
+
+  <view class='label habit'>性格：</view>
+  <input type='text' value='{{cat.habit}}' bindinput="inputText" data-key='habit'></input>
+
+  <view class='label father'>父亲：</view>
+  <input type='text' value='{{cat.father}}' bindinput="inputText" data-key='father'></input>
+  <view class='label mother'>母亲：</view>
+  <input type='text' value='{{cat.mother}}' bindinput="inputText" data-key='mother'></input>
+  <view class='label relation'>好友：</view>
+  <input type='text' value='{{cat.relation}}' bindinput="inputText" data-key='relation'></input>
+  <view class='label gender'>性别：</view>
+  <picker mode="selector" range='{{pickers.gender}}' value='0' bindchange='pickerChange' data-key='gender'>{{cat.gender == undefined? '请选择': cat.gender}}</picker>
+  <view class='label sterilized'>绝育：</view>
+  <picker mode="selector" range='{{pickers.sterilized}}' value='0' bindchange='pickerChange' data-key='sterilized'>{{cat.sterilized == undefined? '请选择': cat.sterilized}}</picker>
+  <view class='label adopt'>已领养：</view>
+  <picker mode="selector" range='{{pickers.adopt}}' value='0' bindchange='pickerChange' data-key='adopt'>{{cat.adopt == undefined? '请选择': cat.adopt}}</picker>
+  <view class='label popularity'>人气：{{cat.popularity}}</view>
+  <button class='primary' bindtap='upload'>确定提交</button>
+
+  <view class='label'>照片：</view>
+  <view class='card' wx:for='{{photo}}' wx:key="{{item}}">
+    <view class='label light'>-- 第{{index + 1}}张  --</view>
+    <view class='label light'>上传者：{{item.userInfo.nickName || '匿名'}}</view>
+    <view class='label light'>拍摄日期：{{item.shooting_date || '暂无'}}</view>
+    <view class='label'>摄影师：</view>
+    <input type='text' value='{{item.photographer}}' placeholder='默认为上传者' bindinput='inputPher' data-pid='{{item._id}}'></input>
+    <button bindtap='updatePher' data-photo='{{item}}' data-index='{{index}}'>更新摄影师</button>
+    <view class='photo'>
+      <image mode='aspectFill' src='{{item.photo_id}}'></image>
+      <view class='best' wx:if='{{item.best}}'>精选照片</view>
+    </view>
+    
+    <button type='warn' bindtap='deletePhoto' data-photo='{{item}}'>删除第{{index + 1}}张</button>
+    <button bindtap='reverseBest' data-photo='{{item}}' data-index='{{index}}'>{{item.best? '取消': '设为'}}精选</button>
+  </view>
+
+  <view class='label bottom' hidden="{{!bottomShow}}">{{bottomText}}</view>
+<button bindtap='clickLoad'>加载更多猫图</button>
+
+</block>
+<view wx:else class="unAuth">
+  <text>{{tipText}}</text>
+  <button bindtap='goBack' wx:if="{{tipBtn}}">打扰了</button>
+</view>

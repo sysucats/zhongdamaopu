@@ -1,0 +1,134 @@
+{
+	"miniprogramRoot": "miniprogram/",
+	"cloudfunctionRoot": "cloudfunctions/",
+	"setting": {
+		"urlCheck": true,
+		"es6": true,
+		"postcss": true,
+		"minified": true,
+		"newFeature": true,
+		"autoAudits": false
+	},
+	"appid": "wx5bd705b2bc91c73b",
+	"projectname": "%E4%B8%AD%E5%A4%A7%E7%8C%AB%E8%B0%B1",
+	"libVersion": "2.6.0",
+	"simulatorType": "wechat",
+	"simulatorPluginLibVersion": {},
+	"cloudfunctionTemplateRoot": "cloudfunctionTemplate",
+	"condition": {
+		"search": {
+			"current": -1,
+			"list": []
+		},
+		"conversation": {
+			"current": -1,
+			"list": []
+		},
+		"plugin": {
+			"current": -1,
+			"list": []
+		},
+		"game": {
+			"list": []
+		},
+		"miniprogram": {
+			"current": 1,
+			"list": [
+				{
+					"id": 1,
+					"name": "添加照片",
+					"pathName": "pages/addPhoto/addPhoto",
+					"query": "cat_id=XE6ZFHkPDdDCJ4MO"
+				},
+				{
+					"id": 1,
+					"name": "猫猫详情",
+					"pathName": "pages/detailCat/detailCat",
+					"query": "cat_id=XHt2Ft7E7L4weTZA",
+					"scene": null
+				},
+				{
+					"id": -1,
+					"name": "管理端",
+					"pathName": "pages/manage/manage",
+					"query": ""
+				},
+				{
+					"id": 4,
+					"name": "添加猫",
+					"pathName": "pages/addCat/addCat",
+					"query": "cat_id=XE6ZFHkPDdDCJ4MO"
+				},
+				{
+					"id": -1,
+					"name": "测试滑动",
+					"pathName": "pages/testSw/testSw",
+					"query": ""
+				},
+				{
+					"id": -1,
+					"name": "科普页",
+					"pathName": "pages/science/science",
+					"query": "",
+					"scene": null
+				},
+				{
+					"id": -1,
+					"name": "关于页",
+					"pathName": "pages/info/info",
+					"query": "",
+					"scene": null
+				},
+				{
+					"id": -1,
+					"name": "照片排行榜",
+					"pathName": "pages/info/photoRank/photoRank",
+					"query": "",
+					"scene": null
+				},
+				{
+					"id": -1,
+					"name": "打赏",
+					"pathName": "pages/info/reward/reward",
+					"query": "",
+					"scene": null
+				},
+				{
+					"id": 9,
+					"name": "反馈",
+					"pathName": "pages/info/feedback/feedback",
+					"query": "",
+					"scene": null
+				},
+				{
+					"id": -1,
+					"name": "开发团队",
+					"pathName": "pages/info/devTeam/devTeam",
+					"query": "",
+					"scene": null
+				},
+				{
+					"id": 11,
+					"name": "科普分类",
+					"pathName": "pages/science/sciDetail/sciDetail",
+					"query": "cate=1",
+					"scene": null
+				},
+				{
+					"id": -1,
+					"name": "调试",
+					"pathName": "pages/debug/debug",
+					"query": "",
+					"scene": null
+				},
+				{
+					"id": -1,
+					"name": "图片处理",
+					"pathName": "pages/imProcess/imProcess",
+					"query": "",
+					"scene": null
+				}
+			]
+		}
+	}
+}

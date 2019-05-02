@@ -1,0 +1,21 @@
+/**app.wxss**/
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-sizing: border-box;
+} 
+
+/* 下面是没有授权的 */
+.unAuth {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  align-content: center;
+}
+
+.unAuth text {
+  margin: 600rpx 0 30rpx 0;
+  text-align: center;
+  font-size: 34rpx;
+}

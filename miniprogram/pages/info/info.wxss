@@ -1,0 +1,56 @@
+/* miniprogram/pages/info/info.wxss */
+page {
+  width: 750rpx;
+  padding: 30rpx 30rpx;
+  box-sizing: border-box;
+  background-color: #f7f7fa;
+}
+
+.mina-info {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  align-items: center;
+  padding: 50rpx 0;
+  /* box-shadow: 0rpx 10rpx 20rpx #d8d8d8; */
+}
+
+.buttons {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
+.buttons .button {
+  width: 330rpx;
+  height: 182rpx;
+  border-radius: 15rpx;
+  box-shadow: 0rpx 0rpx 10rpx #f2f2f2;
+  margin-bottom: 15rpx;
+}
+
+/* 下面是旧的 */
+
+/* .manager-zone {
+  background:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAARElEQVQoU2NkQAIPHz40RubLy8ufhfEZYQx8ikBqwAoJKQIrJEYRhkJkNyG7FUUhPkVwhYQUwT2Dbg02Pjx4CCkmWiEAY7scC0VfrYwAAAAASUVORK5CYII=) repeat;
+} */
+
+.mina-info image {
+  width: 150rpx;
+  height: 150rpx;
+  border-radius: 10rpx;
+  box-shadow: 0 0 10rpx #e2e2e2;
+}
+
+.mina-info .title {
+  font-size: 26rpx;
+  font-weight: 500;
+  margin-top: 20rpx;
+}
+
+.mina-info .dev {
+  font-size: 22rpx;
+  font-weight: 300;
+  margin-top: 10rpx;
+  text-align: center;
+}

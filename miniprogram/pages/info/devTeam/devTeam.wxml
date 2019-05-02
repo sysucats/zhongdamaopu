@@ -1,0 +1,66 @@
+<!--miniprogram/pages/info/devTeam/devTeam.wxml-->
+
+
+<view class='block'>
+  <view class='title'>开发团队</view>
+  <view class='desc'>
+    <text>渔政、蓝卷、玥琪、大米、hehe\n以及各校区猫群小伙伴</text>
+  </view>
+</view>
+
+<view class='block'>
+  <view class='title'>更新日志</view>
+  <view class='desc'>
+    <view class='sub-title hl'>v1.1.6</view>
+    <view class='sub-detail'><text>- 4月捐款公示</text></view>
+    <view class='sub-detail'><text>- 排行榜样式更新、并列排名</text></view>
+    <view class='sub-detail'><text>- 猫猫详情里的下拉颜色问题</text></view>
+    <view class='sub-detail'><text>- 修复相册的一些小问题</text></view>
+    <view class='sub-detail'><text>- 未知性别不显示</text></view>
+    <view class='sub-detail'><text>- 去掉流量提醒</text></view>
+    <view class='sub-detail'><text>- 更新时间：2019/5/2</text></view>
+
+    <view class='sub-title hl'>v1.1.5</view>
+    <view class='sub-detail'><text>- 样式小改动</text></view>
+    <view class='sub-detail'><text>- 3月捐款公示</text></view>
+    <view class='sub-detail'><text>- 更新时间：2019/4/3</text></view>
+
+    <view class='sub-title hl'>v1.1.4</view>
+    <view class='sub-detail'><text>- 有新照片的猫会被排序到前面，并带有明显标志</text></view>
+    <view class='sub-detail'><text>- 处理重复刷人气值的问题</text></view>
+    <view class='sub-detail'><text>- 加快首页照片加载速度</text></view>
+    <view class='sub-detail'><text>- 更新时间：2019/3/23</text></view>
+
+    <view class='sub-title hl'>v1.1.3</view>
+    <view class='sub-detail'><text>- 增加缩略图，缩短首页、相册的加载耗时</text></view>
+    <view class='sub-detail'><text>- 预处理水印图，绕开某些安卓闪退问题</text></view>
+    <view class='sub-detail'><text>- 首页猫猫在一定范围内打乱顺序展示</text></view>
+    <view class='sub-detail'><text>- 更新时间：2019/3/20</text></view>
+
+    <view class='sub-title hl'>v1.1.2</view>
+    <view class='sub-detail'><text>- 优化首页图片加载</text></view>
+    <view class='sub-detail'><text>- 优化上传图片功能，可以同时选多张图啦</text></view>
+    <view class='sub-detail'><text>- 更新时间：2019/3/12</text></view>
+
+    <view class='sub-title hl'>v1.1.1</view>
+    <view class='sub-detail'><text>- 科普页图片搬家、增加文字换行</text></view>
+    <view class='sub-detail'><text>- 修复分享功能</text></view>
+    <view class='sub-detail'><text>- 更新时间：2019/3/10</text></view>
+
+    <view class='sub-title hl'>v1.1.0</view>
+    <view class='sub-detail'><text>- 关于页改头换面，增加了四个板块</text></view>
+    <view class='sub-detail'><text>- 科普页开始施工了</text></view>
+    <view class='sub-detail'><text>- 首页的翻页效果改成了滑溜溜的（我投降）</text></view>
+    <view class='sub-detail'><text>- 修复首页快速切换bug</text></view>
+    <view class='sub-detail'><text>- 更新时间：2019/3/9</text></view>
+
+    <view class='sub-title hl'>v1.0.9</view>
+    <view class='sub-detail'><text>- 首页卡片index可以点击（已废除）</text></view>
+    <view class='sub-detail'><text>- 增加了流量提示</text></view>
+    <view class='sub-detail'><text>- 照片审核页优化，审的更快了</text></view>
+    <view class='sub-detail'><text>- 更新时间：2019/3/3</text></view>
+
+  </view>
+</view>
+
+<view style="height: 1rpx;"></view>

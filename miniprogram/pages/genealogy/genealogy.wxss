@@ -1,0 +1,197 @@
+/* miniprogram/pages/genealogy/genealogy.wxss */
+
+/* 上面的是旧的东西 */
+page {
+  height: 100%;
+  background-color: #f7f7fa;
+}
+/* 顶上部分 */
+#filters {
+  width: 750rpx;
+  /* height: 100rpx; */
+  background-color: white;
+}
+
+/* 顶上过滤器 */
+#filters picker {
+  height: 100%;
+  width: 50%;
+  text-align: center;
+  /* display: inline-block; */
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#filters text {
+  height: 28rpx;
+  display: inline-block;
+  font-size: 28rpx;
+}
+
+#filters tra {
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 10rpx 10rpx 0 10rpx;
+  border-color: #d1d1d1 transparent transparent transparent;
+  display: inline-block;
+  padding-bottom: 7rpx;
+  margin-left: 10rpx;
+}
+
+/* 下面开始猫卡布局 */
+scroll-view {
+  -webkit-overflow-scrolling: touch;
+}
+.card {
+  margin: 20rpx 67.5rpx 50rpx 67.5rpx;
+  font-size: 24rpx;
+  line-height: 24rpx;
+  width: 615rpx;
+  border-radius: 15rpx;
+
+  box-sizing: border-box;
+  background-color: white;
+  /* overflow: hidden; */
+
+  box-shadow: -10rpx 10rpx 30rpx #ddd;
+  position: relative;
+}
+
+.card view.image {
+  width: 615rpx;
+  height: 615rpx;
+  border-radius: 15rpx 15rpx 0 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.card view.image .image-title{
+  width: 615rpx;
+  height: 40rpx;
+
+  line-height: 40rpx;
+
+  background-color: #222;
+  opacity: .4;
+  text-align: center;
+  color: #fff;
+  position: absolute;
+  bottom: 0;
+}
+
+.card view.image image {
+  width: 615rpx;
+  height: 615rpx;
+  background-color: #eee;
+	background-image: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBzdGFuZGFsb25lPSJubyI/PjwhRE9DVFlQRSBzdmcgUFVCTElDICItLy9XM0MvL0RURCBTVkcgMS4xLy9FTiIgImh0dHA6Ly93d3cudzMub3JnL0dyYXBoaWNzL1NWRy8xLjEvRFREL3N2ZzExLmR0ZCI+PHN2ZyB0PSIxNTUzOTI5NDU5ODM3IiBjbGFzcz0iaWNvbiIgc3R5bGU9IiIgdmlld0JveD0iMCAwIDEyMTYgMTAyNCIgdmVyc2lvbj0iMS4xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHAtaWQ9IjIxMzYiIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB3aWR0aD0iMjM3LjUiIGhlaWdodD0iMjAwIj48ZGVmcz48c3R5bGUgdHlwZT0idGV4dC9jc3MiPjwvc3R5bGU+PC9kZWZzPjxwYXRoIGQ9Ik0xMTIwIDEwMjRIOTZjLTU0LjQgMC05Ni00MS42LTk2LTk2Vjk2YzAtNTQuNCA0MS42LTk2IDk2LTk2aDEwMjRjNTQuNCAwIDk2IDQxLjYgOTYgOTZ2ODMyYzAgNTQuNC00MS42IDk2LTk2IDk2ek05NiA2NGMtMTkuMiAwLTMyIDEyLjgtMzIgMzJ2ODMyYzAgMTkuMiAxMi44IDMyIDMyIDMyaDEwMjRjMTkuMiAwIDMyLTEyLjggMzItMzJWOTZjMC0xOS4yLTEyLjgtMzItMzItMzJIOTZ6IiBwLWlkPSIyMTM3IiBmaWxsPSIjY2RjZGNkIj48L3BhdGg+PHBhdGggZD0iTTY0IDc2OGMtOS42IDAtMTYtMy4yLTIyLjQtOS42LTEyLjgtMTIuOC0xMi44LTMyIDAtNDQuOGwzNTItMzUyYzEyLjgtMTIuOCAyOC44LTEyLjggNDEuNi0zLjJMODAwIDY2Mi40bDE3Mi44LTExNS4yYzEyLjgtNi40IDI1LjYtNi40IDM4LjQgMy4ybDE2MCAxMjhjMTIuOCA5LjYgMTYgMzIgNi40IDQ0LjgtOS42IDEyLjgtMzIgMTYtNDQuOCA2LjRMOTkyIDYxNy42bC0xNzIuOCAxMTUuMmMtMTIuOCA2LjQtMjguOCA2LjQtMzguNC0zLjJsLTM2MS42LTMwMC44TDg2LjQgNzU4LjRjLTYuNCA2LjQtMTIuOCA5LjYtMjIuNCA5LjZ6IiBwLWlkPSIyMTM4IiBmaWxsPSIjY2RjZGNkIj48L3BhdGg+PHBhdGggZD0iTTg5NiA1MTJjLTg5LjYgMC0xNjAtNzAuNC0xNjAtMTYwczcwLjQtMTYwIDE2MC0xNjAgMTYwIDcwLjQgMTYwIDE2MC03MC40IDE2MC0xNjAgMTYweiBtMC0yNTZjLTU0LjQgMC05NiA0MS42LTk2IDk2czQxLjYgOTYgOTYgOTYgOTYtNDEuNiA5Ni05Ni00MS42LTk2LTk2LTk2eiIgcC1pZD0iMjEzOSIgZmlsbD0iI2NkY2RjZCI+PC9wYXRoPjwvc3ZnPg==);
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-size: 50% 50%;
+  position: absolute;
+}
+
+.card .info {
+  padding: 30rpx 40rpx 20rpx 40rpx;
+}
+
+.card .info .line {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20rpx;
+}
+
+.card .info .name {
+  height: 30rpx;
+  font-size: 30rpx;
+  line-height: 30rpx;
+
+  font-weight: 600;
+  letter-spacing: 8rpx;
+  /* margin-right: 10rpx; */
+}
+
+.card .info image.gender {
+  height: 27rpx;
+  width: 27rpx;
+  margin-right: 30rpx;
+}
+
+.card .info .adopt {
+  width: 83rpx;
+  height: 30rpx;
+  border-radius: 15rpx;
+  font-size: 18rpx;
+  line-height: 30rpx;
+  text-align: center;
+  background-color: #ffd101;
+}
+
+.card .info .popularity {
+  margin-left: auto;
+  order: 2;
+}
+.popularity image {
+  height: 20rpx;
+  width: 39rpx;
+}
+
+.card .line image.icon {
+  height: 26rpx;
+  width: 26rpx;
+  margin-right: 20rpx;
+}
+
+.card .line .index {
+  margin-left:auto;
+  order:2;
+  color:#bbb;
+}
+
+.loading image {
+  width: 165.9rpx;
+  height: 90.3rpx;
+  margin: 10rpx 292rpx;
+}
+.loadnomore image {
+  width: 750rpx;
+  height: 100rpx;
+  margin: 10rpx 0;
+}
+
+/* 新图标签 */
+.card .label {
+  display: inline-block;
+  text-align: left;
+  /* border-color: #cf590c;
+  background-color: #f2711c; */
+  background-color: #ffd101;
+  border-color: #dfb600;
+  color: #222;
+  border-radius: 0 10rpx 10rpx 0;
+  padding: 10rpx;
+  font-size: 22rpx;
+  position: absolute;
+  top: 30rpx;
+  left: -17.5rpx;
+  z-index: 3;
+}
+
+.card .label::after {
+    position: absolute;
+    top: 100%;
+    right: auto;
+    left: 0;
+
+    border-style: solid;
+    border-width: 0 17.5rpx 17.5rpx 0;
+    border-color: transparent;
+    border-top-color: inherit!important;
+    background-color: transparent!important;
+    border-right-color: inherit!important;
+
+    content: '';
+    width: 0;
+    height: 0;
+}

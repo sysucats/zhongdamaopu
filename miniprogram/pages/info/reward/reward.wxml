@@ -1,0 +1,24 @@
+<!--miniprogram/pages/info/reward/reward.wxml-->
+<!-- <text>miniprogram/pages/info/reward/reward.wxml</text> -->
+
+<view class='block'>
+  <view class='title'>打赏罐头</view>
+  <view class='desc'><text>您的捐款将作为购买猫粮等物资及送医的费用~\n每月的收支都会在<text class='hl'>笃行志愿服务队</text>公众平台进行公开，感谢您对中大流浪猫的帮助与支持！\n喵(^･ｪ･^)</text></view>
+  <view>
+    <view class='btn' bindtap='openMina' data-appid='wx18a2ac992306a5a4' data-path='pages/apps/largess/detail?id=Hj4pYjj1F9Q%3D'>点击打赏</view>
+  </view>
+</view>
+
+
+<view class='block'>
+  <view class='title'>打赏记录</view>
+  <view class='desc' wx:for='{{reward}}' wx:key='{{item.mdate}}'>
+    <view class='sub-title hl'>{{item.mdate}}爱心捐款</view>
+    <view class='sub-detail' wx:for='{{item.records}}' wx:for-item="record" wx:key="{{record}}"><text>- {{record}}</text></view>
+  </view>
+</view>
+
+
+<view class='tip'>* 每月月初统计一次，多谢晒（鞠躬）</view>
+
+<view style='margin-top: 20rpx;'></view>

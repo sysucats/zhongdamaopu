@@ -1,0 +1,4 @@
+<!--miniprogram/pages/debug/debug.wxml-->
+<view style='width: 750rpx;'>{{res}}</view>
+
+<view style='position:fixed;' class='label'>有新图！</view>

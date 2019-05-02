@@ -1,0 +1,39 @@
+<!--miniprogram/pages/info/photoRank/photoRank.wxml-->
+
+<view id='top-block'></view>
+
+<view class='cen-block unAuth' wx:if='{{!userInfo}}'>
+  <view class='title'>请授权查看自己的排名</view>
+  <button open-type='getUserInfo' bindgetuserinfo='getUInfo'>点击授权</button>
+</view>
+<view class='cen-block my' wx:else>
+  <view class='text left'>
+    <view class='title'>排名</view>
+    <view class='number {{userInfo.photo_rank && userInfo.photo_rank <= 3? "active": ""}}'>{{userInfo.photo_rank || '---'}}</view>
+  </view>
+  <view class='text cen my-info'>
+    <image mode='aspectFill' src='{{userInfo.avatarUrl}}'></image>
+    <view class='name'>{{userInfo.nickName}}</view>
+  </view>
+  <view class='text right'>
+    <view class='title'>照片</view>
+    <view class='number {{userInfo.photo_rank && userInfo.photo_rank <= 3? "active": ""}}'>{{userInfo.photo_count || '---'}}</view>
+  </view>
+</view>
+
+
+<view class='cen-block'>
+  <view class='row' wx:for='{{ranks}}' wx:key='{{item.openid}}'>
+    <view class='rank'>{{item.rank}}</view>
+    <view class='avatar'>
+      <image class='avatar' mode='aspectFill' src='{{item.userInfo.avatarUrl}}'></image>
+      <image wx:if='{{item.rank<=3}}' class='medal' mode='aspectFill' src='../../../images/info/rank/{{item.rank}}.png'></image>
+    </view>
+    <view class='name'>{{item.userInfo.nickName}}</view>
+    <view class='photo_count {{index<3? "active": ""}}'>{{item.count}}</view>
+  </view>
+</view>
+
+<view class='tip'>* 每天10点、14点、22点更新</view>
+
+<view style='margin-top: 20rpx;'></view>

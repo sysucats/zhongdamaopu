@@ -1,0 +1,52 @@
+{
+  "pages": [
+    "pages/genealogy/genealogy",
+    "pages/info/info",
+    "pages/addPhoto/addPhoto",
+    "pages/detailCat/detailCat",
+    "pages/manage/manage",
+    "pages/addCat/addCat",
+    "pages/science/science",
+    "pages/info/photoRank/photoRank",
+    "pages/info/reward/reward",
+    "pages/info/feedback/feedback",
+    "pages/info/devTeam/devTeam",
+    "pages/science/sciDetail/sciDetail",
+    "pages/debug/debug",
+    "pages/imProcess/imProcess"
+  ],
+  "tabBar": {
+    "selectedColor": "#000",
+    "list": [
+      {
+        "pagePath": "pages/genealogy/genealogy",
+        "iconPath": "./images/tabs/default/cat.png",
+        "selectedIconPath": "./images/tabs/active/cat.png",
+        "text": "猫谱"
+      },
+      {
+        "pagePath": "pages/science/science",
+        "iconPath": "./images/tabs/default/sci.png",
+        "selectedIconPath": "./images/tabs/active/sci.png",
+        "text": "科普"
+      },
+      {
+        "pagePath": "pages/info/info",
+        "iconPath": "./images/tabs/default/info.png",
+        "selectedIconPath": "./images/tabs/active/info.png",
+        "text": "关于"
+      }
+    ]
+  },
+  "window": {
+    "backgroundColor": "#fff",
+    "backgroundTextStyle": "light",
+    "navigationBarBackgroundColor": "#ffd101",
+    "navigationBarTitleText": "中大猫谱",
+    "navigationBarTextStyle": "black"
+  },
+  "navigateToMiniProgramAppIdList": [
+    "wx18a2ac992306a5a4"
+  ],
+  "sitemapLocation": "sitemap.json"
+}

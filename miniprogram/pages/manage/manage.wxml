@@ -1,0 +1,24 @@
+<!--miniprogram/pages/manage/manage.wxml-->
+<!-- <text>miniprogram/pages/manage/manage.wxml</text> -->
+<block wx:if="{{auth}}">
+  <view id='total-count'><text>目前共有{{total}}张待审核，点击图片可以放大。\n每次最多加载20张，请先审核完这些吧。\n完成后点“刷新状态”看看，注意流量消耗哈。\n确定全部审核完成后，点一下“数猫图”。</text></view>
+  <block wx:for="{{photos}}" wx:key="{{item._id}}">
+    <view class='verify-box'>
+      <view class='label cat'>所属猫猫：{{item.cat.name}}（{{item.cat.campus}}）</view>
+      <image mode='aspectFill' src='{{item.photo_id}}' bindtap='openBigPhoto' data-pid='{{item.photo_id}}'></image>
+      <view class='label user'>上传者：{{item.userInfo.nickName}}</view>
+      <view class='label user'>摄影师：{{item.photographer || item.userInfo.nickName}}</view>
+      <view class='label user'>拍摄时间：{{item.shooting_date}}</view>
+      <button type='normal' bindtap='bindDelete' data-photo='{{item}}'>删除</button>
+      <button type='normal' bindtap='bindCheck' data-photo='{{item}}' data-best='{{false}}'>通过</button>
+      <button class='long' type='primary' bindtap='bindCheck' data-photo='{{item}}' data-best='{{true}}'>通过+精选</button>
+    </view>
+  </block>
+  <button bindtap="countPhoto">数猫图</button>
+  <button bindtap="reload">刷新状态</button>
+  
+</block>
+<view wx:else class='unAuth'>
+  <text>{{tipText}}</text>
+  <button bindtap='goBack' wx:if='{{tipBtn}}'>打扰了</button>
+</view>

@@ -1,0 +1,33 @@
+/* miniprogram/pages/debug/debug.wxss */
+
+
+.label {
+  text-align: left;
+  /* border-color: #cf590c;
+  background-color: #f2711c; */
+  background-color: #ffd101;
+  border-color: #dfb600;
+  color: #222;
+  border-radius: 0 10rpx 10rpx 0;
+  padding: 10rpx;
+  font-size: 22rpx;
+  position: relative;
+}
+
+.label::after {
+    position: absolute;
+    top: 100%;
+    right: auto;
+    left: 0;
+
+    border-style: solid;
+    border-width: 0 1.2em 1.2em 0;
+    border-color: transparent;
+    border-top-color: inherit!important;
+    background-color: transparent!important;
+    border-right-color: inherit!important;
+
+    content: '';
+    width: 0;
+    height: 0;
+}
