@@ -30,7 +30,7 @@
       <image wx:if='{{item.rank<=3}}' class='medal' mode='aspectFill' src='../../../images/info/rank/{{item.rank}}.png'></image>
     </view>
     <view class='name'>{{item.userInfo.nickName}}</view>
-    <view class='photo_count {{index<3? "active": ""}}'>{{item.count}}</view>
+    <view class='photo_count {{item.rank<=3? "active": ""}}'>{{item.count}}</view>
   </view>
 </view>
 

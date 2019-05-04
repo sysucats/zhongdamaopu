@@ -15,23 +15,19 @@ Page({
   data: {
     cats: [],
 
-    filters: [
-      // ['全部校区', '东校区', '南校区', '北校区', '珠海校区', '深圳校区'],
-      // ['全部花色', '橘', '白', '白橘', '三花', '黑', '灰', '玳瑁'],
-      // ['全部特点', '胖', '白手套', '白围脖', '橘尾巴'],
-    ],
-    filters_pickers: {},
-    filters_pickers_act: [0, 0],
+    filters: [],
+    filters_sub: 0, // 过滤器子菜单
+    filters_legal: true, // 这组过滤器是否合法
+    filters_show: false, // 是否显示过滤器
+    filters_input: '', // 输入的内容，目前只用于挑选名字
+    filters_show_shadow: false, // 滚动之后才显示阴影
+
     // 对应数据库的key
-    filter_keys: ['campus', 'colour'],
     filter_keys_name: {
       'campus': '校区',
       'colour': '花色'
     },
 
-    // 这个就有点难理解了，它每一位是二进制表示，对应上面一组filter的激活状态。
-    // filter_active: [1, 1, 1],
-    
     // 高度，单位为px
     heights: {
       filters: 40,
@@ -48,20 +44,7 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
-    // 下面开始加载filters
-    const db = wx.cloud.database();
-    db.collection('filter').limit(1).get().then(res => {
-      console.log(res);
-      var filters = [];
-      for (const k of this.data.filter_keys) {
-        res.data[0][k].unshift('全部' + this.data.filter_keys_name[k]);
-        filters.push(res.data[0][k]);
-      }
-      this.setData({
-        filters: filters,
-        filters_pickers: res.data[0],
-      }, () => { this.reloadCats(); });
-    });
+    this.loadFilters();
     // 下面开始加载wifi信息
     isWifi(function(res) {
       // 不是wifi时提醒一下
@@ -73,6 +56,39 @@ Page({
         //   showCancel: false,
         // });
       }
+    });
+  },
+
+  loadFilters: function() {
+    // 下面开始加载filters
+    const db = wx.cloud.database();
+    db.collection('filter').limit(1).get().then(res => {
+      console.log(res);
+      var filters = [];
+      for (const k in this.data.filter_keys_name) {
+        var main_item = {};
+        main_item.key = k;
+        main_item.name = this.data.filter_keys_name[k];
+        main_item.items = [];
+        main_item.items.push({
+          name: '全部' + this.data.filter_keys_name[k],
+          active: true,
+        });
+        for (const item of res.data[0][k]) {
+          var item = {
+            name: item,
+            active: false
+          }
+          main_item.items.push(item);
+        }
+        filters.push(main_item);
+      }
+      // 默认把第一个先激活了
+      filters[0].active = true;
+      console.log(filters);
+      this.setData({
+        filters: filters,
+      }, () => { this.reloadCats(); });
     });
   },
 
@@ -113,7 +129,7 @@ Page({
     const nowLoadingLock = loadingLock;
     const db = wx.cloud.database();
     const cat = db.collection('cat');
-    const query = this.getPickerQueryFilters();
+    const query = this.fGet();
     console.log(query);
     cat.where(query).count().then(res => {
       if (loadingLock != nowLoadingLock) {
@@ -146,7 +162,7 @@ Page({
       const db = wx.cloud.database();
       const cat = db.collection('cat');
       const _ = db.command;
-      const query = that.getPickerQueryFilters();
+      const query = that.fGet();
       console.log("query condition: " + JSON.stringify(query));
       cat.where(query).orderBy('mphoto', 'desc').orderBy('popularity', 'desc').skip(cats.length).limit(step).get().then(res => {
         if (loadingLock != nowLoadingLock) {
@@ -236,48 +252,6 @@ Page({
     });
   },
 
-  // 选择筛选框
-  picker_change(e) {
-    console.log(e);
-    const key = e.currentTarget.dataset.key;
-    const value = e.detail.value;
-    this.setData({
-      ['filters_pickers_act[' + key + ']']: parseInt(value)
-    }, () => {
-      this.reloadCats();
-    });
-  },
-  // 计算数据库要用的filter，单选情况
-  getPickerQueryFilters() {
-    const filters = this.data.filters_pickers;
-    const active = this.data.filters_pickers_act;
-    const filter_keys = this.data.filter_keys;
-    var res = {};
-    for (const i in filter_keys) {
-      // 这里是选择全部校区
-      if (active[i] === 0) {
-        continue;
-      }
-
-      const key = filter_keys[i];
-      // 这里是选择XX校区
-      if (filters[key][active[i]].includes('校区')) {
-        // 取出前两个字：东校、南校、珠海、深圳、北校
-        const prefix = filters[key][active[i]].substr(0, 2);
-        const _ = wx.cloud.database().command;
-        var selected = [];
-        for (const str of filters[key]) {
-          if (str.includes(prefix)) {
-            selected.push(str);
-          }
-        }
-        res[key] = _.in(selected);
-      } else {
-        res[key] = filters[key][active[i]];
-      }
-    }
-    return res;
-  },
   // 开始计算各个东西高度
   getHeights() {
     wx.getSystemInfo({
@@ -306,4 +280,192 @@ Page({
       }
     })
   },
+
+  ////// 下面开始新的filter //////
+  // mask滑动事件catch
+  voidMove: function () { },
+  // toggle filters
+  fToggle: function () {
+    // 这里只管显示和隐藏，类似取消键的功能
+    this.setData({
+      filters_show: !this.data.filters_show
+    });
+  },
+  // 点击main filter，切换sub的
+  fClickMain: function(e) {
+    var filters = this.data.filters;
+    const click_idx = e.currentTarget.dataset.index;
+    
+    for (var item of filters) {
+      item.active = false;
+    }
+    filters[click_idx].active = true;
+
+    this.setData({
+      filters: filters,
+      filters_sub: click_idx
+    });
+  },
+  // 点击sub filter，切换激活项
+  fClickSub: function (e) {
+    var filters = this.data.filters;
+    var filters_sub = this.data.filters_sub;
+    
+    const click_idx = e.currentTarget.dataset.index;
+    const item = filters[filters_sub].items[click_idx];
+    // 获取到了点击的东西，下面开始各种情况的判断。
+    // 点击的东西包括“全部”两字
+    if (item.name.includes('全部')) {
+      // 它自己反激活，其他全部不激活
+      const tmp = filters[filters_sub].items[click_idx].active;
+      for (var it of filters[filters_sub].items) {
+        it.active = false;
+      }
+      filters[filters_sub].items[click_idx].active = !tmp;
+    } else if (filters[filters_sub].key == 'campus' && item.name.includes('校区')) {
+      // 如果是选中某个校区，那就反激活它，不激活其他这个校区的小东西
+      const tmp = filters[filters_sub].items[click_idx].active;
+      for (var it of filters[filters_sub].items) {
+        if (it.name.substr(0, 2) == item.name.substr(0, 2)) {
+          it.active = false;
+        }
+      }
+      filters[filters_sub].items[click_idx].active = !tmp;
+      // 同时第一个“全部校区”要不激活
+      filters[filters_sub].items[0].active = false;
+    } else {
+      // 这两个情况都不是，那就直接反激活它自己，同时把该校区全选的不激活
+      filters[filters_sub].items[click_idx].active ^= 1;
+      for (var it of filters[filters_sub].items) {
+        if (it.name.includes('校区') && it.name.substr(0, 2) == item.name.substr(0, 2)) {
+          it.active = false;
+        }
+      }
+      // 同时第一个“全部校区”要不激活
+      filters[filters_sub].items[0].active = false;
+    }
+    const fLegal = this.fCheckLegal(filters);
+    this.setData({
+      filters: filters,
+      filters_legal: fLegal
+    });
+  },
+  // 检查现在这个filter是否有效，如果没有，那就deactive完成键
+  fCheckLegal: function(filters) {
+    for (const mainF of filters) {
+      var count = 0; // 激活的数量
+      for (const item of mainF.items) {
+        if (item.active) {
+          count ++;
+          break;
+        }
+      }
+      if (count==0) {
+        return false;
+      }
+    }
+    return true;
+  },
+  fGet: function() {
+    const _ = wx.cloud.database().command;
+    const filters = this.data.filters;
+    var res = {};
+    // 这些是点击选择的filters
+    for (const main_item of filters) {
+      // 把数据库要用的key拿出来
+      const key = main_item.key;
+      var selected = []; // 储存已经选中的项
+
+      // 下面开始遍历每个分类下的子项
+      for (const sub_item of main_item.items) {
+        // 没有激活的就跳过
+        if (!sub_item.active) {
+          continue;
+        }
+
+        // 说明选择了全部东东，不需要过滤这个分类
+        if (sub_item.name.includes('全部')) {
+          break;
+        }
+
+        // 如果选中的是某个校区，那么把该校区下面的全部东西都放进去
+        if (key == 'campus' && sub_item.name.includes('校区')) {
+          const campus_name = sub_item.name.substr(0, 2);
+          for (const item of main_item.items) {
+            // 说明是这个校区的一个区域
+            if (item.name.substr(0, 2) == campus_name && item.name != sub_item.name) {
+              selected.push(item.name);
+            }
+          }
+        } else {
+          // 其他被激活的项直接放进去
+          selected.push(sub_item.name);
+        }
+      }
+      
+      if (selected.length) {
+        res[key] = _.in(selected);
+      }
+    }
+    // 判断一下filters生效没有
+
+    this.setData({
+      filters_active: Object.keys(res).length > 0
+    });
+
+    // 如果用户还输入了东西，也要一起搜索
+    const filters_input = this.data.filters_input;
+    if (filters_input.length) {
+      res['name'] = _.in(filters_input.trim().split(' '));
+    }
+    return res;
+  },
+  fComfirm: function() {
+    if (!this.data.filters_legal) {
+      return false;
+    }
+
+    this.reloadCats();
+    this.fToggle();
+  },
+  fReset: function() {
+    // 重置所有分类
+    var filters = this.data.filters;
+    // const filters_sub = this.data.filters_sub;
+    for (const filters_sub in filters) {
+      for (var sub_item of filters[filters_sub].items) {
+        if (sub_item.name.includes('全部')) {
+          sub_item.active = true;
+        } else {
+          sub_item.active = false;
+        }
+      }
+    }
+
+    const fLegal = this.fCheckLegal(filters);
+    this.setData({
+      filters: filters,
+      filters_legal: fLegal
+    });
+  },
+  // 发起文字搜索
+  fSearchInput: function (e) {
+    const value = e.detail.value;
+    this.setData({
+      filters_input: value
+    });
+  },
+  fSearch: function(e) {
+    this.reloadCats();
+  },
+  // 搜索框是否要显示阴影
+  fScroll: function(e) {
+    const scrollTop = e.detail.scrollTop;
+    const filters_show_shadow = this.data.filters_show_shadow;
+    if ((scrollTop < 50 && filters_show_shadow == true) || (scrollTop >= 50 && filters_show_shadow == false)) {
+      this.setData({
+        filters_show_shadow: !filters_show_shadow
+      });
+    }
+  }
 })

@@ -136,10 +136,40 @@ Page({
       },
     })
   },
-  
-  uploadImg(e) {
+
+  // 点击单个上传
+  uploadSingleClick(e) {
     const currentIndex = e.currentTarget.dataset.index;
     const photo = this.data.photos[currentIndex];
+    this.uploadImg(photo);
+  },
+
+  // 点击多个上传
+  uploadAllClick(e, rec=false) {
+    // rec 表示是不是递归回来的，说明有已经上传的照片
+    const photos = []; // 这里只会保存可以上传的照片
+    for (const item of this.data.photos) {
+      if (item.shooting_date && item.file.path) {
+        photos.push(item);
+      }
+    }
+    wx.showLoading({
+      title: '正在上传(' + photos.length + ')',
+    });
+    if (photos.length == 0 && rec) {
+      wx.hideLoading();
+      wx.showModal({
+        title: '上传成功！',
+        content: '审核通过后就会被展示出来啦',
+        showCancel: false
+      });
+    } else {
+      this.uploadImg(photos[0], true);
+    }
+  },
+  
+  uploadImg(photo, multiple=false) {
+    // multiple 表示当前是否在批量上传，如果是就不显示上传成功的弹框
     const that = this;
     this.setData({
       uploading: true,
@@ -170,23 +200,36 @@ Page({
             },
             success: (res) => {
               console.log(res);
-              wx.showModal({
-                title: '上传成功！',
-                content: '审核通过后就会被展示出来啦',
-                showCancel: false,
-                success: (res) => {
-                  const photos = that.data.photos;
-                  const new_photos = photos.filter((ph, ind, arr) => {
-                    // 这个photo是用户点击的photo，在上面定义的
-                    return currentIndex != ind;
-                  });
-                  that.setData({
-                    uploading: false,
-                    photos: new_photos,
-                  })
-                  
-                }
-              });
+              if (!multiple) {
+                wx.showModal({
+                  title: '上传成功！',
+                  content: '审核通过后就会被展示出来啦',
+                  showCancel: false,
+                  success: () => {
+                    const photos = that.data.photos;
+                    const new_photos = photos.filter((ph) => {
+                      // 这个photo是用户点击的photo，在上面定义的
+                      return tempFilePath != ph.file.path;
+                    });
+                    that.setData({
+                      uploading: false,
+                      photos: new_photos,
+                    });
+                  }
+                });
+              } else {
+                const photos = that.data.photos;
+                const new_photos = photos.filter((ph) => {
+                  // 这个photo是用户点击的photo，在上面定义的
+                  return tempFilePath != ph.file.path;
+                });
+                that.setData({
+                  uploading: false,
+                  photos: new_photos,
+                }, ()=> {
+                  that.uploadAllClick(null, true);
+                });
+              }
             }
           })
         },

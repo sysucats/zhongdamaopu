@@ -5,44 +5,10 @@ page {
   height: 100%;
   background-color: #f7f7fa;
 }
-/* 顶上部分 */
-#filters {
-  width: 750rpx;
-  /* height: 100rpx; */
-  background-color: white;
-}
-
-/* 顶上过滤器 */
-#filters picker {
-  height: 100%;
-  width: 50%;
-  text-align: center;
-  /* display: inline-block; */
-  display: inline-flex;
-  justify-content: center;
-  align-items: center;
-}
-
-#filters text {
-  height: 28rpx;
-  display: inline-block;
-  font-size: 28rpx;
-}
-
-#filters tra {
-  width: 0;
-  height: 0;
-  border-style: solid;
-  border-width: 10rpx 10rpx 0 10rpx;
-  border-color: #d1d1d1 transparent transparent transparent;
-  display: inline-block;
-  padding-bottom: 7rpx;
-  margin-left: 10rpx;
-}
-
 /* 下面开始猫卡布局 */
 scroll-view {
   -webkit-overflow-scrolling: touch;
+  z-index: 0;
 }
 .card {
   margin: 20rpx 67.5rpx 50rpx 67.5rpx;
@@ -175,7 +141,7 @@ scroll-view {
   position: absolute;
   top: 30rpx;
   left: -17.5rpx;
-  z-index: 3;
+  z-index: 1;
 }
 
 .card .label::after {
@@ -194,4 +160,187 @@ scroll-view {
     content: '';
     width: 0;
     height: 0;
+}
+
+/* 顶部的搜索框还有筛选 */
+#search {
+  width: 750rpx;
+  /* background-color: #ffd101; */
+  background-color: #f7f7fa;
+  box-sizing: border-box;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: nowrap;
+}
+
+#search.shadow {
+  box-shadow: 0 0 10rpx #bbb;
+}
+
+#search .input-block {
+  width: 80%;
+  display: flex;
+  align-items: center;
+  flex-wrap: nowrap;
+}
+
+#search .input-icon {
+  width: 10%;
+  height: 1.4rem;
+  background-color: white;
+  border-top-left-radius: 10rpx;
+  border-bottom-left-radius: 10rpx;
+  display: inline-block;
+}
+
+#search .input-icon image {
+  width: 60%;
+  height: 100%;
+  margin: 0 20%;
+}
+
+#search input.name {
+  width: 90%;
+  height: 1.4rem;
+  line-height: 1.4rem;
+  /* background-color: rgb(255, 237, 193); */
+  background-color: white;
+  border-top-right-radius: 10rpx;
+  border-bottom-right-radius: 10rpx;
+  display: inline-block;
+  box-sizing: border-box;
+  margin: 0;
+
+  font-size: 30rpx;
+}
+
+#search .icon {
+  background-color: yellow;
+  width: 5%;
+  height: 100%;
+}
+
+#search .filter-btn {
+  /* background-color: yellow; */
+  width: 10%;
+  height: 1.4rem;
+  padding: 10rpx 0 10rpx 30rpx;
+}
+
+.filter-btn image {
+  width: 70%;
+  height: 100%;
+}
+
+/* 过滤器点开的部分 */
+#filter-block {
+  width: 750rpx;
+  position: fixed;
+  z-index: 2;
+  background-color: rgba(0, 0, 0, .8);
+}
+
+#filter-block .tri {
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 0 15rpx 25rpx 15rpx;
+  border-color: transparent transparent #fff transparent;
+  position: absolute;
+  top: -15rpx;
+  right: 60rpx;
+}
+
+#filter-block .filters {
+  width: 100%;
+  background-color: white;
+  display: flex;
+  flex-wrap: nowrap;
+}
+
+.f-column {
+  padding: 0rpx 30rpx;
+  height: 400rpx;
+}
+.f-column .padding-block {
+  height: 20rpx;
+}
+.f-column-1 {
+  width: 33%;
+  /* border-right: 1rpx solid #ddd; */
+  box-sizing: border-box;
+}
+.f-column-2 {
+  width: 40%;
+}
+.f-column-3 {
+  width: 67%;
+  display: flex;
+  justify-content: space-between;
+}
+
+.f-column .item {
+  height: 40rpx;
+  font-size: 30rpx;
+  line-height: 40rpx;
+  margin: 10rpx;
+  padding: 2rpx 20rpx;
+  display: inline-flex;
+  flex-wrap: nowrap;
+  border: 3rpx solid transparent;
+}
+
+.f-column .item.active {
+  color: #ffd101;
+  border: 3rpx solid #ffd101;
+  border-radius: 40rpx;
+}
+
+.f-column.main .item.active {
+  color: black;
+  background-color: #ffd101;
+  border-radius: 40rpx;
+}
+
+.f-column .item .right-arrow {
+  width: 20rpx;
+  height: 40rpx;
+  margin-left: 10rpx;
+
+  display: inline-block;
+}
+
+.right-arrow image {
+  height: 20rpx;
+  width: 20rpx;
+}
+
+#filter-block .divider {
+  width: 100%;
+  height: 1rpx;
+  background-color: #dedede;
+}
+
+#filter-block .buttons {
+  width: 100%;
+  background-color: #dedede;
+  display: flex;
+  justify-content: space-between;
+}
+
+#filter-block .buttons .btn {
+  /* 留1rpx给中间的分割线 */
+  width: 374.8rpx;
+  height: 80rpx;
+  line-height: 80rpx;
+  font-size: 30rpx;
+  background-color: white;
+  color: #bbb;
+  text-align: center;
+}
+
+#filter-block .buttons .active {
+  color: #ffd101;
 }

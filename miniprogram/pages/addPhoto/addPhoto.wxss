@@ -50,7 +50,8 @@ button {
 }
 
 button.long {
-  width: 690rpx;
+  /* width: 690rpx; */
+  width: 100%;
 }
 
 button.primary {

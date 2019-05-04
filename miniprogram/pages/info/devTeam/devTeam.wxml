@@ -11,6 +11,12 @@
 <view class='block'>
   <view class='title'>更新日志</view>
   <view class='desc'>
+    <view class='sub-title hl'>v1.1.7</view>
+    <view class='sub-detail'><text>- 首页增加名字搜索</text></view>
+    <view class='sub-detail'><text>- 过滤器大变样，可以多选了</text></view>
+    <view class='sub-detail'><text>- 可以一键传多张照片（感谢芥子的建议）</text></view>
+    <view class='sub-detail'><text>- 更新时间：2019/5/4</text></view>
+
     <view class='sub-title hl'>v1.1.6</view>
     <view class='sub-detail'><text>- 4月捐款公示</text></view>
     <view class='sub-detail'><text>- 排行榜样式更新、并列排名</text></view>
@@ -26,7 +32,7 @@
     <view class='sub-detail'><text>- 更新时间：2019/4/3</text></view>
 
     <view class='sub-title hl'>v1.1.4</view>
-    <view class='sub-detail'><text>- 有新照片的猫会被排序到前面，并带有明显标志</text></view>
+    <view class='sub-detail'><text>- 有新照片的猫会排序靠前，并带有明显标志</text></view>
     <view class='sub-detail'><text>- 处理重复刷人气值的问题</text></view>
     <view class='sub-detail'><text>- 加快首页照片加载速度</text></view>
     <view class='sub-detail'><text>- 更新时间：2019/3/23</text></view>
@@ -63,4 +69,4 @@
   </view>
 </view>
 
-<view style="height: 1rpx;"></view>
+<view style="height: 20rpx;"></view>

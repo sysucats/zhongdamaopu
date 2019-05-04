@@ -28,6 +28,8 @@
       <input type='text' placeholder='（选填）默认为上传者' bindinput='setAllPher'>{{set_all.pher}}</input>
     </view>
     <view class='tip'>* 在此填写会覆盖下面所有设置</view>
+
+    <button class='long primary' bindtap='uploadAllClick'>全部上传</button>
   </view>
   
 
@@ -43,6 +45,6 @@
     </view>
 
     <button bindtap='removeOne' data-index='{{index}}'>移除</button>
-    <button bindtap='uploadImg' class='primary' disabled='{{item.shooting_date && item.file.path && !uploading? false: true}}' data-index='{{index}}'>确定上传</button>
+    <button bindtap='uploadSingleClick' class='primary' disabled='{{item.shooting_date && item.file.path && !uploading? false: true}}' data-index='{{index}}'>确定上传</button>
   </view>
 </block>

@@ -140,24 +140,24 @@ Page({
           }).then(res => {
             console.log("审核通过：" + photo._id);
             console.log(res.data);
-            wx.showModal({
-              title: '完成',
-              content: '审核通过',
-              showCancel: false,
-              success: (res) => {
-                // that.reload();
-                // 直接从列表里去掉这只猫，不完全加载了
-                const photos = that.data.photos;
-                const new_photos = photos.filter((ph, index, arr) => {
-                  // 这个photo是用户点击的photo，在上面定义的
-                  return ph._id != photo._id;
-                });
-                that.setData({
-                  photos: new_photos,
-                  total: that.data.total - 1
-                });
-              }
+
+            // 直接从列表里去掉这只猫，不完全加载了
+            const photos = that.data.photos;
+            const new_photos = photos.filter((ph, index, arr) => {
+              // 这个photo是用户点击的photo，在上面定义的
+              return ph._id != photo._id;
             });
+            that.setData({
+              photos: new_photos,
+              total: that.data.total - 1
+            }, () => {
+              wx.showModal({
+                title: '完成',
+                content: '审核通过',
+                showCancel: false,
+              });
+            });
+            
           })
         }
       }
@@ -181,13 +181,22 @@ Page({
             }
           }).then(res => {
             console.log("删除照片记录：" + photo._id);
-            wx.showModal({
-              title: '完成',
-              content: '删除成功',
-              showCancel: false,
-              success: (res) => {
-                that.reload();
-              }
+
+            // 直接从列表里去掉这只猫，不完全加载了
+            const photos = that.data.photos;
+            const new_photos = photos.filter((ph, index, arr) => {
+              // 这个photo是用户点击的photo，在上面定义的
+              return ph._id != photo._id;
+            });
+            that.setData({
+              photos: new_photos,
+              total: that.data.total - 1
+            }, () => {
+              wx.showModal({
+                title: '完成',
+                content: '删除成功',
+                showCancel: false,
+              });
             });
           })
         }

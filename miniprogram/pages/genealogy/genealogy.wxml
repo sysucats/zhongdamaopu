@@ -1,26 +1,65 @@
 <!--miniprogram/pages/genealogy/genealogy.wxml-->
-<!-- <text>miniprogram/pages/genealogy/genealogy.wxml</text> -->
 
-<view id="filters" style='height: {{heights.filters}}px'>
-  <picker
-    range="{{filters_pickers.campus}}"
-    value='{{filters_pickers_act[0]}}'
-    bindchange='picker_change'
-    data-key='0'>
-    <text>{{filters_pickers.campus[filters_pickers_act[0]]}}</text>
-    <tra></tra>
-  </picker>
-  <picker
-    range="{{filters_pickers.colour}}"
-    value='{{filters_pickers_act[1]}}'
-    bindchange='picker_change'
-    data-key='1'>
-    <text>{{filters_pickers.colour[filters_pickers_act[1]]}}</text>
-    <tra></tra>
-  </picker>
+<view id='search' class='{{filters_show_shadow? "shadow": ""}}' style='height: {{heights.filters}}px'>
+  <view class='input-block'>
+    <view class='input-icon'>
+      <image mode='aspectFit' src="../../images/filter/search.png"></image>
+    </view>
+    <input class='name' placeholder='请输入猫猫名字（空格分隔）' value='{{filters_input}}' maxlength='20' confirm-type='search' bindinput='fSearchInput' bindconfirm='fSearch'></input>
+  </view>
+  
+  <view class='filter-btn' bindtap='fToggle'>
+    <image wx:if='{{filters_active}}' mode='aspectFill' src="../../images/filter/filter_y.png"></image>
+    <image wx:else mode='aspectFill' src="../../images/filter/filter.png"></image>
+  </view>
 </view>
 
-<scroll-view style='height: {{heights.windowHeight - heights.filters}}px' scroll-y='true' enable-back-to-top='true' bindscrolltolower='onReachBottom'>
+<!-- 点击过滤按钮出来的块 -->
+<view id='filter-block' style='height: {{heights.windowHeight - heights.filters}}px;' catchtouchmove="voidMove" hidden='{{!filters_show}}' bindtap='fToggle'>
+  <!-- 白色的上三角 -->
+  <view class='tri'></view>
+  <!-- filter选择部分 -->
+  <view class='filters' catchtap='voidMove'>
+    <scroll-view class='f-column f-column-1 main' scroll-y='1'>
+      <view class='padding-block'></view>
+      <view class='item {{item.active? "active": ""}}' wx:for='{{filters}}' wx:key='{{item.name}}' bindtap='fClickMain' data-index='{{index}}'>
+        <text>{{item.name}}</text>
+
+        <view class='right-arrow' wx:if='{{item.active}}'>
+          <image mode='aspectFill' src="../../images/filter/right.png"></image> 
+        </view>
+      </view>
+    </scroll-view>
+    <!-- <scroll-view class='f-column f-column-2' scroll-y='1'>
+      <view class='item'>全部校区</view>
+      <view class='item active'>
+        <text>东校区</text>
+        <view class='right-arrow'>
+          <image mode='aspectFill' src="../../images/filter/right_y.png"></image>
+        </view>
+      </view>
+      <view class='item '>南校区</view>
+      <view class='item '>北校区</view>
+      <view class='item '>珠海校区</view>
+      <view class='item '>深圳校区</view>
+    </scroll-view> -->
+    <scroll-view class='f-column f-column-3' scroll-y='1'>
+      <view class='padding-block'></view>
+      <view class='item {{item.active? "active": ""}}' wx:for='{{filters[filters_sub].items}}' wx:key='{{item.name}}' bindtap='fClickSub' data-index='{{index}}'>
+        {{item.name}}
+      </view>
+    </scroll-view>
+  </view>
+  <!-- 来一条分割线 -->
+  <view class='divider'  catchtap='voidMove'></view>
+  <!-- 按钮部分 -->
+  <view class='buttons'  catchtap='voidMove'>
+    <view class='btn' bindtap='fReset'>重 置</view>
+    <view class='btn {{filters_legal? "active": ""}}' bindtap='fComfirm'>完 成</view>
+  </view>
+</view>
+
+<scroll-view style='height: {{heights.windowHeight - heights.filters}}px;' scroll-y='true' enable-back-to-top='true' bindscrolltolower='onReachBottom' bindscroll='fScroll'>
   <view class='card' bindtap='clickCatCard' bindlongpress='bindManageCat'
   wx:for='{{cats}}' wx:key="{{item._id}}" data-cat_id='{{item._id}}'>
     <view class='label' wx:if="{{item.mphoto_new}}">有新相片！</view>
