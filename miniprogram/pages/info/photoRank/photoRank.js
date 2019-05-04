@@ -34,7 +34,9 @@ Page({
    * 用户点击右上角分享
    */
   onShareAppMessage: function () {
-
+    return {
+      title: '拍照月榜 - 中大猫谱'
+    }
   },
 
   checkUInfo() {

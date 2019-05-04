@@ -122,7 +122,9 @@ Page({
    * 用户点击右上角分享
    */
   onShareAppMessage: function () {
-
+    return {
+      title: this.data.cat.name + ' - 中大猫谱'
+    }
   },
   
   swiperLast(e) {
