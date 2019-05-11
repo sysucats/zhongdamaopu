@@ -13,7 +13,8 @@
     "pages/info/devTeam/devTeam",
     "pages/science/sciDetail/sciDetail",
     "pages/debug/debug",
-    "pages/imProcess/imProcess"
+    "pages/imProcess/imProcess",
+    "pages/filters/filters"
   ],
   "tabBar": {
     "selectedColor": "#000",

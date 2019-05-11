@@ -469,5 +469,18 @@ Page({
         filters_show_shadow: !filters_show_shadow
       });
     }
+  },
+  // 跳转去修改filters
+  toUpdateFilter: function () {
+    const that = this;
+    isManager(res => {
+      if (res) {
+        wx.navigateTo({
+          url: '/pages/filters/filters',
+        });
+      } else {
+        console.log("not a manager");
+      }
+    });
   }
 })

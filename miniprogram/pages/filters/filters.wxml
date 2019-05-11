@@ -1,0 +1,27 @@
+<!--miniprogram/pages/filters/filters.wxml-->
+<block wx:if="{{auth}}">
+  <view class='cate-block' wx:for='{{cates}}' wx:for-item='cate' wx:key='{{cate.key}}'>
+    <view class='title'>{{cate.name}}选项</view>
+    <view class='container'>
+      <view class='option' wx:for='{{filters[cate.key]}}' wx:key='{{item}}'>
+        <block wx:if='{{item.length}}'>
+          <view class='content'>{{item}}</view>
+          <button class='short' bindtap='moveOption' data-index='{{index}}' data-direct='up' data-cate='{{cate.key}}'>上</button>
+          <button class='short' bindtap='moveOption' data-index='{{index}}' data-direct='down' data-cate='{{cate.key}}'>下</button>
+          <button class='short' bindtap='deleteOption' data-index='{{index}}' data-cate='{{cate.key}}'>删</button>
+        </block>
+        <block wx:else>
+          <input class='content' value='{{item}}' bindinput='inputOption' data-cate='{{cate.key}}'></input>
+          <button bindtap='addOptionConfirm' data-cate='{{cate.key}}'>确定</button>
+        </block>
+      </view>
+      <button class='long' bindtap='addOptionInput' data-cate='{{cate.key}}'>加{{cate.name}}</button>
+    </view>
+  </view>
+
+  <button class='long primary' bindtap='uploadFilters'>确定上传</button>
+</block>
+<view wx:else class='unAuth'>
+  <text>{{tipText}}</text>
+  <button bindtap='goBack' wx:if='{{tipBtn}}'>打扰了</button>
+</view>

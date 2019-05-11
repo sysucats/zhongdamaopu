@@ -106,7 +106,7 @@ Page({
   reload() {
     wx.showLoading({
       title: '加载中...',
-    })
+    });
     const that = this;
     const db = wx.cloud.database();
     db.collection('photo').where({ verified: false }).count().then(res => {

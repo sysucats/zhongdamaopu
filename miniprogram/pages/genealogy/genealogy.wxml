@@ -8,7 +8,7 @@
     <input class='name' placeholder='请输入猫猫名字（空格分隔）' value='{{filters_input}}' maxlength='20' confirm-type='search' bindinput='fSearchInput' bindconfirm='fSearch'></input>
   </view>
   
-  <view class='filter-btn' bindtap='fToggle'>
+  <view class='filter-btn' bindtap='fToggle' bindlongpress='toUpdateFilter'>
     <image wx:if='{{filters_active}}' mode='aspectFill' src="../../images/filter/filter_y.png"></image>
     <image wx:else mode='aspectFill' src="../../images/filter/filter.png"></image>
   </view>
