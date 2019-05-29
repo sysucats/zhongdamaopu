@@ -11,7 +11,7 @@
       <view class='label user'>拍摄时间：{{item.shooting_date}}</view>
       <button type='normal' bindtap='bindDelete' data-photo='{{item}}'>删除</button>
       <button type='normal' bindtap='bindCheck' data-photo='{{item}}' data-best='{{false}}'>通过</button>
-      <button class='long' type='primary' bindtap='bindCheck' data-photo='{{item}}' data-best='{{true}}'>通过+精选</button>
+      <button class='long primary' bindtap='bindCheck' data-photo='{{item}}' data-best='{{true}}'>通过+精选</button>
     </view>
   </block>
   <button bindtap="countPhoto">数猫图</button>

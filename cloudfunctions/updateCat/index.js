@@ -7,7 +7,7 @@ function deepcopy(origin) {
   // not for modifying.
   const copyKeys = ['area', 'campus', 'characteristics',
     'colour', 'father', 'gender', 'mother', 'name', 'nickname', 'popularity', 'sterilized', 'adopt',
-    'birthday', 'habit', 'tutorial', 'relation']
+    'birthday', 'habit', 'tutorial', 'relation', 'to_star']
   var res = {};
   for (const key of copyKeys) {
     res[key] = origin[key];
@@ -36,11 +36,4 @@ exports.main = async (event, context) => {
       data: cat
     })
   }
-
-  // return {
-  //   event,
-  //   openid: wxContext.OPENID,
-  //   appid: wxContext.APPID,
-  //   unionid: wxContext.UNIONID,
-  // }
 }

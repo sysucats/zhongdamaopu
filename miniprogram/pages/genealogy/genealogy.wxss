@@ -58,6 +58,10 @@ scroll-view {
   position: absolute;
 }
 
+.card view.image.to_star image {
+  filter: grayscale(100%);
+}
+
 .card .info {
   padding: 30rpx 40rpx 20rpx 40rpx;
 }
@@ -85,13 +89,25 @@ scroll-view {
 }
 
 .card .info .adopt {
-  width: 83rpx;
+  padding: 0 10rpx;
   height: 30rpx;
   border-radius: 15rpx;
   font-size: 18rpx;
   line-height: 30rpx;
   text-align: center;
   background-color: #ffd101;
+}
+
+.card .info .to_star {
+  height: 30rpx;
+  border-radius: 15rpx;
+  font-size: 18rpx;
+  line-height: 30rpx;
+  text-align: center;
+  background-color: #e8e8e8;
+  
+  padding: 0 10rpx;
+  margin: 0 10rpx;
 }
 
 .card .info .popularity {
@@ -261,22 +277,22 @@ scroll-view {
 }
 
 .f-column {
-  padding: 0rpx 30rpx;
+  padding: 0rpx 10rpx;
   height: 400rpx;
 }
 .f-column .padding-block {
   height: 20rpx;
 }
 .f-column-1 {
-  width: 33%;
-  /* border-right: 1rpx solid #ddd; */
+  width: 31%;
   box-sizing: border-box;
 }
-.f-column-2 {
+/* .f-column-2 {
   width: 40%;
-}
+} */
 .f-column-3 {
-  width: 67%;
+  /* width: 67%; */
+  flex-grow: 1;
   display: flex;
   justify-content: space-between;
 }

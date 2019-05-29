@@ -101,6 +101,10 @@ swiper-item image {
   margin-right: 30rpx;
 }
 
+.info .to_star {
+  background-color: #e8e8e8;
+}
+
 .details {
   width: 630rpx;
   margin-top: 50rpx;

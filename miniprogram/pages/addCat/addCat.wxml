@@ -7,8 +7,8 @@
   <input type='text' value='{{cat.nickname}}' bindinput="inputText" data-key='nickname'></input>
   <view class='label campus'>校区：</view>
   <picker mode="selector" range='{{pickers.campus}}' value='0' bindchange='pickerChange' data-key='campus'>{{cat.campus == undefined? '请选择': cat.campus}}</picker>
-  <view class='label area'>出没区域：</view>
-  <input type='text' value='{{cat.area}}' bindinput="inputText" data-key='area'></input>
+  <!-- <view class='label area'>出没区域：</view>
+  <input type='text' value='{{cat.area}}' bindinput="inputText" data-key='area'></input> -->
 
   <view class='label birthday'>出生信息：</view>
   <!-- <input type='text' value='{{cat.birthday}}' bindinput="inputText" data-key='birthday'></input> -->
@@ -43,6 +43,8 @@
   <picker mode="selector" range='{{pickers.sterilized}}' value='0' bindchange='pickerChange' data-key='sterilized'>{{cat.sterilized == undefined? '请选择': cat.sterilized}}</picker>
   <view class='label adopt'>已领养：</view>
   <picker mode="selector" range='{{pickers.adopt}}' value='0' bindchange='pickerChange' data-key='adopt'>{{cat.adopt == undefined? '请选择': cat.adopt}}</picker>
+  <view class='label to_star'>返回喵星：</view>
+  <picker mode="selector" range='{{pickers.to_star}}' value='0' bindchange='pickerChange' data-key='to_star'>{{cat.to_star == undefined? '请选择': cat.to_star}}</picker>
   <view class='label popularity'>人气：{{cat.popularity}}</view>
   <button class='primary' bindtap='upload'>确定提交</button>
 

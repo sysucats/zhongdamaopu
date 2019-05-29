@@ -37,6 +37,7 @@ next-margin='60rpx'>
   <view>
     <text class='tag'>{{cat.adopt? '已': '未'}}领养</text>
     <text class='tag'>{{cat.sterilized? '已': '待'}}绝育</text>
+    <text class='tag to_star' wx:if='{{cat.to_star}}'>返回喵星</text>
   </view>
   <view class='details'>
     <view class='item'>

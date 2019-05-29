@@ -16,6 +16,7 @@ Page({
       gender: ['公', '母'],
       sterilized: [false, true],
       adopt: [false, true],
+      to_star: [false, true],
     },
     bottomShow: false
   },

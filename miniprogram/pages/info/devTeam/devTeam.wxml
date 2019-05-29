@@ -11,6 +11,11 @@
 <view class='block'>
   <view class='title'>更新日志</view>
   <view class='desc'>
+    <view class='sub-title hl'>v1.1.8</view>
+    <view class='sub-detail'><text>- 小bug修复</text></view>
+    <view class='sub-detail'><text>- 增加返回喵星提示（心痛！）</text></view>
+    <view class='sub-detail'><text>- 更新时间：2019/5/24</text></view>
+
     <view class='sub-title hl'>v1.1.7</view>
     <view class='sub-detail'><text>- 首页增加名字搜索</text></view>
     <view class='sub-detail'><text>- 过滤器大变样，可以多选了</text></view>

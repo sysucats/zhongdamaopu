@@ -19,6 +19,10 @@ button {
   box-sizing: border-box;
 }
 
+button.primary {
+  background-color: #ffd101;
+}
+
 button + button {
   margin-left: 10%;
   /* float: right; */
