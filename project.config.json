@@ -34,7 +34,7 @@
 			"list": []
 		},
 		"miniprogram": {
-			"current": 3,
+			"current": 2,
 			"list": [
 				{
 					"id": 1,
@@ -50,10 +50,11 @@
 					"scene": null
 				},
 				{
-					"id": -1,
-					"name": "管理端",
+					"id": 2,
+					"name": "审核照片",
 					"pathName": "pages/manage/checkPhotos/checkPhotos",
-					"query": ""
+					"query": "",
+					"scene": null
 				},
 				{
 					"id": 3,

@@ -1,5 +1,9 @@
 // 审核照片
-import { regeneratorRuntime, randomInt, isManager } from '../../../utils.js'
+import { regeneratorRuntime, randomInt, isManager } from '../../../utils.js';
+import { sendNotice } from '../../../msg.js';
+
+// 准备发送通知的列表，姓名：审核详情
+var notice_list = {};
 
 Page({
 
@@ -16,6 +20,7 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
+    notice_list = {};
     this.checkAuth();
   },
 
@@ -44,7 +49,18 @@ Page({
    * 生命周期函数--监听页面卸载
    */
   onUnload: function () {
+    console.log('页面退出');
 
+    // 自动数猫图
+    wx.cloud.callFunction({
+      name: "countPhoto",
+      success: (res) => {
+        console.log('数猫图完成', res.result);
+      }
+    });
+    
+    // 发送审核消息
+    sendNotice(notice_list);
   },
 
   /**
@@ -140,6 +156,8 @@ Page({
           }).then(res => {
             console.log("审核通过：" + photo._id);
             console.log(res.data);
+            // 内存记录一下这个操作，用来发通知
+            that.addNotice(photo, true);
 
             // 直接从列表里去掉这只猫，不完全加载了
             const photos = that.data.photos;
@@ -151,10 +169,8 @@ Page({
               photos: new_photos,
               total: that.data.total - 1
             }, () => {
-              wx.showModal({
-                title: '完成',
-                content: '审核通过',
-                showCancel: false,
+              wx.showToast({
+                title: '审核通过',
               });
             });
             
@@ -181,6 +197,8 @@ Page({
             }
           }).then(res => {
             console.log("删除照片记录：" + photo._id);
+            // 内存记录一下这个操作，用来发通知
+            that.addNotice(photo, false);
 
             // 直接从列表里去掉这只猫，不完全加载了
             const photos = that.data.photos;
@@ -192,10 +210,8 @@ Page({
               photos: new_photos,
               total: that.data.total - 1
             }, () => {
-              wx.showModal({
-                title: '完成',
-                content: '删除成功',
-                showCancel: false,
+              wx.showToast({
+                title: '删除成功',
               });
             });
           })
@@ -210,18 +226,19 @@ Page({
     });
   },
 
-  // 重新计算每只猫有多少张精选
-  countPhoto() {
-    wx.showLoading({
-      title: '计算中',
-      mask: true,
-    });
-    wx.cloud.callFunction({
-      name:"countPhoto",
-      success: (res) => {
-        console.log(res.result);
-        wx.hideLoading();
+  // 添加一条通知记录，等页面退出的时候统一发送通知
+  addNotice(photo, accepted) {
+    const openid = photo._openid;
+    if (!notice_list[openid]) {
+      notice_list[openid] = {
+        accepted: 0,
+        deleted: 0,
       }
-    });
+    }
+    if(accepted) {
+      notice_list[openid].accepted ++;
+    } else {
+      notice_list[openid].deleted ++;
+    }
   }
 })

@@ -89,17 +89,15 @@ function getGlobalSettings(key) {
   return new Promise(function (resolve, reject) {
     const app = getApp();
     if (app.globalData.settings) {
-      console.log('有了已经');
       resolve(app.globalData.settings[key]);
       return;
     }
 
-    console.log('重新获取');
     // 如果没有，那就获取一下
     const db = wx.cloud.database();
-    db.collection('setting').get().then(res => {
+    db.collection('setting').doc('pages').get().then(res => {
       console.log(res);
-      app.globalData.settings = res.data[0];
+      app.globalData.settings = res.data;
       resolve(app.globalData.settings[key]);
     });
   });

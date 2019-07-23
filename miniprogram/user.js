@@ -68,7 +68,25 @@ function updateUserWithInfo(user) {
   });
 }
 
+// 修改用户的微信通知设定
+function toggleUserNoticeSetting(user) {
+  return new Promise(resolve => {
+    user.notice = !user.notice;
+    wx.cloud.callFunction({
+      name: 'userOp',
+      data: {
+        op: 'update',
+        user: user
+      },
+      success: (res) => {
+        resolve(user);
+      }
+    });
+  });
+}
+
 export {
   getUser,
-  getUserInfoOrFalse
+  getUserInfoOrFalse,
+  toggleUserNoticeSetting
 } 

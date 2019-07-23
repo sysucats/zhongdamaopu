@@ -1,5 +1,5 @@
 <block wx:if="{{auth}}">
-  <view id='total-count'><text>目前共有{{total}}张待审核，点击图片可以放大。\n每次最多加载20张，请先审核完这些吧。\n完成后点“刷新状态”看看，注意流量消耗哈。\n确定全部审核完成后，点一下“数猫图”。</text></view>
+  <view id='total-count'><text>目前共有{{total}}张待审核，点击图片可以放大。\n每次最多加载20张，请先审核完这些吧。\n完成后点“刷新状态”看看，注意流量消耗哈。</text></view>
   <block wx:for="{{photos}}" wx:key="{{item._id}}">
     <view class='verify-box'>
       <view class='label cat'>所属猫猫：{{item.cat.name}}（{{item.cat.campus}}）</view>
@@ -12,8 +12,7 @@
       <button class='long primary' bindtap='bindCheck' data-photo='{{item}}' data-best='{{true}}'>通过+精选</button>
     </view>
   </block>
-  <button bindtap="countPhoto">数猫图</button>
-  <button bindtap="reload">刷新状态</button>
+  <button class='long primary' bindtap="reload">刷新状态</button>
   
 </block>
 <view wx:else class='unAuth'>

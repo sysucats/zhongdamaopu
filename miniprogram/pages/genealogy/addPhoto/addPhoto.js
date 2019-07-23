@@ -1,5 +1,5 @@
 import { generateUUID, getCurrentPath, shareTo } from '../../../utils.js';
-import { getUserInfoOrFalse } from '../../../user.js';
+import { getUserInfoOrFalse, toggleUserNoticeSetting } from '../../../user.js';
 
 Page({
 
@@ -8,7 +8,7 @@ Page({
    */
   data: {
     isAuth: false,
-    userInfo: {},
+    user: {},
     uploading: false,
     birth_date: '2008-01-01',
     photos: [],
@@ -103,7 +103,7 @@ Page({
       console.log(res);
       that.setData({
         isAuth: true,
-        userInfo: res.userInfo,
+        user: res,
       });
     });
   },
@@ -192,7 +192,7 @@ Page({
             data: {
               cat_id: cat._id,
               photo_id: res.fileID,
-              userInfo: that.data.userInfo,
+              userInfo: that.data.user.userInfo,
               verified: false,
               mdate: (new Date()),
               shooting_date: photo.shooting_date,
@@ -300,10 +300,25 @@ Page({
     db.collection('formId').add({
       data: {
         formId: formId,
+        mdate: new Date(),
       },
       success: (res) => {
         console.log('保存formId: ' + formId)
       }
     });
+  },
+  updateNoticeSetting(e) {
+    wx.showLoading({
+      title: '更改中...',
+      mask: true
+    });
+    const that = this;
+    toggleUserNoticeSetting(this.data.user).then(res => {
+      that.setData({
+        user: res
+      }, ()=>{
+        wx.hideLoading();
+      });
+    })
   }
 })

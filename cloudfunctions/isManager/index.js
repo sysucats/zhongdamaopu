@@ -11,7 +11,11 @@ exports.main = async (event, context) => {
   const openid = wxContext.OPENID || event.openid;
 
   const filter = { openid: openid };
-  const count = (await db.collection('manager').where(filter).count()).total;
+  const user = (await db.collection('user').where(filter).field({manager: true}).get()).data[0];
 
-  return (count === 1);
+  if (!user) {
+    return user;
+  }
+
+  return user.manager;
 }

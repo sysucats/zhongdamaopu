@@ -5,15 +5,23 @@
 <block wx:else>
   <!-- <view>--已经授权--</view> -->
   <view class='userInfo'>
-    <image src='{{userInfo.avatarUrl}}'></image>
+    <image src='{{user.userInfo.avatarUrl}}'></image>
     <view>
-      <text>{{userInfo.nickName}}\n---正在为[<text style="font-weight:600;">{{cat.name}}</text>]添加照片</text>
+      <text>{{user.userInfo.nickName}}\n---正在为[<text style="font-weight:600;">{{cat.name}}</text>]添加照片</text>
     </view>
+  </view>
+
+    
+  <view class='need-notice' bindtap="updateNoticeSetting">
+    <view class="my-checkbox {{user.notice? 'checked': ''}}">
+      <view class="my-checkbox-core"></view>
+    </view>
+    <text>收录结果微信通知</text>
   </view>
 
   <button bindtap='chooseImg' class='long primary'>选择照片</button>
   
-  <view class='tip' hidden='{{photos && photos.length}}'>* 如果遇到闪退，清理后台后再试试~</view>
+  <view class='tip' hidden='{{photos && photos.length}}'>* 如果遇到闪退，清理后台应用再试试~</view>
 
   <view class='set-all' hidden='{{!photos || photos.length<2}}'>
     <view class='title'>统一设置</view>

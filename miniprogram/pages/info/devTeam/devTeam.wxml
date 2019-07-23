@@ -11,6 +11,14 @@
 <view class='block'>
   <view class='title'>更新日志</view>
   <view class='desc'>
+    <view class='sub-title hl'>v1.2.0</view>
+    <view class='sub-detail'><text>- 首页支持模糊搜索啦</text></view>
+    <view class='sub-detail'><text>- 上传照片时可选订阅审核完成通知</text></view>
+    <view class='sub-detail'><text>- 重构用户表，整理相关逻辑</text></view>
+    <view class='sub-detail'><text>- 修改后台设置格式</text></view>
+    <view class='sub-detail'><text>- 优化审核流程</text></view>
+    <view class='sub-detail'><text>- 更新时间：2019/7/23</text></view>
+
     <view class='sub-title hl'>v1.1.11</view>
     <view class='sub-detail'><text>- 增加后台设置项</text></view>
     <view class='sub-detail'><text>- 优化页面逻辑</text></view>
