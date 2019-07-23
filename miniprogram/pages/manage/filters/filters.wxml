@@ -1,4 +1,3 @@
-<!--miniprogram/pages/filters/filters.wxml-->
 <block wx:if="{{auth}}">
   <view class='cate-block' wx:for='{{cates}}' wx:for-item='cate' wx:key='{{cate.key}}'>
     <view class='title'>{{cate.name}}选项</view>

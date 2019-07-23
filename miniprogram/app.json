@@ -1,20 +1,20 @@
 {
   "pages": [
     "pages/genealogy/genealogy",
-    "pages/info/info",
-    "pages/addPhoto/addPhoto",
-    "pages/detailCat/detailCat",
-    "pages/manage/manage",
-    "pages/addCat/addCat",
+    "pages/genealogy/addPhoto/addPhoto",
+    "pages/genealogy/detailCat/detailCat",
     "pages/science/science",
+    "pages/science/sciDetail/sciDetail",
+    "pages/info/info",
     "pages/info/photoRank/photoRank",
     "pages/info/reward/reward",
     "pages/info/feedback/feedback",
     "pages/info/devTeam/devTeam",
-    "pages/science/sciDetail/sciDetail",
-    "pages/debug/debug",
-    "pages/imProcess/imProcess",
-    "pages/filters/filters"
+    "pages/manage/addCat/addCat",
+    "pages/manage/imProcess/imProcess",
+    "pages/manage/checkPhotos/checkPhotos",
+    "pages/manage/filters/filters",
+    "pages/debug/debug"
   ],
   "tabBar": {
     "selectedColor": "#000",

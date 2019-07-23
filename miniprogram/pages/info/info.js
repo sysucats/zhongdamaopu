@@ -40,14 +40,23 @@ Page({
       wx.showToast({
         title: 'Nothing...',
       });
-      // wx.cloud.callFunction({
-      //   name: 'getPhotoRank',
-      //   complete: console.log
-      // })
       return false;
     }
     wx.navigateTo({
       url: to,
     });
   },
+
+  longtapbtn(e) {
+    const to = e.currentTarget.dataset.longto;
+    if (!to) {
+      wx.showToast({
+        title: 'Nothing...',
+      });
+      return false;
+    }
+    wx.navigateTo({
+      url: to,
+    });
+  }
 })

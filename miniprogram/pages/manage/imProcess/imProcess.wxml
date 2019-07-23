@@ -1,0 +1,20 @@
+<block wx:if="{{auth}}">
+  <canvas style="width: 2000px; height: 2000px; border: 3rpx solid red; left: 1000000px; position: fixed;" canvas-id="bigPhoto"></canvas>
+
+  <view>[{{now}}/{{total}}] 目前阶段：{{phase}} | {{phase2str[phase]}}</view>
+  <button class='primary long' bindtap='clickBegin'>开始处理30张</button>
+  <view class='title'>原图</view>
+  <image mode='aspectFit' wx:if='{{origin.path}}' src='{{origin.path}}' bindtap='preview' data-src='{{origin.path}}'></image>
+  <view class='title'>缩略图</view>
+  <image mode='aspectFit' wx:if='{{images_path.compressed}}' src='{{images_path.compressed}}' bindtap='preview' data-src='{{images_path.compressed}}'></image>
+  <view class='title'>水印图</view>
+  <image mode='aspectFit' wx:if='{{images_path.watermark}}' src='{{images_path.watermark}}' bindtap='preview' data-src='{{images_path.watermark}}'></image>
+  <!-- <button bindtap='preview' data-src='{{origin.path}}'>原图</button>
+  <button bindtap='preview' data-src='{{images_path.compressed}}'>压缩图</button>
+  <button bindtap='preview' data-src='{{images_path.watermark}}'>水印图</button> -->
+
+</block>
+<view wx:else class='unAuth'>
+  <text>{{tipText}}</text>
+  <button bindtap='goBack' wx:if='{{tipBtn}}'>打扰了</button>
+</view>

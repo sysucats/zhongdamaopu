@@ -1,4 +1,3 @@
-// miniprogram/pages/debug/debug.js
 Page({
 
   /**

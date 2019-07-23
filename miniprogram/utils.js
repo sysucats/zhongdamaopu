@@ -30,21 +30,11 @@ function isManager(callback) {
   // 为bool类型，当前用户为manager时为true，
   // 否则为false
   wx.cloud.callFunction({
-    name: 'login',
+    name: 'isManager',
   }).then(res => {
     console.log(res);
-    const db = wx.cloud.database();
-    const openid = res.result.openid;
-    const _ = db.command;
-    const qf = { openid: _.in([openid, 'anyone']) };
-    db.collection('manager').where(qf).count().then(res => {
-      if (res.total === 1) {
-        callback(true);
-      } else {
-        callback(false);
-      }
-    })
-  })
+    callback(res.result);
+  });
 }
 
 function isWifi(callback) {
@@ -74,6 +64,65 @@ function shuffle(a) {
   return a;
 }
 
+// 获取分享连接，从首页跳转过去
+function shareTo(title, path) {
+  return {
+    title: title,
+    path: '/pages/genealogy/genealogy?toPath=' + encodeURIComponent(path)
+  }
+}
+
+// 获取当前页面的path，包括参数
+function getCurrentPath(pagesStack) {
+  const currentPage = pagesStack[pagesStack.length - 1];
+  const route = currentPage.route;
+  const options = currentPage.options;
+  var path = '/' + route + '?'
+  for (const key in options) {
+    path += key + '=' + options[key] + '&';
+  }
+  return path;
+}
+
+// 获取全局的设置
+function getGlobalSettings(key) {
+  return new Promise(function (resolve, reject) {
+    const app = getApp();
+    if (app.globalData.settings) {
+      console.log('有了已经');
+      resolve(app.globalData.settings[key]);
+      return;
+    }
+
+    console.log('重新获取');
+    // 如果没有，那就获取一下
+    const db = wx.cloud.database();
+    db.collection('setting').get().then(res => {
+      console.log(res);
+      app.globalData.settings = res.data[0];
+      resolve(app.globalData.settings[key]);
+    });
+  });
+}
+
+
+// 判断两个userInfo是否相同，初级版
+function userInfoEq(a, b) {
+  try {
+    for (const k in a) {
+      if (a[k] != b[k]) {
+        console.log('找到不同了', k, a[k], b[k]);
+        return false;
+      }
+    }
+    return true;
+  } catch (err) {
+    console.error(err);
+    return false;
+  }
+}
+
+
 export {
   regeneratorRuntime,
   randomInt,
@@ -82,4 +131,8 @@ export {
   isManager,
   isWifi,
   shuffle,
+  shareTo,
+  getCurrentPath,
+  getGlobalSettings,
+  userInfoEq,
 };

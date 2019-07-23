@@ -1,0 +1,72 @@
+page {
+  width: 750rpx;
+  padding: 30rpx 30rpx;
+  box-sizing: border-box;
+}
+
+.cate-block {
+  padding-bottom: 30rpx;
+  margin-bottom: 30rpx;
+}
+
+.cate-block .title {
+  font-weight: bold;
+  text-align: center;
+}
+
+button {
+  width: 45%;
+  display: inline-block;
+  font-size: 35rpx;
+  box-sizing: border-box;
+}
+
+button + button {
+  margin-left: 10%;
+  /* float: right; */
+}
+
+#container {
+  display: flex;
+  align-content: space-between;
+}
+
+button.primary {
+  background-color: #ffd110;
+}
+
+button.long {
+  margin: 20rpx 0 0 0;
+  width: 100%;
+}
+
+button.short {
+  width: 12%;
+  height: 100%;
+  margin: 2%;
+  padding: 2%;
+  font-size: 24rpx;
+  line-height: 24rpx;
+}
+
+.option {
+  width: 100%;
+  border-bottom: 2rpx #ffd110 solid;
+  /* background-color: #fafafa; */
+  padding: 10rpx;
+  color: #222;
+  display: flex;
+  align-content: space-around;
+  justify-content: center;
+  align-items: center;
+}
+
+.content {
+  width: 50%;
+  display: inline-block;
+}
+
+input.content {
+  border-bottom: 2rpx #ffd110 solid;
+  background-color: #fafafa;
+}

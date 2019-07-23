@@ -1,5 +1,3 @@
-<!--miniprogram/pages/addPhoto/addPhoto.wxml-->
-<!-- <text>miniprogram/pages/addPhoto/addPhoto.wxml</text> -->
 <view wx:if="{{!isAuth}}" class='unAuth'>
   <text>请授权后进行操作</text>
   <button open-type='getUserInfo' bindgetuserinfo='getUInfo'>点击授权</button>
@@ -29,7 +27,10 @@
     </view>
     <view class='tip'>* 在此填写会覆盖下面所有设置</view>
 
-    <button class='long primary' bindtap='uploadAllClick'>全部上传</button>
+    <form report-submit='{{true}}' report-submit-timeout='800' bindsubmit='uploadAllClick'>
+      <button class='long primary' form-type='submit'>全部上传</button>
+    </form>
+    
   </view>
   
 
@@ -43,8 +44,9 @@
     <view>
       <input type='text' placeholder='（选填）默认为上传者' bindinput='inputPher' data-index='{{index}}' value='{{item.pher}}'></input>
     </view>
-
-    <button bindtap='removeOne' data-index='{{index}}'>移除</button>
-    <button bindtap='uploadSingleClick' class='primary' disabled='{{item.shooting_date && item.file.path && !uploading? false: true}}' data-index='{{index}}'>确定上传</button>
+    <form report-submit='{{true}}' data-index='{{index}}' report-submit-timeout='800' bindsubmit='uploadSingleClick'>
+      <button bindtap='removeOne' data-index='{{index}}'>移除</button>
+      <button form-type='submit' class='primary' disabled='{{item.shooting_date && item.file.path && !uploading? false: true}}'>确定上传</button>
+    </form>
   </view>
 </block>

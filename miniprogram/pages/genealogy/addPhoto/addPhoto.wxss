@@ -1,0 +1,97 @@
+page {
+  width: 750rpx;
+  padding: 30rpx 30rpx;
+  box-sizing: border-box;
+}
+.userInfo {
+  width: 100%;
+  padding: 30rpx 0rpx;
+  display: flex;
+}
+
+.userInfo image {
+  height: 50rpx;
+  width: 50rpx;
+  margin-right: 10rpx;
+  border-radius: 5rpx;
+}
+
+.userInfo text {
+  height: 50rpx;
+  line-height: 50rpx;
+  font-size: 35rpx;
+}
+
+.card {
+  box-shadow: 0 0 10rpx #888;
+  padding: 30rpx 30rpx;
+  margin: 20rpx 0;
+  border-radius: 20rpx;
+}
+
+.selected-image {
+  border-radius: 3rpx;
+  width: 630rpx;
+  height: 630rpx;
+  background-color: #f7f7fa;
+  margin-bottom: 30rpx;
+}
+
+button {
+  width: 300rpx;
+  display: inline-block;
+  box-sizing: border-box;
+  font-size: 30rpx;
+  line-height: 40rpx;
+  padding: 20rpx 30rpx;
+  border: 1rpx solid #888;
+  border-radius: 10rpx;
+}
+
+button.long {
+  /* width: 690rpx; */
+  width: 100%;
+}
+
+button.primary {
+  background-color: #ffd101;
+}
+
+button + button {
+  margin-left: 30rpx;
+  /* float: right; */
+}
+
+
+.label {
+  font-size: 30rpx;
+  font-weight: 600;
+  margin-bottom: 5rpx;
+}
+
+picker, input {
+  border-bottom: 2rpx #ffd101 solid;
+  background-color: #fafafa;
+  padding: 10rpx;
+  margin-bottom: 20rpx;
+  color: #222;
+}
+
+/* 统一设置相关 */
+.set-all {
+  box-shadow: 0 0 10rpx #888;
+  padding: 30rpx 30rpx;
+  margin: 20rpx 0;
+  border-radius: 20rpx;
+}
+
+.set-all .title {
+  width: 100%;
+  text-align: center;
+  font-size: 36rpx;
+}
+
+.tip {
+  font-size: 24rpx;
+  /* font-weight: bold; */
+}

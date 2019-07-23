@@ -1,13 +1,29 @@
 // 云函数入口文件
 const cloud = require('wx-server-sdk')
 
-cloud.init()
+cloud.init();
+const db = cloud.database();
+
+function updateMphoto(cat_id) {
+  const today = new Date();
+  return db.collection('cat').doc(cat_id).update({
+    data: {
+      mphoto: today
+    }
+  });
+}
 
 // 云函数入口函数
 exports.main = async (event, context) => {
+  const wxContext = cloud.getWXContext();
+  const openid = wxContext.OPENID;
+  const isManager = (await cloud.callFunction({ name: 'isManager', data: { openid: openid } }));
+  if (!isManager.result) {
+    return { msg: 'not a manager', result: isManager };
+  }
+  
   const photo = event.photo;
   const type = event.type;
-  const db = cloud.database();
 
   if (type === "check") {
     const best = event.best;
@@ -19,12 +35,7 @@ exports.main = async (event, context) => {
         manager: OPENID,
       }
     });
-    const today = new Date();
-    return db.collection('cat').doc(photo.cat_id).update({
-      data: {
-        mphoto: today
-      }
-    });
+    updateMphoto(photo.cat_id);
   } else if (type === "delete") {
     var photoIDs = [photo.photo_id];
     if (photo.photo_compressed) {
@@ -39,9 +50,11 @@ exports.main = async (event, context) => {
       },
       fail: console.error
     });
+    updateMphoto(photo.cat_id);
     return db.collection('photo').doc(photo._id).remove();
   } else if (type === "setBest") {
     const best = event.best;
+    updateMphoto(photo.cat_id);
     return db.collection('photo').doc(photo._id).update({
       data: {
         best: best
@@ -78,5 +91,4 @@ exports.main = async (event, context) => {
       }
     });
   }
-
 }

@@ -1,9 +1,10 @@
-// miniprogram/pages/detailCat/detailCat.js
-const ctx = wx.createCanvasContext('bigPhoto');
-const photoStep = 4;
-var photoMax = 0;
+import { shareTo, getCurrentPath, getGlobalSettings } from '../../../utils.js';
 
-const albumStep = 4;
+const ctx = wx.createCanvasContext('bigPhoto');
+
+// 页面设置，从global读取
+var page_settings = {};
+var photoMax = 0;
 var albumMax = 0;
 var cat_id;
 
@@ -46,7 +47,16 @@ Page({
    */
   onLoad: function (options) {
     cat_id = options.cat_id;
-    this.loadCat();
+
+    // 开始加载页面
+    const that = this;
+    getGlobalSettings('detailCat').then(settings => {
+      // 先把设置拿到
+      page_settings = settings;
+      // 启动加载
+      that.loadCat();
+    })
+    
     // 先判断一下这个用户在12小时之内有没有点击过这只猫
     if (!check_multi_click(cat_id)) {
       console.log("add click!");
@@ -122,9 +132,10 @@ Page({
    * 用户点击右上角分享
    */
   onShareAppMessage: function () {
-    return {
-      title: this.data.cat.name + ' - 中大猫谱'
-    }
+    const pagesStack = getCurrentPages();
+    const path = getCurrentPath(pagesStack);
+    console.log(shareTo(this.data.cat.name + ' - 中大猫谱', path))
+    return shareTo(this.data.cat.name + ' - 中大猫谱', path);
   },
   
   swiperLast(e) {
@@ -184,7 +195,7 @@ Page({
     }
 
     const qf = { cat_id: cat_id, verified: true, best: true };
-    const step = photoStep;
+    const step = page_settings.photoStep;
     const now = cat.photo.length;
 
     const db = wx.cloud.database();
@@ -200,7 +211,7 @@ Page({
 
   bindAddPhoto() {
     wx.navigateTo({
-      url: '/pages/addPhoto/addPhoto?cat_id=' + this.data.cat._id,
+      url: '/pages/genealogy/addPhoto/addPhoto?cat_id=' + this.data.cat._id,
     });
   },
   bindTapPhoto(e) {
@@ -276,7 +287,7 @@ Page({
       return false;
     }
     const qf = { cat_id: cat_id, verified: true };
-    const step = albumStep;
+    const step = page_settings.albumStep;
     const now = album_raw.length;
 
     const db = wx.cloud.database();
@@ -340,9 +351,8 @@ Page({
   // 处理主容器滑动时的行为
   bindContainerScroll(e) {
     const rpx2px = heights.rpx2px;
+    // 先保证这两个数字拿到了，再开始逻辑
     if (rpx2px && infoHeight) {
-      // 先保证这个数字拿到了，再开始逻辑
-
       const showHoverHeader = this.data.showHoverHeader;
       // 这个是rpx为单位的
       const to_top = e.detail.scrollTop / rpx2px;
@@ -357,7 +367,7 @@ Page({
       
       const hideBgBlock = this.data.hideBgBlock;
       // 判断是否要隐藏背景颜色块的高度
-      const hide_bg_thred = 50;
+      const hide_bg_thred = 150;
       if ((to_top > hide_bg_thred && hideBgBlock == false) || (to_top < hide_bg_thred && hideBgBlock == true)) {
         this.setData({
           hideBgBlock: !hideBgBlock

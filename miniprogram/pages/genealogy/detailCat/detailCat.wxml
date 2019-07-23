@@ -1,9 +1,8 @@
-<!--miniprogram/pages/detailCat/detailCat.wxml-->
 <!-- 这是一张画布 -->
 <canvas style="width: 2000px; height: 2000px; border: 3rpx solid red; left: 1000000px; position: fixed;" canvas-id="bigPhoto"></canvas>
 
 <!-- 背景下拉看到黄色块 -->
-<view id='bg-yellow' hidden='{{hideBgBlock}}'></view>
+<view id='bg-yellow' style='{{hideBgBlock? "background-color: transparent;": ""}}'></view>
 <!-- 整个页面容器 -->
 <scroll-view id='container' scroll-y="1" bindscrolltolower='loadMoreAlbum' enable-back-to-top="true" bindscroll="bindContainerScroll">
 <!-- 半圆形下面的白底块 -->
@@ -26,11 +25,11 @@ next-margin='60rpx'>
 <view class='info' id='info-box'>
   <view class='name'>{{cat.name}}
     <block wx:if='{{item.gender}}'>
-      <image mode='aspectFill' class='gender' wx:if='{{item.gender === "公"}}' src="../../images/card/card/male.png"></image>
-      <image mode='aspectFill' class='gender' wx:if='{{item.gender === "母"}}' src="../../images/card/card/female.png"></image>
+      <image mode='aspectFill' class='gender' wx:if='{{item.gender === "公"}}' src="../../../images/card/card/male.png"></image>
+      <image mode='aspectFill' class='gender' wx:if='{{item.gender === "母"}}' src="../../../images/card/card/female.png"></image>
     </block>
     <view class='popularity'>
-      <image src='../../images/card/card/pop.png'></image>
+      <image src='../../../images/card/card/pop.png'></image>
       <text> {{cat.popularity}}</text>
     </view>
   </view>
@@ -122,7 +121,7 @@ next-margin='60rpx'>
 <view class='album'>
   <view wx:for="{{album}}" class='album-block' wx:key='{{albumBlock.date}}' wx:for-item="albumBlock">
     <view class='header'>
-      <image src='../../images/card/card/time.png'></image>
+      <image src='../../../images/card/card/time.png'></image>
       <view class='time'>{{albumBlock.date[0]}}年{{albumBlock.date[1]}}月</view>
       <view wx:if='{{albumBlock.age[0] >= 0 && albumBlock.age[1] >= 0}}' class='age'>{{albumBlock.age[0]}}岁{{albumBlock.age[1]}}个月</view>
     </view>
@@ -135,6 +134,6 @@ next-margin='60rpx'>
 </view>
 <!-- album end -->
 
-<image id='add-photo-btn' src='../../images/plus.png' bindtap='bindAddPhoto'></image>
+<image id='add-photo-btn' src='../../../images/plus.png' bindtap='bindAddPhoto'></image>
 
 </scroll-view>

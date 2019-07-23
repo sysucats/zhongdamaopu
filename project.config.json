@@ -7,7 +7,9 @@
 		"postcss": true,
 		"minified": true,
 		"newFeature": true,
-		"autoAudits": false
+		"autoAudits": false,
+		"checkInvalidKey": true,
+		"uglifyFileName": true
 	},
 	"appid": "wx5bd705b2bc91c73b",
 	"projectname": "%E4%B8%AD%E5%A4%A7%E7%8C%AB%E8%B0%B1",
@@ -32,32 +34,33 @@
 			"list": []
 		},
 		"miniprogram": {
-			"current": 14,
+			"current": 3,
 			"list": [
 				{
 					"id": 1,
 					"name": "添加照片",
-					"pathName": "pages/addPhoto/addPhoto",
+					"pathName": "pages/genealogy/addPhoto/addPhoto",
 					"query": "cat_id=XE6ZFHkPDdDCJ4MO"
 				},
 				{
 					"id": 1,
 					"name": "猫猫详情",
-					"pathName": "pages/detailCat/detailCat",
+					"pathName": "pages/genealogy/detailCat/detailCat",
 					"query": "cat_id=XHt2Ft7E7L4weTZA",
 					"scene": null
 				},
 				{
 					"id": -1,
 					"name": "管理端",
-					"pathName": "pages/manage/manage",
+					"pathName": "pages/manage/checkPhotos/checkPhotos",
 					"query": ""
 				},
 				{
-					"id": 4,
+					"id": 3,
 					"name": "添加猫",
-					"pathName": "pages/addCat/addCat",
-					"query": "cat_id=XE6ZFHkPDdDCJ4MO"
+					"pathName": "pages/manage/addCat/addCat",
+					"query": "cat_id=XE6ZFHkPDdDCJ4MO",
+					"scene": null
 				},
 				{
 					"id": -1,
@@ -124,14 +127,14 @@
 				{
 					"id": -1,
 					"name": "图片处理",
-					"pathName": "pages/imProcess/imProcess",
+					"pathName": "pages/manage/imProcess/imProcess",
 					"query": "",
 					"scene": null
 				},
 				{
 					"id": -1,
 					"name": "过滤器管理",
-					"pathName": "pages/filters/filters",
+					"pathName": "pages/manage/filters/filters",
 					"query": "",
 					"scene": null
 				}

@@ -1,5 +1,3 @@
-<!--miniprogram/pages/addCat/addCat.wxml-->
-<!-- <text>miniprogram/pages/addCat/addCat.wxml</text> -->
 <block wx:if="{{auth}}">
   <view class='label name'>名称：</view>
   <input type='text' value='{{cat.name}}' bindinput="inputText" data-key='name'></input>

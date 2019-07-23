@@ -11,6 +11,22 @@
 <view class='block'>
   <view class='title'>更新日志</view>
   <view class='desc'>
+    <view class='sub-title hl'>v1.1.11</view>
+    <view class='sub-detail'><text>- 增加后台设置项</text></view>
+    <view class='sub-detail'><text>- 优化页面逻辑</text></view>
+    <view class='sub-detail'><text>- 更新时间：2019/7/22</text></view>
+
+    <view class='sub-title hl'>v1.1.10</view>
+    <view class='sub-detail'><text>- 猫猫分享从首页跳转进入</text></view>
+    <view class='sub-detail'><text>- 优化一些交互</text></view>
+    <view class='sub-detail'><text>- 更新时间：2019/6/9</text></view>
+
+    <view class='sub-title hl'>v1.1.9</view>
+    <view class='sub-detail'><text>- 优化精选图片数量计算</text></view>
+    <view class='sub-detail'><text>- 修复拍照月榜自己的排名</text></view>
+    <view class='sub-detail'><text>- 3月打赏公示</text></view>
+    <view class='sub-detail'><text>- 更新时间：2019/6/7</text></view>
+
     <view class='sub-title hl'>v1.1.8</view>
     <view class='sub-detail'><text>- 小bug修复</text></view>
     <view class='sub-detail'><text>- 增加返回喵星提示（心痛！）</text></view>
@@ -23,7 +39,7 @@
     <view class='sub-detail'><text>- 更新时间：2019/5/4</text></view>
 
     <view class='sub-title hl'>v1.1.6</view>
-    <view class='sub-detail'><text>- 4月捐款公示</text></view>
+    <view class='sub-detail'><text>- 4月打赏公示</text></view>
     <view class='sub-detail'><text>- 排行榜样式更新、并列排名</text></view>
     <view class='sub-detail'><text>- 猫猫详情里的下拉颜色问题</text></view>
     <view class='sub-detail'><text>- 修复相册的一些小问题</text></view>
@@ -33,7 +49,7 @@
 
     <view class='sub-title hl'>v1.1.5</view>
     <view class='sub-detail'><text>- 样式小改动</text></view>
-    <view class='sub-detail'><text>- 3月捐款公示</text></view>
+    <view class='sub-detail'><text>- 3月打赏公示</text></view>
     <view class='sub-detail'><text>- 更新时间：2019/4/3</text></view>
 
     <view class='sub-title hl'>v1.1.4</view>
@@ -64,13 +80,6 @@
     <view class='sub-detail'><text>- 首页的翻页效果改成了滑溜溜的（我投降）</text></view>
     <view class='sub-detail'><text>- 修复首页快速切换bug</text></view>
     <view class='sub-detail'><text>- 更新时间：2019/3/9</text></view>
-
-    <view class='sub-title hl'>v1.0.9</view>
-    <view class='sub-detail'><text>- 首页卡片index可以点击（已废除）</text></view>
-    <view class='sub-detail'><text>- 增加了流量提示</text></view>
-    <view class='sub-detail'><text>- 照片审核页优化，审的更快了</text></view>
-    <view class='sub-detail'><text>- 更新时间：2019/3/3</text></view>
-
   </view>
 </view>
 

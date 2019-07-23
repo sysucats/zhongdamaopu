@@ -1,4 +1,6 @@
 // miniprogram/pages/info/photoRank/photoRank.js
+import { getUserInfoOrFalse } from '../../../user.js';
+
 Page({
 
   /**
@@ -41,22 +43,16 @@ Page({
 
   checkUInfo() {
     const that = this;
-    wx.getSetting({
-      success(res) {
-        if (res.authSetting['scope.userInfo']) {
-          // 已经授权，可以直接调用 getUserInfo 获取头像昵称
-          wx.getUserInfo({
-            success(res) {
-              console.log(res.userInfo);
-              that.setData({
-                userInfo: res.userInfo,
-              }, () => { that.getMyRank() })
-            }
-          })
-        } else {
-          console.log("未授权");
-        }
+    // 检查用户信息有没有拿到，如果有就更新this.data
+    getUserInfoOrFalse().then(res => {
+      if (!res) {
+        console.log('未授权');
+        return;
       }
+      console.log(res);
+      that.setData({
+        userInfo: res.userInfo,
+      }, () => { that.getMyRank() })
     });
   },
   getUInfo(event) {
@@ -110,7 +106,7 @@ Page({
         for (const i in ranks) {
           if (ranks[i]._openid === openid) {
             that.setData({
-              'userInfo.photo_rank': parseInt(i)+1,
+              'userInfo.photo_rank': ranks[i].rank,
               'userInfo.photo_count': ranks[i].count
             });
             return;

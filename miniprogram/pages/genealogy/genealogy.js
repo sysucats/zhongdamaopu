@@ -2,9 +2,9 @@
 
 // const default_png = '../../images/default.png';
 const default_png = undefined;
-import { regeneratorRuntime, randomInt, isWifi, isManager, shuffle } from '../../utils.js';
-const catsStep = 6;
+import { regeneratorRuntime, randomInt, isWifi, isManager, shuffle, getGlobalSettings } from '../../utils.js';
 
+var catsStep = 1;
 var loadingLock = 0;
 
 Page({
@@ -38,25 +38,33 @@ Page({
     // 加载相关
     loading: false, // 正在加载
     loadnomore: false, // 没有再多了
+
+    // 页面设置，从global里获取
+    page_settings: {},
   },
 
   /**
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
-    this.loadFilters();
-    // 下面开始加载wifi信息
-    isWifi(function(res) {
-      // 不是wifi时提醒一下
-      if(!res) {
-        // 暂时移除
-        // wx.showModal({
-        //   title: '注意流量消耗',
-        //   content: '非Wifi网络看猫图要注意流量消耗哈',
-        //   showCancel: false,
-        // });
-      }
-    });
+    // 从分享点进来，到跳转到其他页面
+    if (options.toPath) {
+      wx.navigateTo({
+        url: decodeURIComponent(options.toPath),
+      });
+    }
+    // 开始加载页面
+    const that = this;
+    getGlobalSettings('genealogy'). then(settings => {
+      // 先把设置拿到
+      catsStep = settings['catsStep'];
+      // 启动加载
+      that.loadFilters();
+
+      that.setData({
+        main_lower_threshold: settings['main_lower_threshold']
+      });
+    })
   },
 
   loadFilters: function() {
@@ -248,7 +256,7 @@ Page({
   clickCatCard(e) {
     console.log(e);
     const cat_id = e.currentTarget.dataset.cat_id;
-    const detail_url = '/pages/detailCat/detailCat';
+    const detail_url = '/pages/genealogy/detailCat/detailCat';
     wx.navigateTo({
       url: detail_url + '?cat_id=' + cat_id,
     });
@@ -275,7 +283,7 @@ Page({
       if (res) {
         const cat_id = e.currentTarget.dataset.cat_id;
         wx.navigateTo({
-          url: '/pages/addCat/addCat?cat_id=' + cat_id,
+          url: '/pages/manage/addCat/addCat?cat_id=' + cat_id,
         });
       } else {
         console.log("not a manager");
@@ -369,7 +377,8 @@ Page({
     return true;
   },
   fGet: function() {
-    const _ = wx.cloud.database().command;
+    const db = wx.cloud.database();
+    const _ = db.command;
     const filters = this.data.filters;
     var res = {};
     // 这些是点击选择的filters
@@ -418,7 +427,19 @@ Page({
     // 如果用户还输入了东西，也要一起搜索
     const filters_input = this.data.filters_input;
     if (filters_input.length) {
-      res['name'] = _.in(filters_input.trim().split(' '));
+      var search_str = '';
+      for (const n of filters_input.trim().split(' ')) {
+        if (search_str === '') {
+          search_str += '(.*' + n + '.*)';
+        } else {
+          search_str += '|(.*' + n + '.*)';
+        }
+      }
+      // res['name'] = _.in(filters_input.trim().split(' '));
+      res['name'] = db.RegExp({
+        regexp: search_str,
+        options: 'igs',
+      })
     }
     return res;
   },
@@ -476,7 +497,7 @@ Page({
     isManager(res => {
       if (res) {
         wx.navigateTo({
-          url: '/pages/filters/filters',
+          url: '/pages/manage/filters/filters',
         });
       } else {
         console.log("not a manager");

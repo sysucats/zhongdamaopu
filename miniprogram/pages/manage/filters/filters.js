@@ -1,5 +1,4 @@
-// miniprogram/pages/filters/filters.js
-import { regeneratorRuntime, randomInt, isManager } from '../../utils.js'
+import { regeneratorRuntime, randomInt, isManager } from '../../../utils.js'
 
 // 储存还没确定的新filter
 var new_filters = {};

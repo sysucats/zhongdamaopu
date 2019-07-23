@@ -1,6 +1,3 @@
-/* miniprogram/pages/debug/debug.wxss */
-
-
 .label {
   text-align: left;
   /* border-color: #cf590c;

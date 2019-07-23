@@ -1,5 +1,5 @@
-// miniprogram/pages/manage/manage.js
-import { regeneratorRuntime, randomInt, isManager } from '../../utils.js'
+// 审核照片
+import { regeneratorRuntime, randomInt, isManager } from '../../../utils.js'
 
 Page({
 
@@ -214,6 +214,7 @@ Page({
   countPhoto() {
     wx.showLoading({
       title: '计算中',
+      mask: true,
     });
     wx.cloud.callFunction({
       name:"countPhoto",

@@ -1,6 +1,4 @@
-// miniprogram/pages/addCat/addCat.js
-const default_png = '../../images/default.png';
-import { loadFilter, isManager } from '../../utils.js';
+import { loadFilter, isManager } from '../../../utils.js';
 var cat_id = undefined;
 
 const photoStep = 5; // 每次加载的图片数量

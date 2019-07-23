@@ -1,6 +1,5 @@
-// miniprogram/pages/addPhoto/addPhoto.js
-
-import { generateUUID } from '../../utils.js';
+import { generateUUID, getCurrentPath, shareTo } from '../../../utils.js';
+import { getUserInfoOrFalse } from '../../../user.js';
 
 Page({
 
@@ -23,14 +22,12 @@ Page({
     const db = wx.cloud.database();
     const cat = db.collection('cat');
     const cat_id = options.cat_id;
-
-    console.log(cat_id);
-    cat.doc(cat_id).get().then(res => {
+    cat.doc(cat_id).field({ birthday: true, name: true, campus: true, _id: true }).get().then(res => {
       console.log(res.data);
-
+      const birthday = res.data.birthday;
       this.setData({
         cat: res.data,
-        birth_date: res.data.birthday
+        birth_date: birthday || ''
       });
     })
     this.checkUInfo();
@@ -38,7 +35,6 @@ Page({
     // 获取一下现在的日期，用在拍摄日前选择上
     const today = new Date();
     var now_date = today.getFullYear() + '-' + (today.getMonth()+1) + '-' + today.getDate();
-    console.log(now_date);
     this.setData({
       now_date: now_date
     });
@@ -90,30 +86,25 @@ Page({
    * 用户点击右上角分享
    */
   onShareAppMessage: function () {
-    return {
-      title: '给' + this.data.cat.name + '添加照片 - 中大猫谱'
-    }
+    const pagesStack = getCurrentPages();
+    const path = getCurrentPath(pagesStack);
+    console.log(shareTo(this.data.cat.name + ' - 中大猫谱', path))
+    return shareTo('给' + this.data.cat.name + '添加照片 - 中大猫谱', path);
   },
 
   checkUInfo() {
     const that = this;
-    wx.getSetting({
-      success(res) {
-        if (res.authSetting['scope.userInfo']) {
-          // 已经授权，可以直接调用 getUserInfo 获取头像昵称
-          wx.getUserInfo({
-            success(res) {
-              console.log(res.userInfo)
-              that.setData({
-                isAuth: true,
-                userInfo: res.userInfo,
-              })
-            }
-          })
-        } else {
-          console.log("未授权");
-        }
+    // 检查用户信息有没有拿到，如果有就更新this.data
+    getUserInfoOrFalse().then(res => {
+      if (!res) {
+        console.log('未授权');
+        return;
       }
+      console.log(res);
+      that.setData({
+        isAuth: true,
+        userInfo: res.userInfo,
+      });
     });
   },
 
@@ -144,10 +135,16 @@ Page({
     const currentIndex = e.currentTarget.dataset.index;
     const photo = this.data.photos[currentIndex];
     this.uploadImg(photo);
+    // 保存formId
+    this.saveFormId(e.detail.formId);
   },
 
   // 点击多个上传
   uploadAllClick(e, rec=false) {
+    if (e) {
+      // 保存formId
+      this.saveFormId(e.detail.formId);
+    }
     // rec 表示是不是递归回来的，说明有已经上传的照片
     const photos = []; // 这里只会保存可以上传的照片
     for (const item of this.data.photos) {
@@ -157,6 +154,7 @@ Page({
     }
     wx.showLoading({
       title: '正在上传(' + photos.length + ')',
+      mask: true,
     });
     if (photos.length == 0 && rec) {
       wx.hideLoading();
@@ -288,6 +286,24 @@ Page({
     });
     this.setData({
       photos: new_photos
+    });
+  },
+
+  // 保存formId
+  saveFormId(formId) {
+    if (formId === "the formId is a mock one" || formId.startsWith('requestFormId:fail')) {
+      // 无效的formID，不保存
+      console.log('无效formId: ' + formId)
+      return false;
+    }
+    const db = wx.cloud.database();
+    db.collection('formId').add({
+      data: {
+        formId: formId,
+      },
+      success: (res) => {
+        console.log('保存formId: ' + formId)
+      }
     });
   }
 })

@@ -1,5 +1,5 @@
 // miniprogram/pages/imProcess/imProcess.js
-import { regeneratorRuntime, generateUUID } from '../../utils.js';
+import { regeneratorRuntime, generateUUID, isManager } from '../../../utils.js';
 const ctx = wx.createCanvasContext('bigPhoto');
 const canvasMax = 2000; // 正方形画布的尺寸px
 
@@ -7,13 +7,15 @@ var global_photo; // 数据库项
 var global_fileID_compressed, global_fileID_watermark;
 
 // 自动搞的数量
-var auto_count = 40;
+var auto_count = 0;
 Page({
 
   /**
    * 页面的初始数据
    */
   data: {
+    tipText: '正在鉴权...',
+    tipBtn: false,
     phase: 0,
     phase2str: {
       0: '准备开始',
@@ -26,13 +28,17 @@ Page({
       7: '已写入数据库'
     },
     images_path: {},
-    now: 0,
+    now: 0, // 当前状态
   },
 
   /**
    * 生命周期函数--监听页面加载
    */
   onLoad: function () {
+    this.checkAuth();
+  },
+
+  loadProcess() {
     const that = this;
     const db = wx.cloud.database();
     const _ = db.command;
@@ -41,10 +47,37 @@ Page({
       that.setData({
         total: res.total
       }, () => {
-        that.beginProcess();
+        // that.beginProcess();
       });
     });
-    auto_count = 40;
+  },
+
+  // 没有权限，返回上一页
+  goBack() {
+    wx.navigateBack();
+  },
+  // 检查权限
+  checkAuth() {
+    const that = this;
+    isManager(function (res) {
+      if (res) {
+        that.setData({
+          auth: true
+        });
+        that.loadProcess();
+      } else {
+        that.setData({
+          tipText: '只有管理员能进入嗷',
+          tipBtn: true,
+        });
+        console.log("Not a manager.");
+      }
+    })
+  },
+
+  clickBegin: function() {
+    auto_count = 30;
+    this.beginProcess();
   },
 
   beginProcess: function () {
@@ -54,17 +87,31 @@ Page({
     db.collection('photo').where({ photo_compressed: _.in([undefined, '']), verified: true }).get().then(res => {
       console.log(res);
       if(res.data.length) {
-        that.processOne(res.data[0]);
+
+        // 自动下一步
+        if (auto_count) {
+          auto_count--;
+          console.log("还剩" + auto_count + "张自动上传");
+          that.processOne(res.data[0]);
+        } else {
+          wx.showModal({
+            title: '等待操作',
+            content: '继续处理请点击按钮',
+            showCancel: false,
+          });
+        }
+        
       } else {
         wx.showModal({
           title: '处理完成',
           content: '没有等待处理的猫图啦',
+          showCancel: false,
         });
       }
     });
   },
 
-  // 处理一张图片试试
+  // 处理一张图片
   processOne: function (photo) {
     photo.mdate = new Date(photo.mdate).toJSON();
     console.log(photo);
@@ -158,12 +205,7 @@ Page({
             phase: 3,
             "images_path.watermark": res.tempFilePath
           }, () => {
-            // 自动下一步
-            if (auto_count) {
-              auto_count --;
-              console.log("还剩" + auto_count + "张自动上传");
-              setTimeout(() => that.uploadCompressed(), 1000);
-            }
+            that.uploadCompressed();
           })
         }
       }, that);
@@ -174,6 +216,7 @@ Page({
   uploadCompressed: function() {
     wx.showLoading({
       title: '上传中',
+      mask: true,
     });
     const that = this;
     const filePath = this.data.images_path.compressed;
