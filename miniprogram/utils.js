@@ -96,7 +96,6 @@ function getGlobalSettings(key) {
     // 如果没有，那就获取一下
     const db = wx.cloud.database();
     db.collection('setting').doc('pages').get().then(res => {
-      console.log(res);
       app.globalData.settings = res.data;
       resolve(app.globalData.settings[key]);
     });
@@ -121,6 +120,15 @@ function userInfoEq(a, b) {
 }
 
 
+// 替换字符串中的正则特殊符号
+function regReplace(raw) {
+  const sp_char = "*.?+$^[](){}|\/";
+  for (const ch of sp_char) {
+    raw = raw.replace(ch, '\\'+ch);
+  }
+  return raw;
+}
+
 export {
   regeneratorRuntime,
   randomInt,
@@ -133,4 +141,5 @@ export {
   getCurrentPath,
   getGlobalSettings,
   userInfoEq,
+  regReplace,
 };

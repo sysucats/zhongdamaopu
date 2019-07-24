@@ -2,7 +2,7 @@
 
 // const default_png = '../../images/default.png';
 const default_png = undefined;
-import { regeneratorRuntime, randomInt, isWifi, isManager, shuffle, getGlobalSettings, loadFilter } from '../../utils.js';
+import { regeneratorRuntime, randomInt, isWifi, isManager, shuffle, getGlobalSettings, loadFilter, regReplace } from '../../utils.js';
 
 var catsStep = 1;
 var loadingLock = 0;
@@ -156,7 +156,6 @@ Page({
     const db = wx.cloud.database();
     const cat = db.collection('cat');
     const query = this.fGet();
-    console.log(query);
     cat.where(query).count().then(res => {
       if (loadingLock != nowLoadingLock) {
         // 说明过期了
@@ -440,8 +439,9 @@ Page({
     });
 
     // 如果用户还输入了东西，也要一起搜索
-    const filters_input = this.data.filters_input;
+    const filters_input = regReplace(this.data.filters_input);
     if (filters_input.length) {
+
       var search_str = '';
       for (const n of filters_input.trim().split(' ')) {
         if (search_str === '') {
