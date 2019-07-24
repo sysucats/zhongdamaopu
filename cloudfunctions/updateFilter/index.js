@@ -19,7 +19,7 @@ exports.main = async (event, context) => {
   to_upload.openid = wxContext.OPENID;
 
   const db = cloud.database();
-  return db.collection('filter').doc(filter_id).update({
+  return db.collection('setting').doc('filter').update({
     data: to_upload
   });
 }

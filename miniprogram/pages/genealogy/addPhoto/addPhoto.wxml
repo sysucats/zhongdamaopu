@@ -1,6 +1,13 @@
 <view wx:if="{{!isAuth}}" class='unAuth'>
-  <text>请授权后进行操作</text>
-  <button open-type='getUserInfo' bindgetuserinfo='getUInfo'>点击授权</button>
+  <!-- <text>请授权后进行操作</text>
+  <button open-type='getUserInfo' bindgetuserinfo='getUInfo'>点击授权</button> -->
+  <view class='userInfo'>
+    <image src='../../../images/user.png'></image>
+    <view>
+      <text>[等待授权]\n---准备为[<text style="font-weight:600;">{{cat.name}}</text>]添加照片</text>
+    </view>
+  </view>
+  <button class='long primary' open-type='getUserInfo' bindgetuserinfo='getUInfo'>点击授权</button>
 </view>
 <block wx:else>
   <!-- <view>--已经授权--</view> -->

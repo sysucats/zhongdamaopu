@@ -25,7 +25,8 @@ exports.main = async (event, context) => {
       var user = event.user;
       const _id = user._id;
       delete user._id; // 因为数据库不能更新_id
-      await db.collection('user').doc(user._id).update({ data: user });
+      delete user.openid; // 这个键唯一
+      await db.collection('user').doc(_id).update({ data: user });
       return (await db.collection('user').where({ 'openid': openid }).get()).data[0];
     }
     default: {

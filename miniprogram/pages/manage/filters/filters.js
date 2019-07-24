@@ -1,4 +1,4 @@
-import { regeneratorRuntime, randomInt, isManager } from '../../../utils.js'
+import { regeneratorRuntime, randomInt, isManager, loadFilter } from '../../../utils.js'
 
 // 储存还没确定的新filter
 var new_filters = {};
@@ -105,14 +105,12 @@ Page({
       title: '加载中...',
     });
     const that = this;
-    const db = wx.cloud.database();
-    db.collection('filter').limit(1).get().then(res => {
-      console.log(res.data[0]);
+    loadFilter().then(res => {
       that.setData({
-        filters: res.data[0]
+        filters: res
       });
       wx.hideLoading();
-    });
+    })
   },
 
   // 增加option

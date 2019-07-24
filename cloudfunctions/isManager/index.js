@@ -14,8 +14,8 @@ exports.main = async (event, context) => {
   const user = (await db.collection('user').where(filter).field({manager: true}).get()).data[0];
 
   if (!user) {
-    return user;
+    return false;
   }
 
-  return user.manager;
+  return (user.manager > 0);
 }

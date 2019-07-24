@@ -12,18 +12,13 @@ Page({
    */
   onLoad: function (options) {
     const that = this;
-    wx.scanCode({
+    wx.cloud.callFunction({
+      name:"clearFormId",
       success: (res) => {
         console.log(res);
+        that.setData({ res: JSON.stringify(res.result)});
       }
     })
-    // wx.cloud.callFunction({
-    //   name:"countCatNo",
-    //   success: (res) => {
-    //     console.log(res.result);
-    //     that.setData({ res: JSON.stringify(res.result)});
-    //   }
-    // })
   },
 
   /**

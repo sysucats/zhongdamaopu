@@ -7,7 +7,7 @@ cloud.init();
 exports.main = async (event, context) => {
   const openid = event.openid;
   const formId = event.formId;
-  var content = '本次共收录' + event.content.accepted + '张照片' + (event.content.deleted? ('，有' + event.content.deleted + '张未被收录'): '。');
+  var content = '本次共收录' + event.content.accepted + '张照片' + (event.content.deleted? ('，有' + event.content.deleted + '张未被收录。'): '。');
   try {
     const result = await cloud.openapi.templateMessage.send({
       touser: openid, // 通过 getWXContext 获取 OPENID
@@ -21,7 +21,7 @@ exports.main = async (event, context) => {
           value: content
         },
         keyword3: {
-          value: (event.content.deleted ? '照片未被收录的原因可能是重复、模糊、或与猫猫无关，': '') + '再次感谢你的支持！你可以随时在猫谱上传页面退订此消息。'
+          value: (event.content.deleted ? '未被收录可能是因为重复、模糊、或与猫猫无关。': '') + '\n感谢你的支持！'
         }
       },
       templateId: 'Sv3vW9rFffD_mRM4W8ivV_WSaL1vrfoey9QS8VlRNOo',

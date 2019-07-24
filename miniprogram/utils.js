@@ -19,8 +19,8 @@ function generateUUID() {
 function loadFilter() {
   return new Promise(function(resolve, reject) {
     const db = wx.cloud.database();
-    db.collection('filter').get().then(res => {
-      resolve(res.data[0]);
+    db.collection('setting').doc('filter').get().then(res => {
+      resolve(res.data);
     })
   });
 }

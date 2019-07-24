@@ -2,7 +2,7 @@
 
 // const default_png = '../../images/default.png';
 const default_png = undefined;
-import { regeneratorRuntime, randomInt, isWifi, isManager, shuffle, getGlobalSettings } from '../../utils.js';
+import { regeneratorRuntime, randomInt, isWifi, isManager, shuffle, getGlobalSettings, loadFilter } from '../../utils.js';
 
 var catsStep = 1;
 var loadingLock = 0;
@@ -86,9 +86,8 @@ Page({
 
   loadFilters: function() {
     // 下面开始加载filters
-    const db = wx.cloud.database();
-    db.collection('filter').limit(1).get().then(res => {
-      console.log(res);
+    loadFilter().then(res => {
+
       var filters = [];
       for (const k in this.data.filter_keys_name) {
         var main_item = {};
@@ -99,7 +98,7 @@ Page({
           name: '全部' + this.data.filter_keys_name[k],
           active: true,
         });
-        for (const item of res.data[0][k]) {
+        for (const item of res[k]) {
           var item = {
             name: item,
             active: false
@@ -114,7 +113,7 @@ Page({
       this.setData({
         filters: filters,
       }, () => { this.reloadCats(); });
-    });
+    })
   },
 
   /**

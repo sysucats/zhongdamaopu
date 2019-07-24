@@ -11,6 +11,12 @@
 <view class='block'>
   <view class='title'>更新日志</view>
   <view class='desc'>
+    <view class='sub-title hl'>v1.2.1</view>
+    <view class='sub-detail'><text>- 猫猫详情可生成专属小程序码</text></view>
+    <view class='sub-detail'><text>- 上传页面的授权按钮修改</text></view>
+    <view class='sub-detail'><text>- 一些稍微的数据库修改</text></view>
+    <view class='sub-detail'><text>- 更新时间：2019/7/24</text></view>
+
     <view class='sub-title hl'>v1.2.0</view>
     <view class='sub-detail'><text>- 首页支持模糊搜索啦</text></view>
     <view class='sub-detail'><text>- 上传照片时可选订阅审核完成通知</text></view>
