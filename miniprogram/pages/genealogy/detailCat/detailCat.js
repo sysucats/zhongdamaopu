@@ -374,5 +374,42 @@ Page({
         });
       }
     }
-  }
+  },
+
+  // 展示mpcode
+  bingMpTap(e) {
+    // 直接显示
+    if (this.data.cat.mpcode) {
+      wx.previewImage({
+        urls: [this.data.cat.mpcode],
+      });
+      return false;
+    }
+    // 如果目前没有，那就先生成一个，再显示
+    console.log('生成mpcode');
+    wx.showLoading({
+      title: '生成ing...',
+    })
+    const that = this;
+    const cat = this.data.cat;
+    wx.cloud.callFunction({
+      name: 'getMpCode',
+      data: {
+        _id: cat._id,
+        scene: 'toC=' + cat._no,
+        page: 'pages/genealogy/genealogy',
+        width: 500,
+      },
+      success: (res) => {
+        wx.hideLoading();
+        console.log(res);
+        wx.previewImage({
+          urls: [res.result],
+        });
+        that.setData({
+          'cat.mpcode': res.result
+        });
+      }
+    })
+  },
 })

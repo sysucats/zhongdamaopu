@@ -29,7 +29,7 @@ exports.main = async (event, context) => {
   })).data;
 
   // 下面开始获取每只猫的精选图片数量
-  var stats = []; // 没啥用的东西，返回给前段看看
+  var stats = []; // 没啥用的东西，返回给前端看看
   for (const cat of cats) {
     const count = (await db.collection('photo').where({ cat_id: cat._id, best: true, verified: true }).count()).total;
     var stat = await db.collection('cat').doc(cat._id).update({

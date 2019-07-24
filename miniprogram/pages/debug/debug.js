@@ -12,8 +12,13 @@ Page({
    */
   onLoad: function (options) {
     const that = this;
+    wx.scanCode({
+      success: (res) => {
+        console.log(res);
+      }
+    })
     // wx.cloud.callFunction({
-    //   name:"countPhoto",
+    //   name:"countCatNo",
     //   success: (res) => {
     //     console.log(res.result);
     //     that.setData({ res: JSON.stringify(res.result)});

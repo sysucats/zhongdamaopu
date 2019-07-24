@@ -25,7 +25,7 @@ exports.main = async (event, context) => {
   }
 
   console.log(event);
-  const cat = event.cat;
+  var cat = event.cat;
   const cat_id = event.cat_id;
 
   const db = cloud.database();
@@ -39,6 +39,8 @@ exports.main = async (event, context) => {
   } else {
     // 是新猫
     console.log("开始添加新猫");
+    const count = db.collection('cat').count();
+    cat._no = 'c' + count;
     return db.collection('cat').add({
       data: cat
     })

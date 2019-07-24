@@ -34,7 +34,7 @@
 			"list": []
 		},
 		"miniprogram": {
-			"current": 2,
+			"current": 12,
 			"list": [
 				{
 					"id": 1,
@@ -46,7 +46,7 @@
 					"id": 1,
 					"name": "猫猫详情",
 					"pathName": "pages/genealogy/detailCat/detailCat",
-					"query": "cat_id=XHt2Ft7E7L4weTZA",
+					"query": "cat_id=XE6ZFHkPDdDCJ4MO",
 					"scene": null
 				},
 				{
@@ -119,8 +119,8 @@
 					"scene": null
 				},
 				{
-					"id": -1,
-					"name": "调试",
+					"id": 12,
+					"name": "调试debug",
 					"pathName": "pages/debug/debug",
 					"query": "",
 					"scene": null

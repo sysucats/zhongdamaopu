@@ -24,19 +24,22 @@ next-margin='60rpx'>
 
 <view class='info' id='info-box'>
   <view class='name'>{{cat.name}}
-    <block wx:if='{{item.gender}}'>
-      <image mode='aspectFill' class='gender' wx:if='{{item.gender === "公"}}' src="../../../images/card/card/male.png"></image>
-      <image mode='aspectFill' class='gender' wx:if='{{item.gender === "母"}}' src="../../../images/card/card/female.png"></image>
+    <block wx:if='{{cat.gender}}'>
+      <image mode='aspectFill' class='gender' wx:if='{{cat.gender === "公"}}' src="../../../images/card/card/male.png"></image>
+      <image mode='aspectFill' class='gender' wx:if='{{cat.gender === "母"}}' src="../../../images/card/card/female.png"></image>
     </block>
     <view class='popularity'>
       <image src='../../../images/card/card/pop.png'></image>
       <text> {{cat.popularity}}</text>
     </view>
   </view>
-  <view>
+  <view class="tags">
     <text class='tag'>{{cat.adopt? '已': '未'}}领养</text>
     <text class='tag'>{{cat.sterilized? '已': '待'}}绝育</text>
     <text class='tag to_star' wx:if='{{cat.to_star}}'>返回喵星</text>
+    <view class="mpcode" bindtap="bingMpTap">
+      <image src="../../../images/mpcode.png"></image>
+    </view>
   </view>
   <view class='details'>
     <view class='item'>

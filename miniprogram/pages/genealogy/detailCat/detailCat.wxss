@@ -74,6 +74,7 @@ swiper-item image {
 }
 
 .info image.gender {
+  margin-left: 10rpx;
   height: 34rpx;
   width: 34rpx;
 }
@@ -87,15 +88,18 @@ swiper-item image {
   color: #535353;
 }
 .popularity image {
-  /* height: 39rpx;
-  width: 70rpx; */
   height: 20rpx;
   width: 39rpx;
 }
 
-.info .tag {
-  font-size: 20rpx;
+.tags {
+  display: flex;
+  justify-items: center;
+}
 
+.tags .tag {
+  font-size: 20rpx;
+  height: 40rpx;
   box-sizing: border-box;
   border-radius: 20rpx;
   background-color: #ffd101;
@@ -103,8 +107,18 @@ swiper-item image {
   margin-right: 30rpx;
 }
 
-.info .to_star {
+
+.tags .to_star {
   background-color: #e8e8e8;
+}
+
+.tags .mpcode {
+  height: 40rpx;
+  margin-left: auto;
+}
+.mpcode image {
+  height: 40rpx;
+  width: 40rpx;
 }
 
 .details {

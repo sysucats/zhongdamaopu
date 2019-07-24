@@ -53,6 +53,23 @@ Page({
         url: decodeURIComponent(options.toPath),
       });
     }
+    // 从扫描二维码扫进来，目前只用于猫猫二维码跳转
+    if (options.scene) {
+      const scene = decodeURIComponent(options.scene);
+      console.log(scene);
+      if(scene.startsWith('toC=')) {
+        const cat_No = scene.substr(4);
+        const db = wx.cloud.database();
+        const that = this;
+        db.collection('cat').where({ _no: cat_No }).field({ _no: true }).get().then(res => {
+          if (!res.data.length) {
+            return;
+          }
+          const _id = res.data[0]._id;
+          that.clickCatCard(_id, true);
+        })
+      }
+    }
     // 开始加载页面
     const that = this;
     getGlobalSettings('genealogy'). then(settings => {
@@ -253,9 +270,8 @@ Page({
   },
   
   // 点击猫猫卡片
-  clickCatCard(e) {
-    console.log(e);
-    const cat_id = e.currentTarget.dataset.cat_id;
+  clickCatCard(e, isCatId=false) {
+    const cat_id = isCatId ? e : e.currentTarget.dataset.cat_id;
     const detail_url = '/pages/genealogy/detailCat/detailCat';
     wx.navigateTo({
       url: detail_url + '?cat_id=' + cat_id,
