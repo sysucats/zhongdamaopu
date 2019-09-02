@@ -178,6 +178,24 @@ scroll-view {
     height: 0;
 }
 
+/* 广告栏 */
+
+.card-ad {
+  margin: 20rpx 67.5rpx 50rpx 67.5rpx;
+  width: 615rpx;
+  border-radius: 15rpx;
+  background-color: white;
+  box-shadow: -10rpx 10rpx 30rpx #ddd;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.card-ad.hidden {
+  display: none;
+}
+
 /* 顶部的搜索框还有筛选 */
 #search {
   width: 750rpx;

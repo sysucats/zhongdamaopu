@@ -11,10 +11,14 @@
 <view class='block'>
   <view class='title'>更新日志</view>
   <view class='desc'>
+    <view class='sub-title hl'>v1.2.2</view>
+    <view class='sub-detail'><text>- 首页加一点点广告（给猫猫救助）</text></view>
+    <view class='sub-detail'><text>- 更新时间：2019/7/30</text></view>
+
     <view class='sub-title hl'>v1.2.1</view>
     <view class='sub-detail'><text>- 猫猫详情可生成专属小程序码</text></view>
     <view class='sub-detail'><text>- 上传页面的授权按钮修改</text></view>
-    <view class='sub-detail'><text>- 一些稍微的数据库修改</text></view>
+    <view class='sub-detail'><text>- 一些微小的数据库修改</text></view>
     <view class='sub-detail'><text>- 更新时间：2019/7/24</text></view>
 
     <view class='sub-title hl'>v1.2.0</view>

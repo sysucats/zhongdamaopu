@@ -89,7 +89,7 @@ Page({
     const pagesStack = getCurrentPages();
     const path = getCurrentPath(pagesStack);
     console.log(shareTo(this.data.cat.name + ' - 中大猫谱', path))
-    return shareTo('给' + this.data.cat.name + '添加照片 - 中大猫谱', path);
+    return shareTo('来给' + this.data.cat.name + '添加照片 - 中大猫谱', path);
   },
 
   checkUInfo() {
@@ -160,7 +160,7 @@ Page({
       wx.hideLoading();
       wx.showModal({
         title: '上传成功！',
-        content: '审核通过后就会被展示出来啦',
+        content: '审核后就会展示出来啦',
         showCancel: false
       });
     } else {
@@ -203,7 +203,7 @@ Page({
               if (!multiple) {
                 wx.showModal({
                   title: '上传成功！',
-                  content: '审核通过后就会被展示出来啦',
+                  content: '审核后就会展示出来啦',
                   showCancel: false,
                   success: () => {
                     const photos = that.data.photos;

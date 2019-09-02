@@ -21,7 +21,7 @@ exports.main = async (event, context) => {
           value: content
         },
         keyword3: {
-          value: (event.content.deleted ? '未被收录可能是因为重复、模糊、或与猫猫无关。': '') + '\n感谢你的支持！'
+          value: (event.content.deleted ? '未被收录可能是因为重复、模糊、或与猫猫无关。\n': '') + '感谢你的支持！'
         }
       },
       templateId: 'Sv3vW9rFffD_mRM4W8ivV_WSaL1vrfoey9QS8VlRNOo',

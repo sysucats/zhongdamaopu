@@ -39,8 +39,8 @@ Page({
     loading: false, // 正在加载
     loadnomore: false, // 没有再多了
 
-    // 页面设置，从global里获取
-    page_settings: {},
+    // 广告是否展示
+    ad_show: {},
   },
 
   /**
@@ -72,14 +72,15 @@ Page({
     }
     // 开始加载页面
     const that = this;
-    getGlobalSettings('genealogy'). then(settings => {
+    getGlobalSettings('genealogy').then(settings => {
       // 先把设置拿到
       catsStep = settings['catsStep'];
       // 启动加载
       that.loadFilters();
 
       that.setData({
-        main_lower_threshold: settings['main_lower_threshold']
+        main_lower_threshold: settings['main_lower_threshold'],
+        adStep: settings['adStep']
       });
     })
   },
@@ -518,5 +519,35 @@ Page({
         console.log("not a manager");
       }
     });
+  },
+
+  ////// 广告相关
+  changeState(ad_id, show) {
+    var ad_show = this.data.ad_show;
+    if (ad_show[ad_id] != show) {
+      ad_show[ad_id] = show;
+      this.setData({
+        ad_show: ad_show
+      });
+    }
+  },
+
+  // 广告加载成功，展示出来
+  adLoad(e) {
+    const ad_id = e.currentTarget.dataset.ad_id;
+    console.log('广告加载', ad_id);
+    this.changeState(ad_id, true);
+  },
+  // 加载失败
+  adError(e) {
+    const ad_id = e.currentTarget.dataset.ad_id;
+    console.log('广告加载失败', ad_id);
+    this.changeState(ad_id, false);
+  },
+  // 被关闭
+  adClose(e) {
+    const ad_id = e.currentTarget.dataset.ad_id;
+    console.log('广告被关闭', ad_id);
+    this.changeState(ad_id, false);
   }
 })
