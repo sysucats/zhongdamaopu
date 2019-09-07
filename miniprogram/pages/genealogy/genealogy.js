@@ -28,7 +28,7 @@ Page({
       'colour': '花色'
     },
 
-    // 高度，单位为px
+    // 高度，单位为px（后面会覆盖掉）
     heights: {
       filters: 40,
     },
@@ -283,6 +283,7 @@ Page({
       success: res => {
         console.log(res);
         this.setData({
+          "heights.filters": res.screenHeight * 0.07,
           "heights.screenHeight": res.screenHeight,
           "heights.windowHeight": res.windowHeight,
           "heights.statusBarHeight": res.statusBarHeight,

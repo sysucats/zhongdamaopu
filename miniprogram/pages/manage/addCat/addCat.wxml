@@ -55,7 +55,7 @@
     <input type='text' value='{{item.photographer}}' placeholder='默认为上传者' bindinput='inputPher' data-pid='{{item._id}}'></input>
     <button bindtap='updatePher' data-photo='{{item}}' data-index='{{index}}'>更新摄影师</button>
     <view class='photo'>
-      <image mode='aspectFill' src='{{item.photo_id}}'></image>
+      <image mode='aspectFill' src='{{item.photo_compressed === undefined ? item.photo_id: item.photo_compressed}}'></image>
       <view class='best' wx:if='{{item.best}}'>精选照片</view>
     </view>
     

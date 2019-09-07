@@ -11,6 +11,11 @@
 <view class='block'>
   <view class='title'>更新日志</view>
   <view class='desc'>
+    <view class='sub-title hl'>v1.2.3</view>
+    <view class='sub-detail'><text>- 首页样式小调整</text></view>
+    <view class='sub-detail'><text>- 清理储存空间</text></view>
+    <view class='sub-detail'><text>- 更新时间：2019/9/7</text></view>
+
     <view class='sub-title hl'>v1.2.2</view>
     <view class='sub-detail'><text>- 首页加一点点广告（给猫猫救助）</text></view>
     <view class='sub-detail'><text>- 更新时间：2019/7/30</text></view>

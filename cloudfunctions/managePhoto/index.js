@@ -62,7 +62,11 @@ exports.main = async (event, context) => {
     });
   } else if (type === 'setPher') {
     const photographer = event.photographer;
-    if (photo.photo_compressed) {
+    if (photo.photographer == photographer) {
+      return "same";
+    }
+    if (photo.photo_compressed && photo.photo_id != 'deleted') {
+      // 如果原图没有删掉，那么就删除压缩图和水印图
       cloud.deleteFile({
         fileList: [photo.photo_compressed, photo.photo_watermark],
         success: res => {

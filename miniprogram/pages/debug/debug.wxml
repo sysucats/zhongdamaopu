@@ -1,3 +1,3 @@
 <view style='width: 750rpx;'>{{res}}</view>
 
-<view style='position:fixed;' class='label'>DEBUG</view>
+<view style='position:fixed;' class='label' bindtap="run_debug">DEBUG</view>

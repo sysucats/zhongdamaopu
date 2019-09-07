@@ -3,7 +3,7 @@
 <view class='mina-info'>
   <image src='../../images/zdmp_logo.png'></image>
   <view class='title'>中大猫谱</view>
-  <view class='dev'><text>v1.2.2\n拍照记录中山大学猫猫的成长轨迹</text></view>
+  <view class='dev'><text>v1.2.3\n拍照记录中山大学猫猫的成长轨迹</text></view>
 </view>
 
 <view class='buttons'>
