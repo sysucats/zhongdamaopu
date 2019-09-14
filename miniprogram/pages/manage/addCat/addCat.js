@@ -1,4 +1,7 @@
-import { loadFilter, isManager } from '../../../utils.js';
+const utils = require('../../../utils.js');
+const loadFilter = utils.loadFilter;
+const isManager = utils.isManager;
+
 var cat_id = undefined;
 
 const photoStep = 5; // 每次加载的图片数量
@@ -93,12 +96,12 @@ Page({
         that.loadCat();
       } else {
         that.setData({
-          tipText: '只有管理员能进入嗷',
+          tipText: '只有管理员Level-2能进入嗷',
           tipBtn: true,
         });
         console.log("Not a manager.");
       }
-    })
+    }, 2)
   },
   loadCat() {
     if (cat_id===undefined) {
@@ -224,26 +227,26 @@ Page({
     });
     return value;
   },
-  checkBoxChange(e) {
-    console.log(e);
-    this.setData({
-      "cat.characteristics": e.detail.value
-    }, () => {
-      this.isCharChecked();
-    })
-  },
-  isCharChecked() {
-    const cat_chars = this.data.cat.characteristics || [];
-    const chars = this.data.pickers.char;
-    var checked = [];
-    for (const c of chars) {
-      checked.push(cat_chars.includes(c));
-    }
-    console.log(checked);
-    this.setData({
-      charChecked: checked
-    });
-  },
+  // checkBoxChange(e) {
+  //   console.log(e);
+  //   this.setData({
+  //     "cat.characteristics": e.detail.value
+  //   }, () => {
+  //     this.isCharChecked();
+  //   })
+  // },
+  // isCharChecked() {
+  //   const cat_chars = this.data.cat.characteristics || [];
+  //   const chars = this.data.pickers.char;
+  //   var checked = [];
+  //   for (const c of chars) {
+  //     checked.push(cat_chars.includes(c));
+  //   }
+  //   console.log(checked);
+  //   this.setData({
+  //     charChecked: checked
+  //   });
+  // },
   loadPickers() {
     return new Promise((resolve, reject) => {
       loadFilter().then(res => {

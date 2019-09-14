@@ -1,8 +1,16 @@
 // miniprogram/pages/genealogy/genealogy.js
+const utils = require('../../utils.js');
+const getGlobalSettings = utils.getGlobalSettings;
+const regeneratorRuntime = utils.regeneratorRuntime;
+const randomInt = utils.randomInt;
+const isWifi = utils.isWifi;
+const isManager = utils.isManager;
+const shuffle = utils.shuffle;
+const loadFilter = utils.loadFilter;
+const regReplace = utils.regReplace;
 
-// const default_png = '../../images/default.png';
 const default_png = undefined;
-import { regeneratorRuntime, randomInt, isWifi, isManager, shuffle, getGlobalSettings, loadFilter, regReplace } from '../../utils.js';
+
 
 var catsStep = 1;
 var loadingLock = 0;
@@ -100,11 +108,11 @@ Page({
           active: true,
         });
         for (const item of res[k]) {
-          var item = {
+          var new_item = {
             name: item,
             active: false
           }
-          main_item.items.push(item);
+          main_item.items.push(new_item);
         }
         filters.push(main_item);
       }

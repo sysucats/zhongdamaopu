@@ -1,5 +1,9 @@
 // miniprogram/pages/info/info.js
-import { isManager } from '../../utils.js'
+const utils = require('../../utils.js');
+
+console.log("utils:", utils);
+const isManager = utils.isManager;
+
 const rewardsStep = 20;
 var rewardsMax = 0;
 Page({

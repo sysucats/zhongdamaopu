@@ -9,6 +9,7 @@
   </view>
 </view>
 
+<view class='tip'>* 每月月初统计一次，多谢晒（鞠躬）</view>
 
 <view class='block'>
   <view class='title'>打赏记录</view>
@@ -19,6 +20,5 @@
 </view>
 
 
-<view class='tip'>* 每月月初统计一次，多谢晒（鞠躬）</view>
 
-<view style='margin-top: 20rpx;'></view>
+<view style='height: 20rpx;'></view>

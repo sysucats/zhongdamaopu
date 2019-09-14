@@ -9,8 +9,8 @@
   </view>
   
   <view class='filter-btn' bindtap='fToggle' bindlongpress='toUpdateFilter'>
-    <image wx:if='{{filters_active}}' mode='aspectFill' src="../../images/filter/filter_y.png"></image>
-    <image wx:else mode='aspectFill' src="../../images/filter/filter.png"></image>
+    <image wx:if='{{filters_active}}' mode='aspectFit' src="../../images/filter/filter_y.png"></image>
+    <image wx:else mode='aspectFit' src="../../images/filter/filter.png"></image>
   </view>
 </view>
 

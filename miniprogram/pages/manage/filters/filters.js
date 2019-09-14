@@ -1,4 +1,8 @@
-import { regeneratorRuntime, randomInt, isManager, loadFilter } from '../../../utils.js'
+const utils = require('../../../utils.js');
+const regeneratorRuntime = utils.regeneratorRuntime;
+const randomInt = utils.randomInt;
+const isManager = utils.isManager;
+const loadFilter = utils.loadFilter;
 
 // 储存还没确定的新filter
 var new_filters = {};
@@ -91,12 +95,12 @@ Page({
         that.reloadFilter();
       } else {
         that.setData({
-          tipText: '只有管理员能进入嗷',
+          tipText: '只有管理员Level-2才能进入嗷',
           tipBtn: true,
         });
         console.log("Not a manager.");
       }
-    })
+    }, 2);
   },
 
   // 加载数据库里的filters，应该只有一个

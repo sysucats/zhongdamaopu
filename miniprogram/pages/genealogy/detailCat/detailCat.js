@@ -1,4 +1,7 @@
-import { shareTo, getCurrentPath, getGlobalSettings } from '../../../utils.js';
+const utils = require('../../../utils.js');
+const shareTo = utils.shareTo;
+const getCurrentPath = utils.getCurrentPath;
+const getGlobalSettings = utils.getGlobalSettings;
 
 const ctx = wx.createCanvasContext('bigPhoto');
 

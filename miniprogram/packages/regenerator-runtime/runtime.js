@@ -709,3 +709,6 @@ var regeneratorRuntime = (function (exports) {
   // the regeneratorRuntime variable at the top of this file.
   typeof module === "object" ? module.exports : {}
 ));
+
+
+module.exports = { regeneratorRuntime };

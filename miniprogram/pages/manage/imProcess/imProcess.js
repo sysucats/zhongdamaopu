@@ -1,5 +1,9 @@
 // miniprogram/pages/imProcess/imProcess.js
-import { regeneratorRuntime, generateUUID, isManager } from '../../../utils.js';
+const utils = require('../../../utils.js');
+const generateUUID = utils.generateUUID;
+const isManager = utils.isManager;
+
+
 const ctx = wx.createCanvasContext('bigPhoto');
 const canvasMax = 2000; // 正方形画布的尺寸px
 
@@ -67,12 +71,12 @@ Page({
         that.loadProcess();
       } else {
         that.setData({
-          tipText: '只有管理员能进入嗷',
+          tipText: '只有管理员Level-3能进入嗷',
           tipBtn: true,
         });
         console.log("Not a manager.");
       }
-    })
+    }, 3)
   },
 
   clickBegin: function() {

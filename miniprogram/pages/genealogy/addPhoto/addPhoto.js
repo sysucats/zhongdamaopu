@@ -1,5 +1,11 @@
-import { generateUUID, getCurrentPath, shareTo } from '../../../utils.js';
-import { getUserInfoOrFalse, toggleUserNoticeSetting } from '../../../user.js';
+const utils = require('../../../utils.js');
+const generateUUID = utils.generateUUID;
+const getCurrentPath = utils.getCurrentPath;
+const shareTo = utils.shareTo;
+
+const user = require('../../../user.js');
+const getUserInfoOrFalse = user.getUserInfoOrFalse;
+const toggleUserNoticeSetting = user.toggleUserNoticeSetting;
 
 Page({
 

@@ -1,8 +1,8 @@
 <block wx:if="{{auth}}">
-  <view id='total-count'><text>目前共有{{total}}张待审核，点击图片可以放大。\n每次最多加载20张，请先审核完这些吧。\n完成后点“刷新状态”看看，注意流量消耗哈。</text></view>
+  <view id='total-count'><text>目前共有{{total}}张待审核，点击图片可以放大，\n点击所属猫猫名字可以跳转到该猫猫详情。\n每次最多加载20张，请先审核完这些吧。\n完成后点“刷新状态”看看，注意流量消耗哈。</text></view>
   <block wx:for="{{photos}}" wx:key="{{item._id}}">
     <view class='verify-box'>
-      <view class='label cat'>所属猫猫：{{item.cat.name}}（{{item.cat.campus}}）</view>
+      <view class='label cat'>所属猫猫：<text bindtap="toCatDetail" data-cat_id="{{item.cat._id}}">{{item.cat.name}}（{{item.cat.campus}}）</text></view>
       <image mode='aspectFill' src='{{item.photo_id}}' bindtap='openBigPhoto' data-pid='{{item.photo_id}}'></image>
       <view class='label user'>上传者：{{item.userInfo.nickName}}</view>
       <view class='label user'>摄影师：{{item.photographer || item.userInfo.nickName}}</view>

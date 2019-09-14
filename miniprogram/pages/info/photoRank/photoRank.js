@@ -1,5 +1,6 @@
 // miniprogram/pages/info/photoRank/photoRank.js
-import { getUserInfoOrFalse } from '../../../user.js';
+const user = require('../../../user.js');
+const getUserInfoOrFalse = user.getUserInfoOrFalse;
 
 Page({
 

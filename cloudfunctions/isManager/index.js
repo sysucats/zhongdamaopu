@@ -17,5 +17,8 @@ exports.main = async (event, context) => {
     return false;
   }
 
-  return (user.manager > 0);
+  // 需要的管理员权限等级为
+  const req = event.req || 0;
+  
+  return user.manager && (user.manager >= req);
 }

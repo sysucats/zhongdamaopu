@@ -1,6 +1,6 @@
-// const regeneratorRuntime = require('./packages/regenerator-runtime/runtime.js');
+const regeneratorRuntime = require('./packages/regenerator-runtime/runtime.js');
 
-import regeneratorRuntime from './packages/regenerator-runtime/runtime.js';
+// import regeneratorRuntime from './packages/regenerator-runtime/runtime.js';
 
 function randomInt(min, max) {
   return Math.floor(Math.random() * (max - min)) + min;
@@ -25,12 +25,16 @@ function loadFilter() {
   });
 }
 
-function isManager(callback) {
+function isManager(callback, req=0) {
   // 这里的callback将接受一个参数res，
   // 为bool类型，当前用户为manager时为true，
   // 否则为false
+  // req是要求的等级，是一个整数值
   wx.cloud.callFunction({
     name: 'isManager',
+    data: {
+      req: req
+    }
   }).then(res => {
     console.log(res);
     callback(res.result);
@@ -129,7 +133,7 @@ function regReplace(raw) {
   return raw;
 }
 
-export {
+module.exports = {
   regeneratorRuntime,
   randomInt,
   generateUUID,

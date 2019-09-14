@@ -1,0 +1,34 @@
+<block wx:if="{{auth}}">
+  <scroll-view style="height: {{windowHeight}}px;" scroll-y="true" enable-back-to-top="true" bindscrolltolower="scrollToReload">
+    <view class="user-box" wx:for="{{users}}" wx:key="{{item._id}}">
+      <view wx:if="{{item.userInfo}}" class="info">
+        <image class="avatar" src="{{item.userInfo.avatarUrl}}"></image>
+        <view class="name-and-others">
+          <view class="nickName">{{item.userInfo.nickName}}</view>
+          <block wx:if="{{item.userInfo.gender}}">
+            <view class="gender">{{item.userInfo.gender == 2? '女': '男'}}，</view>
+          </block>
+          <view class="area">{{item.userInfo.country || '-'}}, {{item.userInfo.province || '-'}}, {{item.userInfo.city || '-'}}</view>
+        </view>
+      </view>
+      <view wx:else class="unknow-info info">匿名用户</view>
+
+      <form bindsubmit="updateUserLevel">
+        <input style="display: none;" name="index" value="{{index}}"></input>
+        <input style="display: none;" name="_id" value="{{item._id}}"></input>
+        <view class="operation">
+              <picker mode="selector" range="{{manager_types}}" class="manager-level" name="level" value="{{item.manager == 99? (manager_types.length-1) : (item.manager || 0)}}" bindchange="changePickerValue" data-index="{{index}}">
+                {{manager_types[item.manager == 99? (manager_types.length-1) : (item.manager || 0)]}}
+              </picker>
+          <button form-type="submit" class="manager-update primary">更新等级</button>
+
+          <view class="index">#{{index}}</view>
+        </view>
+      </form>
+    </view>
+  </scroll-view>
+</block>
+<view wx:else class='unAuth'>
+  <text>{{tipText}}</text>
+  <button bindtap='goBack' wx:if='{{tipBtn}}'>打扰了</button>
+</view>

@@ -247,7 +247,8 @@ scroll-view {
   box-sizing: border-box;
   margin: 0;
 
-  font-size: 30rpx;
+  /* font-size: 1.1rem; */
+  font-size: 80%;
 }
 
 #search .icon {
@@ -259,7 +260,8 @@ scroll-view {
 #search .filter-btn {
   /* background-color: yellow; */
   width: 10%;
-  height: 1.4rem;
+  /* height: 1.4rem; */
+  height: 55%;
   padding: 10rpx 0 10rpx 30rpx;
 }
 
@@ -308,12 +310,11 @@ scroll-view {
 /* .f-column-2 {
   width: 40%;
 } */
-.f-column-3 {
-  /* width: 67%; */
+/* .f-column-3 {
   flex-grow: 1;
   display: flex;
   justify-content: space-between;
-}
+} */
 
 .f-column .item {
   height: 40rpx;

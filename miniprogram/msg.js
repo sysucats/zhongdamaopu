@@ -44,6 +44,6 @@ function sendSingleNotice(openid, content) {
   });
 }
 
-export {
+module.exports = {
   sendNotice,
 }

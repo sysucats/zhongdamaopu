@@ -1,6 +1,11 @@
 // 审核照片
-import { regeneratorRuntime, randomInt, isManager } from '../../../utils.js';
-import { sendNotice } from '../../../msg.js';
+const utils = require('../../../utils.js');
+const regeneratorRuntime = utils.regeneratorRuntime;
+const randomInt = utils.regeneratorRuntime;
+const isManager = utils.isManager;
+
+const msg = require('../../../msg.js');
+const sendNotice = msg.sendNotice;
 
 // 准备发送通知的列表，姓名：审核详情
 var notice_list = {};
@@ -98,12 +103,12 @@ Page({
         that.reload();
       } else {
         that.setData({
-          tipText: '只有管理员能进入嗷',
+          tipText: '只有管理员Level-1能进入嗷',
           tipBtn: true,
         });
         console.log("Not a manager.");
       }
-    })
+    }, 1)
   },
   async loadPhotos() {
     const db = wx.cloud.database();
@@ -240,5 +245,13 @@ Page({
     } else {
       notice_list[openid].deleted ++;
     }
-  }
+  },
+
+  // 点击所属猫猫名称，可以跳转到猫猫详情
+  toCatDetail(e) {
+    const cat_id = e.currentTarget.dataset.cat_id;
+    wx.navigateTo({
+      url: '/pages/genealogy/detailCat/detailCat?cat_id=' + cat_id,
+    })
+  },
 })

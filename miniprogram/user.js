@@ -85,7 +85,7 @@ function toggleUserNoticeSetting(user) {
   });
 }
 
-export {
+module.exports = {
   getUser,
   getUserInfoOrFalse,
   toggleUserNoticeSetting

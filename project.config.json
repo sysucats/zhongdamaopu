@@ -4,16 +4,25 @@
 	"setting": {
 		"urlCheck": true,
 		"es6": true,
+		"enhance": true,
 		"postcss": true,
 		"minified": true,
 		"newFeature": true,
+		"nodeModules": false,
 		"autoAudits": false,
+		"uglifyFileName": true,
 		"checkInvalidKey": true,
-		"uglifyFileName": true
+		"checkSiteMap": true,
+		"uploadWithSourceMap": true,
+		"babelSetting": {
+			"ignore": [],
+			"disablePlugins": [],
+			"outputPath": ""
+		}
 	},
 	"appid": "wx5bd705b2bc91c73b",
 	"projectname": "%E4%B8%AD%E5%A4%A7%E7%8C%AB%E8%B0%B1",
-	"libVersion": "2.6.0",
+	"libVersion": "2.8.2",
 	"simulatorType": "wechat",
 	"simulatorPluginLibVersion": {},
 	"cloudfunctionTemplateRoot": "cloudfunctionTemplate",
@@ -34,7 +43,7 @@
 			"list": []
 		},
 		"miniprogram": {
-			"current": 12,
+			"current": 15,
 			"list": [
 				{
 					"id": 1,
@@ -137,6 +146,12 @@
 					"name": "过滤器管理",
 					"pathName": "pages/manage/filters/filters",
 					"query": "",
+					"scene": null
+				},
+				{
+					"id": -1,
+					"name": "管理管理员",
+					"pathName": "pages/manage/managers/managers",
 					"scene": null
 				}
 			]

@@ -3,7 +3,7 @@
 <view class='mina-info'>
   <image src='../../images/zdmp_logo.png'></image>
   <view class='title'>中大猫谱</view>
-  <view class='dev'><text>v1.2.3\n拍照记录中山大学猫猫的成长轨迹</text></view>
+  <view class='dev'><text>v1.3.0\n拍照记录中山大学猫猫的成长轨迹</text></view>
 </view>
 
 <view class='buttons'>
@@ -12,8 +12,9 @@
     <image class='button' bindtap='clickbtn' data-to='/pages/info/devTeam/devTeam' src='../../images/info/btn/tuandui.png'></image>
     <image class='button' bindtap='clickbtn' data-to='/pages/info/feedback/feedback' src='../../images/info/btn/fankui.png'></image>
     <block wx:if="{{showManager}}">
-      <image class='button' bindtap='clickbtn' data-to='/pages/manage/addCat/addCat' src='../../images/info/btn/xinmao.png'></image>
+      <image class='button' bindtap='clickbtn' data-to='/pages/manage/addCat/addCat' src='../../images/info/btn/xinmao.png'
+      bindlongpress='longtapbtn' data-longto='/pages/manage/managers/managers'></image>
       <image class='button' bindtap='clickbtn' data-to='/pages/manage/checkPhotos/checkPhotos' src='../../images/info/btn/shenhe.png'
-      bindlongtap='longtapbtn' data-longto='/pages/manage/imProcess/imProcess'></image>
+      bindlongpress='longtapbtn' data-longto='/pages/manage/imProcess/imProcess'></image>
     </block>
 </view>

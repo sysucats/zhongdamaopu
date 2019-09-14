@@ -46,6 +46,11 @@ button.long {
   margin: 10rpx 0;
 }
 
+.label.cat text {
+  font-weight: bold;
+  text-decoration: underline;
+}
+
 #total-count {
   font-size: 30rpx;
   font-weight: 300;

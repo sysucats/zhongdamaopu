@@ -19,7 +19,7 @@ function deepcopy(origin) {
 exports.main = async (event, context) => {
   const wxContext = cloud.getWXContext();
   const openid = wxContext.OPENID;
-  const isManager = (await cloud.callFunction({ name: 'isManager', data: { openid: openid }}));
+  const isManager = (await cloud.callFunction({ name: 'isManager', data: { openid: openid, req: 2 }}));
   if (!isManager.result) {
     return { msg: 'not a manager', result: isManager };
   }

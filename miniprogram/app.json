@@ -14,7 +14,8 @@
     "pages/manage/imProcess/imProcess",
     "pages/manage/checkPhotos/checkPhotos",
     "pages/manage/filters/filters",
-    "pages/debug/debug"
+    "pages/debug/debug",
+    "pages/manage/managers/managers"
   ],
   "tabBar": {
     "selectedColor": "#000",

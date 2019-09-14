@@ -1,0 +1,95 @@
+/* miniprogram/pages/manage/managers.wxss */
+page {
+  width: 750rpx;
+}
+
+button {
+  width: 45%;
+  display: inline-block;
+  font-size: 35rpx;
+  box-sizing: border-box;
+}
+
+button.primary {
+  background-color: #ffd101;
+}
+
+button + button {
+  margin-left: 10%;
+  /* float: right; */
+}
+
+button.long {
+  margin: 20rpx 0 0 0;
+  width: 100%;
+}
+
+
+/* 下面开始用户管理的CSS */
+.user-box {
+  box-sizing: border-box;
+  padding: 15rpx 10rpx;
+  margin: 20rpx 20rpx 50rpx 20rpx;
+  box-shadow: 0rpx 0rpx 10rpx #ddd;
+  border-radius: 10rpx;
+}
+
+.user-box .info {
+  border-bottom: 1px rgba(221, 221, 221, 0.377) solid;
+  margin-bottom: 20rpx;
+  display: flex;
+  align-items: center;
+}
+
+.user-box image.avatar {
+  width: 80rpx;
+  height: 80rpx;
+}
+
+.name-and-others {
+  display: inline-block;
+  margin-left: 10rpx;
+}
+
+.name-and-others .nickName,
+.unknow-info {
+  font-size: 32rpx;
+}
+
+.name-and-others .gender,
+.name-and-others .area {
+  font-size: 30rpx;
+  color: #888;
+  display: inline-block;
+}
+
+.operation {
+  width: 100%;
+  display: flex;
+  align-items: flex-end;
+}
+
+picker.manager-level {
+  width: 400rpx;
+  height: 60rpx;
+  line-height: 60rpx;
+  border-bottom: 2rpx #ffd110 solid;
+  background-color: #fafafa;
+  padding: 10rpx;
+  color: #222;
+  display: inline-block;
+}
+
+button.manager-update {
+  width: 200rpx;
+  font-size: 32rpx;
+  margin-left: 20rpx;
+  display: inline-block;
+}
+
+.index {
+  font-size: 28rpx;
+  color: #dfdfdf;
+  margin-left: auto;
+  display: inline-block;
+}
