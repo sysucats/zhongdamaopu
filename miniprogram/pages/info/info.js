@@ -27,6 +27,12 @@ Page({
         });
       }
     });
+
+    // 获取version
+    const app = getApp();
+    this.setData({
+      version: app.globalData.version
+    });
   },
 
   /**

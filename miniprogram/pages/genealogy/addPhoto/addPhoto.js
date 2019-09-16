@@ -2,6 +2,7 @@ const utils = require('../../../utils.js');
 const generateUUID = utils.generateUUID;
 const getCurrentPath = utils.getCurrentPath;
 const shareTo = utils.shareTo;
+const getGlobalSettings = utils.getGlobalSettings;
 
 const user = require('../../../user.js');
 const getUserInfoOrFalse = user.getUserInfoOrFalse;
@@ -19,6 +20,7 @@ Page({
     birth_date: '2008-01-01',
     photos: [],
     set_all: {},
+    canUpload: false,
   },
 
   /**
@@ -44,6 +46,19 @@ Page({
     this.setData({
       now_date: now_date
     });
+
+    // 加载设置、关闭上传功能
+    const that = this;
+    const app = getApp();
+    getGlobalSettings('detailCat').then(settings => {
+      // 是否开启上传功能
+      console.log("settings:", settings);
+      console.log("App:", app);
+      that.setData({
+        canUpload: (settings.cantUpload !== app.globalData.version)
+      });
+    })
+
   },
 
   /**
@@ -326,5 +341,10 @@ Page({
         wx.hideLoading();
       });
     })
+  },
+  goBackIndex(e) {
+    wx.switchTab({
+      url: '/pages/genealogy/genealogy',
+    });
   }
 })

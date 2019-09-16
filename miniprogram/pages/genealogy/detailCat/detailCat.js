@@ -43,6 +43,7 @@ Page({
     showHoverHeader: false, // 显示浮动的相册标题
     hideBgBlock: false, // 隐藏背景黄块
     canvas: {}, // 画布的宽高
+    canUpload: false, // 是否可以上传照片
   },
 
   /**
@@ -53,11 +54,18 @@ Page({
 
     // 开始加载页面
     const that = this;
+    const app = getApp();
     getGlobalSettings('detailCat').then(settings => {
       // 先把设置拿到
       page_settings = settings;
       // 启动加载
       that.loadCat();
+      // 是否开启上传功能
+      console.log("settings:", settings);
+      console.log("App:", app);
+      that.setData({
+        canUpload: (settings.cantUpload !== app.globalData.version)
+      });
     })
     
     // 先判断一下这个用户在12小时之内有没有点击过这只猫
