@@ -1,0 +1,39 @@
+<form bindsubmit="bindSubmit">
+  <view wx:if="{{!isAuth}}" class='unAuth'>
+    <!-- <text>请授权后进行操作</text>
+      <button open-type='getUserInfo' bindgetuserinfo='getUInfo'>点击授权</button> -->
+    <view class='userInfo'>
+      <image src='../../../images/user.png'></image>
+      <view>
+        <text>[等待授权]\n---准备为[<text style="font-weight:600;">{{cat.name}}</text>]反馈信息</text>
+      </view>
+    </view>
+    <button class='long primary' open-type='getUserInfo' bindgetuserinfo='getUInfo'>点击授权</button>
+  </view>
+  <block wx:else>
+    <!-- <view>--已经授权--</view> -->
+    <view class='userInfo'>
+      <image src='{{user.userInfo.avatarUrl}}'></image>
+      <view>
+        <text>{{user.userInfo.nickName}}\n---正在为[<text style="font-weight:600;">{{cat.name}}</text>]反馈信息</text>
+      </view>
+    </view>
+    <view class='inputColumns'>
+      <view>
+        <text>反馈内容：</text>
+        <textarea class='feedbackColumn' placeholder="猫猫信息纠错、照片归属权、功能改进等~" name='feedbackInfo' maxlength='{{maxlength}}' bindinput='bindInput' />
+        <text class='lengthTips'>字数：{{length}}/{{maxlength}}</text>
+      </view>
+      <view style='margin-top:40rpx;'>
+        <text>你的联系方式：</text>
+        <input placeholder="（选填）微信/QQ/邮箱" name='contactInfo' maxlength='30' />
+      </view>
+    </view>
+    <view class='submitButton'>
+      <button form-type='submit'>提交反馈</button>
+    </view>
+  </block>
+</form>
+<view class='footnote'>
+  <text>*反馈内容仅后台工作人员可见</text>
+</view>

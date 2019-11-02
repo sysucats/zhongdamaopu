@@ -219,6 +219,11 @@ Page({
       });
     });
   },
+  bindTapFeedback() {
+    wx.navigateTo({
+      url: '/pages/genealogy/feedbackDetail/feedbackDetail?cat_id=' + this.data.cat._id,
+    });
+  },
 
   bindAddPhoto() {
     wx.navigateTo({

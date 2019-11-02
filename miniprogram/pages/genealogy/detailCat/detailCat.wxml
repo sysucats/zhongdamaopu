@@ -101,6 +101,9 @@ next-margin='60rpx'>
       <view class='value'>{{cat.tutorial || '暂时还没有'}}</view>
     </view>
   </view>
+  <view class='feedback'>
+    <view class='fb-button' bindtap='bindTapFeedback'>信息反馈</view>
+  </view>
 </view>
 <!-- info end -->
 

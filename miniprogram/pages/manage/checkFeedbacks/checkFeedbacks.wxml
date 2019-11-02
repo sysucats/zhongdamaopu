@@ -1,0 +1,27 @@
+<wxs module="dateStr">
+function formatDate(date_str) {
+  var mdate = getDate(date_str);
+  return mdate.getFullYear() + '-' + (mdate.getMonth() + 1) + '-' + mdate.getDay() + ' ' + mdate.getHours() + ':' + mdate.getMinutes() + ':' + mdate.getSeconds();
+}
+module.exports = { formatDate : formatDate }
+</wxs>
+
+<block wx:if="{{auth}}">
+  <view id='total-count'><text>目前共有{{total}}条反馈待处理，\n点击所属猫猫名字可以跳转到该猫猫详情。\n每次最多加载20条，请先处理完这些吧。\n完成后点“刷新状态”看看。</text></view>
+  <block wx:for="{{feedbacks}}" wx:key="{{item._id}}">
+    <view class='verify-box'>
+      <view class='label cat'>所属猫猫：<text bindtap="toCatDetail" data-cat_id="{{item.cat._id}}">{{item.cat.name}}（{{item.cat.campus}}）</text></view>
+      <view class='feedback-info'>反馈内容：{{item.feedbackInfo}}</view>
+      <view class='label user'>反馈人：{{item.userInfo.nickName}}</view>
+      <view class='label user'>联系方式：{{item.contactInfo || "对方没有留下联系方式"}}</view>
+      <view class='label user'>反馈时间：{{dateStr.formatDate(item.date_str)}}</view>
+      <button class='long' bindtap='bindCheck' data-feedback='{{item}}'>完成</button>
+    </view>
+  </block>
+  <button class='long primary' bindtap="reload">刷新状态</button>
+  
+</block>
+<view wx:else class='unAuth'>
+  <text>{{tipText}}</text>
+  <button bindtap='goBack' wx:if='{{tipBtn}}'>打扰了</button>
+</view>

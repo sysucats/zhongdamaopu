@@ -1,0 +1,79 @@
+page {
+  width: 750rpx;
+  padding: 50rpx 30rpx;
+  box-sizing: border-box;
+}
+
+.userInfo {
+  width: 100%;
+  padding: 0rpx 0rpx 30rpx 0;
+  display: flex;
+}
+
+.userInfo image {
+  height: 50rpx;
+  width: 50rpx;
+  margin-right: 10rpx;
+  border-radius: 5rpx;
+}
+
+.userInfo text {
+  height: 50rpx;
+  line-height: 50rpx;
+  font-size: 35rpx;
+}
+
+button.long {
+  /* width: 690rpx; */
+  width: 100%;
+}
+
+button.primary {
+  background-color: #ffd101;
+}
+
+input, picker, textarea {
+  width: 670rpx;
+  border-bottom: 2rpx #ffd110 solid;
+  background-color: #fafafa;
+  padding: 10rpx;
+  color: #222;
+}
+
+.feedbackColumn {
+  height: 12rem;
+}
+
+button {
+  background-color: #ffd101;
+  width: 100%;
+  display: inline-block;
+  box-sizing: border-box;
+  font-size: 35rpx;
+  line-height: 40rpx;
+  padding: 20rpx 30rpx;
+  border: 1rpx solid #888;
+  border-radius: 10rpx;
+  margin-top: 20rpx;
+}
+
+.inputColumn {
+  font-size: 35rpx;
+  line-height: 40rpx;
+}
+
+.lengthTips {
+  font-size: 26rpx;
+  color: #888;
+  float: right;
+}
+
+.submitButton {
+  margin-top: 20rpx;
+}
+
+.footnote {
+  margin-top: 20rpx;
+  front-size: 26rpx;
+  color: #888;
+}

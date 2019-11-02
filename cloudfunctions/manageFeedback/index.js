@@ -1,0 +1,24 @@
+// 云函数入口文件
+const cloud = require('wx-server-sdk')
+
+cloud.init();
+const db = cloud.database();
+
+// 云函数入口函数
+exports.main = async (event, context) => {
+  const wxContext = cloud.getWXContext()
+  const openid = wxContext.OPENID;
+  const isManager = (await cloud.callFunction({ name: 'isManager', data: { openid: openid, req: 1 } }));
+  if (!isManager.result) {
+    return { msg: 'not a manager', result: isManager };
+  }
+
+  const feedback = event.feedback;
+
+  await db.collection('feedback').doc(feedback._id).update({
+    data: {
+      dealed: true,
+      dealDate: new Date()
+    }
+  });
+}

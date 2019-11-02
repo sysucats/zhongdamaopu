@@ -160,6 +160,22 @@ swiper-item image {
   width: 100%;
 }
 
+.feedback {
+  display: flex;
+  flex-direction: row;
+}
+
+.feedback .fb-button {
+  position: absolute;
+  right: 60rpx;
+  font-size: 20rpx;
+  height: 40rpx;
+  box-sizing: border-box;
+  border-radius: 10rpx;
+  background-color: #ffd101;
+  padding: 5rpx 10rpx;
+}
+
 /* 下面开始相册 */
 .album-title {
   text-align: center;

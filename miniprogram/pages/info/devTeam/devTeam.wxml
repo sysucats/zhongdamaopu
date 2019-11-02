@@ -4,16 +4,18 @@
 <view class='block'>
   <view class='title'>开发团队</view>
   <view class='desc'>
-    <text>渔政、蓝卷、玥琪、大米、hehe\n以及各校区猫群小伙伴~</text>
+    <text>渔政、蓝卷、玥琪、大米、hehe、XD\n以及各校区猫群小伙伴~</text>
   </view>
 </view>
 
 <view class='block'>
   <view class='title'>更新日志</view>
   <view class='desc'>
+    <view class='sub-title hl'>v1.3.1</view>
+    <text class='sub-detail'>- 猫猫详情页增加信息反馈\n- 更新时间：2019/11/2</text>
+
     <view class='sub-title hl'>v1.3.0</view>
     <text class='sub-detail'>- 适配一下PC版\n- 管理员权限分级、管理系统\n- 更新时间：2019/9/14</text>
-
 
     <view class='sub-title hl'>v1.2.3</view>
     <text class='sub-detail'>- 首页样式小调整\n- 清理储存空间\n- 更新时间：2019/9/7</text>

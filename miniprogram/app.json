@@ -15,7 +15,9 @@
     "pages/manage/checkPhotos/checkPhotos",
     "pages/manage/filters/filters",
     "pages/debug/debug",
-    "pages/manage/managers/managers"
+    "pages/manage/managers/managers",
+    "pages/genealogy/feedbackDetail/feedbackDetail",
+    "pages/manage/checkFeedbacks/checkFeedbacks"
   ],
   "tabBar": {
     "selectedColor": "#000",
