@@ -54,3 +54,41 @@ page {
   margin-top: 10rpx;
   text-align: center;
 }
+
+.option-box{
+  background-color: #ffffff;
+  margin: 10px;
+  padding: 10px;
+  box-shadow: 5px 5px 5px gainsboro;
+  border-radius: 15rpx;
+}
+
+.option {
+  padding: 20rpx 30rpx;
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.option:before {
+  content: " ";
+  position: absolute;
+  left: 30rpx;
+  top: 0;
+  right: 30rpx;
+  height: 1px;
+  border-top: 1rpx solid #D8D8D8;
+  color: #D8D8D8;
+}
+
+.option:first-child:before {
+  display: none;
+}
+
+.option-text {
+  flex: 1;
+}
+
+.option-prompt {
+  color: #888;
+}

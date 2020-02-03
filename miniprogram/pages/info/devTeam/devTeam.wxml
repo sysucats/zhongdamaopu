@@ -11,6 +11,9 @@
 <view class='block'>
   <view class='title'>更新日志</view>
   <view class='desc'>
+    <view class='sub-title hl'>v1.3.2</view>
+    <text class='sub-detail'>- 修复后台反馈日期显示错误的问题\n - 反馈内容可选中，并增加一键复制\n - 更改管理项样式，更加易于理解\n- 更新时间：2019/1/24</text>
+
     <view class='sub-title hl'>v1.3.1</view>
     <text class='sub-detail'>- 猫猫详情页增加信息反馈\n- 更新时间：2019/11/2</text>
 

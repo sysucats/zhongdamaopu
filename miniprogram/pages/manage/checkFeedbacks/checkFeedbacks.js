@@ -175,6 +175,15 @@ Page({
     })
   },
 
+  bindCopy(e) {
+    const item = e.currentTarget.dataset.feedback;
+    const mdate = new Date(item.date_str);
+    const dateStr = mdate.getFullYear() + '-' + (mdate.getMonth() + 1) + '-' + mdate.getDate() + ' ' + mdate.getHours() + ':' + mdate.getMinutes() + ':' + mdate.getSeconds()
+    wx.setClipboardData({
+      data: "所属猫猫：" + item.cat.name + '（' + item.cat.campus + '）' + "\n反馈内容：" + item.feedbackInfo + "\n反馈人：" + item.userInfo.nickName + "\n联系方式：" + (item.contactInfo || "对方没有留下联系方式") + "\n反馈时间：" + dateStr,
+    });
+  },
+
   // 添加一条通知记录，等页面退出的时候统一发送通知
   /* addNotice(photo, accepted) {
     const openid = photo._openid;

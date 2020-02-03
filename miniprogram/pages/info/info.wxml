@@ -10,12 +10,28 @@
     <image class='button' bindtap='clickbtn' data-to='/pages/info/reward/reward' src='../../images/info/btn/dashang.png'></image>
     <image class='button' bindtap='clickbtn' data-to='/pages/info/photoRank/photoRank' src='../../images/info/btn/paizhao.png'></image>
     <image class='button' bindtap='clickbtn' data-to='/pages/info/devTeam/devTeam' src='../../images/info/btn/tuandui.png'></image>
-    <image class='button' bindtap='clickbtn' data-to='/pages/info/feedback/feedback' src='../../images/info/btn/fankui.png'
-      bindlongpress='longtapbtn' data-longto='/pages/manage/checkFeedbacks/checkFeedbacks'></image>
-    <block wx:if="{{showManager}}">
-      <image class='button' bindtap='clickbtn' data-to='/pages/manage/addCat/addCat' src='../../images/info/btn/xinmao.png'
-      bindlongpress='longtapbtn' data-longto='/pages/manage/managers/managers'></image>
-      <image class='button' bindtap='clickbtn' data-to='/pages/manage/checkPhotos/checkPhotos' src='../../images/info/btn/shenhe.png'
-      bindlongpress='longtapbtn' data-longto='/pages/manage/imProcess/imProcess'></image>
-    </block>
+    <image class='button' bindtap='clickbtn' data-to='/pages/info/feedback/feedback' src='../../images/info/btn/fankui.png'></image>
 </view>
+
+<block wx:if='{{showManager}}'><view class='option-box'>
+  <view class="option" bindtap='clickbtn' data-to='/pages/manage/checkPhotos/checkPhotos'>
+    <view class="option-text">照片审核({{numChkPhotos}})</view>
+    <view class="option-prompt">＞</view>
+  </view>
+  <view class="option" bindtap='clickbtn' data-to='/pages/manage/imProcess/imProcess'>
+    <view class="option-text">照片处理({{numPrcssImg}})</view>
+    <view class="option-prompt">＞</view>
+  </view>
+  <view class="option" bindtap='clickbtn' data-to='/pages/manage/checkFeedbacks/checkFeedbacks'>
+    <view class="option-text">反馈处理({{numFeedbacks}})</view>
+    <view class="option-prompt">＞</view>
+  </view>
+  <view class="option" bindtap='clickbtn' data-to='/pages/manage/addCat/addCat'>
+    <view class="option-text">添加新猫</view>
+    <view class="option-prompt">＞</view>
+  </view>
+  <view class="option" bindtap='clickbtn' data-to='/pages/manage/managers/managers'>
+    <view class="option-text">人员管理</view>
+    <view class="option-prompt">＞</view>
+  </view>
+</view></block>

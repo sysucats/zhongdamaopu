@@ -13,6 +13,9 @@ Page({
    */
   data: {
     showManager: false,
+    numChkPhotos: 0,
+    numPrcssImg: 0,
+    numFeedbacks: 0,
   },
 
   /**
@@ -22,8 +25,29 @@ Page({
     const that = this;
     isManager(res => {
       if (res) {
+        const that = this;
+        const db = wx.cloud.database();
+        const _ = db.command;
+        db.collection('photo').where({ verified: false}).count().then(res => {
+          that.data.numChkPhotos = res.total;
+          that.setData({
+            numChkPhotos: res.total,
+          })
+        })
+        this.data.numPrcssImg = db.collection('photo').where({ photo_compressed: _.in([undefined, '']), verified: true }).count().then(res => {
+          that.data.numPrcssImg = res.total;
+          that.setData({
+            numPrcssImg: res.total,
+          })
+        })
+        this.data.numFeedbacks = db.collection('feedback').where({ dealed: false}).count().then(res => {
+          that.data.numFeedbacks = res.total;
+          that.setData({
+            numFeedbacks: res.total,
+          })
+        })
         that.setData({
-          showManager: true
+          showManager: true,
         });
       }
     });
@@ -46,19 +70,6 @@ Page({
 
   clickbtn(e) {
     const to = e.currentTarget.dataset.to;
-    if (!to) {
-      wx.showToast({
-        title: 'Nothing...',
-      });
-      return false;
-    }
-    wx.navigateTo({
-      url: to,
-    });
-  },
-
-  longtapbtn(e) {
-    const to = e.currentTarget.dataset.longto;
     if (!to) {
       wx.showToast({
         title: 'Nothing...',
