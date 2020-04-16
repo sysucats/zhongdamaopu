@@ -21,7 +21,9 @@ Page({
   /**
    * 生命周期函数--监听页面加载
    */
-  onLoad: function (options) {
+
+  // 用 onShow 不用 onLoad，为了在返回这个页面时也能重新加载
+  onShow: function (options) {
     const that = this;
     isManager(res => {
       if (res) {
