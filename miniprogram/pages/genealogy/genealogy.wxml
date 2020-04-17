@@ -22,7 +22,7 @@
   <view class='filters' catchtap='voidMove'>
     <scroll-view class='f-column f-column-1 main' scroll-y='1'>
       <view class='padding-block'></view>
-      <view class='item {{item.active? "active": ""}}' wx:for='{{filters}}' wx:key='{{item.name}}' bindtap='fClickMain' data-index='{{index}}'>
+      <view class='item {{item.active? "active": ""}}' wx:for='{{filters}}' wx:key='name' bindtap='fClickMain' data-index='{{index}}'>
         <text>{{item.name}}</text>
 
         <view class='right-arrow' wx:if='{{item.active}}'>
@@ -32,7 +32,7 @@
     </scroll-view>
     <scroll-view class='f-column f-column-3' scroll-y='1'>
       <view class='padding-block'></view>
-      <view class='item {{item.active? "active": ""}}' wx:for='{{filters[filters_sub].items}}' wx:key='{{item.name}}' bindtap='fClickSub' data-index='{{index}}'>
+      <view class='item {{item.active? "active": ""}}' wx:for='{{filters[filters_sub].items}}' wx:key='name' bindtap='fClickSub' data-index='{{index}}'>
         {{item.name}}
       </view>
     </scroll-view>
@@ -47,7 +47,7 @@
 </view>
 
 <scroll-view style='height: {{heights.windowHeight - heights.filters}}px;' scroll-y='true' enable-back-to-top='true' bindscrolltolower='onReachBottom' bindscroll='fScroll' lower-threshold='{{main_lower_threshold}}'>
-  <block wx:for='{{cats}}' wx:key="{{item._id}}">
+  <block wx:for='{{cats}}' wx:key="_id">
     <view class='card' bindtap='clickCatCard' bindlongpress='bindManageCat' data-cat_id='{{item._id}}'>
       <view class='label' wx:if="{{item.mphoto_new}}">有新相片！</view>
       <view class='image {{item.to_star? "to_star": ""}}'>

@@ -16,7 +16,7 @@ indicator-active-color='#ffd101'
 bindchange='swiperLast'
 previous-margin='60rpx'
 next-margin='60rpx'>
-  <swiper-item wx:for='{{cat.photo}}' wx:key="{{item}}" bindtap='bindTapPhoto' data-photo="{{item}}">
+  <swiper-item wx:for='{{cat.photo}}' wx:key="_id" bindtap='bindTapPhoto' data-photo="{{item}}">
     <image bindload='bindImageLoaded' mode='aspectFill' src='{{item.photo_compressed || item.photo_id}}'></image>
   </swiper-item>
 </swiper>
@@ -102,7 +102,7 @@ next-margin='60rpx'>
     </view>
   </view>
   <view class='feedback'>
-    <view class='fb-button' bindtap='bindTapFeedback'>信息反馈</view>
+    <view class='fb-button' bindtap='bindTapFeedback'>我想反馈猫猫信息！</view>
   </view>
 </view>
 <!-- info end -->
@@ -125,13 +125,13 @@ next-margin='60rpx'>
 </view>
 
 <view class='album'>
-  <view wx:for="{{album}}" class='album-block' wx:key='{{albumBlock.date}}' wx:for-item="albumBlock">
+  <view wx:for="{{album}}" class='album-block' wx:key='date' wx:for-item="albumBlock">
     <view class='header'>
       <image src='../../../images/card/card/time.png'></image>
       <view class='time'>{{albumBlock.date[0]}}年{{albumBlock.date[1]}}月</view>
       <view wx:if='{{albumBlock.age[0] >= 0 && albumBlock.age[1] >= 0}}' class='age'>{{albumBlock.age[0]}}岁{{albumBlock.age[1]}}个月</view>
     </view>
-    <image mode='aspectFill' lazy-load='true' class='alb-image' wx:for="{{albumBlock.photos}}" src='{{item.photo_compressed || item.photo_id}}' wx:key="{{item.photo_compressed || item.photo_id}}" bindtap='bindTapPhoto' data-photo="{{item}}"></image>
+    <image mode='aspectFill' lazy-load='true' class='alb-image' wx:for="{{albumBlock.photos}}" src='{{item.photo_compressed || item.photo_id}}' wx:key="_id" bindtap='bindTapPhoto' data-photo="{{item}}"></image>
   </view>
   
   <view class='loading'>

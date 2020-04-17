@@ -6,7 +6,7 @@
   </swiper-item>
 </swiper>
 
-<view class='qna {{item.active? "active": ""}}' wx:for='{{qnas}}' wx:key='{{item.question}}' bindtap='activateQna' data-index='{{index}}' hidden='{{item.cate != cate_active}}'>
+<view class='qna {{item.active? "active": ""}}' wx:for='{{qnas}}' wx:key='_id' bindtap='activateQna' data-index='{{index}}' hidden='{{item.cate != cate_active}}'>
   <view class='question'>{{item.question}}</view>
   <view class='answer'><text>{{item.answer}}</text></view>
 </view>

@@ -29,57 +29,6 @@ Page({
     this.checkAuth();
   },
 
-  /**
-   * 生命周期函数--监听页面初次渲染完成
-   */
-  onReady: function () {
-
-  },
-
-  /**
-   * 生命周期函数--监听页面显示
-   */
-  onShow: function () {
-
-  },
-
-  /**
-   * 生命周期函数--监听页面隐藏
-   */
-  onHide: function () {
-
-  },
-
-  /**
-   * 生命周期函数--监听页面卸载
-   */
-  onUnload: function () {
-    // console.log('页面退出');
-    // 发送审核消息
-    // sendNotice(notice_list);
-  },
-
-  /**
-   * 页面相关事件处理函数--监听用户下拉动作
-   */
-  onPullDownRefresh: function () {
-
-  },
-
-  /**
-   * 页面上拉触底事件的处理函数
-   */
-  onReachBottom: function () {
-
-  },
-
-  /**
-   * 用户点击右上角分享
-   */
-  onShareAppMessage: function () {
-
-  },
-
   // 没有权限，返回上一页
   goBack() {
     wx.navigateBack();
@@ -112,6 +61,10 @@ Page({
       fb.cat = cat
     }
     console.log(feedbacks);
+    // 将Date对象转化为字符串
+    for (let i = 0; i < feedbacks.length; ++i) {
+      feedbacks[i].openDateStr = utils.formatDate(feedbacks[i].openDate, "yyyy-MM-dd hh:mm:ss");
+    }
     this.setData({
       feedbacks: feedbacks
     });
