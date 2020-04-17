@@ -57,7 +57,7 @@ page {
 
 .option-box{
   background-color: #ffffff;
-  margin: 10px;
+  margin: 10px 3px;
   padding: 10px;
   box-shadow: 5px 5px 5px gainsboro;
   border-radius: 15rpx;

@@ -6,7 +6,9 @@ const getGlobalSettings = utils.getGlobalSettings;
 
 const user = require('../../../user.js');
 const getUserInfoOrFalse = user.getUserInfoOrFalse;
-const toggleUserNoticeSetting = user.toggleUserNoticeSetting;
+
+const msg = require('../../../msg.js');
+const requestNotice = msg.requestNotice;
 
 Page({
 
@@ -62,48 +64,6 @@ Page({
   },
 
   /**
-   * 生命周期函数--监听页面初次渲染完成
-   */
-  onReady: function () {
-
-  },
-
-  /**
-   * 生命周期函数--监听页面显示
-   */
-  onShow: function () {
-
-  },
-
-  /**
-   * 生命周期函数--监听页面隐藏
-   */
-  onHide: function () {
-
-  },
-
-  /**
-   * 生命周期函数--监听页面卸载
-   */
-  onUnload: function () {
-
-  },
-
-  /**
-   * 页面相关事件处理函数--监听用户下拉动作
-   */
-  onPullDownRefresh: function () {
-
-  },
-
-  /**
-   * 页面上拉触底事件的处理函数
-   */
-  onReachBottom: function () {
-
-  },
-
-  /**
    * 用户点击右上角分享
    */
   onShareAppMessage: function () {
@@ -151,113 +111,107 @@ Page({
     })
   },
 
+
   // 点击单个上传
-  uploadSingleClick(e) {
+  async uploadSingleClick(e) {
+    await requestNotice('verify');
+    wx.showLoading({
+      title: '正在上传...',
+      mask: true,
+    });
     const currentIndex = e.currentTarget.dataset.index;
     const photo = this.data.photos[currentIndex];
-    this.uploadImg(photo);
-    // 保存formId
-    this.saveFormId(e.detail.formId);
+    await this.uploadImg(photo);
+    this.data.photos = this.data.photos.filter((ph) => {
+      // 把已上传的图片从图片列表中去掉
+      return ph.file.path != photo.file.path;
+    });
+    this.setData({
+      uploading: false,
+      photos: this.data.photos,
+    });
+    wx.hideLoading();
+    wx.showModal({
+      title: '上传成功！',
+      content: '审核后就会展示出来啦',
+      showCancel: false
+    });
   },
 
   // 点击多个上传
-  uploadAllClick(e, rec=false) {
-    if (e) {
-      // 保存formId
-      this.saveFormId(e.detail.formId);
-    }
-    // rec 表示是不是递归回来的，说明有已经上传的照片
+  async uploadAllClick(e) {
     const photos = []; // 这里只会保存可以上传的照片
     for (const item of this.data.photos) {
       if (item.shooting_date && item.file.path) {
         photos.push(item);
       }
     }
-    wx.showLoading({
-      title: '正在上传(' + photos.length + ')',
-      mask: true,
-    });
-    if (photos.length == 0 && rec) {
-      wx.hideLoading();
+    if (photos.length == 0) {
       wx.showModal({
-        title: '上传成功！',
-        content: '审核后就会展示出来啦',
+        title: '提示',
+        content: '填写信息后再上传哦！',
         showCancel: false
       });
-    } else {
-      this.uploadImg(photos[0], true);
+      return;
     }
+    await requestNotice('verify');
+    for (let i = 0; i < photos.length; ++i) {
+      wx.showLoading({
+        title: '正在上传(' + (photos.length - i) + ')',
+        mask: true,
+      });
+      await this.uploadImg(photos[i]);
+      this.data.photos = this.data.photos.filter((ph) => {
+        // 把已上传的图片从图片列表中去掉
+        return ph.file.path != photos[i].file.path;
+      });
+    }
+    this.setData({
+      uploading: false,
+      photos: this.data.photos,
+    })
+    wx.hideLoading();
+    wx.showModal({
+      title: '上传成功！',
+      content: '审核后就会展示出来啦',
+      showCancel: false
+    });
   },
   
-  uploadImg(photo, multiple=false) {
+  async uploadImg(photo) {
     // multiple 表示当前是否在批量上传，如果是就不显示上传成功的弹框
     const that = this;
     this.setData({
       uploading: true,
-    }, function() {
-      const cat = this.data.cat;
-      const tempFilePath = photo.file.path;
-      //获取后缀
-      const index = tempFilePath.lastIndexOf(".");
-      const ext = tempFilePath.substr(index + 1);
-
-      wx.cloud.uploadFile({
-        cloudPath: cat.campus + '/' + generateUUID() + '.' + ext, // 上传至云端的路径
-        filePath: tempFilePath, // 小程序临时文件路径
-        success: res => {
-          // 返回文件 ID
-          console.log(res.fileID);
-          // 添加记录
-          const db = wx.cloud.database();
-          db.collection('photo').add({
-            data: {
-              cat_id: cat._id,
-              photo_id: res.fileID,
-              userInfo: that.data.user.userInfo,
-              verified: false,
-              mdate: (new Date()),
-              shooting_date: photo.shooting_date,
-              photographer: photo.pher
-            },
-            success: (res) => {
-              console.log(res);
-              if (!multiple) {
-                wx.showModal({
-                  title: '上传成功！',
-                  content: '审核后就会展示出来啦',
-                  showCancel: false,
-                  success: () => {
-                    const photos = that.data.photos;
-                    const new_photos = photos.filter((ph) => {
-                      // 这个photo是用户点击的photo，在上面定义的
-                      return tempFilePath != ph.file.path;
-                    });
-                    that.setData({
-                      uploading: false,
-                      photos: new_photos,
-                    });
-                  }
-                });
-              } else {
-                const photos = that.data.photos;
-                const new_photos = photos.filter((ph) => {
-                  // 这个photo是用户点击的photo，在上面定义的
-                  return tempFilePath != ph.file.path;
-                });
-                that.setData({
-                  uploading: false,
-                  photos: new_photos,
-                }, ()=> {
-                  that.uploadAllClick(null, true);
-                });
-              }
-            }
-          })
-        },
-        fail: console.error
-      });
     });
+    const cat = this.data.cat;
+    const tempFilePath = photo.file.path;
+    //获取后缀
+    const index = tempFilePath.lastIndexOf(".");
+    const ext = tempFilePath.substr(index + 1);
+
+    let upRes = await wx.cloud.uploadFile({
+      cloudPath: cat.campus + '/' + generateUUID() + '.' + ext, // 上传至云端的路径
+      filePath: tempFilePath, // 小程序临时文件路径
+    });
+    // 返回文件 ID
+    console.log(upRes.fileID);
+    // 添加记录
+    const db = wx.cloud.database();
+    let dbAddRes = await db.collection('photo').add({
+      data: {
+        cat_id: cat._id,
+        photo_id: upRes.fileID,
+        userInfo: that.data.user.userInfo,
+        verified: false,
+        mdate: (new Date()),
+        shooting_date: photo.shooting_date,
+        photographer: photo.pher
+      }
+    });
+    console.log(dbAddRes);
   },
+  
   pickDate(e) {
     console.log(e);
     const index = e.currentTarget.dataset.index;
@@ -310,38 +264,6 @@ Page({
     });
   },
 
-  // 保存formId
-  saveFormId(formId) {
-    if (formId === "the formId is a mock one" || formId.startsWith('requestFormId:fail')) {
-      // 无效的formID，不保存
-      console.log('无效formId: ' + formId)
-      return false;
-    }
-    const db = wx.cloud.database();
-    db.collection('formId').add({
-      data: {
-        formId: formId,
-        mdate: new Date(),
-      },
-      success: (res) => {
-        console.log('保存formId: ' + formId)
-      }
-    });
-  },
-  updateNoticeSetting(e) {
-    wx.showLoading({
-      title: '更改中...',
-      mask: true
-    });
-    const that = this;
-    toggleUserNoticeSetting(this.data.user).then(res => {
-      that.setData({
-        user: res
-      }, ()=>{
-        wx.hideLoading();
-      });
-    })
-  },
   goBackIndex(e) {
     wx.switchTab({
       url: '/pages/genealogy/genealogy',

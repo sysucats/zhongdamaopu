@@ -5,7 +5,8 @@ const randomInt = utils.regeneratorRuntime;
 const isManager = utils.isManager;
 
 const msg = require('../../../msg.js');
-const sendNotice = msg.sendNotice;
+const sendVerifyNotice = msg.sendVerifyNotice;
+const verifyTplId = msg.verifyTplId;
 
 // 准备发送通知的列表，姓名：审核详情
 var notice_list = {};
@@ -65,7 +66,7 @@ Page({
     });
     
     // 发送审核消息
-    sendNotice(notice_list);
+    sendVerifyNotice(notice_list);
   },
 
   /**

@@ -8,6 +8,9 @@ const user = require('../../../user.js');
 const getUserInfoOrFalse = user.getUserInfoOrFalse;
 const toggleUserNoticeSetting = user.toggleUserNoticeSetting;
 
+const msg = require('../../../msg.js');
+const requestNotice = msg.requestNotice;
+
 Page({
 
   /**
@@ -74,7 +77,7 @@ Page({
     })
   },
 
-  bindSubmit(e) {
+  async bindSubmit(e) {
     var submitData = e.detail.value;
     if (!submitData.feedbackInfo) {
       wx.showToast({
@@ -89,6 +92,11 @@ Page({
       })
       return;
     } */
+    await requestNotice('feedback');
+    wx.showLoading({
+      title: '正在提交...',
+      mask: true,
+    })
     const cat = this.data.cat;
     const that = this;
     const db = wx.cloud.database();
@@ -104,6 +112,7 @@ Page({
       },
       success: (res) => {
         console.log(res);
+        wx.hideLoading();
         wx.showToast({
           title: '收到你的反馈啦',
           icon: 'success',

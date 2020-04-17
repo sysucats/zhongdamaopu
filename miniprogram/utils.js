@@ -25,7 +25,7 @@ function loadFilter() {
   });
 }
 
-function isManager(callback, req=0) {
+function isManager(callback, req=1) {
   // 这里的callback将接受一个参数res，
   // 为bool类型，当前用户为manager时为true，
   // 否则为false

@@ -29,13 +29,14 @@
       </view>
     </view>
 
-      
+    <!-- 旧版模板消息，微信已下线
     <view class='need-notice' bindtap="updateNoticeSetting">
       <view class="my-checkbox {{user.notice? 'checked': ''}}">
         <view class="my-checkbox-core"></view>
       </view>
       <text>收录结果微信通知</text>
     </view>
+    -->
 
     <button bindtap='chooseImg' class='long primary'>选择照片</button>
     
@@ -53,14 +54,12 @@
       </view>
       <view class='tip'>* 在此填写会覆盖下面所有设置</view>
 
-      <form report-submit='{{true}}' report-submit-timeout='800' bindsubmit='uploadAllClick'>
-        <button class='long primary' form-type='submit'>全部上传</button>
-      </form>
+      <button class='long primary' bindtap='uploadAllClick' disabled="{{!uploading ? false: true}}">全部上传</button>
       
     </view>
     
 
-    <view class='card' wx:for="{{photos}}" wx:key="{{item.path}}">
+    <view class='card' wx:for="{{photos}}" wx:key="path">
       <image class='selected-image' mode='aspectFit' src='{{item.file.path}}'></image>
       <view class='label'>拍摄日期：</view>
       <view>
@@ -70,10 +69,8 @@
       <view>
         <input type='text' placeholder='（选填）默认为上传者' bindinput='inputPher' data-index='{{index}}' value='{{item.pher}}'></input>
       </view>
-      <form report-submit='{{true}}' data-index='{{index}}' report-submit-timeout='800' bindsubmit='uploadSingleClick'>
         <button bindtap='removeOne' data-index='{{index}}'>移除</button>
-        <button form-type='submit' class='primary' disabled='{{item.shooting_date && item.file.path && !uploading? false: true}}'>确定上传</button>
-      </form>
+        <button class='primary' disabled='{{item.shooting_date && item.file.path && !uploading? false: true}}' data-index='{{index}}' bindtap='uploadSingleClick'>确定上传</button>
     </view>
   </block>
 

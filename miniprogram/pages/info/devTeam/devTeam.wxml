@@ -11,6 +11,9 @@
 <view class='block'>
   <view class='title'>更新日志</view>
   <view class='desc'>
+    <view class='sub-title hl'>v1.4.0</view>
+    <text class='sub-detail'>- 修复已知问题\n- 适配微信新的小程序通知方式\n- 增加反馈回复通知功能\n- 更新时间：2020/4/18</text>
+
     <view class='sub-title hl'>v1.3.3</view>
     <text class='sub-detail'>- 更新打赏链接\n - 修改关于页加载方式，使返回页面时能重新加载后台待处理数字\n- 更新时间：2020/4/16</text>
 

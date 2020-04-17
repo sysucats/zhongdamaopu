@@ -4,12 +4,6 @@ const regeneratorRuntime = utils.regeneratorRuntime;
 const randomInt = utils.regeneratorRuntime;
 const isManager = utils.isManager;
 
-const msg = require('../../../msg.js');
-const sendNotice = msg.sendNotice;
-
-// 准备发送通知的列表，姓名：反馈详情
-var notice_list = {};
-
 Page({
 
   /**
@@ -25,7 +19,6 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
-    notice_list = {};
     this.checkAuth();
   },
 
@@ -88,7 +81,6 @@ Page({
     });
   },
 
-  //下面的还没改
   bindCheck(e) {
     const feedback = e.currentTarget.dataset.feedback;
     const that = this;
@@ -106,12 +98,10 @@ Page({
           }).then(res => {
             console.log("反馈已处理：" + feedback._id);
             console.log(res.data);
-            // 内存记录一下这个操作，用来发通知
-            // that.addNotice(photo, true);
-            // 直接从列表里去掉这只猫，不完全加载了
+            // 直接从列表里去掉这个反馈，不完全加载了
             const feedbacks = that.data.feedbacks;
             const new_feedbacks = feedbacks.filter((fb, index, arr) => {
-              // 这个photo是用户点击的photo，在上面定义的
+              // 这个feedback是用户点击的feedback，在上面定义的
               return fb._id != feedback._id;
             });
             that.setData({
@@ -137,27 +127,18 @@ Page({
     });
   },
 
-  // 添加一条通知记录，等页面退出的时候统一发送通知
-  /* addNotice(photo, accepted) {
-    const openid = photo._openid;
-    if (!notice_list[openid]) {
-      notice_list[openid] = {
-        accepted: 0,
-        deleted: 0,
-      }
-    }
-    if (accepted) {
-      notice_list[openid].accepted++;
-    } else {
-      notice_list[openid].deleted++;
-    }
-  },*/
-
   // 点击所属猫猫名称，可以跳转到猫猫详情
   toCatDetail(e) {
     const cat_id = e.currentTarget.dataset.cat_id;
     wx.navigateTo({
       url: '/pages/genealogy/detailCat/detailCat?cat_id=' + cat_id,
+    })
+  },
+
+  toReply(e) {
+    const fb_id = e.currentTarget.dataset.fbid;
+    wx.navigateTo({
+      url: '/pages/manage/replyFeedback/replyFeedback?fb_id=' + fb_id,
     })
   }
 })

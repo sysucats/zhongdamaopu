@@ -3,12 +3,13 @@
   <block wx:for="{{feedbacks}}" wx:key="_id">
     <view class='verify-box'>
       <view class='label cat'>所属猫猫：<text selectable bindtap="toCatDetail" data-cat_id="{{item.cat._id}}">{{item.cat.name}}（{{item.cat.campus}}）</text></view>
-      <view class='feedback-info'><text selectable='true'>反馈内容：{{item.feedbackInfo}}</text></view>
+      <view class='feedback-info'><text selectable='true'>反馈内容：\n{{item.feedbackInfo}}</text></view>
       <view class='label user'><text selectable='true'>反馈人：{{item.userInfo.nickName}}</text></view>
       <view class='label user'><text selectable='true'>联系方式：{{item.contactInfo || "对方没有留下联系方式"}}</text></view>
-      <view class='label user'><text selectable='true'>反馈时间：{{item.openDateStr}}</text></view>
+      <view class='label user'><text selectable='true'>反馈时间：{{item.openDateStr}}\n\n</text></view>
       <button bindtap='bindCopy' data-feedback='{{item}}'>复制</button>
-      <button class='primary' bindtap='bindCheck' data-feedback='{{item}}'>完成</button>
+      <button class='primary' bindtap='toReply' data-fbid='{{item._id}}'>回复</button>
+      <button class='long primary' bindtap='bindCheck' data-feedback='{{item}}'>标记为已处理</button>
     </view>
   </block>
   <button class='long primary' bindtap="reload">刷新状态</button>
