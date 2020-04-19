@@ -1,9 +1,0 @@
-{
-  "triggers": [
-    {
-      "name": "clearFormId",
-      "type": "timer",
-      "config": "0 0 * * * * *"
-    }
-  ]
-}
