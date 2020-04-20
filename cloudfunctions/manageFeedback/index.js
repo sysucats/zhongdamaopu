@@ -15,10 +15,19 @@ exports.main = async (event, context) => {
 
   const feedback = event.feedback;
 
-  await db.collection('feedback').doc(feedback._id).update({
-    data: {
-      dealed: true,
-      dealDate: new Date()
-    }
-  });
+  if (event.operation == 'deal') {
+    await db.collection('feedback').doc(feedback._id).update({
+      data: {
+        dealed: true,
+        dealDate: new Date()
+      }
+    });
+  } else if (event.operation == 'reply') {
+    await db.collection('feedback').doc(feedback._id).update({
+      data: {
+        replyDate: new Date(),
+        replyInfo: event.replyInfo,
+      }
+    });
+  }
 }

@@ -127,6 +127,7 @@ Page({
           wx.cloud.callFunction({
             name: "manageFeedback",
             data: {
+              operation: 'deal',
               feedback: feedback
             }
           }).then(res => {
@@ -154,10 +155,8 @@ Page({
 
   bindCopy(e) {
     const item = e.currentTarget.dataset.feedback;
-    const mdate = new Date(item.date_str);
-    const dateStr = mdate.getFullYear() + '-' + (mdate.getMonth() + 1) + '-' + mdate.getDate() + ' ' + mdate.getHours() + ':' + mdate.getMinutes() + ':' + mdate.getSeconds()
     wx.setClipboardData({
-      data: "所属猫猫：" + item.cat.name + '（' + item.cat.campus + '）' + "\n反馈内容：" + item.feedbackInfo + "\n反馈人：" + item.userInfo.nickName + "\n联系方式：" + (item.contactInfo || "对方没有留下联系方式") + "\n反馈时间：" + dateStr,
+      data: (item.cat ? ("所属猫猫：" + item.cat.name + '（' + item.cat.campus + '）') : '反馈来源：关于页-信息反馈') + "\n反馈内容：" + item.feedbackInfo + "\n反馈人：" + item.userInfo.nickName + "\n联系方式：" + (item.contactInfo || "对方没有留下联系方式") + "\n反馈时间：" + item.openDateStr,
     });
   },
 

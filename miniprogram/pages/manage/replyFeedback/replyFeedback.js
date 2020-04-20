@@ -99,10 +99,11 @@ Page({
           console.log(res);
           if (res.errCode == 0) {
             // 记录一下回复的内容和时间
-            const db = wx.cloud.database();
-            await db.collection('feedback').doc(that.data.feedback._id).update({
+            await wx.cloud.callFunction({
+              name: "manageFeedback",
               data: {
-                replyDate: new Date(),
+                operation: 'reply',
+                feedback: that.data.feedback,
                 replyInfo: submitData.replyInfo,
               }
             });
