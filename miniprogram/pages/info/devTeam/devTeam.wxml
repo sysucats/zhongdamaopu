@@ -11,6 +11,9 @@
 <view class='block'>
   <view class='title'>更新日志</view>
   <view class='desc'>
+    <view class='sub-title hl'>v1.4.1</view>
+    <text class='sub-detail'>- 优化猫猫详情页图片预览\n- 优化后台页面\n- 更新时间：2020/4/20</text>
+
     <view class='sub-title hl'>v1.4.0</view>
     <text class='sub-detail'>- 修复已知问题\n- 适配微信新的小程序通知方式\n- 增加反馈回复通知功能\n- 更新时间：2020/4/18</text>
 

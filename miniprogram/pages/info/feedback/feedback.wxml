@@ -6,7 +6,7 @@
     <text>每一条留言我们都会认真看滴</text>
   </view>
   <view style='flex-basis:100%;'>
-    <button open-type='contact'>点击留言</button>
+    <button bindtap='toFeedback'>点击留言</button>
   </view>
 </view>
 

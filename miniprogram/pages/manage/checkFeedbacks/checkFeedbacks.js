@@ -3,6 +3,10 @@ const utils = require('../../../utils.js');
 const regeneratorRuntime = utils.regeneratorRuntime;
 const randomInt = utils.regeneratorRuntime;
 const isManager = utils.isManager;
+const formatDate = utils.formatDate;
+const getGlobalSettings = utils.getGlobalSettings;
+
+var step; // 反馈加载步长，onLoad时从数据库拿
 
 Page({
 
@@ -12,13 +16,20 @@ Page({
   data: {
     tipText: '正在鉴权...',
     tipBtn: false,
-    total: '-',
+    feedbacks: [],
+    total: undefined,
+    checkHistory: false,
   },
 
   /**
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
+    getGlobalSettings('checkFeedback').then(settings => {
+      // 先把设置拿到
+      console.log(settings);
+      step = settings.step;
+    });
     this.checkAuth();
   },
 
@@ -48,20 +59,24 @@ Page({
 
   async loadFeedbacks() {
     const db = wx.cloud.database();
-    var feedbacks = (await db.collection('feedback').where({ dealed: false }).get()).data;
-    for (var fb of feedbacks) {
-      var cat = (await db.collection('cat').doc(fb.cat_id).get()).data;
-      fb.cat = cat
-    }
+    const nowLoaded = this.data.feedbacks.length;
+    var feedbacks = (await db.collection('feedback').where({ dealed: this.data.checkHistory }).orderBy('openDate', 'desc').skip(nowLoaded).limit(step).get()).data;
     console.log(feedbacks);
-    // 将Date对象转化为字符串
+    // 获取对应猫猫信息；将Date对象转化为字符串；判断是否已回复
     for (let i = 0; i < feedbacks.length; ++i) {
-      feedbacks[i].openDateStr = utils.formatDate(feedbacks[i].openDate, "yyyy-MM-dd hh:mm:ss");
+      if (feedbacks[i].cat_id != undefined) {
+        feedbacks[i].cat = (await db.collection('cat').doc(feedbacks[i].cat_id).field({ name: true, campus: true }).get()).data;
+      }
+      feedbacks[i].openDateStr = formatDate(feedbacks[i].openDate, "yyyy-MM-dd hh:mm:ss");
+      feedbacks[i].replied = feedbacks[i].hasOwnProperty('replyDate');
+      if (feedbacks[i].replied) {
+        feedbacks[i].replyDateStr = formatDate(feedbacks[i].replyDate, "yyyy-MM-dd hh:mm:ss");
+      }
     }
+    this.data.feedbacks.push(...feedbacks);
     this.setData({
-      feedbacks: feedbacks
+      feedbacks: this.data.feedbacks
     });
-    return true;
   },
 
   reload() {
@@ -70,15 +85,34 @@ Page({
     });
     const that = this;
     const db = wx.cloud.database();
-    db.collection('feedback').where({ dealed: false }).count().then(res => {
+    db.collection('feedback').where({ dealed: this.data.checkHistory }).count().then(res => {
       console.log(res);
+      this.data.total = res.total;
+      this.data.feedbacks = []; // 清空，loadFeedbacks再填充
       that.setData({
-        total: res.total
+        total: this.data.total,
       });
       that.loadFeedbacks().then(() => {
         wx.hideLoading();
       });
     });
+  },
+
+  async onReachBottom() {
+    if (this.data.feedbacks.length == this.data.total) {
+      wx.showToast({
+        title: '已无更多反馈',
+        icon: 'none',
+        duration: 500
+      });
+      return;
+    }
+    wx.showLoading({
+      title: '加载更多反馈..',
+      mask: true
+    });
+    await this.loadFeedbacks();
+    wx.hideLoading();
   },
 
   bindCheck(e) {
@@ -140,5 +174,13 @@ Page({
     wx.navigateTo({
       url: '/pages/manage/replyFeedback/replyFeedback?fb_id=' + fb_id,
     })
+  },
+
+  switchHistory(event) {
+    this.data.checkHistory = !this.data.checkHistory;
+    this.reload();
+    this.setData({
+      checkHistory: this.data.checkHistory
+    });
   }
 })

@@ -11,14 +11,14 @@ async function requestNotice(template) {
   let res = await wx.requestSubscribeMessage({
     tmplIds: [tplId],
   });
-  if (res.errCode != 0) {
+  if (res.errMsg != 'requestSubscribeMessage:ok') {
     console.log('调用消息订阅请求接口失败' + res.errCode);
     await wx.showToast({
       title: '消息订阅好像出了点问题',
       icon: 'none',
       duration: 500,
     })
-    return;
+    return false;
   }
   if (res[tplId] == 'accept') {
     await wx.showToast({
@@ -26,12 +26,14 @@ async function requestNotice(template) {
       icon: 'success',
       duration: 500,
     })
+    return true;
   } else {
     await wx.showToast({
       title: '你拒收了结果通知QAQ',
       icon: 'none',
       duration: 500,
     })
+    return false;
   }
 }
 

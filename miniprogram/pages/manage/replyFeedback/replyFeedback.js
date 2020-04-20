@@ -97,8 +97,16 @@ Page({
           });
           let res = await sendReplyNotice(that.data.feedback._openid, that.data.feedback._id, submitData.replyInfo);
           console.log(res);
-          wx.hideLoading();
           if (res.errCode == 0) {
+            // 记录一下回复的内容和时间
+            const db = wx.cloud.database();
+            await db.collection('feedback').doc(that.data.feedback._id).update({
+              data: {
+                replyDate: new Date(),
+                replyInfo: submitData.replyInfo,
+              }
+            });
+            wx.hideLoading();
             wx.showToast({
               title: '回复成功',
               icon: 'success',
@@ -108,6 +116,7 @@ Page({
               }
             })
           } else {
+            wx.hideLoading();
             wx.showToast({
               title: '回复失败，这可能是因为对方没有订阅或次数耗尽',
               icon: 'none',

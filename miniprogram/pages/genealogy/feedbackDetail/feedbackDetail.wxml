@@ -15,7 +15,7 @@
     <view class='userInfo'>
       <image src='{{user.userInfo.avatarUrl}}'></image>
       <view>
-        <text>{{user.userInfo.nickName}}\n---正在为[<text style="font-weight:600;">{{cat.name}}</text>]反馈信息</text>
+        <text>{{user.userInfo.nickName}}\n---正在为[<text style="font-weight:600;">{{cat? cat.name: '中大猫谱'}}</text>]反馈信息</text>
       </view>
     </view>
     <view class='inputColumns'>

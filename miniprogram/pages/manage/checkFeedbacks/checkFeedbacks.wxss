@@ -32,6 +32,17 @@ button.long {
   width: 100%;
 }
 
+.bottom-box{
+  position: fixed;
+  bottom: 20rpx;
+  margin: 20rpx 3rpx;
+  padding: 20rpx;
+  box-shadow: 0rpx 0rpx 30rpx gainsboro;
+  border-radius: 20rpx;
+  background-color: rgba(255,255,255,0.95);
+  width: 650rpx;
+}
+
 .verify-box {
   box-sizing: border-box;
   padding: 50rpx 10rpx;
@@ -55,6 +66,11 @@ button.long {
   color: #888;
 }
 
+.label.reply {
+  color: #008;
+  margin: 10rpx 0;
+}
+
 .label.cat text {
   font-weight: bold;
   text-decoration: underline;
@@ -68,4 +84,10 @@ button.long {
   padding: 30rpx;
   margin: 30rpx 0;
   border-radius: 10rpx;
+}
+
+#container {
+  width: 750rpx;
+  height: 100%;
+  overflow: hidden;
 }

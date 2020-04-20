@@ -21,6 +21,7 @@ Page({
     user: {},
     length: 0,
     maxlength: 300,
+    cat: undefined
   },
 
   /**
@@ -28,14 +29,15 @@ Page({
    */
   onLoad: function (options) {
     const db = wx.cloud.database();
-    const cat = db.collection('cat');
-    const cat_id = options.cat_id;
-    cat.doc(cat_id).field({ name: true, _id: true}).get().then(res => {
-      console.log(res.data);
-      this.setData({
-        cat: res.data
-      });
-    })
+    if (options.cat_id != undefined) {
+      db.collection('cat').doc(options.cat_id).field({ name: true, _id: true }).get().then(res => {
+        console.log(res.data);
+        this.data.cat = res.data;
+        this.setData({
+          cat: this.data.cat
+        });
+      })
+    }
     this.checkUInfo();
   },
 
@@ -92,24 +94,27 @@ Page({
       })
       return;
     } */
-    await requestNotice('feedback');
+    let repliable = await requestNotice('feedback'); // 请求订阅消息推送
     wx.showLoading({
       title: '正在提交...',
       mask: true,
     })
-    const cat = this.data.cat;
+    var data = {
+      userInfo: this.data.user.userInfo,
+      openDate: new Date(),
+      feedbackInfo: submitData.feedbackInfo,
+      contactInfo: submitData.contactInfo,
+      dealed: false,
+      repliable: repliable,
+    };
+    if (this.data.cat != undefined) {
+      data.cat_id = this.data.cat._id;
+      data.cat_name = this.data.cat_name;
+    }
     const that = this;
     const db = wx.cloud.database();
     db.collection('feedback').add({
-      data: {
-        cat_id: cat._id,
-        cat_name: cat.name,
-        userInfo: that.data.user.userInfo,
-        openDate: new Date(),
-        feedbackInfo: submitData.feedbackInfo,
-        contactInfo: submitData.contactInfo,
-        dealed: false
-      },
+      data: data,
       success: (res) => {
         console.log(res);
         wx.hideLoading();

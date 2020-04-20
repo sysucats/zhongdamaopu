@@ -14,6 +14,8 @@ var cat_id;
 var album_raw = []; // 这里放的是raw数据
 var loadingAlbum = false;
 
+var whichGallery; // 预览时记录展示的gallery是精选还是相册
+
 var infoHeight = 0; // 单位是px
 const canvasMax = 2000; // 正方形画布的尺寸px
 
@@ -44,6 +46,9 @@ Page({
     hideBgBlock: false, // 隐藏背景黄块
     canvas: {}, // 画布的宽高
     canUpload: false, // 是否可以上传照片
+    showGallery: false,
+    imgUrls: [],
+    currentImg: 0,
   },
 
   /**
@@ -198,7 +203,7 @@ Page({
     });
   },
 
-  loadMorePhotos() {
+  async loadMorePhotos() {
     var cat = this.data.cat;
     // 给这个参数是防止异步
     if (this.data.cat.photo.length >= photoMax) {
@@ -211,12 +216,15 @@ Page({
 
     const db = wx.cloud.database();
     console.log(qf);
-    db.collection('photo').where(qf).orderBy('mdate', 'desc').skip(now).limit(step).get().then(res => {
-      console.log(res);
-      cat.photo = cat.photo.concat(res.data);
-      this.setData({
-        cat: cat
-      });
+    let res = await db.collection('photo').where(qf).orderBy('mdate', 'desc').skip(now).limit(step).get();
+    console.log(res);
+    const offset = cat.photo.length;
+    for (let i = 0; i < res.data.length; ++i) {
+      res.data[i].index = offset + i; // 把index加上，gallery预览要用到
+    }
+    cat.photo = cat.photo.concat(res.data);
+    this.setData({
+      cat: cat
     });
   },
   bindTapFeedback() {
@@ -230,59 +238,71 @@ Page({
       url: '/pages/genealogy/addPhoto/addPhoto?cat_id=' + this.data.cat._id,
     });
   },
-  bindTapPhoto(e) {
-    const photo = e.currentTarget.dataset.photo;
-    // 已经有水印图了
-    if (photo.photo_watermark) {
-      wx.previewImage({
-        urls: [photo.photo_watermark],
-      });
-      return false;
-    }
+  async bindTapPhoto(e) {
     wx.showLoading({
-      title: '加载大图中...',
-    });
-    console.log(photo);
-    const userInfo = photo.userInfo;
-    const shooting_date = photo.shooting_date;
-    var url = photo.photo_id;
-    const that = this;
-    // 先用canvas加上水印
-    wx.getImageInfo({
-      src: url,
-      success: function(res) {
-        console.log(res);
-        const draw_rate = Math.max(res.width, res.height) / canvasMax;
-        const draw_width = res.width / draw_rate;
-        const draw_height = res.height / draw_rate;
-        console.log(draw_width, draw_height);
-        // 画上图片
-        ctx.drawImage(res.path, 0, 0, draw_width, draw_height);
-        // 写上水印
-        ctx.setFontSize(draw_height * 0.03);
-        ctx.setFillStyle('white');
-        ctx.fillText('中大猫谱@' + (photo.photographer || userInfo.nickName), 30, draw_height - (draw_height * 0.03));
-        ctx.draw(false, function () {
-          // 变成图片显示
-          wx.canvasToTempFilePath({
-            canvasId: 'bigPhoto',
-            width: draw_width,
-            height: draw_height,
-            destWidth: res.width,
-            destHeight: res.height,
-            fileType: 'jpg',
-            success: function (res) {
-              console.log(res);
-              wx.hideLoading();
-              wx.previewImage({
-                urls: [res.tempFilePath],
-              });
-            }
-          }, that);
-        });
-      }
+      title: '正在加载...',
+      mask: true,
     })
+    this.currentImg = e.currentTarget.dataset.index;
+    // 预览到最后preload张照片时预加载
+    const preload = page_settings.galleryPreload;
+    whichGallery = e.currentTarget.dataset.kind;
+    if (whichGallery == 'best') {
+      if (this.data.cat.photo.length - this.currentImg <= preload) await this.loadMorePhotos(); //preload
+      this.imgUrls = this.data.cat.photo.map((photo) => {
+        return (photo.photo_watermark || photo.photo_id);
+      });
+    } else { // album
+      if (album_raw.length - this.currentImg <= preload) await this.loadMoreAlbum(); // preload
+      this.imgUrls = album_raw.map((photo) => {
+        return (photo.photo_watermark || photo.photo_id);
+      });
+    }
+    this.setData({
+      showGallery: true,
+      imgUrls: this.imgUrls,
+      currentImg: this.currentImg,
+    });
+    wx.hideLoading();
   },
+
+  async bindGalleryChange(e) {
+    const index = e.detail.current;
+    const preload = page_settings.galleryPreload;
+    if (whichGallery == 'best') {
+      if (this.imgUrls.length - index <= preload && this.imgUrls.length < photoMax) {
+        wx.showLoading({
+          title: '加载更多中...',
+          mask: true,
+        })
+        await this.loadMorePhotos(); //preload
+        this.imgUrls = this.data.cat.photo.map((photo) => {
+          return (photo.photo_watermark || photo.photo_id);
+        });
+        this.setData({
+          imgUrls: this.imgUrls
+        });
+        wx.hideLoading();
+      }
+    } else { //album
+      if (this.imgUrls.length - index <= preload && this.imgUrls.length < albumMax) {
+        wx.showLoading({
+          title: '加载更多中...',
+          mask: true,
+        })
+        await this.loadMoreAlbum(); // preload
+        this.imgUrls = album_raw.map((photo) => {
+          return (photo.photo_watermark || photo.photo_id);
+        });
+        this.setData({
+          imgUrls: this.imgUrls
+        });
+        wx.hideLoading();
+      }
+    }
+  },
+
+
   bindImageLoaded(e) {
     // console.log(e);
   },
@@ -290,7 +310,7 @@ Page({
   // 下面开始加载相册咯
   // 相册和上面的photo不同的地方在于，有没有best=true这个条件
   // 而且相册的东西还要再处理一下，分开拍摄年月
-  loadMoreAlbum() {
+  async loadMoreAlbum() {
     if (loadingAlbum) {
       return false;
     }
@@ -307,16 +327,16 @@ Page({
     const now = album_raw.length;
 
     const db = wx.cloud.database();
-    
-    const that = this;
 
     loadingAlbum = true;
-    db.collection('photo').where(qf).orderBy('shooting_date', 'desc').orderBy('mdate', 'desc').skip(now).limit(step).get().then(res => {
-      console.log(res);
-      // 处理一下时间shooting_date
-      album_raw = album_raw.concat(res.data);
-      that.updateAlbum();
-    });
+    let res = await db.collection('photo').where(qf).orderBy('shooting_date', 'desc').orderBy('mdate', 'desc').skip(now).limit(step).get();
+    console.log(res);
+    const offset = album_raw.length;
+    for (let i = 0; i < res.data.length; ++i) {
+      res.data[i].index = offset + i; // 把index加上，gallery预览要用到
+    }
+    album_raw = album_raw.concat(res.data);
+    this.updateAlbum();
   },
 
   updateAlbum() {

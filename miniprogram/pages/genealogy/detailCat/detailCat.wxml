@@ -16,7 +16,7 @@ indicator-active-color='#ffd101'
 bindchange='swiperLast'
 previous-margin='60rpx'
 next-margin='60rpx'>
-  <swiper-item wx:for='{{cat.photo}}' wx:key="_id" bindtap='bindTapPhoto' data-photo="{{item}}">
+  <swiper-item wx:for='{{cat.photo}}' wx:key="_id" bindtap='bindTapPhoto' data-index="{{item.index}}" data-kind='best'>
     <image bindload='bindImageLoaded' mode='aspectFill' src='{{item.photo_compressed || item.photo_id}}'></image>
   </swiper-item>
 </swiper>
@@ -131,7 +131,7 @@ next-margin='60rpx'>
       <view class='time'>{{albumBlock.date[0]}}年{{albumBlock.date[1]}}月</view>
       <view wx:if='{{albumBlock.age[0] >= 0 && albumBlock.age[1] >= 0}}' class='age'>{{albumBlock.age[0]}}岁{{albumBlock.age[1]}}个月</view>
     </view>
-    <image mode='aspectFill' lazy-load='true' class='alb-image' wx:for="{{albumBlock.photos}}" src='{{item.photo_compressed || item.photo_id}}' wx:key="_id" bindtap='bindTapPhoto' data-photo="{{item}}"></image>
+    <image mode='aspectFill' lazy-load='true' class='alb-image' wx:for="{{albumBlock.photos}}" src='{{item.photo_compressed || item.photo_id}}' wx:key="_id" bindtap='bindTapPhoto' data-index="{{item.index}}" data-kind='album'></image>
   </view>
   
   <view class='loading'>
@@ -143,3 +143,5 @@ next-margin='60rpx'>
 <image wx:if="{{canUpload}}" id='add-photo-btn' src='../../../images/plus.png' bindtap='bindAddPhoto'></image>
 
 </scroll-view>
+
+<mp-gallery show="{{showGallery}}" bindchange="bindGalleryChange" img-urls="{{imgUrls}}" current="{{currentImg}}" hide-on-click="{{true}}" showDelete="{{false}}"></mp-gallery>

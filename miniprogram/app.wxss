@@ -19,3 +19,5 @@
   text-align: center;
   font-size: 34rpx;
 }
+
+@import '/packages/weui/weui-wxss/dist/style/weui.wxss'

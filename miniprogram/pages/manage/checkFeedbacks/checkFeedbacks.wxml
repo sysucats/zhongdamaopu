@@ -1,20 +1,26 @@
 <block wx:if="{{auth}}">
-  <view id='total-count'><text>目前共有{{total}}条反馈待处理，\n点击所属猫猫名字可以跳转到该猫猫详情。\n每次最多加载20条，请先处理完这些吧。\n完成后点“刷新状态”看看。</text></view>
+  <view id='total-count'><text>目前共有{{total}}条反馈{{checkHistory? '已': '待'}}处理，\n点击所属猫猫名字可以跳转到该猫猫详情。\n</text></view>
   <block wx:for="{{feedbacks}}" wx:key="_id">
     <view class='verify-box'>
-      <view class='label cat'>所属猫猫：<text selectable bindtap="toCatDetail" data-cat_id="{{item.cat._id}}">{{item.cat.name}}（{{item.cat.campus}}）</text></view>
-      <view class='feedback-info'><text selectable='true'>反馈内容：\n{{item.feedbackInfo}}</text></view>
+      <view class='label cat' wx:if="{{item.cat}}">所属猫猫：<text selectable='true' bindtap="toCatDetail" data-cat_id="{{item.cat_id}}">{{item.cat.name}}（{{item.cat.campus}}）</text></view>
+      <view class='label cat' wx:else>反馈来源：<text selectable='true'>关于页-信息反馈</text></view>
+      <view class='feedback-info'><text selectable='true'>反馈内容：{{item.feedbackInfo}}</text></view>
       <view class='label user'><text selectable='true'>反馈人：{{item.userInfo.nickName}}</text></view>
       <view class='label user'><text selectable='true'>联系方式：{{item.contactInfo || "对方没有留下联系方式"}}</text></view>
-      <view class='label user'><text selectable='true'>反馈时间：{{item.openDateStr}}\n\n</text></view>
-      <button bindtap='bindCopy' data-feedback='{{item}}'>复制</button>
-      <button class='primary' bindtap='toReply' data-fbid='{{item._id}}'>回复</button>
-      <button class='long primary' bindtap='bindCheck' data-feedback='{{item}}'>标记为已处理</button>
+      <view class='label user'><text selectable='true'>反馈时间：{{item.openDateStr}}</text></view>
+      <view class='label reply' wx:if="{{!checkHistory && !item.repliable}}"><text selectable='true'>用户没有订阅回复通知，无法回复</text></view>
+      <view class='label reply' wx:elif="{{item.replied}}"><text selectable='true'>已于{{item.replyDateStr}}回复：{{item.replyInfo}}</text></view>
+      <button class="{{checkHistory? 'long': ''}}" bindtap='bindCopy' data-feedback='{{item}}'>复制</button>
+      <button class='primary' wx:if="{{!checkHistory}}" disabled='{{item.replied || !item.repliable}}' bindtap='toReply' data-fbid='{{item._id}}'>{{item.replied? '已回复': '回复'}}</button>
+      <button class='long primary' wx:if="{{!checkHistory}}" bindtap='bindCheck' data-feedback='{{item}}'>标记为已处理</button>
     </view>
   </block>
-  <button class='long primary' bindtap="reload">刷新状态</button>
-  
+  <view class='bottom-box'>
+    <button class='primary' bindtap="reload">刷新状态</button>
+    <button bindtap="switchHistory">{{checkHistory? '查看待处理': '查看已处理'}}</button>
+  </view>
 </block>
+
 <view wx:else class='unAuth'>
   <text>{{tipText}}</text>
   <button bindtap='goBack' wx:if='{{tipBtn}}'>打扰了</button>

@@ -42,6 +42,27 @@ Page({
     this.checkAuth();
   },
 
+  onShow: function () {
+    console.log('设置屏幕常亮');
+    wx.setKeepScreenOn({
+      keepScreenOn: true
+    });
+  },
+
+  onHide: function () {
+    console.log('取消屏幕常亮');
+    wx.setKeepScreenOn({
+      keepScreenOn: false
+    });
+  },
+
+  onUnload: function () {
+    console.log('取消屏幕常亮');
+    wx.setKeepScreenOn({
+      keepScreenOn: false
+    });
+  },
+
   loadProcess() {
     const that = this;
     const db = wx.cloud.database();
