@@ -268,6 +268,7 @@ Page({
 
   async bindGalleryChange(e) {
     const index = e.detail.current;
+    this.currentImg = index; // 这里得记一下，保存的时候需要
     const preload = page_settings.galleryPreload;
     if (whichGallery == 'best') {
       if (this.imgUrls.length - index <= preload && this.imgUrls.length < photoMax) {
@@ -448,4 +449,38 @@ Page({
       }
     })
   },
+
+  async bindGalleryLongPress(e) {
+    const that = this;
+    wx.showActionSheet({
+      itemList: ['保存'],
+      async success(res) {
+        // 用户选择取消时不会回调success，不过还是判断一下吧
+        if (res.tapIndex == 0) {
+          console.log('保存图片');
+          wx.showLoading({
+            title: '正在保存...',
+            mask: true,
+          })
+          let downloadRes = await wx.cloud.downloadFile({
+            fileID: that.imgUrls[that.currentImg],
+          });
+          wx.hideLoading();
+          if (downloadRes.errMsg == 'downloadFile:ok') {
+            wx.saveImageToPhotosAlbum({
+              filePath: downloadRes.tempFilePath,
+              success(res) {
+                wx.showToast({
+                  title: '已保存到相册',
+                  icon: 'success',
+                })
+              }
+            });
+          } else {
+            console.log(downloadRes);
+          }
+        }
+      },
+    });
+  }
 })
