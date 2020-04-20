@@ -32,7 +32,7 @@ button.long {
   width: 100%;
 }
 
-.bottom-box{
+.floating-box{
   position: fixed;
   bottom: 20rpx;
   margin: 20rpx 3rpx;
@@ -41,6 +41,11 @@ button.long {
   border-radius: 20rpx;
   background-color: rgba(255,255,255,0.95);
   width: 650rpx;
+}
+
+.bottom-clear-box {
+  height: 100rpx;
+  opacity: 0;
 }
 
 .verify-box {

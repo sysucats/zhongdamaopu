@@ -15,10 +15,11 @@
       <button class='long primary' wx:if="{{!checkHistory}}" bindtap='bindCheck' data-feedback='{{item}}'>标记为已处理</button>
     </view>
   </block>
-  <view class='bottom-box'>
+  <view class='floating-box'>
     <button class='primary' bindtap="reload">刷新状态</button>
     <button bindtap="switchHistory">{{checkHistory? '查看待处理': '查看已处理'}}</button>
   </view>
+  <view class='bottom-clear-box'></view> <!-- 用一个透明方块防止拉到底浮动按钮挡住内容按不到 -->
 </block>
 
 <view wx:else class='unAuth'>
