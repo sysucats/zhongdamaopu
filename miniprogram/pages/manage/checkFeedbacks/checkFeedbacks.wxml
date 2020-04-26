@@ -2,7 +2,7 @@
   <view id='total-count'><text>目前共有{{total}}条反馈{{checkHistory? '已': '待'}}处理，\n点击所属猫猫名字可以跳转到该猫猫详情。\n</text></view>
   <block wx:for="{{feedbacks}}" wx:key="_id">
     <view class='verify-box'>
-      <view class='label cat' wx:if="{{item.cat}}">所属猫猫：<text selectable='true' bindtap="toCatDetail" data-cat_id="{{item.cat_id}}">{{item.cat.name}}（{{item.cat.campus}}）</text></view>
+      <view class='label cat' wx:if="{{item.cat}}" bindtap="toCatDetail" bindlongpress="toCatManage" data-cat_id="{{item.cat_id}}">所属猫猫：<text selectable='false'>{{item.cat.name}}（{{item.cat.campus}}）</text></view>
       <view class='label cat' wx:else>反馈来源：<text selectable='true'>关于页-信息反馈</text></view>
       <view class='feedback-info'><text selectable='true'>反馈内容：{{item.feedbackInfo}}</text></view>
       <view class='label user'><text selectable='true'>反馈人：{{item.userInfo.nickName}}</text></view>

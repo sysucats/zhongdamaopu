@@ -1,4 +1,5 @@
 //app.js
+import { checkUpdateVersion } from "./utils";
 
 App({
   onLaunch: function () {
@@ -11,8 +12,11 @@ App({
       })
     }
 
+    // 检查版本
+    checkUpdateVersion();
+
     this.globalData = {
-      version: "v1.4.1"
+      version: "v1.4.2"
     }
   }
 })

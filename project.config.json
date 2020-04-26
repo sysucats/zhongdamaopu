@@ -42,6 +42,10 @@
 		"game": {
 			"list": []
 		},
+		"gamePlugin": {
+			"current": -1,
+			"list": []
+		},
 		"miniprogram": {
 			"current": 15,
 			"list": [
@@ -152,6 +156,14 @@
 					"id": -1,
 					"name": "管理管理员",
 					"pathName": "pages/manage/managers/managers",
+					"query": "",
+					"scene": null
+				},
+				{
+					"id": 16,
+					"name": "首页更新",
+					"pathName": "pages/genealogy/genealogy",
+					"query": "",
 					"scene": null
 				}
 			]

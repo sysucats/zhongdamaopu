@@ -97,6 +97,7 @@ Page({
   chooseImg(e) {
     wx.chooseImage({
       count: 9,
+      sizeType: ["compressed"],
       success: (res) => {
         console.log(res);
         var photos = [];

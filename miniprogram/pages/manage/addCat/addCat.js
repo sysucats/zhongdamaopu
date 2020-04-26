@@ -125,7 +125,7 @@ Page({
         cat: res.data
       }, () => {
         this.reloadPhotos();
-        this.isCharChecked();
+        // this.isCharChecked();
       });
     });
   },

@@ -168,6 +168,14 @@ Page({
     })
   },
 
+  // 长按所属猫猫名称，可以跳转到猫信息修改
+  toCatManage(e) {
+    const cat_id = e.currentTarget.dataset.cat_id;
+    wx.navigateTo({
+      url: '/pages/manage/addCat/addCat?cat_id=' + cat_id,
+    });
+  },
+
   toReply(e) {
     const fb_id = e.currentTarget.dataset.fbid;
     wx.navigateTo({

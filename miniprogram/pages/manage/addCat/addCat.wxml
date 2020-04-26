@@ -47,7 +47,7 @@
   <button class='primary' bindtap='upload'>确定提交</button>
 
   <view class='label'>照片：</view>
-  <view class='card' wx:for='{{photo}}' wx:key="{{item}}">
+  <view class='card' wx:for='{{photo}}' wx:key="_id">
     <view class='label light'>-- 第{{index + 1}}张  --</view>
     <view class='label light'>上传者：{{item.userInfo.nickName || '匿名'}}</view>
     <view class='label light'>拍摄日期：{{item.shooting_date || '暂无'}}</view>

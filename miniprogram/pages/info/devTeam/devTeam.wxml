@@ -11,6 +11,9 @@
 <view class='block'>
   <view class='title'>更新日志</view>
   <view class='desc'>
+    <view class='sub-title hl'>v1.4.2</view>
+    <text class='sub-detail'>- 关闭上传原图通道\n- 增加版本更新提示\n- 更新时间：2020/4/26</text>
+
     <view class='sub-title hl'>v1.4.1</view>
     <text class='sub-detail'>- 优化猫猫详情页图片预览\n- 优化后台页面\n- 更新时间：2020/4/20</text>
 
