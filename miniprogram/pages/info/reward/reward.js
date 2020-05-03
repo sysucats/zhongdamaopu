@@ -40,14 +40,24 @@ Page({
     });
   },
 
-  openBig(e) {
-    const src = e.currentTarget.dataset.src;
-    console.log(src);
+  // 打开大图
+  openImg(e) {
+    const src = "cloud://rel-eeeccf.7265-rel-eeeccf-1258586139/系统/reward.jpg";
     wx.previewImage({
       urls: [src],
+      success: (res) => {
+        console.log(res);
+      },
+      fail: (res) => {
+        console.log(res);
+      },
+      complete: (res) => {
+        console.log(res);
+      },
     });
   },
 
+  // 跳转到 给赞 小程序
   openMina(e) {
     const appid = e.currentTarget.dataset.appid;
     const path = e.currentTarget.dataset.path;

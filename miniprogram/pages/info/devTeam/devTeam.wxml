@@ -4,18 +4,21 @@
 <view class='block'>
   <view class='title'>开发团队</view>
   <view class='desc'>
-    <text>渔政、蓝卷、玥琪、大米、hehe、XD\n以及各校区猫群小伙伴~</text>
+    <text>渔政、蓝卷、XD、hehe、玥琪、大米\n以及各校区猫群小伙伴~</text>
   </view>
 </view>
 
 <view class='block'>
   <view class='title'>更新日志</view>
   <view class='desc'>
+    <view class='sub-title hl'>v1.4.3</view>
+    <text class='sub-detail'>- 压缩图打水印\n- 增加展示压缩图的选项（流量太贵了...）\n- 更新时间：2020/5/3</text>
+
     <view class='sub-title hl'>v1.4.2</view>
     <text class='sub-detail'>- 关闭上传原图通道\n- 增加版本更新提示\n- 更新时间：2020/4/26</text>
 
     <view class='sub-title hl'>v1.4.1</view>
-    <text class='sub-detail'>- 优化猫猫详情页图片预览\n- 优化后台页面\n- 更新时间：2020/4/20</text>
+    <text class='sub-detail'>- 优化猫猫详情页图片预览（感谢华农LoLo同学的建议）\n- 优化后台页面\n- 更新时间：2020/4/20</text>
 
     <view class='sub-title hl'>v1.4.0</view>
     <text class='sub-detail'>- 修复已知问题\n- 适配微信新的小程序通知方式\n- 增加反馈回复通知功能\n- 更新时间：2020/4/18</text>

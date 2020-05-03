@@ -250,11 +250,19 @@ Page({
     if (whichGallery == 'best') {
       if (this.data.cat.photo.length - this.currentImg <= preload) await this.loadMorePhotos(); //preload
       this.imgUrls = this.data.cat.photo.map((photo) => {
+        // 展示压缩图（流量预警！）
+        if (page_settings.galleryQuality === "compressed") {
+          return (photo.photo_compressed || photo.photo_watermark || photo.photo_id);
+        }
         return (photo.photo_watermark || photo.photo_id);
       });
     } else { // album
       if (album_raw.length - this.currentImg <= preload) await this.loadMoreAlbum(); // preload
       this.imgUrls = album_raw.map((photo) => {
+        // 展示压缩图（流量预警！）
+        if (page_settings.galleryQuality === "compressed") {
+          return (photo.photo_compressed || photo.photo_watermark || photo.photo_id);
+        }
         return (photo.photo_watermark || photo.photo_id);
       });
     }

@@ -177,6 +177,15 @@ Page({
     }
     
     ctx.drawImage(origin.path, 0, 0, draw_width, draw_height);
+    
+    // 写上水印
+    const photo = global_photo;
+    const userInfo = photo.userInfo;
+    ctx.setFontSize(draw_height * 0.03);
+    ctx.setFillStyle('white');
+    ctx.fillText('中大猫谱@' + (photo.photographer || userInfo.nickName), 30, draw_height - (draw_height * 0.03));
+    
+
     ctx.draw(false, function () {
       // 变成图片显示
       wx.canvasToTempFilePath({
@@ -208,10 +217,10 @@ Page({
 
     const photo = global_photo;
     const userInfo = photo.userInfo;
-    const shooting_date = photo.shooting_date;
+    // const shooting_date = photo.shooting_date;
 
     ctx.drawImage(origin.path, 0, 0, draw_width, draw_height);
-    ctx.drawImage(origin.path, 0, 0, draw_width, draw_height);
+    // ctx.drawImage(origin.path, 0, 0, draw_width, draw_height);
     // 写上水印
     ctx.setFontSize(draw_height * 0.03);
     ctx.setFillStyle('white');
