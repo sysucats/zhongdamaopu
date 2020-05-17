@@ -89,6 +89,7 @@ page {
   flex: 1;
 }
 
-.option-prompt {
-  color: #888;
+.right-arrow image {
+  height: 20rpx;
+  width: 20rpx;
 }

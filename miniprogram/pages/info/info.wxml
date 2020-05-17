@@ -16,22 +16,26 @@
 <block wx:if='{{showManager}}'><view class='option-box'>
   <view class="option" bindtap='clickbtn' data-to='/pages/manage/checkPhotos/checkPhotos'>
     <view class="option-text">照片审核({{numChkPhotos}})</view>
-    <view class="option-prompt">＞</view>
+    <view class="right-arrow"><image mode='aspectFill' src="../../images/filter/right.png"></image></view> 
   </view>
   <view class="option" bindtap='clickbtn' data-to='/pages/manage/imProcess/imProcess'>
     <view class="option-text">照片处理({{numPrcssImg}})</view>
-    <view class="option-prompt">＞</view>
+    <view class="right-arrow"><image mode='aspectFill' src="../../images/filter/right.png"></image></view> 
   </view>
   <view class="option" bindtap='clickbtn' data-to='/pages/manage/checkFeedbacks/checkFeedbacks'>
     <view class="option-text">反馈处理({{numFeedbacks}})</view>
-    <view class="option-prompt">＞</view>
+    <view class="right-arrow"><image mode='aspectFill' src="../../images/filter/right.png"></image></view> 
   </view>
   <view class="option" bindtap='clickbtn' data-to='/pages/manage/addCat/addCat'>
     <view class="option-text">添加新猫</view>
-    <view class="option-prompt">＞</view>
+    <view class="right-arrow"><image mode='aspectFill' src="../../images/filter/right.png"></image></view> 
   </view>
   <view class="option" bindtap='clickbtn' data-to='/pages/manage/managers/managers'>
     <view class="option-text">人员管理</view>
-    <view class="option-prompt">＞</view>
+    <view class="right-arrow"><image mode='aspectFill' src="../../images/filter/right.png"></image></view> 
+  </view>
+  <view class="option" bindtap='clickbtn' data-to='/pages/manage/filters/filters'>
+    <view class="option-text">区域/花色管理</view>
+    <view class="right-arrow"><image mode='aspectFill' src="../../images/filter/right.png"></image></view> 
   </view>
 </view></block>

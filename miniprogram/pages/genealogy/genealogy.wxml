@@ -8,7 +8,7 @@
     <input class='name' placeholder='搜索猫猫名字（支持模糊）' value='{{filters_input}}' maxlength='20' confirm-type='search' bindinput='fSearchInput' bindconfirm='fSearch'></input>
   </view>
   
-  <view class='filter-btn' bindtap='fToggle' bindlongpress='toUpdateFilter'>
+  <view class='filter-btn' bindtap='fToggle'>
     <image wx:if='{{filters_active}}' mode='aspectFit' src="../../images/filter/filter_y.png"></image>
     <image wx:else mode='aspectFit' src="../../images/filter/filter.png"></image>
   </view>
@@ -32,8 +32,11 @@
     </scroll-view>
     <scroll-view class='f-column f-column-3' scroll-y='1'>
       <view class='padding-block'></view>
-      <view class='item {{item.active? "active": ""}}' wx:for='{{filters[filters_sub].items}}' wx:key='name' bindtap='fClickSub' data-index='{{index}}'>
-        {{item.name}}
+      <view wx:for='{{filters[filters_sub].category}}' wx:key='name' data-index='{{index}}'>
+        <view class='item {{item.all_active? "active": ""}}' bindtap='fClickCategory' data-index='{{index}}'>{{item.name}}</view>
+        <view wx:for='{{item.items}}' wx:key='name' wx:for-index='innerindex' wx:for-item='inneritem' class='item {{inneritem.active? "active": ""}}' bindtap='fClickSub' data-index="{{index}}" data-innerindex="{{innerindex}}">{{inneritem.name}}</view>
+        <!-- 来一条分割线 -->
+        <view wx:if='{{index != (filters[filters_sub].category.length - 1)}}' class='divider'></view>
       </view>
     </scroll-view>
   </view>

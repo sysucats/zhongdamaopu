@@ -30,12 +30,6 @@ Page({
     filters_input: '', // 输入的内容，目前只用于挑选名字
     filters_show_shadow: false, // 滚动之后才显示阴影
 
-    // 对应数据库的key
-    filter_keys_name: {
-      'campus': '校区',
-      'colour': '花色'
-    },
-
     // 高度，单位为px（后面会覆盖掉）
     heights: {
       filters: 40,
@@ -98,24 +92,47 @@ Page({
     loadFilter().then(res => {
 
       var filters = [];
-      for (const k in this.data.filter_keys_name) {
-        var main_item = {};
-        main_item.key = k;
-        main_item.name = this.data.filter_keys_name[k];
-        main_item.items = [];
-        main_item.items.push({
-          name: '全部' + this.data.filter_keys_name[k],
-          active: true,
-        });
-        for (const item of res[k]) {
-          var new_item = {
-            name: item,
-            active: false
-          }
-          main_item.items.push(new_item);
-        }
-        filters.push(main_item);
+
+      var areas_item = {
+        key: 'area',
+        name: '校区',
+        category: []
+      };
+      areas_item.category.push({
+        name: '全部校区',
+        items: [],    // '全部校区'特殊处理
+        all_active: true
+      });
+      // 用个object当作字典，把area分下类
+      var classifier = {};
+      for (let i = 0, len = res.campuses.length; i < len; ++i) {
+        classifier[res.campuses[i]] = {
+          name: res.campuses[i],
+          items: [],    // 记录属于这个校区的area
+          all_active: false
+        };
       }
+      for (let k = 0, len = res.areas.length; k < len; ++k) {
+        classifier[res.areas[k].campus].items.push(res.areas[k]);
+      }
+      for (let i = 0, len = res.campuses.length; i < len; ++i) {
+        areas_item.category.push(classifier[res.campuses[i]]);
+      }
+      filters.push(areas_item);
+
+      var colour_item = {
+        key: 'colour',
+        name: '花色',
+        category: [{
+          name: '全部花色',
+          items: res.colour.map(name => {
+            return {name: name};
+          }),
+          all_active: true
+        }]
+      }
+      filters.push(colour_item);
+
       // 默认把第一个先激活了
       filters[0].active = true;
       console.log(filters);
@@ -342,44 +359,57 @@ Page({
       filters_sub: click_idx
     });
   },
+  // 点击category filter，全选/反选该类下所有sub
+  fClickCategory: function (e) {
+    var filters = this.data.filters;
+    var filters_sub = this.data.filters_sub;
+
+    const index = e.target.dataset.index;
+    const all_active = !filters[filters_sub].category[index].all_active;
+    var category = filters[filters_sub].category[index];
+    if (index == 0) {   // 默认第0个是'全部'
+      for (let i = 0, len = filters[filters_sub].category.length; i < len; ++i) { // 把所有项反激活
+        var ctg = filters[filters_sub].category[i];
+        ctg.all_active = false;
+        for (let k = 0, length = ctg.items.length; k < length; ++k) {
+          ctg.items[k].active = false;
+        }
+      }
+      filters[filters_sub].category[index].all_active = all_active;   // '全部'的激活状态
+    } else {
+      filters[filters_sub].category[0].all_active = false;  // 取消'全部'的激活，默认第0个是'全部'
+      category.all_active = all_active;   // 点击的category状态取反
+      /* for (let k = 0, len = category.items.length; k < len; ++k) {  // 其下的所有项目激活状态与category一致
+        category.items[k].active = all_active;
+      } */
+      for (let k = 0, len = category.items.length; k < len; ++k) {  // 反激活其下所有sub
+        category.items[k].active = false;
+      }
+    }
+    const fLegal = this.fCheckLegal(filters);
+    this.setData({
+      filters: filters,
+      filters_legal: fLegal
+    });
+  },
   // 点击sub filter，切换激活项
   fClickSub: function (e) {
     var filters = this.data.filters;
     var filters_sub = this.data.filters_sub;
     
-    const click_idx = e.currentTarget.dataset.index;
-    const item = filters[filters_sub].items[click_idx];
-    // 获取到了点击的东西，下面开始各种情况的判断。
-    // 点击的东西包括“全部”两字
-    if (item.name.includes('全部')) {
-      // 它自己反激活，其他全部不激活
-      const tmp = filters[filters_sub].items[click_idx].active;
-      for (var it of filters[filters_sub].items) {
-        it.active = false;
-      }
-      filters[filters_sub].items[click_idx].active = !tmp;
-    } else if (filters[filters_sub].key == 'campus' && item.name.includes('校区')) {
-      // 如果是选中某个校区，那就反激活它，不激活其他这个校区的小东西
-      const tmp = filters[filters_sub].items[click_idx].active;
-      for (var it of filters[filters_sub].items) {
-        if (it.name.substr(0, 2) == item.name.substr(0, 2)) {
-          it.active = false;
-        }
-      }
-      filters[filters_sub].items[click_idx].active = !tmp;
-      // 同时第一个“全部校区”要不激活
-      filters[filters_sub].items[0].active = false;
-    } else {
-      // 这两个情况都不是，那就直接反激活它自己，同时把该校区全选的不激活
-      filters[filters_sub].items[click_idx].active ^= 1;
-      for (var it of filters[filters_sub].items) {
-        if (it.name.includes('校区') && it.name.substr(0, 2) == item.name.substr(0, 2)) {
-          it.active = false;
-        }
-      }
-      // 同时第一个“全部校区”要不激活
-      filters[filters_sub].items[0].active = false;
+    const category = filters[filters_sub].category[e.target.dataset.index];
+    const index= e.target.dataset.innerindex;
+
+    category.items[index].active = !category.items[index].active; // 激活状态取反
+    filters[filters_sub].category[0].all_active = false;  // 取消'全部'的激活，默认第0个是'全部'
+    /* // 看看是否要把category激活/反激活
+    var counter = 0;
+    for (let k = 0, len = category.items.length; k < len; ++k) {
+      if (category.items[k].active) ++counter;
     }
+    category.all_active = (counter == category.items.length); */
+    category.all_active = false; // 直接反激活category
+
     const fLegal = this.fCheckLegal(filters);
     this.setData({
       filters: filters,
@@ -390,15 +420,17 @@ Page({
   fCheckLegal: function(filters) {
     for (const mainF of filters) {
       var count = 0; // 激活的数量
-      for (const item of mainF.items) {
-        if (item.active) {
-          count ++;
-          break;
+      if (mainF.category[0].all_active) continue; // '全部’是激活的
+      for (const category of mainF.category) {
+        if (category.all_active) {
+          count += category.items.length;
+          continue;
+        }
+        for (const item of category.items) {
+          if (item.active)++count;
         }
       }
-      if (count==0) {
-        return false;
-      }
+      if (count == 0) return false;
     }
     return true;
   },
@@ -408,41 +440,21 @@ Page({
     const filters = this.data.filters;
     var res = {};
     // 这些是点击选择的filters
-    for (const main_item of filters) {
+    for (const mainF of filters) {
       // 把数据库要用的key拿出来
-      const key = main_item.key;
+      const key = mainF.key;
       var selected = []; // 储存已经选中的项
 
       // 下面开始遍历每个分类下的子项
-      for (const sub_item of main_item.items) {
-        // 没有激活的就跳过
-        if (!sub_item.active) {
-          continue;
-        }
+      if (mainF.category[0].all_active) continue; // 选择了'全部‘, 不用管这个类
 
-        // 说明选择了全部东东，不需要过滤这个分类
-        if (sub_item.name.includes('全部')) {
-          break;
-        }
-
-        // 如果选中的是某个校区，那么把该校区下面的全部东西都放进去
-        if (key == 'campus' && sub_item.name.includes('校区')) {
-          const campus_name = sub_item.name.substr(0, 2);
-          for (const item of main_item.items) {
-            // 说明是这个校区的一个区域
-            if (item.name.substr(0, 2) == campus_name && item.name != sub_item.name) {
-              selected.push(item.name);
-            }
-          }
-        } else {
-          // 其他被激活的项直接放进去
-          selected.push(sub_item.name);
+      for (const category of mainF.category) {
+        for (const item of category.items) {
+          if (category.all_active || item.active) selected.push(item.name);
         }
       }
-      
-      if (selected.length) {
-        res[key] = _.in(selected);
-      }
+
+      res[key] = _.in(selected);
     }
     // 判断一下filters生效没有
 
@@ -482,14 +494,15 @@ Page({
     // 重置所有分类
     var filters = this.data.filters;
     // const filters_sub = this.data.filters_sub;
-    for (const filters_sub in filters) {
-      for (var sub_item of filters[filters_sub].items) {
-        if (sub_item.name.includes('全部')) {
-          sub_item.active = true;
-        } else {
-          sub_item.active = false;
+    for (let sub = 0, len = filters.length; sub < len; ++sub) {
+      for (let i = 0, catelen = filters[sub].category.length; i < catelen; ++i) {
+        var category = filters[sub].category[i];
+        category.all_active = false;
+        for (let k = 0, itemlen = category.items.length; k < itemlen; ++i) {
+          category.items[k].active = false;
         }
       }
+      filters[sub].category[0].active = true; // 默认第0个是'全部'
     }
 
     const fLegal = this.fCheckLegal(filters);
@@ -517,19 +530,6 @@ Page({
         filters_show_shadow: !filters_show_shadow
       });
     }
-  },
-  // 跳转去修改filters
-  toUpdateFilter: function () {
-    const that = this;
-    isManager(res => {
-      if (res) {
-        wx.navigateTo({
-          url: '/pages/manage/filters/filters',
-        });
-      } else {
-        console.log("not a manager");
-      }
-    });
   },
 
   ////// 广告相关
