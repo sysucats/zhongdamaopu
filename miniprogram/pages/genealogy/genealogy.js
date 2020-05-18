@@ -93,12 +93,12 @@ Page({
 
       var filters = [];
 
-      var areas_item = {
+      var area_item = {
         key: 'area',
         name: '校区',
         category: []
       };
-      areas_item.category.push({
+      area_item.category.push({
         name: '全部校区',
         items: [],    // '全部校区'特殊处理
         all_active: true
@@ -112,13 +112,13 @@ Page({
           all_active: false
         };
       }
-      for (let k = 0, len = res.areas.length; k < len; ++k) {
-        classifier[res.areas[k].campus].items.push(res.areas[k]);
+      for (let k = 0, len = res.area.length; k < len; ++k) {
+        classifier[res.area[k].campus].items.push(res.area[k]);
       }
       for (let i = 0, len = res.campuses.length; i < len; ++i) {
-        areas_item.category.push(classifier[res.campuses[i]]);
+        area_item.category.push(classifier[res.campuses[i]]);
       }
-      filters.push(areas_item);
+      filters.push(area_item);
 
       var colour_item = {
         key: 'colour',
@@ -225,6 +225,8 @@ Page({
         console.log(res.data);
         res.data = shuffle(res.data);
         for (var d of res.data) {
+          // 把area格式化为'校区-区域'格式，现在是个兼容的妥协
+          d.area = d.campus.substr(0, 2) + d.area;
           d.photo = default_png;
           d.characteristics_string = [(d.colour || '') + '猫'].concat(d.characteristics || []).join('，');
           if (!d.mphoto) {

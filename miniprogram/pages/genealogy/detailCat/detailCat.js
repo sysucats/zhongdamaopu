@@ -165,6 +165,8 @@ Page({
     const db = wx.cloud.database();
     db.collection('cat').doc(cat_id).get().then(res => {
       console.log(res);
+      // 把area格式化为'校区-区域'格式，现在是个兼容的妥协
+      res.data.area = res.data.campus.substr(0, 2) + res.data.area;
       res.data.photo = [];
       // res.data.characteristics_string = [(res.data.colour || '') + '猫'].concat(res.data.characteristics || []).join('，');
       res.data.characteristics_string = (res.data.colour || '') + '猫';

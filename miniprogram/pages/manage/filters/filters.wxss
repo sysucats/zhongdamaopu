@@ -4,12 +4,13 @@ page {
   box-sizing: border-box;
 }
 
-.cate-block {
+.mainF-block {
   padding-bottom: 30rpx;
   margin-bottom: 30rpx;
 }
 
-.cate-block .title {
+.mainF-block .title {
+  font-size: 50rpx;
   font-weight: bold;
   text-align: center;
 }
@@ -31,6 +32,10 @@ button + button {
   align-content: space-between;
 }
 
+.category-box {
+  width: 100%;
+}
+
 button.primary {
   background-color: #ffd110;
 }
@@ -49,7 +54,22 @@ button.short {
   line-height: 24rpx;
 }
 
-.option {
+.category {
+  width: 100%;
+  margin-top: 30rpx;
+  border-bottom: 4rpx #bbb solid;
+  /* background-color: #fafafa; */
+  font-weight: normal;
+  padding: 10rpx;
+  color: #888;
+  display: flex;
+  align-content: space-around;
+  justify-content: left;
+  align-items: left;
+  font-size: 40rpx;
+}
+
+.sub-option {
   width: 100%;
   border-bottom: 2rpx #ffd110 solid;
   /* background-color: #fafafa; */
@@ -66,7 +86,33 @@ button.short {
   display: inline-block;
 }
 
+.submit {
+  margin-top: 10rpx;
+  margin-left: 30rpx;
+}
+
 input.content {
   border-bottom: 2rpx #ffd110 solid;
   background-color: #fafafa;
+}
+
+button.bottom {
+  width: 100%;
+  background-color: #ffd110;
+}
+
+.floating-box{
+  position: fixed;
+  bottom: 20rpx;
+  margin: 20rpx 3rpx;
+  padding: 20rpx;
+  box-shadow: 0rpx 0rpx 30rpx gainsboro;
+  border-radius: 20rpx;
+  background-color: rgba(255,255,255,0.95);
+  width: 650rpx;
+}
+
+.bottom-clear-box {
+  height: 100rpx;
+  opacity: 0;
 }

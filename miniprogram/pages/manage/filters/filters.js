@@ -4,9 +4,6 @@ const randomInt = utils.randomInt;
 const isManager = utils.isManager;
 const loadFilter = utils.loadFilter;
 
-// 储存还没确定的新filter
-var new_filters = {};
-
 Page({
 
   /**
@@ -15,13 +12,7 @@ Page({
   data: {
     tipText: '正在鉴权...',
     tipBtn: false,
-    cates: [{
-      key: 'campus',
-      name: '校区位置',
-    }, {
-      key: 'colour',
-      name: '花色',
-    }]
+    filters: [],
   },
 
   /**
@@ -110,63 +101,114 @@ Page({
     });
     const that = this;
     loadFilter().then(res => {
-      that.setData({
-        filters: res
-      });
+      var filters = [];
+
+      var area_item = {
+        key: 'area',
+        name: '校区',
+        category: [],
+      };
+      // 用个object当作字典，把area分下类
+      var classifier = {};
+      for (let i = 0, len = res.campuses.length; i < len; ++i) {
+        classifier[res.campuses[i]] = {
+          name: res.campuses[i],
+          items: [],    // 记录属于这个校区的area
+          adding: false,
+        };
+      }
+      for (let k = 0, len = res.area.length; k < len; ++k) {
+        classifier[res.area[k].campus].items.push(res.area[k]);
+      }
+      for (let i = 0, len = res.campuses.length; i < len; ++i) {
+        area_item.category.push(classifier[res.campuses[i]]);
+      }
+      filters.push(area_item);
+
+      var colour_item = {
+        key: 'colour',
+        name: '花色',
+        category: [{
+          name: '花色',
+          items: res.colour.map(name => {
+            return { name: name };
+          }),
+          adding: false,
+        }]
+      }
+      filters.push(colour_item);
+      console.log(filters);
+      this.setData({
+        filters: filters
+      })
       wx.hideLoading();
     })
   },
 
   // 增加option
   addOptionInput(e) {
-    const cate = e.currentTarget.dataset.cate;
+    const filters_sub = e.currentTarget.dataset.filterssub;
+    const index = e.currentTarget.dataset.cateindex;
     var filters = this.data.filters;
-    if (filters[cate].includes('')) {
-      return false;
-    }
-    filters[cate].push(''); // 给一个空串，表示新增的
-    new_filters[cate] = ''; // 内存里的也重新赋值
+    var category = filters[filters_sub].category[index];
+    category.adding = true;
     this.setData({ filters: filters });
   },
 
-  inputOption(e) {
-    const cate = e.currentTarget.dataset.cate;
-    const value = e.detail.value;
-    new_filters[cate] = value;
-  },
-
   addOptionConfirm(e) {
-    const cate = e.currentTarget.dataset.cate;
-    const value = new_filters[cate];
     var filters = this.data.filters;
-    const i = filters[cate].indexOf('');
-    if (filters[cate].includes(value)) {
-      // 已经有了不能重复
-      wx.showToast({
-        title: '不能重复',
-        icon: 'none',
-      });
+
+    const name = e.detail.value.name;
+    const filters_sub = e.currentTarget.dataset.filterssub;
+    const index = e.currentTarget.dataset.cateindex;
+    
+    var mainF = filters[filters_sub]
+    var category = mainF.category[index];
+
+    if (name == '') { // 名字不能为空
       return false;
     }
-    filters[cate][i] = value;
+    for (let i = 0, len = mainF.category.length; i < len; ++i) {  // 检查重名
+      let ctg = mainF.category[i];
+      for (let k = 0, length = ctg.items.length; k < length; ++k) {
+        if (name == ctg.items[k].name) {
+          wx.showToast({
+            title: '名字不能重复',
+            icon: 'none'
+          })
+          return false;
+        }
+      }
+    }
+    
+    category.items.push({
+      name: name,
+      campus: category.name
+    })
+    category.adding = false;
     this.setData({ filters: filters });
   },
 
   // 移动、管理option
   moveOption(e) {
-    const index = e.currentTarget.dataset.index; 
-    const cate = e.currentTarget.dataset.cate;
-    const direct = e.currentTarget.dataset.direct; // 'up' or 'down'
     var filters = this.data.filters;
-    const len = filters[cate].length;
+
+    const filters_sub = e.currentTarget.dataset.filterssub;
+    const cateindex = e.currentTarget.dataset.cateindex;
+    const index = e.currentTarget.dataset.innerindex; 
+    const direct = e.currentTarget.dataset.direct; // 'up' or 'down'
+
+    const category = filters[filters_sub].category[cateindex];
+    
+    const len = category.items.length;
     const new_index = (direct === 'up') ? index - 1: index + 1;
     if (new_index < 0 || new_index >= len) {
       return false;
     }
     console.log(direct);
-    const temp = filters[cate][index];
-    filters[cate][index] = filters[cate][new_index];
-    filters[cate][new_index] = temp;
+    const temp = category.items[index];
+    category.items[index] = category.items[new_index];
+    category.items[new_index] = temp;
     this.setData({ filters: filters });
   },
 
@@ -175,15 +217,20 @@ Page({
       title: '检查中...',
       mask: true
     });
-    const index = e.currentTarget.dataset.index;
-    const cate = e.currentTarget.dataset.cate;
     var filters = this.data.filters;
-    const delete_value = filters[cate][index];
-    // 检查一下数据库里这个地址有没有猫，如果有就不能删
 
+    const filters_sub = e.currentTarget.dataset.filterssub;
+    const cateindex = e.currentTarget.dataset.cateindex;
+    const index = e.currentTarget.dataset.innerindex;
+
+    const mainF = filters[filters_sub];
+    const category = mainF.category[cateindex];
+    const delete_value = category.items[index];
+    
+    // 检查一下数据库里这个地址有没有猫，如果有就不能删
     const that = this;
     const db = wx.cloud.database();
-    const qf = { [cate]: delete_value };
+    const qf = { [mainF.key]: category.items[index].name };
     db.collection('cat').where(qf).count().then(res => {
       console.log(res);
       if (res.total) {
@@ -194,7 +241,7 @@ Page({
         return false;
       }
       // 执行删除
-      filters[cate] = filters[cate].filter(val => val != delete_value);
+      category.items = category.items.filter(val => val != delete_value);
       this.setData({ filters: filters }, () => {
         wx.showToast({
           title: '删除成功',
@@ -205,32 +252,37 @@ Page({
 
   // 确定上传
   uploadFilters() {
-    // 先检查有没有空串
-    const cates = this.data.cates;
-    const filters = this.data.filters;
-    var to_upload = {};
-    for (const cate of cates) {
-      if (filters[cate.key].includes('')) {
-        wx.showToast({
-          title: '请先完成填空',
-          icon: 'none'
-        });
-        return false;
-      }
-      // 放到另外一个to_upload里，排除掉id
-      to_upload[cate.key] = filters[cate.key];
-    }
+    var filters = this.data.filters;
     // 开始上传
     wx.showLoading({
       title: '正在上传...',
     });
-    console.log(to_upload);
+    console.log(filters);
+    // 处理回数据库中的原始格式
+    var area = [];
+    var colour = [];
+    for (const mainF of filters) {
+      for (const category of mainF.category) {
+        for (const item of category.items) {
+          if (mainF.key == 'area') {
+            area.push({
+              name: item.name,
+              campus: item.campus,
+            });
+          } else if (mainF.key == 'colour') {
+            colour.push(item.name);
+          }
+        }
+      }
+    }
     const that = this;
     wx.cloud.callFunction({
       name: 'updateFilter',
       data: {
-        to_upload: to_upload,
-        filter_id: filters._id
+        to_upload: {
+          area: area,
+          colour: colour
+        }
       }
     }).then(res => {
       that.reloadFilter();

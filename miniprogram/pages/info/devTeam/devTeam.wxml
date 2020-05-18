@@ -11,6 +11,9 @@
 <view class='block'>
   <view class='title'>更新日志</view>
   <view class='desc'>
+    <view class='sub-title hl'>v1.4.4</view>
+    <text class='sub-detail'>- 优化筛选器（重建了数据库，头都秃了）\n- 更新时间：2020/5/18</text>
+
     <view class='sub-title hl'>v1.4.3</view>
     <text class='sub-detail'>- 压缩图打水印\n- 增加展示压缩图的选项（流量太贵了...）\n- 更新时间：2020/5/3</text>
 

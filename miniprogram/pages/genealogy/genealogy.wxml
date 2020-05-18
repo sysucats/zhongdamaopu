@@ -86,7 +86,7 @@
         </view>
         <view class='line'>
           <image mode='aspectFit' class='icon' src='../../images/card/card/pos.png'></image>
-          <text>{{item.campus || '-'}}</text>
+          <text>{{item.area || '-'}}</text>
           <view class='index'><text decode='true'>&lt; {{index+1}}/{{catsMax}} &gt;</text></view>
         </view>
       </view>

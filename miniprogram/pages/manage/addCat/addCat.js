@@ -116,9 +116,12 @@ Page({
       return false;
     }
 
+    const pickers = this.data.pickers;
     const db = wx.cloud.database();
     db.collection('cat').doc(cat_id).get().then(res => {
       console.log(res);
+      // 把area格式化为'校区-区域'格式，现在是个兼容的妥协
+      res.data.area = res.data.campus.substr(0, 2) + (res.data.campus[1] == '校' ? '区' : '校区') + '-' + res.data.area;
       res.data.mphoto = String(new Date(res.data.mphoto));
       console.log(res.data.mphoto);
       this.setData({
@@ -251,16 +254,12 @@ Page({
     return new Promise((resolve, reject) => {
       loadFilter().then(res => {
         console.log(res);
-        // 去掉 xx校区 的项
-        var campus_modified = [];
-        for (const cam of res.campus) {
-          if (!cam.includes('校区')) {
-            campus_modified.push(cam);
-          }
-        }
+        // 把area格式化为'校区-区域'
+        var area_modified = res.area.map(area => {
+          return area.campus + '-' + area.name; 
+        })
         this.setData({
-          "pickers.campus": campus_modified,
-          "pickers.char": res.characteristics,
+          "pickers.area": area_modified,
           "pickers.colour": res.colour,
         });
       });
@@ -271,6 +270,12 @@ Page({
     wx.showLoading({
       title: '更新中...',
     });
+    // 恢复为数据库格式，拆分campus和area
+    for (var i = 0; i < this.data.cat.area.length; ++i) {
+      if (this.data.cat.area[i] == '-') break;
+    }
+    this.data.cat.campus = this.data.cat.area.substr(0, i);
+    this.data.cat.area = this.data.cat.area.substr(i + 1);
     wx.cloud.callFunction({
       name: 'updateCat',
       data: {
