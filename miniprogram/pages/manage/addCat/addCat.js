@@ -120,8 +120,6 @@ Page({
     const db = wx.cloud.database();
     db.collection('cat').doc(cat_id).get().then(res => {
       console.log(res);
-      // 把area格式化为'校区-区域'格式，现在是个兼容的妥协
-      res.data.area = res.data.campus.substr(0, 2) + (res.data.campus[1] == '校' ? '区' : '校区') + '-' + res.data.area;
       res.data.mphoto = String(new Date(res.data.mphoto));
       console.log(res.data.mphoto);
       this.setData({
@@ -250,16 +248,46 @@ Page({
   //     charChecked: checked
   //   });
   // },
+  pickerAreaColumnChange(e) {
+    var pickers = this.data.pickers;
+
+    const column = e.detail.column;
+    const index = e.detail.value;
+
+    if (column == 0) {  // 修改了校区列内容，区域列变为对应校区的区域
+      var now_campus = pickers.campus_area[0][index];
+      pickers.campus_area[1] = pickers.area_category[now_campus];
+      this.setData({
+        "pickers.campus_area": pickers.campus_area,
+        "pickers.campus_index": [index, 0]
+      })
+    }
+  },
+  bindAreaChange() {    // 这个和columnChange的区别是要确认才触发
+    var pickers = this.data.pickers;
+    const indices = e.detail.value;
+    this.setData({
+      'cat.campus': pickers.campus_area[0][indices[0]],
+      'cat.area': pickers.campus_area[1][indices[1]]
+    });
+  },
   loadPickers() {
     return new Promise((resolve, reject) => {
       loadFilter().then(res => {
         console.log(res);
-        // 把area格式化为'校区-区域'
-        var area_modified = res.area.map(area => {
-          return area.campus + '-' + area.name; 
-        })
+        // 把area按campus分类
+        var area_category = {};
+        for (const campus of res.campuses) {
+          area_category[campus] = []
+        }
+        for (const area of res.area) {
+          area_category[area.campus].push(area.name);
+        }
+        var first_campus = res.campuses[0];
         this.setData({
-          "pickers.area": area_modified,
+          "pickers.area_category": area_category, // wxml实际上不用到这个值，但是更改area picker时的逻辑需要这些数据
+          "pickers.campus_area": [res.campuses, area_category[first_campus]],
+          "pickers.campus_index": [0, 0],
           "pickers.colour": res.colour,
         });
       });

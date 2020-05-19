@@ -18,7 +18,8 @@
     "pages/manage/managers/managers",
     "pages/genealogy/feedbackDetail/feedbackDetail",
     "pages/manage/checkFeedbacks/checkFeedbacks",
-    "pages/manage/replyFeedback/replyFeedback"
+    "pages/manage/replyFeedback/replyFeedback",
+    "pages/manage/rewards/rewards"
   ],
   "tabBar": {
     "selectedColor": "#000",

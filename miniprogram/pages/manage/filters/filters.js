@@ -105,6 +105,7 @@ Page({
 
       var area_item = {
         key: 'area',
+        cateKey: 'campus',
         name: '校区',
         category: [],
       };
@@ -168,16 +169,13 @@ Page({
     if (name == '') { // 名字不能为空
       return false;
     }
-    for (let i = 0, len = mainF.category.length; i < len; ++i) {  // 检查重名
-      let ctg = mainF.category[i];
-      for (let k = 0, length = ctg.items.length; k < length; ++k) {
-        if (name == ctg.items[k].name) {
-          wx.showToast({
-            title: '名字不能重复',
-            icon: 'none'
-          })
-          return false;
-        }
+    for (let k = 0, length = category.items.length; k < length; ++k) {   // 检查类内有无重名
+      if (name == category.items[k].name) {
+        wx.showToast({
+          title: '名字不能重复',
+          icon: 'none'
+        })
+        return false;
       }
     }
     
@@ -230,7 +228,10 @@ Page({
     // 检查一下数据库里这个地址有没有猫，如果有就不能删
     const that = this;
     const db = wx.cloud.database();
-    const qf = { [mainF.key]: category.items[index].name };
+    var qf = { [mainF.key]: category.items[index].name };
+    if (mainF.cateKey) {
+      qf[mainF.cateKey] = category.name;
+    }
     db.collection('cat').where(qf).count().then(res => {
       console.log(res);
       if (res.total) {

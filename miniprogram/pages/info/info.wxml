@@ -38,4 +38,8 @@
     <view class="option-text">区域/花色管理</view>
     <view class="right-arrow"><image mode='aspectFill' src="../../images/filter/right.png"></image></view> 
   </view>
+  <view class="option" bindtap='clickbtn' data-to='/pages/manage/rewards/rewards'>
+    <view class="option-text">打赏记录管理</view>
+    <view class="right-arrow"><image mode='aspectFill' src="../../images/filter/right.png"></image></view> 
+  </view>
 </view></block>

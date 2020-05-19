@@ -54,7 +54,7 @@ next-margin='60rpx'>
         <view class='label-block'></view>
         常驻地
       </view>
-      <view class='value'>{{cat.area || '-'}}</view>
+      <view class='value'>{{(cat.campus + cat.area) || '-'}}</view>
     </view>
     <view class='item'>
       <view class='label'>

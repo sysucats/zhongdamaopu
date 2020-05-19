@@ -95,6 +95,7 @@ Page({
 
       var area_item = {
         key: 'area',
+        cateKey: 'campus',
         name: '校区',
         category: []
       };
@@ -225,8 +226,6 @@ Page({
         console.log(res.data);
         res.data = shuffle(res.data);
         for (var d of res.data) {
-          // 把area格式化为'校区-区域'格式，现在是个兼容的妥协
-          d.area = d.campus.substr(0, 2) + d.area;
           d.photo = default_png;
           d.characteristics_string = [(d.colour || '') + '猫'].concat(d.characteristics || []).join('，');
           if (!d.mphoto) {
@@ -446,17 +445,30 @@ Page({
       // 把数据库要用的key拿出来
       const key = mainF.key;
       var selected = []; // 储存已经选中的项
+      const cateFilter = Boolean(mainF.cateKey);
+      if (cateFilter) {  // 如果分类的名字也会作为筛选内容，这种筛选可能是因为不同类间key字段可能重名
+        var cateKey = mainF.cateKey;
+        var cateSelected = [];
+      }
 
       // 下面开始遍历每个分类下的子项
       if (mainF.category[0].all_active) continue; // 选择了'全部‘, 不用管这个类
 
       for (const category of mainF.category) {
+        let cateKeyPushed = false;  // 一个category只用push一次，记一下
         for (const item of category.items) {
-          if (category.all_active || item.active) selected.push(item.name);
+          if (category.all_active || item.active) {
+            selected.push(item.name);
+            if (cateFilter && !cateKeyPushed) {
+              cateSelected.push(category.name);
+              cateKeyPushed = true;
+            }
+          }
         }
       }
 
       res[key] = _.in(selected);
+      if (cateFilter) res[cateKey] = _.in(cateSelected);
     }
     // 判断一下filters生效没有
 

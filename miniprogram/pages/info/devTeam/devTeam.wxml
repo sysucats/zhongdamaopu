@@ -11,6 +11,9 @@
 <view class='block'>
   <view class='title'>更新日志</view>
   <view class='desc'>
+    <view class='sub-title hl'>v1.4.5</view>
+    <text class='sub-detail'>- 解决上一版本优化筛选器时因兼容暂缓的问题\n- 后台增加打赏记录编辑（疯狂暗示）\n- 更新时间：2020/5/19</text>
+
     <view class='sub-title hl'>v1.4.4</view>
     <text class='sub-detail'>- 优化筛选器（重建了数据库，头都秃了）\n- 更新时间：2020/5/18</text>
 
