@@ -263,7 +263,7 @@ Page({
       })
     }
   },
-  bindAreaChange() {    // 这个和columnChange的区别是要确认才触发
+  bindAreaChange(e) {    // 这个和columnChange的区别是要确认才触发
     var pickers = this.data.pickers;
     const indices = e.detail.value;
     this.setData({
@@ -298,12 +298,6 @@ Page({
     wx.showLoading({
       title: '更新中...',
     });
-    // 恢复为数据库格式，拆分campus和area
-    for (var i = 0; i < this.data.cat.area.length; ++i) {
-      if (this.data.cat.area[i] == '-') break;
-    }
-    this.data.cat.campus = this.data.cat.area.substr(0, i);
-    this.data.cat.area = this.data.cat.area.substr(i + 1);
     wx.cloud.callFunction({
       name: 'updateCat',
       data: {
