@@ -12,6 +12,7 @@ Page({
    * 页面的初始数据
    */
   data: {
+    friendApps: [],
     showManager: false,
     numChkPhotos: 0,
     numPrcssImg: 0,
@@ -21,6 +22,16 @@ Page({
   /**
    * 生命周期函数--监听页面加载
    */
+  onLoad: function (options) {
+    const that = this;
+    const db = wx.cloud.database();
+    db.collection('setting').doc('friendLink').get().then(res => {
+      that.friendApps = res.data.apps;
+      that.setData({
+        friendApps: that.friendApps,
+      })
+    });
+  },
 
   // 用 onShow 不用 onLoad，为了在返回这个页面时也能重新加载
   onShow: function (options) {
@@ -81,5 +92,12 @@ Page({
     wx.navigateTo({
       url: to,
     });
+  },
+
+  clickFriendLink(e) {
+    const appid = e.currentTarget.dataset.appid;
+    wx.navigateToMiniProgram({
+      appId: appid
+    })
   }
 })

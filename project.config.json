@@ -8,6 +8,7 @@
 		"postcss": true,
 		"minified": true,
 		"newFeature": true,
+		"coverView": true,
 		"nodeModules": false,
 		"autoAudits": false,
 		"uglifyFileName": true,
@@ -18,7 +19,10 @@
 			"ignore": [],
 			"disablePlugins": [],
 			"outputPath": ""
-		}
+		},
+		"useIsolateContext": true,
+		"useCompilerModule": false,
+		"userConfirmedUseCompilerModuleSwitch": false
 	},
 	"appid": "wx5bd705b2bc91c73b",
 	"projectname": "%E4%B8%AD%E5%A4%A7%E7%8C%AB%E8%B0%B1",

@@ -55,12 +55,41 @@ page {
   text-align: center;
 }
 
-.option-box{
+.block-name {
+  font-size: 25rpx;
+  font-weight: 300;
+  margin-top: 10rpx;
+  width: 100%;
+  text-align: center;
+}
+
+.friend-link-box, .option-box {
   background-color: #ffffff;
-  margin: 10px 3px;
-  padding: 10px;
-  box-shadow: 5px 5px 5px gainsboro;
+  margin: 20rpx 6rpx;
+  padding: 20rpx;
+  box-shadow: 0rpx 0rpx 10rpx #f2f2f2;
   border-radius: 15rpx;
+}
+
+.friend-link {
+  width: 25%;
+  display: inline-block;
+}
+
+.friend-link image {
+  width: 100rpx;
+  height: 100rpx;
+  margin-left: 33.75rpx;
+  border-radius: 50rpx;
+}
+
+.friend-link-text {
+  width: 100%;
+  font-size: 25rpx;
+  text-align: center;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
 }
 
 .option {
@@ -86,6 +115,7 @@ page {
 }
 
 .option-text {
+  font-size: 28rpx;
   flex: 1;
 }
 

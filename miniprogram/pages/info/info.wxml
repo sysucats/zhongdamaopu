@@ -13,7 +13,16 @@
     <image class='button' bindtap='clickbtn' data-to='/pages/info/feedback/feedback' src='../../images/info/btn/fankui.png'></image>
 </view>
 
-<block wx:if='{{showManager}}'><view class='option-box'>
+<view class='block-name'>友情链接</view>
+<view class="friend-link-box">
+  <view wx:for="{{friendApps}}" class="friend-link" bindtap="clickFriendLink" data-appid="{{item.appid}}">
+    <image mode='aspectFit' src="{{item.logo}}"></image>
+    <view class="friend-link-text">{{item.name}}</view>
+  </view>
+</view>
+
+<block wx:if='{{showManager}}'><view class='block-name'>管理后台</view>
+<view class='option-box'>
   <view class="option" bindtap='clickbtn' data-to='/pages/manage/checkPhotos/checkPhotos'>
     <view class="option-text">照片审核({{numChkPhotos}})</view>
     <view class="right-arrow"><image mode='aspectFill' src="../../images/filter/right.png"></image></view> 
