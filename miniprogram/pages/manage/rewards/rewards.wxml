@@ -10,7 +10,7 @@
       </block>
       <block wx:else>
         <form bindsubmit="changeConfirm" data-index='{{index}}'>
-          <textarea class='changecolumn' value='{{item.records_raw}}' name='records_raw' />
+          <textarea class='changecolumn' value='{{item.records_raw}}' name='records_raw' maxlength='-1' />
           <button class='long primary' form-type="submit">提交修改</button>
         </form>
       </block>
