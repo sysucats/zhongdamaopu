@@ -9,6 +9,7 @@ page {
 scroll-view {
   -webkit-overflow-scrolling: touch;
   z-index: 0;
+  background-color: rgb(245, 245, 245);
 }
 .card {
   margin: 20rpx 67.5rpx 50rpx 67.5rpx;
@@ -63,13 +64,19 @@ scroll-view {
 }
 
 .card .info {
-  padding: 30rpx 40rpx 20rpx 40rpx;
+  padding: 35rpx 40rpx 20rpx 40rpx;
 }
 
 .card .info .line {
   display: flex;
   align-items: center;
-  margin-bottom: 20rpx;
+  margin-bottom: 18rpx;
+}
+
+#firstLine{
+  display: flex;
+  align-items: center;
+  margin-bottom: 28rpx;
 }
 
 .card .info .name {
@@ -86,6 +93,7 @@ scroll-view {
   height: 27rpx;
   width: 27rpx;
   margin-right: 30rpx;
+  margin-left: 5rpx;
 }
 
 .card .info .adopt {
@@ -204,7 +212,7 @@ scroll-view {
   box-sizing: border-box;
 
   display: flex;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: center;
   flex-wrap: nowrap;
 }
@@ -214,15 +222,16 @@ scroll-view {
 }
 
 #search .input-block {
-  width: 80%;
+  width: 87%;
   display: flex;
   align-items: center;
   flex-wrap: nowrap;
+  margin-left: 25rpx;
 }
 
 #search .input-icon {
   width: 10%;
-  height: 1.4rem;
+  height: 2.2rem;
   background-color: white;
   border-top-left-radius: 10rpx;
   border-bottom-left-radius: 10rpx;
@@ -237,8 +246,8 @@ scroll-view {
 
 #search input.name {
   width: 90%;
-  height: 1.4rem;
-  line-height: 1.4rem;
+  height: 2.2rem;
+  line-height: 2.2rem;
   /* background-color: rgb(255, 237, 193); */
   background-color: white;
   border-top-right-radius: 10rpx;
@@ -262,7 +271,7 @@ scroll-view {
   width: 10%;
   /* height: 1.4rem; */
   height: 55%;
-  padding: 10rpx 0 10rpx 30rpx;
+  padding: 10rpx 0 10rpx 20rpx;
 }
 
 .filter-btn image {
@@ -378,4 +387,9 @@ scroll-view {
 
 #filter-block .buttons .active {
   color: #ffd101;
+}
+
+.searchPlaceholderStyle{
+  display: flex;
+
 }

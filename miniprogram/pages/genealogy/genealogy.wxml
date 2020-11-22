@@ -5,7 +5,7 @@
     <view class='input-icon'>
       <image mode='aspectFit' src="../../images/filter/search.png"></image>
     </view>
-    <input class='name' placeholder='搜索猫猫名字（支持模糊）' value='{{filters_input}}' maxlength='20' confirm-type='search' bindinput='fSearchInput' bindconfirm='fSearch'></input>
+    <input class='name' placeholder='搜索猫猫名字（支持模糊）' placeholder-class='searchPlaceholderStyle' value='{{filters_input}}' maxlength='20' confirm-type='search' bindinput='fSearchInput' bindconfirm='fSearch'></input>
   </view>
   
   <view class='filter-btn' bindtap='fToggle'>
@@ -59,7 +59,7 @@
         <view class='image-title' wx:else>{{item.photo.photo_id? ('Photo by ' + (item.photo.photographer ||(item.photo.userInfo? item.photo.userInfo.nickName: '匿名猫友'))): '加载照片ing'}}</view>
       </view>
       <view class='info'>
-        <view class='line'>
+        <view class='line' id='firstLine'>
           <text class='name'>{{item.name}}</text>
           <block wx:if='{{item.gender}}'>
             <image mode='aspectFill' class='gender' wx:if='{{item.gender === "公"}}' src="../../images/card/card/male.png"></image>
