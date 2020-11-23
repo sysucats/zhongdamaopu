@@ -33,13 +33,17 @@ button.primary {
 }
 
 input, picker, textarea {
-  width: 670rpx;
+  width: 650rpx;
   border-bottom: 2rpx #ffd110 solid;
   background-color: #fafafa;
-  padding: 10rpx;
+  padding: 20rpx;
   color: #222;
   border-radius: 20rpx;
   margin-top: 8rpx;
+}
+
+.inputTitle{
+  margin-left: 15rpx;
 }
 
 .feedbackColumn {
@@ -77,7 +81,7 @@ button {
 }
 
 .footnote {
-  margin-top: 20rpx;
-  font-size: 30rpx;
+  /* margin-top: 20rpx; */
+  font-size: 26rpx;
   color: #888;
 }

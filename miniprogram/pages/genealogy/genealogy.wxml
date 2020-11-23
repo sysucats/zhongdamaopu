@@ -49,7 +49,7 @@
   </view>
 </view>
 
-<scroll-view style='height: {{heights.windowHeight - heights.filters}}px;' scroll-y='true' enable-back-to-top='true' bindscrolltolower='onReachBottom' bindscroll='fScroll' lower-threshold='{{main_lower_threshold}}'>
+<scroll-view enable-flex='true' class='cards' style='height: {{heights.windowHeight - heights.filters}}px;' scroll-y='true' enable-back-to-top='true' bindscrolltolower='onReachBottom' bindscroll='fScroll' lower-threshold='{{main_lower_threshold}}'>
   <block wx:for='{{cats}}' wx:key="_id">
     <view class='card' bindtap='clickCatCard' bindlongpress='bindManageCat' data-cat_id='{{item._id}}'>
       <view class='label' wx:if="{{item.mphoto_new}}">有新相片！</view>

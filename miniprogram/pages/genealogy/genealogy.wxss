@@ -9,13 +9,25 @@ page {
 scroll-view {
   -webkit-overflow-scrolling: touch;
   z-index: 0;
-  background-color: rgb(240, 240, 240);
+  background-color: #f7f7fa;
 }
+
+.cards{
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  /* padding-top: 20rpx; */
+  /* 第一张card的margin-top */
+}
+
 .card {
-  margin: 20rpx 67.5rpx 50rpx 67.5rpx;
+  /* margin: 20rpx 67.5rpx 50rpx 67.5rpx; */
+  margin: 25rpx 0;
   font-size: 24rpx;
   line-height: 24rpx;
-  width: 615rpx;
+  /* width: 615rpx; */
+  width: 650rpx;
   border-radius: 15rpx;
 
   box-sizing: border-box;
@@ -28,7 +40,7 @@ scroll-view {
 }
 
 .card view.image {
-  width: 615rpx;
+  /* width: 615rpx; */
   height: 615rpx;
   border-radius: 15rpx 15rpx 0 0;
   position: relative;
@@ -36,7 +48,8 @@ scroll-view {
 }
 
 .card view.image .image-title{
-  width: 615rpx;
+  /* width: 615rpx; */
+  width: 100%;
   height: 40rpx;
 
   line-height: 40rpx;
@@ -50,7 +63,8 @@ scroll-view {
 }
 
 .card view.image image {
-  width: 615rpx;
+  /* width: 615rpx; */
+  width: 100%;
   height: 615rpx;
   background-color: #eee;
 	background-image: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBzdGFuZGFsb25lPSJubyI/PjwhRE9DVFlQRSBzdmcgUFVCTElDICItLy9XM0MvL0RURCBTVkcgMS4xLy9FTiIgImh0dHA6Ly93d3cudzMub3JnL0dyYXBoaWNzL1NWRy8xLjEvRFREL3N2ZzExLmR0ZCI+PHN2ZyB0PSIxNTUzOTI5NDU5ODM3IiBjbGFzcz0iaWNvbiIgc3R5bGU9IiIgdmlld0JveD0iMCAwIDEyMTYgMTAyNCIgdmVyc2lvbj0iMS4xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHAtaWQ9IjIxMzYiIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB3aWR0aD0iMjM3LjUiIGhlaWdodD0iMjAwIj48ZGVmcz48c3R5bGUgdHlwZT0idGV4dC9jc3MiPjwvc3R5bGU+PC9kZWZzPjxwYXRoIGQ9Ik0xMTIwIDEwMjRIOTZjLTU0LjQgMC05Ni00MS42LTk2LTk2Vjk2YzAtNTQuNCA0MS42LTk2IDk2LTk2aDEwMjRjNTQuNCAwIDk2IDQxLjYgOTYgOTZ2ODMyYzAgNTQuNC00MS42IDk2LTk2IDk2ek05NiA2NGMtMTkuMiAwLTMyIDEyLjgtMzIgMzJ2ODMyYzAgMTkuMiAxMi44IDMyIDMyIDMyaDEwMjRjMTkuMiAwIDMyLTEyLjggMzItMzJWOTZjMC0xOS4yLTEyLjgtMzItMzItMzJIOTZ6IiBwLWlkPSIyMTM3IiBmaWxsPSIjY2RjZGNkIj48L3BhdGg+PHBhdGggZD0iTTY0IDc2OGMtOS42IDAtMTYtMy4yLTIyLjQtOS42LTEyLjgtMTIuOC0xMi44LTMyIDAtNDQuOGwzNTItMzUyYzEyLjgtMTIuOCAyOC44LTEyLjggNDEuNi0zLjJMODAwIDY2Mi40bDE3Mi44LTExNS4yYzEyLjgtNi40IDI1LjYtNi40IDM4LjQgMy4ybDE2MCAxMjhjMTIuOCA5LjYgMTYgMzIgNi40IDQ0LjgtOS42IDEyLjgtMzIgMTYtNDQuOCA2LjRMOTkyIDYxNy42bC0xNzIuOCAxMTUuMmMtMTIuOCA2LjQtMjguOCA2LjQtMzguNC0zLjJsLTM2MS42LTMwMC44TDg2LjQgNzU4LjRjLTYuNCA2LjQtMTIuOCA5LjYtMjIuNCA5LjZ6IiBwLWlkPSIyMTM4IiBmaWxsPSIjY2RjZGNkIj48L3BhdGg+PHBhdGggZD0iTTg5NiA1MTJjLTg5LjYgMC0xNjAtNzAuNC0xNjAtMTYwczcwLjQtMTYwIDE2MC0xNjAgMTYwIDcwLjQgMTYwIDE2MC03MC40IDE2MC0xNjAgMTYweiBtMC0yNTZjLTU0LjQgMC05NiA0MS42LTk2IDk2czQxLjYgOTYgOTYgOTYgOTYtNDEuNiA5Ni05Ni00MS42LTk2LTk2LTk2eiIgcC1pZD0iMjEzOSIgZmlsbD0iI2NkY2RjZCI+PC9wYXRoPjwvc3ZnPg==);
@@ -65,7 +79,7 @@ scroll-view {
 }
 
 .card .info {
-  padding: 35rpx 40rpx 20rpx 40rpx;
+  padding: 35rpx 35rpx 20rpx 35rpx;
 }
 
 .card .info .line {
@@ -82,7 +96,7 @@ scroll-view {
 
 .card .info .name {
   height: 30rpx;
-  font-size: 30rpx;
+  font-size: 33rpx;
   line-height: 30rpx;
 
   font-weight: 600;
@@ -143,7 +157,7 @@ scroll-view {
   color:#bbb;
 }
 .card .line .characteristics{
-  line-height: 1rem;
+  line-height: 0.8rem;
 }
 
 .loading image {
@@ -196,12 +210,13 @@ scroll-view {
 /* 广告栏 */
 
 .card-ad {
-  margin: 20rpx 67.5rpx 50rpx 67.5rpx;
-  width: 615rpx;
+  /* margin: 20rpx 67.5rpx 50rpx 67.5rpx; */
+  margin: 15rpx 0;
+  width: 650rpx;
   border-radius: 15rpx;
   background-color: white;
   box-shadow: -10rpx 10rpx 30rpx #ddd;
-  overflow: hidden;
+  /* overflow: hidden; */
   display: flex;
   justify-content: center;
   align-items: center;
