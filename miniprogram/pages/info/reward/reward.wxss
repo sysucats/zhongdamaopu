@@ -3,7 +3,7 @@
 .block {
   width: 690rpx;
   margin: 50rpx 30rpx 0 30rpx;
-  padding: 50rpx 30rpx 20rpx 30rpx;
+  padding: 50rpx 30rpx 25rpx 30rpx;
   box-sizing: border-box;
   border-radius: 10rpx;
   box-shadow: 0 0 10rpx #555;
@@ -31,6 +31,7 @@
   font-size: 30rpx;
   color: #2f2f2f;
   line-height: 50rpx;
+  margin-bottom: 10rpx;
 }
 
 .block .hl {
@@ -45,14 +46,15 @@ button {
   font-size: 30rpx;
   line-height: 40rpx;
   margin: 10rpx;
-  padding: 20rpx 30rpx;
+  padding: 16rpx 30rpx;
   border: 1rpx solid #888;
-  border-radius: 10rpx;
+  border-radius: 25rpx;
+  /* TODO:hover-class */
 }
 
 /* 最后的小tip */
 .tip {
   font-size: 28rpx;
-  margin: 30rpx;
+  margin: 15rpx 40rpx;
   color: #777;
 }

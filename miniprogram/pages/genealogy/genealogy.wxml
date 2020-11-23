@@ -5,7 +5,7 @@
     <view class='input-icon'>
       <image mode='aspectFit' src="../../images/filter/search.png"></image>
     </view>
-    <input class='name' placeholder='搜索猫猫名字（支持模糊）' value='{{filters_input}}' maxlength='20' confirm-type='search' bindinput='fSearchInput' bindconfirm='fSearch'></input>
+    <input class='name' placeholder='搜索猫猫名字（支持模糊）' placeholder-class='searchPlaceholderStyle' value='{{filters_input}}' maxlength='20' confirm-type='search' bindinput='fSearchInput' bindconfirm='fSearch'></input>
   </view>
   
   <view class='filter-btn' bindtap='fToggle'>
@@ -49,7 +49,7 @@
   </view>
 </view>
 
-<scroll-view style='height: {{heights.windowHeight - heights.filters}}px;' scroll-y='true' enable-back-to-top='true' bindscrolltolower='onReachBottom' bindscroll='fScroll' lower-threshold='{{main_lower_threshold}}'>
+<scroll-view enable-flex='true' class='cards' style='height: {{heights.windowHeight - heights.filters}}px;' scroll-y='true' enable-back-to-top='true' bindscrolltolower='onReachBottom' bindscroll='fScroll' lower-threshold='{{main_lower_threshold}}'>
   <block wx:for='{{cats}}' wx:key="_id">
     <view class='card' bindtap='clickCatCard' bindlongpress='bindManageCat' data-cat_id='{{item._id}}'>
       <view class='label' wx:if="{{item.mphoto_new}}">有新相片！</view>
@@ -59,7 +59,7 @@
         <view class='image-title' wx:else>{{item.photo.photo_id? ('Photo by ' + (item.photo.photographer ||(item.photo.userInfo? item.photo.userInfo.nickName: '匿名猫友'))): '加载照片ing'}}</view>
       </view>
       <view class='info'>
-        <view class='line'>
+        <view class='line' id='firstLine'>
           <text class='name'>{{item.name}}</text>
           <block wx:if='{{item.gender}}'>
             <image mode='aspectFill' class='gender' wx:if='{{item.gender === "公"}}' src="../../images/card/card/male.png"></image>
@@ -78,11 +78,11 @@
         </view>
         <view class='line'>
           <image mode='aspectFit' class='icon' src='../../images/card/card/cat.png'></image>
-          <text>{{item.characteristics_string}}</text>
+          <text class="characteristics">{{item.characteristics_string}}</text>
         </view>
         <view class='line'>
           <image mode='aspectFit' class='icon' src='../../images/card/card/heart.png'></image>
-          <text>{{item.habit || '性格未知'}}</text>
+          <text class="habit">{{item.habit || '性格未知'}}</text>
         </view>
         <view class='line'>
           <image mode='aspectFit' class='icon' src='../../images/card/card/pos.png'></image>
@@ -95,6 +95,10 @@
       <ad unit-id="adunit-9a7dcb84fe2c4db1" ad-intervals="120"
       bindload="adLoad" binderror="adError" bindclose="adClose" data-ad_id='ad-{{(index+1)}}'></ad>
     </view>
+    <!-- 嵌套card-ad时，card-over设置overflow:hidden-安卓不可见;独立ad时，需设置over
+     -->
+    <!-- <ad wx:if="{{adStep && (index+1)%adStep===0}}" class="card-ad" unit-id="adunit-9a7dcb84fe2c4db1" ad-intervals="120"
+      bindload="adLoad" binderror="adError" bindclose="adClose" data-ad_id='ad-{{(index+1)}}'></ad> -->
   </block>
 
 <view class='loading' wx:if='{{!loadnomore}}'>

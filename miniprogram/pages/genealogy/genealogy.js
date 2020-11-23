@@ -311,7 +311,7 @@ Page({
       success: res => {
         console.log(res);
         this.setData({
-          "heights.filters": res.screenHeight * 0.07,
+          "heights.filters": res.screenHeight * 0.065,
           "heights.screenHeight": res.screenHeight,
           "heights.windowHeight": res.windowHeight,
           "heights.statusBarHeight": res.statusBarHeight,
@@ -560,7 +560,7 @@ Page({
   // 广告加载成功，展示出来
   adLoad(e) {
     const ad_id = e.currentTarget.dataset.ad_id;
-    console.log('广告加载', ad_id);
+    console.log('广告加载成功', ad_id);
     this.changeState(ad_id, true);
   },
   // 加载失败

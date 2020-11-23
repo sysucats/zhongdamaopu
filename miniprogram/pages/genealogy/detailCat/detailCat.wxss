@@ -50,7 +50,7 @@ swiper-item image {
 .info {
   width: 750rpx;
   box-sizing: border-box;
-  padding: 30rpx 60rpx;
+  padding: 30rpx 60rpx 10rpx 60rpx;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -62,13 +62,13 @@ swiper-item image {
 /* 以下为信息部分 */
 .info .name {
   height: 36rpx;
-  font-size: 36rpx;
+  font-size: 40rpx;
   line-height: 36rpx;
 
   font-weight: 450;
   letter-spacing: 4rpx;
-  margin-bottom: 20rpx;
-
+  margin-bottom: 30rpx;
+  margin-left: 8rpx;
   display: flex;
   align-items: center;
 }
@@ -103,8 +103,8 @@ swiper-item image {
   box-sizing: border-box;
   border-radius: 20rpx;
   background-color: #ffd101;
-  padding: 5rpx 10rpx;
-  margin-right: 30rpx;
+  padding: 6rpx 15rpx 8rpx 15rpx;
+  margin-right: 20rpx;
 }
 
 
@@ -123,7 +123,7 @@ swiper-item image {
 
 .details {
   width: 630rpx;
-  margin-top: 50rpx;
+  margin-top: 35rpx;
 
   display: flex;
   justify-content: space-between;
@@ -166,14 +166,16 @@ swiper-item image {
 }
 
 .feedback .fb-button {
-  position: absolute;
-  right: 60rpx;
+  /* 文案（作为按钮略长）、位置、配色（和不能点击的tag相似）有待考虑 */
+  /* position: absolute;
+  right: 60rpx; */
   font-size: 20rpx;
   height: 40rpx;
   box-sizing: border-box;
   border-radius: 10rpx;
   background-color: #ffd101;
-  padding: 5rpx 10rpx;
+  padding: 5rpx 13rpx;
+  margin-right: 40rpx;
 }
 
 /* 下面开始相册 */
@@ -192,7 +194,7 @@ swiper-item image {
 
 .album-block .header {
   width: 100%;
-  padding: 20rpx 40rpx 10rpx 40rpx;
+  padding: 30rpx 0 20rpx 35rpx;
 }
 
 .album-block .header image {
@@ -220,7 +222,7 @@ swiper-item image {
   width: 240rpx;
   height: 240rpx;
   box-sizing: border-box;
-  margin: 5rpx;
+  margin: 6rpx;
   background-color: #fff;
 }
 
@@ -248,7 +250,8 @@ swiper-item image {
   width: 750rpx;
   background-color: white;
   display: flex;
-  align-content: center;
+  /* align-content: center; */
+  align-items: center;
 }
 .big-header.fix {
   position: fixed;
@@ -263,6 +266,7 @@ swiper-item image {
 }
 .big-header .name-and-count {
   display: inline-block;
+  flex-grow: 1;
 }
 .big-header .name-and-count .name {
   height: 36rpx;
