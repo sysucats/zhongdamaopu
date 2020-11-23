@@ -78,11 +78,11 @@
         </view>
         <view class='line'>
           <image mode='aspectFit' class='icon' src='../../images/card/card/cat.png'></image>
-          <text>{{item.characteristics_string}}</text>
+          <text class="characteristics">{{item.characteristics_string}}</text>
         </view>
         <view class='line'>
           <image mode='aspectFit' class='icon' src='../../images/card/card/heart.png'></image>
-          <text>{{item.habit || '性格未知'}}</text>
+          <text class="habit">{{item.habit || '性格未知'}}</text>
         </view>
         <view class='line'>
           <image mode='aspectFit' class='icon' src='../../images/card/card/pos.png'></image>
