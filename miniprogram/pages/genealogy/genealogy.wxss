@@ -157,7 +157,7 @@ scroll-view {
   color:#bbb;
 }
 .card .line .characteristics{
-  line-height: 0.8rem;
+  line-height: 1rem;
 }
 
 .loading image {
@@ -216,10 +216,17 @@ scroll-view {
   border-radius: 15rpx;
   background-color: white;
   box-shadow: -10rpx 10rpx 30rpx #ddd;
-  /* overflow: hidden; */
+  overflow: hidden;
+  /* overflow: visible; */
+  /* flex-grow: 1; */
+
   display: flex;
   justify-content: center;
   align-items: center;
+
+  min-height: 200rpx;
+  box-sizing: border-box;
+
 }
 
 .card-ad.hidden {
