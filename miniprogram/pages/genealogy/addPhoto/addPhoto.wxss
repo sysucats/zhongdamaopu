@@ -1,11 +1,11 @@
 page {
   width: 750rpx;
-  padding: 50rpx 30rpx;
+  padding: 50rpx 30rpx 0 30rpx;
   box-sizing: border-box;
 }
 .userInfo {
   width: 100%;
-  padding: 0rpx 0rpx 30rpx 0;
+  padding: 0rpx 0rpx 10rpx 0;
   display: flex;
 }
 
@@ -59,8 +59,8 @@ page {
 
 .card {
   box-shadow: 0 0 10rpx #888;
-  padding: 30rpx 30rpx;
-  margin: 20rpx 0;
+  padding: 30rpx 30rpx 15rpx 30rpx;
+  margin: 30rpx 0;
   border-radius: 20rpx;
 }
 
@@ -80,7 +80,8 @@ button {
   line-height: 40rpx;
   padding: 20rpx 30rpx;
   border: 1rpx solid #888;
-  border-radius: 10rpx;
+  border-radius: 15rpx;
+  margin-top: 15rpx;
 }
 
 button.long {
@@ -102,6 +103,7 @@ button + button {
   font-size: 30rpx;
   font-weight: 600;
   margin-bottom: 5rpx;
+  margin-left: 10rpx;
 }
 
 picker, input {
@@ -115,7 +117,7 @@ picker, input {
 /* 统一设置相关 */
 .set-all {
   box-shadow: 0 0 10rpx #888;
-  padding: 30rpx 30rpx;
+  padding: 30rpx 30rpx 20rpx 30rpx;
   margin: 20rpx 0;
   border-radius: 20rpx;
 }
@@ -128,5 +130,6 @@ picker, input {
 
 .tip {
   font-size: 24rpx;
+  margin-bottom: 5rpx;
   /* font-weight: bold; */
 }

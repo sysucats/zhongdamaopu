@@ -15,7 +15,7 @@
     <view class='userInfo'>
       <image src='../../../images/user.png'></image>
       <view>
-        <text>[等待授权]\n---准备为[<text style="font-weight:600;">{{cat.name}}</text>]添加照片</text>
+        <text>[等待授权]\n---准备为「<text style="font-weight:600;">{{cat.name}}</text>」添加照片</text>
       </view>
     </view>
     <button class='long primary' open-type='getUserInfo' bindgetuserinfo='getUInfo'>点击授权</button>
@@ -25,7 +25,7 @@
     <view class='userInfo'>
       <image src='{{user.userInfo.avatarUrl}}'></image>
       <view>
-        <text>{{user.userInfo.nickName}}\n---正在为[<text style="font-weight:600;">{{cat.name}}</text>]添加照片</text>
+        <text>{{user.userInfo.nickName}}\n---正在为「<text style="font-weight:600;">{{cat.name}}</text>」添加照片</text>
       </view>
     </view>
 

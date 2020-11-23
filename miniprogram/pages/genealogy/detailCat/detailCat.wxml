@@ -101,9 +101,9 @@ next-margin='60rpx'>
       <view class='value'>{{cat.tutorial || '暂时还没有'}}</view>
     </view>
   </view>
-  <view class='feedback'>
+  <!-- <view class='feedback'>
     <view class='fb-button' bindtap='bindTapFeedback'>我想反馈猫猫信息！</view>
-  </view>
+  </view> -->
 </view>
 <!-- info end -->
 
@@ -112,6 +112,9 @@ next-margin='60rpx'>
   <view class='name-and-count'>
     <view class='name'>{{cat.name}}的相册</view>
     <view class='count'>共{{albumMax}}张照片</view>
+  </view>
+  <view class='feedback'>
+    <view class='fb-button' bindtap='bindTapFeedback'>我想反馈猫猫信息！</view>
   </view>
 </view>
 
