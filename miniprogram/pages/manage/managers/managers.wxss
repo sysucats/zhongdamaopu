@@ -24,6 +24,45 @@ button.long {
   width: 100%;
 }
 
+#search {
+  width: 100%;
+}
+
+/* 搜索框CSS */
+#search .input-block {
+  align-items: center;
+  padding: 15rpx 10rpx;
+  margin: 20rpx 20rpx 30rpx 20rpx;
+  box-shadow: 0rpx 0rpx 10rpx #ddd;
+  border-radius: 10rpx;
+}
+
+#search .input-icon {
+  width: 10%;
+  height: 1.4rem;
+  background-color: white;
+  border-top-left-radius: 10rpx;
+  border-bottom-left-radius: 10rpx;
+  display: inline-block;
+}
+
+#search .input-icon image {
+  width: 60%;
+  height: 100%;
+  margin: 0 20%;
+}
+
+#search input.name {
+  width: 90%;
+  height: 1.4rem;
+  line-height: 1.4rem;
+  /* background-color: rgb(255, 237, 193); */
+  background-color: white;
+  border-top-right-radius: 10rpx;
+  border-bottom-right-radius: 10rpx;
+  display: inline-block;
+  box-sizing: border-box;
+}
 
 /* 下面开始用户管理的CSS */
 .user-box {

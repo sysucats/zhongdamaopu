@@ -1,4 +1,12 @@
 <block wx:if="{{auth}}">
+  <view id='search'>
+    <view class='input-block'>
+      <view class='input-icon'>
+        <image mode='aspectFit' src="../../../images/filter/search.png"></image>
+      </view>
+      <input class='name' placeholder='搜索人员（支持模糊）' value='{{userSearch}}' maxlength='20' confirm-type='search' bindinput='fSearchInput' bindconfirm='fSearch'></input>
+    </view>
+  </view>
   <scroll-view style="height: {{windowHeight}}px;" scroll-y="true" enable-back-to-top="true" bindscrolltolower="scrollToReload">
     <view class="user-box" wx:for="{{users}}" wx:key="{{item._id}}">
       <view wx:if="{{item.userInfo}}" class="info">

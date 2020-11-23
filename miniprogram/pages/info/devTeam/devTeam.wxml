@@ -11,6 +11,9 @@
 <view class='block'>
   <view class='title'>更新日志</view>
   <view class='desc'>
+    <view class='sub-title hl'>v1.4.9</view>
+    <text class='sub-detail'>- 后台人员管理增加搜索功能\n- 更新时间：2020/11/23</text>
+
     <view class='sub-title hl'>v1.4.8</view>
     <text class='sub-detail'>- 修复赞赏记录后台输入限制bug\n- 更新时间：2020/11/5</text>
 

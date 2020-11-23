@@ -13,6 +13,7 @@ Page({
   data: {
     tipText: '正在鉴权...',
     tipBtn: false,
+    userSearch: '',
     users: [],
     windowHeight: "300",
     manager_types: ['0-非管理员', '1-审核照片', '2-修改猫猫、校区', '3-处理图片', '99-管理成员']
@@ -108,7 +109,9 @@ Page({
     wx.showLoading({
       title: '加载中...',
     });
-    db.collection('user').skip(users.length).limit(10).get().then(res => {
+    var userSearch = this.data.userSearch;
+    var query = userSearch ? {"userInfo.nickName": db.RegExp({regexp: userSearch, options: 'ims'})} : {};
+    db.collection('user').where(query).skip(users.length).limit(10).get().then(res => {
       console.log(res);
       wx.hideLoading();
       if (reload) {
@@ -135,6 +138,18 @@ Page({
   // 滑到底部来reload
   scrollToReload: function(e) {
     this.loadUsers();
+  },
+
+  fSearchInput: function (e) {
+    const value = e.detail.value;
+    this.setData({
+      userSearch: value
+    });
+  },
+
+  fSearch: function(e) {
+    this.data.users = [];
+    this.loadUsers(true);
   },
 
   // 获取一下页面高度，铺满scroll-view
