@@ -4,7 +4,7 @@
 <view class='block'>
   <view class='title'>开发团队</view>
   <view class='desc'>
-    <text>渔政、蓝卷、XD、hehe、玥琪、大米\n以及各校区猫群小伙伴~</text>
+    <text>渔政、蓝卷、XD、zJ、hehe、玥琪、大米\n以及各校区猫群小伙伴~</text>
   </view>
 </view>
 
@@ -12,7 +12,7 @@
   <view class='title'>更新日志</view>
   <view class='desc'>
     <view class='sub-title hl'>v1.4.9</view>
-    <text class='sub-detail'>- 后台人员管理增加搜索功能\n- 更新时间：2020/11/23</text>
+    <text class='sub-detail'>- 后台人员管理增加搜索功能\n - 猫谱页、猫咪详情页、反馈页、关于页面布局调整\n- 更新时间：2020/11/23</text>
 
     <view class='sub-title hl'>v1.4.8</view>
     <text class='sub-detail'>- 修复赞赏记录后台输入限制bug\n- 更新时间：2020/11/5</text>
