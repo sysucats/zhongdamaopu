@@ -12,7 +12,7 @@ image {
 }
 
 button {
-  width: 45%;
+  width: 47%;
   display: inline-block;
   font-size: 35rpx;
   box-sizing: border-box;
@@ -23,7 +23,7 @@ button.primary {
 }
 
 button + button {
-  margin-left: 10%;
+  margin-left: 5%;
   /* float: right; */
 }
 
@@ -36,11 +36,11 @@ button.long {
   position: fixed;
   bottom: 20rpx;
   margin: 20rpx 3rpx;
-  padding: 20rpx;
+  padding: 40rpx 40rpx 30rpx 40rpx;
   box-shadow: 0rpx 0rpx 30rpx gainsboro;
   border-radius: 20rpx;
   background-color: rgba(255,255,255,0.95);
-  width: 650rpx;
+  width: 610rpx;
 }
 
 .bottom-clear-box {
@@ -50,7 +50,7 @@ button.long {
 
 .verify-box {
   box-sizing: border-box;
-  padding: 50rpx 10rpx;
+  padding: 40rpx 40rpx 30rpx 40rpx;
   margin-bottom: 50rpx;
   box-shadow: 0rpx 0rpx 30rpx #ddd;
   border-radius: 20rpx;
@@ -73,7 +73,7 @@ button.long {
 
 .label.reply {
   color: #008;
-  margin: 10rpx 0;
+  margin: 10rpx 0 30rpx 0;
 }
 
 .label.cat text {
@@ -87,7 +87,7 @@ button.long {
   color: #888;
   box-shadow: 0rpx 0rpx 30rpx #ddd;
   padding: 30rpx;
-  margin: 30rpx 0;
+  margin-bottom: 30rpx;
   border-radius: 10rpx;
 }
 
