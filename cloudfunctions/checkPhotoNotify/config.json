@@ -1,6 +1,8 @@
 {
   "permissions": {
     "openapi": [
+      "templateMessage.send",
+      "subscribeMessage.send"
     ]
   }
 }

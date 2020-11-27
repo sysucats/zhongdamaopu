@@ -63,7 +63,17 @@ page {
   text-align: center;
 }
 
-.friend-link-box, .option-box {
+.friend-link-box{
+  background-color: #ffffff;
+  margin: 10rpx 6rpx 10rpx 6rpx;
+  padding: 35rpx 15rpx 15rpx 15rpx;
+  padding: 5rpx ;
+  box-shadow: 0rpx 0rpx 10rpx #f2f2f2;
+  border-radius: 15rpx;
+  display: flex;
+}
+
+.option-box {
   background-color: #ffffff;
   margin: 10rpx 6rpx 10rpx 6rpx;
   padding: 35rpx 15rpx 15rpx 15rpx;
