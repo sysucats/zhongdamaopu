@@ -20,6 +20,7 @@ button {
 
 button.primary {
   background-color: #ffd101;
+  margin-top:30rpx;
 }
 
 button + button {
@@ -73,7 +74,7 @@ button.long {
 
 .label.reply {
   color: #008;
-  margin: 10rpx 0 30rpx 0;
+  margin: 10rpx 0;
 }
 
 .label.cat text {

@@ -9,7 +9,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "request-promise": "^4.2.4",
-    "wx-server-sdk": "latest"
+    "wx-server-sdk": "~2.3.2"
   }
 }

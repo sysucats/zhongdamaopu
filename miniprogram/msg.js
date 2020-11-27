@@ -1,16 +1,23 @@
+// const { fail } = require("assert");
+
 const verifyTplId = 'AtntuAUGnzoBumjfmGB8Yyc-67FUxRH5Cw7bnEYFCXo'; //审核结果通知模板Id
 const feedbackTplId = 'IeKS7nPSsBy62REOKiDC2zuz_M7RbKwR97ZiIy_ocmw'; // 反馈回复结果模板Id
+const notifyVerifyTplId = 'jxcvND-iLSQZLZhlHD2A91gY0tLSfzyYc3bl39bxVuk'; // 提醒审核模版Id // jxcvND-iLSQZLZhlHD2A91ZfBLp0Kexv569MzTxa3zk
 
 async function requestNotice(template) {
   var tplId;
   if (template == 'verify') {
     tplId = verifyTplId;
-  } else {
+  } else if( template == 'notifyVerify'){
+    tplId = notifyVerifyTplId;
+  }
+  else {
     tplId = feedbackTplId;
   }
   let res = await wx.requestSubscribeMessage({
     tmplIds: [tplId],
   });
+  // console.log(res)
   if (res.errMsg != 'requestSubscribeMessage:ok') {
     console.log('调用消息订阅请求接口失败' + res.errCode);
     await wx.showToast({
@@ -29,7 +36,7 @@ async function requestNotice(template) {
     return true;
   } else {
     await wx.showToast({
-      title: '你拒收了结果通知QAQ',
+      title: '你拒收了通知QAQ',
       icon: 'none',
       duration: 500,
     })
@@ -74,8 +81,30 @@ async function sendReplyNotice(openid, fb_id, reply) {
   return res.result;
 }
 
+// 发送提醒审核消息
+function sendNotifyVertifyNotice(numUnchkPhotos) {
+  const db = wx.cloud.database();
+  const _ = db.command;
+  let res = wx.cloud.callFunction({
+    name: 'sendMsg',
+    data: {
+      numUnchkPhotos: numUnchkPhotos,
+      tplId: notifyVerifyTplId,
+    },
+    success:res=>{
+      console.log("callSendMsgSuccess:",res);
+    },
+    fail:res => {
+      console.log("callSendMsgFail:",res);
+    }
+  });
+  return res;
+}
+
 module.exports = {
   requestNotice,
   sendVerifyNotice,
   sendReplyNotice,
+  sendNotifyVertifyNotice,
+  notifyVerifyTplId
 }

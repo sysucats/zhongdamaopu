@@ -9,6 +9,7 @@ const getUserInfoOrFalse = user.getUserInfoOrFalse;
 
 const msg = require('../../../msg.js');
 const requestNotice = msg.requestNotice;
+const sendNotifyVerifyMsg = msg.sendNotifyVertifyNotice
 
 Page({
 
@@ -61,6 +62,10 @@ Page({
       });
     })
 
+  },
+
+  onUnload:function(options){
+    this.ifSendNotifyVeriftMsg()
   },
 
   /**
@@ -179,6 +184,25 @@ Page({
     });
   },
   
+  ifSendNotifyVeriftMsg(){
+
+    const triggerNum = 1; //累计一定数量未处理才进行消息提醒,TODO:从统一设置页导入
+    const db = wx.cloud.database();
+    var numUnchkPhotos;
+    db.collection('photo').where({
+      verified: false
+    }).count().then(res => {
+      // console.log("photoUnverify",res)
+      numUnchkPhotos = res.total;
+      // console.log(numUnchkPhotos);
+      if (numUnchkPhotos >= triggerNum) {
+      sendNotifyVerifyMsg(numUnchkPhotos);
+      console.log("toSendNVMsg");
+      }
+    })
+    
+  },
+
   async uploadImg(photo) {
     // multiple 表示当前是否在批量上传，如果是就不显示上传成功的弹框
     const that = this;

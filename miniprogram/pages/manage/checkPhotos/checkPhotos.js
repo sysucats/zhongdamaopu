@@ -5,8 +5,10 @@ const randomInt = utils.regeneratorRuntime;
 const isManager = utils.isManager;
 
 const msg = require('../../../msg.js');
+const requestNotice = msg.requestNotice;
 const sendVerifyNotice = msg.sendVerifyNotice;
-const verifyTplId = msg.verifyTplId;
+// const verifyTplId = msg.verifyTplId;
+const notifyTplId = msg.notifyVerifyTplId;
 
 // 准备发送通知的列表，姓名：审核详情
 var notice_list = {};
@@ -64,7 +66,7 @@ Page({
         console.log('数猫图完成', res.result);
       }
     });
-    
+
     // 发送审核消息
     sendVerifyNotice(notice_list);
   },
@@ -96,7 +98,7 @@ Page({
   // 检查权限
   checkAuth() {
     const that = this;
-    isManager(function(res) {
+    isManager(function (res) {
       if (res) {
         that.setData({
           auth: true
@@ -113,7 +115,9 @@ Page({
   },
   async loadPhotos() {
     const db = wx.cloud.database();
-    var photos = (await db.collection('photo').where({ verified: false }).get()).data;
+    var photos = (await db.collection('photo').where({
+      verified: false
+    }).get()).data;
     for (var ph of photos) {
       var cat = (await db.collection('cat').doc(ph.cat_id).get()).data;
       ph.cat = cat
@@ -126,12 +130,15 @@ Page({
   },
 
   reload() {
+    this.requestSubscribeMessage()  //判断是否弹出订阅消息设置
     wx.showLoading({
       title: '加载中...',
     });
     const that = this;
     const db = wx.cloud.database();
-    db.collection('photo').where({ verified: false }).count().then(res => {
+    db.collection('photo').where({
+      verified: false
+    }).count().then(res => {
       console.log(res);
       that.setData({
         total: res.total
@@ -139,9 +146,34 @@ Page({
       that.loadPhotos().then(() => {
         wx.hideLoading();
       });
+      
     });
   },
 
+  async requestSubscribeMessage() {
+    // if (this.data.total === 0) {
+    if (this.data.total >= 0) {
+      wx.getSetting({
+        withSubscriptions: true,
+        success: res => {
+          console.log("subscribeSet:",res);
+          if(!(notifyTplId in res['subscriptionsSetting'])){
+            // 第一次请求
+            requestNotice('notifyVerify');
+            console.log("firstRequest");
+          }
+          else if(res.subscriptionsSetting[notifyTplId] === 'reject'){
+            // console.log("已拒绝");// 不再请求/重复弹出toast
+          }
+          else if(res.subscriptionsSetting[notifyTplId] === 'accept'){
+            console.log('重新请求下个一次性订阅');
+            requestNotice('notifyVerify');
+          }
+        }
+      })
+      // if(subscribeSetting['mainSwitch']){} //本小程序订阅消息总开关
+    }
+  },
   bindCheck(e) {
     const photo = e.currentTarget.dataset.photo;
     const best = e.currentTarget.dataset.best;
@@ -179,7 +211,7 @@ Page({
                 title: '审核通过',
               });
             });
-            
+
           })
         }
       }
@@ -241,10 +273,10 @@ Page({
         deleted: 0,
       }
     }
-    if(accepted) {
-      notice_list[openid].accepted ++;
+    if (accepted) {
+      notice_list[openid].accepted++;
     } else {
-      notice_list[openid].deleted ++;
+      notice_list[openid].deleted++;
     }
   },
 
