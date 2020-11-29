@@ -184,17 +184,17 @@ Page({
     });
   },
   
-  ifSendNotifyVeriftMsg(){
-
-    const triggerNum = 1; //累计一定数量未处理才进行消息提醒,TODO:从统一设置页导入
-    const db = wx.cloud.database();
+  async ifSendNotifyVeriftMsg(){
+    const db = wx.cloud.database(); 
+    const subMsgSetting = await db.collection('setting').doc('subscribeMsg').get();
+    const triggerNum = subMsgSetting.data.verifyPhoto.triggerNum; //几条未审核才触发
+    // console.log("triggerN",triggerNum);
     var numUnchkPhotos;
     db.collection('photo').where({
       verified: false
     }).count().then(res => {
       // console.log("photoUnverify",res)
       numUnchkPhotos = res.total;
-      // console.log(numUnchkPhotos);
       if (numUnchkPhotos >= triggerNum) {
       sendNotifyVerifyMsg(numUnchkPhotos);
       console.log("toSendNVMsg");

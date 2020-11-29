@@ -168,6 +168,13 @@ Page({
     }
   },
 
+  // onShareTimeline:function () {
+  //   return {
+  //     title: '中大猫谱 - 发现身边的猫咪',
+  //     // query: 'cat_id=' + this.data.cat._id
+  //   }
+  // },
+
   checkNeedLoad() {
     if (this.data.cats.length >= this.data.catsMax) {
       this.setData({

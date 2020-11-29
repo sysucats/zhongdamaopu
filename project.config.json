@@ -42,12 +42,6 @@
   "simulatorPluginLibVersion": {},
   "cloudfunctionTemplateRoot": "cloudfunctionTemplate",
   "condition": {
-    "search": {
-      "list": []
-    },
-    "conversation": {
-      "list": []
-    },
     "plugin": {
       "list": []
     },
@@ -173,6 +167,12 @@
           "id": 16,
           "name": "首页更新",
           "pathName": "pages/genealogy/genealogy",
+          "query": "",
+          "scene": null
+        },
+        {
+          "name": "反馈处理",
+          "pathName": "pages/manage/checkFeedbacks/checkFeedbacks",
           "query": "",
           "scene": null
         }

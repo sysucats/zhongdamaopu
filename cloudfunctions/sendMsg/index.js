@@ -9,6 +9,18 @@ const feedbackTplId = 'IeKS7nPSsBy62REOKiDC2zuz_M7RbKwR97ZiIy_ocmw'; // 反馈�
 const notifyVerifyTplId = 'jxcvND-iLSQZLZhlHD2A91gY0tLSfzyYc3bl39bxVuk' // 提醒审核模版Id
 // jxcvND-iLSQZLZhlHD2A91ZfBLp0Kexv569MzTxa3zk
 
+async function arrayResort(oriArray) {
+  var resortedArray = [];
+  var len = oriArray.length;
+  for (var i = 0; i < len; i++) {
+    var index = Math.floor(Math.random() * oriArray.length);
+    resortedArray.push(oriArray[index]);
+    oriArray.splice(index, 1);
+  }
+  resortedArray = [...resortedArray, ...oriArray];
+  return resortedArray;
+}
+
 function formatDate(date, fmt) {
   var o = {
     "M+": date.getMonth() + 1, //月份 
@@ -29,7 +41,8 @@ function formatDate(date, fmt) {
 exports.main = async (event, context) => {
   const openid = event.openid;
   const tplId = event.tplId;
-  const numUnchkPhotos = event.numUnchkPhotos;
+  const subMsgSettings = await db.collection('setting').doc('subscribeMsg').get()
+
   if (tplId == verifyTplId) {
     const content = '本次共收录' + event.content.accepted + '张照片' + (event.content.deleted ? ('，有' + event.content.deleted + '张未被收录。') : '。');
     try {
@@ -81,54 +94,66 @@ exports.main = async (event, context) => {
       return err;
     }
   } else if (tplId == notifyVerifyTplId) {
+    const maxReceiverNum = subMsgSettings.data.verifyPhoto.receiverNum;// 最多推送给几位管理员
+    // console.log('maxReceiverNum',maxReceiverNum);
+    const numUnchkPhotos = event.numUnchkPhotos;
+    const receiverCounter = 0; 
+    const verifyPhotoLevel = 2; // 所需最小管理员等级
     const wxContext = cloud.getWXContext()
     const _ = db.command;
-    const content = '又有' + numUnchkPhotos + '张新的猫片啦，有空审核一下吧';
-    var managerList;
-    // 管理员openIdList
-    var res = await db.collection('user').where({
-      manager: _.gt(10).lt(12)
+    // const content = '又有' + numUnchkPhotos + '张新的猫片啦，有空审核一下吧';
+    const content = '又有几张新的照片啦，有空看看猫猫吧'
+
+    var managerList = await db.collection('user').where({
+      manager: _.gte(verifyPhotoLevel) 
     }).get();
-    managerList = res.data; // TODO:随机推送/按序轮流推送部分管理员
+    // console.log("testList:", testList);
+    var resortedML = await arrayResort(managerList.data);
+    // console.log('resortML:', resortedML);
 
-    //最早一条未审核照片的提交时间
     var uploadTimeList = await db.collection('photo').where({
-      verified : false
-    }).orderBy('mdate','asc').get();
-    console.log("earliestUnverifyTime:", uploadTimeList);
-    var earliestTime = formatDate(uploadTimeList.data[0].mdate,'MM月dd日 hh:mm:ss')
-
-    for (var manager of managerList) {
-        try {
-          var result = await cloud.openapi.subscribeMessage.send({
-            touser: manager['openid'],
-            page: 'pages/manage/checkPhotos/checkPhotos',
-            data: {
-              number5: {
-                value: numUnchkPhotos
-              },
-              thing2:{
-              // thing7: {
-                value: content
-              },
-              time6: {
-                value: earliestTime
-              }
+      verified: false
+    }).orderBy('mdate', 'asc').get(); //最早一条未审核照片的提交时间
+    // console.log("earliestUnverifyTime:", uploadTimeList);
+    var earliestTime = formatDate(uploadTimeList.data[0].mdate, 'MM月dd日 hh:mm:ss')
+    var result;
+    for (var manager of resortedML) {
+      try {
+          result = await cloud.openapi.subscribeMessage.send({
+          touser: manager['openid'],
+          page: 'pages/manage/checkPhotos/checkPhotos',
+          data: {
+            number5: {
+              value: numUnchkPhotos
             },
-            templateId: notifyVerifyTplId,
-          })
-          // result 结构
-          // { errCode: 0, errMsg: 'openapi.templateMessage.send:ok' }
-          console.log("sendResult:", result);
-          return result;
-        } catch (err) {
-          // 错误处理
-          // err.errCode !== 0
-          // throw err
-          console.log("errerr:", err);
-          return err;
+            thing2: {
+              value: content
+            },
+            time6: {
+              value: earliestTime
+            }
+          },
+          templateId: notifyVerifyTplId,
+        })
+        // result 结构
+        // { errCode: 0, errMsg: 'openapi.templateMessage.send:ok' }
+        // console.log("sendResult:", result);
+        if(result.errCode === 0){
+          receiverCounter += 1;
+          if (receiverCounter >= maxReceiverNum) {
+            break;
+          }
         }
+      } catch (err) {
+        //遇到未订阅的管理员，TODO:建立订阅状态登记系统
+        // if (err.errCode === 43101) {
+        //   console.log("4310143101:", err);
+        // }else{
+        //   console.log("errerr:", err);
+        // }
+        continue;
       }
-    console.log("mgList1:", managerList);
+    }
+    return 'send to'+ receiverCounter + 'manager' ;
   }
 }
