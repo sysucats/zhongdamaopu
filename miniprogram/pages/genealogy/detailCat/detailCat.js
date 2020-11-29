@@ -55,8 +55,9 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
+    console.log("options:",options);
     cat_id = options.cat_id;
-
+    // console.log('cat_id:',cat_id);
     // 开始加载页面
     const that = this;
     const app = getApp();
@@ -153,7 +154,14 @@ Page({
     console.log(shareTo(this.data.cat.name + ' - 中大猫谱', path))
     return shareTo(this.data.cat.name + ' - 中大猫谱', path);
   },
-  
+
+  // onShareTimeline:function () {
+  //   return {
+  //     title: '中大猫谱 - 发现校园身边的猫咪',
+  //     query: 'cat_id=' + this.data.cat._id
+  //   }
+  // },
+
   swiperLast(e) {
     const current = e.detail.current;
     if (current === this.data.cat.photo.length - 1) {

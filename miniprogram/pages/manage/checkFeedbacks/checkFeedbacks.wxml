@@ -1,5 +1,5 @@
 <block wx:if="{{auth}}">
-  <view id='total-count'><text>目前共有{{total}}条反馈{{checkHistory? '已': '待'}}处理，\n点击所属猫猫名字可以跳转到该猫猫详情。\n</text></view>
+  <view id='total-count'><text>目前共有 {{total}} 条反馈{{checkHistory? '已': '待'}}处理，\n点击所属猫猫名字可以跳转到该猫猫详情。\n</text></view>
   <block wx:for="{{feedbacks}}" wx:key="_id">
     <view class='verify-box'>
       <view class='label cat' wx:if="{{item.cat}}" bindtap="toCatDetail" bindlongpress="toCatManage" data-cat_id="{{item.cat_id}}">所属猫猫：<text selectable='false'>{{item.cat.name}}（{{item.cat.campus}}）</text></view>

@@ -130,7 +130,7 @@ Page({
   },
 
   reload() {
-    this.requestSubscribeMessage()  //判断是否弹出订阅消息设置
+    this.requestSubscribeMessage() //判断是否弹出订阅消息设置
     wx.showLoading({
       title: '加载中...',
     });
@@ -146,28 +146,28 @@ Page({
       that.loadPhotos().then(() => {
         wx.hideLoading();
       });
-      
+
     });
   },
 
   async requestSubscribeMessage() {
-    // if (this.data.total === 0) {
-    if (this.data.total >= 0) {
+    // if (this.data.total <= 2) { //最多剩余几张照片可更新订阅状态，TODO:待更改
+    if (this.data.total >= 0) { 
       wx.getSetting({
         withSubscriptions: true,
         success: res => {
-          console.log("subscribeSet:",res);
-          if(!(notifyTplId in res['subscriptionsSetting'])){
-            // 第一次请求
-            requestNotice('notifyVerify');
-            console.log("firstRequest");
-          }
-          else if(res.subscriptionsSetting[notifyTplId] === 'reject'){
-            // console.log("已拒绝");// 不再请求/重复弹出toast
-          }
-          else if(res.subscriptionsSetting[notifyTplId] === 'accept'){
-            console.log('重新请求下个一次性订阅');
-            requestNotice('notifyVerify');
+          console.log("subscribeSet:", res);
+          if ('subscriptionsSetting' in res) {
+            if (!(notifyTplId in res['subscriptionsSetting'])) {
+              // 第一次请求
+              requestNotice('notifyVerify');
+              console.log("firstRequest");
+            } else if (res.subscriptionsSetting[notifyTplId] === 'reject') {
+              // console.log("已拒绝");// 不再请求/重复弹出toast
+            } else if (res.subscriptionsSetting[notifyTplId] === 'accept') {
+              console.log('重新请求下个一次性订阅');
+              requestNotice('notifyVerify');
+            }
           }
         }
       })

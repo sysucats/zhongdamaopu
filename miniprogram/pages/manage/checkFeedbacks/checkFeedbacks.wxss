@@ -1,6 +1,6 @@
 page {
   width: 750rpx;
-  padding: 30rpx 30rpx;
+  padding: 30rpx 30rpx 90rpx 30rpx;
   box-sizing: border-box;
 }
 
@@ -37,10 +37,10 @@ button.long {
   position: fixed;
   bottom: 20rpx;
   margin: 20rpx 3rpx;
-  padding: 40rpx 40rpx 30rpx 40rpx;
-  box-shadow: 0rpx 0rpx 30rpx gainsboro;
+  padding: 10rpx 40rpx 30rpx 40rpx;
+  box-shadow: 0rpx 0rpx 20rpx rgb(200, 200, 200);
   border-radius: 20rpx;
-  background-color: rgba(255,255,255,0.95);
+  background-color: rgba(255, 255, 255, 0.5);
   width: 610rpx;
 }
 

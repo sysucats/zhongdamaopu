@@ -66,33 +66,50 @@ page {
 .friend-link-box{
   background-color: #ffffff;
   margin: 10rpx 6rpx 10rpx 6rpx;
-  padding: 35rpx 15rpx 15rpx 15rpx;
-  padding: 5rpx ;
+  padding: 15rpx 15rpx;
   box-shadow: 0rpx 0rpx 10rpx #f2f2f2;
   border-radius: 15rpx;
   display: flex;
+  flex-wrap: wrap;
 }
+
+/* .scroll-friend-link-box{
+  background-color: #ffffff;
+  width: 90.5%;
+  margin: 10rpx 6rpx 10rpx 6rpx;
+  padding: 8rpx 30rpx;
+  box-shadow: 0rpx 0rpx 10rpx #f2f2f2;
+  border-radius: 15rpx;
+  display: flex;
+  overflow: scroll;
+  height: 200rpx;
+} */
 
 .option-box {
   background-color: #ffffff;
   margin: 10rpx 6rpx 10rpx 6rpx;
-  padding: 35rpx 15rpx 15rpx 15rpx;
+  /* padding: 35rpx 15rpx 15rpx 15rpx; */
   padding: 5rpx;
   box-shadow: 0rpx 0rpx 10rpx #f2f2f2;
   border-radius: 15rpx;
 }
 
 .friend-link {
-  margin: 28rpx 5rpx 20rpx 5rpx;
-  width: 25%;
-  display: inline-block;
+  margin: 28rpx 10rpx 20rpx 5rpx;
+  width: 150rpx;
+  /* display: inline-block; */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 
 .friend-link image {
   width: 100rpx;
   height: 100rpx;
-  margin-left: 33.75rpx;
+  /* margin-left: 33.75rpx; */
   border-radius: 50rpx;
+  margin-bottom: 15rpx;
 }
 
 .friend-link-text {
