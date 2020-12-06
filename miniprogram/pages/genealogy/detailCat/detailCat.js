@@ -156,9 +156,10 @@ Page({
   },
 
   // onShareTimeline:function () {
+  //   console.log('cat_id=' + this.data.cat._id);
   //   return {
-  //     title: '中大猫谱 - 发现校园身边的猫咪',
-  //     query: 'cat_id=' + this.data.cat._id
+  //     title: '中大猫谱 - 记录校园身边的猫咪',
+  //     // query: 'cat_id=' + this.data.cat._id
   //   }
   // },
 

@@ -58,12 +58,16 @@ Page({
     // 从扫描二维码扫进来，目前只用于猫猫二维码跳转
     if (options.scene) {
       const scene = decodeURIComponent(options.scene);
-      console.log(scene);
-      if(scene.startsWith('toC=')) {
+      console.log("scene:",scene);
+      if (scene.startsWith('toC=')) {
         const cat_No = scene.substr(4);
         const db = wx.cloud.database();
         const that = this;
-        db.collection('cat').where({ _no: cat_No }).field({ _no: true }).get().then(res => {
+        db.collection('cat').where({
+          _no: cat_No
+        }).field({
+          _no: true
+        }).get().then(res => {
           if (!res.data.length) {
             return;
           }
@@ -85,9 +89,34 @@ Page({
         adStep: settings['adStep']
       });
     })
+
+
+    var scene = wx.getLaunchOptionsSync().scene;
+    console.log(scene);
+    if(scene === 1154){
+      that.loadFilters();
+      // that.setData({
+      //   main_lower_threshold: 50,
+      //   adStep: 6
+      // });
+      // catsStep = 3;
+      const db = wx.cloud.database();
+      db.collection('setting').doc('pages').get().then(res => {
+        var genealogySetting = res.data['genealogy'];
+        console.log("genealogySetting",genealogySetting);
+        that.setData({
+          main_lower_threshold: genealogySetting['main_lower_threshold'],
+          adStep:genealogySetting['adStep']
+        })
+        catsStep = genealogySetting['catsStep']
+      });
+    }
   },
 
-  loadFilters: function() {
+  // onShow: function (options) {
+  //   console.log('onShow:', options);
+  // },
+  loadFilters: function () {
     // 下面开始加载filters
     loadFilter().then(res => {
 
@@ -101,7 +130,7 @@ Page({
       };
       area_item.category.push({
         name: '全部校区',
-        items: [],    // '全部校区'特殊处理
+        items: [], // '全部校区'特殊处理
         all_active: true
       });
       // 用个object当作字典，把area分下类
@@ -109,7 +138,7 @@ Page({
       for (let i = 0, len = res.campuses.length; i < len; ++i) {
         classifier[res.campuses[i]] = {
           name: res.campuses[i],
-          items: [],    // 记录属于这个校区的area
+          items: [], // 记录属于这个校区的area
           all_active: false
         };
       }
@@ -127,7 +156,9 @@ Page({
         category: [{
           name: '全部花色',
           items: res.colour.map(name => {
-            return {name: name};
+            return {
+              name: name
+            };
           }),
           all_active: true
         }]
@@ -139,7 +170,9 @@ Page({
       console.log(filters);
       this.setData({
         filters: filters,
-      }, () => { this.reloadCats(); });
+      }, () => {
+        this.reloadCats();
+      });
     })
   },
 
@@ -150,8 +183,6 @@ Page({
     this.getHeights();
   },
 
-  
-  
   /**
    * 页面上拉触底事件的处理函数
    */
@@ -168,12 +199,12 @@ Page({
     }
   },
 
-  // onShareTimeline:function () {
-  //   return {
-  //     title: '中大猫谱 - 发现身边的猫咪',
-  //     // query: 'cat_id=' + this.data.cat._id
-  //   }
-  // },
+  onShareTimeline:function () {
+    return {
+      title: '中大猫谱 - 发现校园身边的猫咪',
+      // query: 'cat_id=' + this.data.cat._id
+    }
+  },
 
   checkNeedLoad() {
     if (this.data.cats.length >= this.data.catsMax) {
@@ -187,7 +218,7 @@ Page({
 
   reloadCats() {
     // 增加lock
-    loadingLock ++;
+    loadingLock++;
     const nowLoadingLock = loadingLock;
     const db = wx.cloud.database();
     const cat = db.collection('cat');
@@ -206,7 +237,7 @@ Page({
       });
     });
   },
-  
+
   // 加载更多的猫猫
   loadMoreCats() {
     // 加载lock
@@ -248,7 +279,7 @@ Page({
         that.setData({
           cats: new_cats,
           loading: false,
-          loadnomore: Boolean(new_cats.length === that.data.catsMax )
+          loadnomore: Boolean(new_cats.length === that.data.catsMax)
         }, () => {
           that.loadCatsPhoto().then();
         });
@@ -267,7 +298,11 @@ Page({
     var cat2photos = {};
     for (var cat of cats) {
       if (cat.photo === default_png) {
-        const qf = { cat_id: cat._id, verified: true, best: true };
+        const qf = {
+          cat_id: cat._id,
+          verified: true,
+          best: true
+        };
         var total = cat.photo_count;
         // var total = (await photo.where(qf).count()).total;
         if (!total || total === 0) {
@@ -302,9 +337,9 @@ Page({
     });
 
   },
-  
+
   // 点击猫猫卡片
-  clickCatCard(e, isCatId=false) {
+  clickCatCard(e, isCatId = false) {
     const cat_id = isCatId ? e : e.currentTarget.dataset.cat_id;
     const detail_url = '/pages/genealogy/detailCat/detailCat';
     wx.navigateTo({
@@ -344,7 +379,7 @@ Page({
 
   ////// 下面开始新的filter //////
   // mask滑动事件catch
-  voidMove: function () { },
+  voidMove: function () {},
   // toggle filters
   fToggle: function () {
     // 这里只管显示和隐藏，类似取消键的功能
@@ -353,10 +388,10 @@ Page({
     });
   },
   // 点击main filter，切换sub的
-  fClickMain: function(e) {
+  fClickMain: function (e) {
     var filters = this.data.filters;
     const click_idx = e.currentTarget.dataset.index;
-    
+
     for (var item of filters) {
       item.active = false;
     }
@@ -375,7 +410,7 @@ Page({
     const index = e.target.dataset.index;
     const all_active = !filters[filters_sub].category[index].all_active;
     var category = filters[filters_sub].category[index];
-    if (index == 0) {   // 默认第0个是'全部'
+    if (index == 0) { // 默认第0个是'全部'
       for (let i = 0, len = filters[filters_sub].category.length; i < len; ++i) { // 把所有项反激活
         var ctg = filters[filters_sub].category[i];
         ctg.all_active = false;
@@ -383,14 +418,14 @@ Page({
           ctg.items[k].active = false;
         }
       }
-      filters[filters_sub].category[index].all_active = all_active;   // '全部'的激活状态
+      filters[filters_sub].category[index].all_active = all_active; // '全部'的激活状态
     } else {
-      filters[filters_sub].category[0].all_active = false;  // 取消'全部'的激活，默认第0个是'全部'
-      category.all_active = all_active;   // 点击的category状态取反
+      filters[filters_sub].category[0].all_active = false; // 取消'全部'的激活，默认第0个是'全部'
+      category.all_active = all_active; // 点击的category状态取反
       /* for (let k = 0, len = category.items.length; k < len; ++k) {  // 其下的所有项目激活状态与category一致
         category.items[k].active = all_active;
       } */
-      for (let k = 0, len = category.items.length; k < len; ++k) {  // 反激活其下所有sub
+      for (let k = 0, len = category.items.length; k < len; ++k) { // 反激活其下所有sub
         category.items[k].active = false;
       }
     }
@@ -404,12 +439,12 @@ Page({
   fClickSub: function (e) {
     var filters = this.data.filters;
     var filters_sub = this.data.filters_sub;
-    
+
     const category = filters[filters_sub].category[e.target.dataset.index];
-    const index= e.target.dataset.innerindex;
+    const index = e.target.dataset.innerindex;
 
     category.items[index].active = !category.items[index].active; // 激活状态取反
-    filters[filters_sub].category[0].all_active = false;  // 取消'全部'的激活，默认第0个是'全部'
+    filters[filters_sub].category[0].all_active = false; // 取消'全部'的激活，默认第0个是'全部'
     /* // 看看是否要把category激活/反激活
     var counter = 0;
     for (let k = 0, len = category.items.length; k < len; ++k) {
@@ -425,7 +460,7 @@ Page({
     });
   },
   // 检查现在这个filter是否有效，如果没有，那就deactive完成键
-  fCheckLegal: function(filters) {
+  fCheckLegal: function (filters) {
     for (const mainF of filters) {
       var count = 0; // 激活的数量
       if (mainF.category[0].all_active) continue; // '全部’是激活的
@@ -435,14 +470,14 @@ Page({
           continue;
         }
         for (const item of category.items) {
-          if (item.active)++count;
+          if (item.active) ++count;
         }
       }
       if (count == 0) return false;
     }
     return true;
   },
-  fGet: function() {
+  fGet: function () {
     const db = wx.cloud.database();
     const _ = db.command;
     const filters = this.data.filters;
@@ -453,7 +488,7 @@ Page({
       const key = mainF.key;
       var selected = []; // 储存已经选中的项
       const cateFilter = Boolean(mainF.cateKey);
-      if (cateFilter) {  // 如果分类的名字也会作为筛选内容，这种筛选可能是因为不同类间key字段可能重名
+      if (cateFilter) { // 如果分类的名字也会作为筛选内容，这种筛选可能是因为不同类间key字段可能重名
         var cateKey = mainF.cateKey;
         var cateSelected = [];
       }
@@ -462,7 +497,7 @@ Page({
       if (mainF.category[0].all_active) continue; // 选择了'全部‘, 不用管这个类
 
       for (const category of mainF.category) {
-        let cateKeyPushed = false;  // 一个category只用push一次，记一下
+        let cateKeyPushed = false; // 一个category只用push一次，记一下
         for (const item of category.items) {
           if (category.all_active || item.active) {
             selected.push(item.name);
@@ -503,7 +538,7 @@ Page({
     }
     return res;
   },
-  fComfirm: function() {
+  fComfirm: function () {
     if (!this.data.filters_legal) {
       return false;
     }
@@ -511,7 +546,7 @@ Page({
     this.reloadCats();
     this.fToggle();
   },
-  fReset: function() {
+  fReset: function () {
     // 重置所有分类
     var filters = this.data.filters;
     // const filters_sub = this.data.filters_sub;
@@ -539,11 +574,11 @@ Page({
       filters_input: value
     });
   },
-  fSearch: function(e) {
+  fSearch: function (e) {
     this.reloadCats();
   },
   // 搜索框是否要显示阴影
-  fScroll: function(e) {
+  fScroll: function (e) {
     const scrollTop = e.detail.scrollTop;
     const filters_show_shadow = this.data.filters_show_shadow;
     if ((scrollTop < 50 && filters_show_shadow == true) || (scrollTop >= 50 && filters_show_shadow == false)) {

@@ -38,7 +38,7 @@ input, picker, textarea {
   background-color: #fafafa;
   padding: 20rpx;
   color: #222;
-  border-radius: 20rpx;
+  /* border-radius: 20rpx; */
   margin-top: 8rpx;
 }
 

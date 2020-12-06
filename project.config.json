@@ -175,6 +175,11 @@
           "pathName": "pages/manage/checkFeedbacks/checkFeedbacks",
           "query": "",
           "scene": null
+        },
+        {
+          "name": "单页模式（分享到朋友圈）",
+          "pathName": "pages/genealogy/genealogy",
+          "scene": 1154
         }
       ]
     }
