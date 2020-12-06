@@ -146,6 +146,7 @@ scroll-view {
 .card .line image.icon {
   height: 26rpx;
   width: 26rpx;
+  min-width: 26rpx;
   margin-right: 20rpx;
 }
 
@@ -155,6 +156,10 @@ scroll-view {
   color:#bbb;
 }
 .card .line .characteristics{
+  line-height: 0.9rem;
+}
+
+.card .line .habit{
   line-height: 0.9rem;
 }
 

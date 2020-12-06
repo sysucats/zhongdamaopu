@@ -94,7 +94,7 @@ Page({
       })
       return;
     } */
-    let repliable = await requestNotice('feedback'); // 请求订阅消息推送
+    // let repliable = await requestNotice('feedback'); // 请求订阅消息推送
     wx.showLoading({
       title: '正在提交...',
       mask: true,
@@ -105,7 +105,7 @@ Page({
       feedbackInfo: submitData.feedbackInfo,
       contactInfo: submitData.contactInfo,
       dealed: false,
-      repliable: repliable,
+      // repliable: repliable,
     };
     if (this.data.cat != undefined) {
       data.cat_id = this.data.cat._id;
@@ -117,19 +117,36 @@ Page({
       data: data,
       success: (res) => {
         console.log(res);
+        that.setData({
+          feedbackId : res._id
+        })
         wx.hideLoading();
         wx.showToast({
           title: '收到你的反馈啦',
           icon: 'success',
           duration: 1000,
           success: () => {
-            setTimeout(() => {
-              wx.navigateBack();
-            }, 1000)
+            // setTimeout(() => {
+            //   wx.navigateBack();
+            // }, 1000)
           }
         })
       },
       fail: console.error
     })
-  }
+  },
+  
+  async toSubmit() {
+    let repliable = await requestNotice('feedback'); // 请求订阅消息推送
+    const db = wx.cloud.database();
+    db.collection('feedback').doc(this.data.feedbackId).update({
+      data:{
+        repliable:repliable
+      },
+      success:res=>{
+          wx.navigateBack();
+      }
+    })
+}
 })
+

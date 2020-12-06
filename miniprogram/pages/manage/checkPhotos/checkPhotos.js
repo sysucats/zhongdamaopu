@@ -8,7 +8,7 @@ const msg = require('../../../msg.js');
 const requestNotice = msg.requestNotice;
 const sendVerifyNotice = msg.sendVerifyNotice;
 // const verifyTplId = msg.verifyTplId;
-const notifyTplId = msg.notifyVerifyTplId;
+const notifyVerifyPhotoTplId = msg.notifyVerifyTplId;
 
 // 准备发送通知的列表，姓名：审核详情
 var notice_list = {};
@@ -158,13 +158,13 @@ Page({
         success: res => {
           console.log("subscribeSet:", res);
           if ('subscriptionsSetting' in res) {
-            if (!(notifyTplId in res['subscriptionsSetting'])) {
-              // 第一次请求
+            if (!(notifyVerifyPhotoTplId in res['subscriptionsSetting'])) {
+              // 第一次申请或只点了取消，未永久拒绝也未允许
               requestNotice('notifyVerify');
-              console.log("firstRequest");
-            } else if (res.subscriptionsSetting[notifyTplId] === 'reject') {
+              // console.log("firstRequest");
+            } else if (res.subscriptionsSetting[notifyVerifyPhotoTplId] === 'reject') {
               // console.log("已拒绝");// 不再请求/重复弹出toast
-            } else if (res.subscriptionsSetting[notifyTplId] === 'accept') {
+            } else if (res.subscriptionsSetting[notifyVerifyPhotoTplId] === 'accept') {
               console.log('重新请求下个一次性订阅');
               requestNotice('notifyVerify');
             }

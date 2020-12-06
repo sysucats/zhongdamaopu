@@ -70,6 +70,12 @@ Page({
     this.setData({
       version: app.globalData.version
     });
+
+    const db = wx.cloud.database();
+    db.collection('setting').doc('pages').get().then(res => {
+      app.globalData.settings = res.data;
+      resolve(app.globalData.settings[key]);
+    });
   },
 
   /**
@@ -78,6 +84,12 @@ Page({
   onShareAppMessage: function () {
     return {
       title: '关于 - 中大猫谱'
+    }
+  },
+
+  onShareTimeline:function () {
+    return {
+      title: '中大猫谱 - 记录校园身边的猫咪',
     }
   },
 

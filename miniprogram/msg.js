@@ -2,22 +2,33 @@
 
 const verifyTplId = 'AtntuAUGnzoBumjfmGB8Yyc-67FUxRH5Cw7bnEYFCXo'; //审核结果通知模板Id
 const feedbackTplId = 'IeKS7nPSsBy62REOKiDC2zuz_M7RbKwR97ZiIy_ocmw'; // 反馈回复结果模板Id
-const notifyVerifyTplId = 'jxcvND-iLSQZLZhlHD2A91gY0tLSfzyYc3bl39bxVuk'; // 提醒审核模版Id // jxcvND-iLSQZLZhlHD2A91ZfBLp0Kexv569MzTxa3zk
+const notifyVerifyTplId = 'jxcvND-iLSQZLZhlHD2A91gY0tLSfzyYc3bl39bxVuk'; // 提醒审核模版Id
+const notifyChkFeedbackTplId = 'jxcvND-iLSQZLZhlHD2A97jP3fm_FWV4wL_GFUcLxcQ';
 
 async function requestNotice(template) {
   var tplId;
   if (template == 'verify') {
     tplId = verifyTplId;
-  } else if( template == 'notifyVerify'){
+  } else if (template == 'notifyVerify') {
     tplId = notifyVerifyTplId;
-  }
-  else {
+  } else if (template == 'notifyChkFeedback') {
+    tplId = notifyChkFeedbackTplId;
+  } else {
     tplId = feedbackTplId;
   }
+
   let res = await wx.requestSubscribeMessage({
     tmplIds: [tplId],
   });
-  // console.log(res)
+  // let res;
+  // wx.requestSubscribeMessage({
+  //   tmplIds: [tplId],
+  //   success: response=>{
+  //     res = response
+  //   }
+  // });
+  // BUG：反馈页Android端存在res：undefined并无法完成反馈的情况
+  console.log("requestSubMsgRes:", res);
   if (res.errMsg != 'requestSubscribeMessage:ok') {
     console.log('调用消息订阅请求接口失败' + res.errCode);
     await wx.showToast({
@@ -31,14 +42,14 @@ async function requestNotice(template) {
     await wx.showToast({
       title: '结果能通知你啦',
       icon: 'success',
-      duration: 500,
+      duration: 800,
     })
     return true;
   } else {
     await wx.showToast({
       title: '你拒收了通知QAQ',
       icon: 'none',
-      duration: 500,
+      duration: 800,
     })
     return false;
   }
@@ -47,7 +58,7 @@ async function requestNotice(template) {
 // 发送审核消息
 function sendVerifyNotice(notice_list) {
   const openids = Object.keys(notice_list);
-  if(!openids.length) {
+  if (!openids.length) {
     return false;
   }
   const db = wx.cloud.database();
@@ -91,11 +102,11 @@ function sendNotifyVertifyNotice(numUnchkPhotos) {
       numUnchkPhotos: numUnchkPhotos,
       tplId: notifyVerifyTplId,
     },
-    success:res=>{
-      console.log("callSendMsgSuccess:",res);
+    success: res => {
+      console.log("callSendMsgSuccess:", res);
     },
-    fail:res => {
-      console.log("callSendMsgFail:",res);
+    fail: res => {
+      console.log("callSendMsgFail:", res);
     }
   });
   return res;
@@ -106,5 +117,6 @@ module.exports = {
   sendVerifyNotice,
   sendReplyNotice,
   sendNotifyVertifyNotice,
-  notifyVerifyTplId
+  notifyVerifyTplId,
+  notifyChkFeedbackTplId
 }

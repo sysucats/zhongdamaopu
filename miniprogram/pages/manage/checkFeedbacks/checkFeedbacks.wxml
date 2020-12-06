@@ -16,10 +16,10 @@
     </view>
   </block>
   <view class='floating-box'>
-    <button class='primary' bindtap="reload">刷新状态</button>
+    <button class='primary' bindtap="refreshStatus">刷新状态</button>
     <button bindtap="switchHistory">{{checkHistory? '查看待处理': '查看已处理'}}</button>
   </view>
-  <view class='bottom-clear-box'></view> <!-- 用一个透明方块防止拉到底浮动按钮挡住内容按不到 -->
+  <!-- <view class='bottom-clear-box'></view> 用一个透明方块防止拉到底浮动按钮挡住内容按不到（更改布局后反而会挡住按钮？） -->
 </block>
 
 <view wx:else class='unAuth'>
