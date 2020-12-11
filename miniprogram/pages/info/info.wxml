@@ -3,7 +3,7 @@
 <view class='mina-info'>
   <image src='../../images/zdmp_logo.png'></image>
   <view class='title'>中大猫谱</view>
-  <view class='dev'><text>{{version}} \n拍照记录中大猫猫的成长轨迹</text></view>
+  <view class='dev'><text>{{version ? version + "\n" : ""}} 拍照记录校园内猫猫的成长轨迹</text></view>
 </view>
 
 <view class='buttons'>
@@ -14,6 +14,8 @@
 </view>
 
 <view class='block-name'>友情链接</view>
+
+<!-- <scroll-view class="scroll-friend-link-box" scroll-x="true" enable-flex='true' enhanced="true" show-scrollbar='false'></scroll-view> -->
 <view class="friend-link-box">
   <view wx:for="{{friendApps}}" class="friend-link" bindtap="clickFriendLink" data-appid="{{item.appid}}">
     <image mode='aspectFit' src="{{item.logo}}"></image>

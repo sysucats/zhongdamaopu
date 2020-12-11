@@ -1,18 +1,27 @@
 page {
   width: 750rpx;
-  padding: 30rpx 30rpx;
+  padding: 35rpx;
   box-sizing: border-box;
 }
 
 image {
-  border-radius: 10rpx;
-  width: 670rpx;
-  height: 670rpx;
+  border-radius: 30rpx;
+  width: 100%;
+  height: 600rpx;
   background-color: #f7f7fa;
+  margin-top: 10rpx;
+
+  /* position: relative;
+  z-index:-1;
+  vertical-align: top; */
 }
+/* .imageShadowMask{
+  box-shadow: inset 0rpx 0rpx 20rpx #666666;
+  border-radius: 30rpx;
+} */
 
 button {
-  width: 45%;
+  width: 47%;
   display: inline-block;
   font-size: 35rpx;
   box-sizing: border-box;
@@ -23,7 +32,7 @@ button.primary {
 }
 
 button + button {
-  margin-left: 10%;
+  margin-left: 6%;
   /* float: right; */
 }
 
@@ -34,21 +43,23 @@ button.long {
 
 .verify-box {
   box-sizing: border-box;
-  padding: 50rpx 10rpx;
-  margin-bottom: 50rpx;
+  padding: 30rpx 40rpx;
+  margin-bottom: 40rpx;
   box-shadow: 0rpx 0rpx 30rpx #ddd;
   border-radius: 20rpx;
 }
 
 .label {
-  font-size: 30rpx;
-  font-weight: 400;
+  font-size: 33rpx;
+  font-weight: 300;
   margin: 10rpx 0;
 }
-
 .label.cat text {
   font-weight: bold;
   text-decoration: underline;
+}
+.label.user.shotTime{
+  margin-bottom: 20rpx;
 }
 
 #total-count {
@@ -56,7 +67,7 @@ button.long {
   font-weight: 300;
   color: #888;
   box-shadow: 0rpx 0rpx 30rpx #ddd;
-  padding: 30rpx;
-  margin: 30rpx 0;
+  padding: 40rpx;
+  margin-bottom: 30rpx;
   border-radius: 10rpx;
 }

@@ -6,6 +6,10 @@ const isManager = utils.isManager;
 const formatDate = utils.formatDate;
 const getGlobalSettings = utils.getGlobalSettings;
 
+const msg = require('../../../msg.js');
+const requestNotice = msg.requestNotice;
+const notifyChkFeedbackTplId = msg.notifyChkFeedbackTplId;
+
 var step; // 反馈加载步长，onLoad时从数据库拿
 
 Page({
@@ -60,12 +64,17 @@ Page({
   async loadFeedbacks() {
     const db = wx.cloud.database();
     const nowLoaded = this.data.feedbacks.length;
-    var feedbacks = (await db.collection('feedback').where({ dealed: this.data.checkHistory }).orderBy('openDate', 'desc').skip(nowLoaded).limit(step).get()).data;
+    var feedbacks = (await db.collection('feedback').where({
+      dealed: this.data.checkHistory
+    }).orderBy('openDate', 'desc').skip(nowLoaded).limit(step).get()).data;
     console.log(feedbacks);
     // 获取对应猫猫信息；将Date对象转化为字符串；判断是否已回复
     for (let i = 0; i < feedbacks.length; ++i) {
       if (feedbacks[i].cat_id != undefined) {
-        feedbacks[i].cat = (await db.collection('cat').doc(feedbacks[i].cat_id).field({ name: true, campus: true }).get()).data;
+        feedbacks[i].cat = (await db.collection('cat').doc(feedbacks[i].cat_id).field({
+          name: true,
+          campus: true
+        }).get()).data;
       }
       feedbacks[i].openDateStr = formatDate(feedbacks[i].openDate, "yyyy-MM-dd hh:mm:ss");
       feedbacks[i].replied = feedbacks[i].hasOwnProperty('replyDate');
@@ -79,13 +88,20 @@ Page({
     });
   },
 
-  reload() {
+  async refreshStatus(){
+    await this.requestSubscribeMessage();
+    await this.reload();
+  },
+  
+  async reload() {
     wx.showLoading({
       title: '加载中...',
     });
     const that = this;
     const db = wx.cloud.database();
-    db.collection('feedback').where({ dealed: this.data.checkHistory }).count().then(res => {
+    db.collection('feedback').where({
+      dealed: this.data.checkHistory
+    }).count().then(res => {
       console.log(res);
       this.data.total = res.total;
       this.data.feedbacks = []; // 清空，loadFeedbacks再填充
@@ -96,6 +112,31 @@ Page({
         wx.hideLoading();
       });
     });
+  },
+
+  async requestSubscribeMessage() {
+    wx.getSetting({
+      withSubscriptions: true,
+      success: res => {
+        console.log("subscribeSet:", res);
+        if ('subscriptionsSetting' in res) {
+          if (!(notifyChkFeedbackTplId in res['subscriptionsSetting'])) {
+            // 第一次请求
+            requestNotice('notifyChkFeedback');
+            console.log("firstRequest");
+          } else if (res.subscriptionsSetting[notifyChkFeedbackTplId] === 'reject') {
+            // console.log("已拒绝");// 不再请求/重复弹出toast
+            // requestNotice('notifyChkFeedback');
+          } else if (res.subscriptionsSetting[notifyChkFeedbackTplId] === 'accept') {
+            console.log('重新请求下个一次性订阅');
+            requestNotice('notifyChkFeedback');
+          }
+        }
+      },
+      complete:res=>{
+        console.log("complete:",res);
+      }
+    })
   },
 
   async onReachBottom() {
