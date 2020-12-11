@@ -1,5 +1,5 @@
 <block wx:if="{{auth}}">
-  <view id='total-count'><text>目前共有{{total}}条反馈{{checkHistory? '已': '待'}}处理，\n点击所属猫猫名字可以跳转到该猫猫详情。\n</text></view>
+  <view id='total-count'><text>目前共有 {{total}} 条反馈{{checkHistory? '已': '待'}}处理，\n点击所属猫猫名字可以跳转到该猫猫详情。\n</text></view>
   <block wx:for="{{feedbacks}}" wx:key="_id">
     <view class='verify-box'>
       <view class='label cat' wx:if="{{item.cat}}" bindtap="toCatDetail" bindlongpress="toCatManage" data-cat_id="{{item.cat_id}}">所属猫猫：<text selectable='false'>{{item.cat.name}}（{{item.cat.campus}}）</text></view>
@@ -16,10 +16,10 @@
     </view>
   </block>
   <view class='floating-box'>
-    <button class='primary' bindtap="reload">刷新状态</button>
+    <button class='primary' bindtap="refreshStatus">刷新状态</button>
     <button bindtap="switchHistory">{{checkHistory? '查看待处理': '查看已处理'}}</button>
   </view>
-  <view class='bottom-clear-box'></view> <!-- 用一个透明方块防止拉到底浮动按钮挡住内容按不到 -->
+  <!-- <view class='bottom-clear-box'></view> 用一个透明方块防止拉到底浮动按钮挡住内容按不到（更改布局后反而会挡住按钮？） -->
 </block>
 
 <view wx:else class='unAuth'>

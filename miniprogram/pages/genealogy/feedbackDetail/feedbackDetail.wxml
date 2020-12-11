@@ -30,7 +30,7 @@
       </view>
     </view>
     <view class='submitButton'>
-      <button form-type='submit'>提交反馈</button>
+      <button form-type='submit' bindtap="toSubmit">提交反馈</button>
     </view>
   </block>
 </form>

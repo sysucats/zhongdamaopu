@@ -11,18 +11,18 @@
 .cen-block {
   width: 690rpx;
   height: auto;
-  padding: 20rpx 50rpx;
+  padding: 40rpx 50rpx 30rpx 50rpx;
   margin: 30rpx;
   box-sizing: border-box;
   background-color: white;
-  border-radius: 10rpx;
+  border-radius: 20rpx;
 
   display: flex;
-  justify-content: space-between;
+  justify-content: space-around;
   align-items: center;
   flex-wrap: wrap;
 
-  box-shadow: 0rpx 0rpx 10rpx #f0f0f0;
+  box-shadow: 0rpx 0rpx 10rpx #e6e6e6;
 }
 
 /* 未授权的 */
@@ -42,8 +42,12 @@
 .text.cen {
   text-align: center;
 }
+.text.left{
+  width: 20%;
+}
 .text.right {
   text-align: right;
+  width: 20%;
 }
 
 /* 文字大小 */
@@ -59,7 +63,8 @@
   color: #ffd101;
 }
 .text .name {
-  font-size: 32rpx;
+  font-size: 35rpx;
+  font-weight: 500;
 }
 
 /* 一行排名 */
@@ -122,5 +127,5 @@ button {
   background-color: #ffd101;
   margin: 10rpx;
   border: 1rpx solid #888;
-  border-radius: 10rpx;
+  border-radius: 20rpx;
 }

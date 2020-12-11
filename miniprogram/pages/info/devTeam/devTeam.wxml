@@ -11,8 +11,14 @@
 <view class='block'>
   <view class='title'>更新日志</view>
   <view class='desc'>
+    <view class='sub-title hl'>v1.4.11</view>
+    <text class='sub-detail'>- 猫谱、关于页分享至朋友圈功能，欢迎分享宣传！（目前仅Android系统开放测试）\n - 定时反馈处理提醒\n - 修复Android端无法反馈消息的bug\n - 更新时间：2020/12/06</text>
+    
+    <view class='sub-title hl'>v1.4.10</view>
+    <text class='sub-detail'>- 提醒审核功能\n - 后台页面调整\n- 更新时间：2020/11/29</text>
+
     <view class='sub-title hl'>v1.4.9</view>
-    <text class='sub-detail'>- 后台人员管理增加搜索功能\n - 猫谱页、猫咪详情页、反馈页、关于页面布局调整\n- 更新时间：2020/11/23</text>
+    <text class='sub-detail'>- 后台人员管理增加搜索功能\n - 猫谱页、猫咪详情页、反馈页、关于页布局调整\n- 更新时间：2020/11/23</text>
 
     <view class='sub-title hl'>v1.4.8</view>
     <text class='sub-detail'>- 修复赞赏记录后台输入限制bug\n- 更新时间：2020/11/5</text>

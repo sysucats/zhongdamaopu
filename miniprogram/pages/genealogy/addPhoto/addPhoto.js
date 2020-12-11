@@ -9,6 +9,7 @@ const getUserInfoOrFalse = user.getUserInfoOrFalse;
 
 const msg = require('../../../msg.js');
 const requestNotice = msg.requestNotice;
+const sendNotifyVerifyMsg = msg.sendNotifyVertifyNotice
 
 Page({
 
@@ -61,6 +62,10 @@ Page({
       });
     })
 
+  },
+
+  onUnload:function(options){
+    this.ifSendNotifyVeriftMsg()
   },
 
   /**
@@ -179,6 +184,25 @@ Page({
     });
   },
   
+  async ifSendNotifyVeriftMsg(){
+    const db = wx.cloud.database(); 
+    const subMsgSetting = await db.collection('setting').doc('subscribeMsg').get();
+    const triggerNum = subMsgSetting.data.verifyPhoto.triggerNum; //几条未审核才触发
+    // console.log("triggerN",triggerNum);
+    var numUnchkPhotos;
+    db.collection('photo').where({
+      verified: false
+    }).count().then(res => {
+      // console.log("photoUnverify",res)
+      numUnchkPhotos = res.total;
+      if (numUnchkPhotos >= triggerNum) {
+      sendNotifyVerifyMsg(numUnchkPhotos);
+      console.log("toSendNVMsg");
+      }
+    })
+    
+  },
+
   async uploadImg(photo) {
     // multiple 表示当前是否在批量上传，如果是就不显示上传成功的弹框
     const that = this;
