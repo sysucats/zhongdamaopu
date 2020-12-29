@@ -25,10 +25,10 @@ page {
 
 input, picker, textarea {
   width: 670rpx;
-  border-bottom: 2rpx #ffd110 solid;
-  background-color: #fafafa;
+  border-bottom: 2rpx var(--color-primary) solid;
+  background-color: var(--color-white-dark);
   padding: 10rpx;
-  color: #222;
+  color: var(--color-black-light);
 }
 
 .replyColumn {
@@ -43,14 +43,14 @@ button {
 }
 
 button.submit {
-  background-color: #ffd101;
+  background-color: var(--color-primary);
   width: 100%;
   display: inline-block;
   box-sizing: border-box;
   font-size: 35rpx;
   line-height: 40rpx;
   padding: 20rpx 30rpx;
-  border: 1rpx solid #888;
+  border: 1rpx solid var(--color-gray-max);
   border-radius: 10rpx;
   margin-top: 20rpx;
 }
@@ -63,7 +63,7 @@ button.submit {
 
 .lengthTips {
   font-size: 26rpx;
-  color: #888;
+  color: var(--color-gray-max);
   float: right;
 }
 
@@ -74,7 +74,7 @@ button.submit {
 .footnote {
   margin-top: 20rpx;
   font-size: 30rpx;
-  color: #888;
+  color: var(--color-gray-max);
 }
 
 .feedback-content {
@@ -89,5 +89,5 @@ button.submit {
 }
 
 .label.user {
-  color: #888;
+  color: var(--color-gray-max);
 }

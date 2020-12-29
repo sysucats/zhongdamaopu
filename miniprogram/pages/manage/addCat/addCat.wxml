@@ -20,11 +20,6 @@
 
   <view class='label tutorial'>撸猫指南：</view>
   <textarea type='text' value='{{cat.tutorial}}' bindinput="inputText" data-key='tutorial'></textarea>
-  <!-- <checkbox-group bindchange="checkBoxChange">
-    <block wx:for="{{pickers.char}}" wx:key="{{item}}">
-      <checkbox value="{{item}}" checked="{{ charChecked[index] }}">{{item}}</checkbox>
-    </block>
-  </checkbox-group> -->
 
   <view class='label habit'>性格：</view>
   <input type='text' value='{{cat.habit}}' bindinput="inputText" data-key='habit'></input>

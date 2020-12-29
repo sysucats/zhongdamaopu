@@ -8,7 +8,7 @@ image {
   border-radius: 10rpx;
   width: 670rpx;
   height: 670rpx;
-  background-color: #f7f7fa;
+  background-color: var(--color-gray-light);
 }
 
 button {
@@ -19,7 +19,7 @@ button {
 }
 
 button.primary {
-  background-color: #ffd101;
+  background-color: var(--color-primary);
 }
 
 button + button {
@@ -50,14 +50,14 @@ button.long {
 
 button.bottom {
   width: 100%;
-  background-color: #ffd110;
+  background-color: var(--color-primary);
 }
 
 .reward-box {
   box-sizing: border-box;
   padding: 50rpx 10rpx;
   margin-bottom: 50rpx;
-  box-shadow: 0rpx 0rpx 30rpx #ddd;
+  box-shadow: 0rpx 0rpx 30rpx var(--color-gray);
   border-radius: 20rpx;
 }
 
@@ -67,7 +67,7 @@ button.bottom {
 }
 
 .label.record {
-  color: #888;
+  color: var(--color-gray-max);
 }
 
 .label.reward {
@@ -77,8 +77,8 @@ button.bottom {
 #top-box {
   font-size: 30rpx;
   font-weight: 300;
-  color: #888;
-  box-shadow: 0rpx 0rpx 30rpx #ddd;
+  color: var(--color-gray-max);
+  box-shadow: 0rpx 0rpx 30rpx var(--color-gray);
   padding: 30rpx;
   margin: 30rpx 0;
   border-radius: 10rpx;
@@ -92,10 +92,10 @@ button.bottom {
 
 input, picker, textarea {
   width: 95%;
-  border-bottom: 2rpx #ffd110 solid;
-  background-color: #fafafa;
+  border-bottom: 2rpx var(--color-primary) solid;
+  background-color: var(--color-white-dark);
   padding: 10rpx;
-  color: #222;
+  color: var(--color-black-light);
 }
 
 .changeColumn {

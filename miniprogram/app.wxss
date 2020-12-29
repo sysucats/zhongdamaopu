@@ -1,4 +1,18 @@
 /**app.wxss**/
+page {
+  /* 定义一些颜色变量 */
+  --color-primary: #ffd101;
+  --color-primary-dark: #dfb600;
+
+  --color-white-dark: #fafafa;
+
+  --color-gray-light: #f7f7fa;
+  --color-gray: #dddddd;
+  --color-gray-dark: #bbbbbb;
+  --color-gray-max: #888;
+
+  --color-black-light: #222222;
+}
 .container {
   display: flex;
   flex-direction: column;

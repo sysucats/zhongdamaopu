@@ -8,7 +8,7 @@
     </view>
   </view>
   <scroll-view style="height: {{windowHeight}}px;" scroll-y="true" enable-back-to-top="true" bindscrolltolower="scrollToReload">
-    <view class="user-box" wx:for="{{users}}" wx:key="{{item._id}}">
+    <view class="user-box" wx:for="{{users}}" wx:key="_id">
       <view wx:if="{{item.userInfo}}" class="info">
         <image class="avatar" src="{{item.userInfo.avatarUrl}}"></image>
         <view class="name-and-others">

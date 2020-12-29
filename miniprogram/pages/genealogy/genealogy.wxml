@@ -16,8 +16,6 @@
 
 <!-- 点击过滤按钮出来的块 -->
 <view id='filter-block' style='height: {{heights.windowHeight - heights.filters}}px;' catchtouchmove="voidMove" hidden='{{!filters_show}}' bindtap='fToggle'>
-  <!-- 白色的上三角 -->
-  <view class='tri'></view>
   <!-- filter选择部分 -->
   <view class='filters' catchtap='voidMove'>
     <scroll-view class='f-column f-column-1 main' scroll-y='1'>
@@ -59,7 +57,7 @@
         <view class='image-title' wx:else>{{item.photo.photo_id? ('Photo by ' + (item.photo.photographer ||(item.photo.userInfo? item.photo.userInfo.nickName: '匿名猫友'))): '加载照片ing'}}</view>
       </view>
       <view class='info'>
-        <view class='line' id='firstLine'>
+        <view class='line first'>
           <text class='name'>{{item.name}}</text>
           <block wx:if='{{item.gender}}'>
             <image mode='aspectFill' class='gender' wx:if='{{item.gender === "公"}}' src="../../images/card/card/male.png"></image>

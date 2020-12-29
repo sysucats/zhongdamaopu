@@ -18,7 +18,7 @@ button {
 }
 
 button.primary {
-  background-color: #ffd110;
+  background-color: var(--color-primary);
 }
 
 button.long {

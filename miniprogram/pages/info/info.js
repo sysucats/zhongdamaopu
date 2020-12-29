@@ -74,7 +74,7 @@ Page({
     const db = wx.cloud.database();
     db.collection('setting').doc('pages').get().then(res => {
       app.globalData.settings = res.data;
-      resolve(app.globalData.settings[key]);
+      // resolve(app.globalData.settings[key]);
     });
   },
 

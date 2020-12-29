@@ -4,7 +4,7 @@
   top: 0;
   width: 750rpx;
   height: 100rpx;
-  background-color: #ffd101;
+  background-color: var(--color-primary);
   z-index: -1;
 }
 
@@ -22,7 +22,7 @@
   align-items: center;
   flex-wrap: wrap;
 
-  box-shadow: 0rpx 0rpx 10rpx #e6e6e6;
+  box-shadow: 0rpx 0rpx 10rpx var(--color-gray);
 }
 
 /* 未授权的 */
@@ -34,7 +34,7 @@
   width: 150rpx;
   height: 150rpx;
   border-radius: 150rpx;
-  background-color: #f2f2f2;
+  background-color: var(--color-white-dark);
 }
 
 
@@ -53,14 +53,14 @@
 /* 文字大小 */
 .text .title {
   font-size: 24rpx;
-  color: #888;
+  color: var(--color-gray-max);
 }
 .text .number {
   font-size: 50rpx;
   font-weight: 650;
 }
 .text .number.active {
-  color: #ffd101;
+  color: var(--color-primary);
 }
 .text .name {
   font-size: 35rpx;
@@ -76,7 +76,7 @@
   padding: 10rpx 0;
 }
 .row + .row {
-  border-top: 1rpx solid #f8f8f8;
+  border-top: 1rpx solid var(--color-gray-light);
 }
 .row .rank {
   font-size: 32rpx;
@@ -112,20 +112,20 @@
   margin-left: auto;
 }
 .row .photo_count.active {
-  color: #ffd101;
+  color: var(--color-primary);
 }
 
 /* 最后的小tip */
 .tip {
   font-size: 28rpx;
   margin: 30rpx;
-  color: #777;
+  color: var(--color-gray-max);
 }
 
 button {
   font-size: 30rpx;
-  background-color: #ffd101;
+  background-color: var(--color-primary);
   margin: 10rpx;
-  border: 1rpx solid #888;
+  border: 1rpx solid var(--color-gray-max);
   border-radius: 20rpx;
 }

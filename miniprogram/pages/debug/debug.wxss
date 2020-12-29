@@ -1,10 +1,8 @@
 .label {
   text-align: left;
-  /* border-color: #cf590c;
-  background-color: #f2711c; */
-  background-color: #ffd101;
-  border-color: #dfb600;
-  color: #222;
+  background-color: var(--color-primary);
+  border-color: var(--color-primary-dark);
+  color: var(--color-black-light);
   border-radius: 0 10rpx 10rpx 0;
   padding: 10rpx;
   font-size: 22rpx;

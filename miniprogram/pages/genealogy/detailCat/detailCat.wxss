@@ -1,12 +1,12 @@
 page {
   height: 100%;
   overflow: hidden;
-  background-color: #e8e8e8;
+  background-color: var(--color-gray-light);
 }
 #bg-yellow {
   width: 750rpx;
   height: 1000rpx;
-  background-color: #ffd101;
+  background-color: var(--color-primary);
   position: fixed;
   z-index: -1;
 }
@@ -27,7 +27,7 @@ page {
 #big-circle {
   width: 1250rpx;
   height: 1250rpx;
-  background-color: #ffd101;
+  background-color: var(--color-primary);
   border-radius: 1250rpx;
   position: absolute;
   left: -250rpx;
@@ -85,7 +85,7 @@ swiper-item image {
   display: inline;
   font-size: 22rpx;
   letter-spacing: 1rpx;
-  color: #535353;
+  color: var(--color-black-light);
 }
 .popularity image {
   height: 20rpx;
@@ -102,14 +102,14 @@ swiper-item image {
   height: 40rpx;
   box-sizing: border-box;
   border-radius: 20rpx;
-  background-color: #ffd101;
+  background-color: var(--color-primary);
   padding: 6rpx 15rpx 8rpx 15rpx;
   margin-right: 20rpx;
 }
 
 
 .tags .to_star {
-  background-color: #e8e8e8;
+  background-color: var(--color-gray-light);
 }
 
 .tags .mpcode {
@@ -138,7 +138,7 @@ swiper-item image {
 .details .item .label-block {
   width: 8rpx;
   height: 20rpx;
-  background-color: #ffd101;
+  background-color: var(--color-primary);
   display: inline-block;
 }
 
@@ -173,7 +173,7 @@ swiper-item image {
   height: 40rpx;
   box-sizing: border-box;
   border-radius: 10rpx;
-  background-color: #ffd101;
+  background-color: var(--color-primary);
   padding: 5rpx 13rpx;
   margin-right: 40rpx;
 }
@@ -189,7 +189,7 @@ swiper-item image {
   width: 750rpx;
   display: flex;
   flex-wrap: wrap;
-  background-color: #e8e8e8;
+  background-color: var(--color-gray-light);
 }
 
 .album-block .header {
@@ -214,7 +214,7 @@ swiper-item image {
   font-size: 28rpx;
   line-height: 28rpx;
   display: inline-block;
-  color: #8f8f8f;
+  color: var(--color-black-light);
   padding: 0 10rpx;
 }
 
@@ -223,14 +223,14 @@ swiper-item image {
   height: 240rpx;
   box-sizing: border-box;
   margin: 6rpx;
-  background-color: #fff;
+  background-color: white;
 }
 
 .album .loading {
   width: 100%;
   text-align: center;
-  background-color: #e8e8e8;
-  color: #aeaeae;
+  background-color: var(--color-gray-light);
+  color: var(--color-gray);
   font-size: 28rpx;
   padding: 5rpx 0;
 }
@@ -242,7 +242,7 @@ swiper-item image {
   position: fixed;
   bottom: 50rpx;
   right: 50rpx;
-  box-shadow: 5rpx 5rpx 20rpx #8f8f8f;
+  box-shadow: 5rpx 5rpx 20rpx var(--color-gray-dark);
 }
 
 /* 下面开始悬浮标题 */
@@ -256,7 +256,7 @@ swiper-item image {
 .big-header.fix {
   position: fixed;
   top: 0;
-  box-shadow: 0 5rpx 20rpx #8f8f8f;
+  box-shadow: 0 5rpx 20rpx var(--color-gray);
 }
 .big-header image {
   width: 70rpx;
@@ -279,6 +279,6 @@ swiper-item image {
   height: 28rpx;
   line-height: 28rpx;
   font-size: 28rpx;
-  color: #8f8f8f;
+  color: var(--color-black-light);
   margin-bottom: 30rpx;
 }
