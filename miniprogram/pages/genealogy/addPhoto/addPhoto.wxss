@@ -32,7 +32,7 @@ page {
 .need-notice .my-checkbox {
   width: 40rpx;
   height: 40rpx;
-  border: 1rpx solid #bbb;
+  border: 1rpx solid var(--color-gray-dark);
   border-radius: 20%;
   padding: 5rpx;
   display: inline-block;
@@ -43,11 +43,11 @@ page {
   width: 100%;
   height: 100%;
   border-radius: 20%;
-  background-color: #f7f7fa;
+  background-color: var(--color-gray-light);
 }
 
 .need-notice .my-checkbox.checked .my-checkbox-core {
-  background-color: #ffd101;
+  background-color: var(--color-primary);
 }
 
 .need-notice text {
@@ -58,7 +58,7 @@ page {
 }
 
 .card {
-  box-shadow: 0 0 10rpx #888;
+  box-shadow: 0 0 10rpx var(--color-gray-dark);
   padding: 30rpx 30rpx 15rpx 30rpx;
   margin: 30rpx 0;
   border-radius: 20rpx;
@@ -68,7 +68,7 @@ page {
   border-radius: 3rpx;
   width: 630rpx;
   height: 630rpx;
-  background-color: #f7f7fa;
+  background-color: var(--color-gray-dark);
   margin-bottom: 30rpx;
 }
 
@@ -79,7 +79,7 @@ button {
   font-size: 30rpx;
   line-height: 40rpx;
   padding: 20rpx 30rpx;
-  border: 1rpx solid #888;
+  border: 1rpx solid var(--color-gray-max);
   border-radius: 15rpx;
   margin-top: 15rpx;
 }
@@ -90,7 +90,7 @@ button.long {
 }
 
 button.primary {
-  background-color: #ffd101;
+  background-color: var(--color-primary);
 }
 
 button + button {
@@ -107,16 +107,16 @@ button + button {
 }
 
 picker, input {
-  border-bottom: 2rpx #ffd101 solid;
-  background-color: #fafafa;
+  border-bottom: 2rpx var(--color-primary) solid;
+  background-color: var(--color-white-dark);
   padding: 10rpx;
   margin-bottom: 20rpx;
-  color: #222;
+  color: var(--color-black-light);
 }
 
 /* 统一设置相关 */
 .set-all {
-  box-shadow: 0 0 10rpx #888;
+  box-shadow: 0 0 10rpx var(--color-gray-max);
   padding: 30rpx 30rpx 20rpx 30rpx;
   margin: 20rpx 0;
   border-radius: 20rpx;
@@ -131,5 +131,4 @@ picker, input {
 .tip {
   font-size: 24rpx;
   margin-bottom: 5rpx;
-  /* font-weight: bold; */
 }

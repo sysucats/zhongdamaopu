@@ -1,6 +1,6 @@
 <!--miniprogram/pages/science/sciDetail/sciDetail.wxml-->
 
-<swiper indicator-dots="1" indicator-active-color="#ffd101" circular="1" current="{{cate_current-1}}" bindchange="changeCate">
+<swiper indicator-dots="1" indicator-active-color="var(--color-primary)" circular="1" current="{{cate_current-1}}" bindchange="changeCate">
   <swiper-item wx:for="{{images}}" wx:key="unique">
     <image src='{{item}}'></image>
   </swiper-item>

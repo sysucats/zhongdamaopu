@@ -12,7 +12,6 @@
 
 <swiper
 indicator-dots='{{false}}'
-indicator-active-color='#ffd101'
 bindchange='swiperLast'
 previous-margin='60rpx'
 next-margin='60rpx'>

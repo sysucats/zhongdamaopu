@@ -1,6 +1,6 @@
 <block wx:if="{{auth}}">
   <view id='total-count'><text>目前共有 {{total}} 张待审核，点击图片可以放大，\n点击所属猫猫名字可以跳转到该猫猫详情。\n每次最多加载 20 张，请先审核完这些吧。\n完成后点“刷新状态”看看，注意流量消耗哈。</text></view>
-  <block wx:for="{{photos}}" wx:key="{{item._id}}">
+  <block wx:for="{{photos}}" wx:key="_id">
     <view class='verify-box'>
       <!-- <view class="imageShadowMask"></view> -->
       <image mode='aspectFill' src='{{item.photo_id}}' bindtap='openBigPhoto' data-pid='{{item.photo_id}}'></image>

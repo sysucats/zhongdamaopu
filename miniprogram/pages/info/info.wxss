@@ -3,7 +3,7 @@ page {
   width: 750rpx;
   padding: 30rpx 30rpx;
   box-sizing: border-box;
-  background-color: #f7f7fa;
+  background-color: var(--color-gray-light);
 }
 
 .mina-info {
@@ -12,7 +12,6 @@ page {
   flex-wrap: wrap;
   align-items: center;
   padding: 40rpx 0 15rpx 0;
-  /* box-shadow: 0rpx 10rpx 20rpx #d8d8d8; */
 }
 
 .buttons {
@@ -25,21 +24,17 @@ page {
   width: 330rpx;
   height: 182rpx;
   border-radius: 15rpx;
-  box-shadow: 0rpx 0rpx 10rpx #f2f2f2;
+  box-shadow: 0rpx 0rpx 10rpx var(--color-gray-light);
   margin-top: 30rpx;
 }
 
 /* 下面是旧的 */
 
-/* .manager-zone {
-  background:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAARElEQVQoU2NkQAIPHz40RubLy8ufhfEZYQx8ikBqwAoJKQIrJEYRhkJkNyG7FUUhPkVwhYQUwT2Dbg02Pjx4CCkmWiEAY7scC0VfrYwAAAAASUVORK5CYII=) repeat;
-} */
-
 .mina-info image {
   width: 150rpx;
   height: 150rpx;
   border-radius: 20rpx;
-  box-shadow: 0 0 10rpx #e2e2e2;
+  box-shadow: 0 0 10rpx var(--color-gray);
 }
 
 .mina-info .title {
@@ -64,40 +59,27 @@ page {
 }
 
 .friend-link-box{
-  background-color: #ffffff;
+  background-color: white;
   margin: 10rpx 6rpx 10rpx 6rpx;
   padding: 15rpx 15rpx;
-  box-shadow: 0rpx 0rpx 10rpx #f2f2f2;
+  box-shadow: 0rpx 0rpx 10rpx var(--color-gray-light);
   border-radius: 15rpx;
   display: flex;
   flex-wrap: wrap;
 }
 
-/* .scroll-friend-link-box{
-  background-color: #ffffff;
-  width: 90.5%;
-  margin: 10rpx 6rpx 10rpx 6rpx;
-  padding: 8rpx 30rpx;
-  box-shadow: 0rpx 0rpx 10rpx #f2f2f2;
-  border-radius: 15rpx;
-  display: flex;
-  overflow: scroll;
-  height: 200rpx;
-} */
 
 .option-box {
-  background-color: #ffffff;
+  background-color: white;
   margin: 10rpx 6rpx 10rpx 6rpx;
-  /* padding: 35rpx 15rpx 15rpx 15rpx; */
   padding: 5rpx;
-  box-shadow: 0rpx 0rpx 10rpx #f2f2f2;
+  box-shadow: 0rpx 0rpx 10rpx var(--color-gray-light);
   border-radius: 15rpx;
 }
 
 .friend-link {
   margin: 28rpx 10rpx 20rpx 5rpx;
   width: 150rpx;
-  /* display: inline-block; */
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -107,7 +89,6 @@ page {
 .friend-link image {
   width: 100rpx;
   height: 100rpx;
-  /* margin-left: 33.75rpx; */
   border-radius: 50rpx;
   margin-bottom: 15rpx;
 }
@@ -135,8 +116,8 @@ page {
   top: 0;
   right: 30rpx;
   height: 1px;
-  border-top: 1rpx solid #D8D8D8;
-  color: #D8D8D8;
+  border-top: 1rpx solid var(--color-gray-light);
+  color: var(--color-gray-light);
 }
 
 .option:first-child:before {

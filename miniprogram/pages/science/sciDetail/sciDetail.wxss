@@ -21,7 +21,7 @@ swiper image {
   border-radius: 15rpx;
   font-size: 30rpx;
   /* background-color: rgb(229,229,229); */
-  border: 3rpx solid #ffd101;
+  border: 3rpx solid var(--color-primary);
   padding: 30rpx;
   box-sizing: border-box;
 }
@@ -38,7 +38,7 @@ swiper image {
 }
 
 .qna.active {
-  border: 5rpx solid #ffd101;
+  border: 5rpx solid var(--color-primary);
 }
 
 .qna.active .question {
