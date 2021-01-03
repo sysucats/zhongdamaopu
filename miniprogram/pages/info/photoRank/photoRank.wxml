@@ -34,6 +34,6 @@
   </view>
 </view>
 
-<view class='tip'>* 每天10点、14点、22点更新</view>
+<view class='tip'>* 每3小时自动更新</view>
 
 <view style='margin-top: 20rpx;'></view>
