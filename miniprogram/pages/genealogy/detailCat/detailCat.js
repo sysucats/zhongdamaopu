@@ -2,6 +2,7 @@ const utils = require('../../../utils.js');
 const shareTo = utils.shareTo;
 const getCurrentPath = utils.getCurrentPath;
 const getGlobalSettings = utils.getGlobalSettings;
+const checkCanUpload = utils.checkCanUpload;
 
 const ctx = wx.createCanvasContext('bigPhoto');
 
@@ -67,11 +68,13 @@ Page({
       // 启动加载
       that.loadCat();
       // 是否开启上传功能
-      console.log("settings:", settings);
-      console.log("App:", app);
-      that.setData({
-        canUpload: (settings.cantUpload !== app.globalData.version)
-      });
+      
+      
+      checkCanUpload().then(res => {
+        that.setData({
+          canUpload: res
+        });
+      })
     })
     
     // 先判断一下这个用户在12小时之内有没有点击过这只猫
@@ -260,7 +263,7 @@ Page({
       if (this.data.cat.photo.length - this.currentImg <= preload) await this.loadMorePhotos(); //preload
       this.imgUrls = this.data.cat.photo.map((photo) => {
         // 展示压缩图（流量预警！）
-        if (page_settings.galleryQuality === "compressed") {
+        if (page_settings.galleryCompressed) {
           return (photo.photo_compressed || photo.photo_watermark || photo.photo_id);
         }
         return (photo.photo_watermark || photo.photo_id);
@@ -269,7 +272,7 @@ Page({
       if (album_raw.length - this.currentImg <= preload) await this.loadMoreAlbum(); // preload
       this.imgUrls = album_raw.map((photo) => {
         // 展示压缩图（流量预警！）
-        if (page_settings.galleryQuality === "compressed") {
+        if (page_settings.galleryCompressed) {
           return (photo.photo_compressed || photo.photo_watermark || photo.photo_id);
         }
         return (photo.photo_watermark || photo.photo_id);
@@ -334,7 +337,6 @@ Page({
     }
 
     if (album_raw.length >= albumMax) {
-      console.log("No more album.");
       this.setData({
         bottomText: '- THE END -'
       })
@@ -348,7 +350,6 @@ Page({
 
     loadingAlbum = true;
     let res = await db.collection('photo').where(qf).orderBy('shooting_date', 'desc').orderBy('mdate', 'desc').skip(now).limit(step).get();
-    console.log(res);
     const offset = album_raw.length;
     for (let i = 0; i < res.data.length; ++i) {
       res.data[i].index = offset + i; // 把index加上，gallery预览要用到

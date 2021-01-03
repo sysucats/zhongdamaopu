@@ -179,6 +179,29 @@ function checkUpdateVersion() {
   })
 }
 
+
+/*
+* 检查是否开启上传通道（返回true为开启上传）
+*/
+async function checkCanUpload() {
+  // 如果是管理员，开启
+  let manager = (await wx.cloud.callFunction({
+    name: 'isManager',
+    data: {
+      req: 1
+    }
+  })).result;
+  let manageUpload = (await getGlobalSettings('detailCat')).manageUpload;
+  if (manager && manageUpload) {
+    return true;
+  }
+
+  // 加载设置、关闭上传功能
+  const app = getApp();
+  let cantUpload = (await getGlobalSettings('detailCat')).cantUpload;
+  return (cantUpload !== '*') && (cantUpload !== app.globalData.version);
+}
+
 module.exports = {
   regeneratorRuntime,
   randomInt,
@@ -194,4 +217,5 @@ module.exports = {
   regReplace,
   formatDate,
   checkUpdateVersion,
+  checkCanUpload,
 };

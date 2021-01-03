@@ -2,6 +2,7 @@ const utils = require('../../../utils.js');
 const generateUUID = utils.generateUUID;
 const getCurrentPath = utils.getCurrentPath;
 const shareTo = utils.shareTo;
+const checkCanUpload = utils.checkCanUpload;
 const getGlobalSettings = utils.getGlobalSettings;
 
 const user = require('../../../user.js');
@@ -52,13 +53,10 @@ Page({
 
     // 加载设置、关闭上传功能
     const that = this;
-    const app = getApp();
-    getGlobalSettings('detailCat').then(settings => {
-      // 是否开启上传功能
-      console.log("settings:", settings);
-      console.log("App:", app);
+    
+    checkCanUpload().then(res => {
       that.setData({
-        canUpload: (settings.cantUpload !== app.globalData.version)
+        canUpload: res
       });
     })
 

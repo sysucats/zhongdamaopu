@@ -3,7 +3,7 @@
     {
       "name": "getPhotoRank",
       "type": "timer",
-      "config": "0 0 10,14,22 * * * *"
+      "config": "0 0 */4 * * * *"
     }
   ]
 }

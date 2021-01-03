@@ -32,7 +32,7 @@ input, picker, textarea {
   box-sizing: border-box;
 }
 .card input {
-  width: 300rpx;
+  width: 290rpx;
   display: inline-block;
 }
 

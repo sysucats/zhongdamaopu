@@ -116,7 +116,6 @@ Page({
       return false;
     }
 
-    const pickers = this.data.pickers;
     const db = wx.cloud.database();
     db.collection('cat').doc(cat_id).get().then(res => {
       console.log(res);
@@ -182,7 +181,7 @@ Page({
 
     const db = wx.cloud.database();
     console.log(qf);
-    db.collection('photo').where(qf).skip(now).limit(photoStep).get().then(res => {
+    db.collection('photo').where(qf).orderBy('mdate', 'desc').skip(now).limit(photoStep).get().then(res => {
       console.log(res);
       photo = photo.concat(res.data);
       this.setData({
