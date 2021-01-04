@@ -4,12 +4,7 @@ Page({
   /**
    * 页面的初始数据
    */
-  data: {
-    images: {
-      'juankuan': 'cloud://rel-eeeccf.7265-rel-eeeccf/系统/juankuan.jpg',
-      'gongzhonghao': 'cloud://rel-eeeccf.7265-rel-eeeccf/系统/gongzhonghao.jpg'
-    }
-  },
+  data: {},
 
   onLoad: function (option) {
     this.loadReward();
