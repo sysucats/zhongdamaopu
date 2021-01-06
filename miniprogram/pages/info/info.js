@@ -4,8 +4,6 @@ const utils = require('../../utils.js');
 console.log("utils:", utils);
 const isManager = utils.isManager;
 
-const rewardsStep = 20;
-var rewardsMax = 0;
 Page({
 
   /**
@@ -35,7 +33,6 @@ Page({
 
   // 用 onShow 不用 onLoad，为了在返回这个页面时也能重新加载
   onShow: function (options) {
-    const that = this;
     isManager(res => {
       if (res) {
         const that = this;

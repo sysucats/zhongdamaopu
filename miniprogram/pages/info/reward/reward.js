@@ -1,4 +1,6 @@
 // miniprogram/pages/info/reward/reward.js
+const config = require('../../../config.js');
+
 Page({
 
   /**
@@ -37,7 +39,7 @@ Page({
 
   // 打开大图
   openImg(e) {
-    const src = "cloud://rel-eeeccf.7265-rel-eeeccf-1258586139/系统/reward.jpg";
+    const src = config.reward_img;
     wx.previewImage({
       urls: [src],
       success: (res) => {

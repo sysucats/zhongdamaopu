@@ -1,6 +1,7 @@
 // miniprogram/pages/science/sciDetail/sciDetail.js
-
 const cates = ['猫咪救助', '撸猫指南', '猫咪领养', '猫咪喂养', '猫咪健康'];
+
+const config = require('../../../config.js');
 
 Page({
 
@@ -10,13 +11,7 @@ Page({
   data: {
     cate_current: -1,
     // 几张背景图
-    images: [
-      "cloud://rel-eeeccf.7265-rel-eeeccf/系统/1.png",
-      "cloud://rel-eeeccf.7265-rel-eeeccf/系统/2.png",
-      "cloud://rel-eeeccf.7265-rel-eeeccf/系统/3.png",
-      "cloud://rel-eeeccf.7265-rel-eeeccf/系统/4.png",
-      "cloud://rel-eeeccf.7265-rel-eeeccf/系统/5.png"
-    ]
+    images: config.science_imgs
   },
 
   /**

@@ -1,4 +1,6 @@
 // miniprogram/pages/science/science.js
+const config = require('../../config.js');
+
 Page({
 
   /**
@@ -6,13 +8,7 @@ Page({
    */
   data: {
     // 几张背景图
-    images: [
-      "cloud://rel-eeeccf.7265-rel-eeeccf/系统/1.png",
-      "cloud://rel-eeeccf.7265-rel-eeeccf/系统/2.png",
-      "cloud://rel-eeeccf.7265-rel-eeeccf/系统/3.png",
-      "cloud://rel-eeeccf.7265-rel-eeeccf/系统/4.png",
-      "cloud://rel-eeeccf.7265-rel-eeeccf/系统/5.png"
-    ]
+    images: config.science_imgs
   },
 
   /**
