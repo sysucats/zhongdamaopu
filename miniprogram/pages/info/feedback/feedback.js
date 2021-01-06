@@ -1,4 +1,6 @@
 // miniprogram/pages/info/feedback/feedback.js
+const config = require('../../../config.js');
+
 Page({
 
   /**
@@ -15,7 +17,7 @@ Page({
   },
 
   toNewCat() {
-    const src = "cloud://rel-eeeccf.7265-rel-eeeccf-1258586139/系统/新猫问卷.png";
+    const src = config.feedback_wj_img;
     wx.previewImage({
       urls: [src],
       success: (res) => {

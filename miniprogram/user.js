@@ -6,7 +6,7 @@ import { userInfoEq } from './utils.js';
 // 如果数据库中没有会后台自动新建并返回
 function getUser() {
   return new Promise(resolve => {
-    const user = wx.cloud.callFunction({
+    wx.cloud.callFunction({
       name: 'userOp',
       data: {
         op: 'get'
