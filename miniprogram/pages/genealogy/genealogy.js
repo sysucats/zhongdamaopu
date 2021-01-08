@@ -11,9 +11,10 @@ const regReplace = utils.regReplace;
 
 const default_png = undefined;
 
-
 var catsStep = 1;
 var loadingLock = 0;
+
+// var imgLoadedNum = 0;
 
 Page({
 
@@ -40,6 +41,8 @@ Page({
     // 加载相关
     loading: false, // 正在加载
     loadnomore: false, // 没有再多了
+
+    imgLoadedCount: 0,
 
     // 广告是否展示
     ad_show: {},
@@ -246,8 +249,10 @@ Page({
       return false;
     }
     const that = this;
+    // const newImgeCount = new Array(catsStep).fill(true);
     this.setData({
-      loading: true
+      loading: true,
+      // imgLoadedCount: this.data.imgLoadedCount.concat(newImgeCount)
     }, () => {
       var cats = that.data.cats;
       var step = catsStep;
@@ -336,6 +341,13 @@ Page({
       cats: new_cats
     });
 
+  },
+
+  bindImageLoaded(e){
+    this.setData({
+      imgLoadedCount: this.data.imgLoadedCount+1
+    },
+);
   },
 
   // 点击猫猫卡片

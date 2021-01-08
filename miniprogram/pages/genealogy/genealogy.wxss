@@ -72,6 +72,11 @@ scroll-view {
   padding: 35rpx 35rpx 20rpx 35rpx;
 }
 
+.card .hoverInfo{
+  background-color: var(--color-gray-light);
+  padding: 35rpx 35rpx 20rpx 35rpx;
+}
+
 .card .info .line {
   display: flex;
   align-items: flex-start;
