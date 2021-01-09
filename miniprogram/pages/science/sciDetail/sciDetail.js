@@ -24,7 +24,7 @@ Page({
       cate_current: cate_current,
       cate_active: cates[cate_current-1]
     });
-
+    
     this.getSci();
   },
 
@@ -65,3 +65,4 @@ Page({
     })
   }
 })
+
