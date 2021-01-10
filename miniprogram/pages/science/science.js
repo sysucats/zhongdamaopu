@@ -90,7 +90,7 @@ Page({
   gotoDetail(e) {
     const cate = e.currentTarget.dataset.cate;
     wx.navigateTo({
-      url: '/pages/science/sciDetail/sciDetail?cate=' + cate,
+      url: '/pages/science/sciDetail/sciDetail?cate=' + cate +'&coverImgList=' + this.data.images,
     });
   },
 

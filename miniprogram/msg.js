@@ -20,15 +20,9 @@ async function requestNotice(template) {
   let res = await wx.requestSubscribeMessage({
     tmplIds: [tplId],
   });
-  // let res;
-  // wx.requestSubscribeMessage({
-  //   tmplIds: [tplId],
-  //   success: response=>{
-  //     res = response
-  //   }
-  // });
-  // BUG：反馈页Android端存在res：undefined并无法完成反馈的情况
-  console.log("requestSubMsgRes:", res);
+
+  // console.log("requestSubMsgRes:", res);
+  
   if (res.errMsg != 'requestSubscribeMessage:ok') {
     console.log('调用消息订阅请求接口失败' + res.errCode);
     await wx.showToast({

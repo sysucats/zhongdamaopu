@@ -11,7 +11,7 @@ Page({
   data: {
     cate_current: -1,
     // 几张背景图
-    images: config.science_imgs
+    // images: config.science_imgs
   },
 
   /**
@@ -19,11 +19,22 @@ Page({
    */
   onLoad: function (options) {
     // 切换到该分类
+    console.log('options',options);
     const cate_current = options.cate;
     this.setData({
       cate_current: cate_current,
       cate_active: cates[cate_current-1]
     });
+
+    //封面图缓存
+    if (options.coverImgList) {
+      console.log('cil',options.coverImgList);
+      const imgList = options.coverImgList.split(',')
+      console.log(imgList);
+      this.setData({images:imgList})
+    } else {
+      this.setData({images:config.science_imgs})
+    }
     
     this.getSci();
   },
