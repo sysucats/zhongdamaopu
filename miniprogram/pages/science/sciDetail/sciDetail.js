@@ -19,7 +19,6 @@ Page({
    */
   onLoad: function (options) {
     // 切换到该分类
-    console.log('options',options);
     const cate_current = options.cate;
     this.setData({
       cate_current: cate_current,
@@ -28,9 +27,7 @@ Page({
 
     //封面图缓存
     if (options.coverImgList) {
-      console.log('cil',options.coverImgList);
       const imgList = options.coverImgList.split(',')
-      console.log(imgList);
       this.setData({images:imgList})
     } else {
       this.setData({images:config.science_imgs})

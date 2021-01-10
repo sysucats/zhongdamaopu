@@ -10,7 +10,7 @@ Page({
   onLoad: function (params) {
     const that = this;
     const fileSystem = wx.getFileSystemManager();
-    var coverPath = wx.getStorageSync('sciImgStorage0');
+    var coverPath = wx.getStorageSync('sciImgStorage'+ Math.floor(Math.random()*5));
     if (coverPath) { // 已有缓存的图片地址
       fileSystem.access({
         path: coverPath,
@@ -18,16 +18,18 @@ Page({
           that.setImagesList();
         },
         fail: res => { // 找不到保存的图片文件，重新下载设置
-          console.log('fail');
           that.downloadCoverImg();
         }
       })
-    } else {//缓存里没有图片地址
+    } else { //缓存里没有图片地址
       this.downloadCoverImg();
     }
   },
 
   downloadCoverImg() {
+    // 下载并缓存，但本次先使用云端图片
+    this.setData({images:config.science_imgs})
+
     const fileSystem = wx.getFileSystemManager();
     this.setImagesList = this.setImagesList.bind(this);
 
@@ -36,38 +38,27 @@ Page({
       wx.cloud.downloadFile({
         fileID: coverImage,
         success: res => { //下载成功
-          if (res.statusCode === 200) {
             fileSystem.saveFile({
               tempFilePath: res.tempFilePath,
-              success: res => {//图片文件保存成功
-                wx.setStorage({
+              success:res => {//图片文件保存成功
+                  wx.setStorage({
                   key: 'sciImgStorage' + index,
                   data: res.savedFilePath,
-                  success: response => {//图片路径缓存成功
-                    if (index === config.science_imgs.length - 1) {
-                      this.setImagesList()
-                    }
-                  }
                 })
               }
             })
-          }
         }
       })
     }
   },
 
-  setImagesList() {
+  async setImagesList() {
     var coverImgList = [];
     for (let index = 0; index < config.science_imgs.length; index++) {
       const coverPath = wx.getStorageSync('sciImgStorage' + index);
-      coverImgList.push(coverPath);
-      if (index === config.science_imgs.length - 1) {
-        this.setData({
-          images: coverImgList
-        })
-      }
+      await coverImgList.push(coverPath);
     }
+    this.setData({images: coverImgList})
   },
   /**
    * 用户点击右上角分享

@@ -21,6 +21,7 @@
     "compileHotReLoad": false,
     "useMultiFrameRuntime": true,
     "useApiHook": true,
+    "useApiHostProcess": true,
     "babelSetting": {
       "ignore": [],
       "disablePlugins": [],
@@ -33,14 +34,14 @@
     "userConfirmedBundleSwitch": true,
     "packNpmManually": false,
     "packNpmRelationList": [],
-    "minifyWXSS": true,
-    "useApiHostProcess": true
+    "minifyWXSS": true
   },
   "appid": "wx5bd705b2bc91c73b",
   "projectname": "%E4%B8%AD%E5%A4%A7%E7%8C%AB%E8%B0%B1",
   "libVersion": "2.8.2",
   "simulatorType": "wechat",
   "simulatorPluginLibVersion": {},
+  "compileType": "miniprogram",
   "condition": {
     "plugin": {
       "list": []

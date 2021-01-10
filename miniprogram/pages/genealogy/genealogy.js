@@ -14,8 +14,6 @@ const default_png = undefined;
 var catsStep = 1;
 var loadingLock = 0;
 
-// var imgLoadedNum = 0;
-
 Page({
 
   /**
@@ -95,21 +93,14 @@ Page({
 
 
     var scene = wx.getLaunchOptionsSync().scene;
-    console.log(scene);
-    if(scene === 1154){
-      that.loadFilters();
-      // that.setData({
-      //   main_lower_threshold: 50,
-      //   adStep: 6
-      // });
-      // catsStep = 3;
+    if(scene === 1154){//朋友圈内打开 “单页模式”
+      this.loadFilters();
       const db = wx.cloud.database();
       db.collection('setting').doc('pages').get().then(res => {
         var genealogySetting = res.data['genealogy'];
-        console.log("genealogySetting",genealogySetting);
+        // console.log("genealogySetting",genealogySetting);
         that.setData({
           main_lower_threshold: genealogySetting['main_lower_threshold'],
-          adStep:genealogySetting['adStep']
         })
         catsStep = genealogySetting['catsStep']
       });
@@ -249,10 +240,8 @@ Page({
       return false;
     }
     const that = this;
-    // const newImgeCount = new Array(catsStep).fill(true);
     this.setData({
       loading: true,
-      // imgLoadedCount: this.data.imgLoadedCount.concat(newImgeCount)
     }, () => {
       var cats = that.data.cats;
       var step = catsStep;
@@ -551,6 +540,8 @@ Page({
     return res;
   },
   fComfirm: function () {
+    this.setData({imgLoadedCount:0});
+
     if (!this.data.filters_legal) {
       return false;
     }
