@@ -287,6 +287,7 @@ Page({
       imgUrls: this.imgUrls,
       currentImg: this.currentImg,
     });
+    wx.hideLoading();
   },
 
   async bindGalleryChange(e) {

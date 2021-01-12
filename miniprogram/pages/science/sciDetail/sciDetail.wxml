@@ -1,4 +1,5 @@
 <!--miniprogram/pages/science/sciDetail/sciDetail.wxml-->
+<mp-navigation-bar loading="{{loading}}" title="猫咪科普"></mp-navigation-bar>
 
 <swiper indicator-dots="1" indicator-active-color="var(--color-primary)" circular="1" current="{{cate_current-1}}" bindchange="changeCate">
   <swiper-item wx:for="{{images}}" wx:key="unique">

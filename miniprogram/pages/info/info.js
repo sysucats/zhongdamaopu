@@ -1,20 +1,17 @@
 // miniprogram/pages/info/info.js
 const utils = require('../../utils.js');
 
-console.log("utils:", utils);
+// console.log("utils:", utils);
 const isManager = utils.isManager;
 
 Page({
-
-  /**
-   * 页面的初始数据
-   */
   data: {
     friendApps: [],
     showManager: false,
     numChkPhotos: 0,
     numPrcssImg: 0,
     numFeedbacks: 0,
+    friendLinkImgLoaded:false
   },
 
   /**
@@ -24,9 +21,9 @@ Page({
     const that = this;
     const db = wx.cloud.database();
     db.collection('setting').doc('friendLink').get().then(res => {
-      that.friendApps = res.data.apps;
+      // that.friendApps = res.data.apps;
       that.setData({
-        friendApps: that.friendApps,
+        friendApps: res.data.apps,
       })
     });
   },
@@ -68,11 +65,12 @@ Page({
       version: app.globalData.version
     });
 
-    const db = wx.cloud.database();
-    db.collection('setting').doc('pages').get().then(res => {
-      app.globalData.settings = res.data;
-      // resolve(app.globalData.settings[key]);
-    });
+    // this.setData = this.setData.bind(this);
+    // if (options.scene === 1154) {
+      // const db = wx.cloud.database();
+      // db.collection('setting').doc('pages').get().then(res => {
+      // });
+    // } 
   },
 
   /**

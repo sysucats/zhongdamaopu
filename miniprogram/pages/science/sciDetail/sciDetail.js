@@ -46,14 +46,16 @@ Page({
   },
 
   getSci() {
+    wx.showLoading({title:'加载中...'})
     wx.cloud.callFunction({
       name: 'getAllSci',
     }).then(res => {
       console.log(res);
       const data = res.result.data;
       this.setData({
-        qnas: data,
+        qnas: data
       });
+      wx.hideLoading()
     })
   },
 
