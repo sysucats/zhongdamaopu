@@ -11,6 +11,9 @@
 <view class='block'>
   <view class='title'>更新日志</view>
   <view class='desc'>
+    <view class='sub-title hl'>v1.4.15</view>
+    <text class='sub-detail'>- 后台人员管理增加管理员筛选功能\n - 更新时间：2021/3/3</text>
+
     <view class='sub-title hl'>v1.4.14</view>
     <text class='sub-detail'>- 现在可以搜索猫猫昵称啦\n - 更新时间：2021/2/26</text>
 

@@ -14,6 +14,7 @@ Page({
     tipText: '正在鉴权...',
     tipBtn: false,
     userSearch: '',
+    managerOnly: false,
     users: [],
     windowHeight: "300",
     manager_types: ['0-非管理员', '1-审核照片', '2-修改猫猫、校区', '3-处理图片', '99-管理成员']
@@ -110,7 +111,14 @@ Page({
       title: '加载中...',
     });
     var userSearch = this.data.userSearch;
-    var query = userSearch ? {"userInfo.nickName": db.RegExp({regexp: userSearch, options: 'ims'})} : {};
+    var query = {};
+    if (userSearch) {
+      query["userInfo.nickName"] = db.RegExp({regexp: userSearch, options: 'ims'});
+    }
+    if (this.data.managerOnly) {
+      query["manager"] = db.command.gt(0);
+    }
+    console.log("query", query);
     db.collection('user').where(query).skip(users.length).limit(10).get().then(res => {
       console.log(res);
       wx.hideLoading();
@@ -147,7 +155,16 @@ Page({
     });
   },
 
+  // 搜索
   fSearch: function(e) {
+    this.data.users = [];
+    this.loadUsers(true);
+  },
+
+  // 筛选条件复选框
+  filterChange(e) {
+    let filters = e.detail.value;
+    this.data.managerOnly = filters.indexOf('manager-only') != -1;
     this.data.users = [];
     this.loadUsers(true);
   },
