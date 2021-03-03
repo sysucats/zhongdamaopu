@@ -255,7 +255,7 @@ Page({
       const cat = db.collection('cat');
       const _ = db.command;
       const query = that.fGet();
-      console.log("query condition: " + JSON.stringify(query));
+      console.log("query condition: ", query);
       cat.where(query).orderBy('mphoto', 'desc').orderBy('popularity', 'desc').skip(cats.length).limit(step).get().then(res => {
         if (loadingLock != nowLoadingLock) {
           // 说明过期了
@@ -463,7 +463,7 @@ Page({
   fCheckLegal: function (filters) {
     for (const mainF of filters) {
       var count = 0; // 激活的数量
-      if (mainF.category[0].all_active) continue; // '全部’是激活的
+      if (mainF.category[0].all_active) continue; // '全部'是激活的
       for (const category of mainF.category) {
         if (category.all_active) {
           count += category.items.length;
@@ -481,7 +481,7 @@ Page({
     const db = wx.cloud.database();
     const _ = db.command;
     const filters = this.data.filters;
-    var res = {};
+    var res = []; // 先把查询条件全部放进数组，最后用_.and包装，这样方便跨字段使用or逻辑
     // 这些是点击选择的filters
     for (const mainF of filters) {
       // 把数据库要用的key拿出来
@@ -494,7 +494,7 @@ Page({
       }
 
       // 下面开始遍历每个分类下的子项
-      if (mainF.category[0].all_active) continue; // 选择了'全部‘, 不用管这个类
+      if (mainF.category[0].all_active) continue; // 选择了'全部', 不用管这个类
 
       for (const category of mainF.category) {
         let cateKeyPushed = false; // 一个category只用push一次，记一下
@@ -509,13 +509,13 @@ Page({
         }
       }
 
-      res[key] = _.in(selected);
-      if (cateFilter) res[cateKey] = _.in(cateSelected);
+      res.push({[key]: _.in(selected)});
+      if (cateFilter) res.push({[cateKey]: _.in(cateSelected)});
     }
     // 判断一下filters生效没有
 
     this.setData({
-      filters_active: Object.keys(res).length > 0
+      filters_active: res.length > 0
     });
 
     // 如果用户还输入了东西，也要一起搜索
@@ -531,12 +531,13 @@ Page({
         }
       }
       // res['name'] = _.in(filters_input.trim().split(' '));
-      res['name'] = db.RegExp({
+      let regexp = db.RegExp({
         regexp: search_str,
         options: 'igs',
-      })
+      });
+      res.push(_.or([{name: regexp}, {nickname: regexp}]));
     }
-    return res;
+    return res.length ? _.and(res) : {};
   },
   fComfirm: function () {
     if (!this.data.filters_legal) {
