@@ -79,7 +79,7 @@ page {
 
 .friend-link {
   margin: 28rpx 10rpx 20rpx 5rpx;
-  width: 150rpx;
+  width: 148rpx;
   display: flex;
   flex-direction: column;
   justify-content: center;
