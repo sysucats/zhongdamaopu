@@ -9,10 +9,18 @@
 </view>
 
 <view class='block'>
+  <view class='title'>开源代码</view>
+  <view class='desc'>
+    <text selectable='true'>中大猫谱现在开源啦！\nhttps://github.com/Zing22/zhongdamaopu</text>
+    <button bindtap='copyOpenSourceLink'>点击复制到剪切板</button>
+  </view>
+</view>
+
+<view class='block'>
   <view class='title'>更新日志</view>
   <view class='desc'>
     <view class='sub-title hl'>v1.4.16</view>
-    <text class='sub-detail'>- 适配微信小程序登录接口修改！！！\n - 现在可以通过云函数自动处理图片了\n - 更新时间：2021/3/18</text>
+    <text class='sub-detail'>- 适配微信小程序登录接口修改！！！\n - 现在可以通过云函数自动处理图片了\n - 更新时间：2021/4/21</text>
 
     <view class='sub-title hl'>v1.4.15</view>
     <text class='sub-detail'>- 后台人员管理增加管理员筛选功能\n - 修复打赏记录月份可能重复添加的问题\n - 更新时间：2021/3/5</text>

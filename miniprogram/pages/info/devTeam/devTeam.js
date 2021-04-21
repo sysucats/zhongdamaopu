@@ -64,5 +64,11 @@ Page({
     return {
       title: '开发团队 - 中大猫谱'
     }
+  },
+
+  copyOpenSourceLink: function() {
+    wx.setClipboardData({
+      data: 'https://github.com/Zing22/zhongdamaopu',
+    });
   }
 })
