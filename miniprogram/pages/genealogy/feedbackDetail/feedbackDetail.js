@@ -142,6 +142,6 @@ Page({
           wx.navigateBack();
       }
     })
-}
+  }
 })
 

@@ -41,6 +41,10 @@
     <view class="option-text">人员管理</view>
     <view class="right-arrow"><image mode='aspectFill' src="../../images/filter/right.png"></image></view> 
   </view>
+  <view class="option" bindtap='clickbtn' data-to='/pages/manage/manageOrgs/manageOrgs'>
+    <view class="option-text">组织管理</view>
+    <view class="right-arrow"><image mode='aspectFill' src="../../images/filter/right.png"></image></view> 
+  </view>
   <view class="option" bindtap='clickbtn' data-to='/pages/manage/filters/filters'>
     <view class="option-text">区域/花色管理</view>
     <view class="right-arrow"><image mode='aspectFill' src="../../images/filter/right.png"></image></view> 

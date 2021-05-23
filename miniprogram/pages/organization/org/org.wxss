@@ -1,0 +1,2 @@
+/* miniprogram/pages/organization/org/org.wxss */
+@import "../../genealogy/genealogy.wxss";
