@@ -1,0 +1,48 @@
+<!--miniprogram/pages/organization/addorgcat/addorgcat.wxml-->
+<block wx:if="{{auth}}">
+<form bindsubmit="bindSubmit">
+  <view class='inputColumns'>
+    <view wx:for="{{form_items}}" wx:key="key">
+      <text wx:if="{{item.key == 'photos'}}" class='inputTitle'>{{item.name}}（{{item.value.length}}/{{item.limit}}）：</text>
+      <text wx:else class='inputTitle'>{{item.name}}：</text>
+      <!-- 选择器 -->
+      <block wx:if="{{item.type == 'picker'}}">
+        <picker bindchange="bindPickerChange" value="{{item.index}}" range="{{item.enum}}" data-index="{{index}}">
+            <view class="picker">
+              {{item.enum[item.index] === undefined? '-': item.enum[item.index]}}{{item.disc && item.disc[item.index] ? '（' + item.disc[item.index] + '）' : ''}}
+            </view>
+          </picker>
+          <view class='lengthTips'>点击修改</view>
+      </block>
+      <block wx:elif="{{item.type == 'picker-date'}}">
+        <picker bindchange="bindPickerDateChange" value="{{item.index}}" data-index="{{index}}" mode='date' fields='month'>
+            <view class="picker">
+              {{item.value === undefined ? '-' : item.value}}
+            </view>
+          </picker>
+          <view class='lengthTips'>点击修改</view>
+      </block>
+      <block wx:elif="{{item.key == 'photos'}}">
+        <view class="photos">
+          <image wx:for="{{item.value}}" wx:key="item" wx:for-item="ph" wx:for-index="phidx" mode="aspectFit" bindtap="bindPhoto" data-index="{{index}}" data-phidx="{{phidx}}" class="photo" src="{{ph}}"></image>
+
+          <view wx:if="{{item.value.length < item.limit}}" class="photo addPhoto" bindtap="choosePhoto" data-index="{{index}}">+</view>
+        </view>
+        <view class='lengthTips'>点击图像进行操作，单张照片大小限制：300KB</view>
+      </block>
+      <block wx:else>
+        <input wx:if="{{item.maxlength < 50}}" placeholder="{{item.placeholder || item.name}}" name='contactInfo' maxlength='{{item.maxlength}}' bindinput='bindInput' bindfocus="bindFocus" data-index="{{index}}" value="{{item.value}}"/>
+        <textarea wx:else class='feedbackColumn' placeholder="{{item.placeholder || item.name}}" name='feedbackInfo' maxlength='{{item.maxlength}}' bindinput='bindInput' bindfocus="bindFocus" data-index="{{index}}" value="{{item.value}}"/>
+        <view class='lengthTips'>字数：{{item.value.length}}/{{item.maxlength}}</view>
+      </block>
+    </view>
+  </view>
+  <view class='submitButton'>
+    <button form-type='submit'>提交信息</button>
+  </view>
+</form>
+</block>
+<view wx:else class='unAuth'>
+  <text>{{tipText}}</text>
+  <button bindtap='goBack' wx:if='{{tipBtn}}'>打扰了</button>
+</view>

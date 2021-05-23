@@ -1,0 +1,22 @@
+/* miniprogram/pages/organization/addorgcat/addorgcat.wxss */
+@import "../applyorg/applyorg.wxss";
+
+.photos {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.photo {
+  width: 200rpx;
+  height: 200rpx;
+  margin: 5rpx;
+  display: inline-block;
+}
+
+.addPhoto {
+  text-align: center;
+  font-size: 50rpx;
+  line-height: 200rpx;
+  color: var(--color-gray-max);
+  background-color: var(--color-gray-light);
+}

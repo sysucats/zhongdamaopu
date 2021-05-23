@@ -170,6 +170,18 @@
           "pathName": "pages/organization/org/org",
           "query": "_id=28ee4e3e60a528ce1a319c0c03096f45",
           "scene": null
+        },
+        {
+          "name": "组织配置",
+          "pathName": "pages/organization/orgsettings/orgsettings",
+          "query": "org_id=28ee4e3e60a528ce1a319c0c03096f45",
+          "scene": null
+        },
+        {
+          "name": "新增组织猫",
+          "pathName": "pages/organization/addorgcat/addorgcat",
+          "query": "org_id=28ee4e3e60a528ce1a319c0c03096f45&orgcat_id=79550af260aa7384198575360d7b0071",
+          "scene": null
         }
       ]
     }
