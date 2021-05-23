@@ -202,6 +202,16 @@ async function checkCanUpload() {
   return (cantUpload !== '*') && (cantUpload !== app.globalData.version);
 }
 
+
+// 切分org的filter
+function splitFilterLine(line) {
+  if (!line) {
+    return [];
+  }
+  var line = line.split('\n');
+  return line.filter((val) => val.length);
+}
+
 module.exports = {
   regeneratorRuntime,
   randomInt,
@@ -218,4 +228,5 @@ module.exports = {
   formatDate,
   checkUpdateVersion,
   checkCanUpload,
+  splitFilterLine,
 };

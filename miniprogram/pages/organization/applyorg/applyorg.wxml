@@ -1,0 +1,42 @@
+<!--miniprogram/pages/organization/applyorg/applyorg.wxml-->
+<form bindsubmit="bindSubmit">
+  <view wx:if="{{!isAuth}}" class='unAuth'>
+    <!-- <text>请授权后进行操作</text> -->
+    <view class='userInfo'>
+      <image src='../../../images/user.png'></image>
+      <view>
+        <text>[等待授权]\n---准备填写串门信息</text>
+      </view>
+    </view>
+    <button class='long primary' bindtap='getUInfo'>点击授权</button>
+  </view>
+  <block wx:else>
+    <!-- <view>--已经授权--</view> -->
+    <view class='userInfo'>
+      <image src='{{user.userInfo.avatarUrl}}'></image>
+      <view>
+        <text>{{user.userInfo.nickName}}\n---正在填写串门信息</text>
+      </view>
+    </view>
+    <view class='inputColumns'>
+      <view wx:for="{{form_items}}" wx:key="key">
+        <text class='inputTitle'>{{item.name}}：</text>
+        <block wx:if="{{item.key == 'avatar'}}">
+          <image mode="aspectFit" bindtap="chooseAvatar" class="avatar" src="{{item.value || '../../../images/plus.png'}}"></image>
+          <view class='lengthTips'>点击图像进行更换</view>
+        </block>
+        <block wx:else>
+          <input wx:if="{{item.maxlength < 50}}" placeholder="{{item.placeholder || item.name}}" name='contactInfo' maxlength='{{item.maxlength}}' bindinput='bindInput' bindfocus="bindFocus" data-key="{{item.key}}"/>
+          <textarea wx:else class='feedbackColumn' placeholder="{{item.placeholder || item.name}}" name='feedbackInfo' maxlength='{{item.maxlength}}' bindinput='bindInput' bindfocus="bindFocus" data-key="{{item.key}}"/>
+          <view class='lengthTips'>字数：{{item.value.length}}/{{item.maxlength}}</view>
+        </block>
+      </view>
+    </view>
+    <view class='submitButton'>
+      <button form-type='submit'>提交申请</button>
+    </view>
+  </block>
+</form>
+<view class='footnote'>
+  <text>*申请内容仅后台工作人员可见</text>
+</view>

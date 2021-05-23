@@ -19,7 +19,13 @@
     "pages/genealogy/feedbackDetail/feedbackDetail",
     "pages/manage/checkFeedbacks/checkFeedbacks",
     "pages/manage/replyFeedback/replyFeedback",
-    "pages/manage/rewards/rewards"
+    "pages/manage/rewards/rewards",
+    "pages/organization/orglist/orglist",
+    "pages/organization/applyorg/applyorg",
+    "pages/manage/manageOrgs/manageOrgs",
+    "pages/manage/modifyOrg/modifyOrg",
+    "pages/organization/org/org",
+    "pages/organization/orgsettings/orgsettings"
   ],
   "tabBar": {
     "selectedColor": "#000",
@@ -29,6 +35,12 @@
         "iconPath": "./images/tabs/default/cat.png",
         "selectedIconPath": "./images/tabs/active/cat.png",
         "text": "猫谱"
+      },
+      {
+        "pagePath": "pages/organization/orglist/orglist",
+        "iconPath": "./images/tabs/default/cat.png",
+        "selectedIconPath": "./images/tabs/active/cat.png",
+        "text": "串门"
       },
       {
         "pagePath": "pages/science/science",

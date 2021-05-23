@@ -1,0 +1,15 @@
+<!--miniprogram/pages/organization/orglist/orglist.wxml-->
+<view wx:for="{{org_list}}" wx:key="id">
+  <view class="card" bindtap="toOrg" data-_id="{{item._id}}">
+    <image class="avatar" src="{{item.avatar}}" alt="logo"></image>
+    <view class="info">
+      <view class="name">{{item.name}}</view>
+      <view class="slogan">{{item.slogan}}</view>
+    </view>
+  </view>
+</view>
+
+<view class="card apply" bindtap="toApply">
+  <view class="icon">+</view>
+  <view class="content">欢迎串门</view>
+</view>

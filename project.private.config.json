@@ -1,47 +1,5 @@
 {
-  "miniprogramRoot": "miniprogram/",
-  "cloudfunctionRoot": "cloudfunctions/",
-  "setting": {
-    "urlCheck": true,
-    "es6": true,
-    "enhance": true,
-    "postcss": true,
-    "preloadBackgroundData": false,
-    "minified": true,
-    "newFeature": true,
-    "coverView": true,
-    "nodeModules": false,
-    "autoAudits": false,
-    "showShadowRootInWxmlPanel": true,
-    "scopeDataCheck": false,
-    "uglifyFileName": true,
-    "checkInvalidKey": true,
-    "checkSiteMap": true,
-    "uploadWithSourceMap": true,
-    "compileHotReLoad": false,
-    "useMultiFrameRuntime": true,
-    "useApiHook": true,
-    "useApiHostProcess": true,
-    "babelSetting": {
-      "ignore": [],
-      "disablePlugins": [],
-      "outputPath": ""
-    },
-    "bundle": false,
-    "useIsolateContext": true,
-    "useCompilerModule": false,
-    "userConfirmedUseCompilerModuleSwitch": false,
-    "userConfirmedBundleSwitch": false,
-    "packNpmManually": false,
-    "packNpmRelationList": [],
-    "minifyWXSS": true
-  },
-  "appid": "wx5bd705b2bc91c73b",
-  "projectname": "%E4%B8%AD%E5%A4%A7%E7%8C%AB%E8%B0%B1",
-  "libVersion": "2.10.4",
-  "simulatorType": "wechat",
-  "simulatorPluginLibVersion": {},
-  "cloudfunctionTemplateRoot": "cloudfunctionTemplate",
+  "setting": {},
   "condition": {
     "plugin": {
       "list": []
@@ -180,7 +138,38 @@
         {
           "name": "单页模式（分享到朋友圈）",
           "pathName": "pages/genealogy/genealogy",
+          "query": "",
           "scene": 1154
+        },
+        {
+          "name": "串门tab",
+          "pathName": "pages/organization/orglist/orglist",
+          "query": "",
+          "scene": null
+        },
+        {
+          "name": "申请串门",
+          "pathName": "pages/organization/applyorg/applyorg",
+          "query": "",
+          "scene": null
+        },
+        {
+          "name": "组织管理",
+          "pathName": "pages/manage/manageOrgs/manageOrgs",
+          "query": "",
+          "scene": null
+        },
+        {
+          "name": "修改组织信息",
+          "pathName": "pages/manage/modifyOrg/modifyOrg",
+          "query": "_id=28ee4e3e60a528ce1a319c0c03096f45",
+          "scene": null
+        },
+        {
+          "name": "组织首页",
+          "pathName": "pages/organization/org/org",
+          "query": "_id=28ee4e3e60a528ce1a319c0c03096f45",
+          "scene": null
         }
       ]
     }
