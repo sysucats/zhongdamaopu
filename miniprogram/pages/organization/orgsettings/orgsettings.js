@@ -1,4 +1,6 @@
 // miniprogram/pages/organization/orgsettings/orgsettings.js
+var org_id = undefined;
+
 Page({
 
   /**
@@ -12,7 +14,7 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
-
+    org_id = options.org_id;
   },
 
   /**
@@ -56,11 +58,16 @@ Page({
   onReachBottom: function () {
 
   },
+  
+  toModifyOrg() {
+    wx.navigateTo({
+      url: `/pages/manage/modifyOrg/modifyOrg?org_id=${org_id}`,
+    });
+  },
 
-  /**
-   * 用户点击右上角分享
-   */
-  onShareAppMessage: function () {
-
-  }
+  toAddCat() {
+    wx.navigateTo({
+      url: `/pages/organization/addorgcat/addorgcat?org_id=${org_id}`,
+    });
+  },
 })

@@ -1,2 +1,12 @@
 <!--miniprogram/pages/organization/orgsettings/orgsettings.wxml-->
-<text>miniprogram/pages/organization/orgsettings/orgsettings.wxml</text>
+<button bindtap="toModifyOrg">组织信息修改</button>
+<button bindtap="showQRCode">专属二维码</button>
+
+<view class="header">猫猫管理 (0/100)</view>
+
+<button bindtap="toAddCat">新增猫猫</button>
+
+<view class="cat">
+  <image class="avatar"></image>
+  <view class="name">名称</view>
+</view>

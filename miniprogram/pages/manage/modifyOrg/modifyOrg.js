@@ -57,7 +57,7 @@ Page({
       {
         key: "colour",
         name: "花色",
-        required: false,
+        optional: true,
         placeholder: "猫猫的花色，新建猫猫前确定，一行一个。删除原有会导致该区域猫猫无法检索，请谨慎修改！",
         maxlength: 300,
         value: ""
@@ -65,7 +65,7 @@ Page({
       {
         key: "address",
         name: "聚集地",
-        required: false,
+        optional: true,
         placeholder: "猫猫所在地，新建猫猫前确定，一行一个。删除原有会导致该区域猫猫无法检索，请谨慎修改！",
         maxlength: 300,
         value: ""
@@ -119,7 +119,7 @@ Page({
   async bindSubmit(e) {
     var items = this.data.form_items;
     for (const item of items) {
-      if (!item.value.length && !item.required) {
+      if (!item.value.length && !item.optional) {
         wx.showToast({
           title: `请填写\"${item.name}\"后再提交哦`,
           icon: 'none'
