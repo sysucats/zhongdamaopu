@@ -7,7 +7,7 @@ Page({
    * 页面的初始数据
    */
   data: {
-
+    orgcat_list: [],
   },
 
   /**
@@ -15,50 +15,89 @@ Page({
    */
   onLoad: function (options) {
     org_id = options.org_id;
+    this.loadOrg();
   },
 
-  /**
-   * 生命周期函数--监听页面初次渲染完成
-   */
-  onReady: function () {
-
-  },
-
-  /**
-   * 生命周期函数--监听页面显示
-   */
   onShow: function () {
-
-  },
-
-  /**
-   * 生命周期函数--监听页面隐藏
-   */
-  onHide: function () {
-
-  },
-
-  /**
-   * 生命周期函数--监听页面卸载
-   */
-  onUnload: function () {
-
-  },
-
-  /**
-   * 页面相关事件处理函数--监听用户下拉动作
-   */
-  onPullDownRefresh: function () {
-
+    this.loadOrgCat();
   },
 
   /**
    * 页面上拉触底事件的处理函数
    */
   onReachBottom: function () {
-
+    this.loadOrgCat();
   },
+
   
+  async loadOrg () {
+    const db = wx.cloud.database();
+    var org = (await db.collection('organization').doc(org_id).get()).data;
+    console.log(org);
+
+    this.setData({
+      org: org,
+    });
+  },
+
+  async loadOrgCat() {
+    wx.showLoading({
+      title: '加载中...'
+    });
+
+    const db = wx.cloud.database();
+    var orgcat_total = this.data.orgcat_total;
+    if (orgcat_total === undefined) {
+      orgcat_total = (await db.collection('orgcat').where({org: org_id}).count()).total;
+    }
+
+    var orgcat_list = this.data.orgcat_list;
+    if (orgcat_list.length < orgcat_total) {
+      var res = await db.collection('orgcat').where({org: org_id})
+                        .skip(orgcat_list.length).limit(10).get();
+      orgcat_list = orgcat_list.concat(res.data);
+    }
+
+    this.setData({
+      orgcat_list: orgcat_list,
+      orgcat_total: orgcat_total,
+    });
+
+    wx.hideLoading();
+  },
+
+  showQRCode() {
+    if (this.data.org.mpcode) {
+      wx.previewImage({
+        urls: [this.data.org.mpcode],
+      });
+      return;
+    }
+
+    wx.showLoading({
+      title: '生成中...',
+    });
+
+    var that = this;
+    wx.cloud.callFunction({
+      name: 'getOrgMpCode',
+      data: {
+        _id: this.data.org._id,
+        width: 500,
+      },
+      success: (res) => {
+        wx.hideLoading();
+        console.log(res);
+        wx.previewImage({
+          urls: [res.result],
+        });
+        that.setData({
+          'org.mpcode': res.result
+        });
+      }
+    })
+  },
+
   toModifyOrg() {
     wx.navigateTo({
       url: `/pages/manage/modifyOrg/modifyOrg?org_id=${org_id}`,

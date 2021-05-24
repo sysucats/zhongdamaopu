@@ -17,7 +17,7 @@
       <block wx:elif="{{item.type == 'picker-date'}}">
         <picker bindchange="bindPickerDateChange" value="{{item.index}}" data-index="{{index}}" mode='date' fields='month'>
             <view class="picker">
-              {{item.value === undefined ? '-' : item.value}}
+              {{!item.value ? '-' : item.value}}
             </view>
           </picker>
           <view class='lengthTips'>点击修改</view>

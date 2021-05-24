@@ -168,7 +168,7 @@
         {
           "name": "组织首页",
           "pathName": "pages/organization/org/org",
-          "query": "_id=28ee4e3e60a528ce1a319c0c03096f45",
+          "query": "org_id=28ee4e3e60a528ce1a319c0c03096f45",
           "scene": null
         },
         {
@@ -181,6 +181,12 @@
           "name": "新增组织猫",
           "pathName": "pages/organization/addorgcat/addorgcat",
           "query": "org_id=28ee4e3e60a528ce1a319c0c03096f45&orgcat_id=79550af260aa7384198575360d7b0071",
+          "scene": null
+        },
+        {
+          "name": "组织猫详情",
+          "pathName": "pages/organization/detailorgcat/detailorgcat",
+          "query": "cat_id=79550af260ab15b2199d2afd77086e15",
           "scene": null
         }
       ]

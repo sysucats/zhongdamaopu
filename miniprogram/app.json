@@ -26,7 +26,8 @@
     "pages/manage/modifyOrg/modifyOrg",
     "pages/organization/org/org",
     "pages/organization/orgsettings/orgsettings",
-    "pages/organization/addorgcat/addorgcat"
+    "pages/organization/addorgcat/addorgcat",
+    "pages/organization/detailorgcat/detailorgcat"
   ],
   "tabBar": {
     "selectedColor": "#000",

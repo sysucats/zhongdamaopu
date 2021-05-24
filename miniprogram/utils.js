@@ -212,6 +212,20 @@ function splitFilterLine(line) {
   return line.filter((val) => val.length);
 }
 
+
+function checkMultiClick(cat_id) {
+  const last_click = wx.getStorageSync(cat_id);
+  if(!cat_id) {
+    return false;
+  }
+  const today = new Date();
+  const delta = today - (new Date(last_click));
+  console.log("last click: " + (delta / 1000 / 3600));
+  // 小于2小时就返回true，说明是一个multi-click
+  return (delta/1000/3600) < 2;
+}
+
+
 module.exports = {
   regeneratorRuntime,
   randomInt,
@@ -229,4 +243,5 @@ module.exports = {
   checkUpdateVersion,
   checkCanUpload,
   splitFilterLine,
+  checkMultiClick,
 };

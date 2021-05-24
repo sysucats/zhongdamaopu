@@ -48,6 +48,15 @@ page {
   font-size: 24rpx;
   line-height: 30rpx;
   margin-top: 10rpx;
+  color: var(--color-gray-max);
+}
+
+.card .nav-btn {
+  margin: 0 30rpx 0 auto;
+  font-size: 40rpx;
+  height: 100rpx;
+  line-height: 100rpx;
+  color: var(--color-gray-dark);
 }
 
 .card.apply .icon {
@@ -57,6 +66,19 @@ page {
   text-align: center;
   font-size: 100rpx;
   font-weight: bold;
+}
+
+/* 展开详情的卡片 */
+.card.detail {
+  height: auto;
+}
+
+.card .intro {
+  width: 100%;
+  margin: 10rpx 30rpx;
+  padding: 10rpx 0;
+  border-top: 1rpx solid lightgray;
+  line-height: 150%;
 }
 
 .card.apply .content {
