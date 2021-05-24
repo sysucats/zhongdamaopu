@@ -31,11 +31,11 @@
         <text>管理页</text>
       </view>
     </scroll-view>
-    <wxs src="./org.wxs" module="tools" />
+    <!-- <wxs src="./org.wxs" module="tools" /> -->
     <scroll-view class='f-column f-column-3' scroll-y='1'>
       <view class='padding-block'></view>
       <view>
-        <view wx:for='{{filters[filters_sub].category}}' wx:key='item' class='item {{tools.isSelected(filters[filters_sub].selected, index)? "active": ""}}' bindtap='fClickCategory' data-index='{{index}}'>{{item}}</view>
+        <view wx:for='{{filters[filters_sub].category}}' wx:key='item' class='item {{filters[filters_sub].selected[index]? "active": ""}}' bindtap='fClickCategory' data-index='{{index}}'>{{item}}</view>
       </view>
     </scroll-view>
   </view>
@@ -51,24 +51,23 @@
 <scroll-view enable-flex='true' class='cards' style='height: {{heights.windowHeight - heights.filters}}px;' scroll-y='true' enable-back-to-top='true' bindscrolltolower='onReachBottom' bindscroll='fScroll' lower-threshold='{{main_lower_threshold}}'>
   <block wx:for='{{cats}}' wx:key="_id">
     <view class='card' bindtap='clickCatCard' bindlongpress='bindManageCat' data-cat_id='{{item._id}}'>
-      <view class='label' wx:if="{{item.mphoto_new}}">有新相片！</view>
       <view class='image {{item.to_star? "to_star": ""}}'>
-        <image mode='aspectFill' src='{{item.photo.photo_compressed || item.photo.photo_id}}'></image>
-        <view class='image-title' wx:if='{{!item.photo_count || item.photo_count === 0}}'>暂无照片...</view>
-        <view class='image-title' wx:else>{{item.photo.photo_id? ('Photo by ' + (item.photo.photographer ||(item.photo.userInfo? item.photo.userInfo.nickName: '匿名猫友'))): '加载照片ing'}}</view>
+        <image mode='aspectFill' src='{{item.photos[0]}}'></image>
+        <!-- <view class='image-title' wx:if='{{!item.photo_count || item.photo_count === 0}}'>暂无照片...</view> -->
+        <!-- <view class='image-title' wx:else>{{item.photo.photo_id? ('Photo by ' + (item.photo.photographer ||(item.photo.userInfo? item.photo.userInfo.nickName: '匿名猫友'))): '加载照片ing'}}</view> -->
       </view>
       <view class='info'>
         <view class='line first'>
           <text class='name'>{{item.name}}</text>
           <block wx:if='{{item.gender}}'>
-            <image mode='aspectFill' class='gender' wx:if='{{item.gender === "公"}}' src="../../../images/card/card/male.png"></image>
-            <image mode='aspectFill' class='gender' wx:if='{{item.gender === "母"}}' src="../../../images/card/card/female.png"></image>
+            <image mode='aspectFill' class='gender' wx:if='{{item.gender === "boy"}}' src="../../../images/card/card/male.png"></image>
+            <image mode='aspectFill' class='gender' wx:if='{{item.gender === "girl"}}' src="../../../images/card/card/female.png"></image>
           </block>
           <view wx:if='{{item.adopt}}'class='adopt'>已领养</view>
           <view wx:if='{{item.to_star}}'class='to_star'>返回喵星</view>
           <view class='popularity'>
             <image src='../../../images/card/card/pop.png'></image>
-            <text> ({{item.popularity}})</text>
+            <text> ({{item.popularity || 0}})</text>
           </view>
         </view>
         <view class='line'>
@@ -81,11 +80,11 @@
         </view>
         <view class='line'>
           <image mode='aspectFit' class='icon' src='../../../images/card/card/heart.png'></image>
-          <text class="habit">{{item.habit || '性格未知'}}</text>
+          <text class="intro">{{item.intro || '暂无介绍..'}}</text>
         </view>
         <view class='line'>
           <image mode='aspectFit' class='icon' src='../../../images/card/card/pos.png'></image>
-          <text>{{(item.campus + item.area) || '-'}}</text>
+          <text>{{item.address || '-'}}</text>
           <view class='index'><text decode='true'>&lt; {{index+1}}/{{catsMax}} &gt;</text></view>
         </view>
       </view>

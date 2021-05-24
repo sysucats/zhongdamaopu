@@ -102,6 +102,16 @@ Page ({
         index: "0",
       },
       {
+        key: "adopt",
+        name: "已领养",
+        optional: true,
+        type: "picker",
+        enum: [false, true],
+        disc: ["否", "是"],
+        value: false,
+        index: "0",
+      },
+      {
         key: "sterilized",
         name: "绝育",
         optional: true,
@@ -401,6 +411,7 @@ Page ({
 
     var data = {
       mDate: new Date(),
+      org: org_id,
     };
     for (const item of items) {
       if (item.value != item.old_value) {

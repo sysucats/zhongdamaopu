@@ -1,0 +1,2 @@
+/* miniprogram/pages/organization/detailorgcat/detailorgcat.wxss */
+@import "../../genealogy/detailCat/detailCat.wxss";

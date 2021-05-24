@@ -2,11 +2,11 @@
 <button bindtap="toModifyOrg">组织信息修改</button>
 <button bindtap="showQRCode">专属二维码</button>
 
-<view class="header">猫猫管理 (0/100)</view>
+<view class="header">猫猫管理 ({{orgcat_total}}/{{org.limitcat}})</view>
 
 <button bindtap="toAddCat">新增猫猫</button>
 
-<view class="cat">
-  <image class="avatar"></image>
-  <view class="name">名称</view>
+<view wx:for="{{orgcat_list}}" wx:key="_id" class="cat">
+  <image class="avatar" mode="aspectFit" src="{{item.photos[0]}}"></image>
+  <view class="name">{{item.name}}</view>
 </view>

@@ -49,7 +49,7 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
-    org_id = options._id;
+    org_id = options.org_id;
     this.checkAuth();
     this.loadOrg();
     
@@ -95,6 +95,11 @@ Page({
 
   },
 
+  // 触底
+  onReachBottom: function () {
+    this.loadMoreCats();
+  },
+
   /**
    * 用户点击右上角分享
    */
@@ -116,6 +121,15 @@ Page({
       that.setData({
         auth: res.result
       })
+    });
+  },
+
+  // 点击猫猫卡片
+  clickCatCard(e, isCatId) {
+    const cat_id = isCatId ? e : e.currentTarget.dataset.cat_id;
+    const detail_url = '/pages/organization/detailorgcat/detailorgcat';
+    wx.navigateTo({
+      url: detail_url + '?cat_id=' + cat_id,
     });
   },
   
@@ -140,28 +154,126 @@ Page({
   async loadOrg (){
     const db = wx.cloud.database();
     var org = (await db.collection('organization').doc(org_id).get()).data;
+    if (org.status == 'locked') {
+      // 封禁状态
+      wx.showModal({
+        title: '哦吼',
+        content: '加载失败，看看其他猫猫吧~',
+        showCancel: false,
+        success: (res) => {
+          wx.switchTab({
+            url: '/pages/genealogy/genealogy',
+          });
+        }
+      });
+      return false;
+    }
     console.log(org);
     this.loadFilters(org);
     this.setData({
       org: org,
     });
+
+    // 设置一下标题
+    wx.setNavigationBarTitle({
+      title: org.name
+    })
   },
+
+  // 检查是否需要继续加载猫猫
+  checkNeedLoad() {
+    if (this.data.cats.length >= this.data.catsMax) {
+      this.setData({
+        loadnomore: true
+      });
+      return false;
+    }
+    return true;
+  },
+  
+  // 加载猫猫
+  reloadCats() {
+    // 增加lock
+    loadingLock++;
+    const nowLoadingLock = loadingLock;
+    const db = wx.cloud.database();
+    const cat = db.collection('orgcat');
+    const query = this.fGet();
+    console.log(query);
+    cat.where(query).count().then(res => {
+      if (loadingLock != nowLoadingLock) {
+        // 说明过期了
+        return false;
+      }
+      console.log(res);
+      this.setData({
+        cats: [],
+        catsMax: res.total,
+        loadnomore: false,
+      }, function () {
+        this.loadMoreCats();
+      });
+    });
+  },
+
+  
+  // 加载更多的猫猫
+  loadMoreCats() {
+    // 加载lock
+    const nowLoadingLock = loadingLock;
+    if (!this.checkNeedLoad() || this.data.loading) {
+      return false;
+    }
+    const that = this;
+    this.setData({
+      loading: true
+    }, () => {
+      var cats = that.data.cats;
+      var step = catsStep;
+      const db = wx.cloud.database();
+      const cat = db.collection('orgcat');
+      const _ = db.command;
+      const query = that.fGet();
+      console.log("query condition: ", query);
+      cat.where(query).orderBy('mphoto', 'desc').orderBy('popularity', 'desc').skip(cats.length).limit(step).get().then(res => {
+        if (loadingLock != nowLoadingLock) {
+          // 说明过期了
+          return false;
+        }
+        console.log(res.data);
+        res.data = shuffle(res.data);
+        for (var d of res.data) {
+          d.photo = default_png;
+          d.characteristics_string = [(d.colour || '') + '猫'].concat(d.looks || []).join('，');
+        }
+        const new_cats = cats.concat(res.data);
+        that.setData({
+          cats: new_cats,
+          loading: false,
+          loadnomore: Boolean(new_cats.length === that.data.catsMax)
+        });
+      });
+    });
+  },
+
   
   loadFilters: function (org) {
     // 下面开始加载filters
+    var address = splitFilterLine(org.address);
+    var colour = splitFilterLine(org.colour);
     var filters = [
       {
         key: "address",
         name: "位置",
-        category:  ["全部位置"].concat(splitFilterLine(org.address)),
-        selected: [0, 2],
+        category:  ["全部位置"].concat(address),
+        selected: [true].concat(Array(address.length).fill(false)),
         active: true,
       },
       {
         key: "colour",
         name: "花色",
-        category:  ["全部花色"].concat(splitFilterLine(org.colour)),
-        selected: [0],
+        category:  ["全部花色"].concat(colour),
+        selected: [true].concat(Array(colour.length).fill(false)),
       },
     ];
 
@@ -169,7 +281,7 @@ Page({
     this.setData({
       filters: filters,
     }, () => {
-      // this.reloadCats();
+      this.reloadCats();
     });
   },
 
@@ -202,33 +314,23 @@ Page({
   fClickCategory: function (e) {
     var filters = this.data.filters;
     var filters_sub = this.data.filters_sub;
+    var selected = filters[filters_sub].selected;
 
     const index = e.target.dataset.index;
-    const all_active = !filters[filters_sub].category[index].all_active;
-    var category = filters[filters_sub].category[index];
-    if (index == 0) { // 默认第0个是'全部'
-      for (let i = 0, len = filters[filters_sub].category.length; i < len; ++i) { // 把所有项反激活
-        var ctg = filters[filters_sub].category[i];
-        ctg.all_active = false;
-        for (let k = 0, length = ctg.items.length; k < length; ++k) {
-          ctg.items[k].active = false;
-        }
-      }
-      filters[filters_sub].category[index].all_active = all_active; // '全部'的激活状态
-    } else {
-      filters[filters_sub].category[0].all_active = false; // 取消'全部'的激活，默认第0个是'全部'
-      category.all_active = all_active; // 点击的category状态取反
-      /* for (let k = 0, len = category.items.length; k < len; ++k) {  // 其下的所有项目激活状态与category一致
-        category.items[k].active = all_active;
-      } */
-      for (let k = 0, len = category.items.length; k < len; ++k) { // 反激活其下所有sub
-        category.items[k].active = false;
+    selected[index] = !selected[index];
+    if (index != 0) {
+      selected[0] = false;
+    } else if (index == 0 && selected[0]) {
+      // 0号表示“全部”
+      for (let i = 1; i < selected.length; i++) {
+        selected[i] = false;
       }
     }
+
     const fLegal = this.fCheckLegal(filters);
     this.setData({
       filters: filters,
-      filters_legal: fLegal
+      filters_legal: fLegal,
     });
   },
   // 点击sub filter，切换激活项
@@ -241,12 +343,6 @@ Page({
 
     category.items[index].active = !category.items[index].active; // 激活状态取反
     filters[filters_sub].category[0].all_active = false; // 取消'全部'的激活，默认第0个是'全部'
-    /* // 看看是否要把category激活/反激活
-    var counter = 0;
-    for (let k = 0, len = category.items.length; k < len; ++k) {
-      if (category.items[k].active) ++counter;
-    }
-    category.all_active = (counter == category.items.length); */
     category.all_active = false; // 直接反激活category
 
     const fLegal = this.fCheckLegal(filters);
@@ -258,18 +354,14 @@ Page({
   // 检查现在这个filter是否有效，如果没有，那就deactive完成键
   fCheckLegal: function (filters) {
     for (const mainF of filters) {
-      var count = 0; // 激活的数量
-      if (mainF.category[0].all_active) continue; // '全部'是激活的
-      for (const category of mainF.category) {
-        if (category.all_active) {
-          count += category.items.length;
-          continue;
-        }
-        for (const item of category.items) {
-          if (item.active) ++count;
-        }
+      var actived = false;
+      for (const el of mainF.selected) {
+        if (el) {
+          actived = true;
+          break;
+        };
       }
-      if (count == 0) return false;
+      if (!actived) return false;
     }
     return true;
   },
@@ -277,41 +369,29 @@ Page({
     const db = wx.cloud.database();
     const _ = db.command;
     const filters = this.data.filters;
-    var res = []; // 先把查询条件全部放进数组，最后用_.and包装，这样方便跨字段使用or逻辑
+    var res = [{org: org_id}, {hidden: _.neq(true)}]; // 先把查询条件全部放进数组，最后用_.and包装，这样方便跨字段使用or逻辑
     // 这些是点击选择的filters
     for (const mainF of filters) {
       // 把数据库要用的key拿出来
       const key = mainF.key;
       var selected = []; // 储存已经选中的项
-      const cateFilter = Boolean(mainF.cateKey);
-      if (cateFilter) { // 如果分类的名字也会作为筛选内容，这种筛选可能是因为不同类间key字段可能重名
-        var cateKey = mainF.cateKey;
-        var cateSelected = [];
-      }
 
       // 下面开始遍历每个分类下的子项
-      if (mainF.category[0].all_active) continue; // 选择了'全部', 不用管这个类
+      if (mainF.selected[0] === true) continue; // 选择了'全部', 不用管这个类
 
-      for (const category of mainF.category) {
-        let cateKeyPushed = false; // 一个category只用push一次，记一下
-        for (const item of category.items) {
-          if (category.all_active || item.active) {
-            selected.push(item.name);
-            if (cateFilter && !cateKeyPushed) {
-              cateSelected.push(category.name);
-              cateKeyPushed = true;
-            }
-          }
+      
+      for (let i = 1; i < mainF.selected.length; i++) {
+        if (mainF.selected[i]) {
+          selected.push(mainF.category[i]);
         }
       }
-
+      
       res.push({[key]: _.in(selected)});
-      if (cateFilter) res.push({[cateKey]: _.in(cateSelected)});
     }
-    // 判断一下filters生效没有
 
+    // 判断一下filters生效没有
     this.setData({
-      filters_active: res.length > 0
+      filters_active: res.length > 2, // 这里是2的原因是初始有一个org_id和一个hidden
     });
 
     // 如果用户还输入了东西，也要一起搜索
@@ -347,15 +427,11 @@ Page({
     // 重置所有分类
     var filters = this.data.filters;
     // const filters_sub = this.data.filters_sub;
-    for (let sub = 0, len = filters.length; sub < len; ++sub) {
-      for (let i = 0, catelen = filters[sub].category.length; i < catelen; ++i) {
-        var category = filters[sub].category[i];
-        category.all_active = false;
-        for (let k = 0, itemlen = category.items.length; k < itemlen; ++i) {
-          category.items[k].active = false;
-        }
+    for (var mainF of filters) {
+      for (let i = 0; i < mainF.selected.length; i++) {
+        mainF.selected[i] = false;
       }
-      filters[sub].category[0].active = true; // 默认第0个是'全部'
+      mainF.selected[0] = true;
     }
 
     const fLegal = this.fCheckLegal(filters);

@@ -77,7 +77,7 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
-    org_id = options._id;
+    org_id = options.org_id;
     this.checkAuth();
     this.loadOrg();
   },

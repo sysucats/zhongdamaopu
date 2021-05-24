@@ -3,6 +3,7 @@ const shareTo = utils.shareTo;
 const getCurrentPath = utils.getCurrentPath;
 const getGlobalSettings = utils.getGlobalSettings;
 const checkCanUpload = utils.checkCanUpload;
+const checkMultiClick = utils.checkMultiClick;
 
 const ctx = wx.createCanvasContext('bigPhoto');
 
@@ -21,18 +22,6 @@ var infoHeight = 0; // 单位是px
 const canvasMax = 2000; // 正方形画布的尺寸px
 
 var heights = {}; // 系统的各种heights
-
-function check_multi_click(cat_id) {
-  const last_click = wx.getStorageSync(cat_id);
-  if(!cat_id) {
-    return false;
-  }
-  const today = new Date();
-  const delta = today - (new Date(last_click));
-  console.log("last click: " + (delta / 1000 / 3600));
-  // 小于2小时就返回true，说明是一个multi-click
-  return (delta/1000/3600) < 2;
-}
 
 Page({
 
@@ -56,9 +45,7 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
-    console.log("options:",options);
     cat_id = options.cat_id;
-    // console.log('cat_id:',cat_id);
     // 开始加载页面
     const that = this;
     const app = getApp();
@@ -78,7 +65,7 @@ Page({
     })
     
     // 先判断一下这个用户在12小时之内有没有点击过这只猫
-    if (!check_multi_click(cat_id)) {
+    if (!checkMultiClick(cat_id)) {
       console.log("add click!");
       wx.setStorage({
         key: cat_id,

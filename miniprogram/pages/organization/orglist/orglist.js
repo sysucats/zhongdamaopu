@@ -75,11 +75,13 @@ Page({
 
   async getOrgList() {
     const db = wx.cloud.database();
-    var total = (await db.collection('organization').count()).total;
+    const _ = db.command;
+    const query = {status: _.neq("locked")};
+    var total = (await db.collection('organization').where(query).count()).total;
     console.log(total);
     var org_list = [];
     while (org_list.length < total) {
-      var res = await db.collection('organization').skip(org_list.length).limit(20).get();
+      var res = await db.collection('organization').where(query).skip(org_list.length).limit(20).get();
       org_list = org_list.concat(res.data);
     }
 
@@ -100,4 +102,12 @@ Page({
       url: '/pages/organization/applyorg/applyorg',
     })
   },
+
+  openDetail(e) {
+    var index = e.currentTarget.dataset.index;
+    var detail = !this.data.org_list[index].detail;
+    this.setData({
+      [`org_list[${index}].detail`]: detail
+    });
+  }
 })

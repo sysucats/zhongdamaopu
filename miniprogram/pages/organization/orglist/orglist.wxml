@@ -1,10 +1,15 @@
 <!--miniprogram/pages/organization/orglist/orglist.wxml-->
 <view wx:for="{{org_list}}" wx:key="id">
-  <view class="card" bindtap="toOrg" data-_id="{{item._id}}">
+  <view class="card {{item.detail? 'detail': ''}}" bindtap="openDetail" data-index="{{index}}">
     <image class="avatar" src="{{item.avatar}}" alt="logo"></image>
     <view class="info">
       <view class="name">{{item.name}}</view>
       <view class="slogan">{{item.slogan}}</view>
+    </view>
+    <view class="nav-btn" bindtap="toOrg" data-_id="{{item._id}}">进入👉</view>
+    
+    <view class="intro" wx:if="{{item.detail}}">
+      简介：{{item.intro}}
     </view>
   </view>
 </view>
