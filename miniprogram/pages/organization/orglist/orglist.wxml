@@ -5,16 +5,22 @@
     <view class="info">
       <view class="name">{{item.name}}</view>
       <view class="slogan">{{item.slogan}}</view>
+      <view class="cat-num">
+        <image mode="aspectFit" src="../../../images/cat.png"></image>
+        <text>{{item.cat_count}}</text>
+      </view>
+      
+      <view class="intro">
+        简介：{{item.intro}}
+      </view>
     </view>
-    <view class="nav-btn" bindtap="toOrg" data-_id="{{item._id}}">进入👉</view>
-    
-    <view class="intro" wx:if="{{item.detail}}">
-      简介：{{item.intro}}
+    <view class="nav-btn" catchtap="toOrg" data-_id="{{item._id}}">
+      <image mode="aspectFit" src="../../../images/gointo.png"></image>
     </view>
   </view>
 </view>
 
-<view class="card apply" bindtap="toApply">
+<view class="apply" bindtap="toApply">
   <view class="icon">+</view>
   <view class="content">欢迎串门</view>
 </view>

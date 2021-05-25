@@ -69,7 +69,6 @@ Page({
   onShareTimeline:function () {
     return {
       title: '中大猫谱 - 发现校园身边的猫咪',
-      // query: 'cat_id=' + this.data.cat._id
     }
   },
 
@@ -83,6 +82,11 @@ Page({
     while (org_list.length < total) {
       var res = await db.collection('organization').where(query).skip(org_list.length).limit(20).get();
       org_list = org_list.concat(res.data);
+    }
+
+    for (const org of org_list) {
+      var query_cat = _.and({org: org._id}, {hidden: _.neq(true)});
+      org.cat_count = (await db.collection('orgcat').where(query_cat).count()).total;
     }
 
     this.setData({

@@ -19,6 +19,9 @@
 <view class='block'>
   <view class='title'>更新日志</view>
   <view class='desc'>
+    <view class='sub-title hl'>v1.5.0</view>
+    <text class='sub-detail'>- 串门功能上线测试！\n - 更新时间：2021/5/25</text>
+
     <view class='sub-title hl'>v1.4.16</view>
     <text class='sub-detail'>- 适配微信小程序登录接口修改！！！\n - 现在可以通过云函数自动处理图片了\n - 更新时间：2021/4/21</text>
 
