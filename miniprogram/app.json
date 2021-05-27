@@ -40,8 +40,8 @@
       },
       {
         "pagePath": "pages/organization/orglist/orglist",
-        "iconPath": "./images/tabs/default/cat.png",
-        "selectedIconPath": "./images/tabs/active/cat.png",
+        "iconPath": "./images/tabs/default/org.png",
+        "selectedIconPath": "./images/tabs/active/org.png",
         "text": "串门"
       },
       {
