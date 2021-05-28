@@ -109,4 +109,11 @@ Page({
       url: `/pages/organization/addorgcat/addorgcat?org_id=${org_id}`,
     });
   },
+
+  toModifyCat(e) {
+    var cat_id = e.currentTarget.dataset._id;
+    wx.navigateTo({
+      url: `/pages/organization/addorgcat/addorgcat?org_id=${org_id}&orgcat_id=${cat_id}`,
+    });
+  }
 })

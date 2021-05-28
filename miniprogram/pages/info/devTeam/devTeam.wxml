@@ -4,7 +4,7 @@
 <view class='block'>
   <view class='title'>开发团队</view>
   <view class='desc'>
-    <text>程序开发：渔政、蓝卷、XD、zJ\n初期资料整理：hehe、玥琪、大米\n以及各校区猫群的小伙伴~</text>
+    <text>程序开发：渔政、蓝卷、XD、zJ\n资料维护：Lo\n初期资料整理：hehe、玥琪、大米\n以及各校区猫群的小伙伴~</text>
   </view>
 </view>
 
@@ -19,6 +19,9 @@
 <view class='block'>
   <view class='title'>更新日志</view>
   <view class='desc'>
+    <view class='sub-title hl'>v1.5.1</view>
+    <text class='sub-detail'>- 增加串门功能介绍\n - UI及已知问题修复\n - 更新时间：2021/5/28</text>
+
     <view class='sub-title hl'>v1.5.0</view>
     <text class='sub-detail'>- 串门功能上线测试！\n - 更新时间：2021/5/25</text>
 

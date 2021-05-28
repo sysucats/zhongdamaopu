@@ -31,6 +31,7 @@
   ],
   "tabBar": {
     "selectedColor": "#000",
+    "borderStyle": "white",
     "list": [
       {
         "pagePath": "pages/genealogy/genealogy",

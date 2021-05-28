@@ -9,6 +9,7 @@ Page({
    */
   data: {
     org_list: [],
+    modal_show: false,
   },
 
   /**
@@ -21,20 +22,20 @@ Page({
         canUpload: res
       });
     })
+    this.getOrgList();
   },
 
   /**
    * 生命周期函数--监听页面初次渲染完成
    */
   onReady: function () {
-
+    this.getHeights();
   },
 
   /**
    * 生命周期函数--监听页面显示
    */
   onShow: function () {
-    this.getOrgList();
   },
 
   /**
@@ -80,6 +81,23 @@ Page({
     }
   },
 
+  
+  // 开始计算各个东西高度
+  getHeights() {
+    wx.getSystemInfo({
+      success: res => {
+        console.log(res);
+        this.setData({
+          "heights.filters": res.screenHeight * 0.065,
+          "heights.screenHeight": res.screenHeight,
+          "heights.windowHeight": res.windowHeight,
+          "heights.statusBarHeight": res.statusBarHeight,
+          "heights.rpx2px": res.windowWidth / 750,
+        });
+      }
+    });
+  },
+
   async getOrgList() {
     const db = wx.cloud.database();
     const _ = db.command;
@@ -120,6 +138,13 @@ Page({
     var detail = !this.data.org_list[index].detail;
     this.setData({
       [`org_list[${index}].detail`]: detail
+    });
+  },
+
+  toggleModal() {
+    var modal_show = this.data.modal_show;
+    this.setData({
+      modal_show: !modal_show,
     });
   }
 })
