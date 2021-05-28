@@ -3,7 +3,7 @@
 <!-- 背景下拉看到黄色块 -->
 <view id='bg-yellow' style='{{hideBgBlock? "background-color: transparent;": ""}}'></view>
 <!-- 整个页面容器 -->
-<scroll-view id='container' scroll-y="1" bindscrolltolower='loadMoreAlbum' enable-back-to-top="true" bindscroll="bindContainerScroll">
+<scroll-view id='container' scroll-y="1" enable-back-to-top="true">
 <!-- 半圆形下面的白底块 -->
 <view id='bg-big-circle'></view>
 <!-- 这是黄色的半圆形 -->
@@ -101,6 +101,8 @@ next-margin='60rpx'>
   </view>
 </view>
 <!-- info end -->
+<view class="ad-title">- 广告 -</view>
+<ad unit-id="adunit-4f6d3d3322710591"></ad>
 </scroll-view>
 
 <mp-gallery show="{{showGallery}}" bindchange="bindGalleryChange" img-urls="{{imgUrls}}" current="{{currentImg}}" hide-on-click="{{true}}" showDelete="{{false}}" bindlongpress='bindGalleryLongPress'></mp-gallery>

@@ -5,8 +5,6 @@ const getGlobalSettings = utils.getGlobalSettings;
 const checkCanUpload = utils.checkCanUpload;
 const checkMultiClick = utils.checkMultiClick;
 
-const ctx = wx.createCanvasContext('bigPhoto');
-
 // 页面设置，从global读取
 var page_settings = {};
 var photoMax = 0;

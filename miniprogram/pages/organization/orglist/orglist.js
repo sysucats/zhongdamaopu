@@ -1,4 +1,7 @@
 // miniprogram/pages/organization/orglist/orglist.js
+const utils = require('../../../utils.js');
+const checkCanUpload = utils.checkCanUpload;
+
 Page({
 
   /**
@@ -12,7 +15,12 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
-
+    var that = this;
+    checkCanUpload().then(res => {
+      that.setData({
+        canUpload: res
+      });
+    })
   },
 
   /**
@@ -75,7 +83,7 @@ Page({
   async getOrgList() {
     const db = wx.cloud.database();
     const _ = db.command;
-    const query = {status: _.neq("locked")};
+    const query = {status: _.eq("active")};
     var total = (await db.collection('organization').where(query).count()).total;
     console.log(total);
     var org_list = [];

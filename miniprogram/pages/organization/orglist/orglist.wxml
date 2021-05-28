@@ -20,7 +20,7 @@
   </view>
 </view>
 
-<view class="apply" bindtap="toApply">
+<view class="apply" bindtap="toApply" wx:if="canUpload">
   <view class="icon">+</view>
   <view class="content">欢迎串门</view>
 </view>

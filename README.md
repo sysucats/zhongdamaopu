@@ -20,6 +20,18 @@
 
 如果，你所在校园（/社团/小区...）的猫猫:smile_cat:也盼望拥有一份属于自己的猫猫档案，请你跟随下一章节的指引，为它们部署、发布一份独特的猫谱小程序。
 
+# :school:串门
+
+2021-5 上线的“串门”功能：如果不想自己部署一份独立的猫谱，可选择将猫猫资料托管到“中大猫谱”小程序上，我们将为你提供：
+1. 独立的组织首页，可以生成唯一菊花码、分享到wx聊天直接进入
+2. 猫猫档案、照片托管功能，与中大猫谱的UI风格一致
+3. 自主创建猫猫聚集地、花色选项，灵活管理
+4. 更新完善更多功能ing...
+
+心动不如行动，现在打开中大猫谱小程序，进入串门页面填写组织信息吧~
+
+![简介大图](./readme/chuanmen.jpg)
+
 # :scroll:部署
 
 :smirk_cat:*无需从零开始，只要一些耐心。*
@@ -29,9 +41,9 @@
 - [ ] 在[微信公众平台](https://mp.weixin.qq.com/)（[https://mp.weixin.qq.com/](https://mp.weixin.qq.com/)）注册小程序账号
 - [ ] 挑选并设置好小程序名称及LOGO
 - [ ] 下载并安装[微信开发者工具](https://developers.weixin.qq.com/miniprogram/dev/devtools/download.html)稳定版（[https://developers.weixin.qq.com/miniprogram/dev/devtools/download.html](https://developers.weixin.qq.com/miniprogram/dev/devtools/download.html)）
-- [ ] **Fork**一份本仓库，并**切换到Fork出来的副本**链接
-- [ ] 使用`git clone`命令将代码下载至本地
+- [ ] （:warning:2021/5/28更新，保证Release）进入[Releases页面](https://github.com/Zing22/zhongdamaopu/releases)，下载`v1.4.16存档点`的Source code(zip)，解压
 - [ ] 替换`initDatabase/系统图片`中的二维码图片（稍后再换也行）
+
 ## 代码部署
 
 我们在2021年1月录制了一份代码部署视频（[https://www.bilibili.com/video/BV1zA411W7Rn/](https://www.bilibili.com/video/BV1zA411W7Rn/)），希望这段视频能帮助你完成部署阶段最繁杂的部分。
