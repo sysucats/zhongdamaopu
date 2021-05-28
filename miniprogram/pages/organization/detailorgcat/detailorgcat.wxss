@@ -1,2 +1,11 @@
 /* miniprogram/pages/organization/detailorgcat/detailorgcat.wxss */
 @import "../../genealogy/detailCat/detailCat.wxss";
+
+.ad-title {
+  text-align: center;
+  height: 36rpx;
+  font-size: 22rpx;
+  line-height: 36rpx;
+  color: var(--color-gray-max);
+  background-color: var(--color-gray-light);
+}
