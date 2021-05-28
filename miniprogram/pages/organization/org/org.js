@@ -104,7 +104,18 @@ Page({
    * 用户点击右上角分享
    */
   onShareAppMessage: function () {
+    var org = this.data.org;
+    return {
+      title: `${org.name} - 中大猫谱`
+    }
+  },
 
+  // 分享到朋友圈
+  onShareTimeline: function () {
+    var org = this.data.org;
+    return {
+      title: `${org.name} - 中大猫谱`
+    }
   },
   
   // 检查权限

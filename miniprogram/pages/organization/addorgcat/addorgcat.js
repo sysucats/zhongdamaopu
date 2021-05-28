@@ -310,7 +310,9 @@ Page ({
     var phidx = e.currentTarget.dataset.phidx;
     var photos = this.data.form_items[photos_index].value;
     var op_list = [];
-    if (phidx == 0) {
+    if (photos.length == 1) {
+      op_list = ['删除'];
+    } else if (phidx == 0) {
       op_list = ['删除', '后移👉'];
     } else if (phidx == photos.length - 1) {
       op_list = ['删除', '👈前移'];

@@ -4,6 +4,7 @@ page {
   width: 750rpx;
   height: 100%;
   background-color: var(--color-gray-light);
+  overflow: hidden;
 }
 
 .card {
@@ -29,13 +30,9 @@ page {
 }
 
 .card .info {
-  width: 550rpx;
   max-height: 210rpx;
   background-color: white;
   box-shadow: 13rpx 13rpx 30rpx var(--color-gray);
-  /* position: absolute;
-  top: 30rpx;
-  left: 70rpx; */
   margin: 30rpx 0 0 -130rpx;
   z-index: 2;
 
@@ -135,6 +132,7 @@ page {
   text-align: center;
   font-size: 30rpx;
   line-height: 30rpx;
+  box-sizing: border-box;
 }
 
 /* 展开详情的卡片 */
@@ -161,4 +159,47 @@ page {
 
 .card.detail .intro {
   opacity: 1;
+}
+
+/* whatis */
+.whatis, .modal-close {
+  width: 100%;
+  height: 60rpx;
+  padding: 10rpx;
+  text-align: center;
+  color: var(--color-gray-dark);
+
+  font-size: 24rpx;
+  box-sizing: border-box;
+}
+
+.modal-whatis {
+  width: 750rpx;
+  background-color: var(--color-black-transparent);
+  position: fixed;
+  top: 0rpx;
+  left: 0rpx;
+  z-index: 5;
+}
+
+.dialog {
+  width: 670rpx;
+  margin: 300rpx 40rpx;
+  background-color: white;
+  border-radius: 10rpx;
+
+  box-shadow: 0 0 10rpx var(--color-gray);
+  opacity: 1;
+}
+
+.content {
+  width: 600rpx;
+  margin-left: auto;
+  white-space:pre-wrap;
+
+  padding: 10rpx;
+  font-size: 22rpx;
+
+  color: var(--color-black-light);
+  display: inline-block;
 }
