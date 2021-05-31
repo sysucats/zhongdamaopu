@@ -4,6 +4,7 @@ const splitFilterLine = utils.splitFilterLine;
 const generateUUID = utils.generateUUID;
 
 var org_id = undefined;
+var org = undefined;
 var focusing_item = undefined;
 
 var orgcat_id = undefined;
@@ -181,7 +182,7 @@ Page ({
 
   async loadOrg () {
     const db = wx.cloud.database();
-    var org = (await db.collection('organization').doc(org_id).get()).data;
+    org = (await db.collection('organization').doc(org_id).get()).data;
     console.log(org);
 
     const items = this.data.form_items;
@@ -192,6 +193,7 @@ Page ({
       [`form_items[${colour_index}].enum`]: splitFilterLine(org.colour),
       [`form_items[${address_index}].enum`]: splitFilterLine(org.address),
       [`form_items[${photos_index}].limit`]: org.limitphoto,
+      [`form_items[${photos_index}].limitsize`]: org.limitsize,
     });
   },
 
@@ -283,7 +285,7 @@ Page ({
         console.log(res);
         var new_photos = [];
         for (const file of res.tempFiles) {
-          if (file.size / 1024 <= 300) {
+          if (file.size / 1024 <= org.limitsize) {
             new_photos.push(file.path);
           }
         }

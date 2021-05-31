@@ -70,6 +70,27 @@ Page({
         maxlength: 300,
         value: ""
       },
+      {
+        key: "limitphoto",
+        name: "照片上限",
+        enum: [3, 5, 10, 20, 50],
+        value: "",
+        index: "",
+      },
+      {
+        key: "limitcat",
+        name: "猫猫上限",
+        enum: [50, 120, 200, 300, 999],
+        value: "",
+        index: "",
+      },
+      {
+        key: "limitsize",
+        name: "照片大小上限（KB）",
+        enum: [300, 1000, 1500, 2000, 3000, 9999],
+        value: "",
+        index: "",
+      },
     ]
   },
 
@@ -105,7 +126,7 @@ Page({
       item.value = item.old_value = org[item.key];
 
       // picker需要赋值一下index
-      if (item.key == 'status') {
+      if (['status', 'limitphoto', 'limitcat', 'limitsize'].includes(item.key)) {
         item.index = item.enum.findIndex((it)=>it==org[item.key]);
       }
     }
@@ -119,7 +140,7 @@ Page({
   async bindSubmit(e) {
     var items = this.data.form_items;
     for (const item of items) {
-      if (!item.value.length && !item.optional) {
+      if (item.value.length === 0 && !item.optional) {
         wx.showToast({
           title: `请填写\"${item.name}\"后再提交哦`,
           icon: 'none'

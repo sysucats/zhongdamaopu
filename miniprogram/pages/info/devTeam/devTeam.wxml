@@ -19,6 +19,9 @@
 <view class='block'>
   <view class='title'>更新日志</view>
   <view class='desc'>
+    <view class='sub-title hl'>v1.5.2</view>
+    <text class='sub-detail'>- 增加几个串门设置项 - 更新时间：2021/5/31</text>
+
     <view class='sub-title hl'>v1.5.1</view>
     <text class='sub-detail'>- 增加串门功能介绍\n - UI及已知问题修复\n - 更新时间：2021/5/28</text>
 

@@ -118,9 +118,10 @@ Page({
       status: "new",
       userInfo: this.data.user.userInfo,
       openDate: new Date(),
-      // 两个默认限制
+      // 几个默认限制
       limitcat: 120,
       limitphoto: 3,
+      limitsize: 300,
     };
     for (const item of items) {
       data[item.key] = item.value;

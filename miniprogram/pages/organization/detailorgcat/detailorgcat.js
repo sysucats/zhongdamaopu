@@ -2,18 +2,11 @@
 const utils = require('../../../utils.js');
 const shareTo = utils.shareTo;
 const getCurrentPath = utils.getCurrentPath;
-const getGlobalSettings = utils.getGlobalSettings;
-const checkCanUpload = utils.checkCanUpload;
 const checkMultiClick = utils.checkMultiClick;
 
 
 // 页面设置，从global读取
-var page_settings = {};
-var photoMax = 0;
-var albumMax = 0;
 var cat_id;
-
-var heights = {}; // 系统的各种heights
 
 Page({
 
@@ -55,18 +48,6 @@ Page({
    * 生命周期函数--监听页面初次渲染完成
    */
   onReady: function () {
-    // 获取一下屏幕高度
-    wx.getSystemInfo({
-      success: res => {
-        console.log(res);
-        heights = {
-          "screenHeight": res.screenHeight,
-          "windowHeight": res.windowHeight,
-          "rpx2px": res.windowWidth / 750,
-          "pixelRatio": res.pixelRatio
-        }
-      }
-    });
   },
 
   /**
@@ -93,17 +74,14 @@ Page({
 
   
   async bindTapPhoto(e) {
-    wx.showLoading({
-      title: '正在加载...',
-      mask: true,
-    });
-    console.log(e);
+    console.log(e.currentTarget.dataset);
+    var urls = this.data.cat.photos;
     var currentImg = e.currentTarget.dataset.index;
-    this.setData({
-      showGallery: true,
-      imgUrls: this.data.cat.photos,
-      currentImg: currentImg,
+    currentImg = urls[currentImg];
+    console.log(currentImg);
+    wx.previewImage({
+      urls: urls,
+      current: currentImg
     });
-    wx.hideLoading();
   },
 })

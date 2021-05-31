@@ -76,7 +76,7 @@ Page({
   toModify(e) {
     var _id = e.currentTarget.dataset._id;
     wx.navigateTo({
-      url: `/pages/manage/modifyOrg/modifyOrg?_id=${_id}`,
+      url: `/pages/manage/modifyOrg/modifyOrg?org_id=${_id}`,
     });
   }
 })
