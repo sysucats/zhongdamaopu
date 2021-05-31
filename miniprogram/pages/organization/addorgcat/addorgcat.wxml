@@ -28,7 +28,7 @@
 
           <view wx:if="{{item.value.length < item.limit}}" class="photo addPhoto" bindtap="choosePhoto" data-index="{{index}}">+</view>
         </view>
-        <view class='lengthTips'>点击图像进行操作，单张照片大小限制：300KB</view>
+        <view class='lengthTips'>点击图像进行操作，单张照片大小限制：{{item.limitsize}}KB</view>
       </block>
       <block wx:else>
         <input wx:if="{{item.maxlength < 50}}" placeholder="{{item.placeholder || item.name}}" name='contactInfo' maxlength='{{item.maxlength}}' bindinput='bindInput' bindfocus="bindFocus" data-index="{{index}}" value="{{item.value}}"/>

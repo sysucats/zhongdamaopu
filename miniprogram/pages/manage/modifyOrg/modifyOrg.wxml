@@ -19,6 +19,17 @@
         </block>
         <text wx:else>{{item.enum[item.index]}}（{{item.disc[item.index]}}）</text>
       </block>
+      <block wx:elif="{{item.key == 'limitphoto' || item.key == 'limitcat' || item.key == 'limitsize'}}">
+        <block wx:if="{{auth == 'mp-manager'}}">
+          <picker bindchange="bindPickerChange" value="{{item.index}}" range="{{item.enum}}" data-index="{{index}}">
+            <view class="picker">
+              {{item.enum[item.index] || '-'}}
+            </view>
+          </picker>
+          <view class='lengthTips'>点击修改</view>
+        </block>
+        <text wx:else>{{item.enum[item.index]}}</text>
+      </block>
       <block wx:else>
         <input wx:if="{{item.maxlength < 50}}" placeholder="{{item.placeholder || item.name}}" name='contactInfo' maxlength='{{item.maxlength}}' bindinput='bindInput' bindfocus="bindFocus" data-index="{{index}}" value="{{item.value}}"/>
         <textarea wx:else class='feedbackColumn' placeholder="{{item.placeholder || item.name}}" name='feedbackInfo' maxlength='{{item.maxlength}}' bindinput='bindInput' bindfocus="bindFocus" data-index="{{index}}" value="{{item.value}}"/>

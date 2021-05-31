@@ -11,7 +11,6 @@
 
 <swiper
 indicator-dots='{{false}}'
-bindchange='swiperLast'
 previous-margin='60rpx'
 next-margin='60rpx'>
   <swiper-item wx:for='{{cat.photos}}' wx:key="_id" bindtap='bindTapPhoto' data-index="{{index}}">
@@ -105,4 +104,4 @@ next-margin='60rpx'>
 <ad unit-id="adunit-4f6d3d3322710591"></ad>
 </scroll-view>
 
-<mp-gallery show="{{showGallery}}" bindchange="bindGalleryChange" img-urls="{{imgUrls}}" current="{{currentImg}}" hide-on-click="{{true}}" showDelete="{{false}}" bindlongpress='bindGalleryLongPress'></mp-gallery>
+<!-- <mp-gallery show="{{showGallery}}" bindchange="bindGalleryChange" img-urls="{{imgUrls}}" current="{{currentImg}}" hide-on-click="{{true}}" showDelete="{{false}}" bindlongpress='bindGalleryLongPress'></mp-gallery> -->

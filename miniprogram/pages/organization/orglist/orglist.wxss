@@ -30,6 +30,7 @@ page {
 }
 
 .card .info {
+  width: 600rpx;
   max-height: 210rpx;
   background-color: white;
   box-shadow: 13rpx 13rpx 30rpx var(--color-gray);

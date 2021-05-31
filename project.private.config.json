@@ -162,7 +162,7 @@
         {
           "name": "修改组织信息",
           "pathName": "pages/manage/modifyOrg/modifyOrg",
-          "query": "_id=28ee4e3e60a528ce1a319c0c03096f45",
+          "query": "org_id=28ee4e3e60a528ce1a319c0c03096f45",
           "scene": null
         },
         {
