@@ -20,7 +20,7 @@
   <view class='title'>更新日志</view>
   <view class='desc'>
     <view class='sub-title hl'>v1.5.3</view>
-    <text class='sub-detail'>- 优化部分UI\n - 更新时间：2021/9/4</text>
+    <text class='sub-detail'>- 优化部分UI\n - 关闭串门页入口\n - 更新时间：2021/9/4</text>
 
     <view class='sub-title hl'>v1.5.2</view>
     <text class='sub-detail'>- 增加几个串门设置项\n - 更新时间：2021/5/31</text>

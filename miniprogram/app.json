@@ -40,12 +40,6 @@
         "text": "猫谱"
       },
       {
-        "pagePath": "pages/organization/orglist/orglist",
-        "iconPath": "./images/tabs/default/org.png",
-        "selectedIconPath": "./images/tabs/active/org.png",
-        "text": "串门"
-      },
-      {
         "pagePath": "pages/science/science",
         "iconPath": "./images/tabs/default/sci.png",
         "selectedIconPath": "./images/tabs/active/sci.png",
