@@ -18,10 +18,9 @@
       </view>
     </view>
   </view>
-  <view class='floating-box'>
+  <view class='bottom-bar'>
     <button class='bottom' bindtap='uploadFilters'>确定上传</button>
   </view>
-  <view class='bottom-clear-box'></view> <!-- 用一个透明方块防止拉到底浮动按钮挡住内容按不到 -->
 </block>
 <view wx:else class='unAuth'>
   <text>{{tipText}}</text>

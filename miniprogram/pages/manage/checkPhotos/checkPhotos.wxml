@@ -13,7 +13,9 @@
       <button class='long primary' bindtap='bindCheck' data-photo='{{item}}' data-best='{{true}}'>通过+精选</button>
     </view>
   </block>
-  <button class='long primary' bindtap="reload">刷新状态</button>
+  <view class='bottom-bar'>
+    <button class='long primary' bindtap="reload">刷新状态</button>
+  </view>
   
 </block>
 <view wx:else class='unAuth'>

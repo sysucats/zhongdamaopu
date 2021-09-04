@@ -1,15 +1,15 @@
 <block wx:if="{{auth}}">
   <view class='filter-block'>
     <view class='search'>
-      <icon size='36rpx' type='search'></icon>
-      <input style="font-size: 36rpx; margin-left: 25rpx; width: 100%;" placeholder='搜索用户'
+      <icon size='30rpx' type='search' style="transform: translateY(15%)"></icon>
+      <input style="font-size: 30rpx; margin-left: 25rpx; width: 100%;" placeholder='搜索用户'
       value='{{userSearch}}' maxlength='20' confirm-type='search' bindinput='fSearchInput' bindconfirm='fSearch'>
       </input>
     </view>
     <!--分割线--><view class="line"></view>
     <view class='filters'>
       <checkbox-group bindchange="filterChange">
-        <checkbox value="manager-only">只看管理员</checkbox>
+        <checkbox value="manager-only" style="font-size: 28rpx">只看管理员</checkbox>
       </checkbox-group>
     </view>
   </view>

@@ -1,5 +1,5 @@
 {
   "usingComponents": {},
   "navigationBarTitleText": "关于",
-  "disableScroll": false
+  "backgroundColor": "#F7F7FA"
 }

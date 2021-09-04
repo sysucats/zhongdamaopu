@@ -20,10 +20,9 @@
       <picker mode='date' fields='month' end='{{today}}' value='{{today}}' bindchange='addMonthConfirm'>请选择月份</picker>
     </view>
   </block>
-  <view class='floating-box'>
+  <view class='bottom-bar'>
     <button class='bottom' bindtap='addMonth' disabled="{{adding}}">增加一个月份</button>
   </view>
-  <view class='bottom-clear-box'></view> <!-- 用一个透明方块防止拉到底浮动按钮挡住内容按不到 -->
 </block>
 
 <view wx:else class='unAuth'>
