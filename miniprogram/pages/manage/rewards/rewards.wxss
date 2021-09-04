@@ -1,6 +1,6 @@
 page {
   width: 750rpx;
-  padding: 30rpx 30rpx;
+  padding: 30rpx 30rpx 150rpx 30rpx;
   box-sizing: border-box;
 }
 
@@ -14,7 +14,7 @@ image {
 button {
   width: 45%;
   display: inline-block;
-  font-size: 35rpx;
+  font-size: 30rpx;
   box-sizing: border-box;
 }
 
@@ -32,17 +32,6 @@ button.long {
   width: 100%;
 }
 
-.floating-box{
-  position: fixed;
-  bottom: 20rpx;
-  margin: 20rpx 3rpx;
-  padding: 20rpx;
-  box-shadow: 0rpx 0rpx 30rpx gainsboro;
-  border-radius: 20rpx;
-  background-color: rgba(255,255,255,0.95);
-  width: 650rpx;
-}
-
 .bottom-clear-box {
   height: 100rpx;
   opacity: 0;
@@ -55,10 +44,11 @@ button.bottom {
 
 .reward-box {
   box-sizing: border-box;
-  padding: 50rpx 10rpx;
+  padding: 30rpx 40rpx;
   margin-bottom: 50rpx;
   box-shadow: 0rpx 0rpx 30rpx var(--color-gray);
   border-radius: 20rpx;
+  background-color: #FFFFFF;
 }
 
 .label {
@@ -79,9 +69,10 @@ button.bottom {
   font-weight: 300;
   color: var(--color-gray-max);
   box-shadow: 0rpx 0rpx 30rpx var(--color-gray);
-  padding: 30rpx;
-  margin: 30rpx 0;
-  border-radius: 10rpx;
+  padding: 30rpx 40rpx;
+  margin-bottom: 50rpx;
+  border-radius: 20rpx;
+  background-color: #FFFFFF;
 }
 
 #container {
@@ -98,6 +89,17 @@ input, picker, textarea {
   color: var(--color-black-light);
 }
 
-.changeColumn {
-  height: 5rem;
+.changecolumn {
+  height: 8rem;
+}
+
+.bottom-bar{
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  padding: 30rpx 40rpx 40rpx 40rpx;
+  border-top: 1rpx solid var(--color-gray);
+  background-color: #FFFFFF;
+  width: 100%;
+  box-sizing: border-box;
 }
