@@ -19,38 +19,37 @@ function getUser() {
   });
 }
 
-function getUserInfoOrFalse() {
-  return new Promise(resolve => {
-    wx.getSetting({
-      success(res) {
-        if (res.authSetting['scope.userInfo']) {
-          // 已经授权
-          getUser().then(user => {
-            updateUserWithInfo(user).then(res => {
-              resolve(res);
-            });
-          });
-        } else {
-          // 虽然说可能数据库里也保存了这个user的数据，
-          // 但是既然他手动清除了，我们就不应该继续使用
+async function getUserInfoOrFalse() {
+  if (!wx.getUserProfile) { // 如果不支持新接口，直接使用数据库中的旧数据，若无数据则提醒用户
+    var user = await getUser();
+    if (!user.userInfo) {
+      wx.showToast({
+        title: '当前微信版本不支持登陆，请先使用手机较新版本微信登陆',
+        icon: 'none'
+      });
+      return false;
+    }
+    return user;
+  } else { // 使用新接口
+    var res = await new Promise(resolve => {
+      wx.getUserProfile({
+        desc: '获取你的头像和昵称',
+        success(res) {
+          resolve(res);
+        },
+        fail(err) {
+          console.log('failed getUserProfile', err);
           resolve(false);
         }
-      }
+      })
     });
-  });
-}
-
-// 更新当前用户的userInfo
-// 需要提前授权，返回update后的
-function updateUserWithInfo(user) {
-  return new Promise(resolve => {
-    // 调用者需要保证已经授权
-    wx.getUserInfo({
-      success(res) {
+    if (res) {
+      getUser().then(user => {
         if (!user.userInfo || !userInfoEq(res.userInfo, user.userInfo)) {
-          // 如果userInfo有更新，那么就返回更新后的
+          // 如果userInfo有更新，那么就更新数据库中的userInfo并返回更新后的
           console.log('需要更新');
           user.userInfo = res.userInfo;
+          // 更新数据库的userInfo
           wx.cloud.callFunction({
             name: 'userOp',
             data: {
@@ -58,14 +57,11 @@ function updateUserWithInfo(user) {
               user: user
             }
           });
-          resolve(user);
-        } else {
-          // 没有更新，直接返回原来的
-          resolve(user);
         }
-      }
-    });
-  });
+      });
+    }
+    return res;
+  }
 }
 
 module.exports = {

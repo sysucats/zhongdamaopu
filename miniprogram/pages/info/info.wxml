@@ -29,10 +29,6 @@
     <view class="option-text">照片审核({{numChkPhotos}})</view>
     <view class="right-arrow"><image mode='aspectFill' src="../../images/filter/right.png"></image></view> 
   </view>
-  <view class="option" bindtap='clickbtn' data-to='/pages/manage/imProcess/imProcess'>
-    <view class="option-text">照片处理({{numPrcssImg}})</view>
-    <view class="right-arrow"><image mode='aspectFill' src="../../images/filter/right.png"></image></view> 
-  </view>
   <view class="option" bindtap='clickbtn' data-to='/pages/manage/checkFeedbacks/checkFeedbacks'>
     <view class="option-text">反馈处理({{numFeedbacks}})</view>
     <view class="right-arrow"><image mode='aspectFill' src="../../images/filter/right.png"></image></view> 
@@ -45,12 +41,20 @@
     <view class="option-text">人员管理</view>
     <view class="right-arrow"><image mode='aspectFill' src="../../images/filter/right.png"></image></view> 
   </view>
+  <view class="option" bindtap='clickbtn' data-to='/pages/manage/manageOrgs/manageOrgs'>
+    <view class="option-text">组织管理</view>
+    <view class="right-arrow"><image mode='aspectFill' src="../../images/filter/right.png"></image></view> 
+  </view>
   <view class="option" bindtap='clickbtn' data-to='/pages/manage/filters/filters'>
     <view class="option-text">区域/花色管理</view>
     <view class="right-arrow"><image mode='aspectFill' src="../../images/filter/right.png"></image></view> 
   </view>
   <view class="option" bindtap='clickbtn' data-to='/pages/manage/rewards/rewards'>
     <view class="option-text">打赏记录管理</view>
+    <view class="right-arrow"><image mode='aspectFill' src="../../images/filter/right.png"></image></view> 
+  </view>
+  <view class="option" style="color: var(--color-gray-dark);" bindtap='clickbtn' data-to='/pages/manage/imProcess/imProcess'>
+    <view class="option-text">照片处理</view>
     <view class="right-arrow"><image mode='aspectFill' src="../../images/filter/right.png"></image></view> 
   </view>
 </view></block>

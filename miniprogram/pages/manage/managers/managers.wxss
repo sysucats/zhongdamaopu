@@ -24,44 +24,51 @@ button.long {
   width: 100%;
 }
 
-#search {
-  width: 100%;
-}
-
-/* 搜索框CSS */
-#search .input-block {
+.filter-block {
   align-items: center;
-  padding: 15rpx 10rpx;
+  padding: 20rpx 35rpx;
   margin: 20rpx 20rpx 30rpx 20rpx;
   box-shadow: 0rpx 0rpx 10rpx var(--color-gray);
   border-radius: 10rpx;
 }
 
-#search .input-icon {
-  width: 10%;
-  height: 1.4rem;
-  background-color: white;
-  border-top-left-radius: 10rpx;
-  border-bottom-left-radius: 10rpx;
-  display: inline-block;
+.search {
+  display: flex;
 }
 
-#search .input-icon image {
-  width: 60%;
-  height: 100%;
-  margin: 0 20%;
+.line {
+  width: 100%;
+  height: 2rpx;
+  background: var(--color-gray);
+  margin: 15rpx 0rpx;
 }
 
-#search input.name {
-  width: 90%;
-  height: 1.4rem;
-  line-height: 1.4rem;
-  /* background-color: rgb(255, 237, 193); */
-  background-color: white;
-  border-top-right-radius: 10rpx;
-  border-bottom-right-radius: 10rpx;
-  display: inline-block;
-  box-sizing: border-box;
+.filters checkbox .wx-checkbox-input {
+  width: 30rpx;
+  height: 30rpx;
+}
+
+.filters checkbox .wx-checkbox-input.wx-checkbox-input-checked {
+  background: var(--color-primary);
+}
+
+.filters checkbox .wx-checkbox-input.wx-checkbox-input-checked::before {
+  width: 28rpx;
+  height: 28rpx;
+  line-height: 28rpx;
+  text-align: center;
+  font-size: 22rpx;
+  color: #fff;
+  background: transparent;
+  transform: translate(-50%, -50%) scale(1);
+  -webkit-transform: translate(-50%, -50%) scale(1);
+}
+
+.filters {
+  font-size: 30rpx;
+  color: var(--color-gray-max);
+  display: flex;
+  flex-direction: row-reverse;
 }
 
 /* 下面开始用户管理的CSS */

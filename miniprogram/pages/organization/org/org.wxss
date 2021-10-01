@@ -1,0 +1,8 @@
+/* miniprogram/pages/organization/org/org.wxss */
+@import "../../genealogy/genealogy.wxss";
+
+.intro {
+  white-space:nowrap;
+  overflow:hidden; 
+  text-overflow:ellipsis;
+}

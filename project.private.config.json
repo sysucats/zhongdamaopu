@@ -1,0 +1,195 @@
+{
+  "setting": {},
+  "condition": {
+    "plugin": {
+      "list": []
+    },
+    "game": {
+      "list": []
+    },
+    "gamePlugin": {
+      "list": []
+    },
+    "miniprogram": {
+      "list": [
+        {
+          "id": 1,
+          "name": "添加照片",
+          "pathName": "pages/genealogy/addPhoto/addPhoto",
+          "query": "cat_id=XE6ZFHkPDdDCJ4MO"
+        },
+        {
+          "id": 1,
+          "name": "猫猫详情",
+          "pathName": "pages/genealogy/detailCat/detailCat",
+          "query": "cat_id=XE6ZFHkPDdDCJ4MO",
+          "scene": null
+        },
+        {
+          "id": 2,
+          "name": "审核照片",
+          "pathName": "pages/manage/checkPhotos/checkPhotos",
+          "query": "",
+          "scene": null
+        },
+        {
+          "id": 3,
+          "name": "添加猫",
+          "pathName": "pages/manage/addCat/addCat",
+          "query": "cat_id=XE6ZFHkPDdDCJ4MO",
+          "scene": null
+        },
+        {
+          "id": -1,
+          "name": "测试滑动",
+          "pathName": "pages/testSw/testSw",
+          "query": ""
+        },
+        {
+          "id": -1,
+          "name": "科普页",
+          "pathName": "pages/science/science",
+          "query": "",
+          "scene": null
+        },
+        {
+          "id": -1,
+          "name": "关于页",
+          "pathName": "pages/info/info",
+          "query": "",
+          "scene": null
+        },
+        {
+          "id": -1,
+          "name": "照片排行榜",
+          "pathName": "pages/info/photoRank/photoRank",
+          "query": "",
+          "scene": null
+        },
+        {
+          "id": -1,
+          "name": "打赏",
+          "pathName": "pages/info/reward/reward",
+          "query": "",
+          "scene": null
+        },
+        {
+          "id": 9,
+          "name": "反馈",
+          "pathName": "pages/info/feedback/feedback",
+          "query": "",
+          "scene": null
+        },
+        {
+          "id": -1,
+          "name": "开发团队",
+          "pathName": "pages/info/devTeam/devTeam",
+          "query": "",
+          "scene": null
+        },
+        {
+          "id": 11,
+          "name": "科普分类",
+          "pathName": "pages/science/sciDetail/sciDetail",
+          "query": "cate=1",
+          "scene": null
+        },
+        {
+          "id": 12,
+          "name": "调试debug",
+          "pathName": "pages/debug/debug",
+          "query": "",
+          "scene": null
+        },
+        {
+          "id": -1,
+          "name": "图片处理",
+          "pathName": "pages/manage/imProcess/imProcess",
+          "query": "",
+          "scene": null
+        },
+        {
+          "id": -1,
+          "name": "过滤器管理",
+          "pathName": "pages/manage/filters/filters",
+          "query": "",
+          "scene": null
+        },
+        {
+          "id": -1,
+          "name": "管理管理员",
+          "pathName": "pages/manage/managers/managers",
+          "query": "",
+          "scene": null
+        },
+        {
+          "id": 16,
+          "name": "首页更新",
+          "pathName": "pages/genealogy/genealogy",
+          "query": "",
+          "scene": null
+        },
+        {
+          "name": "反馈处理",
+          "pathName": "pages/manage/checkFeedbacks/checkFeedbacks",
+          "query": "",
+          "scene": null
+        },
+        {
+          "name": "单页模式（分享到朋友圈）",
+          "pathName": "pages/genealogy/genealogy",
+          "query": "",
+          "scene": 1154
+        },
+        {
+          "name": "串门tab",
+          "pathName": "pages/organization/orglist/orglist",
+          "query": "",
+          "scene": null
+        },
+        {
+          "name": "申请串门",
+          "pathName": "pages/organization/applyorg/applyorg",
+          "query": "",
+          "scene": null
+        },
+        {
+          "name": "组织管理",
+          "pathName": "pages/manage/manageOrgs/manageOrgs",
+          "query": "",
+          "scene": null
+        },
+        {
+          "name": "修改组织信息",
+          "pathName": "pages/manage/modifyOrg/modifyOrg",
+          "query": "org_id=28ee4e3e60a528ce1a319c0c03096f45",
+          "scene": null
+        },
+        {
+          "name": "组织首页",
+          "pathName": "pages/organization/org/org",
+          "query": "org_id=28ee4e3e60a528ce1a319c0c03096f45",
+          "scene": null
+        },
+        {
+          "name": "组织配置",
+          "pathName": "pages/organization/orgsettings/orgsettings",
+          "query": "org_id=28ee4e3e60a528ce1a319c0c03096f45",
+          "scene": null
+        },
+        {
+          "name": "新增组织猫",
+          "pathName": "pages/organization/addorgcat/addorgcat",
+          "query": "org_id=28ee4e3e60a528ce1a319c0c03096f45&orgcat_id=79550af260aa7384198575360d7b0071",
+          "scene": null
+        },
+        {
+          "name": "组织猫详情",
+          "pathName": "pages/organization/detailorgcat/detailorgcat",
+          "query": "cat_id=79550af260ab15b2199d2afd77086e15",
+          "scene": null
+        }
+      ]
+    }
+  }
+}

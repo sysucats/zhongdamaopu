@@ -42,7 +42,7 @@ Page({
         birth_date: birthday || ''
       });
     })
-    this.checkUInfo();
+    //this.checkUInfo();
 
     // 获取一下现在的日期，用在拍摄日前选择上
     const today = new Date();
@@ -76,7 +76,7 @@ Page({
     return shareTo('来给' + this.data.cat.name + '添加照片 - 中大猫谱', path);
   },
 
-  checkUInfo() {
+  getUInfo() {
     const that = this;
     // 检查用户信息有没有拿到，如果有就更新this.data
     getUserInfoOrFalse().then(res => {
@@ -90,11 +90,6 @@ Page({
         user: res,
       });
     });
-  },
-
-  getUInfo(event) {
-    console.log(event);
-    this.checkUInfo();
   },
 
   chooseImg(e) {

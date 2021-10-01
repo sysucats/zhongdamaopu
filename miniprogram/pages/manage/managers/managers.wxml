@@ -1,10 +1,16 @@
 <block wx:if="{{auth}}">
-  <view id='search'>
-    <view class='input-block'>
-      <view class='input-icon'>
-        <image mode='aspectFit' src="../../../images/filter/search.png"></image>
-      </view>
-      <input class='name' placeholder='搜索人员（支持模糊）' value='{{userSearch}}' maxlength='20' confirm-type='search' bindinput='fSearchInput' bindconfirm='fSearch'></input>
+  <view class='filter-block'>
+    <view class='search'>
+      <icon size='30rpx' type='search' style="transform: translateY(15%)"></icon>
+      <input style="font-size: 30rpx; margin-left: 25rpx; width: 100%;" placeholder='搜索用户'
+      value='{{userSearch}}' maxlength='20' confirm-type='search' bindinput='fSearchInput' bindconfirm='fSearch'>
+      </input>
+    </view>
+    <!--分割线--><view class="line"></view>
+    <view class='filters'>
+      <checkbox-group bindchange="filterChange">
+        <checkbox value="manager-only" style="font-size: 28rpx">只看管理员</checkbox>
+      </checkbox-group>
     </view>
   </view>
   <scroll-view style="height: {{windowHeight}}px;" scroll-y="true" enable-back-to-top="true" bindscrolltolower="scrollToReload">
@@ -34,6 +40,7 @@
         </view>
       </form>
     </view>
+    <view style="height: 50rpx; opacity: 0;"></view> <!--加个透明块防止内容偏低按不到-->
   </scroll-view>
 </block>
 <view wx:else class='unAuth'>

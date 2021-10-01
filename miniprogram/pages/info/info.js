@@ -9,7 +9,6 @@ Page({
     friendApps: [],
     showManager: false,
     numChkPhotos: 0,
-    numPrcssImg: 0,
     numFeedbacks: 0,
     friendLinkImgLoaded:false
   },
@@ -39,12 +38,6 @@ Page({
           that.data.numChkPhotos = res.total;
           that.setData({
             numChkPhotos: res.total,
-          })
-        })
-        this.data.numPrcssImg = db.collection('photo').where({ photo_compressed: _.in([undefined, '']), verified: true }).count().then(res => {
-          that.data.numPrcssImg = res.total;
-          that.setData({
-            numPrcssImg: res.total,
           })
         })
         this.data.numFeedbacks = db.collection('feedback').where({ dealed: false}).count().then(res => {

@@ -1,0 +1,40 @@
+<!--miniprogram/pages/organization/orglist/orglist.wxml-->
+<view wx:for="{{org_list}}" wx:key="id">
+  <view class="card {{item.detail? 'detail': ''}}" bindtap="openDetail" data-index="{{index}}">
+    <image class="avatar" src="{{item.avatar}}" alt="logo"></image>
+    <view class="info">
+      <view class="name">{{item.name}}</view>
+      <view class="slogan">{{item.slogan}}</view>
+      <view class="cat-num">
+        <image mode="aspectFit" src="../../../images/cat.png"></image>
+        <text>{{item.cat_count}}</text>
+      </view>
+      
+      <view class="intro">
+        简介：{{item.intro}}
+      </view>
+    </view>
+    <view class="nav-btn" catchtap="toOrg" data-_id="{{item._id}}">
+      <image mode="aspectFit" src="../../../images/gointo.png"></image>
+    </view>
+  </view>
+</view>
+
+<view class="apply" bindtap="toApply" wx:if="{{canUpload}}">
+  <view class="icon">+</view>
+  <view class="content">欢迎串门</view>
+</view>
+
+<view class="whatis" bindtap="toggleModal" wx:if="{{canUpload}}">什么是串门？</view>
+
+<view class="modal-whatis" style="height: {{heights.windowHeight}}px;" wx:if="{{modal_show}}">
+  <view class="dialog">
+    <text class="content">
+    将猫猫资料托管到“中大猫谱”小程序，我们将为你提供：
+      1. 独立的组织首页，可生成唯一菊花码、分享到聊天直达
+      2. 猫猫档案、照片托管功能，与中大猫谱的UI风格一致
+      3. 自主创建猫猫聚集地、花色选项，灵活管理
+      4. 更新完善更多功能ing...</text>
+    <view class="modal-close" bindtap="toggleModal">收起</view>
+  </view>
+</view>

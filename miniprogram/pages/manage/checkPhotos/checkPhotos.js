@@ -67,6 +67,14 @@ Page({
       }
     });
 
+    // 后台处理缩略图和水印图
+    wx.cloud.callFunction({
+      name: "imProcess",
+      success: (res) => {
+        console.log('图片处理完成', res.result);
+      }
+    });
+
     // 发送审核消息
     sendVerifyNotice(notice_list);
   },

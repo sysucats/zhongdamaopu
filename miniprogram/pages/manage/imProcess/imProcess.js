@@ -39,7 +39,28 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: function () {
-    this.checkAuth();
+    const that = this;
+    wx.showModal({
+      title: '提示',
+      content: '目前后台已实现自动处理图片，在该功能正常的情况下管理员无需再手动处理图片。',
+      showCancel: true,
+      cancelText: '坚持处理',
+      cancelColor: '#cd0000',
+      confirmText: '离开',
+      confirmColor: '#32cd32',
+      success: (res) => {
+        if (res.cancel) {
+          that.checkAuth();
+        } else {
+          wx.navigateBack({
+            delta: 1
+          });
+        }
+      },
+      fail: (err) => {
+        console.log(err);
+      }
+    });
   },
 
   onShow: function () {

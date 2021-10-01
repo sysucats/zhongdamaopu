@@ -1,0 +1,6 @@
+{
+  "usingComponents": {
+    "mp-gallery": "/packages/weui/gallery/gallery"
+  },
+  "navigationBarTitleText": "猫猫详情"
+}

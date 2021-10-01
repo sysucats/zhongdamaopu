@@ -1,0 +1,2 @@
+/* miniprogram/pages/manage/modifyOrg/modifyOrg.wxss */
+@import "../../organization/applyorg/applyorg.wxss";

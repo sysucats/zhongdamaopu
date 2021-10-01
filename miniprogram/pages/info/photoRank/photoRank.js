@@ -29,7 +29,7 @@ Page({
    * 生命周期函数--监听页面显示
    */
   onShow: function () {
-    this.checkUInfo();
+    //this.checkUInfo();
     this.getRank();
   },
 
@@ -42,7 +42,7 @@ Page({
     }
   },
 
-  checkUInfo() {
+  getUInfo() {
     const that = this;
     // 检查用户信息有没有拿到，如果有就更新this.data
     getUserInfoOrFalse().then(res => {
@@ -55,10 +55,6 @@ Page({
         userInfo: res.userInfo,
       }, () => { that.getMyRank() })
     });
-  },
-  getUInfo(event) {
-    console.log(event);
-    this.checkUInfo();
   },
   getRank(event) {
     const that = this;

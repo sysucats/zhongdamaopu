@@ -73,10 +73,11 @@ Page({
   },
 
   changeConfirm(e) {
-    console.log(e);
     wx.showLoading({
       title: '正在提交',
+      mask: true
     });
+    console.log(e);
     var rewards = this.data.rewards;
     const index = e.currentTarget.dataset.index;
     const records_raw = e.detail.value.records_raw;

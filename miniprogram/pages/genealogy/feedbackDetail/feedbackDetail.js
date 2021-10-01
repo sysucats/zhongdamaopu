@@ -38,7 +38,7 @@ Page({
         });
       })
     }
-    this.checkUInfo();
+    //this.checkUInfo();
   },
 
   /**
@@ -51,7 +51,7 @@ Page({
     return shareTo('来给' + this.data.cat.name + '反馈信息 - 中大猫谱', path);
   },
 
-  checkUInfo() {
+  getUInfo() {
     const that = this;
     // 检查用户信息有没有拿到，如果有就更新this.data
     getUserInfoOrFalse().then(res => {
@@ -65,11 +65,6 @@ Page({
         user: res,
       });
     });
-  },
-
-  getUInfo(event) {
-    console.log(event);
-    this.checkUInfo();
   },
 
   bindInput(e) {
@@ -147,6 +142,6 @@ Page({
           wx.navigateBack();
       }
     })
-}
+  }
 })
 
