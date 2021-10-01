@@ -17,34 +17,45 @@ async function requestNotice(template) {
     tplId = feedbackTplId;
   }
 
-  let res = await wx.requestSubscribeMessage({
-    tmplIds: [tplId],
-  });
+  try {
+    let res = await wx.requestSubscribeMessage({
+      tmplIds: [tplId],
+    });
+    console.log("requestSubMsgRes:", res);
 
-  // console.log("requestSubMsgRes:", res);
-  
-  if (res.errMsg != 'requestSubscribeMessage:ok') {
-    console.log('调用消息订阅请求接口失败' + res.errCode);
-    await wx.showToast({
-      title: '消息订阅好像出了点问题',
-      icon: 'none',
-      duration: 500,
-    })
-    return false;
-  }
-  if (res[tplId] == 'accept') {
-    await wx.showToast({
-      title: '结果能通知你啦',
-      icon: 'success',
-      duration: 800,
-    })
-    return true;
-  } else {
-    await wx.showToast({
-      title: '你拒收了通知QAQ',
-      icon: 'none',
-      duration: 800,
-    })
+    if (res.errMsg != 'requestSubscribeMessage:ok') { //这个条件会触发吗？
+      console.log('调用消息订阅请求接口失败' + res.errCode);
+      await wx.showToast({
+        title: '消息订阅好像出了点问题',
+        icon: 'none',
+        duration: 500,
+      })
+      return false;
+    }
+
+    if (res[tplId] == 'accept') {
+      await wx.showToast({
+        title: '结果能通知你啦',
+        icon: 'success',
+        duration: 800,
+      })
+      return true;
+    } else {
+      await wx.showToast({
+        title: '你拒收了通知QAQ',
+        icon: 'none',
+        duration: 800,
+      })
+      return false;
+    }
+
+  } catch (error) { // 订阅消息错误处理
+    console.log("request SubMsg error:", error)
+    await wx.showModal({
+      title: '提示',
+      content: '订阅消息出错（错误代码：' + error.errCode + '）\n请尝试通过 “关于页”-“信息反馈”内的邮箱 或 “笃行志愿服务队”公众号留言联系我们，感谢反馈！',
+      showCancel: false,
+    });
     return false;
   }
 }
