@@ -278,6 +278,10 @@ swiper-item image {
   font-size: 36rpx;
   font-weight: 450;
   margin: 30rpx 0 10rpx 0;
+  width: 380rpx;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .big-header .name-and-count .count {
   height: 28rpx;
