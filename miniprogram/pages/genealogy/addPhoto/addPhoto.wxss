@@ -109,7 +109,7 @@ button + button {
 picker, input {
   border-bottom: 2rpx var(--color-primary) solid;
   background-color: var(--color-white-dark);
-  padding: 10rpx;
+  padding: 15rpx;
   margin-bottom: 20rpx;
   color: var(--color-black-light);
 }

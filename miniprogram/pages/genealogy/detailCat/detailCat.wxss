@@ -50,7 +50,7 @@ swiper-item image {
 .info {
   width: 750rpx;
   box-sizing: border-box;
-  padding: 30rpx 60rpx 10rpx 60rpx;
+  padding: 30rpx 60rpx 15rpx 60rpx;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -165,17 +165,18 @@ swiper-item image {
   flex-direction: row;
 }
 
-.feedback .fb-button {
-  /* 文案（作为按钮略长）、位置、配色（和不能点击的tag相似）有待考虑 */
-  /* position: absolute;
-  right: 60rpx; */
-  font-size: 20rpx;
-  height: 40rpx;
+.fb-button {
+  font-size: 25rpx;
+  height: 55rpx;
   box-sizing: border-box;
-  border-radius: 10rpx;
+  border-radius: 15rpx;
   background-color: var(--color-primary);
-  padding: 5rpx 13rpx;
+  padding: 25rpx 20rpx;
   margin-right: 40rpx;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 /* 下面开始相册 */
@@ -252,6 +253,9 @@ swiper-item image {
   display: flex;
   /* align-content: center; */
   align-items: center;
+
+  border:solid var(--color-gray-light);
+  border-width: 1rpx 0;
 }
 .big-header.fix {
   position: fixed;
@@ -274,6 +278,10 @@ swiper-item image {
   font-size: 36rpx;
   font-weight: 450;
   margin: 30rpx 0 10rpx 0;
+  width: 380rpx;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .big-header .name-and-count .count {
   height: 28rpx;

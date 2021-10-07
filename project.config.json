@@ -27,11 +27,10 @@
       "disablePlugins": [],
       "outputPath": ""
     },
-    "bundle": false,
-    "useIsolateContext": true,
+    "useIsolateContext": false,
     "useCompilerModule": false,
     "userConfirmedUseCompilerModuleSwitch": false,
-    "userConfirmedBundleSwitch": false,
+    "userConfirmedBundleSwitch": true,
     "packNpmManually": false,
     "packNpmRelationList": [],
     "minifyWXSS": true
@@ -41,6 +40,7 @@
   "libVersion": "2.10.4",
   "simulatorType": "wechat",
   "simulatorPluginLibVersion": {},
+  "compileType": "miniprogram",
   "cloudfunctionTemplateRoot": "cloudfunctionTemplate",
   "condition": {
     "plugin": {
@@ -178,8 +178,15 @@
           "scene": null
         },
         {
-          "name": "单页模式（分享到朋友圈）",
+          "name": "单页模式猫谱（分享到朋友圈）",
           "pathName": "pages/genealogy/genealogy",
+          "query": "",
+          "scene": 1154
+        },
+        {
+          "name": "单页模式关于页",
+          "pathName": "pages/info/info",
+          "query": "",
           "scene": 1154
         }
       ]
