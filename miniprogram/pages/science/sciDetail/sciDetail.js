@@ -11,7 +11,7 @@ Page({
   data: {
     cate_current: -1,
     // 几张背景图
-    images: config.science_imgs
+    // images: config.science_imgs
   },
 
   /**
@@ -25,6 +25,14 @@ Page({
       cate_active: cates[cate_current-1]
     });
 
+    //封面图缓存
+    if (options.coverImgList) {
+      const imgList = options.coverImgList.split(',')
+      this.setData({images:imgList})
+    } else {
+      this.setData({images:config.science_imgs})
+    }
+    
     this.getSci();
   },
 
@@ -38,14 +46,16 @@ Page({
   },
 
   getSci() {
+    wx.showLoading({title:'加载中...'})
     wx.cloud.callFunction({
       name: 'getAllSci',
     }).then(res => {
       console.log(res);
       const data = res.result.data;
       this.setData({
-        qnas: data,
+        qnas: data
       });
+      wx.hideLoading()
     })
   },
 
@@ -65,3 +75,4 @@ Page({
     })
   }
 })
+

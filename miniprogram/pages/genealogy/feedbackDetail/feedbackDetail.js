@@ -133,13 +133,18 @@ Page({
   
   async toSubmit() {
     let repliable = await requestNotice('feedback'); // 请求订阅消息推送
+
     const db = wx.cloud.database();
+    // console.log('fbID:',this.data.feedbackId,'\n repliable:',repliable);
     db.collection('feedback').doc(this.data.feedbackId).update({
       data:{
         repliable:repliable
       },
       success:res=>{
-          wx.navigateBack();
+        wx.navigateBack();
+      },
+      fail:res=>{
+        console.log('repliable record fail:\n',res);
       }
     })
   }

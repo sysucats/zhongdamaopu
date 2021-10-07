@@ -89,7 +89,10 @@ next-margin='60rpx'>
         <view class='label-block'></view>
         特点
       </view>
-      <view class='value'><text>{{(cat.characteristics || '') + (cat.characteristics?'\n':'') + (cat.habit || '-')}}</text></view>
+      <view class='value'>
+        <!-- 新猫特点Char是空的数组（以前的是空值），修改判定方式 -->
+        <text>{{(cat.characteristics || '') + (cat.characteristics.length?'\n':'') + (cat.habit || '-')}}</text>
+      </view>
     </view>
 
     <view class='item long'>
@@ -100,9 +103,6 @@ next-margin='60rpx'>
       <view class='value'>{{cat.tutorial || '暂时还没有'}}</view>
     </view>
   </view>
-  <!-- <view class='feedback'>
-    <view class='fb-button' bindtap='bindTapFeedback'>我想反馈猫猫信息！</view>
-  </view> -->
 </view>
 <!-- info end -->
 
@@ -112,9 +112,8 @@ next-margin='60rpx'>
     <view class='name'>{{cat.name}}的相册</view>
     <view class='count'>共{{albumMax}}张照片</view>
   </view>
-  <view class='feedback'>
-    <view class='fb-button' bindtap='bindTapFeedback'>我想反馈猫猫信息！</view>
-  </view>
+  <view class='fb-button' bindtap='bindTapFeedback'>反馈猫猫信息</view>
+
 </view>
 
 
@@ -124,6 +123,7 @@ next-margin='60rpx'>
     <view class='name'>{{cat.name}}的相册</view>
     <view class='count'>共{{albumMax}}张照片</view>
   </view>
+  <view class='fb-button' bindtap='bindTapFeedback'>反馈猫猫信息</view>
 </view>
 
 <view class='album'>

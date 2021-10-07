@@ -1,6 +1,6 @@
 page {
   width: 750rpx;
-  padding: 35rpx;
+  padding: 35rpx 35rpx 160rpx 35rpx;
   box-sizing: border-box;
 }
 

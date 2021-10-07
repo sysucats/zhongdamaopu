@@ -45,6 +45,10 @@ Page({
   onLoad: function (options) {
     cat_id = options.cat_id;
     // 开始加载页面
+    wx.showLoading({
+      title: '加载中',
+      mask: true
+    })
     const that = this;
     const app = getApp();
     getGlobalSettings('detailCat').then(settings => {
@@ -303,14 +307,13 @@ Page({
         this.setData({
           imgUrls: this.imgUrls
         });
-        wx.hideLoading();
       }
     }
   },
 
-
   bindImageLoaded(e) {
     // console.log(e);
+    wx.hideLoading();
   },
 
   // 下面开始加载相册咯

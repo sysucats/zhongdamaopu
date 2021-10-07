@@ -11,7 +11,6 @@ const regReplace = utils.regReplace;
 
 const default_png = undefined;
 
-
 var catsStep = 1;
 var loadingLock = 0;
 
@@ -40,6 +39,8 @@ Page({
     // 加载相关
     loading: false, // 正在加载
     loadnomore: false, // 没有再多了
+
+    imgLoadedCount: 0,
 
     // 广告是否展示
     ad_show: {},
@@ -92,21 +93,14 @@ Page({
 
 
     var scene = wx.getLaunchOptionsSync().scene;
-    console.log(scene);
-    if(scene === 1154){
-      that.loadFilters();
-      // that.setData({
-      //   main_lower_threshold: 50,
-      //   adStep: 6
-      // });
-      // catsStep = 3;
+    if(scene === 1154){//朋友圈内打开 “单页模式”
+      this.loadFilters();
       const db = wx.cloud.database();
       db.collection('setting').doc('pages').get().then(res => {
         var genealogySetting = res.data['genealogy'];
-        console.log("genealogySetting",genealogySetting);
+        // console.log("genealogySetting",genealogySetting);
         that.setData({
           main_lower_threshold: genealogySetting['main_lower_threshold'],
-          adStep:genealogySetting['adStep']
         })
         catsStep = genealogySetting['catsStep']
       });
@@ -247,7 +241,7 @@ Page({
     }
     const that = this;
     this.setData({
-      loading: true
+      loading: true,
     }, () => {
       var cats = that.data.cats;
       var step = catsStep;
@@ -336,6 +330,13 @@ Page({
       cats: new_cats
     });
 
+  },
+
+  bindImageLoaded(e){
+    this.setData({
+      imgLoadedCount: this.data.imgLoadedCount+1
+    },
+);
   },
 
   // 点击猫猫卡片
@@ -540,6 +541,8 @@ Page({
     return res.length ? _.and(res) : {};
   },
   fComfirm: function () {
+    this.setData({imgLoadedCount:0});
+
     if (!this.data.filters_legal) {
       return false;
     }
