@@ -148,8 +148,9 @@
 
 主要设置各个页面的元素展示。
 
-|checkFeedback|step|反馈处理页每次加载数量|
+|设置项|子设置项|描述|
 |:----|:----|:----|
+|checkFeedback|step|反馈处理页每次加载数量|
 |detailCat|albumStep|猫猫相册每次加载数量|
 |    |cantUpload|关闭上传功能的版本号|
 |    |galleryCompressed|相册大图是否使用压缩图|
@@ -164,8 +165,9 @@
 
 主要用于猫猫信息修改，及首页过滤器。
 
-|area|区域（请使用小程序端修改）|
+|设置项|描述|
 |:----|:----|
+|area|区域（请使用小程序端修改）|
 |campuses|校区（谨慎修改）|
 |colour|花色（请使用小程序端修改）|
 
@@ -173,8 +175,9 @@
 
 用于设置友情链接，请参考样例进行添加。
 
-|appid|小程序的APPID|
+|设置项|描述|
 |:----|:----|
+|appid|小程序的APPID|
 |logo|小程序的图标，可以使用云存储FileID|
 |name|小程序的名称|
 
@@ -182,8 +185,9 @@
 
 用于管理员订阅的数量设置。
 
-|chkFeedback|receiverNum|最多推送给几位管理员（暂未生效）|
+|设置项|子设置项|描述|
 |:----|:----|:----|
+|chkFeedback|receiverNum|最多推送给几位管理员（暂未生效）|
 |verifyPhoto|receiverNum|最多推送给几位管理员|
 |    |triggerNum|触发推送的待审核数量|
 
