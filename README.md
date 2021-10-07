@@ -29,7 +29,7 @@
 - [ ] 在[微信公众平台](https://mp.weixin.qq.com/)（[https://mp.weixin.qq.com/](https://mp.weixin.qq.com/)）注册小程序账号
 - [ ] 挑选并设置好小程序名称及LOGO
 - [ ] 下载并安装[微信开发者工具](https://developers.weixin.qq.com/miniprogram/dev/devtools/download.html)稳定版（[https://developers.weixin.qq.com/miniprogram/dev/devtools/download.html](https://developers.weixin.qq.com/miniprogram/dev/devtools/download.html)）
-- [ ] （:warning:2021/5/28更新，保证Release）进入[Releases页面](https://github.com/Zing22/zhongdamaopu/releases)，下载`v1.4.16存档点`的Source code(zip)，解压
+- [ ] （:warning:2021/5/28更新，保证Release稳定）进入[Releases页面](https://github.com/Zing22/zhongdamaopu/releases)，下载`v1.4.16存档点`的Source code(zip)，解压
 - [ ] 替换`initDatabase/系统图片`中的二维码图片（稍后再换也行）
 
 ## 代码部署
