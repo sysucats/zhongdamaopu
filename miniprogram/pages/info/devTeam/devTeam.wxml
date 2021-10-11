@@ -19,6 +19,9 @@
 <view class='block'>
   <view class='title'>更新日志</view>
   <view class='desc'>
+    <view class='sub-title hl'>v1.5.5</view>
+    <text class='sub-detail'>- BUG修复\n - 更新时间：2021/10/11</text>
+
     <view class='sub-title hl'>v1.5.4</view>
     <text class='sub-detail'>- 页面优化\n - 更新时间：2021/10/7</text>
     

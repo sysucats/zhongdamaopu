@@ -45,10 +45,7 @@ Page({
   onLoad: function (options) {
     cat_id = options.cat_id;
     // 开始加载页面
-    wx.showLoading({
-      title: '加载中',
-      mask: true
-    })
+
     const that = this;
     const app = getApp();
     getGlobalSettings('detailCat').then(settings => {
@@ -214,6 +211,11 @@ Page({
     const qf = { cat_id: cat_id, verified: true, best: true };
     const step = page_settings.photoStep;
     const now = cat.photo.length;
+
+    wx.showLoading({
+      title: '加载中',
+      mask: true
+    })
 
     const db = wx.cloud.database();
     console.log(qf);
