@@ -11,6 +11,7 @@ page {
   --color-gray-dark: #bbbbbb;
   --color-gray-max: #888;
 
+  --color-black-min:#414141;
   --color-black-light: #222222;
 
   --color-black-transparent: rgba(0,0,0,0.5);

@@ -1,0 +1,48 @@
+<!--pages/ai/ai.wxml-->
+<page-meta>
+  <navigation-bar title="拍照识猫" background-color="white" front-color="black" />
+</page-meta>
+
+<!-- 无摄像头权限 -->
+<view wx:if="{{!cameraAuth}}" class="authTips">
+<text class="text">提供相机权限后 拍照识别猫咪🐈\n 或 上传猫咪照片进行识别\n  </text>
+<button class="authBtn" bindtap="reqCamAuth">启用相机权限</button>  
+</view>
+
+<!-- 相机 & 照片预览 -->
+<camera wx:if="{{cameraAuth && !src}}" device-position="{{lensDirection}}" resolution="high" frame-size="large" flash="off" binderror="error"
+  class="camera"></camera>
+<image mode="widthFix" wx:if="{{src}}" src="{{src}}" class="camera"></image>
+
+<!-- 快门等功能栏 -->
+<view wx:if="{{!src}}" class="control">
+  <image wx:if="{{!src}}" class='btn' bindtap='choosePhoto' src='../../images/ai/choose.png'></image>
+  <button hover-class="hoverShutter" class="shutter" type="primary" bindtap="takePhoto"></button>
+  <image class='btn' bindtap='reverseCamera' src='../../images/ai/reverse.png'></image>
+</view>
+<view wx:if="{{src}}" class="control_after">
+  <image class='btn_after' bindtap='back' src='../../images/ai/back.png'></image>
+  <image class='btn_after' bindtap='savePhoto' src='../../images/ai/save.png'></image>
+</view>
+
+<!-- 识别结果 -->
+<view class="result">
+  <view wx:if="{{catList}}" class="title">识别结果</view>
+  <view wx:for="{{catList}}" class="item" hover-class="hoverItem" data-cat_id="{{item._id}}" bindtap="clickCatCard">
+    <image class="photo" mode="aspectFill" src="{{item.photo.photo_compressed}}"></image>
+    <view class="info">
+      <view class="name">{{item.name}}</view>
+      <view class='detail'> 
+        <image wx:if="{{item.campus}}" mode='aspectFit' class='icon' src='../../images/card/card/pos.png'></image>
+        <view class="detailText">{{item.campus +' '+ item.area}}</view>
+
+        <image wx:if="{{item.characteristics_string}}" mode='aspectFit' class='icon' src='../../images/card/card/cat.png'></image>
+        <view class="detailText">{{item.characteristics_string}}</view>
+      </view>
+    </view>
+
+    <view class="accuracy">{{item.accuracy + '%'}}</view>
+
+    <image class='enter' src='../../images/ai/enter.png'></image>
+  </view>
+</view>
