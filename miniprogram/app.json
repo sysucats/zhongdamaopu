@@ -27,7 +27,8 @@
     "pages/organization/org/org",
     "pages/organization/orgsettings/orgsettings",
     "pages/organization/addorgcat/addorgcat",
-    "pages/organization/detailorgcat/detailorgcat"
+    "pages/organization/detailorgcat/detailorgcat",
+    "pages/ai/ai"
   ],
   "tabBar": {
     "selectedColor": "#000",
@@ -38,6 +39,12 @@
         "iconPath": "./images/tabs/default/cat.png",
         "selectedIconPath": "./images/tabs/active/cat.png",
         "text": "猫谱"
+      },
+      {
+        "pagePath": "pages/ai/ai",
+        "iconPath": "./images/tabs/default/ai.png",
+        "selectedIconPath": "./images/tabs/active/ai.png",
+        "text": "识猫"
       },
       {
         "pagePath": "pages/science/science",

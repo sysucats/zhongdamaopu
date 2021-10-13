@@ -1,0 +1,157 @@
+/* pages/ai/ai.wxss */
+
+/* .wrapper{
+  display: flex;
+  flex-direction: column;
+} */
+
+.authTips {
+  padding: 90rpx;
+  font-size: 35rpx;
+  text-align: center;
+}
+.authTips .text{
+  color: var(--color-black-min);
+}
+.authTips .authBtn{
+  width: 300rpx;
+  margin-top: 40rpx;
+  background-color: var(--color-primary);
+  color: var(--color-black-min);
+  border-radius: 20rpx;
+}
+
+.camera {
+  width: 100vw;
+  height:85vh;
+}
+
+/* .image{
+  width: 100vw;
+  height: 90vh;
+} */
+
+.control{
+  padding: 40rpx;
+  display: flex;
+  /* height: 200rpx; */
+  align-items: center;
+  justify-content: space-around;
+
+  border-bottom: 1rpx solid var(--color-gray-light);
+}
+
+.control_after{
+  padding: 20rpx;
+  display: flex;
+  /* height: 200rpx; */
+  align-items: center;
+  justify-content: space-around;
+
+  border-bottom: 1rpx solid var(--color-gray-light);
+}
+
+.control_after .btn_after{
+  width: 70rpx;
+  height: 70rpx;
+}
+
+.control .btn{
+  width: 80rpx;
+  height: 80rpx;
+}
+
+.control .shutter{
+  width: 100rpx;
+  height: 100rpx;
+  background-color: var(--color-primary);
+  border-radius: 50%;
+  border:12rpx solid var(--color-white-dark);
+  box-shadow:0 0 0 10rpx var(--color-primary)
+}
+
+.control .hoverShutter{
+  background-color: var(--color-primary-darky);
+}
+
+/* 结果列表 */
+.result{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.result .title{
+  font-size: larger;
+  font-weight:500;
+  color: var(--color-primary);
+  margin-top: 25rpx;
+  margin-left: 25rpx;
+  align-self: flex-start
+}
+
+.item{
+  /* margin:0 30rpx 30rpx 30rpx;
+  border-radius: 40rpx; */
+  /* box-shadow: 2rpx 3rpx 5rpx var(--color-gray); */
+  border-bottom: 1rpx solid var(--color-gray-light);
+  padding: 30rpx;
+
+
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.hoverItem{
+  background-color: var(--color-gray-light);
+}
+
+.item .photo{
+  width: 130rpx;
+  height: 130rpx;
+  margin-right: 25rpx;
+  border-radius: 10rpx;
+}
+
+.item .info{
+  flex-direction: column;
+  width: 400rpx;
+}
+
+.item .name{
+  font-size:35rpx;
+  color: var(--color-black-light);
+}
+.item .detail{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.item .icon {
+  height: 26rpx;
+  width: 26rpx;
+  min-width: 26rpx;
+  margin-right: 5rpx;
+}
+
+.item .detailText{
+  font-size: 28rpx;
+  color: var(--color-gray-max);
+  margin-right: 15rpx
+}
+
+.item .accuracy{
+  font-size: larger;
+  font-weight:500;
+  color: var(--color-primary);
+  width: 100rpx;
+  text-align:right;
+}
+
+.item .enter{
+  width: 40rpx;
+  height: 40rpx;
+  margin-left: 10rpx;
+}
