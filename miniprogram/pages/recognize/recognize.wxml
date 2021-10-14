@@ -1,51 +1,46 @@
 <!--pages/recognize/recognize.wxml-->
-<page-meta>
-  <navigation-bar title="拍照识猫" background-color="white" front-color="black" />
-</page-meta>
 
 <!-- 压缩图片用 -->
-<canvas type="2d" style="width: 2000px; height: 2000px; border: 3rpx solid red; left: 100000px; position: fixed;" class="canvas" canvas-id="canvasForCompres"></canvas>
+<canvas style="width: 500px; height: 500px; border: 1px solid red; left: 100000px; position: fixed;" canvas-id="canvasForCompress"></canvas>
 
 <!-- 无摄像头权限 -->
-<view wx:if="{{!cameraAuth}}" class="authTips">
-<text class="text">提供相机权限后 拍照识别猫咪🐈\n 或 上传猫咪照片进行识别\n  </text>
-<button class="authBtn" bindtap="reqCamAuth">启用相机权限</button>  
+<view wx:if="{{!cameraAuth && !photoPath}}" class="authTips">
+  <text class="text">你可以从相册选择猫猫照片进行识别\n提供相机权限后可以直接拍照哦\n</text>
+  <button class="authBtn" bindtap="reqCamAuth">启用相机权限</button>
 </view>
 
 <!-- 相机 & 照片预览 -->
-<camera wx:if="{{cameraAuth && !src}}" device-position="{{lensDirection}}" resolution="high" frame-size="large" flash="off" binderror="error"
+<camera wx:if="{{cameraAuth && !photoPath}}" device-position="{{devicePosition}}" resolution="high" frame-size="large" flash="off"
   class="camera"></camera>
-<image mode="widthFix" wx:if="{{src}}" src="{{src}}" class="camera"></image>
+<image mode="widthFix" wx:if="{{photoPath}}" src="{{photoPath}}" class="camera"></image>
 
 <!-- 快门等功能栏 -->
-<view wx:if="{{!src}}" class="control">
-  <image wx:if="{{!src}}" class='btn' bindtap='choosePhoto' src='../../images/recognize/choose.png'></image>
+<view wx:if="{{!photoPath}}" class="cameraControll">
+  <image class='btn' bindtap='choosePhoto' src='../../images/recognize/choose.png'></image>
   <button hover-class="hoverShutter" class="shutter" type="primary" bindtap="takePhoto"></button>
   <image class='btn' bindtap='reverseCamera' src='../../images/recognize/reverse.png'></image>
 </view>
-<view wx:if="{{src}}" class="control_after">
-  <image class='btn_after' bindtap='back' src='../../images/recognize/back.png'></image>
-  <image class='btn_after' bindtap='savePhoto' src='../../images/recognize/save.png'></image>
+<view wx:if="{{photoPath}}" class="photoControll">
+  <image class='btn' bindtap='reset' src='../../images/recognize/back.png'></image>
+  <image class='btn' bindtap='savePhoto' src='../../images/recognize/save.png'></image>
 </view>
 
 <!-- 识别结果 -->
 <view class="result">
-  <view wx:if="{{catList}}" class="title">识别结果</view>
-  <view wx:for="{{catList}}" class="item" hover-class="hoverItem" data-cat_id="{{item._id}}" bindtap="clickCatCard">
+  <view wx:if="{{catList.length}}" class="title">识别结果</view>
+  <view wx:for="{{catList}}" wx:key="_id" class="item" hover-class="hoverItem" data-cat-id="{{item._id}}" bindtap="clickCatCard">
     <image class="photo" mode="aspectFill" src="{{item.photo.photo_compressed}}"></image>
     <view class="info">
       <view class="name">{{item.name}}</view>
       <view class='detail'> 
-        <image wx:if="{{item.campus}}" mode='aspectFit' class='icon' src='../../images/card/card/pos.png'></image>
-        <view class="detailText">{{item.campus +' '+ item.area}}</view>
+        <image mode='aspectFit' class='icon' src='../../images/card/card/pos.png'></image>
+        <view class="detailText">{{item.campus + item.area}}</view>
 
-        <image wx:if="{{item.characteristics_string}}" mode='aspectFit' class='icon' src='../../images/card/card/cat.png'></image>
-        <view class="detailText">{{item.characteristics_string}}</view>
+        <image mode='aspectFit' class='icon' src='../../images/card/card/cat.png'></image>
+        <view class="detailText">{{item.colour}}猫</view>
       </view>
     </view>
-
-    <view class="accuracy">{{item.accuracy + '%'}}</view>
-
+    <view class="accuracy">{{item.prob + '%'}}</view>
     <image class='enter' src='../../images/recognize/enter.png'></image>
   </view>
 </view>
