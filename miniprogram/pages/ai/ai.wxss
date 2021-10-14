@@ -1,10 +1,5 @@
 /* pages/ai/ai.wxss */
 
-/* .wrapper{
-  display: flex;
-  flex-direction: column;
-} */
-
 .authTips {
   padding: 90rpx;
   font-size: 35rpx;

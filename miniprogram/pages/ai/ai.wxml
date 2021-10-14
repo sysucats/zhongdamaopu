@@ -3,6 +3,9 @@
   <navigation-bar title="拍照识猫" background-color="white" front-color="black" />
 </page-meta>
 
+<!-- 压缩图片用 -->
+<canvas type="2d" style="width: 2000px; height: 2000px; border: 3rpx solid red; left: 100000px; position: fixed;" class="canvas" canvas-id="canvasForCompres"></canvas>
+
 <!-- 无摄像头权限 -->
 <view wx:if="{{!cameraAuth}}" class="authTips">
 <text class="text">提供相机权限后 拍照识别猫咪🐈\n 或 上传猫咪照片进行识别\n  </text>

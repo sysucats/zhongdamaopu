@@ -188,6 +188,12 @@
           "pathName": "pages/organization/detailorgcat/detailorgcat",
           "query": "cat_id=79550af260ab15b2199d2afd77086e15",
           "scene": null
+        },
+        {
+          "name": "拍照识猫",
+          "pathName": "pages/ai/ai",
+          "query": "",
+          "scene": null
         }
       ]
     }
