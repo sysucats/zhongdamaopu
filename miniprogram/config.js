@@ -13,5 +13,5 @@ module.exports = {
   feedback_wj_img: "cloud://rel-eeeccf.7265-rel-eeeccf-1258586139/系统/新猫问卷.png",
 
   // 拍照识猫服务端url
-  aiUrl: "https://mp.zing22.com/recognizeCatPhoto"
+  recognize_url: "https://mp.zing22.com/recognizeCatPhoto"
 }

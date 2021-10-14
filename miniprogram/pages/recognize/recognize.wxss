@@ -1,14 +1,16 @@
-/* pages/ai/ai.wxss */
+/* pages/recognize/recognize.wxss */
 
 .authTips {
   padding: 90rpx;
   font-size: 35rpx;
   text-align: center;
 }
-.authTips .text{
+
+.authTips .text {
   color: var(--color-black-min);
 }
-.authTips .authBtn{
+
+.authTips .authBtn {
   width: 300rpx;
   margin-top: 40rpx;
   background-color: var(--color-primary);
@@ -18,59 +20,45 @@
 
 .camera {
   width: 100vw;
-  height:85vh;
+  height: 100vw;
 }
 
-/* .image{
-  width: 100vw;
-  height: 90vh;
-} */
-
-.control{
+.cameraControll {
   padding: 40rpx;
   display: flex;
-  /* height: 200rpx; */
   align-items: center;
   justify-content: space-around;
-
   border-bottom: 1rpx solid var(--color-gray-light);
 }
 
-.control_after{
+.photoControll {
   padding: 20rpx;
   display: flex;
-  /* height: 200rpx; */
   align-items: center;
   justify-content: space-around;
-
   border-bottom: 1rpx solid var(--color-gray-light);
 }
 
-.control_after .btn_after{
-  width: 70rpx;
-  height: 70rpx;
-}
-
-.control .btn{
+.cameraControll .btn, .photoControll .btn {
   width: 80rpx;
   height: 80rpx;
 }
 
-.control .shutter{
+.cameraControll .shutter{
   width: 100rpx;
   height: 100rpx;
   background-color: var(--color-primary);
-  border-radius: 50%;
-  border:12rpx solid var(--color-white-dark);
-  box-shadow:0 0 0 10rpx var(--color-primary)
+  border-radius: 50rpx;
+  border: 8rpx solid var(--color-white-dark);
+  box-shadow:0 0 0 8rpx var(--color-primary);
 }
 
-.control .hoverShutter{
-  background-color: var(--color-primary-darky);
+.cameraControll .hoverShutter{
+  background-color: var(--color-primary-dark);
 }
 
 /* 结果列表 */
-.result{
+.result {
   display: flex;
   flex-direction: column;
   align-items: center;
