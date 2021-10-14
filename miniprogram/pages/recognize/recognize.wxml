@@ -1,4 +1,4 @@
-<!--pages/ai/ai.wxml-->
+<!--pages/recognize/recognize.wxml-->
 <page-meta>
   <navigation-bar title="拍照识猫" background-color="white" front-color="black" />
 </page-meta>
@@ -19,13 +19,13 @@
 
 <!-- 快门等功能栏 -->
 <view wx:if="{{!src}}" class="control">
-  <image wx:if="{{!src}}" class='btn' bindtap='choosePhoto' src='../../images/ai/choose.png'></image>
+  <image wx:if="{{!src}}" class='btn' bindtap='choosePhoto' src='../../images/recognize/choose.png'></image>
   <button hover-class="hoverShutter" class="shutter" type="primary" bindtap="takePhoto"></button>
-  <image class='btn' bindtap='reverseCamera' src='../../images/ai/reverse.png'></image>
+  <image class='btn' bindtap='reverseCamera' src='../../images/recognize/reverse.png'></image>
 </view>
 <view wx:if="{{src}}" class="control_after">
-  <image class='btn_after' bindtap='back' src='../../images/ai/back.png'></image>
-  <image class='btn_after' bindtap='savePhoto' src='../../images/ai/save.png'></image>
+  <image class='btn_after' bindtap='back' src='../../images/recognize/back.png'></image>
+  <image class='btn_after' bindtap='savePhoto' src='../../images/recognize/save.png'></image>
 </view>
 
 <!-- 识别结果 -->
@@ -46,6 +46,6 @@
 
     <view class="accuracy">{{item.accuracy + '%'}}</view>
 
-    <image class='enter' src='../../images/ai/enter.png'></image>
+    <image class='enter' src='../../images/recognize/enter.png'></image>
   </view>
 </view>

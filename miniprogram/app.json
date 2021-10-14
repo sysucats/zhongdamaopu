@@ -28,7 +28,7 @@
     "pages/organization/orgsettings/orgsettings",
     "pages/organization/addorgcat/addorgcat",
     "pages/organization/detailorgcat/detailorgcat",
-    "pages/ai/ai"
+    "pages/recognize/recognize"
   ],
   "tabBar": {
     "selectedColor": "#000",
@@ -41,9 +41,9 @@
         "text": "猫谱"
       },
       {
-        "pagePath": "pages/ai/ai",
-        "iconPath": "./images/tabs/default/ai.png",
-        "selectedIconPath": "./images/tabs/active/ai.png",
+        "pagePath": "pages/recognize/recognize",
+        "iconPath": "./images/tabs/default/recog.png",
+        "selectedIconPath": "./images/tabs/active/recog.png",
         "text": "识猫"
       },
       {
