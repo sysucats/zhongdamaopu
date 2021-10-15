@@ -75,19 +75,34 @@ Page({
       url: config.recognize_url,
       timeout: 10 * 1000, // 10s超时
       success(resp) {
-        const res = JSON.parse(resp.data);
-        if (res.ok === true) {
-          that.loadCatsResult(res.data);
-        } else {
-          console.log('get error from interface:', res);
+        try {
+          if (resp.statusCode != 200) {
+            throw resp.data;
+          }
+          const res = JSON.parse(resp.data); // 这里也可能抛出异常
+          if (res.ok === true) {
+            that.loadCatsResult(res.data);
+          } else {
+            throw res;
+          }
+        } catch (err) {
+          console.log('get error from interface:', err);
           wx.hideLoading();
-          // TODO: 错误提示
+          wx.showToast({
+            icon: 'error',
+            title: '出错了'
+          });
+          wx.reportMonitor('recognizeCatPhotoError', 1);
         }
       },
       fail(err) {
         console.log(err);
         wx.hideLoading();
-        // TODO: 错误提示
+        wx.showToast({
+          icon: 'error',
+          title: '出错了'
+        });
+        wx.reportMonitor('recognizeCatPhotoError', 1);
       }
     })
   },

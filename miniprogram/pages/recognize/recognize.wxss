@@ -128,6 +128,11 @@ page {
   color: var(--color-primary);
 }
 
+#resultBox .footnote {
+  font-size: 26rpx;
+  color: var(--color-gray-max);
+}
+
 .catCard {
   font-size: 24rpx;
   padding: 20rpx 0;
