@@ -10,7 +10,7 @@ const msg = require('../../../msg.js');
 const requestNotice = msg.requestNotice;
 const notifyChkFeedbackTplId = msg.notifyChkFeedbackTplId;
 
-var step; // 反馈加载步长，onLoad时从数据库拿
+const step = 6;
 
 Page({
 
@@ -29,11 +29,6 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
-    getGlobalSettings('checkFeedback').then(settings => {
-      // 先把设置拿到
-      console.log(settings);
-      step = settings.step;
-    });
     this.checkAuth();
   },
 

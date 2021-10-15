@@ -26,15 +26,19 @@ button.long {
   width: 100%;
 }
 
-.bottom-bar{
+.bottom-bar {
   position: fixed;
   bottom: 0;
   left: 0;
-  padding: 0rpx 40rpx 40rpx 40rpx;
+  padding: 16rpx 40rpx env(safe-area-inset-bottom) 40rpx; /*底部iOS小黑边safe-area*/
   border-top: 1rpx solid var(--color-gray);
   background-color: #FFFFFF;
   width: 100%;
   box-sizing: border-box;
+}
+
+.bottom-bar button.primary, .bottom-bar button.long {
+  margin-top: 0;
 }
 
 .verify-box {
