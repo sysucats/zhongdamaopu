@@ -14,6 +14,7 @@ Page({
     devicePosition: 'back', // 前置/后置摄像头
     photoPath: null, // 用户选择的照片的路径
     catList: [], // 展示的猫猫列表
+    showResultBox: false, // 用来配合动画延时展示resultBox
   },
 
   onLoad() {
@@ -141,6 +142,13 @@ Page({
       catList: catList
     });
     wx.hideLoading();
+    // 在布局完成上移后展示resultBox
+    const that = this;
+    setTimeout(() => {
+      that.setData({
+        showResultBox: true,
+      });
+    }, 500);
   },
 
   async getCatInfo(cat) {
@@ -185,7 +193,8 @@ Page({
   reset() {
     this.setData({
       photoPath: null,
-      catList: []
+      catList: [],
+      showResultBox: false,
     });
   },
 
@@ -216,11 +225,20 @@ Page({
     })
   },
 
-  clickCatCard(e) {
+  tapCatCard(e) {
     const catId = e.currentTarget.dataset.catId;
     wx.navigateTo({
       url: '/pages/genealogy/detailCat/detailCat?cat_id=' + catId,
     });
   },
+
+  tapPreview(e) {
+    if (!this.data.photoPath) {
+      return;
+    }
+    wx.previewImage({
+      urls: [this.data.photoPath],
+    });
+  }
 
 })
