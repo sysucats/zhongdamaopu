@@ -6,6 +6,10 @@
     },
     {
       "action": "allow",
+      "page": "pages/recognize/recognize"
+    },
+    {
+      "action": "allow",
       "page": "pages/info/info"
     },
     {

@@ -1,0 +1,60 @@
+<!--pages/recognize/recognize.wxml-->
+
+<!-- 压缩图片用 -->
+<canvas style="width: 500px; height: 500px; border: 1px solid red; left: 100000px; position: fixed;" canvas-id="canvasForCompress"></canvas>
+
+<view id="positionWrapper" class="{{catList.length ? 'flowUp' : ''}}">
+
+<view id="photoBox">
+  <view id="previewArea">
+    <!-- 无摄像头权限 -->
+    <view wx:if="{{!cameraAuth && !photoPath}}" id="authTips">
+      <text>你可以从相册选择猫猫照片\n或点击下方启用相机权限后直接拍照\n</text>
+      <button bindtap="reqCamAuth">启用相机权限</button>
+    </view>
+    <!-- 相机取景预览 -->
+    <camera wx:if="{{cameraAuth && !photoPath}}" device-position="{{devicePosition}}" resolution="high" frame-size="large" flash="off" id="cameraPreview"></camera>
+    <!-- 拍照/选图结果预览 -->
+    <image mode="aspectFit" wx:if="{{photoPath}}" src="{{photoPath}}" id="photoPreview" bindtap="tapPreview"></image>
+    <!-- 重新选图按钮 -->
+    <view wx:if="{{photoPath}}" id="resetButton" bindtap="reset">
+      <image src="../../images/recognize/back.png"></image>
+    </view>
+  </view>
+  <!-- 拍照/选图前功能栏 -->
+  <view id="cameraControll" class="{{photoPath ? 'shrink' : ''}}">
+    <image class='btn' bindtap='choosePhoto' src='../../images/recognize/choose.png'></image>
+    <button id="shutter" disabled="{{!cameraAuth}}" bindtap="takePhoto"></button>
+    <image class='btn' bindtap='reverseCamera' src='../../images/recognize/reverse.png'></image>
+  </view>
+</view>
+
+<!-- 识别结果 -->
+<view id="resultBox" wx:if="{{catList.length && showResultBox}}">
+  <view class="title">识别结果</view>
+  <view wx:for="{{catList}}" wx:key="_id" class="catCard" data-cat-id="{{item._id}}" bindtap=" tapCatCard">
+    <image class="photo" mode="aspectFill" src="{{item.photo.photo_compressed}}"></image>
+    <view class="info">
+      <view class='line first'>
+        <text class='name'>{{item.name}}</text>
+        <block wx:if='{{item.gender}}'>
+          <image mode='aspectFill' class='gender' wx:if='{{item.gender === "公"}}' src="../../images/card/card/male.png"></image>
+          <image mode='aspectFill' class='gender' wx:if='{{item.gender === "母"}}' src="../../images/card/card/female.png"></image>
+        </block>
+        <view wx:if='{{item.adopt}}'class='adopt'>已领养</view>
+        <view wx:if='{{item.to_star}}'class='to_star'>返回喵星</view>
+      </view>
+      <view class='line'>
+        <image mode='aspectFit' class='icon' src='../../images/card/card/cat.png'></image>
+        <text class="characteristics">{{item.colour}}猫</text>
+      </view>
+      <view class='line'>
+        <image mode='aspectFit' class='icon' src='../../images/card/card/pos.png'></image>
+        <text>{{(item.campus + item.area) || '-'}}</text>
+      </view>
+    </view>
+    <view class="prob">{{item.prob + '%'}}</view>
+  </view>
+</view>
+
+</view><!-- positionWrapper -->
