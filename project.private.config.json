@@ -191,7 +191,7 @@
         },
         {
           "name": "拍照识猫",
-          "pathName": "pages/ai/ai",
+          "pathName": "pages/recognize/recognize",
           "query": "",
           "scene": null
         }

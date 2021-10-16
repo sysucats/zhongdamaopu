@@ -62,7 +62,7 @@ Page({
 
   async recognizePhoto() {
     wx.showLoading({
-      title: '翻阅猫谱中',
+      title: '翻阅猫谱中...',
       mask: true
     });
     // 压缩图片
