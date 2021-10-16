@@ -32,7 +32,7 @@
 <!-- 识别结果 -->
 <view id="resultBox" wx:if="{{catList.length && showResultBox}}">
   <view class="title">识别结果</view>
-  <view wx:for="{{catList}}" wx:key="_id" class="catCard" data-cat-id="{{item._id}}" bindtap=" tapCatCard">
+  <view wx:for="{{catList}}" wx:key="_id" class="catCard" data-cat-id="{{item._id}}" bindtap="tapCatCard">
     <image class="photo" mode="aspectFill" src="{{item.photo.photo_compressed}}"></image>
     <view class="info">
       <view class='line first'>

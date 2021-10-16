@@ -67,7 +67,7 @@ page {
   box-sizing: border-box;
   overflow: hidden;
   height: 180rpx;
-  transition: height 0.5s ease-in-out;
+  transition: height 1s ease-in-out;
 }
 
 #cameraControll.shrink {

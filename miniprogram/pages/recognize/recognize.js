@@ -254,6 +254,13 @@ Page({
     wx.previewImage({
       urls: [this.data.photoPath],
     });
+  },
+
+  onShareAppMessage() {
+    return {
+      title: '拍照识猫 - 中大猫谱',
+      imageUrl: '../../images/recognize/share_cover.jpg'
+    };
   }
 
 })
