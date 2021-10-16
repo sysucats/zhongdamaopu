@@ -43,8 +43,8 @@ Page({
     canvas: {}, // 画布的宽高
     canUpload: false, // 是否可以上传照片
     showGallery: false,
-    imgUrls: [],
-    currentImg: 0,
+    imgUrls: [], // 预览组件使用的URLs
+    currentImg: 0, // 预览组件当前预览的图片
     photoOrderSelectorRange: photoOrder,
     photoOrderSelectorKey: "name",
     photoOrderSelected: 0,
@@ -266,22 +266,40 @@ Page({
     whichGallery = e.currentTarget.dataset.kind;
     if (whichGallery == 'best') {
       if (this.data.cat.photo.length - this.currentImg <= preload) await this.loadMorePhotos(); //preload
-      this.imgUrls = this.data.cat.photo.map((photo) => {
-        // 展示压缩图（流量预警！）
-        if (page_settings.galleryCompressed) {
-          return (photo.photo_compressed || photo.photo_watermark || photo.photo_id);
-        }
-        return (photo.photo_watermark || photo.photo_id);
-      });
+      // this.imgUrls = this.data.cat.photo.map((photo) => {
+      //   // 展示压缩图（流量预警！）
+      //   if (page_settings.galleryCompressed) {
+      //     return (photo.photo_compressed || photo.photo_watermark || photo.photo_id);
+      //   }
+      //   return (photo.photo_watermark || photo.photo_id);
+      // });
+      // 先全部用本地占位图片填充，避免全部都加载耗时太长
+      this.imgUrls = new Array(this.data.cat.photo.length).fill('../../../images/gallery_placeholder.png');
+      // 立刻展示的图片不应当使用占位图
+      let photo = this.data.cat.photo[this.currentImg];
+      if (page_settings.galleryCompressed) {
+        this.imgUrls[this.currentImg] = (photo.photo_compressed || photo.photo_watermark || photo.photo_id);
+      } else {
+        this.imgUrls[this.currentImg] = (photo.photo_watermark || photo.photo_id);
+      }
     } else { // album
       if (album_raw.length - this.currentImg <= preload) await this.loadMoreAlbum(); // preload
-      this.imgUrls = album_raw.map((photo) => {
-        // 展示压缩图（流量预警！）
-        if (page_settings.galleryCompressed) {
-          return (photo.photo_compressed || photo.photo_watermark || photo.photo_id);
-        }
-        return (photo.photo_watermark || photo.photo_id);
-      });
+      // this.imgUrls = album_raw.map((photo) => {
+      //   // 展示压缩图（流量预警！）
+      //   if (page_settings.galleryCompressed) {
+      //     return (photo.photo_compressed || photo.photo_watermark || photo.photo_id);
+      //   }
+      //   return (photo.photo_watermark || photo.photo_id);
+      // });
+      // 先全部用本地占位图片填充，避免全部都加载耗时太长
+      this.imgUrls = new Array(album_raw.length).fill('../../../images/gallery_placeholder.png');
+      // 立刻展示的图片不应当使用占位图
+      let photo = album_raw[this.currentImg];
+      if (page_settings.galleryCompressed) {
+        this.imgUrls[this.currentImg] = (photo.photo_compressed || photo.photo_watermark || photo.photo_id);
+      } else {
+        this.imgUrls[this.currentImg] = (photo.photo_watermark || photo.photo_id);
+      }
     }
     this.setData({
       showGallery: true,
@@ -294,6 +312,17 @@ Page({
   async bindGalleryChange(e) {
     const index = e.detail.current;
     this.currentImg = index; // 这里得记一下，保存的时候需要
+    // 把占位图片换成真正要显示的图片
+    let photo = whichGallery == 'best' ? this.data.cat.photo[index] : album_raw[index];
+    if (page_settings.galleryCompressed) {
+      this.imgUrls[index] = (photo.photo_compressed || photo.photo_watermark || photo.photo_id);
+    } else {
+      this.imgUrls[index] = (photo.photo_watermark || photo.photo_id);
+    }
+    this.setData({
+      imgUrls: this.imgUrls
+    });
+    // preload逻辑
     const preload = page_settings.galleryPreload;
     if (whichGallery == 'best') {
       if (this.imgUrls.length - index <= preload && this.imgUrls.length < photoMax) {
@@ -323,6 +352,7 @@ Page({
         this.setData({
           imgUrls: this.imgUrls
         });
+        wx.hideLoading();
       }
     }
   },

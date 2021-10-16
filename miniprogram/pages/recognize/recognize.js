@@ -124,6 +124,8 @@ Page({
       ctx.draw(false, () => {
         wx.canvasToTempFilePath({
           canvasId: 'canvasForCompress',
+          width: drawWidth,
+          height: drawHeight,
           fileType: 'jpg',
           success(res) {
             resolve(res.tempFilePath);
