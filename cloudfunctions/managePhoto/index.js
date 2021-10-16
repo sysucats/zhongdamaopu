@@ -50,11 +50,9 @@ exports.main = async (event, context) => {
       },
       fail: console.error
     });
-    updateMphoto(photo.cat_id);
     return db.collection('photo').doc(photo._id).remove();
   } else if (type === "setBest") {
     const best = event.best;
-    updateMphoto(photo.cat_id);
     return db.collection('photo').doc(photo._id).update({
       data: {
         best: best

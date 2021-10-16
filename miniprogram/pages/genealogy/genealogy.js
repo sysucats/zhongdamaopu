@@ -330,6 +330,14 @@ Page({
 
   },
 
+  bindImageLoaded(e){
+    console.log(e);
+    const idx = e.currentTarget.dataset.index;
+    this.setData({
+      [`cats[${idx}].imageLoaded`]: true
+    });
+  },
+
   // 点击猫猫卡片
   clickCatCard(e, isCatId = false) {
     const cat_id = isCatId ? e : e.currentTarget.dataset.cat_id;
