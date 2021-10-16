@@ -19,7 +19,6 @@
           "query": "cat_id=XE6ZFHkPDdDCJ4MO"
         },
         {
-          "id": 1,
           "name": "猫猫详情",
           "pathName": "pages/genealogy/detailCat/detailCat",
           "query": "cat_id=XE6ZFHkPDdDCJ4MO",

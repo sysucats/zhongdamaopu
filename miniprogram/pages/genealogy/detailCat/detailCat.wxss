@@ -94,7 +94,8 @@ swiper-item image {
 
 .tags {
   display: flex;
-  justify-items: center;
+  align-items: center;
+  justify-content: center;
 }
 
 .tags .tag {
@@ -114,11 +115,24 @@ swiper-item image {
 
 .tags .mpcode {
   height: 40rpx;
-  margin-left: auto;
+  margin-left: 20rpx;
 }
 .mpcode image {
   height: 40rpx;
   width: 40rpx;
+}
+
+.fb-button {
+  font-size: 20rpx;
+  height: 40rpx;
+  line-height: 40rpx;
+  padding: 0 10rpx;
+  text-align: center;
+  margin-left: auto;
+  color: var(--color-black-light);
+  /* background-color: var(--color-primary); */
+  border: 3rpx solid var(--color-primary);
+  border-radius: 5rpx;
 }
 
 .details {
@@ -165,7 +179,7 @@ swiper-item image {
   flex-direction: row;
 }
 
-.fb-button {
+.sort-button {
   font-size: 25rpx;
   height: 55rpx;
   box-sizing: border-box;
@@ -177,6 +191,17 @@ swiper-item image {
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.sort-button .logo {
+  height: 30rpx;
+  width: 30rpx;
+  margin: 0 0 0 10rpx ;
+}
+
+.sort-button .picker {
+  display: flex;
+  align-items: center;
 }
 
 /* 下面开始相册 */
@@ -223,7 +248,7 @@ swiper-item image {
   width: 240rpx;
   height: 240rpx;
   box-sizing: border-box;
-  margin: 6rpx;
+  margin: 6rpx 5rpx;
   background-color: white;
 }
 
