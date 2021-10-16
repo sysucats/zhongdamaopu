@@ -49,7 +49,7 @@
 - [ ] 在开发工具右上角开通**云开发**服务，创建云环境（相当于后端服务器）
 - [ ] 点击部署`cloudfunctions`文件夹中的所有云函数
 - [ ] （:warning:与视频演示不同）对于`countPhoto, getPhotoRank, subMsgTimer`这几个云函数，还需要右键点击，选择“上传触发器”
-- [ ] （:warning:2021/4/21新增云函数）对于 `imProcess` 云函数，应先解压缩initDatabase目录下的[imProcess_node_modules.tgz](initDatabase/imProcess_node_modules.tgz)文件，然后将得到的node_modules目录放到cloudfunctions/imProcess路径下。接着，在开发者工具中右键点击，选择“上传并部署：所有文件”。另外，为了避免一次性审核过多图片导致程序执行超时，可以在云开发面板中依次点击“云函数-imProcess-版本与配置-配置-高级配置”，将超时时间调整为60s。
+- [ ] （:warning:2021/4/21新增云函数）对于 `imProcess` 云函数，部署后需要登录[腾讯云网页端-云开发CloudBase](https://console.cloud.tencent.com/tcb)，选择云开发环境，左侧云函数，层管理，新建一个层，把initDatabase目录下的[imProcess_node_modules.zip](initDatabase/imProcess_node_modules.zip)文件上传上去，环境选`Nodejs10.15`。然后点击左侧云函数，选择`imCompress`，层管理中点击“绑定”，选择刚才创建的层。另外，为了避免一次性审核过多图片导致程序执行超时，可以在云开发面板中依次点击“云函数-imProcess-版本与配置-配置-高级配置”，将超时时间调整为60s。
 
 期望：点开云开发可以看到面板数据，则说明开通成功。
 
