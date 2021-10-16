@@ -11,7 +11,7 @@
 <view class='block'>
   <view class='title'>开源代码</view>
   <view class='desc'>
-    <text selectable='true'>中大猫谱现在开源啦！\nhttps://github.com/sysucats/zhongdamaopu</text>
+    <text selectable='true'>中大猫谱现在开源啦！配备部署教程及视频~\nhttps://github.com/sysucats/zhongdamaopu</text>
     <button bindtap='copyOpenSourceLink'>点击复制到剪切板</button>
   </view>
 </view>
@@ -20,7 +20,7 @@
   <view class='title'>更新日志</view>
   <view class='desc'>
     <view class='sub-title hl'>v1.6.0</view>
-    <text class='sub-detail'>- 现在可以拍照识猫啦！\n - 后台优化\n - 更新时间：2021/10/16</text>
+    <text class='sub-detail'>- 现在可以拍照识猫啦！\n - 猫猫相册增加排序功能\n - 后台优化\n - 更新时间：2021/10/16</text>
 
     <view class='sub-title hl'>v1.5.5</view>
     <text class='sub-detail'>- BUG修复\n - 更新时间：2021/10/11</text>
