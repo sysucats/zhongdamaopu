@@ -36,6 +36,8 @@ next-margin='60rpx'>
     <text class='tag'>{{cat.adopt? '已': '未'}}领养</text>
     <text class='tag'>{{cat.sterilized? '已': '待'}}绝育</text>
     <text class='tag to_star' wx:if='{{cat.to_star}}'>返回喵星</text>
+    
+    <text class='fb-button' bindtap='bindTapFeedback'>反馈猫猫信息</text>
     <view class="mpcode" bindtap="bingMpTap">
       <image src="../../../images/mpcode.png"></image>
     </view>
@@ -103,6 +105,7 @@ next-margin='60rpx'>
       <view class='value'>{{cat.tutorial || '暂时还没有'}}</view>
     </view>
   </view>
+  
 </view>
 <!-- info end -->
 
@@ -112,8 +115,15 @@ next-margin='60rpx'>
     <view class='name'>{{cat.name}}的相册</view>
     <view class='count'>共{{albumMax}}张照片</view>
   </view>
-  <view class='fb-button' bindtap='bindTapFeedback'>反馈猫猫信息</view>
-
+  
+  <view class='sort-button'>
+    <picker bindchange="bindphotoOrderChange" value="{{photoOrderSelected}}" range="{{photoOrderSelectorRange}}" range-key="{{photoOrderSelectorKey}}">
+      <view class="picker">
+        <text>{{photoOrderSelectorRange[photoOrderSelected][photoOrderSelectorKey]}}</text>
+        <image class="logo" mode='aspectFill' src='../../../images/button/sort.png'></image>
+      </view>
+    </picker>
+  </view>
 </view>
 
 
@@ -123,7 +133,15 @@ next-margin='60rpx'>
     <view class='name'>{{cat.name}}的相册</view>
     <view class='count'>共{{albumMax}}张照片</view>
   </view>
-  <view class='fb-button' bindtap='bindTapFeedback'>反馈猫猫信息</view>
+  
+  <view class='sort-button'>
+    <picker bindchange="bindphotoOrderChange" value="{{photoOrderSelected}}" range="{{photoOrderSelectorRange}}" range-key="{{photoOrderSelectorKey}}">
+      <view class="picker">
+        <text>{{photoOrderSelectorRange[photoOrderSelected][photoOrderSelectorKey]}}</text>
+        <image class="logo" mode='aspectFill' src='../../../images/button/sort.png'></image>
+      </view>
+    </picker>
+  </view>
 </view>
 
 <view class='album'>

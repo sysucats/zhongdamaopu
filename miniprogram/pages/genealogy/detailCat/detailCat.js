@@ -4,6 +4,7 @@ const getCurrentPath = utils.getCurrentPath;
 const getGlobalSettings = utils.getGlobalSettings;
 const checkCanUpload = utils.checkCanUpload;
 const checkMultiClick = utils.checkMultiClick;
+const formatDate = utils.formatDate;
 
 // 页面设置，从global读取
 var page_settings = {};
@@ -17,9 +18,16 @@ var loadingAlbum = false;
 var whichGallery; // 预览时记录展示的gallery是精选还是相册
 
 var infoHeight = 0; // 单位是px
-const canvasMax = 2000; // 正方形画布的尺寸px
 
 var heights = {}; // 系统的各种heights
+
+// 获取照片的排序功能
+const photoOrder = [
+  {key: 'shooting_date', order: 'desc', name: '最近拍摄'},
+  {key: 'shooting_date', order: 'asc', name: '最早拍摄'},
+  {key: 'mdate', order: 'desc', name: '最近收录'},
+  {key: 'mdate', order: 'asc', name: '最早收录'},
+]
 
 Page({
 
@@ -37,6 +45,9 @@ Page({
     showGallery: false,
     imgUrls: [],
     currentImg: 0,
+    photoOrderSelectorRange: photoOrder,
+    photoOrderSelectorKey: "name",
+    photoOrderSelected: 0,
   },
 
   /**
@@ -45,9 +56,7 @@ Page({
   onLoad: function (options) {
     cat_id = options.cat_id;
     // 开始加载页面
-
     const that = this;
-    const app = getApp();
     getGlobalSettings('detailCat').then(settings => {
       // 先把设置拿到
       page_settings = settings;
@@ -183,13 +192,18 @@ Page({
 
   reloadPhotos() {
     // 这些是精选照片
-    const qf = { cat_id: cat_id, verified: true, best: true };
     const db = wx.cloud.database();
+    const qf = { cat_id: cat_id, verified: true, best: true };
     db.collection('photo').where(qf).count().then(res => {
       photoMax = res.total;
       this.loadMorePhotos();
     });
+    this.reloadAlbum();
+  },
+
+  reloadAlbum() {
     // 下面是相册的
+    const db = wx.cloud.database();
     const qf_album = { cat_id: cat_id, verified: true };
     db.collection('photo').where(qf_album).count().then(res => {
       albumMax = res.total;
@@ -339,7 +353,8 @@ Page({
     const db = wx.cloud.database();
 
     loadingAlbum = true;
-    let res = await db.collection('photo').where(qf).orderBy('shooting_date', 'desc').orderBy('mdate', 'desc').skip(now).limit(step).get();
+    const orderItem = photoOrder[this.data.photoOrderSelected];
+    let res = await db.collection('photo').where(qf).orderBy(orderItem.key, orderItem.order).orderBy('mdate', 'desc').skip(now).limit(step).get();
     const offset = album_raw.length;
     for (let i = 0; i < res.data.length; ++i) {
       res.data[i].index = offset + i; // 把index加上，gallery预览要用到
@@ -348,12 +363,19 @@ Page({
     this.updateAlbum();
   },
 
-  updateAlbum() {
+  updateAlbum () {
     // 为了页面显示，要把这个结构处理一下
-    // 先按日期分类
+    // 先按日期分类，分为拍摄日期、上传日期
+    var orderIdx = this.data.photoOrderSelected;
+    var orderKey = photoOrder[orderIdx].key;
     var group = {};
     for (const pic of album_raw) {
-      const date = pic.shooting_date;
+      var date;
+      if (orderKey == 'shooting_date') {
+        date = pic.shooting_date;
+      } else if (orderKey == 'mdate') {
+        date = formatDate(pic.mdate, 'yyyy-MM')
+      }
       if (!date) {
         continue;
       }
@@ -365,12 +387,13 @@ Page({
     // 下面整理一下，变成页面能展示的
     var result = [];
     var keys = Object.keys(group);
-    keys.sort((a, b) => -(a - b));
+    var order = photoOrder[orderIdx].order == 'asc'? 1: -1;
+    keys.sort((a, b) => order * (a - b));
     for (const key of keys) {
       const shooting_date = key.split('-');
       var birth = this.data.cat.birthday;
       var age = [-1, -1];
-      if (birth) {
+      if (birth && orderKey == 'shooting_date') {
         birth = birth.split('-');
         var month = parseInt(shooting_date[1]) - parseInt(birth[1]);
         var year = parseInt(shooting_date[0]) - parseInt(birth[0]);
@@ -392,6 +415,15 @@ Page({
     this.setData({
       album: result
     });
+  },
+
+  bindphotoOrderChange(e) {
+    var selected = e.detail.value;
+    this.setData({
+      photoOrderSelected: selected
+    }, function() {
+      this.reloadAlbum();
+    })
   },
   // 处理主容器滑动时的行为
   bindContainerScroll(e) {
