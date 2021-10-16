@@ -40,8 +40,6 @@ Page({
     loading: false, // 正在加载
     loadnomore: false, // 没有再多了
 
-    imgLoadedCount: 0,
-
     // 广告是否展示
     ad_show: {},
   },
@@ -332,13 +330,6 @@ Page({
 
   },
 
-  bindImageLoaded(e){
-    this.setData({
-      imgLoadedCount: this.data.imgLoadedCount+1
-    },
-);
-  },
-
   // 点击猫猫卡片
   clickCatCard(e, isCatId = false) {
     const cat_id = isCatId ? e : e.currentTarget.dataset.cat_id;
@@ -541,8 +532,6 @@ Page({
     return res.length ? _.and(res) : {};
   },
   fComfirm: function () {
-    this.setData({imgLoadedCount:0});
-
     if (!this.data.filters_legal) {
       return false;
     }

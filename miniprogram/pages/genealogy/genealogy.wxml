@@ -49,11 +49,11 @@
 
 <scroll-view enable-flex='true' class='cards' style='height: {{heights.windowHeight - heights.filters}}px;' scroll-y='true' enable-back-to-top='true' bindscrolltolower='onReachBottom' bindscroll='fScroll' lower-threshold='{{main_lower_threshold}}'>
   <block wx:for='{{cats}}' wx:key="_id">
-    <view hidden="{{index > imgLoadedCount-1}}" class='card' bindtap='clickCatCard' bindlongpress='bindManageCat' data-cat_id='{{item._id}}'>
+    <view class='card' bindtap='clickCatCard' bindlongpress='bindManageCat' data-cat_id='{{item._id}}'>
       <view class='label' wx:if="{{item.mphoto_new}}">有新相片！</view>
       <view class='image {{item.to_star? "to_star": ""}}'>
         <image bindload="bindImageLoaded" mode='aspectFill' src='{{item.photo.photo_compressed || item.photo.photo_id}}'></image>
-        <view class='image-title' wx:if='{{!item.photo_count || item.photo_count === 0}}'>暂无照片...</view>
+        <view class='image-title' wx:if='{{!item.photo_count || item.photo_count === 0}}'>暂无封面...</view>
         <view class='image-title' wx:else>{{item.photo.photo_id? ('Photo by ' + (item.photo.photographer ||(item.photo.userInfo? item.photo.userInfo.nickName: '匿名猫友'))): '加载照片ing'}}</view>
       </view>
       <view class='info' hover-class="hoverInfo">
@@ -89,7 +89,7 @@
         </view>
       </view>
     </view>
-    <view hidden="{{index > imgLoadedCount-1}}" wx:if="{{adStep && (index+1)%adStep===0}}" class="card-ad {{ad_show['ad-'+(index+1)]? '': 'hidden'}}">
+    <view wx:if="{{adStep && (index+1)%adStep===0}}" class="card-ad {{ad_show['ad-'+(index+1)]? '': 'hidden'}}">
       <ad unit-id="adunit-9a7dcb84fe2c4db1" ad-intervals="120"
       bindload="adLoad" binderror="adError" bindclose="adClose" data-ad_id='ad-{{(index+1)}}'></ad>
     </view>
