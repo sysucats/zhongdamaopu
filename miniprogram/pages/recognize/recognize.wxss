@@ -116,15 +116,14 @@ page {
 }
 
 #resetButton {
-  width: 40rpx;
-  height: 40rpx;
+  width: 50rpx;
+  height: 50rpx;
   background: white;
-  border-radius: 20rpx;
+  border-radius: 25px;
   box-shadow: 0 0 8rpx rgba(0, 0, 0, 0.5);
   position: absolute;
-  top: 5%;
-  left: 95%;
-  transform: translateX(-50%) translateY(-50%);
+  top: 16rpx;
+  right: 16rpx;
 }
 
 #resetButton image {
@@ -187,6 +186,7 @@ page {
   width: 125rpx;
   height: 125rpx;
   border-radius: 66rpx;
+  background-color: var(--color-gray-light);
 }
 
 .catCard .info {

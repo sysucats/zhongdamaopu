@@ -61,7 +61,7 @@
     </view>
     <view class="prob">{{item.prob + '%'}}</view>
   </view>
-  <view class="footnote">*目前只有在猫谱照片超过10张的猫猫才能被识别出来哦！识别效果还在不断改进中~</view>
+  <view class="footnote">*目前只有在猫谱具有5张以上可识别照片的猫猫才能被认出来哦！识别效果还在不断改进中~</view>
 </view>
 
 </view><!-- positionWrapper -->
