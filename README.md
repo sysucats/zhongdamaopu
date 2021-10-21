@@ -47,11 +47,20 @@
 ### 开通云开发
 
 - [ ] 在开发工具右上角开通**云开发**服务，创建云环境（相当于后端服务器）
+- [ ] （:warning:与视频演示不同）在云环境的“配额方案”中，[切换成按量付费](https://developers.weixin.qq.com/miniprogram/dev/wxcloud/billing/adjust-payment.html)，下一步才能部署超过15个云函数
 - [ ] 点击部署`cloudfunctions`文件夹中的所有云函数
 - [ ] （:warning:与视频演示不同）对于`countPhoto, getPhotoRank, subMsgTimer`这几个云函数，还需要右键点击，选择“上传触发器”
-- [ ] （:warning:2021/4/21新增云函数）对于 `imProcess` 云函数，部署后需要登录[腾讯云网页端-云开发CloudBase](https://console.cloud.tencent.com/tcb)，选择云开发环境，左侧云函数，层管理，新建一个层，把initDatabase目录下的[imProcess_node_modules.zip](initDatabase/imProcess_node_modules.zip)文件上传上去，环境选`Nodejs10.15`。然后点击左侧云函数，选择`imCompress`，层管理中点击“绑定”，选择刚才创建的层。另外，为了避免一次性审核过多图片导致程序执行超时，可以在云开发面板中依次点击“云函数-imProcess-版本与配置-配置-高级配置”，将超时时间调整为60s。
 
 期望：点开云开发可以看到面板数据，则说明开通成功。
+### 特殊依赖安装
+（:warning:2021/4/21新增云函数）对于 `imProcess` 云函数，无法云端自动安装图像处理依赖库，需要手动上传。这一步比较繁琐，可以参考[演示视频的P2](https://www.bilibili.com/video/BV1zA411W7Rn?p=2)（特别感谢happi0同学的实践经验）。
+- [ ] 完成上一步的部署后，登录[腾讯云网页端-云开发CloudBase](https://console.cloud.tencent.com/tcb)，选择云开发环境，左侧云函数，记下`imProcess`函数的运行环境，例如`Nodejs12.16`或`Nodejs10.15`
+- [ ] 点击上方“层管理”，新建一个层，名称和描述随便填。把initDatabase目录下的[imProcess_node_modules.zip](initDatabase/imProcess_node_modules.zip)文件上传上去，环境选刚才记下的`Nodejs`版本
+- [ ] 再点击左侧云函数，选择`imProcess`，层管理中点击“绑定”，选择刚才创建的层
+- [ ] 另外，为了避免一次处理过多图片导致程序执行超时，需要在云开发面板中依次点击“云函数-imProcess-版本与配置-配置-高级配置”，将超时时间调整为60s，
+- [ ] 对`imCompress`云函数进行同样的绑定层、调整超时时间的操作
+
+期望：在腾讯云网页端中，云函数`imProcess`和`imCompress`的层管理列表中，均出现刚绑定上的依赖层。
 
 ### 创建数据集合
 
