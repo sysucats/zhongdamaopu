@@ -60,6 +60,24 @@ page {
   height: 100%;
 }
 
+#photoPreview {
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+}
+
+#photoPreview .catBox {
+  position: absolute;
+  /* top,left,width,height在wxml中绑定JS计算结果 */
+  border: 4rpx solid var(--color-gray);
+  border-radius: 10rpx;
+  box-sizing: border-box;
+}
+
+#photoPreview .catBox.first {
+  border-color: var(--color-primary);
+}
+
 #cameraControll {
   padding: 0 40rpx;
   display: flex;
@@ -127,6 +145,21 @@ page {
   font-size: 36rpx;
   font-weight: 500;
   color: var(--color-primary);
+}
+
+#resultBox .tip {
+  display: flex;
+  align-items: center;
+  color: var(--color-gray-max);
+  font-size: 26rpx;
+  margin: 10rpx 0;
+}
+
+#resultBox .tip image.icon {
+  height: 26rpx;
+  width: 26rpx;
+  min-width: 26rpx;
+  margin-right: 15rpx;
 }
 
 #resultBox .footnote {

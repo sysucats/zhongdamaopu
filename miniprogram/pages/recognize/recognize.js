@@ -1,8 +1,15 @@
 // pages/recognize/recognize.js
 const utils = require('../../utils.js');
-const config = require('../../config.js');
-
+const sha256 = utils.sha256;
+const getGlobalSettings = utils.getGlobalSettings;
 const randomInt = utils.randomInt;
+
+// 接口设置，onLoad中从数据库拉取。
+var interfaceURL;
+var secretKey;
+
+// 图片长宽比，在compresPhoto函数中记录。用于重新映射后端返回的catBox位置信息。
+var widthHeightRatio;
 
 Page({
 
@@ -13,11 +20,17 @@ Page({
     cameraAuth: false,
     devicePosition: 'back', // 前置/后置摄像头
     photoPath: null, // 用户选择的照片的路径
+    photoBase64: null, // 用户选择的照片的base64编码，用于设置background-image
     catList: [], // 展示的猫猫列表
+    catBoxList: [], // 展示的猫猫框列表
     showResultBox: false, // 用来配合动画延时展示resultBox
   },
 
   onLoad() {
+    getGlobalSettings('recognize').then(settings => {
+      interfaceURL = settings.interfaceURL;
+      secretKey = settings.secretKey;
+    });
     this.checkAuth();
   },
 
@@ -53,7 +66,8 @@ Page({
       quality: 'high',
       success: (res) => {
         that.setData({
-          photoPath: res.tempImagePath
+          photoPath: res.tempImagePath,
+          photoBase64: wx.getFileSystemManager().readFileSync(res.tempImagePath, 'base64')
         });
         that.recognizePhoto();
       }
@@ -61,27 +75,40 @@ Page({
   },
 
   async recognizePhoto() {
+    // 检查接口设置
+    if (!interfaceURL || !secretKey) {
+      wx.showToast({
+        icon: 'error',
+        title: '出错了'
+      });
+      return;
+    }
     wx.showLoading({
       title: '翻阅猫谱中...',
       mask: true
     });
     // 压缩图片
     const compressPhotoPath = await this.compressPhoto();
+    // 计算签名
+    const signature = sha256.hex_sha256(wx.getFileSystemManager().readFileSync(compressPhotoPath, 'base64') + secretKey);
     // 调用服务端接口进行识别
     const that = this;
     wx.uploadFile({
       filePath: compressPhotoPath,
       name: 'photo',
-      url: config.recognize_url,
+      url: interfaceURL,
+      formData: {
+        signature: signature
+      },
       timeout: 10 * 1000, // 10s超时
-      success(resp) {
+      async success(resp) {
         try {
           if (resp.statusCode != 200) {
             throw resp.data;
           }
           const res = JSON.parse(resp.data); // 这里也可能抛出异常
           if (res.ok === true) {
-            that.loadCatsResult(res.data);
+            await that.loadRecognizeResult(res.data);
           } else {
             throw res;
           }
@@ -104,7 +131,7 @@ Page({
         });
         wx.reportMonitor('recognizeCatPhotoError', 1);
       }
-    })
+    });
   },
 
   async compressPhoto() {
@@ -113,6 +140,8 @@ Page({
       src: this.data.photoPath,
     });
     console.log('photo info:', photoInfo);
+    // 记录图片长宽比。用于重新映射后端返回的catBox位置信息。
+    widthHeightRatio = photoInfo.width / photoInfo.height;
     // 使用canvas方法压缩图片
     const canvasSideLen = 500;
     const drawRate = Math.max(photoInfo.width, photoInfo.height) / canvasSideLen; // 计算缩放比
@@ -126,6 +155,8 @@ Page({
           canvasId: 'canvasForCompress',
           width: drawWidth,
           height: drawHeight,
+          destWidth: drawWidth,
+          destHeight: drawHeight,
           fileType: 'jpg',
           success(res) {
             resolve(res.tempFilePath);
@@ -139,15 +170,40 @@ Page({
     return compressPhotoPath;
   },
 
-  async loadCatsResult(catData) {
+  async loadRecognizeResult(result) {
+    // 解析猫猫框
+    let catBoxes = result.catBoxes;
+    let catBoxList = [];
+    const previewSideLen = 675; // view#previewArea的长宽rpx值
+    const compressSideLen = 500; // 上传到后台的图片的长边长度
+    const ratio = previewSideLen / compressSideLen; // 缩放比
+    for (let catBox of catBoxes) {
+      let xOffset = 0;
+      let yOffset = 0;
+      // 短边由于居中会产生offset
+      if (widthHeightRatio < 1) {
+        xOffset = previewSideLen * ((1 - widthHeightRatio) / 2);
+      } else {
+        yOffset = previewSideLen * ((1 - 1 / widthHeightRatio) / 2);
+      }
+      catBoxList.push({
+        x: catBox.xmin * ratio + xOffset,
+        y: catBox.ymin * ratio + yOffset,
+        width: (catBox.xmax - catBox.xmin) * ratio,
+        height: (catBox.ymax - catBox.ymin) * ratio
+      });
+    }
+    console.log("cat box list:", catBoxList);
+    // 解析识别结果
+    let recognizeResults = result.recognizeResults;
     let catList = [];
     // 最多maxNum只，最少minNum只，去除概率太低的
     const minProb = 0.001;
     const minNum = 3;
     const maxNum = 5;
     for (let index = 0; index < maxNum; index++) {
-      if (catData[index].prob > minProb || index < minNum) {
-        let cat = catData[index];
+      if (recognizeResults[index].prob > minProb || index < minNum) {
+        let cat = recognizeResults[index];
         let catInfo = await this.getCatInfo(cat);
         catList.push(catInfo);
       } else {
@@ -156,6 +212,7 @@ Page({
     }
     console.log("cat list:", catList);
     this.setData({
+      catBoxList: catBoxList,
       catList: catList
     });
     wx.hideLoading();
@@ -200,7 +257,8 @@ Page({
       sourceType: ['album'],
       success(res) {
         that.setData({
-          photoPath: res.tempFilePaths[0]
+          photoPath: res.tempFilePaths[0],
+          photoBase64: wx.getFileSystemManager().readFileSync(res.tempFilePaths[0], 'base64')
         });
         that.recognizePhoto();
       }
@@ -210,6 +268,8 @@ Page({
   reset() {
     this.setData({
       photoPath: null,
+      photoBase64: null,
+      catBoxList: [],
       catList: [],
       showResultBox: false,
     });

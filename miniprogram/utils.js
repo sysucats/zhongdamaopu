@@ -1,5 +1,7 @@
 const regeneratorRuntime = require('./packages/regenerator-runtime/runtime.js');
 
+const sha256 = require('./packages/sha256/sha256.js');
+
 // import regeneratorRuntime from './packages/regenerator-runtime/runtime.js';
 
 function randomInt(min, max) {
@@ -228,6 +230,7 @@ function checkMultiClick(cat_id) {
 
 module.exports = {
   regeneratorRuntime,
+  sha256,
   randomInt,
   generateUUID,
   loadFilter,

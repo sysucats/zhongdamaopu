@@ -15,7 +15,9 @@
     <!-- 相机取景预览 -->
     <camera wx:if="{{cameraAuth && !photoPath}}" device-position="{{devicePosition}}" resolution="high" frame-size="large" flash="off" id="cameraPreview"></camera>
     <!-- 拍照/选图结果预览 -->
-    <image mode="aspectFit" wx:if="{{photoPath}}" src="{{photoPath}}" id="photoPreview" bindtap="tapPreview"></image>
+    <view wx:if="{{photoPath}}" id="photoPreview" style="background-image: url('data:image/png;base64,{{photoBase64}}');" bindtap="tapPreview">
+      <view wx:for="{{catBoxList}}" class="catBox {{index == 0 ? 'first' : ''}}" style="top: {{item.y}}rpx; left: {{item.x}}rpx; width: {{item.width}}rpx; height: {{item.height}}rpx;"></view>
+    </view>
     <!-- 重新选图按钮 -->
     <view wx:if="{{photoPath}}" id="resetButton" bindtap="reset">
       <image src="../../images/recognize/back.png"></image>
@@ -31,7 +33,11 @@
 
 <!-- 识别结果 -->
 <view id="resultBox" wx:if="{{catList.length && showResultBox}}">
-  <view class="title">识别结果</view>
+  <view class="title">{{!catBoxList.length ? '看起来，整张照片更像...' : (catBoxList.length == 1 ? '看起来，这张照片里的猫猫更像...' : '看起来，黄色框框中的猫猫更像...')}}</view>
+  <view class="tip" wx:if="{{catBoxList.length != 1}}">
+    <image mode='aspectFit' class='icon' src='../../images/tip.png'></image>
+    <text>{{!catBoxList.length ? '照片里好像没有猫猫' : '照片里好像有多只猫猫'}}</text>
+  </view>
   <view wx:for="{{catList}}" wx:key="_id" class="catCard" data-cat-id="{{item._id}}" bindtap="tapCatCard">
     <image class="photo" mode="aspectFill" src="{{item.photo.photo_compressed}}"></image>
     <view class="info">

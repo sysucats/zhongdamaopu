@@ -19,6 +19,9 @@
 <view class='block'>
   <view class='title'>更新日志</view>
   <view class='desc'>
+    <view class='sub-title hl'>v1.6.2</view>
+    <text class='sub-detail'>- 识猫功能现在可以框出识别的猫猫了\n - 更新时间：2021/10/22</text>
+
     <view class='sub-title hl'>v1.6.1</view>
     <text class='sub-detail'>- 修复识猫非正方形图片结果不准确的问题\n - 优化猫猫详情页图片预览\n - 其他BUG修复\n - 更新时间：2021/10/17</text>
 
