@@ -14,10 +14,9 @@
 
 ## 衍生小程序
 
-|<img src="./readme/qrcode2.png" width = "200" height = "200" alt="华农喵星人菊花码" />|<img src="./readme/qrcode3.png" width = "200" height = "200" alt="汇景猫党菊花码" />|
-|:----:|:----:|
-|华农喵星人|汇景猫党|
-|华南农业大学|某居民小区|
+|<img src="./readme/qrcode2.png" width = "200" height = "200" alt="华农喵星人菊花码" />|<img src="./readme/qrcode3.png" width = "200" height = "200" alt="汇景猫党菊花码" />|<img src="./readme/qrcodeHNU.jpg" width = "200" height = "200" alt="HNU喵汪图鉴菊花码" />|
+|:----:|:----:|:----:|
+|华农喵星人|汇景猫党|HNU喵汪图鉴|
 
 如果，你所在校园（/社团/小区...）的猫猫:smile_cat:也盼望拥有一份属于自己的猫猫档案，请你跟随下一章节的指引，为它们部署、发布一份独特的猫谱小程序。
 
