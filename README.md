@@ -19,8 +19,12 @@
 |华农喵星人|汇景猫党|HNU喵汪图鉴|
 
 如果，你所在校园（/社团/小区...）的猫猫:smile_cat:也盼望拥有一份属于自己的猫猫档案，请你跟随下一章节的指引，为它们部署、发布一份独特的猫谱小程序。
+部署完成后，可以邀请你的朋友帮忙管理猫猫信息。
+
+我们为此准备了【猫谱-管理员手册】，信息管理无需接触代码。链接：[https://docs.qq.com/doc/DSEl0aENOSEx5cmtE](https://docs.qq.com/doc/DSEl0aENOSEx5cmtE)
 
 部署过程中遇到任何问题，可以选择：
+* 查看【猫谱-部署常见问题】文档（必看！），链接：[https://docs.qq.com/doc/DSGFSU25jalpEZ2FO](https://docs.qq.com/doc/DSGFSU25jalpEZ2FO)
 * 发邮件至：dxzyfwd@163.com
 * 在部署演示视频下留言
 * 在GitHub页面提issue
@@ -207,7 +211,7 @@
 
 # :notebook_with_decorative_cover:管理员手册
 
-管理员使用时，请参考此共享文档：[https://docs.qq.com/doc/DSEl0aENOSEx5cmtE](https://github.com/sysucats/zhongdamaopu/edit/master/README.md) ，可以发给其他管理员查阅。
+管理员使用时，请参考此共享文档：【猫谱-管理员手册】[https://docs.qq.com/doc/DSEl0aENOSEx5cmtE](https://docs.qq.com/doc/DSEl0aENOSEx5cmtE) ，可以发给其他管理员查阅。
 
 # :dancers:开发团队
 
