@@ -1,5 +1,7 @@
 // miniprogram/pages/info/reward/reward.js
 const config = require('../../../config.js');
+const utils = require('../../../utils.js');
+const checkCanUpload = utils.checkCanUpload;
 
 // 在页面中定义激励视频广告
 let videoAd = null
@@ -16,6 +18,14 @@ Page({
   onLoad: function (option) {
     this.loadReward();
     var that = this;
+    
+    // 是否开启
+    checkCanUpload().then(res => {
+      that.setData({
+        canUpload: res
+      });
+    })
+    
     // 在页面onLoad回调事件中创建激励视频广告实例
     if (wx.createRewardedVideoAd) {
       videoAd = wx.createRewardedVideoAd({
