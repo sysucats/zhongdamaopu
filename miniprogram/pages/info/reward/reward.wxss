@@ -40,16 +40,22 @@
   text-align: center;
 }
 
-.block .btn,
+.block .buttons {
+  width: 100%;
+  display: flex;
+}
+
 button {
-  background-color: var(--color-primary);
   font-size: 30rpx;
   line-height: 40rpx;
   margin: 10rpx;
   padding: 16rpx 30rpx;
   border: 1rpx solid var(--color-gray-max);
   border-radius: 25rpx;
-  /* TODO:hover-class */
+}
+
+button.primary {
+  background-color: var(--color-primary);
 }
 
 /* 最后的小tip */

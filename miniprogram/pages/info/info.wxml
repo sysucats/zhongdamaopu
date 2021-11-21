@@ -1,7 +1,7 @@
 <!--miniprogram/pages/info/info.wxml-->
 <!-- <text>miniprogram/pages/info/info.wxml</text> -->
 <view class='mina-info'>
-  <image src='../../images/zdmp_logo.png'></image>
+  <image src='../../images/zdmp_logo.png' bindlongpress="showMpCode"></image>
   <view class='title'>中大猫谱</view>
   <view class='dev'><text>{{version ? version + "\n" : ""}} 拍照记录校园内猫猫的成长轨迹</text></view>
 </view>
@@ -41,10 +41,10 @@
     <view class="option-text">人员管理</view>
     <view class="right-arrow"><image mode='aspectFill' src="../../images/filter/right.png"></image></view> 
   </view>
-  <view class="option" bindtap='clickbtn' data-to='/pages/manage/manageOrgs/manageOrgs'>
+  <!-- <view class="option" bindtap='clickbtn' data-to='/pages/manage/manageOrgs/manageOrgs'>
     <view class="option-text">组织管理</view>
     <view class="right-arrow"><image mode='aspectFill' src="../../images/filter/right.png"></image></view> 
-  </view>
+  </view> -->
   <view class="option" bindtap='clickbtn' data-to='/pages/manage/filters/filters'>
     <view class="option-text">区域/花色管理</view>
     <view class="right-arrow"><image mode='aspectFill' src="../../images/filter/right.png"></image></view> 

@@ -53,7 +53,7 @@
       <view class='label' wx:if="{{item.mphoto_new}}">有新相片！</view>
       <view class='image {{item.to_star? "to_star": ""}}'>
         <image bindload="bindImageLoaded" mode='aspectFill' src='{{item.photo.photo_compressed || item.photo.photo_id}}' data-index="{{index}}"></image>
-        <view class='image-title' wx:if='{{!item.photo_count || item.photo_count === 0}}'>暂无照片...</view>
+        <view class='image-title' wx:if='{{!item.photo_count_best || item.photo_count_best === 0}}'>暂无封面照片...</view>
         <view class='image-title' wx:else>{{item.photo.photo_id? ('Photo by ' + (item.photo.photographer ||(item.photo.userInfo? item.photo.userInfo.nickName: '匿名猫友'))): '加载照片ing'}}</view>
       </view>
       <view class='info' hover-class="hoverInfo">
@@ -67,7 +67,7 @@
           <view wx:if='{{item.to_star}}'class='to_star'>返回喵星</view>
           <view class='popularity'>
             <image src='../../images/card/card/pop.png'></image>
-            <text> ({{item.popularity}})</text>
+            <text> ({{item.popularity + (item.photo_count_total? item.photo_count_total * photoPopWeight: 0) }})</text>
           </view>
         </view>
         <view class='line'>

@@ -28,7 +28,7 @@
 部署过程中遇到任何问题，可以选择：
 * 查看【猫谱-部署常见问题】文档（必看！），链接：[https://docs.qq.com/doc/DSGFSU25jalpEZ2FO](https://docs.qq.com/doc/DSGFSU25jalpEZ2FO)
 * 发邮件至：dxzyfwd@163.com
-* 在部署演示视频下留言
+* 在部署演示视频下留言，链接：[https://www.bilibili.com/video/BV1zA411W7Rn/](https://www.bilibili.com/video/BV1zA411W7Rn/)
 * 在GitHub页面提issue
 
 # :scroll:部署
@@ -76,7 +76,7 @@
 ### 创建数据集合
 
 - [ ] 创建8个数据集合：`cat, feedback, photo, photo_rank, reward, science, setting, user`
-- [ ] 设置上述8个数据集合权限为第一项：“所有用户可读，仅创建者可读写”
+- [ ] 设置上述8个数据集合权限为自定义项：“所有用户可读，所有用可读写”
 - [ ] 导入`initDatabase/database-setting.json`文件到`setting`数据集合
 - [ ] 导入`initDatabase/database-science.json`文件到`science`数据集合
 
@@ -180,6 +180,7 @@
 |genealogy|adStep|广告出现的间隔|
 |    |catsStep|首页每次加载猫猫的数量|
 |    |main_lower_threshold|首页触底加载的像素值|
+|    |photoPopWeight|每张猫猫照片增加的人气值|
 
 ## filter
 

@@ -11,6 +11,9 @@ var secretKey;
 // 图片长宽比，在compresPhoto函数中记录。用于重新映射后端返回的catBox位置信息。
 var widthHeightRatio;
 
+// 在页面中定义插屏广告
+let interstitialAd = null
+
 Page({
 
   /**
@@ -24,9 +27,22 @@ Page({
     catList: [], // 展示的猫猫列表
     catBoxList: [], // 展示的猫猫框列表
     showResultBox: false, // 用来配合动画延时展示resultBox
+    showAdBox: true, // 展示banner广告
   },
 
   onLoad() {
+    // 在页面onLoad回调事件中创建插屏广告实例
+    if (wx.createInterstitialAd) {
+      interstitialAd = wx.createInterstitialAd({
+        adUnitId: 'adunit-531fedfc9dcd52c3'
+      })
+      interstitialAd.onLoad(() => {
+        console.log("加载插屏广告成功");
+      })
+      interstitialAd.onError((err) => {})
+      interstitialAd.onClose(() => {})
+    }
+
     getGlobalSettings('recognize').then(settings => {
       interfaceURL = settings.interfaceURL;
       secretKey = settings.secretKey;
@@ -243,7 +259,7 @@ Page({
       verified: true,
       best: true
     };
-    var total = catInfo.photo_count;
+    var total = catInfo.photo_count_best;
     var index = randomInt(0, total);
     var photoURL = (await photo.where(query).skip(index).limit(1).get()).data[0];
     return photoURL;
@@ -271,8 +287,16 @@ Page({
       photoBase64: null,
       catBoxList: [],
       catList: [],
-      showResultBox: false,
+      showResultBox: false
     });
+    
+    // 在适合的场景显示插屏广告
+    // if (interstitialAd) {
+    //   console.log("展示广告")
+    //   interstitialAd.show().catch((err) => {
+    //     console.error(err)
+    //   })
+    // }
   },
 
   reverseCamera() {
@@ -323,6 +347,19 @@ Page({
       title: '拍照识猫 - 中大猫谱',
       imageUrl: '../../images/recognize/share_cover.jpg'
     };
+  },
+
+  adLoad() {
+    console.log('Banner 广告加载成功')
+    this.setData({showAdBox: true});
+  },
+  adError(err) {
+    console.log('Banner 广告加载失败', err)
+    this.setData({showAdBox: false});
+  },
+  adClose() {
+    console.log('Banner 广告关闭')
+    this.setData({showAdBox: false});
   }
 
 })

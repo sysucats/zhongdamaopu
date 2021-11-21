@@ -6,7 +6,7 @@
     <text>每一条留言我们都会认真看滴</text>
   </view>
   <view style='flex-basis:100%;'>
-    <button bindtap='toFeedback'>点击留言</button>
+    <button class="primary" bindtap='toFeedback'>点击留言</button>
   </view>
 </view>
 
@@ -16,7 +16,7 @@
     <text>提交猫谱中没有的猫猫信息，给猫猫上户口~</text>
   </view>
   <view style='flex-basis:100%;'>
-    <button bindtap='toNewCat'>点击填写</button>
+    <button class="primary" bindtap='toNewCat'>点击填写</button>
   </view>
 </view>
 

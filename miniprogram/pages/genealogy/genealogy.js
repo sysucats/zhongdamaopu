@@ -85,7 +85,8 @@ Page({
 
       that.setData({
         main_lower_threshold: settings['main_lower_threshold'],
-        adStep: settings['adStep']
+        adStep: settings['adStep'],
+        photoPopWeight: settings['photoPopWeight'] || 10
       });
     })
 
@@ -295,7 +296,7 @@ Page({
           verified: true,
           best: true
         };
-        var total = cat.photo_count;
+        var total = cat.photo_count_best;
         // var total = (await photo.where(qf).count()).total;
         if (!total || total === 0) {
           // 说明这只猫还没有照片

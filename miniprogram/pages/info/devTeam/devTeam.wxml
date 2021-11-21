@@ -4,7 +4,7 @@
 <view class='block'>
   <view class='title'>开发团队</view>
   <view class='desc'>
-    <text>程序开发：渔政、蓝卷、XD、zJ\n资料维护：Lo\n初期资料整理：hehe、玥琪、大米\n以及各校区猫群的小伙伴~</text>
+    <text>程序开发：渔政、蓝卷、XD、zJ\n资料维护：Lo\n初期资料整理：hehe、玥琪、大米\n以及各校区猫群的小伙伴~\n非常欢迎新朋友加入设计开发哇~！</text>
   </view>
 </view>
 
@@ -12,13 +12,16 @@
   <view class='title'>开源代码</view>
   <view class='desc'>
     <text selectable='true'>中大猫谱现在开源啦！配备部署教程及视频~\nhttps://github.com/sysucats/zhongdamaopu</text>
-    <button bindtap='copyOpenSourceLink'>点击复制到剪切板</button>
+    <button class="primary" bindtap='copyOpenSourceLink'>点击复制到剪切板</button>
   </view>
 </view>
 
 <view class='block'>
   <view class='title'>更新日志</view>
   <view class='desc'>
+    <view class='sub-title hl'>v1.6.3</view>
+    <text class='sub-detail'>- 人气值与照片数量有关啦\n - 增加看广告打赏方式\n - 更新时间：2021/11/21</text>
+
     <view class='sub-title hl'>v1.6.2</view>
     <text class='sub-detail'>- 识猫功能现在可以框出识别的猫猫了\n - 更新时间：2021/10/22</text>
 

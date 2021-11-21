@@ -60,6 +60,9 @@ Page({
     getGlobalSettings('detailCat').then(settings => {
       // 先把设置拿到
       page_settings = settings;
+      that.setData({
+        photoPopWeight: settings['photoPopWeight'] || 10
+      });
       // 启动加载
       that.loadCat();
       // 是否开启上传功能

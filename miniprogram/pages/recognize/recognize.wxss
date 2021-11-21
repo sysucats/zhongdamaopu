@@ -16,7 +16,7 @@ page {
   transform: translateX(-50%);
 }
 
-#photoBox, #resultBox {
+#photoBox, #resultBox, #adBox {
   width: 675rpx;
   background-color: white;
   box-shadow: 13rpx 13rpx 30rpx var(--color-gray);
@@ -261,4 +261,11 @@ page {
   width: 100rpx;
   text-align:right;
   /* align-self:flex-end; */
+}
+
+.ad-tip {
+  margin-top: 10rpx;
+  font-size: 24rpx;
+  color: var(--color-gray-max);
+  text-align: center;
 }

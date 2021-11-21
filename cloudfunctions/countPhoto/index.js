@@ -9,7 +9,9 @@ const MAX_LIMIT = 100
 exports.main = async (event, context) => {
   // 先取出mphoto更新时间为一小时前的猫猫（因为每小时自动执行一次）
   var frontOneHour = new Date(new Date().getTime() - 1 * 60 * 60 * 1000);
-  const countResult = await db.collection('cat').where({ mphoto: _.gte(frontOneHour) }).count()
+  // var condition = { photo_count_best: _.exists(false) };
+  var condition = { mphoto: _.gte(frontOneHour) };
+  const countResult = await db.collection('cat').where(condition).count()
   const total = countResult.total;
   if (!total) {
     return {};
@@ -19,7 +21,7 @@ exports.main = async (event, context) => {
   // 承载所有读操作的 promise 的数组
   const tasks = []
   for (let i = 0; i < batchTimes; i++) {
-    const promise = db.collection('cat').where({ mphoto: _.gte(frontOneHour) }).skip(i * MAX_LIMIT).limit(MAX_LIMIT).get()
+    const promise = db.collection('cat').where(condition).skip(i * MAX_LIMIT).limit(MAX_LIMIT).get()
     tasks.push(promise)
   }
   // 等待所有
@@ -31,10 +33,14 @@ exports.main = async (event, context) => {
   // 下面开始获取每只猫的精选图片数量
   var stats = []; // 没啥用的东西，返回给前端看看
   for (const cat of cats) {
-    const count = (await db.collection('photo').where({ cat_id: cat._id, best: true, verified: true }).count()).total;
+    const count_best = (await db.collection('photo').where({ cat_id: cat._id, best: true, verified: true }).count()).total;
+    const count_total = (await db.collection('photo').where({ cat_id: cat._id, verified: true }).count()).total;
     var stat = await db.collection('cat').doc(cat._id).update({
       data: {
-        photo_count: count
+        // TODO: 过渡一下，后续清理数据库中的残留photo_count字段
+        // photo_count: count_best,
+        photo_count_best: count_best,
+        photo_count_total: count_total
       }
     });
     stat.cat_id = cat._id;

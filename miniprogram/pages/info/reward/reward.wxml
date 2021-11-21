@@ -3,17 +3,22 @@
 
 <view class='block'>
   <view class='title'>打赏罐头</view>
-  <view class='desc'><text>您的捐款将作为购买猫粮等物资及送医的费用~\n每月的收支都会在<text class='hl'>笃行志愿服务队</text>公众平台进行公开，感谢您对中大流浪猫的帮助与支持！\n喵(^･ｪ･^)</text></view>
+  <view class='desc'><text>您的捐款及广告收入将用作购买救助物资及送医，每月的收支都会在<text class='hl'>笃行志愿服务队</text>公众平台进行公开，感谢您对中大流浪猫的帮助与支持！\n喵(^･ｪ･^)</text></view>
   <view>
     <!-- 打开小程序 -->
     <!-- <view class='btn' bindtap='openMina' data-appid='wx18a2ac992306a5a4' data-path='pages/apps/largess/detail?id=%2FwGBrSYt5Bs%3D'>点击打赏</view> -->
     
-    <!-- 打开赞赏码 -->
-    <view class='btn' bindtap='openImg'>点击打赏</view>
+    <view class="buttons">
+      <!-- 打开赞赏码 -->
+      <button bindtap='openImg'>赞赏码</button>
+
+      <!-- 打开激励广告 -->
+      <button wx:if="{{showAdBlock}}" class='primary' bindtap='openAd'>观看广告</button>
+    </view>
   </view>
 </view>
 
-<view class='tip'>* 每月月初统计一次，多谢晒（鞠躬）</view>
+<view class='tip'>* 每月统计一次，在公众号公示，多谢晒（鞠躬）</view>
 
 <view class='block'>
   <view class='title'>打赏记录</view>

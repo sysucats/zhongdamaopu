@@ -1,5 +1,6 @@
 // miniprogram/pages/info/info.js
 const utils = require('../../utils.js');
+const config = require('../../config.js');
 
 // console.log("utils:", utils);
 const isManager = utils.isManager;
@@ -98,6 +99,15 @@ Page({
     const appid = e.currentTarget.dataset.appid;
     wx.navigateToMiniProgram({
       appId: appid
+    })
+  },
+
+  showMpCode(e) {
+    wx.previewImage({
+      urls: [config.mpcode_img],
+      fail: function(e) {
+        console.error(e)
+      }
     })
   }
 })

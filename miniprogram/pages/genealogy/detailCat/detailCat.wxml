@@ -29,7 +29,7 @@ next-margin='60rpx'>
     </block>
     <view class='popularity'>
       <image src='../../../images/card/card/pop.png'></image>
-      <text> {{cat.popularity}}</text>
+      <text> {{cat.popularity + (cat.photo_count_total? cat.photo_count_total * photoPopWeight: 0)}}</text>
     </view>
   </view>
   <view class="tags">
