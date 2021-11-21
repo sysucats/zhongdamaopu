@@ -76,7 +76,7 @@
 ### 创建数据集合
 
 - [ ] 创建8个数据集合：`cat, feedback, photo, photo_rank, reward, science, setting, user`
-- [ ] 设置上述8个数据集合权限为自定义项：“所有用户可读，所有用可读写”
+- [ ] 设置上述8个数据集合权限为自定义项：“所有用户可读、可写”，即`{"read": true, "write": true}`
 - [ ] 导入`initDatabase/database-setting.json`文件到`setting`数据集合
 - [ ] 导入`initDatabase/database-science.json`文件到`science`数据集合
 
