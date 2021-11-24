@@ -30,14 +30,13 @@ page {
   width: 675rpx;
   height: 675rpx;
   background-color: var(--color-gray-dark);
-  position: relative;
 }
 
 #authTips {
   width: 90%;
   text-align: center;
   position: absolute;
-  top: 50%;
+  top: calc(675rpx / 2);
   left: 50%;
   transform: translateX(-50%) translateY(-50%);
 }
@@ -116,19 +115,35 @@ page {
 }
 
 #resetButton {
-  width: 50rpx;
-  height: 50rpx;
-  background: white;
-  border-radius: 25px;
-  box-shadow: 0 0 8rpx rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  font-size: 24rpx;
+  font-weight: bold;
+  color: var(--color-gray-max);
+  background-color: var(--color-gray-light);
+  border-radius: 12rpx 0 0 12rpx;
+  box-shadow: 0 0 8rpx var(--color-black-transparent);
+  padding: 8rpx 12rpx;
   position: absolute;
-  top: 16rpx;
-  right: 16rpx;
+  top: 28rpx;
+  right: -16rpx;
 }
 
 #resetButton image {
-  width: 100%;
-  height: 100%;
+  width: 24rpx;
+  height: 24rpx;
+}
+
+#resetButton::after {
+  display: block;
+  content: '';
+  width: 0;
+  height: 0;
+  border-top: 16rpx solid var(--color-gray-dark);
+  border-right: 16rpx solid transparent;
+  position: absolute;
+  right: 0;
+  top: 100%;
 }
 
 #shutter[disabled] {

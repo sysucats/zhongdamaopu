@@ -8,7 +8,6 @@ const verifyTplId = 'AtntuAUGnzoBumjfmGB8Yyc-67FUxRH5Cw7bnEYFCXo'; //审核结�
 const feedbackTplId = 'IeKS7nPSsBy62REOKiDC2zuz_M7RbKwR97ZiIy_ocmw'; // 反馈回复结果模板Id
 const notifyVerifyTplId = 'jxcvND-iLSQZLZhlHD2A91gY0tLSfzyYc3bl39bxVuk' // 提醒审核模版Id
 const notifyChkFeedbackTplId = 'jxcvND-iLSQZLZhlHD2A97jP3fm_FWV4wL_GFUcLxcQ' // 提醒处理反馈模版Id
-// jxcvND-iLSQZLZhlHD2A91ZfBLp0Kexv569MzTxa3zk
 
 async function arrayResort(oriArray) {
   var resortedArray = [];
@@ -72,7 +71,7 @@ exports.main = async (event, context) => {
     const doc = await db.collection('feedback').doc(event.fb_id).get();
     const feedback = doc.data;
     const content = feedback.feedbackInfo.length > 20 ? (feedback.feedbackInfo.substr(0, 18) + '..') : feedback.feedbackInfo;
-    const reply = event.reply.length > 20 ? event.reply.substr(0, 20) : event.reply;
+    const reply = event.reply || '你的反馈已被回复，点击进入小程序查看';
     try {
       const result = await cloud.openapi.subscribeMessage.send({
         touser: openid,
@@ -89,6 +88,7 @@ exports.main = async (event, context) => {
           }
         },
         templateId: feedbackTplId,
+        page: 'pages/info/feedback/myFeedback/myFeedback'
       })
       return result;
     } catch (err) {
@@ -100,7 +100,6 @@ exports.main = async (event, context) => {
     const numUnchkPhotos = event.numUnchkPhotos;
     var receiverCounter = 0;
     const verifyPhotoLevel = 2; // 所需最小管理员等级
-    const content = '又有几张新的照片啦，有空看看猫猫吧'
 
     var managerList = await db.collection('user').where({
       manager: _.gte(verifyPhotoLevel)
@@ -124,7 +123,7 @@ exports.main = async (event, context) => {
               value: numUnchkPhotos
             },
             thing2: {
-              value: content
+              value: '又有几张新的照片啦，有空看看猫猫吧'
             },
             time6: {
               value: earliestTime
@@ -148,8 +147,6 @@ exports.main = async (event, context) => {
     }
     return 'send to' + receiverCounter + 'manager';
   } else if (tplId == notifyChkFeedbackTplId) {
-    const content = '还有同学的反馈没被处理哦';
-
     const dealFeedbackLevel = 1;
     const maxReceiverNum = subMsgSettings.data.chkFeedback.receiverNum; // 最多推送给几位管理员
     var receiverCounter = 0;
@@ -174,7 +171,7 @@ exports.main = async (event, context) => {
             page: 'pages/manage/checkFeedbacks/checkFeedbacks',
             data: {
               thing2: {
-                value: content
+                value: '还有同学的反馈没被处理哦'
               },
               number5: {
                 value: uploadTimeList.data.length

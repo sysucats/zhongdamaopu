@@ -32,7 +32,7 @@ input, picker, textarea {
 }
 
 .replyColumn {
-  height: 5rem;
+  height: 10rem;
 }
 
 button {
@@ -69,12 +69,6 @@ button.submit {
 
 .submitButton {
   margin-top: 20rpx;
-}
-
-.footnote {
-  margin-top: 20rpx;
-  font-size: 30rpx;
-  color: var(--color-gray-max);
 }
 
 .feedback-content {

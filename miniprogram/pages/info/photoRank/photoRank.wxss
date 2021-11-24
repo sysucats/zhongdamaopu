@@ -123,6 +123,7 @@
 }
 
 button {
+  width: 100%;
   font-size: 30rpx;
   background-color: var(--color-primary);
   margin: 10rpx;

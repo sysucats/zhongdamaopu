@@ -1,0 +1,3 @@
+/* pages/info/feedback/myFeedback/myFeedback.wxss */
+
+@import '../../../manage/checkFeedbacks/checkFeedbacks.wxss';

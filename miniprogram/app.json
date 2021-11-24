@@ -9,6 +9,7 @@
     "pages/info/photoRank/photoRank",
     "pages/info/reward/reward",
     "pages/info/feedback/feedback",
+    "pages/info/feedback/myFeedback/myFeedback",
     "pages/info/devTeam/devTeam",
     "pages/manage/addCat/addCat",
     "pages/manage/imProcess/imProcess",

@@ -19,9 +19,6 @@
         <text class='lengthTips'>字数：{{length}}/{{maxlength}}\n</text>
       </view>
     </view>
-    <view class='footnote'>
-      <text>*由于微信限制，回复内容限于20字以内\n</text>
-    </view>
     <view class='submitButton'>
       <button class='submit' form-type='submit'>提交回复</button>
     </view>

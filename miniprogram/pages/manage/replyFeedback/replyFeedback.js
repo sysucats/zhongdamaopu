@@ -17,7 +17,7 @@ Page({
     tipText: '正在鉴权...',
     tipBtn: false,
     feedback: undefined,
-    maxlength: 20,
+    maxlength: 300,
     length: 0,
   },
 
@@ -95,7 +95,7 @@ Page({
             title: '正在提交...',
             mask: true
           });
-          let res = await sendReplyNotice(that.data.feedback._openid, that.data.feedback._id, submitData.replyInfo);
+          let res = await sendReplyNotice(that.data.feedback._openid, that.data.feedback._id);
           console.log(res);
           if (res.errCode == 0) {
             // 记录一下回复的内容和时间
