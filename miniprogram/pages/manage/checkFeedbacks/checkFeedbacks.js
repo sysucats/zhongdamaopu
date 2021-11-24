@@ -1,10 +1,7 @@
 // 处理反馈
 const utils = require('../../../utils.js');
-const regeneratorRuntime = utils.regeneratorRuntime;
-const randomInt = utils.regeneratorRuntime;
 const isManager = utils.isManager;
 const formatDate = utils.formatDate;
-const getGlobalSettings = utils.getGlobalSettings;
 
 const msg = require('../../../msg.js');
 const requestNotice = msg.requestNotice;
@@ -21,7 +18,7 @@ Page({
     tipText: '正在鉴权...',
     tipBtn: false,
     feedbacks: [],
-    total: undefined,
+    total: 0,
     checkHistory: false,
   },
 

@@ -106,7 +106,9 @@ Page({
     // 压缩图片
     const compressPhotoPath = await this.compressPhoto();
     // 计算签名
-    const signature = sha256.hex_sha256(wx.getFileSystemManager().readFileSync(compressPhotoPath, 'base64') + secretKey);
+    const photoBase64 = wx.getFileSystemManager().readFileSync(compressPhotoPath, 'base64');
+    const timestamp = Math.round(new Date().getTime() / 1000);
+    const signature = sha256.hex_sha256(photoBase64 + timestamp + secretKey);
     // 调用服务端接口进行识别
     const that = this;
     wx.uploadFile({
@@ -114,6 +116,7 @@ Page({
       name: 'photo',
       url: interfaceURL,
       formData: {
+        timestamp: timestamp,
         signature: signature
       },
       timeout: 10 * 1000, // 10s超时

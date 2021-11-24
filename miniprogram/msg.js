@@ -82,7 +82,7 @@ function sendVerifyNotice(notice_list) {
 }
 
 // 发送回复消息
-async function sendReplyNotice(openid, fb_id, reply) {
+async function sendReplyNotice(openid, fb_id) {
   const db = wx.cloud.database();
   const _ = db.command;
   let res = await wx.cloud.callFunction({
@@ -90,8 +90,7 @@ async function sendReplyNotice(openid, fb_id, reply) {
     data: {
       openid: openid,
       tplId: feedbackTplId,
-      fb_id: fb_id,
-      reply: reply
+      fb_id: fb_id
     }
   });
   return res.result;

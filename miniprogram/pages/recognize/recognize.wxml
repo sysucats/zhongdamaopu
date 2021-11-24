@@ -21,6 +21,7 @@
     <!-- 重新选图按钮 -->
     <view wx:if="{{photoPath}}" id="resetButton" bindtap="reset">
       <image src="../../images/recognize/back.png"></image>
+      重新选图
     </view>
   </view>
   <!-- 拍照/选图前功能栏 -->
@@ -62,7 +63,7 @@
     </view>
     <view class="prob">{{item.prob + '%'}}</view>
   </view>
-  <view class="footnote">*目前只有在猫谱具有5张以上可识别照片的猫猫才能被认出来哦！识别效果还在不断改进中~</view>
+  <view class="footnote">*目前只有在猫谱具有10张以上高质量照片（照片清晰，且照片中只有一只猫猫）的猫猫才能被认出来哦！识别效果还在不断改进中~</view>
 </view>
 
 <view id="adBox" wx:if="{{catList.length && showResultBox && showAdBox}}">
