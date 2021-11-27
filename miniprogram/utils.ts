@@ -1,8 +1,5 @@
-const regeneratorRuntime = require('./packages/regenerator-runtime/runtime.js');
-
-const sha256 = require('./packages/sha256/sha256.js');
-
-// import regeneratorRuntime from './packages/regenerator-runtime/runtime.js';
+import sha256 from "sha256"
+// import  regeneratorRuntime  from  "regenerator-runtime" ;
 
 function getMaopuApp(opts?: WechatMiniprogram.App.GetAppOption): MaoPuApp {
     const maoPuApp = <MaoPuApp>getApp(opts)
@@ -52,13 +49,12 @@ async function loadFilter():Promise<DB.IDocumentData> {
  * @param req 要求的等级，是一个整数值
  */
 async function isManager(req:number = 1):Promise<Boolean> {
-  const res = await wx.cloud.callFunction({
+  return <Boolean>(await wx.cloud.callFunction({
     name: 'isManager',
     data: {
       req: req
     }
-  })
-  return <Boolean>res.result
+  })).result
 }
 
 async function isWifi():Promise<Boolean> {
@@ -190,33 +186,24 @@ function checkUpdateVersion() {
 */
 async function checkCanUpload(): Promise<Boolean> {
   // 如果是管理员，开启
-  let manager = (await wx.cloud.callFunction({
-    name: 'isManager',
-    data: {
-      req: 1
-    }
-  })).result;
-  let manageUpload = (await getGlobalSettings<{manageUpload:Boolean}>('detailCat'))!.manageUpload;
+  const manager = await isManager()
+  const manageUpload = (await getGlobalSettings<{manageUpload:Boolean}>('detailCat'))!.manageUpload;
   if (manager && manageUpload) {
     return true;
   }
 
   // 加载设置、关闭上传功能
-  const app = getMaopuApp();
-  let cantUpload = (await getGlobalSettings<{cantUpload:string}>('detailCat'))!.cantUpload;
-  return (cantUpload !== '*') && (cantUpload !== app.globalData.version);
+  const cantUpload = (await getGlobalSettings<{cantUpload:string}>('detailCat'))!.cantUpload;
+  return (cantUpload !== '*') && (cantUpload !== getMaopuApp().globalData.version);
 }
 
-
 // 切分org的filter
-function splitFilterLine(lineStr:string):string[] {
+function splitFilterLine(lineStr:string|undefined):string[] {
   if (!lineStr) {
     return [];
   }
-  var line = lineStr.split('\n');
-  return line.filter((val) => val.length);
+  return lineStr.split('\n').filter((val) => val.length);
 }
-
 
 function checkMultiClick(cat_id: string):Boolean {
   const last_click = wx.getStorageSync(cat_id);
@@ -232,7 +219,6 @@ function checkMultiClick(cat_id: string):Boolean {
 
 
 module.exports = {
-  regeneratorRuntime,
   sha256,
   randomInt,
   generateUUID,

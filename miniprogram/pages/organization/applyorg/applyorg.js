@@ -1,5 +1,5 @@
 // miniprogram/pages/organization/applyorg/applyorg.js
-const utils = require('../../../utils.js');
+const utils = require('../../../utils');
 const generateUUID = utils.generateUUID;
 
 const user = require('../../../user.js');

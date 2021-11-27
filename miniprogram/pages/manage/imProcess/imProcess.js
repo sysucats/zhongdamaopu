@@ -1,5 +1,5 @@
 // miniprogram/pages/imProcess/imProcess.js
-const utils = require('../../../utils.js');
+const utils = require('../../../utils');
 const generateUUID = utils.generateUUID;
 const isManager = utils.isManager;
 

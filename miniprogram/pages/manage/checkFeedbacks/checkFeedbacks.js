@@ -1,5 +1,5 @@
 // 处理反馈
-const utils = require('../../../utils.js');
+const utils = require('../../../utils');
 const isManager = utils.isManager;
 const formatDate = utils.formatDate;
 

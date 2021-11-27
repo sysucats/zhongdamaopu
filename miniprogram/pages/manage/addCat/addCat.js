@@ -1,4 +1,4 @@
-const utils = require('../../../utils.js');
+const utils = require('../../../utils');
 const loadFilter = utils.loadFilter;
 const isManager = utils.isManager;
 

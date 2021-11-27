@@ -1,4 +1,4 @@
-const utils = require('../../../utils.js');
+const utils = require('../../../utils');
 const generateUUID = utils.generateUUID;
 const getCurrentPath = utils.getCurrentPath;
 const shareTo = utils.shareTo;

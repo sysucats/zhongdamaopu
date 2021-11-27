@@ -1,5 +1,5 @@
 // miniprogram/pages/organization/orglist/orglist.js
-const utils = require('../../../utils.js');
+const utils = require('../../../utils');
 const checkCanUpload = utils.checkCanUpload;
 
 Page({

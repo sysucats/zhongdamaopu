@@ -1,5 +1,5 @@
 // miniprogram/pages/organization/addorgcat/addorgcat.js
-const utils = require('../../../utils.js');
+const utils = require('../../../utils');
 const splitFilterLine = utils.splitFilterLine;
 const generateUUID = utils.generateUUID;
 
