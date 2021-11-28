@@ -25,7 +25,7 @@
 部署完成后，可以邀请你的朋友帮忙管理猫猫信息。我们为此准备了【猫谱-管理员手册】，信息管理无需接触代码。链接：https://docs.qq.com/doc/DSEl0aENOSEx5cmtE
 
 部署过程中遇到任何问题，可以选择：
-* 加入猫谱技术交流QQ群：
+* 加入猫谱技术交流QQ群：956808218
 * 查看【猫谱-部署常见问题】文档（必看！），链接：https://docs.qq.com/doc/DSGFSU25jalpEZ2FO
 * 发邮件至：dxzyfwd@163.com
 * 在部署演示视频下留言，链接：https://www.bilibili.com/video/BV1zA411W7Rn/
