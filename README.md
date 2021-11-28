@@ -12,7 +12,7 @@
 
 <img src="./readme/qrcode1.png" width = "200" height = "200" alt="中大猫谱菊花码" />
 
-## 衍生小程序
+## 朋友们的小程序
 
 |<img src="./readme/qrcode2.png" width = "200" height = "200" alt="华农喵星人菊花码" />|<img src="./readme/qrcode3.png" width = "200" height = "200" alt="汇景猫党菊花码" />|<img src="./readme/qrcodeHNU.jpg" width = "200" height = "200" alt="HNU喵汪图鉴菊花码" />|
 |:----:|:----:|:----:|
@@ -21,15 +21,25 @@
 |财猫之家|二师猫语|
 
 如果，你所在校园（/社团/小区...）的猫猫:smile_cat:也盼望拥有一份属于自己的猫猫档案，请你跟随下一章节的指引，为它们部署、发布一份独特的猫谱小程序。
-部署完成后，可以邀请你的朋友帮忙管理猫猫信息。
 
-我们为此准备了【猫谱-管理员手册】，信息管理无需接触代码。链接：[https://docs.qq.com/doc/DSEl0aENOSEx5cmtE](https://docs.qq.com/doc/DSEl0aENOSEx5cmtE)
+部署完成后，可以邀请你的朋友帮忙管理猫猫信息。我们为此准备了【猫谱-管理员手册】，信息管理无需接触代码。链接：https://docs.qq.com/doc/DSEl0aENOSEx5cmtE
 
 部署过程中遇到任何问题，可以选择：
-* 查看【猫谱-部署常见问题】文档（必看！），链接：[https://docs.qq.com/doc/DSGFSU25jalpEZ2FO](https://docs.qq.com/doc/DSGFSU25jalpEZ2FO)
+* 加入猫谱技术交流QQ群：
+* 查看【猫谱-部署常见问题】文档（必看！），链接：https://docs.qq.com/doc/DSGFSU25jalpEZ2FO
 * 发邮件至：dxzyfwd@163.com
-* 在部署演示视频下留言，链接：[https://www.bilibili.com/video/BV1zA411W7Rn/](https://www.bilibili.com/video/BV1zA411W7Rn/)
+* 在部署演示视频下留言，链接：https://www.bilibili.com/video/BV1zA411W7Rn/
 * 在GitHub页面提issue
+
+## 资料整理
+|资料名|类型|链接|
+|:----:|:----:|:----:|
+|部署视频|视频|https://www.bilibili.com/video/BV1zA411W7Rn/|
+|猫谱-部署常见问题|文档|https://docs.qq.com/doc/DSGFSU25jalpEZ2FO|
+|猫谱-管理员手册|文档|https://docs.qq.com/doc/DSEl0aENOSEx5cmtE|
+|猫谱-升级代码|文档|https://docs.qq.com/doc/DSExBY2RsUHlOYlpj|
+|imProcess云函数部署|视频|https://www.bilibili.com/video/BV1zA411W7Rn?p=2|
+|imProcess云函数环境|压缩包|https://wwu.lanzoui.com/iaENswzpkeb|
 
 # :scroll:部署
 
@@ -37,15 +47,15 @@
 
 ## 前期准备
 
-- [ ] 在[微信公众平台](https://mp.weixin.qq.com/)（[https://mp.weixin.qq.com/](https://mp.weixin.qq.com/)）注册小程序账号
+- [ ] 在[微信公众平台](https://mp.weixin.qq.com/)（ https://mp.weixin.qq.com/ ）注册小程序账号
 - [ ] 挑选并设置好小程序名称及LOGO
-- [ ] 下载并安装[微信开发者工具](https://developers.weixin.qq.com/miniprogram/dev/devtools/download.html)稳定版（[https://developers.weixin.qq.com/miniprogram/dev/devtools/download.html](https://developers.weixin.qq.com/miniprogram/dev/devtools/download.html)）
+- [ ] 下载并安装[微信开发者工具](https://developers.weixin.qq.com/miniprogram/dev/devtools/download.html)稳定版（ https://developers.weixin.qq.com/miniprogram/dev/devtools/download.html ）
 - [ ] （:warning:2021/5/28更新，保证Release稳定）进入[Releases页面](https://github.com/Zing22/zhongdamaopu/releases)，下载最新版本的的Source code(zip)，解压
 - [ ] 替换`initDatabase/系统图片`中的二维码图片（稍后再换也行）
 
 ## 代码部署
 
-我们在2021年1月录制了一份代码部署视频（[https://www.bilibili.com/video/BV1zA411W7Rn/](https://www.bilibili.com/video/BV1zA411W7Rn/)），希望这段视频能帮助你完成部署阶段最繁杂的部分。
+我们在2021年1月录制了一份代码部署视频（ https://www.bilibili.com/video/BV1zA411W7Rn/ ），希望这段视频能帮助你完成部署阶段最繁杂的部分。
 
 以下是一些你需要完成的关键操作，**如无特别说明**（:warning:符号），则与视频演示一致。
 
@@ -65,8 +75,10 @@
 期望：点开云开发可以看到面板数据，则说明开通成功。
 ### 特殊依赖安装
 （:warning:2021/4/21新增云函数）对于 `imProcess` 云函数，无法云端自动安装图像处理依赖库，需要手动上传。这一步比较繁琐，可以参考[演示视频的P2](https://www.bilibili.com/video/BV1zA411W7Rn?p=2)（特别感谢happi0同学的实践经验）。
+
+- [ ] 下载云函数运行环境压缩包`imProcess_node_modules.zip`，链接：https://wwu.lanzoui.com/iaENswzpkeb
 - [ ] 完成上一步的部署后，登录[腾讯云网页端-云开发CloudBase](https://console.cloud.tencent.com/tcb)，选择云开发环境，左侧云函数，记下`imProcess`函数的运行环境，例如`Nodejs12.16`或`Nodejs10.15`
-- [ ] 点击上方“层管理”，新建一个层，名称和描述随便填。把initDatabase目录下的[imProcess_node_modules.zip](initDatabase/imProcess_node_modules.zip)文件上传上去，环境选刚才记下的`Nodejs`版本
+- [ ] 点击上方“层管理”，新建一个层，名称和描述随便填。把刚才下载的[imProcess_node_modules.zip](https://wwu.lanzoui.com/iaENswzpkeb)文件上传上去，环境选刚才记下的`Nodejs`版本
 - [ ] 再点击左侧云函数，选择`imProcess`，层管理中点击“绑定”，选择刚才创建的层
 - [ ] 另外，为了避免一次处理过多图片导致程序执行超时，需要在云开发面板中依次点击“云函数-imProcess-版本与配置-配置-高级配置”，将超时时间调整为60s，
 - [ ] 对`imCompress`云函数进行同样的绑定层、调整超时时间的操作
@@ -214,7 +226,7 @@
 
 # :notebook_with_decorative_cover:管理员手册
 
-管理员使用时，请参考此共享文档：【猫谱-管理员手册】[https://docs.qq.com/doc/DSEl0aENOSEx5cmtE](https://docs.qq.com/doc/DSEl0aENOSEx5cmtE) ，可以发给其他管理员查阅。
+管理员使用时，请参考此共享文档：【猫谱-管理员手册】https://docs.qq.com/doc/DSEl0aENOSEx5cmtE ，可以发给其他管理员查阅。
 
 # :dancers:开发团队
 
