@@ -1,12 +1,8 @@
 // miniprogram/pages/organization/org/org.js
-const utils = require('../../../utils.js');
+const utils = require('../../../utils');
 const getGlobalSettings = utils.getGlobalSettings;
 const regeneratorRuntime = utils.regeneratorRuntime;
-const randomInt = utils.randomInt;
-const isWifi = utils.isWifi;
-const isManager = utils.isManager;
 const shuffle = utils.shuffle;
-const loadFilter = utils.loadFilter;
 const regReplace = utils.regReplace;
 const splitFilterLine = utils.splitFilterLine;
 

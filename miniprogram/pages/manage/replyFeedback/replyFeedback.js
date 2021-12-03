@@ -1,5 +1,5 @@
 // 处理反馈
-const utils = require('../../../utils.js');
+const utils = require('../../../utils');
 const regeneratorRuntime = utils.regeneratorRuntime;
 const randomInt = utils.regeneratorRuntime;
 const isManager = utils.isManager;

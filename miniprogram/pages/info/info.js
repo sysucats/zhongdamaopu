@@ -1,5 +1,5 @@
 // miniprogram/pages/info/info.js
-const utils = require('../../utils.js');
+const utils = require('../../utils');
 const config = require('../../config.js');
 
 // console.log("utils:", utils);

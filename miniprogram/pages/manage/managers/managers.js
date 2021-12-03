@@ -1,5 +1,5 @@
 // miniprogram/pages/manage/managers.js
-const utils = require('../../../utils.js');
+const utils = require('../../../utils');
 const isManager = utils.isManager;
 
 // 是否正在加载

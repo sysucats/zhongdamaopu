@@ -1,9 +1,8 @@
 // miniprogram/pages/genealogy/genealogy.js
-const utils = require('../../utils.js');
+const utils = require('../../utils');
 const getGlobalSettings = utils.getGlobalSettings;
 const regeneratorRuntime = utils.regeneratorRuntime;
 const randomInt = utils.randomInt;
-const isWifi = utils.isWifi;
 const isManager = utils.isManager;
 const shuffle = utils.shuffle;
 const loadFilter = utils.loadFilter;
@@ -364,18 +363,16 @@ Page({
     });
   },
   // 管理员判断，其实可以存到global里
-  bindManageCat(e) {
-    const that = this;
-    isManager(res => {
-      if (res) {
-        const cat_id = e.currentTarget.dataset.cat_id;
-        wx.navigateTo({
-          url: '/pages/manage/addCat/addCat?cat_id=' + cat_id,
-        });
-      } else {
-        console.log("not a manager");
-      }
-    })
+  async bindManageCat(e) {
+    const res = await isManager()
+    if (res) {
+      const cat_id = e.currentTarget.dataset.cat_id;
+      wx.navigateTo({
+        url: '/pages/manage/addCat/addCat?cat_id=' + cat_id,
+      });
+    } else {
+      console.log("not a manager");
+    }
   },
 
   ////// 下面开始新的filter //////

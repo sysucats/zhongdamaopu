@@ -1,4 +1,4 @@
-const utils = require('../../../utils.js');
+const utils = require('../../../utils');
 const shareTo = utils.shareTo;
 const getCurrentPath = utils.getCurrentPath;
 const getGlobalSettings = utils.getGlobalSettings;

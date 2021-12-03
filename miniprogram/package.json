@@ -1,0 +1,12 @@
+{
+  "name": "zhongdamaopu",
+  "description": "中大猫谱小程序",
+  "main": "app.js",
+  "dependencies": {
+    "miniprogram-sm-crypto": "^0.3.6",
+    "sha256": "^0.2.0"
+  },
+  "devDependencies": {
+    "@types/sha256": "^0.2.0"
+  }
+}

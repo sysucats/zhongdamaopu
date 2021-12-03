@@ -1,5 +1,5 @@
 // pages/recognize/recognize.js
-const utils = require('../../utils.js');
+const utils = require('../../utils');
 const sha256 = utils.sha256;
 const getGlobalSettings = utils.getGlobalSettings;
 const randomInt = utils.randomInt;
