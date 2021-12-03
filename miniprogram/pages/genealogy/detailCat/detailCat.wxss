@@ -58,6 +58,12 @@ swiper-item image {
   background-color: white;
 }
 
+.info .identity {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-end;
+  margin-bottom: 30rpx;
+}
 
 /* 以下为信息部分 */
 .info .name {
@@ -67,7 +73,6 @@ swiper-item image {
 
   font-weight: 450;
   letter-spacing: 4rpx;
-  margin-bottom: 30rpx;
   margin-left: 8rpx;
   display: flex;
   align-items: center;
@@ -124,6 +129,7 @@ swiper-item image {
 
 .fb-button {
   font-size: 20rpx;
+  font-weight: 500;
   height: 40rpx;
   line-height: 40rpx;
   padding: 0 10rpx;
@@ -160,6 +166,7 @@ swiper-item image {
   width: 100%;
   font-size: 22rpx;
   padding-bottom: 10rpx;
+  color: var(--color-black-min);
 }
 
 .details .item .value {
@@ -193,10 +200,14 @@ swiper-item image {
   justify-content: center;
 }
 
-.sort-button .logo {
-  height: 30rpx;
-  width: 30rpx;
+.sort-button .icon {
+  height: 25rpx;
+  width: 25rpx;
   margin: 0 0 0 10rpx ;
+}
+.sort-button .type {
+  font-weight: 300;
+  margin-left: 5rpx;
 }
 
 .sort-button .picker {
@@ -261,14 +272,24 @@ swiper-item image {
   padding: 5rpx 0;
 }
 
-#add-photo-btn {
+.addPhoto {
   width: 100rpx;
   height: 100rpx;
   border-radius: 100rpx;
   position: fixed;
   bottom: 50rpx;
   right: 50rpx;
-  box-shadow: 5rpx 5rpx 20rpx var(--color-gray-dark);
+  background-color: var(--color-primary);
+  box-shadow: 5rpx 7rpx 20rpx var(--color-gray-dark);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.addPhoto .icon{
+  width: 60%;
+  height: 60%;
+  margin-left: 5%;
 }
 
 /* 下面开始悬浮标题 */
@@ -287,7 +308,9 @@ swiper-item image {
   top: 0;
   box-shadow: 0 5rpx 20rpx var(--color-gray);
 }
-.big-header image {
+
+
+.big-header .avatar {
   width: 70rpx;
   height: 70rpx;
   border-radius: 70rpx;
@@ -312,6 +335,7 @@ swiper-item image {
   height: 28rpx;
   line-height: 28rpx;
   font-size: 28rpx;
-  color: var(--color-black-light);
+  color: var(--color-black-min);
+  font-weight: 400;
   margin-bottom: 30rpx;
 }

@@ -43,11 +43,43 @@ Page({
       interstitialAd.onClose(() => {})
     }
 
-    getGlobalSettings('recognize').then(settings => {
-      interfaceURL = settings.interfaceURL;
-      secretKey = settings.secretKey;
-    });
+    // var that = this;
+    // getGlobalSettings('recognize').then(settings => {
+    //   interfaceURL = settings.interfaceURL;
+    //   secretKey = settings.secretKey;
+    // })
+
     this.checkAuth();
+  },
+
+  onShow(){
+    var that = this;
+    if (!interfaceURL || !secretKey) {
+      getGlobalSettings('recognize').then(settings => {
+        interfaceURL = settings.interfaceURL;
+        secretKey = settings.secretKey;
+      }).then(that.recognizeChatImage);
+    }else{// 没杀后台回到聊天重新识别的情况
+      this.recognizeChatImage()
+    }
+  },
+
+  recognizeChatImage(){
+    var that = this;
+    var launchOptions = wx.getEnterOptionsSync();
+    var chatImage = launchOptions.forwardMaterials[0].path;
+    console.log("lanOpt:",launchOptions);
+    if(this.data.photoPath) {
+      return;
+    }
+    if(launchOptions.scene === 1173){
+      //从聊天素材打开，识别素材图片
+      that.setData({
+        photoPath: chatImage,
+        photoBase64: wx.getFileSystemManager().readFileSync(chatImage, 'base64')
+      });
+      that.recognizePhoto();
+    }
   },
 
   async checkAuth() {
@@ -97,6 +129,7 @@ Page({
         icon: 'error',
         title: '出错了'
       });
+      console.log("no interfaceURL || secretKey");
       return;
     }
     wx.showLoading({

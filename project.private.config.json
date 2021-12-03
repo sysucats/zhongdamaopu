@@ -193,6 +193,22 @@
           "pathName": "pages/recognize/recognize",
           "query": "",
           "scene": null
+        },
+        {
+          "name": "识别聊天图片",
+          "pathName": "pages/recognize/recognize",
+          "query": "",
+          "scene": 1173,
+          "referrerInfo": {
+            "materials": [
+              {
+                "type": "image/jpeg",
+                "path": "/Users/zz/Desktop/WechatIMG932.jpeg",
+                "name": "WechatIMG932.jpeg",
+                "size": 71275
+              }
+            ]
+          }
         }
       ]
     }

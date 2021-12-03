@@ -22,16 +22,18 @@ next-margin='60rpx'>
 
 
 <view class='info' id='info-box'>
-  <view class='name'>{{cat.name}}
+  <view class="identity">
+    <view class='name'>{{cat.name}}</view>
     <block wx:if='{{cat.gender}}'>
       <image mode='aspectFill' class='gender' wx:if='{{cat.gender === "公"}}' src="../../../images/card/card/male.png"></image>
       <image mode='aspectFill' class='gender' wx:if='{{cat.gender === "母"}}' src="../../../images/card/card/female.png"></image>
     </block>
     <view class='popularity'>
       <image src='../../../images/card/card/pop.png'></image>
-      <text> {{cat.popularity + (cat.photo_count_total? cat.photo_count_total * photoPopWeight: 0)}}</text>
+      <text> 人气:{{cat.popularity + (cat.photo_count_total? cat.photo_count_total * photoPopWeight: 0)}}</text>
     </view>
   </view>
+
   <view class="tags">
     <text class='tag'>{{cat.adopt? '已': '未'}}领养</text>
     <text class='tag'>{{cat.sterilized? '已': '待'}}绝育</text>
@@ -110,7 +112,7 @@ next-margin='60rpx'>
 <!-- info end -->
 
 <view class='big-header'>
-  <image mode='aspectFill' src='{{cat.photo[0].photo_compressed || cat.photo[0].photo_id}}'></image>
+  <image class='avatar' mode='aspectFill' src='{{cat.photo[0].photo_compressed || cat.photo[0].photo_id}}'></image>
   <view class='name-and-count'>
     <view class='name'>{{cat.name}}的相册</view>
     <view class='count'>共{{albumMax}}张照片</view>
@@ -119,8 +121,8 @@ next-margin='60rpx'>
   <view class='sort-button'>
     <picker bindchange="bindphotoOrderChange" value="{{photoOrderSelected}}" range="{{photoOrderSelectorRange}}" range-key="{{photoOrderSelectorKey}}">
       <view class="picker">
-        <text>{{photoOrderSelectorRange[photoOrderSelected][photoOrderSelectorKey]}}</text>
-        <image class="logo" mode='aspectFill' src='../../../images/button/sort.png'></image>
+        <text class='type'>{{photoOrderSelectorRange[photoOrderSelected][photoOrderSelectorKey]}}</text>
+        <image class="icon" mode='aspectFill' src='../../../images/button/sort.png'></image>
       </view>
     </picker>
   </view>
@@ -128,7 +130,7 @@ next-margin='60rpx'>
 
 
 <view class='big-header fix' hidden='{{!showHoverHeader}}'>
-  <image mode='aspectFill' src='{{cat.photo[0].photo_compressed || cat.photo[0].photo_id}}'></image>
+  <image class='avatar' mode='aspectFill' src='{{cat.photo[0].photo_compressed || cat.photo[0].photo_id}}'></image>
   <view class='name-and-count'>
     <view class='name'>{{cat.name}}的相册</view>
     <view class='count'>共{{albumMax}}张照片</view>
@@ -137,8 +139,8 @@ next-margin='60rpx'>
   <view class='sort-button'>
     <picker bindchange="bindphotoOrderChange" value="{{photoOrderSelected}}" range="{{photoOrderSelectorRange}}" range-key="{{photoOrderSelectorKey}}">
       <view class="picker">
-        <text>{{photoOrderSelectorRange[photoOrderSelected][photoOrderSelectorKey]}}</text>
-        <image class="logo" mode='aspectFill' src='../../../images/button/sort.png'></image>
+        <text class="type">{{photoOrderSelectorRange[photoOrderSelected][photoOrderSelectorKey]}}</text>
+        <image class="icon" mode='aspectFill' src='../../../images/button/sort.png'></image>
       </view>
     </picker>
   </view>
@@ -160,8 +162,10 @@ next-margin='60rpx'>
 </view>
 <!-- album end -->
 
-<image wx:if="{{canUpload}}" id='add-photo-btn' src='../../../images/plus.png' bindtap='bindAddPhoto'></image>
-
+<!-- <image wx:if="{{canUpload}}" id='add-photo-btn' src='../../../images/plus.png' bindtap='bindAddPhoto'></image> -->
+<view class="addPhoto" bindtap='bindAddPhoto'>
+<image class="icon" wx:if="{{canUpload}}" src='../../../images/addPhoto.png'></image>
+</view>
 </scroll-view>
 
 <mp-gallery show="{{showGallery}}" bindchange="bindGalleryChange" img-urls="{{imgUrls}}" current="{{currentImg}}" hide-on-click="{{true}}" showDelete="{{false}}" bindlongpress='bindGalleryLongPress'></mp-gallery>
