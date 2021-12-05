@@ -19,6 +19,9 @@
 <view class='block'>
   <view class='title'>更新日志</view>
   <view class='desc'>
+    <view class='sub-title hl'>v1.6.5</view>
+    <text class='sub-detail'>- 安卓机可以聊天中识别猫猫啦\n - 过滤器修复\n - 更新时间：2021/11/24</text>
+
     <view class='sub-title hl'>v1.6.4</view>
     <text class='sub-detail'>- 反馈系统改进\n - 其他UI改进和接口升级\n - 更新时间：2021/11/24</text>
 

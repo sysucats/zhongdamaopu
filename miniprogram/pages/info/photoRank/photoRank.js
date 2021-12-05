@@ -60,6 +60,10 @@ Page({
     const that = this;
     const db = wx.cloud.database();
     db.collection('photo_rank').orderBy('mdate', 'desc').limit(1).get().then(res => {
+      if (res.data.length == 0) {
+        // 还没有月榜
+        return false;
+      }
       const rank_stat = res.data[0].stat;
       console.log(rank_stat);
       var ranks = [];

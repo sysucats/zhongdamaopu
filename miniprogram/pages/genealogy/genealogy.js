@@ -556,11 +556,11 @@ Page({
       for (let i = 0, catelen = filters[sub].category.length; i < catelen; ++i) {
         var category = filters[sub].category[i];
         category.all_active = false;
-        for (let k = 0, itemlen = category.items.length; k < itemlen; ++i) {
+        for (let k = 0, itemlen = category.items.length; k < itemlen; ++k) {
           category.items[k].active = false;
         }
       }
-      filters[sub].category[0].active = true; // 默认第0个是'全部'
+      filters[sub].category[0].all_active = true; // 默认第0个是'全部'
     }
 
     const fLegal = this.fCheckLegal(filters);

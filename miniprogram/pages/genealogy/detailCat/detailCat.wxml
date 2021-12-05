@@ -28,9 +28,9 @@ next-margin='60rpx'>
       <image mode='aspectFill' class='gender' wx:if='{{cat.gender === "公"}}' src="../../../images/card/card/male.png"></image>
       <image mode='aspectFill' class='gender' wx:if='{{cat.gender === "母"}}' src="../../../images/card/card/female.png"></image>
     </block>
-    <view class='popularity'>
+    <view class='popularity' bindtap="showPopularityTip">
       <image src='../../../images/card/card/pop.png'></image>
-      <text> 人气:{{cat.popularity + (cat.photo_count_total? cat.photo_count_total * photoPopWeight: 0)}}</text>
+      <text> {{cat.popularity + (cat.photo_count_total? cat.photo_count_total * photoPopWeight: 0)}}</text>
     </view>
   </view>
 

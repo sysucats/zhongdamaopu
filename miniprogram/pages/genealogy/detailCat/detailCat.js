@@ -555,5 +555,12 @@ Page({
         }
       },
     });
+  },
+
+  showPopularityTip() {
+    wx.showToast({
+      title: '猫猫人气值',
+      icon: "none"
+    });
   }
 })

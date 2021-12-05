@@ -64,22 +64,25 @@ Page({
     }
   },
 
+
   recognizeChatImage(){
     var that = this;
     var launchOptions = wx.getEnterOptionsSync();
-    var chatImage = launchOptions.forwardMaterials[0].path;
     console.log("lanOpt:",launchOptions);
-    if(this.data.photoPath) {
-      return;
+    if (launchOptions.scene != 1173) {
+      return false
     }
-    if(launchOptions.scene === 1173){
-      //从聊天素材打开，识别素材图片
-      that.setData({
-        photoPath: chatImage,
-        photoBase64: wx.getFileSystemManager().readFileSync(chatImage, 'base64')
-      });
-      that.recognizePhoto();
+    var chatImage = launchOptions.forwardMaterials[0].path;
+    if (this.data.photoPath == chatImage) {
+      // 已经识别了
+      return false
     }
+    //从聊天素材打开，识别素材图片
+    that.setData({
+      photoPath: chatImage,
+      photoBase64: wx.getFileSystemManager().readFileSync(chatImage, 'base64')
+    });
+    that.recognizePhoto();
   },
 
   async checkAuth() {

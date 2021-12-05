@@ -16,7 +16,7 @@
     <camera wx:if="{{cameraAuth && !photoPath}}" device-position="{{devicePosition}}" resolution="high" frame-size="large" flash="off" id="cameraPreview"></camera>
     <!-- 拍照/选图结果预览 -->
     <view wx:if="{{photoPath}}" id="photoPreview" style="background-image: url('data:image/png;base64,{{photoBase64}}');" bindtap="tapPreview">
-      <view wx:for="{{catBoxList}}" class="catBox {{index == 0 ? 'first' : ''}}" style="top: {{item.y}}rpx; left: {{item.x}}rpx; width: {{item.width}}rpx; height: {{item.height}}rpx;"></view>
+      <view wx:for="{{catBoxList}}" wx:key="item" class="catBox {{index == 0 ? 'first' : ''}}" style="top: {{item.y}}rpx; left: {{item.x}}rpx; width: {{item.width}}rpx; height: {{item.height}}rpx;"></view>
     </view>
     <!-- 重新选图按钮 -->
     <view wx:if="{{photoPath}}" id="resetButton" bindtap="reset">
