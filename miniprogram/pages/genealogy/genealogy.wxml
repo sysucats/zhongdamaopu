@@ -63,8 +63,8 @@
             <image mode='aspectFill' class='gender' wx:if='{{item.gender === "公"}}' src="../../images/card/card/male.png"></image>
             <image mode='aspectFill' class='gender' wx:if='{{item.gender === "母"}}' src="../../images/card/card/female.png"></image>
           </block>
-          <view wx:if='{{item.adopt}}'class='adopt'>已领养</view>
-          <view wx:if='{{item.to_star}}'class='to_star'>返回喵星</view>
+          <view wx:if='{{item.adopt}}' class='adopt'>{{adopt_desc[item.adopt]}}</view>
+          <view wx:if='{{item.to_star}}' class='to_star'>返回喵星</view>
           <view class='popularity'>
             <image src='../../images/card/card/pop.png'></image>
             <text> ({{item.popularity + (item.photo_count_total? item.photo_count_total * photoPopWeight: 0) }})</text>
@@ -90,15 +90,30 @@
       </view>
     </view>
     <view wx:if="{{adStep && (index+1)%adStep===0}}" class="card-ad {{ad_show['ad-'+(index+1)]? '': 'hidden'}}">
-      <ad unit-id="adunit-9a7dcb84fe2c4db1" ad-intervals="120"
+      <ad unit-id="{{ad.banner}}" ad-intervals="120"
       bindload="adLoad" binderror="adError" bindclose="adClose" data-ad_id='ad-{{(index+1)}}'></ad>
     </view>
   </block>
 
-<view class='loading' wx:if='{{!loadnomore}}'>
-  <image src='../../images/loading.gif'></image>
-</view>
-<view class='loadnomore' wx:else>
-  <image src='../../images/nomore.png'></image>
-</view>
+  <view class='loading' wx:if='{{!loadnomore}}'>
+    <image src='../../images/loading.gif'></image>
+  </view>
+  <view class='loadnomore' wx:else>
+    <image src='../../images/nomore.png'></image>
+  </view>
 </scroll-view>
+
+<!-- 漂浮的领养logo -->
+<view wx:if="{{adopt_count && filters_empty}}" id="find-adopt" bindtap="clickAdoptBtn">
+  <image class="logo shake" src="../../images/find_adopt.png"></image>
+  <view class="count">{{adopt_count}}只小猫</view>
+</view>
+<!-- 返回首页 -->
+<view wx:if="{{!filters_empty}}" id="back-to-firstpage" bindtap="clickBackFirstPageBtn">
+  <image class="back-btn" src="../../images/back_to_first_page.png"></image>
+</view>
+<!-- 点击漂浮后的提示 -->
+<view class="adopt-filter-tip {{show_filter_tip? '': 'hide'}}">
+  <view class="tri"></view>
+  <view class="content">点此进行筛选</view>
+</view>

@@ -1,3 +1,4 @@
+const config = require('../../../config.js');
 const utils = require('../../../utils.js');
 const shareTo = utils.shareTo;
 const getCurrentPath = utils.getCurrentPath;
@@ -48,6 +49,9 @@ Page({
     photoOrderSelectorRange: photoOrder,
     photoOrderSelectorKey: "name",
     photoOrderSelected: 0,
+
+    // 领养状态
+    adopt_desc: config.cat_status_adopt,
   },
 
   /**
@@ -179,6 +183,13 @@ Page({
       // res.data.characteristics_string = [(res.data.colour || '') + '猫'].concat(res.data.characteristics || []).join('，');
       res.data.characteristics_string = (res.data.colour || '') + '猫';
       // res.data.nickname = (res.data.nickname || []).join('、');
+
+      // 领养状态从bool变成int
+      var adopt = res.data.adopt;
+      if (adopt === undefined || typeof adopt === 'boolean') {
+        res.data.adopt = adopt? 1: 0;
+      }
+
       this.setData({
         cat: res.data
       }, ()=> {

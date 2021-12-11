@@ -9,10 +9,15 @@ const shuffle = utils.shuffle;
 const loadFilter = utils.loadFilter;
 const regReplace = utils.regReplace;
 
+const config = require('../../config.js')
+
 const default_png = undefined;
 
 var catsStep = 1;
-var loadingLock = 0;
+var loadingLock = 0; // 用于下滑刷新
+
+var pageLoadingLock = true; // 用于点击按钮刷新
+var unlockTimeOut = undefined; // 倒计时解锁
 
 Page({
 
@@ -28,6 +33,7 @@ Page({
     filters_show: false, // 是否显示过滤器
     filters_input: '', // 输入的内容，目前只用于挑选名字
     filters_show_shadow: false, // 滚动之后才显示阴影
+    filters_empty: true, // 过滤器是否为空
 
     // 高度，单位为px（后面会覆盖掉）
     heights: {
@@ -40,8 +46,17 @@ Page({
     loading: false, // 正在加载
     loadnomore: false, // 没有再多了
 
+    // 领养状态
+    adopt_desc: config.cat_status_adopt,
+    // 寻找领养的按钮
+    adopt_count: 0,
+
     // 广告是否展示
     ad_show: {},
+    // 广告id
+    ad: {
+      banner: config.ad_genealogy_banner
+    }
   },
 
   /**
@@ -75,6 +90,8 @@ Page({
         })
       }
     }
+    // 加载待领养
+    this.countWaitingAdopt();
     // 开始加载页面
     const that = this;
     getGlobalSettings('genealogy').then(settings => {
@@ -158,6 +175,22 @@ Page({
       }
       filters.push(colour_item);
 
+      var adopt_item = {
+        key: 'adopt',
+        name: '领养',
+        category: [{
+          name: '全部状态',
+          items: config.cat_status_adopt.map((name, i) => {
+            return {
+              name: name,
+              value: i, // 数据库里存的
+            };
+          }),
+          all_active: true
+        }]
+      }
+      filters.push(adopt_item);
+
       // 默认把第一个先激活了
       filters[0].active = true;
       console.log(filters);
@@ -225,6 +258,7 @@ Page({
         cats: [],
         catsMax: res.total,
         loadnomore: false,
+        filters_empty: Object.keys(query).length === 0,
       }, function () {
         this.loadMoreCats();
       });
@@ -248,7 +282,6 @@ Page({
       const cat = db.collection('cat');
       const _ = db.command;
       const query = that.fGet();
-      console.log("query condition: ", query);
       cat.where(query).orderBy('mphoto', 'desc').orderBy('popularity', 'desc').skip(cats.length).limit(step).get().then(res => {
         if (loadingLock != nowLoadingLock) {
           // 说明过期了
@@ -266,6 +299,11 @@ Page({
             const delta_date = today - (new Date(d.mphoto)); // milliseconds
             // 小于7天
             d.mphoto_new = ((delta_date / 1000 / 3600 / 24) < 7);
+          }
+          // 领养状态从bool变成int
+          var adopt = d.adopt;
+          if (adopt != undefined && typeof adopt === 'boolean') {
+            d.adopt = adopt? 1: 0;
           }
         }
         const new_cats = cats.concat(res.data);
@@ -325,14 +363,17 @@ Page({
       }
     }
 
+    var that = this;
+
     this.setData({
       cats: new_cats
+    }, () => {
+      that.unlockBtn();
     });
 
   },
 
   bindImageLoaded(e){
-    console.log(e);
     const idx = e.currentTarget.dataset.index;
     this.setData({
       [`cats[${idx}].imageLoaded`]: true
@@ -501,7 +542,7 @@ Page({
         let cateKeyPushed = false; // 一个category只用push一次，记一下
         for (const item of category.items) {
           if (category.all_active || item.active) {
-            selected.push(item.name);
+            selected.push(item.value != undefined? item.value: item.name);
             if (cateFilter && !cateKeyPushed) {
               cateSelected.push(category.name);
               cateKeyPushed = true;
@@ -544,6 +585,8 @@ Page({
     if (!this.data.filters_legal) {
       return false;
     }
+
+    this.lockBtn();
 
     this.reloadCats();
     this.fToggle();
@@ -618,5 +661,94 @@ Page({
     const ad_id = e.currentTarget.dataset.ad_id;
     console.log('广告被关闭', ad_id);
     this.changeState(ad_id, false);
+  },
+
+  // 查找有多少只猫待领养
+  countWaitingAdopt: function () {
+    const target = config.cat_status_adopt_target;
+    const value = config.cat_status_adopt.findIndex((x) => {return x === target});
+
+    
+    const db = wx.cloud.database();
+    const cat = db.collection('cat');
+    const query = {adopt: value};
+    cat.where(query).count().then(res => {
+      this.setData({
+        adopt_count: res.total
+      });
+    });
+  },
+
+  // 点击领养按钮
+  clickAdoptBtn: function (e) {
+    if (pageLoadingLock) {
+      console.log("page is locking");
+      return false;
+    }
+    this.lockBtn();
+
+    var filters = this.data.filters;
+    var filters_sub = filters.findIndex((x) => {return x.key === "adopt"});
+
+    const target_status = config.cat_status_adopt_target;
+    const category = filters[filters_sub].category[0];
+    const index = category.items.findIndex((x) => {return x.name === target_status}); // 寻找领养中
+
+    if (category.items[index].active) {
+      // 已经激活了
+      return false;
+    }
+
+    category.items[index].active = !category.items[index].active; // 激活状态取反
+    filters[filters_sub].category[0].all_active = false; // 取消'全部'的激活，默认第0个是'全部'
+
+    category.all_active = false; // 直接反激活category
+
+    const fLegal = this.fCheckLegal(filters);
+    this.setData({
+      filters: filters,
+      filters_legal: fLegal
+    }, function() {
+      this.reloadCats();
+      this.showFilterTip();
+    });
+  },
+
+  // 显示过滤器的提示
+  showFilterTip() {
+    this.setData({
+      show_filter_tip: true
+    });
+
+    var that = this;
+    setTimeout(function() {
+      that.setData({
+        show_filter_tip: false
+      })
+    }, 3000);
+  },
+
+  // 返回首页
+  clickBackFirstPageBtn() {
+    if (pageLoadingLock) {
+      console.log("page is locking");
+      return false;
+    }
+
+    this.lockBtn();
+
+    this.fReset();
+    this.reloadCats();
+  },
+
+  // 上锁
+  lockBtn() {
+    console.log("lock");
+    pageLoadingLock = true;
+  },
+  // 解锁
+  unlockBtn() {
+    console.log("unlock");
+    pageLoadingLock = false;
   }
 })

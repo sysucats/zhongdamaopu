@@ -1,3 +1,4 @@
+const config = require('../../../config.js');
 const utils = require('../../../utils.js');
 const loadFilter = utils.loadFilter;
 const isManager = utils.isManager;
@@ -16,9 +17,10 @@ Page({
     pickers: {
       gender: ['公', '母'],
       sterilized: [false, true],
-      adopt: [false, true],
+      adopt: config.cat_status_adopt.map((x) => { return {desc: x} }),
       to_star: [false, true],
     },
+    picker_selected: {},
     bottomShow: false
   },
 
@@ -121,8 +123,31 @@ Page({
       console.log(res);
       res.data.mphoto = String(new Date(res.data.mphoto));
       console.log(res.data.mphoto);
+      // 领养状态从bool变成int
+      var adopt = res.data.adopt;
+      if (adopt != undefined && typeof adopt === 'boolean') {
+        res.data.adopt = adopt? 1: 0;
+      }
+      // 处理一下picker
+      var picker_selected = {};
+      const pickers = this.data.pickers;
+      for (const key in pickers) {
+        const items = pickers[key];
+        const value = res.data[key];
+        if (value == undefined) {
+          continue;
+        }
+        const idx = items.findIndex((v) => v === value);
+        if (idx === -1 && typeof value === "number") {
+          // 既不是undefined，也找不到，说明存的就是下标
+          picker_selected[key] = value;
+        } else {
+          picker_selected[key] = idx;
+        }
+      }
       this.setData({
-        cat: res.data
+        cat: res.data,
+        picker_selected: picker_selected,
       }, () => {
         this.reloadPhotos();
         // this.isCharChecked();
@@ -211,7 +236,11 @@ Page({
     console.log(e);
     const key = e.currentTarget.dataset.key;
     const index = e.detail.value;
-    const value = this.data.pickers[key][index];
+    var value = this.data.pickers[key][index];
+    if (typeof value === "object" && value.desc != undefined) {
+      // 说明是一种映射关系，只保存下标
+      value = parseInt(index);
+    }
     this.setData({
       ['cat.'+key]: value
     });

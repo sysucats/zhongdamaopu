@@ -1,4 +1,5 @@
 // pages/recognize/recognize.js
+const config = require('../../config.js');
 const utils = require('../../utils.js');
 const sha256 = utils.sha256;
 const getGlobalSettings = utils.getGlobalSettings;
@@ -28,6 +29,9 @@ Page({
     catBoxList: [], // 展示的猫猫框列表
     showResultBox: false, // 用来配合动画延时展示resultBox
     showAdBox: true, // 展示banner广告
+    ad: {
+      banner: config.ad_recognize_banner
+    }
   },
 
   onLoad() {

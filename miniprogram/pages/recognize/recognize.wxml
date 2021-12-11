@@ -68,7 +68,7 @@
 
 <view id="adBox" wx:if="{{catList.length && showResultBox && showAdBox}}">
   <view class="ad-tip">识别累了，帮忙点下广告喵（揉眼睛 ( '-ωก̀ )</view>
-  <ad unit-id="adunit-1b69cda0d1b8c703" ad-intervals="30" bindload="adLoad" binderror="adError" bindclose="adClose"></ad>
+  <ad unit-id="{{ad.banner}}" ad-intervals="30" bindload="adLoad" binderror="adError" bindclose="adClose"></ad>
 </view>
 
 </view><!-- positionWrapper -->

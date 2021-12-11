@@ -392,3 +392,142 @@ scroll-view {
   display: flex;
 
 }
+
+#find-adopt, #back-to-firstpage {
+  position: fixed;
+  bottom: 150rpx;
+  right: 30rpx;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+
+  filter: drop-shadow(0 0 5rpx var(--color-gray-dark));
+}
+
+#find-adopt .logo {
+  width: 99rpx;
+  height: 50rpx;
+  display: block;
+}
+
+#find-adopt .count {
+  font-size: 20rpx;
+  padding: 1rpx 10rpx;
+  background-color: var(--color-primary);
+  border-radius: 5rpx;
+  color: var(--color-black-light);
+}
+
+.adopt-filter-tip {
+  position: fixed;
+  top: 100rpx;
+  right: 20rpx;
+  opacity: 1;
+
+  transition: top 1s, opacity 1s;
+}
+
+.adopt-filter-tip.hide {
+  opacity: 0;
+  top: 50rpx;
+}
+
+.adopt-filter-tip .tri {
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 0 10rpx 10rpx 10rpx;
+  border-color: transparent transparent var(--color-black-transparent) transparent;
+
+  position: absolute;
+  right: 20rpx;
+}
+
+.adopt-filter-tip .content {
+  width: 180rpx;
+  text-align: center;
+  font-size: 22rpx;
+  padding: 10rpx;
+  background-color: var(--color-black-transparent);
+  color: white;
+
+  border-radius: 10rpx;
+  
+  position: absolute;
+  right: 0;
+  top: 10rpx;
+}
+
+.shake {
+  /* 摇晃动画 */
+  animation-name: upAnimation;
+  animation-duration: 2s;
+  animation-fill-mode: both;
+  animation-iteration-count: 3;
+  animation-delay: 2s;
+}
+@keyframes upAnimation {
+  0% {
+      transform: rotate(0deg);
+      transition-timing-function: cubic-bezier(0.215, .61, .355, 1)
+  }
+
+  10% {
+      transform: rotate(-12deg);
+      transition-timing-function: cubic-bezier(0.215, .61, .355, 1)
+  }
+
+  20% {
+      transform: rotate(12deg);
+      transition-timing-function: cubic-bezier(0.215, .61, .355, 1)
+  }
+
+  28% {
+      transform: rotate(-10deg);
+      transition-timing-function: cubic-bezier(0.215, .61, .355, 1)
+  }
+
+  36% {
+      transform: rotate(10deg);
+      transition-timing-function: cubic-bezier(0.755, .5, .855, .06)
+  }
+
+  42% {
+      transform: rotate(-8deg);
+      transition-timing-function: cubic-bezier(0.755, .5, .855, .06)
+  }
+
+  48% {
+      transform: rotate(8deg);
+      transition-timing-function: cubic-bezier(0.755, .5, .855, .06)
+  }
+
+  52% {
+      transform: rotate(-4deg);
+      transition-timing-function: cubic-bezier(0.755, .5, .855, .06)
+  }
+
+  56% {
+      transform: rotate(4deg);
+      transition-timing-function: cubic-bezier(0.755, .5, .855, .06)
+  }
+
+  60% {
+      transform: rotate(0deg);
+      transition-timing-function: cubic-bezier(0.755, .5, .855, .06)
+  }
+
+  100% {
+      transform: rotate(0deg);
+      transition-timing-function: cubic-bezier(0.215, .61, .355, 1)
+  }
+}
+
+
+#back-to-firstpage .back-btn {
+  width: 80rpx;
+  height: 80rpx;
+  margin: 0rpx 10rpx;
+  display: block;
+}

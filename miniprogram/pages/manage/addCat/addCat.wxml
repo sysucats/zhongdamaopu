@@ -31,13 +31,13 @@
   <view class='label relation'>好友：</view>
   <input type='text' value='{{cat.relation}}' bindinput="inputText" data-key='relation'></input>
   <view class='label gender'>性别：</view>
-  <picker mode="selector" range='{{pickers.gender}}' value='0' bindchange='pickerChange' data-key='gender'>{{cat.gender == undefined? '请选择': cat.gender}}</picker>
+  <picker mode="selector" range='{{pickers.gender}}' value='{{picker_selected.gender}}' bindchange='pickerChange' data-key='gender'>{{cat.gender == undefined? '请选择': cat.gender}}</picker>
   <view class='label sterilized'>绝育：</view>
-  <picker mode="selector" range='{{pickers.sterilized}}' value='0' bindchange='pickerChange' data-key='sterilized'>{{cat.sterilized == undefined? '请选择': cat.sterilized}}</picker>
-  <view class='label adopt'>已领养：</view>
-  <picker mode="selector" range='{{pickers.adopt}}' value='0' bindchange='pickerChange' data-key='adopt'>{{cat.adopt == undefined? '请选择': cat.adopt}}</picker>
+  <picker mode="selector" range='{{pickers.sterilized}}' value='{{picker_selected.sterilized}}' bindchange='pickerChange' data-key='sterilized'>{{cat.sterilized == undefined? '请选择': cat.sterilized}}</picker>
+  <view class='label adopt'>领养状态：</view>
+  <picker mode="selector" range='{{pickers.adopt}}' range-key='desc' value='{{picker_selected.adopt}}' bindchange='pickerChange' data-key='adopt'>{{cat.adopt == undefined? '请选择': pickers.adopt[cat.adopt].desc}}</picker>
   <view class='label to_star'>返回喵星：</view>
-  <picker mode="selector" range='{{pickers.to_star}}' value='0' bindchange='pickerChange' data-key='to_star'>{{cat.to_star == undefined? '请选择': cat.to_star}}</picker>
+  <picker mode="selector" range='{{pickers.to_star}}' value='{{picker_selected.to_star}}' bindchange='pickerChange' data-key='to_star'>{{cat.to_star == undefined? '请选择': cat.to_star}}</picker>
   <view class='label popularity'>人气：{{cat.popularity}}</view>
   <button class='primary' bindtap='upload'>确定提交</button>
 

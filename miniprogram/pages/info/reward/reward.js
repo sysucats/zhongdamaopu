@@ -29,7 +29,7 @@ Page({
     // 在页面onLoad回调事件中创建激励视频广告实例
     if (wx.createRewardedVideoAd) {
       videoAd = wx.createRewardedVideoAd({
-        adUnitId: 'adunit-eac4513e7b770f93'
+        adUnitId: config.ad_reward_video
       })
       videoAd.onLoad(() => {
         that.setData({

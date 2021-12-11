@@ -1,6 +1,3 @@
-<!--miniprogram/pages/info/devTeam/devTeam.wxml-->
-
-
 <view class='block'>
   <view class='title'>开发团队</view>
   <view class='desc'>
@@ -11,7 +8,7 @@
 <view class='block'>
   <view class='title'>开源代码</view>
   <view class='desc'>
-    <text selectable='true'>中大猫谱现在开源啦！配备部署教程及视频~\nhttps://github.com/sysucats/zhongdamaopu</text>
+    <text selectable='true'>中大猫谱现在开源啦！配备部署教程及视频~\n{{github_link}}</text>
     <button class="primary" bindtap='copyOpenSourceLink'>点击复制到剪切板</button>
   </view>
 </view>
@@ -19,6 +16,9 @@
 <view class='block'>
   <view class='title'>更新日志</view>
   <view class='desc'>
+    <view class='sub-title hl'>v1.6.6</view>
+    <text class='sub-detail'>- 增加领养状态过滤\n - 更新时间：2021/12/11</text>
+
     <view class='sub-title hl'>v1.6.5</view>
     <text class='sub-detail'>- 安卓机可以聊天中识别猫猫啦\n - 过滤器修复\n - 更新时间：2021/11/24</text>
 

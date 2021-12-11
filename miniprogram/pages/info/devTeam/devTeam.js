@@ -5,7 +5,7 @@ Page({
    * 页面的初始数据
    */
   data: {
-
+    github_link: "https://github.com/sysucats/zhongdamaopu"
   },
 
   /**
@@ -68,7 +68,7 @@ Page({
 
   copyOpenSourceLink: function() {
     wx.setClipboardData({
-      data: 'https://github.com/Zing22/zhongdamaopu',
+      data: this.data.github_link,
     });
   }
 })
