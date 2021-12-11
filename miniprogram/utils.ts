@@ -1,5 +1,20 @@
-import sha256 from "sha256"
-// import  regeneratorRuntime  from  "regenerator-runtime" ;
+declare namespace MaoPu {
+  interface MountData {
+      globalData: GlobalData
+  }
+
+  interface GlobalData {
+      version: string,
+      settings?: { [key: string]: any }
+  }
+  
+  interface GetApp {
+      (opts?: WechatMiniprogram.App.GetAppOption): WechatMiniprogram.App.Instance<MountData>
+  }
+}
+
+declare type MaoPuApp = WechatMiniprogram.App.Instance<MaoPu.MountData>
+declare let getMaoPuApp: MaoPu.GetApp;
 
 function getMaopuApp(opts?: WechatMiniprogram.App.GetAppOption): MaoPuApp {
     const maoPuApp = <MaoPuApp>getApp(opts)
@@ -24,11 +39,11 @@ async function getAndRefreshMountData(app: MaoPuApp):Promise<MaoPu.MountData> {
 
 }
 
-function randomInt(min: number, max: number):number {
+export function randomInt(min: number, max: number):number {
   return Math.floor(Math.random() * (max - min)) + min;
 }
 
-function generateUUID():string {
+export function generateUUID():string {
   let d = new Date().getTime();
   const uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
     const r = (d + Math.random() * 16) % 16 | 0;
@@ -38,7 +53,7 @@ function generateUUID():string {
   return uuid;
 };
 
-async function loadFilter():Promise<DB.IDocumentData> {
+export async function loadFilter():Promise<DB.IDocumentData> {
     const db = wx.cloud.database();
     const res = await db.collection('setting').doc('filter').get()
     return res.data
@@ -48,7 +63,7 @@ async function loadFilter():Promise<DB.IDocumentData> {
  * 
  * @param req 要求的等级，是一个整数值
  */
-async function isManager(req:number = 1):Promise<Boolean> {
+export async function isManager(req:number = 1):Promise<Boolean> {
   return <Boolean>(await wx.cloud.callFunction({
     name: 'isManager',
     data: {
@@ -57,7 +72,7 @@ async function isManager(req:number = 1):Promise<Boolean> {
   })).result
 }
 
-async function isWifi():Promise<Boolean> {
+export async function isWifi():Promise<Boolean> {
   // 检查是不是Wifi网络正在访问
   const res = await wx.getNetworkType()
   return res.networkType == 'wifi'
@@ -67,7 +82,7 @@ async function isWifi():Promise<Boolean> {
  * Shuffles array in place. ES6 version
  * @param {Array} a items An array containing the items.
  */
-function shuffle<T>(a: T[]):T[] {
+export function shuffle<T>(a: T[]):T[] {
   for (let i = a.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
     [a[i], a[j]] = [a[j], a[i]];
@@ -76,7 +91,7 @@ function shuffle<T>(a: T[]):T[] {
 }
 
 // 获取分享连接，从首页跳转过去
-function shareTo(title: string, path:string) {
+export function shareTo(title: string, path:string) {
   return {
     title: title,
     path: '/pages/genealogy/genealogy?toPath=' + encodeURIComponent(path)
@@ -84,7 +99,7 @@ function shareTo(title: string, path:string) {
 }
 
 // 获取当前页面的path，包括参数
-function getCurrentPath(pagesStack: WechatMiniprogram.Page.Instance<Record<string, any>, Record<string, any>>[]):string {
+export function getCurrentPath(pagesStack: WechatMiniprogram.Page.Instance<Record<string, any>, Record<string, any>>[]):string {
   const currentPage = pagesStack[pagesStack.length - 1];
   const route = currentPage.route;
   const options = currentPage.options;
@@ -96,7 +111,7 @@ function getCurrentPath(pagesStack: WechatMiniprogram.Page.Instance<Record<strin
 }
 
 // 获取全局的设置
-async function getGlobalSettings<T>(key:string):Promise<T|undefined> {
+export async function getGlobalSettings<T>(key:string):Promise<T|undefined> {
   const app = getMaopuApp();
   if (app.globalData.settings) return app.globalData.settings[key]
 
@@ -108,7 +123,7 @@ async function getGlobalSettings<T>(key:string):Promise<T|undefined> {
 
 
 // 判断两个userInfo是否相同，初级版
-function userInfoEq(a: WechatMiniprogram.UserInfo, b: WechatMiniprogram.UserInfo):Boolean {
+export function userInfoEq(a: WechatMiniprogram.UserInfo, b: WechatMiniprogram.UserInfo):Boolean {
   try {
     for (const k in a) {
       if (a[k] != b[k]) {
@@ -124,7 +139,7 @@ function userInfoEq(a: WechatMiniprogram.UserInfo, b: WechatMiniprogram.UserInfo
 }
 
 // 替换字符串中的正则特殊符号
-function regReplace(raw: string):string {
+export function regReplace(raw: string):string {
   const sp_char = "*.?+$^[](){}|\/";
   for (const ch of sp_char) {
     raw = raw.replace(ch, '\\'+ch);
@@ -132,7 +147,7 @@ function regReplace(raw: string):string {
   return raw;
 }
 
-function formatDate(date: Date, fmt: string):string {
+export function formatDate(date: Date, fmt: string):string {
   const o = {
     "M+": date.getMonth() + 1, //月份 
     "d+": date.getDate(), //日 
@@ -153,7 +168,7 @@ function formatDate(date: Date, fmt: string):string {
  * 
  * TODO
  */
-function checkUpdateVersion() {
+export function checkUpdateVersion() {
   const updateManager = wx.getUpdateManager();
 
   updateManager.onCheckForUpdate(function (res) {
@@ -184,7 +199,7 @@ function checkUpdateVersion() {
 /*
 * 检查是否开启上传通道（返回true为开启上传）
 */
-async function checkCanUpload(): Promise<Boolean> {
+export async function checkCanUpload(): Promise<Boolean> {
   // 如果是管理员，开启
   const manager = await isManager()
   const manageUpload = (await getGlobalSettings<{manageUpload:Boolean}>('detailCat'))!.manageUpload;
@@ -198,14 +213,14 @@ async function checkCanUpload(): Promise<Boolean> {
 }
 
 // 切分org的filter
-function splitFilterLine(lineStr:string|undefined):string[] {
+export function splitFilterLine(lineStr:string|undefined):string[] {
   if (!lineStr) {
     return [];
   }
   return lineStr.split('\n').filter((val) => val.length);
 }
 
-function checkMultiClick(cat_id: string):Boolean {
+export function checkMultiClick(cat_id: string):Boolean {
   const last_click = wx.getStorageSync(cat_id);
   if(!cat_id) {
     return false;
@@ -216,24 +231,3 @@ function checkMultiClick(cat_id: string):Boolean {
   // 小于2小时就返回true，说明是一个multi-click
   return (delta/1000/3600) < 2;
 }
-
-
-module.exports = {
-  sha256,
-  randomInt,
-  generateUUID,
-  loadFilter,
-  isManager,
-  isWifi,
-  shuffle,
-  shareTo,
-  getCurrentPath,
-  getGlobalSettings,
-  userInfoEq,
-  regReplace,
-  formatDate,
-  checkUpdateVersion,
-  checkCanUpload,
-  splitFilterLine,
-  checkMultiClick,
-};

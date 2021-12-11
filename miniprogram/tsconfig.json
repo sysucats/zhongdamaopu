@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "lib": ["es2015", "es2016", "es2017","dom"],
+    "target": "es2017",
+
+    "moduleResolution": "node",
+    "allowSyntheticDefaultImports": true,
+
+    "strict": true,
+    "allowJs": false,
+
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+  },
+  "exclude": ["node_modules"]
+}
