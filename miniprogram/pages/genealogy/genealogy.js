@@ -424,10 +424,13 @@ Page({
   // mask滑动事件catch
   voidMove: function () {},
   // toggle filters
-  fToggle: function () {
+  fToggle: function (status) {
     // 这里只管显示和隐藏，类似取消键的功能
+    if (status === undefined) {
+      status = !this.data.filters_show
+    }
     this.setData({
-      filters_show: !this.data.filters_show
+      filters_show: status
     });
   },
   // 点击main filter，切换sub的
@@ -589,7 +592,7 @@ Page({
     }
     return res.length ? _.and(res) : {};
   },
-  fComfirm: function () {
+  fComfirm: function (e, toggleStatus) {
     if (!this.data.filters_legal) {
       return false;
     }
@@ -597,7 +600,7 @@ Page({
     this.lockBtn();
 
     this.reloadCats();
-    this.fToggle();
+    this.fToggle(toggleStatus);
   },
   fReset: function () {
     // 重置所有分类
@@ -620,7 +623,8 @@ Page({
       filters: filters,
       filters_legal: fLegal
     }, () => {
-      that.fComfirm();
+      // 确认过滤器并关闭展板
+      that.fComfirm(null, false);
     });
   },
   // 发起文字搜索
