@@ -16,6 +16,9 @@
 <view class='block'>
   <view class='title'>更新日志</view>
   <view class='desc'>
+    <view class='sub-title hl'>v1.6.7</view>
+    <text class='sub-detail'>- 增加过滤器提示\n - 优化过滤器逻辑\n - 更新时间：2021/12/12</text>
+
     <view class='sub-title hl'>v1.6.6</view>
     <text class='sub-detail'>- 增加领养状态过滤\n - 更新时间：2021/12/11</text>
 

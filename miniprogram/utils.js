@@ -220,11 +220,17 @@ function checkMultiClick(cat_id) {
   if(!cat_id) {
     return false;
   }
-  const today = new Date();
-  const delta = today - (new Date(last_click));
-  console.log("last click: " + (delta / 1000 / 3600));
+  const deltaHours = getDeltaHours(last_click);
+  console.log("last click: " + deltaHours);
   // 小于2小时就返回true，说明是一个multi-click
-  return (delta/1000/3600) < 2;
+  return deltaHours < 2;
+}
+
+function getDeltaHours(lastTime) {
+  const today = new Date();
+  var deltaHours = today - (new Date(lastTime)); // milliseconds
+  deltaHours = deltaHours / 1000 / 3600; // hours
+  return deltaHours;
 }
 
 
@@ -247,4 +253,5 @@ module.exports = {
   checkCanUpload,
   splitFilterLine,
   checkMultiClick,
+  getDeltaHours,
 };

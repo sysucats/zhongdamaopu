@@ -184,12 +184,6 @@ Page({
       res.data.characteristics_string = (res.data.colour || '') + '猫';
       // res.data.nickname = (res.data.nickname || []).join('、');
 
-      // 领养状态从bool变成int
-      var adopt = res.data.adopt;
-      if (adopt === undefined || typeof adopt === 'boolean') {
-        res.data.adopt = adopt? 1: 0;
-      }
-
       this.setData({
         cat: res.data
       }, ()=> {

@@ -3,21 +3,22 @@ const utils = require('../../utils.js');
 const getGlobalSettings = utils.getGlobalSettings;
 const regeneratorRuntime = utils.regeneratorRuntime;
 const randomInt = utils.randomInt;
-const isWifi = utils.isWifi;
 const isManager = utils.isManager;
 const shuffle = utils.shuffle;
 const loadFilter = utils.loadFilter;
 const regReplace = utils.regReplace;
+const getDeltaHours = utils.getDeltaHours;
 
 const config = require('../../config.js')
 
 const default_png = undefined;
 
 var catsStep = 1;
-var loadingLock = 0; // 用于下滑刷新
+var loadingLock = 0; // 用于下滑刷新加锁
 
-var pageLoadingLock = true; // 用于点击按钮刷新
-var unlockTimeOut = undefined; // 倒计时解锁
+var pageLoadingLock = true; // 用于点击按钮刷新加锁
+
+const tipInterval = 24; // 提示间隔时间 hours
 
 Page({
 
@@ -90,8 +91,6 @@ Page({
         })
       }
     }
-    // 加载待领养
-    this.countWaitingAdopt();
     // 开始加载页面
     const that = this;
     getGlobalSettings('genealogy').then(settings => {
@@ -175,17 +174,20 @@ Page({
       }
       filters.push(colour_item);
 
+      var adopt_status = [{name: "未知", value: null}];
+      adopt_status = adopt_status.concat(config.cat_status_adopt.map((name, i) => {
+        return {
+          name: name,
+          value: i, // 数据库里存的
+        };
+      }));
+
       var adopt_item = {
         key: 'adopt',
         name: '领养',
         category: [{
           name: '全部状态',
-          items: config.cat_status_adopt.map((name, i) => {
-            return {
-              name: name,
-              value: i, // 数据库里存的
-            };
-          }),
+          items: adopt_status,
           all_active: true
         }]
       }
@@ -194,6 +196,7 @@ Page({
       // 默认把第一个先激活了
       filters[0].active = true;
       console.log(filters);
+      this.newUserTip();
       this.setData({
         filters: filters,
       }, () => {
@@ -263,6 +266,9 @@ Page({
         this.loadMoreCats();
       });
     });
+    
+    // 加载待领养
+    this.countWaitingAdopt();
   },
 
   // 加载更多的猫猫
@@ -299,11 +305,6 @@ Page({
             const delta_date = today - (new Date(d.mphoto)); // milliseconds
             // 小于7天
             d.mphoto_new = ((delta_date / 1000 / 3600 / 24) < 7);
-          }
-          // 领养状态从bool变成int
-          var adopt = d.adopt;
-          if (adopt != undefined && typeof adopt === 'boolean') {
-            d.adopt = adopt? 1: 0;
           }
         }
         const new_cats = cats.concat(res.data);
@@ -542,7 +543,13 @@ Page({
         let cateKeyPushed = false; // 一个category只用push一次，记一下
         for (const item of category.items) {
           if (category.all_active || item.active) {
-            selected.push(item.value != undefined? item.value: item.name);
+            var choice = item.name;
+            if (item.value === null) {
+              choice = _.exists(false); // 判断字段不存在
+            } else if (item.value != undefined) {
+              choice = item.value;
+            }
+            selected.push(choice);
             if (cateFilter && !cateKeyPushed) {
               cateSelected.push(category.name);
               cateKeyPushed = true;
@@ -551,6 +558,7 @@ Page({
         }
       }
 
+      console.log(key, selected);
       res.push({[key]: _.in(selected)});
       if (cateFilter) res.push({[cateKey]: _.in(cateSelected)});
     }
@@ -607,9 +615,12 @@ Page({
     }
 
     const fLegal = this.fCheckLegal(filters);
+    const that = this;
     this.setData({
       filters: filters,
       filters_legal: fLegal
+    }, () => {
+      that.fComfirm();
     });
   },
   // 发起文字搜索
@@ -621,6 +632,14 @@ Page({
   },
   fSearch: function (e) {
     this.reloadCats();
+  },
+  fSearchClear: function () {
+    var that = this;
+    this.setData({
+      filters_input: ""
+    }, function() {
+      that.fSearch();
+    })
   },
   // 搜索框是否要显示阴影
   fScroll: function (e) {
@@ -728,6 +747,22 @@ Page({
     }, 3000);
   },
 
+  newUserTip() {
+    const key = "newUserTip";
+    var lastTime = wx.getStorageSync(key);
+
+    if (lastTime != undefined && getDeltaHours(lastTime) < tipInterval) {
+      // 刚提示没多久
+      return false;
+    }
+
+    // 显示提示
+    this.showFilterTip();
+
+    // 写入时间
+    wx.setStorageSync(key, new Date());
+  },
+
   // 返回首页
   clickBackFirstPageBtn() {
     if (pageLoadingLock) {
@@ -738,7 +773,7 @@ Page({
     this.lockBtn();
 
     this.fReset();
-    this.reloadCats();
+    this.fSearchClear();
   },
 
   // 上锁

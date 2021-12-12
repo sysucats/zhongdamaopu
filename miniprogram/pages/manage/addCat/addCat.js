@@ -123,11 +123,6 @@ Page({
       console.log(res);
       res.data.mphoto = String(new Date(res.data.mphoto));
       console.log(res.data.mphoto);
-      // 领养状态从bool变成int
-      var adopt = res.data.adopt;
-      if (adopt != undefined && typeof adopt === 'boolean') {
-        res.data.adopt = adopt? 1: 0;
-      }
       // 处理一下picker
       var picker_selected = {};
       const pickers = this.data.pickers;
