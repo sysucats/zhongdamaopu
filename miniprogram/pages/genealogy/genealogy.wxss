@@ -464,7 +464,7 @@ scroll-view {
   animation-name: upAnimation;
   animation-duration: 2s;
   animation-fill-mode: both;
-  animation-iteration-count: 3;
+  animation-iteration-count: 6;
   animation-delay: 2s;
 }
 @keyframes upAnimation {

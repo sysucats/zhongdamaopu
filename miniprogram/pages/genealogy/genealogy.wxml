@@ -15,7 +15,7 @@
 </view>
 
 <!-- 点击过滤按钮出来的块 -->
-<view id='filter-block' style='height: {{heights.windowHeight - heights.filters}}px;' catchtouchmove="voidMove" hidden='{{!filters_show}}' bindtap='fToggle'>
+<view id='filter-block' style='height: {{heights.windowHeight - heights.filters}}px;' catchtouchmove="voidMove" hidden='{{!filters_show}}' bindtap='fHide'>
   <!-- filter选择部分 -->
   <view class='filters' catchtap='voidMove'>
     <scroll-view class='f-column f-column-1 main' scroll-y='1'>
