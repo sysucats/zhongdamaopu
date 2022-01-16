@@ -204,7 +204,7 @@ swiper-item image {
   height: 55rpx;
   box-sizing: border-box;
   border-radius: 15rpx;
-  background-color: var(--color-primary);
+  /* background-color: var(--color-primary); */
   padding: 25rpx 20rpx;
   margin-right: 40rpx;
 
@@ -219,7 +219,7 @@ swiper-item image {
   margin: 0 0 0 10rpx ;
 }
 .sort-button .type {
-  font-weight: 300;
+  font-weight: 400;
   margin-left: 5rpx;
 }
 
@@ -367,9 +367,10 @@ swiper-item image {
   align-items: center;
   justify-content: center;
 
-
   border-top-left-radius: 10rpx;
   border-bottom-left-radius: 10rpx;
+
+  padding-top: 9rpx;
 }
 
 #comment-btn text {
@@ -379,7 +380,7 @@ swiper-item image {
 }
 
 #comment-btn image {
-  width: 24rpx;
+  width: 22rpx;
   height: 24rpx;
-  margin-top: 10rpx;
+  margin-top: 12rpx;
 }

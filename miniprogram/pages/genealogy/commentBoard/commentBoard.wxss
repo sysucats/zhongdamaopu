@@ -12,17 +12,18 @@ page {
 
 .comment {
   display: flex;
-  padding: 10rpx 0;
+  padding: 15rpx 0;
   background-color: white;
+  margin-bottom: 10rpx;
 }
 
 .comment .left {
-  width: 160rpx;
+  width: 120rpx;
 }
 
 .comment .left .avatar {
-  width: 80rpx;
-  height: 80rpx;
+  width: 70rpx;
+  height: 70rpx;
   border-radius: 25rpx;
   margin: 0 30rpx;
 }
@@ -39,11 +40,17 @@ page {
 .comment .right .username {
   font-size: 28rpx;
   color: var(--color-black-light);
+  font-weight: 500;
 }
 
 .comment .right .datetime {
   font-size: 20rpx;
   color: var(--color-gray-max);
+}
+
+.comment .right .content {
+  font-size: 28rpx;
+  color: var(--color-black-light);
 }
 
 .comment + .comment {
@@ -62,9 +69,10 @@ page {
   bottom: 0;
   display: flex;
   align-items: flex-end;
-  padding: 10rpx;
+  padding: 20rpx;
   padding-bottom: constant(safe-area-inset-bottom);
   padding-bottom: env(safe-area-inset-bottom);
+  /* padding-bottom: 20rpx; */
   background-color: white;
   box-sizing: border-box;
   border-top: 1rpx solid var(--color-gray-light);
@@ -79,7 +87,7 @@ page {
   height: 70rpx;
   background-color: var(--color-white-dark);
   color: var(--color-black-light);
-  padding: 10rpx 20rpx;
+  padding: 18rpx 20rpx;
   border-radius: 10rpx;
 }
 
