@@ -7,6 +7,9 @@ const checkCanUpload = utils.checkCanUpload;
 const checkMultiClick = utils.checkMultiClick;
 const formatDate = utils.formatDate;
 
+const getCatCommentCount = require('../../../comment.js').getCatCommentCount;
+
+
 // 页面设置，从global读取
 var page_settings = {};
 var photoMax = 0;
@@ -188,6 +191,7 @@ Page({
         cat: res.data
       }, ()=> {
         this.reloadPhotos();
+        this.loadCommentCount();
         var query = wx.createSelectorQuery();
         query.select('#info-box').boundingClientRect();
         query.exec((res) => {
@@ -207,6 +211,16 @@ Page({
       this.loadMorePhotos();
     });
     this.reloadAlbum();
+  },
+
+  loadCommentCount() {
+    const that = this;
+    getCatCommentCount(cat_id).then(count => {
+      console.log(count);
+      that.setData({
+        "cat.comment_count": count
+      });
+    })
   },
 
   reloadAlbum() {
@@ -565,6 +579,13 @@ Page({
   showPopularityTip() {
     wx.showToast({
       title: '猫猫人气值',
+      icon: "none"
+    });
+  },
+
+  showCommentTip() {
+    wx.showToast({
+      title: '猫猫留言数',
       icon: "none"
     });
   },

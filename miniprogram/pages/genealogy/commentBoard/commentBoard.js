@@ -11,6 +11,8 @@ const getUserInfo = user.getUserInfo;
 
 const getAvatar = require('../../../cat.js').getAvatar
 
+const getCatCommentCount = require('../../../comment.js').getCatCommentCount;
+
 // 页面设置，从global读取
 var page_settings = {};
 var cat_id;
@@ -18,6 +20,9 @@ var cat_id;
 // 常用的对象
 const db = wx.cloud.database();
 const coll_comment = db.collection('comment');
+
+// 发送锁
+var sendLock = false;
 
 Page({
 
@@ -134,8 +139,12 @@ Page({
     // 获取头像
     cat.avatar = await getAvatar(cat._id, cat.photo_count_best);
     console.log(cat.avatar);
+
+    // 获取总数
+    var comment_count = await getCatCommentCount(cat._id);
     this.setData({
-      cat: cat
+      cat: cat,
+      comment_count: comment_count
     });
   },
 
@@ -176,12 +185,28 @@ Page({
 
   // 发送留言
   sendComment() {
+    // 发送中
+    if (sendLock) {
+      return false;
+    }
+    
     const content = this.data.comment_input;
 
     // 空的就不用留言了
     if (!content || content.length == 1) {
       return false;
     }
+    
+    sendLock = true;
+    wx.showLoading({
+      title: '发送中...',
+    });
+    // 实际发送
+    this.doSendComment();
+  },
+
+  async doSendComment() {
+    const content = this.data.comment_input;
 
     // 判断是否可以留言
     const user = this.data.user;
@@ -191,6 +216,7 @@ Page({
         content: "如有误封请在\"关于-信息反馈\"中留言~",
         showCancel: false,
       })
+      that.doSendCommentEnd();
       return false;
     }
     
@@ -239,6 +265,7 @@ Page({
             content: `涉及[${label_code}]${label}内容，请修改嗷~~`,
             showCancel: false,
           });
+          that.doSendCommentEnd();
           return false;
         }
         // 检测通过
@@ -250,9 +277,15 @@ Page({
           title: "内容检测失败",
           content: "请开发者检查“commentCheck”云函数是否部署成功",
           showCancel: false,
-        })
+        });
+        that.doSendCommentEnd();
       },
     })
+  },
+
+  doSendCommentEnd() {
+    wx.hideLoading();
+    sendLock = false;
   },
 
   addComment(item, user) {
@@ -275,6 +308,7 @@ Page({
         });
 
         // 显示success toast
+        that.doSendCommentEnd();
         wx.showToast({
           title: '留言成功~',
         });
@@ -286,6 +320,7 @@ Page({
           showCancel: false,
         })
         console.error(res);
+        that.doSendCommentEnd();
       }
     })
   },

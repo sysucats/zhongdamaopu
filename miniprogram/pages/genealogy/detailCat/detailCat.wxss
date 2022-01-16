@@ -97,6 +97,19 @@ swiper-item image {
   width: 39rpx;
 }
 
+.info .comment {
+  margin-left: 10rpx;
+  order: 2;
+  display: inline;
+  font-size: 22rpx;
+  letter-spacing: 1rpx;
+  color: var(--color-black-light);
+}
+.comment image {
+  height: 24rpx;
+  width: 29rpx;
+}
+
 .tags {
   display: flex;
   align-items: center;

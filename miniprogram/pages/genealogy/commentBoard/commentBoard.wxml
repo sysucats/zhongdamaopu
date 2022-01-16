@@ -6,7 +6,7 @@
     <image class='avatar' mode='aspectFill' src='{{cat.avatar.photo_compressed || cat.avatar.photo_id}}'></image>
     <view class='name-and-count'>
       <view class='name'>{{cat.name}}的留言板</view>
-      <view class='count'>共{{comments.length}}条留言</view>
+      <view class='count'>共{{comment_count}}条留言</view>
     </view>
   </view>
 

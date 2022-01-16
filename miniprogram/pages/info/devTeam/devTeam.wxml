@@ -16,6 +16,12 @@
 <view class='block'>
   <view class='title'>更新日志</view>
   <view class='desc'>
+    <view class='sub-title hl'>v1.7.1</view>
+    <text class='sub-detail'>- 修复重复发送留言的问题\n - 增加评论数量外显\n - 更新时间：2021/01/16</text>
+
+    <view class='sub-title hl'>v1.7.0</view>
+    <text class='sub-detail'>- 新增猫猫留言板\n - 更新时间：2021/01/15</text>
+
     <view class='sub-title hl'>v1.6.8</view>
     <text class='sub-detail'>- 过滤器优化\n - 更新时间：2021/12/21</text>
 

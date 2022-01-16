@@ -11,6 +11,8 @@ const getDeltaHours = utils.getDeltaHours;
 
 const getAvatar = require('../../cat.js').getAvatar
 
+const getCatCommentCount = require('../../comment.js').getCatCommentCount;
+
 const config = require('../../config.js')
 
 const default_png = undefined;
@@ -328,9 +330,11 @@ Page({
     const cats = this.data.cats;
 
     var cat2photos = {};
+    var cat2commentCount = {};
     for (var cat of cats) {
       if (cat.photo === default_png) {
         cat2photos[cat._id] = await getAvatar(cat._id, cat.photo_count_best);
+        cat2commentCount[cat._id] = await getCatCommentCount(cat._id);
       }
     }
 
@@ -345,6 +349,7 @@ Page({
     for (var c of new_cats) {
       if (cat2photos[c._id]) {
         c.photo = cat2photos[c._id];
+        c.comment_count = cat2commentCount[c._id];
       }
     }
 

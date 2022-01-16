@@ -69,8 +69,12 @@
             <image src='../../images/card/card/pop.png'></image>
             <text> ({{item.popularity + (item.photo_count_total? item.photo_count_total * photoPopWeight: 0) }})</text>
           </view>
+          <view class='comment' wx:if="{{item.comment_count}}">
+            <image src='../../images/card/card/comment.png'></image>
+            <text> ({{item.comment_count}})</text>
+          </view>
         </view>
-        <view class='line'>
+        <view class='line' wx:if="{{item.birthday}}">
           <image mode='aspectFit' class='icon' src='../../images/card/card/birth.png'></image>
           <text>{{item.birthday || '未知生日'}}</text>
         </view>
@@ -78,7 +82,7 @@
           <image mode='aspectFit' class='icon' src='../../images/card/card/cat.png'></image>
           <text class="characteristics">{{item.characteristics_string}}</text>
         </view>
-        <view class='line'>
+        <view class='line' wx:if="{{item.habit}}">
           <image mode='aspectFit' class='icon' src='../../images/card/card/heart.png'></image>
           <text class="habit">{{item.habit || '性格未知'}}</text>
         </view>

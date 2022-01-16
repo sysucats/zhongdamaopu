@@ -141,6 +141,18 @@ scroll-view {
   margin-right: 8rpx;
 }
 
+.card .info .comment {
+  margin-left: 10rpx;
+  order: 2;
+  display: flex;
+  align-items: center;
+}
+.comment image {
+  height: 24rpx;
+  width: 29rpx;
+  margin-right: 8rpx;
+}
+
 .card .line image.icon {
   height: 26rpx;
   width: 26rpx;
