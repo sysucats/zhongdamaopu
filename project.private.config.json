@@ -195,22 +195,6 @@
           "scene": null
         },
         {
-          "name": "识别聊天图片",
-          "pathName": "pages/recognize/recognize",
-          "query": "",
-          "scene": 1173,
-          "referrerInfo": {
-            "materials": [
-              {
-                "type": "image/jpeg",
-                "path": "C:\\Users\\leezi\\Desktop\\微信图片_20210612210403.jpg",
-                "name": "微信图片_20210612210403.jpg",
-                "size": 142951
-              }
-            ]
-          }
-        },
-        {
           "name": "猫猫留言",
           "pathName": "pages/genealogy/commentBoard/commentBoard",
           "query": "cat_id=fa4fe87261a701f101442cc460229526",

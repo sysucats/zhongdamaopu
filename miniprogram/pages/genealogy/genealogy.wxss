@@ -102,7 +102,7 @@ scroll-view {
 .card .info image.gender {
   height: 27rpx;
   width: 27rpx;
-  margin-right: 30rpx;
+  margin-right: 15rpx;
   margin-left: 8rpx;
 }
 
@@ -137,7 +137,7 @@ scroll-view {
 }
 .popularity image {
   height: 20rpx;
-  width: 39rpx;
+  width: 35rpx;
   margin-right: 8rpx;
 }
 
@@ -148,8 +148,8 @@ scroll-view {
   align-items: center;
 }
 .comment image {
-  height: 24rpx;
-  width: 29rpx;
+  height: 27rpx;
+  width: 27rpx;
   margin-right: 8rpx;
 }
 
