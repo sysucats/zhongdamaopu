@@ -3,7 +3,7 @@ const utils = require('../../../utils.js');
 const generateUUID = utils.generateUUID;
 
 const user = require('../../../user.js');
-const getUserInfoOrFalse = user.getUserInfoOrFalse;
+const getCurUserInfoOrFalse = user.getCurUserInfoOrFalse;
 
 // 正在输入的
 var focusing_item = -1;
@@ -61,7 +61,7 @@ Page({
   getUInfo() {
     const that = this;
     // 检查用户信息有没有拿到，如果有就更新this.data
-    getUserInfoOrFalse().then(res => {
+    getCurUserInfoOrFalse().then(res => {
       if (!res) {
         console.log('未授权');
         return;

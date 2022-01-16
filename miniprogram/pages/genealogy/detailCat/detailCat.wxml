@@ -166,6 +166,12 @@ next-margin='60rpx'>
 <view class="addPhoto" bindtap='bindAddPhoto'>
 <image class="icon" wx:if="{{canUpload}}" src='../../../images/addPhoto.png'></image>
 </view>
+
+<!-- 进入留言板 -->
+<view id="comment-btn" bindtap="toComment">
+  <text>留言板</text>
+  <image src="../../../images/right_double_arrow.png" mode="aspectFit"></image>
+</view>
 </scroll-view>
 
 <mp-gallery show="{{showGallery}}" bindchange="bindGalleryChange" img-urls="{{imgUrls}}" current="{{currentImg}}" hide-on-click="{{true}}" showDelete="{{false}}" bindlongpress='bindGalleryLongPress'></mp-gallery>

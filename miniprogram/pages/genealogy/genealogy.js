@@ -9,6 +9,8 @@ const loadFilter = utils.loadFilter;
 const regReplace = utils.regReplace;
 const getDeltaHours = utils.getDeltaHours;
 
+const getAvatar = require('../../cat.js').getAvatar
+
 const config = require('../../config.js')
 
 const default_png = undefined;
@@ -324,29 +326,11 @@ Page({
     const nowLoadingLock = loadingLock;
 
     const cats = this.data.cats;
-    const db = wx.cloud.database();
-    const photo = db.collection('photo');
 
     var cat2photos = {};
     for (var cat of cats) {
       if (cat.photo === default_png) {
-        const qf = {
-          cat_id: cat._id,
-          verified: true,
-          best: true
-        };
-        var total = cat.photo_count_best;
-        // var total = (await photo.where(qf).count()).total;
-        if (!total || total === 0) {
-          // 说明这只猫还没有照片
-          continue;
-        }
-
-        // 这里对于API调用的次数较多，需要修改
-        var index = randomInt(0, total);
-        var pho_src = (await photo.where(qf).skip(index).limit(1).get()).data;
-        cat2photos[cat._id] = pho_src[0];
-        // cat.photo = pho_src[0];
+        cat2photos[cat._id] = await getAvatar(cat._id, cat.photo_count_best);
       }
     }
 

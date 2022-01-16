@@ -209,6 +209,12 @@
               }
             ]
           }
+        },
+        {
+          "name": "猫猫留言",
+          "pathName": "pages/genealogy/commentBoard/commentBoard",
+          "query": "cat_id=fa4fe87261a701f101442cc460229526",
+          "scene": null
         }
       ]
     }

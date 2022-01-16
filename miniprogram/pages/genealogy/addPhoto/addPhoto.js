@@ -6,7 +6,7 @@ const checkCanUpload = utils.checkCanUpload;
 const getGlobalSettings = utils.getGlobalSettings;
 
 const user = require('../../../user.js');
-const getUserInfoOrFalse = user.getUserInfoOrFalse;
+const getCurUserInfoOrFalse = user.getCurUserInfoOrFalse;
 
 const msg = require('../../../msg.js');
 const requestNotice = msg.requestNotice;
@@ -79,7 +79,7 @@ Page({
   getUInfo() {
     const that = this;
     // 检查用户信息有没有拿到，如果有就更新this.data
-    getUserInfoOrFalse().then(res => {
+    getCurUserInfoOrFalse().then(res => {
       if (!res) {
         console.log('未授权');
         return;

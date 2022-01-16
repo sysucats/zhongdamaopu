@@ -567,5 +567,12 @@ Page({
       title: '猫猫人气值',
       icon: "none"
     });
+  },
+
+  toComment() {
+    const url = `/pages/genealogy/commentBoard/commentBoard?cat_id=${cat_id}`
+    wx.navigateTo({
+      url: url,
+    })
   }
 })

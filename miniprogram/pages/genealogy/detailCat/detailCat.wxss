@@ -339,3 +339,34 @@ swiper-item image {
   font-weight: 400;
   margin-bottom: 30rpx;
 }
+
+#comment-btn {
+  width: 60rpx;
+  height: 160rpx;
+  position: absolute;
+  right: 0;
+  top: 60%;
+
+  background-color: var(--color-primary);
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+
+  border-top-left-radius: 10rpx;
+  border-bottom-left-radius: 10rpx;
+}
+
+#comment-btn text {
+  font-size: 26rpx;
+  writing-mode: vertical-rl;
+  display: block;
+}
+
+#comment-btn image {
+  width: 24rpx;
+  height: 24rpx;
+  margin-top: 10rpx;
+}
