@@ -98,16 +98,19 @@ Component({
         addGlobalClass: true
     },
     properties: {
+        imgCompressedUrls: {
+            type: Array,
+            value: [],
+            observer: function observer(newVal, oldVal, changedPath) {
+                this.setData({ currentCompressedImgs: newVal });
+            }
+        },
         imgUrls: {
             type: Array,
             value: [],
             observer: function observer(newVal, oldVal, changedPath) {
                 this.setData({ currentImgs: newVal });
             }
-        },
-        showDelete: {
-            type: Boolean,
-            value: true
         },
         show: {
             type: Boolean,
@@ -127,6 +130,7 @@ Component({
         }
     },
     data: {
+        currentCompressedImgs: [],
         currentImgs: []
     },
     ready: function ready() {
@@ -163,6 +167,13 @@ Component({
                 });
                 this.triggerEvent('hide', {}, {});
             }
+        },
+        showOriginImg: function showOriginImg() {
+            var data = this.data;
+            var url = data.currentImgs[data.current];
+            wx.previewImage({
+              urls: [url],
+            });
         }
     }
 });

@@ -1,5 +1,5 @@
 {
-  "name": "subMsgTimer",
+  "name": "sendMsg",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",

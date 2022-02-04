@@ -10,6 +10,7 @@ const toggleUserNoticeSetting = user.toggleUserNoticeSetting;
 
 const msg = require('../../../msg.js');
 const requestNotice = msg.requestNotice;
+const sendNotifyChkFeeedback = msg.sendNotifyChkFeeedback;
 
 Page({
 
@@ -112,6 +113,7 @@ Page({
       data: data,
       success: (res) => {
         console.log(res);
+        sendNotifyChkFeeedback().then();
         that.setData({
           feedbackId : res._id
         })

@@ -43,8 +43,10 @@
 <view id="input-block" style="margin-bottom: {{keyboard_height}}px;" class="{{keyboard_height>0 ? 'active': ''}}">
   <button wx:if="{{!isAuth}}" class='long primary' bindtap='getUInfo'>授权后进行留言~</button>
   <block wx:else>
-    <textarea id="comment-input" value="{{comment_input}}" auto-height="true" show-confirm-bar="{{false}}" maxlength="300" placeholder="发条友善的留言吧~" adjust-position="{{false}}"
+    <textarea id="comment-input" value="{{comment_input}}" auto-height="{{true}}" show-confirm-bar="{{false}}" maxlength="300" placeholder="发条友善的留言吧~" adjust-position="{{false}}"
     bindfocus="commentFocus" bindblur="commentBlur" bindinput="commentInput"></textarea>
-    <view class="send-btn" bindtap="sendComment">发 送</view>
+    <view wx:if="{{input_focus}}" class="send-btn" bindtap="sendComment">发 送</view>
   </block>
+  <!-- 解决iOS UI兼容性 -->
+  <view wx:if="{{keyboard_height == 0}}" id="input-block-bottom"></view>
 </view>

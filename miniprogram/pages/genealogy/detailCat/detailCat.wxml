@@ -178,4 +178,7 @@ next-margin='60rpx'>
 </view>
 </scroll-view>
 
-<mp-gallery show="{{showGallery}}" bindchange="bindGalleryChange" img-urls="{{imgUrls}}" current="{{currentImg}}" hide-on-click="{{true}}" showDelete="{{false}}" bindlongpress='bindGalleryLongPress'></mp-gallery>
+<mp-gallery show="{{showGallery}}" 
+img-compressed-urls="{{imgCompressedUrls}}" img-urls="{{imgUrls}}" current="{{currentImg}}"
+hide-on-click="{{true}}" 
+bindchange="bindGalleryChange"></mp-gallery>

@@ -233,6 +233,18 @@ function getDeltaHours(lastTime) {
   return deltaHours;
 }
 
+async function arrayResort(oriArray) {
+  var resortedArray = [];
+  var len = oriArray.length;
+  for (var i = 0; i < len; i++) {
+    var index = Math.floor(Math.random() * oriArray.length);
+    resortedArray.push(oriArray[index]);
+    oriArray.splice(index, 1);
+  }
+  resortedArray = [...resortedArray, ...oriArray];
+  return resortedArray;
+}
+
 
 module.exports = {
   regeneratorRuntime,
@@ -254,4 +266,5 @@ module.exports = {
   splitFilterLine,
   checkMultiClick,
   getDeltaHours,
+  arrayResort,
 };

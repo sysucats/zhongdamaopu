@@ -5,7 +5,9 @@ const formatDate = utils.formatDate;
 
 const msg = require('../../../msg.js');
 const requestNotice = msg.requestNotice;
-const notifyChkFeedbackTplId = msg.notifyChkFeedbackTplId;
+
+const config = require("../../../config.js");
+const notifyChkFeedbackTplId = config.msg.notifyChkFeedback.id;
 
 const step = 6;
 

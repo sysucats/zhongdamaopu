@@ -1,197 +1,199 @@
 {
-  "miniprogramRoot": "miniprogram/",
-  "cloudfunctionRoot": "cloudfunctions/",
-  "setting": {
-    "urlCheck": true,
-    "es6": true,
-    "enhance": true,
-    "postcss": true,
-    "preloadBackgroundData": false,
-    "minified": true,
-    "newFeature": true,
-    "coverView": true,
-    "nodeModules": false,
-    "autoAudits": false,
-    "showShadowRootInWxmlPanel": true,
-    "scopeDataCheck": false,
-    "uglifyFileName": true,
-    "checkInvalidKey": true,
-    "checkSiteMap": true,
-    "uploadWithSourceMap": true,
-    "compileHotReLoad": true,
-    "useMultiFrameRuntime": true,
-    "useApiHook": true,
-    "useApiHostProcess": true,
-    "babelSetting": {
-      "ignore": [],
-      "disablePlugins": [],
-      "outputPath": ""
+    "miniprogramRoot": "miniprogram/",
+    "cloudfunctionRoot": "cloudfunctions/",
+    "setting": {
+        "urlCheck": true,
+        "es6": true,
+        "enhance": true,
+        "postcss": true,
+        "preloadBackgroundData": false,
+        "minified": true,
+        "newFeature": true,
+        "coverView": true,
+        "nodeModules": false,
+        "autoAudits": false,
+        "showShadowRootInWxmlPanel": true,
+        "scopeDataCheck": false,
+        "uglifyFileName": true,
+        "checkInvalidKey": true,
+        "checkSiteMap": true,
+        "uploadWithSourceMap": true,
+        "compileHotReLoad": true,
+        "lazyloadPlaceholderEnable": false,
+        "useMultiFrameRuntime": true,
+        "useApiHook": true,
+        "useApiHostProcess": true,
+        "babelSetting": {
+            "ignore": [],
+            "disablePlugins": [],
+            "outputPath": ""
+        },
+        "useIsolateContext": true,
+        "userConfirmedBundleSwitch": true,
+        "packNpmManually": false,
+        "packNpmRelationList": [],
+        "minifyWXSS": true,
+        "disableUseStrict": false,
+        "minifyWXML": true,
+        "showES6CompileOption": false,
+        "useCompilerPlugins": false,
+        "ignoreUploadUnusedFiles": true
     },
-    "useIsolateContext": true,
-    "userConfirmedBundleSwitch": true,
-    "packNpmManually": false,
-    "packNpmRelationList": [],
-    "minifyWXSS": true,
-    "disableUseStrict": false,
-    "minifyWXML": true,
-    "showES6CompileOption": false,
-    "useCompilerPlugins": false
-  },
-  "appid": "wx5bd705b2bc91c73b",
-  "projectname": "%E4%B8%AD%E5%A4%A7%E7%8C%AB%E8%B0%B1",
-  "libVersion": "2.19.6",
-  "simulatorType": "wechat",
-  "simulatorPluginLibVersion": {},
-  "compileType": "miniprogram",
-  "cloudfunctionTemplateRoot": "cloudfunctionTemplate",
-  "condition": {
-    "plugin": {
-      "list": []
-    },
-    "game": {
-      "list": []
-    },
-    "gamePlugin": {
-      "list": []
-    },
-    "miniprogram": {
-      "list": [
-        {
-          "id": 1,
-          "name": "添加照片",
-          "pathName": "pages/genealogy/addPhoto/addPhoto",
-          "query": "cat_id=XE6ZFHkPDdDCJ4MO"
+    "appid": "wx5bd705b2bc91c73b",
+    "projectname": "zhongdamaopu",
+    "libVersion": "2.19.6",
+    "simulatorType": "wechat",
+    "simulatorPluginLibVersion": {},
+    "compileType": "miniprogram",
+    "cloudfunctionTemplateRoot": "cloudfunctionTemplate",
+    "condition": {
+        "plugin": {
+            "list": []
         },
-        {
-          "id": 1,
-          "name": "猫猫详情",
-          "pathName": "pages/genealogy/detailCat/detailCat",
-          "query": "cat_id=XE6ZFHkPDdDCJ4MO",
-          "scene": null
+        "game": {
+            "list": []
         },
-        {
-          "id": 2,
-          "name": "审核照片",
-          "pathName": "pages/manage/checkPhotos/checkPhotos",
-          "query": "",
-          "scene": null
+        "gamePlugin": {
+            "list": []
         },
-        {
-          "id": 3,
-          "name": "添加猫",
-          "pathName": "pages/manage/addCat/addCat",
-          "query": "cat_id=XE6ZFHkPDdDCJ4MO",
-          "scene": null
-        },
-        {
-          "id": -1,
-          "name": "测试滑动",
-          "pathName": "pages/testSw/testSw",
-          "query": ""
-        },
-        {
-          "id": -1,
-          "name": "科普页",
-          "pathName": "pages/science/science",
-          "query": "",
-          "scene": null
-        },
-        {
-          "id": -1,
-          "name": "关于页",
-          "pathName": "pages/info/info",
-          "query": "",
-          "scene": null
-        },
-        {
-          "id": -1,
-          "name": "照片排行榜",
-          "pathName": "pages/info/photoRank/photoRank",
-          "query": "",
-          "scene": null
-        },
-        {
-          "id": -1,
-          "name": "打赏",
-          "pathName": "pages/info/reward/reward",
-          "query": "",
-          "scene": null
-        },
-        {
-          "id": 9,
-          "name": "反馈",
-          "pathName": "pages/info/feedback/feedback",
-          "query": "",
-          "scene": null
-        },
-        {
-          "id": -1,
-          "name": "开发团队",
-          "pathName": "pages/info/devTeam/devTeam",
-          "query": "",
-          "scene": null
-        },
-        {
-          "id": 11,
-          "name": "科普分类",
-          "pathName": "pages/science/sciDetail/sciDetail",
-          "query": "cate=1",
-          "scene": null
-        },
-        {
-          "id": 12,
-          "name": "调试debug",
-          "pathName": "pages/debug/debug",
-          "query": "",
-          "scene": null
-        },
-        {
-          "id": -1,
-          "name": "图片处理",
-          "pathName": "pages/manage/imProcess/imProcess",
-          "query": "",
-          "scene": null
-        },
-        {
-          "id": -1,
-          "name": "过滤器管理",
-          "pathName": "pages/manage/filters/filters",
-          "query": "",
-          "scene": null
-        },
-        {
-          "id": -1,
-          "name": "管理管理员",
-          "pathName": "pages/manage/managers/managers",
-          "query": "",
-          "scene": null
-        },
-        {
-          "id": 16,
-          "name": "首页更新",
-          "pathName": "pages/genealogy/genealogy",
-          "query": "",
-          "scene": null
-        },
-        {
-          "name": "反馈处理",
-          "pathName": "pages/manage/checkFeedbacks/checkFeedbacks",
-          "query": "",
-          "scene": null
-        },
-        {
-          "name": "单页模式猫谱（分享到朋友圈）",
-          "pathName": "pages/genealogy/genealogy",
-          "query": "",
-          "scene": 1154
-        },
-        {
-          "name": "单页模式关于页",
-          "pathName": "pages/info/info",
-          "query": "",
-          "scene": 1154
+        "miniprogram": {
+            "list": [
+                {
+                    "id": 1,
+                    "name": "添加照片",
+                    "pathName": "pages/genealogy/addPhoto/addPhoto",
+                    "query": "cat_id=XE6ZFHkPDdDCJ4MO"
+                },
+                {
+                    "id": 1,
+                    "name": "猫猫详情",
+                    "pathName": "pages/genealogy/detailCat/detailCat",
+                    "query": "cat_id=XE6ZFHkPDdDCJ4MO",
+                    "scene": null
+                },
+                {
+                    "id": 2,
+                    "name": "审核照片",
+                    "pathName": "pages/manage/checkPhotos/checkPhotos",
+                    "query": "",
+                    "scene": null
+                },
+                {
+                    "id": 3,
+                    "name": "添加猫",
+                    "pathName": "pages/manage/addCat/addCat",
+                    "query": "cat_id=XE6ZFHkPDdDCJ4MO",
+                    "scene": null
+                },
+                {
+                    "id": -1,
+                    "name": "测试滑动",
+                    "pathName": "pages/testSw/testSw",
+                    "query": ""
+                },
+                {
+                    "id": -1,
+                    "name": "科普页",
+                    "pathName": "pages/science/science",
+                    "query": "",
+                    "scene": null
+                },
+                {
+                    "id": -1,
+                    "name": "关于页",
+                    "pathName": "pages/info/info",
+                    "query": "",
+                    "scene": null
+                },
+                {
+                    "id": -1,
+                    "name": "照片排行榜",
+                    "pathName": "pages/info/photoRank/photoRank",
+                    "query": "",
+                    "scene": null
+                },
+                {
+                    "id": -1,
+                    "name": "打赏",
+                    "pathName": "pages/info/reward/reward",
+                    "query": "",
+                    "scene": null
+                },
+                {
+                    "id": 9,
+                    "name": "反馈",
+                    "pathName": "pages/info/feedback/feedback",
+                    "query": "",
+                    "scene": null
+                },
+                {
+                    "id": -1,
+                    "name": "开发团队",
+                    "pathName": "pages/info/devTeam/devTeam",
+                    "query": "",
+                    "scene": null
+                },
+                {
+                    "id": 11,
+                    "name": "科普分类",
+                    "pathName": "pages/science/sciDetail/sciDetail",
+                    "query": "cate=1",
+                    "scene": null
+                },
+                {
+                    "id": 12,
+                    "name": "调试debug",
+                    "pathName": "pages/debug/debug",
+                    "query": "",
+                    "scene": null
+                },
+                {
+                    "id": -1,
+                    "name": "图片处理",
+                    "pathName": "pages/manage/imProcess/imProcess",
+                    "query": "",
+                    "scene": null
+                },
+                {
+                    "id": -1,
+                    "name": "过滤器管理",
+                    "pathName": "pages/manage/filters/filters",
+                    "query": "",
+                    "scene": null
+                },
+                {
+                    "id": -1,
+                    "name": "管理管理员",
+                    "pathName": "pages/manage/managers/managers",
+                    "query": "",
+                    "scene": null
+                },
+                {
+                    "id": 16,
+                    "name": "首页更新",
+                    "pathName": "pages/genealogy/genealogy",
+                    "query": "",
+                    "scene": null
+                },
+                {
+                    "name": "反馈处理",
+                    "pathName": "pages/manage/checkFeedbacks/checkFeedbacks",
+                    "query": "",
+                    "scene": null
+                },
+                {
+                    "name": "单页模式猫谱（分享到朋友圈）",
+                    "pathName": "pages/genealogy/genealogy",
+                    "query": "",
+                    "scene": 1154
+                },
+                {
+                    "name": "单页模式关于页",
+                    "pathName": "pages/info/info",
+                    "query": "",
+                    "scene": 1154
+                }
+            ]
         }
-      ]
     }
-  }
 }

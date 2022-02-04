@@ -9,7 +9,9 @@ const loadFilter = utils.loadFilter;
 const regReplace = utils.regReplace;
 const getDeltaHours = utils.getDeltaHours;
 
-const getAvatar = require('../../cat.js').getAvatar
+const cat_utils = require('../../cat.js');
+const getAvatar = cat_utils.getAvatar;
+const getVisitedDate = cat_utils.getVisitedDate;
 
 const getCatCommentCount = require('../../comment.js').getCatCommentCount;
 
@@ -306,9 +308,17 @@ Page({
             d.mphoto_new = false;
           } else {
             const today = new Date();
-            const delta_date = today - (new Date(d.mphoto)); // milliseconds
+            const modified_date = new Date(d.mphoto);
+            const delta_date = today - modified_date; // milliseconds
+
             // 小于7天
             d.mphoto_new = ((delta_date / 1000 / 3600 / 24) < 7);
+
+            // 是否最近看过了
+            const visit_date = getVisitedDate(d._id);
+            if (visit_date >= modified_date) {
+              d.mphoto_new = false;
+            }
           }
         }
         const new_cats = cats.concat(res.data);
@@ -373,7 +383,13 @@ Page({
   // 点击猫猫卡片
   clickCatCard(e, isCatId = false) {
     const cat_id = isCatId ? e : e.currentTarget.dataset.cat_id;
+    const index = this.data.cats.findIndex(cat => cat._id == cat_id);
     const detail_url = '/pages/genealogy/detailCat/detailCat';
+
+    this.setData({
+      [`cats[${index}].mphoto_new`]: false
+    });
+
     wx.navigateTo({
       url: detail_url + '?cat_id=' + cat_id,
     });

@@ -77,3 +77,7 @@ image {
   position: absolute;
   bottom: 0;
 }
+
+.switch-box {
+  font-size: 30rpx;
+}

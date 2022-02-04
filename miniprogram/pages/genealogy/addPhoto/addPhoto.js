@@ -10,7 +10,7 @@ const getCurUserInfoOrFalse = user.getCurUserInfoOrFalse;
 
 const msg = require('../../../msg.js');
 const requestNotice = msg.requestNotice;
-const sendNotifyVerifyMsg = msg.sendNotifyVertifyNotice
+const sendNotifyVertifyNotice = msg.sendNotifyVertifyNotice
 
 Page({
 
@@ -189,8 +189,8 @@ Page({
       // console.log("photoUnverify",res)
       numUnchkPhotos = res.total;
       if (numUnchkPhotos >= triggerNum) {
-      sendNotifyVerifyMsg(numUnchkPhotos);
-      console.log("toSendNVMsg");
+        sendNotifyVertifyNotice(numUnchkPhotos).then();
+        console.log("toSendNVMsg");
       }
     })
     

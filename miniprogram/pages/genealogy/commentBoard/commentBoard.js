@@ -150,13 +150,15 @@ Page({
 
   commentFocus(e) {
     this.setData({
-      keyboard_height: e.detail.height || 0
+      keyboard_height: e.detail.height || 0,
+      input_focus: true,
     })
   },
 
   commentBlur() {
     this.setData({
-      keyboard_height: 0
+      keyboard_height: 0,
+      input_focus: false,
     })
   },
 

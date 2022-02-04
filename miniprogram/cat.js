@@ -24,6 +24,18 @@ async function getAvatar(cat_id, total) {
   return pho_src[0];
 }
 
+// 消除“有新相片”提示
+function getVisitedDate(cat_id) {
+  const key = "visit-cat-" + cat_id;
+  return new Date(wx.getStorageSync(key));
+}
+function setVisitedDate(cat_id) {
+  const key = "visit-cat-" + cat_id;
+  wx.setStorageSync(key, new Date());
+}
+
 export {
-  getAvatar
+  getAvatar,
+  getVisitedDate,
+  setVisitedDate,
 }
