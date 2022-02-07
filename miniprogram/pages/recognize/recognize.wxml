@@ -1,5 +1,12 @@
 <!--pages/recognize/recognize.wxml-->
 
+<wxs module="m1">
+  var toFixed = function (value, precision) {
+    return value.toFixed(precision);
+  }
+ module.exports.toFixed = toFixed;
+</wxs>
+
 <!-- 压缩图片用 -->
 <canvas style="width: 500px; height: 500px; border: 1px solid red; left: 100000px; position: fixed;" canvas-id="canvasForCompress"></canvas>
 
@@ -16,7 +23,7 @@
     <camera wx:if="{{cameraAuth && !photoPath}}" device-position="{{devicePosition}}" resolution="high" frame-size="large" flash="off" id="cameraPreview"></camera>
     <!-- 拍照/选图结果预览 -->
     <view wx:if="{{photoPath}}" id="photoPreview" style="background-image: url('data:image/png;base64,{{photoBase64}}');" bindtap="tapPreview">
-      <view wx:for="{{catBoxList}}" wx:key="item" class="catBox {{index == 0 ? 'first' : ''}}" style="top: {{item.y}}rpx; left: {{item.x}}rpx; width: {{item.width}}rpx; height: {{item.height}}rpx;"></view>
+      <view wx:for="{{catBoxList}}" wx:key="item" class="catBox {{(!catIdx || catIdx > catBoxList.length) && index === 0 || index === catIdx ? 'chosen' : ''}}" style="top: {{item.y}}rpx; left: {{item.x}}rpx; width: {{item.width}}rpx; height: {{item.height}}rpx;" catchtap="tapCatBox" data-index="{{index}}"></view>
     </view>
     <!-- 重新选图按钮 -->
     <view wx:if="{{photoPath}}" id="resetButton" bindtap="reset">
@@ -36,7 +43,7 @@
 <view id="resultBox" wx:if="{{catList.length && showResultBox}}">
   <view class="tip" wx:if="{{catBoxList.length != 1}}">
     <image mode='aspectFit' class='icon' src='../../images/tip.png'></image>
-    <text>{{!catBoxList.length ? '照片里好像没有猫猫' : '照片里好像有多只猫猫'}}</text>
+    <text>{{!catBoxList.length ? '照片里好像没有猫猫' : '点击对应方框可以更改想识别的猫猫'}}</text>
   </view>
   <view class="title">{{!catBoxList.length ? '看起来，整张照片更像...' : (catBoxList.length == 1 ? '看起来，这张照片里的猫猫更像...' : '看起来，黄色框框中的猫猫更像...')}}</view>
 
@@ -61,7 +68,7 @@
         <text>{{(item.campus + item.area) || '-'}}</text>
       </view>
     </view>
-    <view class="prob">{{item.prob + '%'}}</view>
+    <view class="prob">{{m1.toFixed(100 * item.prob, 1) + '%'}}</view>
   </view>
   <view class="footnote">*目前只有在猫谱具有10张以上高质量照片（照片清晰，且照片中只有一只猫猫）的猫猫才能被认出来哦！识别效果还在不断改进中~</view>
 </view>

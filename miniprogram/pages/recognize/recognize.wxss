@@ -73,7 +73,7 @@ page {
   box-sizing: border-box;
 }
 
-#photoPreview .catBox.first {
+#photoPreview .catBox.chosen {
   border-color: var(--color-primary);
 }
 
