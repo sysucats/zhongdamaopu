@@ -4,6 +4,7 @@ const utils = require('../../utils.js');
 const sha256 = utils.sha256;
 const getGlobalSettings = utils.getGlobalSettings;
 const randomInt = utils.randomInt;
+const loadFilter = utils.loadFilter;
 
 // 接口设置，onLoad中从数据库拉取。
 var interfaceURL;
@@ -28,6 +29,10 @@ Page({
     devicePosition: 'back', // 前置/后置摄像头
     photoPath: null, // 用户选择的照片的路径
     photoBase64: null, // 用户选择的照片的base64编码，用于设置background-image
+    campusList:['所有校区'],
+    campusIndex:0,
+    colourList:['所有花色'],
+    colourIndex:0,
     catList: [], // 展示的猫猫列表
     catBoxList: [], // 展示的猫猫框列表
     catIdx: null, // 在有多只猫猫的图片中，识别的猫猫的编号
@@ -51,6 +56,15 @@ Page({
       interstitialAd.onClose(() => {})
     }
 
+    const that= this;
+    loadFilter().then(res => {
+      console.log('filterRes:', res);
+      that.setData({
+        campusList:['所有校区'].concat(res.campuses),
+        colourList:['所有花色'].concat(res.colour)
+      })
+    })
+
     // var that = this;
     // getGlobalSettings('recognize').then(settings => {
     //   interfaceURL = settings.interfaceURL;
@@ -60,7 +74,7 @@ Page({
     this.checkAuth();
   },
 
-  onShow(){
+  onShow() {
     var that = this;
     if (!interfaceURL || !secretKey) {
       console.log('__wxConfig.envVersion: ', __wxConfig.envVersion);
@@ -68,15 +82,15 @@ Page({
         interfaceURL = settings.interfaceURL;
         secretKey = settings.secretKey;
       }).then(that.recognizeChatImage);
-    }else{// 没杀后台回到聊天重新识别的情况
+    } else { // 没杀后台回到聊天重新识别的情况
       this.recognizeChatImage()
     }
   },
 
 
-  recognizeChatImage(){
+  recognizeChatImage() {
     var launchOptions = wx.getEnterOptionsSync();
-    console.log("lanOpt:",launchOptions);
+    console.log("lanOpt:", launchOptions);
     if (launchOptions.scene !== 1173) {
       return;
     }
@@ -278,26 +292,72 @@ Page({
     }, 500);
   },
 
+  catFilter(res) {
+    var type = res.currentTarget.dataset.type;
+    this.setData({
+      [type+'Index'] :res.detail.value
+    })
+    this.pickCatList();
+  },
+
   async pickCatList() {
-    const catList = recognizeResults.filter(catInfo => true); // TODO: 筛选，catInfo已包含一条cat的数据库记录
-    this.calculateSoftmaxProb(catList);
+    wx.showLoading({
+      title: '筛选中...',
+    })
+    const that = this;
+    console.log("recognizeResults:",recognizeResults);
+    const catList = recognizeResults.filter(cat => {
+      const choseCampus = that.data.campusList[that.data.campusIndex];
+      const choseColour = that.data.colourList[that.data.colourIndex];
+      if ((choseCampus === cat.campus || choseCampus === "所有校区") &&( choseColour === cat.colour || choseColour ==="所有花色")) {
+        return true;
+      }
+    }
+    ); 
+
+    console.log("catList:", catList);
+    if (catList.length === 0) {
+      wx.showToast({
+        title: '没有筛选结果，试试换个选项吧',
+        duration: 2000,
+        icon: 'none',
+        mask: true,
+      })
+      wx.hideLoading();
+      return false;
+    }else{
+      this.calculateSoftmaxProb(catList);
+    }
+
+    
     let displayList = [];
-    // 最多maxNum只，最少minNum只，去除概率太低的
+    // 少于maxNum只全部展示；多于maxNum：最多maxNum只，最少minNum只，去除概率太低的
     const minProb = 0.001;
     const minNum = 3;
     const maxNum = 5;
-    for (let index = 0; index < maxNum; index++) {
-      if (catList[index].prob > minProb || index < minNum) {
+
+    if (catList.length <= maxNum) {
+      for (let index = 0; index < catList.length; index++) {
         const catInfo = catList[index];
         catInfo.photo = await this.getCatPhoto(catInfo);
         displayList.push(catInfo);
-      } else {
-        break;
+      }      
+    }else{
+      for (let index = 0; index < maxNum; index++) {
+        if (catList[index].prob > minProb || index < minNum) {
+          const catInfo = catList[index];
+          catInfo.photo = await this.getCatPhoto(catInfo);
+          displayList.push(catInfo);
+        } else {
+          break;
+        }
       }
     }
+
     this.setData({
       catList: displayList
     });
+    wx.hideLoading();
   },
 
   // 根据模型输出的得分（即每个对象的score属性）计算softmax概率，并将结果放到原对象的prob属性上
@@ -357,7 +417,7 @@ Page({
       catIdx: null,
       showResultBox: false
     });
-    
+
     // 在适合的场景显示插屏广告
     // if (interstitialAd) {
     //   console.log("展示广告")
@@ -432,15 +492,21 @@ Page({
 
   adLoad() {
     console.log('Banner 广告加载成功')
-    this.setData({showAdBox: true});
+    this.setData({
+      showAdBox: true
+    });
   },
   adError(err) {
     console.log('Banner 广告加载失败', err)
-    this.setData({showAdBox: false});
+    this.setData({
+      showAdBox: false
+    });
   },
   adClose() {
     console.log('Banner 广告关闭')
-    this.setData({showAdBox: false});
+    this.setData({
+      showAdBox: false
+    });
   }
 
 })
