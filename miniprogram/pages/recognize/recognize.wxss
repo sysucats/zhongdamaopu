@@ -189,9 +189,27 @@ page {
   height: 70rpx;
 }
 
+.filter .picker{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.filter .picker .icon{
+  height: 12rpx;
+  width: 16rpx;
+}
+
+.filter .picker .type{
+  font-size: 25rpx;
+  margin-right: 10rpx;
+  color: var(--color-black-light);
+}
+
 .catCard {
   font-size: 24rpx;
-  padding: 20rpx 0;
+  padding: 20rpx 8rpx;
   display: flex;
   align-items: center;
 }
@@ -286,7 +304,7 @@ page {
 }
 
 .ad-tip {
-  margin-top: 10rpx;
+  margin-top: 8rpx;
   font-size: 24rpx;
   color: var(--color-gray-max);
   text-align: center;

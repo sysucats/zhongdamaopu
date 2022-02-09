@@ -50,12 +50,18 @@
     <view class="filter">
       <picker bindchange="catFilter" data-type="campus" value="{{index}}" range="{{campusList}}">
         <view class="picker">
-          {{campusList[campusIndex]}}
+          <view class="type">
+            {{campusList[campusIndex]}}
+          </view>
+          <image src="../../images/recognize/down.png" class="icon"></image>
         </view>
       </picker>
       <picker bindchange="catFilter" data-type="colour" value="{{index}}" range="{{colourList}}">
         <view class="picker">
-          {{colourList[colourIndex]}}
+          <view class="type">
+            {{colourList[colourIndex]}}
+          </view>
+          <image src="../../images/recognize/down.png" class="icon"></image>
         </view>
       </picker>
       <!-- <view class="campuses" bindtap="catFilter" data-type="campus">{{campus}}</view>
@@ -85,7 +91,7 @@
       </view>
       <view class="prob">{{m1.toFixed(100 * item.prob, 1) + '%'}}</view>
     </view>
-    <view class="footnote">*目前只有在猫谱具有10张以上高质量照片（照片清晰，且照片中只有一只猫猫）的猫猫才能被认出来哦！识别效果还在不断改进中~</view>
+    <view class="footnote">*目前仅拥有十张以上靓照（清晰正面、仅含一只）的猫猫才能被认到哦！多多上传帮忙改进识别效果吧~</view>
   </view>
 
   <view id="adBox" wx:if="{{catList.length && showResultBox && showAdBox}}">

@@ -256,7 +256,7 @@ Page({
     const now = cat.photo.length;
 
     wx.showLoading({
-      title: '加载中',
+      title: '加载中...',
       mask: true
     })
 

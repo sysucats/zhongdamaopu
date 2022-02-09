@@ -19,6 +19,8 @@ var recognizeResults = [];
 // 在页面中定义插屏广告
 let interstitialAd = null
 
+var campusIndexOld;
+var colourIndexOld;
 Page({
 
   /**
@@ -31,6 +33,9 @@ Page({
     photoBase64: null, // 用户选择的照片的base64编码，用于设置background-image
     campusList:['所有校区'],
     campusIndex:0,
+    campusIndexOld:0,
+    lastFilterType:'',
+    colourIndexOld:0,
     colourList:['所有花色'],
     colourIndex:0,
     catList: [], // 展示的猫猫列表
@@ -293,8 +298,11 @@ Page({
   },
 
   catFilter(res) {
+    //点击筛选picker
     var type = res.currentTarget.dataset.type;
     this.setData({
+      [type+'IndexOld']:this.data[type+'Index'],
+      lastFilterType:type,
       [type+'Index'] :res.detail.value
     })
     this.pickCatList();
@@ -304,32 +312,35 @@ Page({
     wx.showLoading({
       title: '筛选中...',
     })
+
     const that = this;
     console.log("recognizeResults:",recognizeResults);
+    const choseCampus = that.data.campusList[that.data.campusIndex];
+    const choseColour = that.data.colourList[that.data.colourIndex];
     const catList = recognizeResults.filter(cat => {
-      const choseCampus = that.data.campusList[that.data.campusIndex];
-      const choseColour = that.data.colourList[that.data.colourIndex];
       if ((choseCampus === cat.campus || choseCampus === "所有校区") &&( choseColour === cat.colour || choseColour ==="所有花色")) {
-        return true;
+        return true;//筛选结果
       }
     }
     ); 
 
     console.log("catList:", catList);
     if (catList.length === 0) {
+      wx.hideLoading();
+      this.setData({
+        [this.data.lastFilterType+'Index']:this.data[this.data.lastFilterType+"IndexOld"]// 无筛选结果，恢复原选项
+      })
       wx.showToast({
-        title: '没有筛选结果，试试换个选项吧',
+        title: '找不到这样的猫猫，试试换个选项吧',
         duration: 2000,
         icon: 'none',
-        mask: true,
+        mask: true
       })
-      wx.hideLoading();
       return false;
     }else{
       this.calculateSoftmaxProb(catList);
     }
 
-    
     let displayList = [];
     // 少于maxNum只全部展示；多于maxNum：最多maxNum只，最少minNum只，去除概率太低的
     const minProb = 0.001;
@@ -415,7 +426,9 @@ Page({
       catBoxList: [],
       catList: [],
       catIdx: null,
-      showResultBox: false
+      showResultBox: false,
+      campusIndex:0,
+      colourIndex:0
     });
 
     // 在适合的场景显示插屏广告
