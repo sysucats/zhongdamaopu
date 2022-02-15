@@ -150,7 +150,8 @@ Page({
     });
   },
   reloadPhotos() {
-    const qf = { cat_id: cat_id, verified: true };
+    const only_best_photo = this.data.only_best_photo;
+    const qf = { cat_id: cat_id, verified: true, best: only_best_photo };
     const db = wx.cloud.database();
     db.collection('photo').where(qf).count().then(res => {
       this.setData({
@@ -196,7 +197,8 @@ Page({
       return false;
     }
 
-    const qf = { cat_id: cat_id, verified: true };
+    const only_best_photo = this.data.only_best_photo;
+    const qf = { cat_id: cat_id, verified: true, best: only_best_photo };
     const now = photo.length;
 
     const db = wx.cloud.database();
@@ -428,6 +430,14 @@ Page({
           });
         }
       });
+    })
+  },
+  switchOnlyBest() {
+    const only_best_photo = this.data.only_best_photo;
+    this.setData({
+      only_best_photo: !only_best_photo
+    }, ()=>{
+      this.reloadPhotos();
     })
   }
 })

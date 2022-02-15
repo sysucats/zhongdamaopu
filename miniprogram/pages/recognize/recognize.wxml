@@ -1,74 +1,111 @@
 <!--pages/recognize/recognize.wxml-->
 
+<wxs module="m1">
+  var toFixed = function (value, precision) {
+    return value.toFixed(precision);
+  }
+  module.exports.toFixed = toFixed;
+</wxs>
+
 <!-- 压缩图片用 -->
 <canvas style="width: 500px; height: 500px; border: 1px solid red; left: 100000px; position: fixed;" canvas-id="canvasForCompress"></canvas>
 
 <view id="positionWrapper" class="{{catList.length ? 'flowUp' : ''}}">
 
-<view id="photoBox">
-  <view id="previewArea">
-    <!-- 无摄像头权限 -->
-    <view wx:if="{{!cameraAuth && !photoPath}}" id="authTips">
-      <text>你可以从相册选择猫猫照片\n或点击下方启用相机权限后直接拍照\n</text>
-      <button bindtap="reqCamAuth">启用相机权限</button>
-    </view>
-    <!-- 相机取景预览 -->
-    <camera wx:if="{{cameraAuth && !photoPath}}" device-position="{{devicePosition}}" resolution="high" frame-size="large" flash="off" id="cameraPreview"></camera>
-    <!-- 拍照/选图结果预览 -->
-    <view wx:if="{{photoPath}}" id="photoPreview" style="background-image: url('data:image/png;base64,{{photoBase64}}');" bindtap="tapPreview">
-      <view wx:for="{{catBoxList}}" wx:key="item" class="catBox {{index == 0 ? 'first' : ''}}" style="top: {{item.y}}rpx; left: {{item.x}}rpx; width: {{item.width}}rpx; height: {{item.height}}rpx;"></view>
-    </view>
-    <!-- 重新选图按钮 -->
-    <view wx:if="{{photoPath}}" id="resetButton" bindtap="reset">
-      <image src="../../images/recognize/back.png"></image>
-      重新选图
-    </view>
-  </view>
-  <!-- 拍照/选图前功能栏 -->
-  <view id="cameraControll" class="{{photoPath ? 'shrink' : ''}}">
-    <image class='btn' bindtap='choosePhoto' src='../../images/recognize/choose.png'></image>
-    <button id="shutter" disabled="{{!cameraAuth}}" bindtap="takePhoto"></button>
-    <image class='btn' bindtap='reverseCamera' src='../../images/recognize/reverse.png'></image>
-  </view>
-</view>
-
-<!-- 识别结果 -->
-<view id="resultBox" wx:if="{{catList.length && showResultBox}}">
-  <view class="tip" wx:if="{{catBoxList.length != 1}}">
-    <image mode='aspectFit' class='icon' src='../../images/tip.png'></image>
-    <text>{{!catBoxList.length ? '照片里好像没有猫猫' : '照片里好像有多只猫猫'}}</text>
-  </view>
-  <view class="title">{{!catBoxList.length ? '看起来，整张照片更像...' : (catBoxList.length == 1 ? '看起来，这张照片里的猫猫更像...' : '看起来，黄色框框中的猫猫更像...')}}</view>
-
-  <view wx:for="{{catList}}" wx:key="_id" class="catCard" data-cat-id="{{item._id}}" bindtap="tapCatCard">
-    <image class="photo" mode="aspectFill" src="{{item.photo.photo_compressed}}"></image>
-    <view class="info">
-      <view class='line first'>
-        <text class='name'>{{item.name}}</text>
-        <block wx:if='{{item.gender}}'>
-          <image mode='aspectFill' class='gender' wx:if='{{item.gender === "公"}}' src="../../images/card/card/male.png"></image>
-          <image mode='aspectFill' class='gender' wx:if='{{item.gender === "母"}}' src="../../images/card/card/female.png"></image>
-        </block>
-        <view wx:if='{{item.adopt}}'class='adopt'>已领养</view>
-        <view wx:if='{{item.to_star}}'class='to_star'>返回喵星</view>
+  <view id="photoBox">
+    <view id="previewArea">
+      <!-- 无摄像头权限 -->
+      <view wx:if="{{!cameraAuth && !photoPath}}" id="authTips">
+        <text>你可以从相册选择猫猫照片\n或点击下方启用相机权限后直接拍照\n</text>
+        <button bindtap="reqCamAuth">启用相机权限</button>
       </view>
-      <view class='line'>
-        <image mode='aspectFit' class='icon' src='../../images/card/card/cat.png'></image>
-        <text class="characteristics">{{item.colour}}猫</text>
+      <!-- 相机取景预览 -->
+      <camera wx:if="{{cameraAuth && !photoPath}}" device-position="{{devicePosition}}" resolution="high" frame-size="large" flash="off" id="cameraPreview"></camera>
+      <!-- 拍照/选图结果预览 -->
+      <view wx:if="{{photoPath}}" id="photoPreview" style="background-image: url('data:image/png;base64,{{photoBase64}}');" bindtap="tapPreview">
+        <view wx:for="{{catBoxList}}" wx:key="item" class="catBox {{(!catIdx || catIdx > catBoxList.length) && index === 0 || index === catIdx ? 'chosen' : ''}}" style="top: {{item.y}}rpx; left: {{item.x}}rpx; width: {{item.width}}rpx; height: {{item.height}}rpx;" catchtap="tapCatBox" data-index="{{index}}"></view>
       </view>
-      <view class='line'>
-        <image mode='aspectFit' class='icon' src='../../images/card/card/pos.png'></image>
-        <text>{{(item.campus + item.area) || '-'}}</text>
+      <!-- 重新选图按钮 -->
+      <view wx:if="{{photoPath}}" id="resetButton" bindtap="reset">
+        <image src="../../images/recognize/back.png"></image>
+        重新选图
       </view>
     </view>
-    <view class="prob">{{item.prob + '%'}}</view>
+    <!-- 拍照/选图前功能栏 -->
+    <view id="cameraControll" class="{{photoPath ? 'shrink' : ''}}">
+      <image class='btn' bindtap='choosePhoto' src='../../images/recognize/choose.png'></image>
+      <button id="shutter" disabled="{{!cameraAuth}}" bindtap="takePhoto"></button>
+      <image class='btn' bindtap='reverseCamera' src='../../images/recognize/reverse.png'></image>
+    </view>
   </view>
-  <view class="footnote">*目前只有在猫谱具有10张以上高质量照片（照片清晰，且照片中只有一只猫猫）的猫猫才能被认出来哦！识别效果还在不断改进中~</view>
-</view>
 
-<view id="adBox" wx:if="{{catList.length && showResultBox && showAdBox}}">
-  <view class="ad-tip">识别累了，帮忙点下广告喵（揉眼睛 ( '-ωก̀ )</view>
-  <ad unit-id="{{ad.banner}}" ad-intervals="30" bindload="adLoad" binderror="adError" bindclose="adClose"></ad>
-</view>
+  <!-- 识别结果 -->
+  <view id="resultBox" wx:if="{{catList.length && showResultBox}}">
+    <view class="tip" wx:if="{{catBoxList.length != 1}}">
+      <image mode='aspectFit' class='icon' src='../../images/tip.png'></image>
+      <text>{{!catBoxList.length ? '照片里好像没有猫猫' : '点击对应方框可以更改想识别的猫猫'}}</text>
+    </view>
+    <view class="title">{{!catBoxList.length ? '看起来，整张照片更像...' : (catBoxList.length == 1 ? '看起来，这张照片里的猫猫更像...' : '看起来，黄色框框中的猫猫更像...')}}</view>
+
+    <view class="filter">
+      <picker bindchange="catFilter" data-type="campus" value="{{index}}" range="{{campusList}}">
+        <view class="picker">
+          <view class="type">
+            {{campusList[campusIndex]}}
+          </view>
+          <image src="../../images/recognize/down.png" class="icon"></image>
+        </view>
+      </picker>
+      <picker bindchange="catFilter" data-type="colour" value="{{index}}" range="{{colourList}}">
+        <view class="picker">
+          <view class="type">
+            {{colourList[colourIndex]}}
+          </view>
+          <image src="../../images/recognize/down.png" class="icon"></image>
+        </view>
+      </picker>
+      <!-- <view class="campuses" bindtap="catFilter" data-type="campus">{{campus}}</view>
+      <view class="colour" bindtap="catFilter" data-type="colour">{{colour}}</view> -->
+    </view>
+
+    <view wx:for="{{catList}}" wx:key="_id" class="catCard" data-cat-id="{{item._id}}" bindtap="tapCatCard">
+      <image class="photo" mode="aspectFill" src="{{item.photo.photo_compressed}}"></image>
+      <view class="info">
+        <view class='line first'>
+          <text class='name'>{{item.name}}</text>
+          <block wx:if='{{item.gender}}'>
+            <image mode='aspectFill' class='gender' wx:if='{{item.gender === "公"}}' src="../../images/card/card/male.png"></image>
+            <image mode='aspectFill' class='gender' wx:if='{{item.gender === "母"}}' src="../../images/card/card/female.png"></image>
+          </block>
+          <view wx:if='{{item.adopt}}' class='adopt'>已领养</view>
+          <view wx:if='{{item.to_star}}' class='to_star'>返回喵星</view>
+        </view>
+        <view class='line'>
+          <image mode='aspectFit' class='icon' src='../../images/card/card/cat.png'></image>
+          <text class="characteristics">{{item.colour}}猫</text>
+        </view>
+        <view class='line'>
+          <image mode='aspectFit' class='icon' src='../../images/card/card/pos.png'></image>
+          <text>{{(item.campus + item.area) || '-'}}</text>
+        </view>
+      </view>
+      <view class="prob">{{m1.toFixed(100 * item.prob, 1) + '%'}}</view>
+    </view>
+    <view class="footnote">*目前仅拥有十张以上靓照（清晰正面、仅含一只）的猫猫才能被认到哦！多多上传帮忙改进识别效果吧~</view>
+  </view>
+
+  <view id="adBox" wx:if="{{catList.length && showResultBox && showAdBox}}">
+    <view class="ad-tip">识别累了，帮忙点下广告喵（揉眼睛 ( '-ωก̀ )</view>
+    <ad unit-id="{{ad.banner}}" ad-intervals="30" bindload="adLoad" binderror="adError" bindclose="adClose"></ad>
+  </view>
 
 </view><!-- positionWrapper -->
+
+<!-- <view class="section">
+  <view class="section__title">选择</view>
+  <picker bindchange="bindPickerChange" value="{{index}}" range="{{array}}">
+    <view class="picker">
+      当前选择：{{array[index]}}
+    </view>
+  </picker>
+</view> -->

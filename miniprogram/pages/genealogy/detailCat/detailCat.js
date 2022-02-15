@@ -7,6 +7,12 @@ const checkCanUpload = utils.checkCanUpload;
 const checkMultiClick = utils.checkMultiClick;
 const formatDate = utils.formatDate;
 
+const getCatCommentCount = require('../../../comment.js').getCatCommentCount;
+
+const cat_utils = require('../../../cat.js');
+const setVisitedDate = cat_utils.setVisitedDate;
+
+
 // 页面设置，从global读取
 var page_settings = {};
 var photoMax = 0;
@@ -44,6 +50,7 @@ Page({
     canvas: {}, // 画布的宽高
     canUpload: false, // 是否可以上传照片
     showGallery: false,
+    imgCompressedUrls: [], // 预览组件使用的URLs
     imgUrls: [], // 预览组件使用的URLs
     currentImg: 0, // 预览组件当前预览的图片
     photoOrderSelectorRange: photoOrder,
@@ -96,6 +103,9 @@ Page({
         console.log(res);
       });
     }
+
+    // 记录访问时间，消除“有新相片”
+    setVisitedDate(cat_id);
   },
 
   /**
@@ -188,6 +198,7 @@ Page({
         cat: res.data
       }, ()=> {
         this.reloadPhotos();
+        this.loadCommentCount();
         var query = wx.createSelectorQuery();
         query.select('#info-box').boundingClientRect();
         query.exec((res) => {
@@ -207,6 +218,16 @@ Page({
       this.loadMorePhotos();
     });
     this.reloadAlbum();
+  },
+
+  loadCommentCount() {
+    const that = this;
+    getCatCommentCount(cat_id).then(count => {
+      console.log(count);
+      that.setData({
+        "cat.comment_count": count
+      });
+    })
   },
 
   reloadAlbum() {
@@ -235,7 +256,7 @@ Page({
     const now = cat.photo.length;
 
     wx.showLoading({
-      title: '加载中',
+      title: '加载中...',
       mask: true
     })
 
@@ -274,44 +295,24 @@ Page({
     whichGallery = e.currentTarget.dataset.kind;
     if (whichGallery == 'best') {
       if (this.data.cat.photo.length - this.currentImg <= preload) await this.loadMorePhotos(); //preload
-      // this.imgUrls = this.data.cat.photo.map((photo) => {
-      //   // 展示压缩图（流量预警！）
-      //   if (page_settings.galleryCompressed) {
-      //     return (photo.photo_compressed || photo.photo_watermark || photo.photo_id);
-      //   }
-      //   return (photo.photo_watermark || photo.photo_id);
-      // });
+      var photos = this.data.cat.photo;
       // 先全部用本地占位图片填充，避免全部都加载耗时太长
-      this.imgUrls = new Array(this.data.cat.photo.length).fill('../../../images/gallery_placeholder.png');
-      // 立刻展示的图片不应当使用占位图
-      let photo = this.data.cat.photo[this.currentImg];
-      if (page_settings.galleryCompressed) {
-        this.imgUrls[this.currentImg] = (photo.photo_compressed || photo.photo_watermark || photo.photo_id);
-      } else {
-        this.imgUrls[this.currentImg] = (photo.photo_watermark || photo.photo_id);
-      }
-    } else { // album
+      // this.imgUrls = new Array(this.data.cat.photo.length).fill('../../../images/gallery_placeholder.png');
+    } else if (whichGallery == 'album') {
       if (album_raw.length - this.currentImg <= preload) await this.loadMoreAlbum(); // preload
-      // this.imgUrls = album_raw.map((photo) => {
-      //   // 展示压缩图（流量预警！）
-      //   if (page_settings.galleryCompressed) {
-      //     return (photo.photo_compressed || photo.photo_watermark || photo.photo_id);
-      //   }
-      //   return (photo.photo_watermark || photo.photo_id);
-      // });
-      // 先全部用本地占位图片填充，避免全部都加载耗时太长
-      this.imgUrls = new Array(album_raw.length).fill('../../../images/gallery_placeholder.png');
-      // 立刻展示的图片不应当使用占位图
-      let photo = album_raw[this.currentImg];
-      if (page_settings.galleryCompressed) {
-        this.imgUrls[this.currentImg] = (photo.photo_compressed || photo.photo_watermark || photo.photo_id);
-      } else {
-        this.imgUrls[this.currentImg] = (photo.photo_watermark || photo.photo_id);
-      }
+      var photos = album_raw;
     }
+
+    this.imgCompressedUrls = photos.map((photo) => {
+      return (photo.photo_compressed || photo.photo_watermark || photo.photo_id);
+    });
+    this.imgUrls = photos.map((photo) => {
+      return (photo.photo_watermark || photo.photo_id);
+    });
     this.setData({
       showGallery: true,
       imgUrls: this.imgUrls,
+      imgCompressedUrls: this.imgCompressedUrls,
       currentImg: this.currentImg,
     });
     wx.hideLoading();
@@ -321,48 +322,39 @@ Page({
     const index = e.detail.current;
     this.currentImg = index; // 这里得记一下，保存的时候需要
     // 把占位图片换成真正要显示的图片
-    let photo = whichGallery == 'best' ? this.data.cat.photo[index] : album_raw[index];
-    if (page_settings.galleryCompressed) {
-      this.imgUrls[index] = (photo.photo_compressed || photo.photo_watermark || photo.photo_id);
-    } else {
-      this.imgUrls[index] = (photo.photo_watermark || photo.photo_id);
-    }
-    this.setData({
-      imgUrls: this.imgUrls
-    });
+    // let photo = whichGallery == 'best' ? this.data.cat.photo[index] : album_raw[index];
+    // if (page_settings.galleryCompressed) {
+    //   this.imgUrls[index] = (photo.photo_compressed || photo.photo_watermark || photo.photo_id);
+    // } else {
+    //   this.imgUrls[index] = (photo.photo_watermark || photo.photo_id);
+    // }
+    // this.setData({
+    //   imgUrls: this.imgUrls
+    // });
     // preload逻辑
     const preload = page_settings.galleryPreload;
-    if (whichGallery == 'best') {
-      if (this.imgUrls.length - index <= preload && this.imgUrls.length < photoMax) {
-        wx.showLoading({
-          title: '加载更多中...',
-          mask: true,
-        })
-        await this.loadMorePhotos(); //preload
-        this.imgUrls = this.data.cat.photo.map((photo) => {
-          return (photo.photo_watermark || photo.photo_id);
-        });
-        this.setData({
-          imgUrls: this.imgUrls
-        });
-        wx.hideLoading();
-      }
-    } else { //album
-      if (this.imgUrls.length - index <= preload && this.imgUrls.length < albumMax) {
-        wx.showLoading({
-          title: '加载更多中...',
-          mask: true,
-        })
-        await this.loadMoreAlbum(); // preload
-        this.imgUrls = album_raw.map((photo) => {
-          return (photo.photo_watermark || photo.photo_id);
-        });
-        this.setData({
-          imgUrls: this.imgUrls
-        });
-        wx.hideLoading();
-      }
+    if (whichGallery == 'best' && this.imgUrls.length - index <= preload && this.imgUrls.length < photoMax) {
+      console.log("加载更多精选图");
+      await this.loadMorePhotos(); //preload
+      
+      var photos = this.data.cat.photo;
+    } else if (whichGallery == 'album' && this.imgUrls.length - index <= preload && this.imgUrls.length < albumMax) { //album
+      await this.loadMoreAlbum(); // preload
+      var photos = album_raw;
+    } else {
+      return;
     }
+    
+    this.imgCompressedUrls = photos.map((photo) => {
+      return (photo.photo_compressed || photo.photo_watermark || photo.photo_id);
+    });
+    this.imgUrls = photos.map((photo) => {
+      return (photo.photo_watermark || photo.photo_id);
+    });
+    this.setData({
+      imgCompressedUrls: this.imgCompressedUrls,
+      imgUrls: this.imgUrls
+    });
   },
 
   bindImageLoaded(e) {
@@ -567,5 +559,19 @@ Page({
       title: '猫猫人气值',
       icon: "none"
     });
+  },
+
+  showCommentTip() {
+    wx.showToast({
+      title: '猫猫留言数',
+      icon: "none"
+    });
+  },
+
+  toComment() {
+    const url = `/pages/genealogy/commentBoard/commentBoard?cat_id=${cat_id}`
+    wx.navigateTo({
+      url: url,
+    })
   }
 })

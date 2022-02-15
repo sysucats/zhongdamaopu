@@ -28,9 +28,13 @@ next-margin='60rpx'>
       <image mode='aspectFill' class='gender' wx:if='{{cat.gender === "公"}}' src="../../../images/card/card/male.png"></image>
       <image mode='aspectFill' class='gender' wx:if='{{cat.gender === "母"}}' src="../../../images/card/card/female.png"></image>
     </block>
-    <view class='popularity' bindtap="showPopularityTip">
+    <view class='popularity' bindtap="showPopularityTip" wx:if="{{cat.popularity != undefined}}">
       <image src='../../../images/card/card/pop.png'></image>
       <text> {{cat.popularity + (cat.photo_count_total? cat.photo_count_total * photoPopWeight: 0)}}</text>
+    </view>
+    <view class='comment' bindtap="showCommentTip" wx:if="{{cat.comment_count != undefined}}">
+      <image src='../../../images/card/card/comment.png'></image>
+      <text> {{cat.comment_count || 0}}</text>
     </view>
   </view>
 
@@ -166,6 +170,15 @@ next-margin='60rpx'>
 <view class="addPhoto" bindtap='bindAddPhoto'>
 <image class="icon" wx:if="{{canUpload}}" src='../../../images/addPhoto.png'></image>
 </view>
+
+<!-- 进入留言板 -->
+<view id="comment-btn" bindtap="toComment">
+  <text>留言板</text>
+  <image src="../../../images/right_double_arrow.png" mode="aspectFit"></image>
+</view>
 </scroll-view>
 
-<mp-gallery show="{{showGallery}}" bindchange="bindGalleryChange" img-urls="{{imgUrls}}" current="{{currentImg}}" hide-on-click="{{true}}" showDelete="{{false}}" bindlongpress='bindGalleryLongPress'></mp-gallery>
+<mp-gallery show="{{showGallery}}" 
+img-compressed-urls="{{imgCompressedUrls}}" img-urls="{{imgUrls}}" current="{{currentImg}}"
+hide-on-click="{{true}}" 
+bindchange="bindGalleryChange"></mp-gallery>

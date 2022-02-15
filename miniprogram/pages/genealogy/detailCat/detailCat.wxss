@@ -94,7 +94,20 @@ swiper-item image {
 }
 .popularity image {
   height: 20rpx;
-  width: 39rpx;
+  width: 35rpx;
+}
+
+.info .comment {
+  margin-left: 10rpx;
+  order: 2;
+  display: inline;
+  font-size: 22rpx;
+  letter-spacing: 1rpx;
+  color: var(--color-black-light);
+}
+.comment image {
+  height: 27rpx;
+  width: 27rpx;
 }
 
 .tags {
@@ -191,7 +204,7 @@ swiper-item image {
   height: 55rpx;
   box-sizing: border-box;
   border-radius: 15rpx;
-  background-color: var(--color-primary);
+  /* background-color: var(--color-primary); */
   padding: 25rpx 20rpx;
   margin-right: 40rpx;
 
@@ -206,7 +219,7 @@ swiper-item image {
   margin: 0 0 0 10rpx ;
 }
 .sort-button .type {
-  font-weight: 300;
+  font-weight: 400;
   margin-left: 5rpx;
 }
 
@@ -338,4 +351,36 @@ swiper-item image {
   color: var(--color-black-min);
   font-weight: 400;
   margin-bottom: 30rpx;
+}
+
+#comment-btn {
+  width: 60rpx;
+  height: 160rpx;
+  position: absolute;
+  right: 0;
+  top: 60%;
+
+  background-color: var(--color-primary);
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  border-top-left-radius: 10rpx;
+  border-bottom-left-radius: 10rpx;
+
+  padding-top: 9rpx;
+}
+
+#comment-btn text {
+  font-size: 26rpx;
+  writing-mode: vertical-rl;
+  display: block;
+}
+
+#comment-btn image {
+  width: 22rpx;
+  height: 24rpx;
+  margin-top: 12rpx;
 }

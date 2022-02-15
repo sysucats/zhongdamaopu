@@ -4,6 +4,7 @@ const utils = require('../../utils.js');
 const sha256 = utils.sha256;
 const getGlobalSettings = utils.getGlobalSettings;
 const randomInt = utils.randomInt;
+const loadFilter = utils.loadFilter;
 
 // 接口设置，onLoad中从数据库拉取。
 var interfaceURL;
@@ -12,9 +13,14 @@ var secretKey;
 // 图片长宽比，在compresPhoto函数中记录。用于重新映射后端返回的catBox位置信息。
 var widthHeightRatio;
 
+// 接口返回的识别结果。展示的结果为在此基础上筛选。
+var recognizeResults = [];
+
 // 在页面中定义插屏广告
 let interstitialAd = null
 
+var campusIndexOld;
+var colourIndexOld;
 Page({
 
   /**
@@ -25,8 +31,16 @@ Page({
     devicePosition: 'back', // 前置/后置摄像头
     photoPath: null, // 用户选择的照片的路径
     photoBase64: null, // 用户选择的照片的base64编码，用于设置background-image
+    campusList:['所有校区'],
+    campusIndex:0,
+    campusIndexOld:0,
+    lastFilterType:'',
+    colourIndexOld:0,
+    colourList:['所有花色'],
+    colourIndex:0,
     catList: [], // 展示的猫猫列表
     catBoxList: [], // 展示的猫猫框列表
+    catIdx: null, // 在有多只猫猫的图片中，识别的猫猫的编号
     showResultBox: false, // 用来配合动画延时展示resultBox
     showAdBox: true, // 展示banner广告
     ad: {
@@ -47,6 +61,15 @@ Page({
       interstitialAd.onClose(() => {})
     }
 
+    const that= this;
+    loadFilter().then(res => {
+      console.log('filterRes:', res);
+      that.setData({
+        campusList:['所有校区'].concat(res.campuses),
+        colourList:['所有花色'].concat(res.colour)
+      })
+    })
+
     // var that = this;
     // getGlobalSettings('recognize').then(settings => {
     //   interfaceURL = settings.interfaceURL;
@@ -56,44 +79,45 @@ Page({
     this.checkAuth();
   },
 
-  onShow(){
+  onShow() {
     var that = this;
     if (!interfaceURL || !secretKey) {
-      getGlobalSettings('recognize').then(settings => {
+      console.log('__wxConfig.envVersion: ', __wxConfig.envVersion);
+      getGlobalSettings(__wxConfig.envVersion === 'release' ? 'recognize' : 'recognize_test').then(settings => {
         interfaceURL = settings.interfaceURL;
         secretKey = settings.secretKey;
       }).then(that.recognizeChatImage);
-    }else{// 没杀后台回到聊天重新识别的情况
+    } else { // 没杀后台回到聊天重新识别的情况
       this.recognizeChatImage()
     }
   },
 
 
-  recognizeChatImage(){
-    var that = this;
+  recognizeChatImage() {
     var launchOptions = wx.getEnterOptionsSync();
-    console.log("lanOpt:",launchOptions);
-    if (launchOptions.scene != 1173) {
-      return false
+    console.log("lanOpt:", launchOptions);
+    if (launchOptions.scene !== 1173) {
+      return;
     }
     var chatImage = launchOptions.forwardMaterials[0].path;
-    if (this.data.photoPath == chatImage) {
+    if (this.data.photoPath === chatImage) {
       // 已经识别了
-      return false
+      return;
     }
+    this.reset();
     //从聊天素材打开，识别素材图片
-    that.setData({
+    this.setData({
       photoPath: chatImage,
       photoBase64: wx.getFileSystemManager().readFileSync(chatImage, 'base64')
     });
-    that.recognizePhoto();
+    this.recognizePhoto();
   },
 
   async checkAuth() {
     let setting = await wx.getSetting();
     console.log('auth setting:', setting.authSetting);
     this.setData({
-      cameraAuth: setting.authSetting['scope.camera']
+      cameraAuth: setting.authSetting['scope.camera'] || false
     });
   },
 
@@ -151,14 +175,18 @@ Page({
     const signature = sha256.hex_sha256(photoBase64 + timestamp + secretKey);
     // 调用服务端接口进行识别
     const that = this;
+    const formData = {
+      timestamp: timestamp,
+      signature: signature,
+    };
+    if (this.data.catIdx !== null) {
+      formData.catIdx = this.data.catIdx;
+    }
     wx.uploadFile({
       filePath: compressPhotoPath,
       name: 'photo',
       url: interfaceURL,
-      formData: {
-        timestamp: timestamp,
-        signature: signature
-      },
+      formData: formData,
       timeout: 10 * 1000, // 10s超时
       async success(resp) {
         try {
@@ -253,27 +281,12 @@ Page({
       });
     }
     console.log("cat box list:", catBoxList);
-    // 解析识别结果
-    let recognizeResults = result.recognizeResults;
-    let catList = [];
-    // 最多maxNum只，最少minNum只，去除概率太低的
-    const minProb = 0.001;
-    const minNum = 3;
-    const maxNum = 5;
-    for (let index = 0; index < maxNum; index++) {
-      if (recognizeResults[index].prob > minProb || index < minNum) {
-        let cat = recognizeResults[index];
-        let catInfo = await this.getCatInfo(cat);
-        catList.push(catInfo);
-      } else {
-        break;
-      }
-    }
-    console.log("cat list:", catList);
     this.setData({
-      catBoxList: catBoxList,
-      catList: catList
+      catBoxList: catBoxList
     });
+    // 识别结果
+    recognizeResults = await Promise.all(result.recognizeResults.map(this.getCatInfo));
+    await this.pickCatList();
     wx.hideLoading();
     // 在布局完成上移后展示resultBox
     const that = this;
@@ -284,12 +297,94 @@ Page({
     }, 500);
   },
 
+  catFilter(res) {
+    //点击筛选picker
+    var type = res.currentTarget.dataset.type;
+    this.setData({
+      [type+'IndexOld']:this.data[type+'Index'],
+      lastFilterType:type,
+      [type+'Index'] :res.detail.value
+    })
+    this.pickCatList();
+  },
+
+  async pickCatList() {
+    wx.showLoading({
+      title: '筛选中...',
+    })
+
+    const that = this;
+    console.log("recognizeResults:",recognizeResults);
+    const choseCampus = that.data.campusList[that.data.campusIndex];
+    const choseColour = that.data.colourList[that.data.colourIndex];
+    const catList = recognizeResults.filter(cat => {
+      if ((choseCampus === cat.campus || choseCampus === "所有校区") &&( choseColour === cat.colour || choseColour ==="所有花色")) {
+        return true;//筛选结果
+      }
+    }
+    ); 
+
+    console.log("catList:", catList);
+    if (catList.length === 0) {
+      wx.hideLoading();
+      this.setData({
+        [this.data.lastFilterType+'Index']:this.data[this.data.lastFilterType+"IndexOld"]// 无筛选结果，恢复原选项
+      })
+      wx.showToast({
+        title: '找不到这样的猫猫，试试换个选项吧',
+        duration: 2000,
+        icon: 'none',
+        mask: true
+      })
+      return false;
+    }else{
+      this.calculateSoftmaxProb(catList);
+    }
+
+    let displayList = [];
+    // 少于maxNum只全部展示；多于maxNum：最多maxNum只，最少minNum只，去除概率太低的
+    const minProb = 0.001;
+    const minNum = 3;
+    const maxNum = 5;
+
+    if (catList.length <= maxNum) {
+      for (let index = 0; index < catList.length; index++) {
+        const catInfo = catList[index];
+        catInfo.photo = await this.getCatPhoto(catInfo);
+        displayList.push(catInfo);
+      }      
+    }else{
+      for (let index = 0; index < maxNum; index++) {
+        if (catList[index].prob > minProb || index < minNum) {
+          const catInfo = catList[index];
+          catInfo.photo = await this.getCatPhoto(catInfo);
+          displayList.push(catInfo);
+        } else {
+          break;
+        }
+      }
+    }
+
+    this.setData({
+      catList: displayList
+    });
+    wx.hideLoading();
+  },
+
+  // 根据模型输出的得分（即每个对象的score属性）计算softmax概率，并将结果放到原对象的prob属性上
+  calculateSoftmaxProb(catList) {
+    const scores = catList.map(item => item.score);
+    const maxScore = scores.reduce((prev, cur) => Math.max(prev, cur));
+    const expScoreSum = scores.reduce((prev, cur) => prev + Math.exp(cur - maxScore), 0);
+    catList.forEach(item => {
+      item.prob = Math.exp(item.score - maxScore) / expScoreSum;
+    });
+  },
+
   async getCatInfo(cat) {
     const db = wx.cloud.database();
     const catInfo = (await db.collection('cat').doc(cat.catID).get()).data;
-    catInfo.prob = (cat.prob * 100).toFixed(1);
-    let photo = await this.getCatPhoto(catInfo);
-    catInfo.photo = photo;
+    catInfo.score = cat.score;
     return catInfo;
   },
 
@@ -330,9 +425,12 @@ Page({
       photoBase64: null,
       catBoxList: [],
       catList: [],
-      showResultBox: false
+      catIdx: null,
+      showResultBox: false,
+      campusIndex:0,
+      colourIndex:0
     });
-    
+
     // 在适合的场景显示插屏广告
     // if (interstitialAd) {
     //   console.log("展示广告")
@@ -385,6 +483,19 @@ Page({
     });
   },
 
+  tapCatBox(e) {
+    const index = e.currentTarget.dataset.index;
+    const currentCatIdx = this.data.catIdx in this.data.catBoxList ? this.data.catIdx : 0;
+    if (index !== currentCatIdx) {
+      this.setData({
+        catList: [],
+        showResultBox: false,
+        catIdx: index,
+      });
+      this.recognizePhoto();
+    }
+  },
+
   onShareAppMessage() {
     return {
       title: '拍照识猫 - 中大猫谱',
@@ -394,15 +505,21 @@ Page({
 
   adLoad() {
     console.log('Banner 广告加载成功')
-    this.setData({showAdBox: true});
+    this.setData({
+      showAdBox: true
+    });
   },
   adError(err) {
     console.log('Banner 广告加载失败', err)
-    this.setData({showAdBox: false});
+    this.setData({
+      showAdBox: false
+    });
   },
   adClose() {
     console.log('Banner 广告关闭')
-    this.setData({showAdBox: false});
+    this.setData({
+      showAdBox: false
+    });
   }
 
 })

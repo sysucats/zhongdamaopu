@@ -42,13 +42,17 @@
   <button class='primary' bindtap='upload'>确定提交</button>
 
   <view class='label'>照片：</view>
+  <view class="switch-box">
+    <switch checked="{{switch1Checked}}" bindchange="switchOnlyBest"/>只显示精选照片
+  </view>
   <view class='card' wx:for='{{photo}}' wx:key="_id">
     <view class='label light'>-- 第{{index + 1}}张  --</view>
     <view class='label light'>上传者：{{item.userInfo.nickName || '匿名'}}</view>
+    <view class='label light'>摄影师：{{item.photographer || item.userInfo.nickName}}</view>
     <view class='label light'>拍摄日期：{{item.shooting_date || '暂无'}}</view>
-    <view class='label'>摄影师：</view>
+    <!-- <view class='label'>摄影师：</view>
     <input type='text' value='{{item.photographer}}' placeholder='默认为上传者' bindinput='inputPher' data-pid='{{item._id}}'></input>
-    <button bindtap='updatePher' data-photo='{{item}}' data-index='{{index}}'>更新摄影师</button>
+    <button bindtap='updatePher' data-photo='{{item}}' data-index='{{index}}'>更新摄影师</button> -->
     <view class='photo'>
       <image mode='aspectFill' src='{{item.photo_compressed === undefined ? item.photo_id: item.photo_compressed}}'></image>
       <view class='best' wx:if='{{item.best}}'>精选照片</view>

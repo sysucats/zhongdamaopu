@@ -29,7 +29,8 @@
     "pages/organization/orgsettings/orgsettings",
     "pages/organization/addorgcat/addorgcat",
     "pages/organization/detailorgcat/detailorgcat",
-    "pages/recognize/recognize"
+    "pages/recognize/recognize",
+    "pages/genealogy/commentBoard/commentBoard"
   ],
   "tabBar": {
     "selectedColor": "#000",

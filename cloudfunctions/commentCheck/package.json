@@ -1,5 +1,5 @@
 {
-  "name": "subMsgTimer",
+  "name": "commentCheck",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -9,6 +9,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "wx-server-sdk": "~2.3.2"
+    "wx-server-sdk": "~2.5.3"
   }
 }

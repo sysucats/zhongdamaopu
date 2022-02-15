@@ -5,11 +5,12 @@ const shareTo = utils.shareTo;
 const getGlobalSettings = utils.getGlobalSettings;
 
 const user = require('../../../user.js');
-const getUserInfoOrFalse = user.getUserInfoOrFalse;
+const getCurUserInfoOrFalse = user.getCurUserInfoOrFalse;
 const toggleUserNoticeSetting = user.toggleUserNoticeSetting;
 
 const msg = require('../../../msg.js');
 const requestNotice = msg.requestNotice;
+const sendNotifyChkFeeedback = msg.sendNotifyChkFeeedback;
 
 Page({
 
@@ -54,7 +55,7 @@ Page({
   getUInfo() {
     const that = this;
     // 检查用户信息有没有拿到，如果有就更新this.data
-    getUserInfoOrFalse().then(res => {
+    getCurUserInfoOrFalse().then(res => {
       if (!res) {
         console.log('未授权');
         return;
@@ -112,6 +113,7 @@ Page({
       data: data,
       success: (res) => {
         console.log(res);
+        sendNotifyChkFeeedback().then();
         that.setData({
           feedbackId : res._id
         })

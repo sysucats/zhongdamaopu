@@ -8,7 +8,9 @@ const msg = require('../../../msg.js');
 const requestNotice = msg.requestNotice;
 const sendVerifyNotice = msg.sendVerifyNotice;
 // const verifyTplId = msg.verifyTplId;
-const notifyVerifyPhotoTplId = msg.notifyVerifyTplId;
+
+const config = require('../../../config.js');
+const notifyVerifyPhotoTplId = config.msg.notifyVerify.id;
 
 // 准备发送通知的列表，姓名：审核详情
 var notice_list = {};
