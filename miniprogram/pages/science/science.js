@@ -1,5 +1,7 @@
 // miniprogram/pages/science/science.js
 const config = require('../../config.js');
+const text_cfg = config.text;
+const share_text = text_cfg.app_name + ' - ' + text_cfg.science.share_tip;
 
 Page({
   data: {
@@ -65,7 +67,7 @@ Page({
    */
   onShareAppMessage: function () {
     return {
-      title: '科普 - 中大猫谱'
+      title: share_text
     }
   },
 

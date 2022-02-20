@@ -16,6 +16,7 @@ const getVisitedDate = cat_utils.getVisitedDate;
 const getCatCommentCount = require('../../comment.js').getCatCommentCount;
 
 const config = require('../../config.js')
+const text_cfg = config.text
 
 const default_png = undefined;
 
@@ -25,6 +26,9 @@ var loadingLock = 0; // 用于下滑刷新加锁
 var pageLoadingLock = true; // 用于点击按钮刷新加锁
 
 const tipInterval = 24; // 提示间隔时间 hours
+
+// 分享的标语
+const share_text = text_cfg.app_name + ' - ' + text_cfg.genealogy.share_tip;
 
 Page({
 
@@ -230,13 +234,13 @@ Page({
    */
   onShareAppMessage: function () {
     return {
-      title: '猫谱 - 中大猫谱'
+      title: share_text
     }
   },
 
   onShareTimeline:function () {
     return {
-      title: '中大猫谱 - 发现校园身边的猫咪',
+      title: share_text,
       // query: 'cat_id=' + this.data.cat._id
     }
   },

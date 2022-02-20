@@ -1,3 +1,6 @@
+// *** 修改指引 *** //
+// 只修改双引号内部的文字，不要修改没有双引号包裹的文字，否则会导致程序出错
+
 module.exports = {
   // 科普页图片
   science_imgs: [
@@ -64,5 +67,98 @@ module.exports = {
         time: "date4", // 时间
       }
     },
+  },
+
+  // 各种文字内容
+  text: {
+    // 小程序名
+    app_name: "中大猫谱",
+    // 首页，pages/genealogy/genealogy
+    genealogy: {
+      share_tip: "发现身边校园猫咪",
+    },
+    // 关于页，pages/info/info
+    info: {
+      share_tip: "关于",
+      slogan: "拍照记录校园内猫猫的成长轨迹",
+    },
+    // 猫猫详情页，pages/genealogy/detailCat/detailCat
+    detail_cat: {
+      bottom_text_loading: "LOADING...",
+      bottom_text_end: "- THE END -",
+      popularity_tip: "猫猫人气值",
+      comment_tip: "猫猫留言数",
+    },
+    // 提交反馈页，pages/genealogy/feedbackDetail/feedbackDetail
+    feedback_detail: {
+      feedback_tip: "猫猫信息纠错、照片归属权、功能改进等~",
+      contract_tip: "（选填）微信/QQ/邮箱",
+      submit_tip: "*反馈内容仅后台工作人员可见",
+    },
+    // 提交留言页，pages/genealogy/commentBoard/commentBoard
+    comment_board: {
+      ban_tip: "如有误封请在\"关于-信息反馈\"中留言~",
+      auth_tip: "授权后进行留言~",
+      comment_tip: "发条友善的留言吧~"
+    },
+    // 添加照片，pages/genealogy/addPhoto/addPhoto
+    add_photo: {
+      auth_tip: "授权后进行上传~",
+      uploading_tip: "正在上传...",
+      success_tip_title: "上传成功！",
+      success_tip_content: "审核后就会展示出来啦",
+      unfinished_tip_title: "提示",
+      unfinished_tip_content: "填写信息后再上传哦！",
+    },
+    // 赞赏页，pages/info/reward/reward
+    reward: {
+      share_tip: "打赏罐头",
+      ad_success_tip: "多谢喵(ฅ'ω'ฅ)!",
+      ad_fail_tip: "没播完喵...",
+      reward_tip_title: "打赏罐头",
+      reward_tip: "您的捐款及广告收入将用作猫猫救助，每月的收支都会在“笃行志愿服务队”公众号进行公开，感谢您对中大流浪猫的帮助与支持！\n喵(^･ｪ･^)",
+      reward_count_tip: "* 每月统计一次，在公众号公示，多谢晒（鞠躬）",
+      reward_title: "爱心捐款",
+    },
+    // 排行页，pages/info/photoRank/photoRank
+    photo_rank: {
+      share_tip: "拍照月榜",
+      auth_tip_title: "请授权查看自己的排名",
+      auth_tip: "点击授权",
+      count_tip: "* 每3小时自动更新"
+    },
+    // 反馈页，pages/info/feedback/feedback
+    feedback: {
+      share_tip: "信息反馈",
+      feedback_tip_title: "留下反馈",
+      feedback_tip: "每一条反馈我们都会认真看滴",
+      new_cat_tip_title: "新的猫猫",
+      new_cat_tip: "提交猫谱中没有的猫猫信息，给猫猫上户口~",
+      contract_tip_title: "更多联系",
+      contract_tip: "有关猫猫信息添加、小程序的建议、照片维权、猫猫领养咨询等事项，请关注笃行志愿服务队公众号后留言，或邮件：dxzyfwd@163.com",
+    },
+    // 开发团队页，pages/info/devTeam/devTeam
+    dev_team: {
+      share_tip: "开发团队",
+      team: "程序开发：渔政、蓝卷、XD、zJ、ArcherJo\n资料维护：Lo\n初期资料整理：hehe、玥琪、大米\n以及各校区猫群的小伙伴~\n非常欢迎新朋友加入设计开发哇~！",
+    },
+    // 识猫页，pages/recognize/recognize
+    recognize: {
+      share_tip: "拍照识猫",
+      select_tip: "你可以从相册选择猫猫照片\n或点击下方启用相机权限后直接拍照\n",
+      select_btn: "启用相机权限",
+      reselect_btn: "重新选图",
+      no_cat_tip: "照片里好像没有猫猫",
+      multi_cat_tip: "点击对应方框可以更改想识别的猫猫",
+      no_cat_rec_tip: "看起来，整张照片更像...",
+      single_cat_rec_tip: "看起来，这张照片里的猫猫更像...",
+      multi_cat_rec_tip: "看起来，黄色框框中的猫猫更像...",
+      bottom_tip: "*目前仅拥有十张以上靓照（清晰正面、仅含一只）的猫猫才能被认到哦！多多上传帮忙改进识别效果吧~",
+      ad_tip: "识别累了，帮忙点下广告喵（揉眼睛 ( '-ωก̀ )",
+    },
+    // 科普页，pages/science/science
+    science: {
+      share_tip: "科普",
+    }
   }
 }

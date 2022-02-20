@@ -10,6 +10,9 @@ const canvasMax = 2000; // 正方形画布的尺寸px
 var global_photo; // 数据库项
 var global_fileID_compressed, global_fileID_watermark;
 
+const config = require('../../../config.js');
+const text_cfg = config.text;
+
 // 自动搞的数量
 var auto_count = 0;
 Page({
@@ -204,7 +207,7 @@ Page({
     const userInfo = photo.userInfo;
     ctx.setFontSize(draw_height * 0.03);
     ctx.setFillStyle('white');
-    ctx.fillText('中大猫谱@' + (photo.photographer || userInfo.nickName), 30, draw_height - (draw_height * 0.03));
+    ctx.fillText(text_cfg.app_name + '@' + (photo.photographer || userInfo.nickName), 30, draw_height - (draw_height * 0.03));
     
 
     ctx.draw(false, function () {
@@ -245,7 +248,7 @@ Page({
     // 写上水印
     ctx.setFontSize(draw_height * 0.03);
     ctx.setFillStyle('white');
-    ctx.fillText('中大猫谱@' + (photo.photographer || userInfo.nickName), 30, draw_height - (draw_height * 0.03));
+    ctx.fillText(text_cfg.app_name + '@' + (photo.photographer || userInfo.nickName), 30, draw_height - (draw_height * 0.03));
     ctx.draw(false, function () {
       // 变成图片显示
       wx.canvasToTempFilePath({

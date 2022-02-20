@@ -3,8 +3,8 @@
 <view id='top-block'></view>
 
 <view class='cen-block unAuth' wx:if='{{!userInfo}}'>
-  <view class='title'>请授权查看自己的排名</view>
-  <button bindtap='getUInfo'>点击授权</button>
+  <view class='title'>{{text_cfg.photo_rank.auth_tip_title}}</view>
+  <button bindtap='getUInfo'>{{text_cfg.photo_rank.auth_tip}}</button>
 </view>
 <view class='cen-block my' wx:else>
   <view class='text left'>
@@ -34,6 +34,6 @@
   </view>
 </view>
 
-<view class='tip'>* 每3小时自动更新</view>
+<view class='tip'>{{text_cfg.photo_rank.count_tip}}</view>
 
 <view style='margin-top: 20rpx;'></view>

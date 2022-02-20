@@ -1,13 +1,16 @@
 // miniprogram/pages/info/feedback/feedback.js
 const config = require('../../../config.js');
 
+const text_cfg = config.text;
+const share_text = text_cfg.app_name + ' - ' + text_cfg.feedback.share_tip;
+
 Page({
 
   /**
    * 页面的初始数据
    */
   data: {
-
+    text_cfg: text_cfg,
   },
 
   toMyFeedback() {
@@ -43,7 +46,7 @@ Page({
    */
   onShareAppMessage: function () {
     return {
-      title: '信息反馈 - 中大猫谱'
+      title: share_text
     }
   }
 })

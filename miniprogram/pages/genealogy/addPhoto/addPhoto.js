@@ -10,7 +10,10 @@ const getCurUserInfoOrFalse = user.getCurUserInfoOrFalse;
 
 const msg = require('../../../msg.js');
 const requestNotice = msg.requestNotice;
-const sendNotifyVertifyNotice = msg.sendNotifyVertifyNotice
+const sendNotifyVertifyNotice = msg.sendNotifyVertifyNotice;
+
+const config = require('../../../config.js');
+const text_cfg = config.text;
 
 Page({
 
@@ -25,6 +28,7 @@ Page({
     photos: [],
     set_all: {},
     canUpload: false,
+    text_cfg: text_cfg,
   },
 
   /**
@@ -72,8 +76,8 @@ Page({
   onShareAppMessage: function () {
     const pagesStack = getCurrentPages();
     const path = getCurrentPath(pagesStack);
-    console.log(shareTo(this.data.cat.name + ' - 中大猫谱', path))
-    return shareTo('来给' + this.data.cat.name + '添加照片 - 中大猫谱', path);
+    const share_text = `来给${this.data.cat.name}添加照片 - ${text_cfg.app_name}`;
+    return shareTo(share_text, path);
   },
 
   getUInfo() {
@@ -115,7 +119,7 @@ Page({
   async uploadSingleClick(e) {
     await requestNotice('verify');
     wx.showLoading({
-      title: '正在上传...',
+      title: text_cfg.add_photo.success_tip_title,
       mask: true,
     });
     const currentIndex = e.currentTarget.dataset.index;
@@ -131,8 +135,8 @@ Page({
     });
     wx.hideLoading();
     wx.showModal({
-      title: '上传成功！',
-      content: '审核后就会展示出来啦',
+      title: text_cfg.add_photo.success_tip_title,
+      content: text_cfg.add_photo.success_tip_content,
       showCancel: false
     });
   },
@@ -147,8 +151,8 @@ Page({
     }
     if (photos.length == 0) {
       wx.showModal({
-        title: '提示',
-        content: '填写信息后再上传哦！',
+        title: text_cfg.add_photo.unfinished_tip_title,
+        content: text_cfg.add_photo.unfinished_tip_content,
         showCancel: false
       });
       return;
@@ -171,8 +175,8 @@ Page({
     })
     wx.hideLoading();
     wx.showModal({
-      title: '上传成功！',
-      content: '审核后就会展示出来啦',
+      title: text_cfg.add_photo.success_tip_title,
+      content: text_cfg.add_photo.success_tip_content,
       showCancel: false
     });
   },

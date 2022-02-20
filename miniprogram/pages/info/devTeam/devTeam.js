@@ -1,10 +1,15 @@
 // miniprogram/pages/info/devTeam/devTeam.js
+const config = require('../../../config.js');
+const text_cfg = config.text;
+const share_text = text_cfg.app_name + ' - ' + text_cfg.info.share_tip;
+
 Page({
 
   /**
    * 页面的初始数据
    */
   data: {
+    text_cfg: text_cfg,
     github_link: "https://github.com/sysucats/zhongdamaopu",
     update_log: [{
         version: "v1.7.3",
@@ -517,7 +522,7 @@ Page({
    */
   onShareAppMessage: function () {
     return {
-      title: '开发团队 - 中大猫谱'
+      title: share_text
     }
   },
 

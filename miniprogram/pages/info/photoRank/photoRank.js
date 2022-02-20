@@ -2,13 +2,17 @@
 const user = require('../../../user.js');
 const getCurUserInfoOrFalse = user.getCurUserInfoOrFalse;
 
+const config = require('../../../config.js');
+const text_cfg = config.text;
+const share_text = text_cfg.app_name + ' - ' + text_cfg.photo_rank.share_tip;
+
 Page({
 
   /**
    * 页面的初始数据
    */
   data: {
-
+    text_cfg: text_cfg,
   },
 
   /**
@@ -38,7 +42,7 @@ Page({
    */
   onShareAppMessage: function () {
     return {
-      title: '拍照月榜 - 中大猫谱'
+      title: share_text
     }
   },
 

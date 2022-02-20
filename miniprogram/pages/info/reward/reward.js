@@ -6,6 +6,9 @@ const checkCanUpload = utils.checkCanUpload;
 // 在页面中定义激励视频广告
 let videoAd = null
 
+const text_cfg = config.text;
+const share_text = text_cfg.app_name + ' - ' + text_cfg.reward.share_tip;
+
 Page({
 
   /**
@@ -13,6 +16,7 @@ Page({
    */
   data: {
     showAdBlock: false,
+    text_cfg: text_cfg,
   },
 
   onLoad: function (option) {
@@ -43,13 +47,13 @@ Page({
       })
       videoAd.onClose((res) => {
         // 用户点击了【关闭广告】按钮
-        var toast = "多谢喵(ฅ'ω'ฅ)!";
+        var toast = text_cfg.reward.ad_success_tip;
         var icon = 'success';
         if (res && res.isEnded) {
           // 正常播放结束
         } else {
           // 播放中途退出
-          toast = "没播完喵...";
+          toast = text_cfg.reward.ad_success_tip;
           icon = 'error';
         }
         wx.showToast({
@@ -65,7 +69,7 @@ Page({
    */
   onShareAppMessage: function () {
     return {
-      title: '打赏罐头 - 中大猫谱'
+      title: share_text
     }
   },
 

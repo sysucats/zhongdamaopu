@@ -76,7 +76,7 @@
         </view>
         <view class='line' wx:if="{{item.birthday}}">
           <image mode='aspectFit' class='icon' src='../../images/card/card/birth.png'></image>
-          <text>{{item.birthday || '未知生日'}}</text>
+          <text>{{item.birthday}}</text>
         </view>
         <view class='line'>
           <image mode='aspectFit' class='icon' src='../../images/card/card/cat.png'></image>
@@ -84,7 +84,7 @@
         </view>
         <view class='line' wx:if="{{item.habit}}">
           <image mode='aspectFit' class='icon' src='../../images/card/card/heart.png'></image>
-          <text class="habit">{{item.habit || '性格未知'}}</text>
+          <text class="habit">{{item.habit}}</text>
         </view>
         <view class='line'>
           <image mode='aspectFit' class='icon' src='../../images/card/card/pos.png'></image>
@@ -109,12 +109,12 @@
 
 <!-- 漂浮的领养logo -->
 <view wx:if="{{adopt_count && filters_empty}}" id="find-adopt" bindtap="clickAdoptBtn">
-  <image class="logo shake" src="../../images/find_adopt.png"></image>
+  <image class="logo shake" src="../../images/button/find_adopt.png"></image>
   <view class="count">{{adopt_count}}只小猫</view>
 </view>
 <!-- 返回首页 -->
 <view wx:if="{{!filters_empty}}" id="back-to-firstpage" bindtap="clickBackFirstPageBtn">
-  <image class="back-btn" src="../../images/back_to_first_page.png"></image>
+  <image class="back-btn" src="../../images/button/back_to_first_page.png"></image>
 </view>
 <!-- 点击漂浮后的提示 -->
 <view class="adopt-filter-tip {{show_filter_tip? '': 'hide'}}">

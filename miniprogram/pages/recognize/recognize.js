@@ -19,8 +19,9 @@ var recognizeResults = [];
 // 在页面中定义插屏广告
 let interstitialAd = null
 
-var campusIndexOld;
-var colourIndexOld;
+const text_cfg = config.text;
+const share_text = text_cfg.app_name + ' - ' + text_cfg.recognize.share_tip;
+
 Page({
 
   /**
@@ -45,7 +46,8 @@ Page({
     showAdBox: true, // 展示banner广告
     ad: {
       banner: config.ad_recognize_banner
-    }
+    },
+    text_cfg: text_cfg,
   },
 
   onLoad() {
@@ -498,7 +500,7 @@ Page({
 
   onShareAppMessage() {
     return {
-      title: '拍照识猫 - 中大猫谱',
+      title: share_text,
       imageUrl: '../../images/recognize/share_cover.jpg'
     };
   },

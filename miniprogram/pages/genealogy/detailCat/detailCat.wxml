@@ -45,7 +45,7 @@ next-margin='60rpx'>
     
     <text class='fb-button' bindtap='bindTapFeedback'>反馈猫猫信息</text>
     <view class="mpcode" bindtap="bingMpTap">
-      <image src="../../../images/mpcode.png"></image>
+      <image src="../../../images/button/mpcode.png"></image>
     </view>
   </view>
   <view class='details'>
@@ -157,7 +157,9 @@ next-margin='60rpx'>
       <view class='time'>{{albumBlock.date[0]}}年{{albumBlock.date[1]}}月</view>
       <view wx:if='{{albumBlock.age[0] >= 0 && albumBlock.age[1] >= 0}}' class='age'>{{albumBlock.age[0]}}岁{{albumBlock.age[1]}}个月</view>
     </view>
-    <image mode='aspectFill' lazy-load='true' class='alb-image' wx:for="{{albumBlock.photos}}" src='{{item.photo_compressed || item.photo_id}}' wx:key="_id" bindtap='bindTapPhoto' data-index="{{item.index}}" data-kind='album'></image>
+    <image mode='aspectFill' lazy-load='true' class='alb-image' 
+      wx:for="{{albumBlock.photos}}" src='{{item.photo_compressed || item.photo_id}}' wx:key="_id"
+      bindtap='bindTapPhoto' data-index="{{item.index}}" data-kind='album'></image>
   </view>
   
   <view class='loading'>
@@ -166,15 +168,14 @@ next-margin='60rpx'>
 </view>
 <!-- album end -->
 
-<!-- <image wx:if="{{canUpload}}" id='add-photo-btn' src='../../../images/plus.png' bindtap='bindAddPhoto'></image> -->
 <view class="addPhoto" bindtap='bindAddPhoto'>
-<image class="icon" wx:if="{{canUpload}}" src='../../../images/addPhoto.png'></image>
+<image class="icon" wx:if="{{canUpload}}" src='../../../images/button/addPhoto.png'></image>
 </view>
 
 <!-- 进入留言板 -->
 <view id="comment-btn" bindtap="toComment">
   <text>留言板</text>
-  <image src="../../../images/right_double_arrow.png" mode="aspectFit"></image>
+  <image src="../../../images/button/right_double_arrow.png" mode="aspectFit"></image>
 </view>
 </scroll-view>
 

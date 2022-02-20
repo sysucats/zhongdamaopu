@@ -12,6 +12,8 @@ const msg = require('../../../msg.js');
 const requestNotice = msg.requestNotice;
 const sendNotifyChkFeeedback = msg.sendNotifyChkFeeedback;
 
+const text_cfg = require('../../../config.js').text;
+
 Page({
 
   /**
@@ -22,7 +24,8 @@ Page({
     user: {},
     length: 0,
     maxlength: 300,
-    cat: undefined
+    cat: undefined,
+    text_cfg: text_cfg
   },
 
   /**
@@ -48,8 +51,9 @@ Page({
   onShareAppMessage: function () {
     const pagesStack = getCurrentPages();
     const path = getCurrentPath(pagesStack);
-    console.log(shareTo(this.data.cat.name + ' - 中大猫谱', path))
-    return shareTo('来给' + this.data.cat.name + '反馈信息 - 中大猫谱', path);
+    
+    const share_text = `来给${this.data.cat.name}反馈信息 - ${text_cfg.app_name}`;
+    return shareTo(share_text, path);
   },
 
   getUInfo() {

@@ -5,13 +5,17 @@ const config = require('../../config.js');
 // console.log("utils:", utils);
 const isManager = utils.isManager;
 
+const text_cfg = config.text;
+const share_text = text_cfg.app_name + ' - ' + text_cfg.info.share_tip;
+
 Page({
   data: {
     friendApps: [],
     showManager: false,
     numChkPhotos: 0,
     numFeedbacks: 0,
-    friendLinkImgLoaded:false
+    friendLinkImgLoaded:false,
+    text_cfg: text_cfg,
   },
 
   /**
@@ -72,22 +76,19 @@ Page({
    */
   onShareAppMessage: function () {
     return {
-      title: '关于 - 中大猫谱'
+      title: share_text
     }
   },
 
   onShareTimeline:function () {
     return {
-      title: '中大猫谱 - 记录校园身边的猫咪',
+      title: share_text,
     }
   },
 
   clickbtn(e) {
     const to = e.currentTarget.dataset.to;
     if (!to) {
-      wx.showToast({
-        title: 'Nothing...',
-      });
       return false;
     }
     wx.navigateTo({

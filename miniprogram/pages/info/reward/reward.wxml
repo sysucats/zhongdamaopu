@@ -2,10 +2,11 @@
 <!-- <text>miniprogram/pages/info/reward/reward.wxml</text> -->
 
 <view class='block'>
-  <view class='title'>打赏罐头</view>
+  <view class='title'>{{text_cfg.reward.reward_tip_title}}</view>
   <view class='desc'>
-    <text wx:if="{{canUpload}}">您的捐款及广告收入将用作购买救助物资及送医，每月的收支都会在<text class='hl'>笃行志愿服务队</text>公众平台进行公开，感谢您对中大流浪猫的帮助与支持！\n喵(^･ｪ･^)</text>
-    <text wx:else>您的捐款及广告收入将用作服务器及流量开销，每月的收支都会在公众平台进行公开，感谢您对中大猫谱小程序的帮助与支持！\n喵(^･ｪ･^)</text>
+    <text wx:if="{{canUpload}}">{{text_cfg.reward.reward_tip}}</text>
+    <!-- 只有当普通用户无法上传时，才会显示下面的提示 -->
+    <text wx:else>您的捐款及广告收入将用作服务器及流量开销，每月的收支都会在公众平台进行公开，感谢您对本小程序的帮助与支持！\n喵(^･ｪ･^)</text>
   </view>
   <view style='flex-basis:100%;'>
     <!-- 打开小程序 -->
@@ -21,12 +22,12 @@
   </view>
 </view>
 
-<view class='tip'>* 每月统计一次，在公众号公示，多谢晒（鞠躬）</view>
+<view class='tip'>{{text_cfg.reward.reward_count_tip}}</view>
 
 <view class='block'>
   <view class='title'>打赏记录</view>
   <view class='desc' wx:for='{{reward}}' wx:key='mdate'>
-    <view class='sub-title hl'>{{item.mdate}}爱心捐款</view>
+    <view class='sub-title hl'>{{item.mdate}}{{text_cfg.reward.reward_title}}</view>
     <view class='sub-detail' wx:for='{{item.records}}' wx:for-item="record" wx:key="item"><text>- {{record}}</text></view>
   </view>
 </view>

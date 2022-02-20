@@ -24,6 +24,8 @@ const coll_comment = db.collection('comment');
 // 发送锁
 var sendLock = false;
 
+const text_cfg = config.text;
+
 Page({
 
   /**
@@ -104,7 +106,7 @@ Page({
     const cat_name = cat.name;
     const cat_avatar = cat.avatar.photo_compressed || cat.avatar.photo_id;
     return {
-      title: `${cat_name}的留言板 - 中大猫谱`,
+      title: `${cat_name}的留言板 - ${text_cfg.app_name}`,
       imageUrl: cat_avatar,
     }
   },
@@ -114,7 +116,7 @@ Page({
     const cat_name = cat.name;
     const cat_avatar = cat.avatar.photo_compressed || cat.avatar.photo_id;
     return {
-      title: `${cat_name}的留言板 - 中大猫谱`,
+      title: `${cat_name}的留言板 - ${text_cfg.app_name}`,
       imageUrl: cat_avatar,
     }
   },
@@ -215,7 +217,7 @@ Page({
     if (user.cantComment) {
       wx.showModal({
         title: "无法留言",
-        content: "如有误封请在\"关于-信息反馈\"中留言~",
+        content: text_cfg.comment_board.ban_tip,
         showCancel: false,
       })
       that.doSendCommentEnd();

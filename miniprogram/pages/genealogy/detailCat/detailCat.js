@@ -12,6 +12,8 @@ const getCatCommentCount = require('../../../comment.js').getCatCommentCount;
 const cat_utils = require('../../../cat.js');
 const setVisitedDate = cat_utils.setVisitedDate;
 
+const text_cfg = config.text;
+
 
 // 页面设置，从global读取
 var page_settings = {};
@@ -44,7 +46,7 @@ Page({
   data: {
     cat: {},
     album: [], // 所有照片
-    bottomText: 'LOADING...',
+    bottomText: text_cfg.detail_cat.bottom_text_loading,
     showHoverHeader: false, // 显示浮动的相册标题
     hideBgBlock: false, // 隐藏背景黄块
     canvas: {}, // 画布的宽高
@@ -166,17 +168,10 @@ Page({
   onShareAppMessage: function () {
     const pagesStack = getCurrentPages();
     const path = getCurrentPath(pagesStack);
-    console.log(shareTo(this.data.cat.name + ' - 中大猫谱', path))
-    return shareTo(this.data.cat.name + ' - 中大猫谱', path);
+    const share_text = `${this.data.cat.name} - ${text_cfg.app_name}`;
+    console.log(shareTo(share_text, path))
+    return shareTo(share_text, path);
   },
-
-  // onShareTimeline:function () {
-  //   console.log('cat_id=' + this.data.cat._id);
-  //   return {
-  //     title: '中大猫谱 - 记录校园身边的猫咪',
-  //     // query: 'cat_id=' + this.data.cat._id
-  //   }
-  // },
 
   swiperLast(e) {
     const current = e.detail.current;
@@ -296,8 +291,6 @@ Page({
     if (whichGallery == 'best') {
       if (this.data.cat.photo.length - this.currentImg <= preload) await this.loadMorePhotos(); //preload
       var photos = this.data.cat.photo;
-      // 先全部用本地占位图片填充，避免全部都加载耗时太长
-      // this.imgUrls = new Array(this.data.cat.photo.length).fill('../../../images/gallery_placeholder.png');
     } else if (whichGallery == 'album') {
       if (album_raw.length - this.currentImg <= preload) await this.loadMoreAlbum(); // preload
       var photos = album_raw;
@@ -321,16 +314,6 @@ Page({
   async bindGalleryChange(e) {
     const index = e.detail.current;
     this.currentImg = index; // 这里得记一下，保存的时候需要
-    // 把占位图片换成真正要显示的图片
-    // let photo = whichGallery == 'best' ? this.data.cat.photo[index] : album_raw[index];
-    // if (page_settings.galleryCompressed) {
-    //   this.imgUrls[index] = (photo.photo_compressed || photo.photo_watermark || photo.photo_id);
-    // } else {
-    //   this.imgUrls[index] = (photo.photo_watermark || photo.photo_id);
-    // }
-    // this.setData({
-    //   imgUrls: this.imgUrls
-    // });
     // preload逻辑
     const preload = page_settings.galleryPreload;
     if (whichGallery == 'best' && this.imgUrls.length - index <= preload && this.imgUrls.length < photoMax) {
@@ -372,7 +355,7 @@ Page({
 
     if (album_raw.length >= albumMax) {
       this.setData({
-        bottomText: '- THE END -'
+        bottomText: text_cfg.detail_cat.bottom_text_end
       })
       return false;
     }
@@ -556,14 +539,14 @@ Page({
 
   showPopularityTip() {
     wx.showToast({
-      title: '猫猫人气值',
+      title: text_cfg.detail_cat.popularity_tip,
       icon: "none"
     });
   },
 
   showCommentTip() {
     wx.showToast({
-      title: '猫猫留言数',
+      title: text_cfg.detail_cat.comment_tip,
       icon: "none"
     });
   },

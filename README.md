@@ -81,15 +81,14 @@
 - [ ] 完成上一步的部署后，登录[腾讯云网页端-云开发CloudBase](https://console.cloud.tencent.com/tcb)，选择云开发环境，左侧云函数，记下`imProcess`函数的运行环境，例如`Nodejs12.16`或`Nodejs10.15`
 - [ ] 点击上方“层管理”，新建一个层，名称和描述随便填。把刚才下载的[imProcess_node_modules.zip](https://wwu.lanzoui.com/iaENswzpkeb)文件上传上去，环境选刚才记下的`Nodejs`版本
 - [ ] 再点击左侧云函数，选择`imProcess`，层管理中点击“绑定”，选择刚才创建的层
-- [ ] 另外，为了避免一次处理过多图片导致程序执行超时，需要在云开发面板中依次点击“云函数-imProcess-版本与配置-配置-高级配置”，将超时时间调整为60s，
-- [ ] 对`imCompress`云函数进行同样的绑定层、调整超时时间的操作
+- [ ] 另外，为了避免一次处理过多图片导致程序执行超时，需要在云开发面板中依次点击“云函数-imProcess-版本与配置-配置-高级配置”，将超时时间调整为60s
 
-期望：在腾讯云网页端中，云函数`imProcess`和`imCompress`的层管理列表中，均出现刚绑定上的依赖层。
+期望：在腾讯云网页端中，云函数`imProcess`的层管理列表中，出现刚绑定上的依赖层。
 
 ### 创建数据集合
 
-- [ ] 创建8个数据集合：`cat, feedback, photo, photo_rank, reward, science, setting, user`
-- [ ] 设置上述8个数据集合权限为自定义项：“所有用户可读、可写”，即`{"read": true, "write": true}`
+- [ ] 创建9个数据集合：`cat, feedback, photo, photo_rank, reward, science, setting, user, comment`
+- [ ] 设置上述9个数据集合权限为自定义项：“所有用户可读、可写”，即`{"read": true, "write": true}`
 - [ ] 导入`initDatabase/database-setting.json`文件到`setting`数据集合
 - [ ] 导入`initDatabase/database-science.json`文件到`science`数据集合
 

@@ -16,8 +16,8 @@
     <view id="previewArea">
       <!-- 无摄像头权限 -->
       <view wx:if="{{!cameraAuth && !photoPath}}" id="authTips">
-        <text>你可以从相册选择猫猫照片\n或点击下方启用相机权限后直接拍照\n</text>
-        <button bindtap="reqCamAuth">启用相机权限</button>
+        <text>{{text_cfg.recognize.select_tip}}</text>
+        <button bindtap="reqCamAuth">{{text_cfg.recognize.select_btn}}</button>
       </view>
       <!-- 相机取景预览 -->
       <camera wx:if="{{cameraAuth && !photoPath}}" device-position="{{devicePosition}}" resolution="high" frame-size="large" flash="off" id="cameraPreview"></camera>
@@ -28,7 +28,7 @@
       <!-- 重新选图按钮 -->
       <view wx:if="{{photoPath}}" id="resetButton" bindtap="reset">
         <image src="../../images/recognize/back.png"></image>
-        重新选图
+        {{text_cfg.recognize.reselect_btn}}
       </view>
     </view>
     <!-- 拍照/选图前功能栏 -->
@@ -42,10 +42,10 @@
   <!-- 识别结果 -->
   <view id="resultBox" wx:if="{{catList.length && showResultBox}}">
     <view class="tip" wx:if="{{catBoxList.length != 1}}">
-      <image mode='aspectFit' class='icon' src='../../images/tip.png'></image>
-      <text>{{!catBoxList.length ? '照片里好像没有猫猫' : '点击对应方框可以更改想识别的猫猫'}}</text>
+      <image mode='aspectFit' class='icon' src='../../images/button/tip.png'></image>
+      <text>{{!catBoxList.length ? text_cfg.recognize.no_cat_tip : text_cfg.recognize.multi_cat_tip}}</text>
     </view>
-    <view class="title">{{!catBoxList.length ? '看起来，整张照片更像...' : (catBoxList.length == 1 ? '看起来，这张照片里的猫猫更像...' : '看起来，黄色框框中的猫猫更像...')}}</view>
+    <view class="title">{{!catBoxList.length ? text_cfg.recognize.no_cat_rec_tip : (catBoxList.length == 1 ? text_cfg.recognize.single_cat_rec_tip : text_cfg.recognize.multi_cat_rec_tip)}}</view>
 
     <view class="filter">
       <picker bindchange="catFilter" data-type="campus" value="{{index}}" range="{{campusList}}">
@@ -91,21 +91,12 @@
       </view>
       <view class="prob">{{m1.toFixed(100 * item.prob, 1) + '%'}}</view>
     </view>
-    <view class="footnote">*目前仅拥有十张以上靓照（清晰正面、仅含一只）的猫猫才能被认到哦！多多上传帮忙改进识别效果吧~</view>
+    <view class="footnote">{{text_cfg.recognize.bottom_tip}}</view>
   </view>
 
   <view id="adBox" wx:if="{{catList.length && showResultBox && showAdBox}}">
-    <view class="ad-tip">识别累了，帮忙点下广告喵（揉眼睛 ( '-ωก̀ )</view>
+    <view class="ad-tip">{{text_cfg.recognize.ad_tip}}</view>
     <ad unit-id="{{ad.banner}}" ad-intervals="30" bindload="adLoad" binderror="adError" bindclose="adClose"></ad>
   </view>
 
 </view><!-- positionWrapper -->
-
-<!-- <view class="section">
-  <view class="section__title">选择</view>
-  <picker bindchange="bindPickerChange" value="{{index}}" range="{{array}}">
-    <view class="picker">
-      当前选择：{{array[index]}}
-    </view>
-  </picker>
-</view> -->
