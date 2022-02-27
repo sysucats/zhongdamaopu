@@ -246,6 +246,22 @@ async function arrayResort(oriArray) {
 }
 
 
+// 检查部署情况，有错误就跳转到部署帮助页
+function checkDeploy() {
+  return new Promise(function (resolve, reject) {
+    try {
+      const db = wx.cloud.database();
+      db.collection('setting').doc('pages').get().then(res => {
+        resolve(true);
+      });
+      
+    } catch (error) {
+      resolve(false);
+    }
+  });
+}
+
+
 module.exports = {
   regeneratorRuntime,
   sha256,
@@ -267,4 +283,5 @@ module.exports = {
   checkMultiClick,
   getDeltaHours,
   arrayResort,
+  checkDeploy,
 };

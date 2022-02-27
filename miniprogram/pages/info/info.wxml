@@ -1,7 +1,7 @@
 <!--miniprogram/pages/info/info.wxml-->
 <!-- <text>miniprogram/pages/info/info.wxml</text> -->
 <view class='mina-info'>
-  <image src='../../images/zdmp_logo.png' bindlongpress="showMpCode"></image>
+  <image src='../../images/app_logo.png' bindlongpress="showMpCode"></image>
   <view class='title'>{{text_cfg.app_name}}</view>
   <view class='dev'><text>{{version ? version + "\n" : ""}} {{text_cfg.info.slogan}}</text></view>
 </view>

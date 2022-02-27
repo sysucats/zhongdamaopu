@@ -1,12 +1,16 @@
 // 生成小程序码，无限数量，但是参数长度限制为32
 const cloud = require('wx-server-sdk')
 
-cloud.init()
+cloud.init({env: cloud.DYNAMIC_CURRENT_ENV})
 const db = cloud.database();
 
 // 生成一张猫猫的mpcode，顺便保存。
 // 如果这只猫猫已经有了mpcode，那就不应该调用这个函数
 exports.main = async (event, context) => {
+  if (event.deploy_test === true) {
+    // 进行部署检查
+    return;
+  }
   const cat_id = event._id;
   
   // scene是页面参数，长度限制32。page是页面路径，不需要'/'开头。

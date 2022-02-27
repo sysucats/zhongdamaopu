@@ -24,6 +24,10 @@ function generateUUID() {
 
 // 云函数入口函数
 exports.main = async (event, context) => {
+  if (event.deploy_test === true) {
+    // 进行部署检查
+    return;
+  }
   const app_name = event.app_name;
   var photos = (await db.collection('photo').where({ photo_compressed: _.in([undefined, '']), verified: true }).get()).data;
   console.log(`待处理图片有${photos.length}张`);

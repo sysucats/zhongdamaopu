@@ -22,7 +22,8 @@
     "pages/manage/replyFeedback/replyFeedback",
     "pages/manage/rewards/rewards",
     "pages/recognize/recognize",
-    "pages/genealogy/commentBoard/commentBoard"
+    "pages/genealogy/commentBoard/commentBoard",
+    "pages/debug/deployTip/deployTip"
   ],
   "tabBar": {
     "selectedColor": "#000",

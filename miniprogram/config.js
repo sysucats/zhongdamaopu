@@ -125,7 +125,7 @@ module.exports = {
       share_tip: "拍照月榜",
       auth_tip_title: "请授权查看自己的排名",
       auth_tip: "点击授权",
-      count_tip: "* 每3小时自动更新"
+      count_tip: "* 定期自动更新"
     },
     // 反馈页，pages/info/feedback/feedback
     feedback: {

@@ -1,10 +1,14 @@
 // 云函数入口文件
 const cloud = require('wx-server-sdk')
-cloud.init()
+cloud.init({env: cloud.DYNAMIC_CURRENT_ENV})
 const db = cloud.database()
 const MAX_LIMIT = 100
 
 exports.main = async (event, context) => {
+  if (event.deploy_test === true) {
+    // 进行部署检查
+    return;
+  }
   // 先取出集合记录总数
   const countResult = await db.collection('science').count()
   const total = countResult.total

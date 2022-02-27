@@ -1,7 +1,7 @@
 // 云函数入口文件
 const cloud = require('wx-server-sdk')
 
-cloud.init();
+cloud.init({env: cloud.DYNAMIC_CURRENT_ENV});
 const db = cloud.database();
 
 function updateMphoto(cat_id) {
@@ -15,6 +15,10 @@ function updateMphoto(cat_id) {
 
 // 云函数入口函数
 exports.main = async (event, context) => {
+  if (event.deploy_test === true) {
+    // 进行部署检查
+    return;
+  }
   const wxContext = cloud.getWXContext();
   const openid = wxContext.OPENID;
   const isManager = (await cloud.callFunction({ name: 'isManager', data: { openid: openid } }));
@@ -51,11 +55,11 @@ exports.main = async (event, context) => {
       fail: console.error
     });
     updateMphoto(photo.cat_id);
-    return db.collection('photo').doc(photo._id).remove();
+    db.collection('photo').doc(photo._id).remove();
   } else if (type === "setBest") {
     const best = event.best;
     updateMphoto(photo.cat_id);
-    return db.collection('photo').doc(photo._id).update({
+    db.collection('photo').doc(photo._id).update({
       data: {
         best: best
       }
@@ -77,7 +81,7 @@ exports.main = async (event, context) => {
       })
     }
     // 把水印和压缩图的链接去掉
-    return db.collection('photo').doc(photo._id).update({
+    db.collection('photo').doc(photo._id).update({
       data: {
         photographer: photographer,
         photo_compressed: '',
@@ -88,11 +92,16 @@ exports.main = async (event, context) => {
     // 修改数据库中记录的压缩图、水印图的URL
     const compressed = event.compressed;
     const watermark = event.watermark;
-    return db.collection('photo').doc(photo._id).update({
+    db.collection('photo').doc(photo._id).update({
       data: {
         photo_compressed: compressed,
         photo_watermark: watermark
       }
     });
   }
+
+  // 所有照片改动之后，重新数一下猫图
+  await cloud.callFunction({ name: 'countPhoto' });
+
+  return;
 }

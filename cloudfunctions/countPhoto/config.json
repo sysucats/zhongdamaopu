@@ -1,9 +1,0 @@
-{
-  "triggers": [
-    {
-      "name": "countPhoto",
-      "type": "timer",
-      "config": "0 */10 * * * * *"
-    }
-  ]
-}

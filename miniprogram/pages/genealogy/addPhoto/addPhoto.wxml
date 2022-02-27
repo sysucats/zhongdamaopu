@@ -1,6 +1,6 @@
 <view wx:if="{{!canUpload}}">
     <view class='userInfo'>
-      <image src='../../../images/user.png'></image>
+      <image src='../../../images/system/user.png'></image>
       <view>
         <text>[普通用户暂无法上传] TAT...\n</text>
       </view>
@@ -12,7 +12,7 @@
   <view wx:if="{{!isAuth}}" class='unAuth'>
     <!-- <text>请授权后进行操作</text> -->
     <view class='userInfo'>
-      <image src='../../../images/user.png'></image>
+      <image src='../../../images/system/user.png'></image>
       <view>
         <text>[等待授权]\n---准备为「<text style="font-weight:600;">{{cat.name}}</text>」添加照片</text>
       </view>

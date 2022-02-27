@@ -8,6 +8,7 @@ const shuffle = utils.shuffle;
 const loadFilter = utils.loadFilter;
 const regReplace = utils.regReplace;
 const getDeltaHours = utils.getDeltaHours;
+const checkDeploy = utils.checkDeploy;
 
 const cat_utils = require('../../cat.js');
 const getAvatar = cat_utils.getAvatar;
@@ -74,6 +75,16 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
+    // 部署检查
+    checkDeploy().then(res => {
+      console.log("deploy status:", res);
+      if (!res) {
+        console.log("未部署成功");
+        wx.navigateTo({
+          url: "/pages/debug/deployTip/deployTip",
+        })
+      }
+    });
     // 从分享点进来，到跳转到其他页面
     if (options.toPath) {
       wx.navigateTo({

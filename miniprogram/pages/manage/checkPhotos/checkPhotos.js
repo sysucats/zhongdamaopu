@@ -83,6 +83,14 @@ Page({
 
     // 发送审核消息
     sendVerifyNotice(notice_list);
+
+    // 重新计算拍照月榜
+    wx.cloud.callFunction({
+      name: "getPhotoRank",
+      success: (res) => {
+        console.log('拍照月榜完成', res.result);
+      }
+    });
   },
 
   /**

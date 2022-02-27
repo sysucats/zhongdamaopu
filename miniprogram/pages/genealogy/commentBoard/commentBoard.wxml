@@ -14,7 +14,7 @@
   <view class="comment" wx:for="{{comments}}" wx:key="_id">
     <view class="left">
       <image wx:if="{{item.userInfo}}" class="avatar" src="{{item.userInfo.avatarUrl}}" mode='aspectFit'></image>
-      <image wx:else class="avatar" src="../../../images/zdmp_logo.png" mode='aspectFit'></image>
+      <image wx:else class="avatar" src="../../../images/app_logo.png" mode='aspectFit'></image>
     </view>
     <view class="right">
       <view class="info-block">

@@ -9,9 +9,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "sharp": "^0.28.1",
-    "canvas": "^2.7.0",
-    "text2png": "^2.3.0",
     "wx-server-sdk": "~2.4.0"
   }
 }

@@ -100,10 +100,10 @@
   </block>
 
   <view class='loading' wx:if='{{!loadnomore}}'>
-    <image src='../../images/loading.gif'></image>
+    <image src='../../images/system/loading.gif'></image>
   </view>
   <view class='loadnomore' wx:else>
-    <image src='../../images/nomore.png'></image>
+    <image src='../../images/system/nomore.png'></image>
   </view>
 </scroll-view>
 
