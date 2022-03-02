@@ -12,6 +12,13 @@ Page({
     text_cfg: text_cfg,
     github_link: "https://github.com/sysucats/zhongdamaopu",
     update_log: [{
+        version: "v1.7.4",
+        content: [
+          "增加部署指引页",
+          "整理内部逻辑",
+        ],
+        time: "2021/03/02"
+      }, {
         version: "v1.7.3",
         content: [
           "识猫图片中有多只猫时可以选择主体了",
@@ -20,7 +27,7 @@ Page({
           "识猫结果可以筛选了",
         ],
         time: "2021/02/09"
-      },{
+      }, {
         version: "v1.7.2",
         content: [
           "修复输入框UI问题",
