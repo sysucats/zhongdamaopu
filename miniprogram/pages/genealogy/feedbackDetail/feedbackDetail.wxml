@@ -19,17 +19,17 @@
     </view>
     <view class='inputColumns'>
       <view>
-        <text class='inputTitle'>反馈内容：</text>
+        <text class='inputTitle'>{{text_cfg.feedback_detail.feedback_title}}：</text>
         <textarea class='feedbackColumn' placeholder="{{text_cfg.feedback_detail.feedback_tip}}" name='feedbackInfo' maxlength='{{maxlength}}' bindinput='bindInput' />
-        <text class='lengthTips'>字数：{{length}}/{{maxlength}}</text>
+        <text class='lengthTips'>{{text_cfg.feedback_detail.input_length_tip}}：{{length}}/{{maxlength}}</text>
       </view>
       <view style='margin-top:40rpx;'>
-        <text class="inputTitle">你的联系方式：</text>
+        <text class="inputTitle">{{text_cfg.feedback_detail.contract_title}}：</text>
         <input placeholder="{{text_cfg.feedback_detail.contract_tip}}" name='contactInfo' maxlength='30' />
       </view>
     </view>
     <view class='submitButton'>
-      <button form-type='submit' bindtap="toSubmit">提交反馈</button>
+      <button form-type='submit' bindtap="toSubmit">{{text_cfg.feedback_detail.submit_button}}</button>
     </view>
   </block>
 </form>

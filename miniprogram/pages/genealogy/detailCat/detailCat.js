@@ -61,6 +61,7 @@ Page({
 
     // 领养状态
     adopt_desc: config.cat_status_adopt,
+    text_cfg: text_cfg,
   },
 
   /**

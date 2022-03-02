@@ -120,7 +120,7 @@ Page({
         title: "部署云函数",
         status: STATUS_DOING,
         func: checkFunctions,
-        tip: "右键cloudfunctions目录下的每个文件夹，选择【上传并部署，云端安装依赖（不上传...）】，等待所有文件夹都呈绿色图标。",
+        tip: "右键cloudfunctions目录下的每个文件夹，选择【上传并部署，云端安装依赖（不上传...）】，等待所有文件夹都呈绿色图标。注意imProcess函数需要特殊部署，请查看视频教程。",
         addition: ""
       },
       3: {
@@ -134,7 +134,7 @@ Page({
         title: "系统云存储图片",
         status: STATUS_DOING,
         func: checkImage,
-        tip: "已自动设置为默认图片，请打开【云开发】-【存储】，替换“系统”文件夹下的图片。",
+        tip: "请将系统图片上传至【云开发】-【存储】，并修改config.js中的图片链接。",
         addition: ""
       },
     },

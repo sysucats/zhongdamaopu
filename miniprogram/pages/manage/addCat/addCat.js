@@ -3,6 +3,8 @@ const utils = require('../../../utils.js');
 const loadFilter = utils.loadFilter;
 const isManager = utils.isManager;
 
+const text_cfg = config.text;
+
 var cat_id = undefined;
 
 const photoStep = 5; // 每次加载的图片数量
@@ -21,7 +23,8 @@ Page({
       to_star: [false, true],
     },
     picker_selected: {},
-    bottomShow: false
+    bottomShow: false,
+    text_cfg: text_cfg
   },
 
   /**

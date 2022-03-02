@@ -76,6 +76,15 @@ module.exports = {
     // 首页，pages/genealogy/genealogy
     genealogy: {
       share_tip: "发现身边校园猫咪",
+      search_tip: "搜索猫猫名字或昵称",
+      filter_tip: "点此进行筛选",
+      new_photo_tip: "有新相片！",
+      no_photo_tip: "暂无封面照片...",
+      photo_by_tip: "Photo by ",
+      photo_by_unknow_tip: "匿名猫友",
+      photo_loading_tip: "加载照片ing",
+      to_star_tip: "返回喵星",
+      adopt_btn: "只小猫",
     },
     // 关于页，pages/info/info
     info: {
@@ -88,11 +97,28 @@ module.exports = {
       bottom_text_end: "- THE END -",
       popularity_tip: "猫猫人气值",
       comment_tip: "猫猫留言数",
+      button_feedback: "反馈猫猫信息",
+      label_nickname: "昵称",
+      label_location: "常驻地",
+      label_birthday: "生日",
+      label_father: "爸爸",
+      label_mother: "妈妈",
+      label_friend: "好友",
+      label_character: "性格及特点",
+      label_tutorial: "撸猫指南",
+      label_tutorial_empty: "暂时还没有",
+      label_comment_board: "留言板",
+      sterilized_true: "已绝育",
+      sterilized_false: "待绝育",
     },
     // 提交反馈页，pages/genealogy/feedbackDetail/feedbackDetail
     feedback_detail: {
+      feedback_title: "反馈内容",
       feedback_tip: "猫猫信息纠错、照片归属权、功能改进等~",
+      input_length_tip: "字数",
+      contract_title: "你的联系方式",
       contract_tip: "（选填）微信/QQ/邮箱",
+      submit_button: "提交反馈",
       submit_tip: "*反馈内容仅后台工作人员可见",
     },
     // 提交留言页，pages/genealogy/commentBoard/commentBoard
