@@ -24,6 +24,11 @@ function generateUUID() {
 
 // 云函数入口函数
 exports.main = async (event, context) => {
+  if (event.deploy_test === true) {
+    // 进行部署检查
+    return;
+  }
+  const app_name = event.app_name;
   var photos = (await db.collection('photo').where({ photo_compressed: _.in([undefined, '']), verified: true }).get()).data;
   console.log(`待处理图片有${photos.length}张`);
   for (let photo of photos) {
@@ -43,7 +48,7 @@ exports.main = async (event, context) => {
     )
     // 创建水印图
     let userInfo = photo.userInfo;
-    let watermark = text2png('中大猫谱@' + (photo.photographer || userInfo.nickName), {
+    let watermark = text2png(app_name + '@' + (photo.photographer || userInfo.nickName), {
       font: Math.round(metadata.height * 0.03) + 'px FZHei',
       color: 'white'
     });

@@ -5,7 +5,7 @@
     <view class='input-icon'>
       <image mode='aspectFit' src="../../images/filter/search.png"></image>
     </view>
-    <input class='name' placeholder='搜索猫猫名字或昵称' placeholder-class='searchPlaceholderStyle' value='{{filters_input}}' maxlength='20' confirm-type='search' bindinput='fSearchInput' bindconfirm='fSearch'></input>
+    <input class='name' placeholder='{{text_cfg.genealogy.search_tip}}' placeholder-class='searchPlaceholderStyle' value='{{filters_input}}' maxlength='20' confirm-type='search' bindinput='fSearchInput' bindconfirm='fSearch'></input>
   </view>
   
   <view class='filter-btn' bindtap='fToggle'>
@@ -50,11 +50,11 @@
 <scroll-view enable-flex='true' class='cards' style='height: {{heights.windowHeight - heights.filters}}px;' scroll-y='true' enable-back-to-top='true' bindscrolltolower='onReachBottom' bindscroll='fScroll' lower-threshold='{{main_lower_threshold}}'>
   <block wx:for='{{cats}}' wx:key="_id">
     <view class='card' bindtap='clickCatCard' bindlongpress='bindManageCat' data-cat_id='{{item._id}}' data-index='{{index}}'>
-      <view class='label' wx:if="{{item.mphoto_new}}">有新相片！</view>
+      <view class='label' wx:if="{{item.mphoto_new}}">{{text_cfg.genealogy.new_photo_tip}}</view>
       <view class='image {{item.to_star? "to_star": ""}}'>
         <image bindload="bindImageLoaded" mode='aspectFill' src='{{item.photo.photo_compressed || item.photo.photo_id}}' data-index="{{index}}"></image>
-        <view class='image-title' wx:if='{{!item.photo_count_best || item.photo_count_best === 0}}'>暂无封面照片...</view>
-        <view class='image-title' wx:else>{{item.photo.photo_id? ('Photo by ' + (item.photo.photographer ||(item.photo.userInfo? item.photo.userInfo.nickName: '匿名猫友'))): '加载照片ing'}}</view>
+        <view class='image-title' wx:if='{{!item.photo_count_best || item.photo_count_best === 0}}'>{{text_cfg.genealogy.no_photo_tip}}</view>
+        <view class='image-title' wx:else>{{item.photo.photo_id? (text_cfg.genealogy.photo_by_tip + (item.photo.photographer ||(item.photo.userInfo? item.photo.userInfo.nickName: text_cfg.genealogy.photo_by_unknow))): text_cfg.genealogy.photo_loading_tip}}</view>
       </view>
       <view class='info' hover-class="hoverInfo">
         <view class='line first'>
@@ -64,7 +64,7 @@
             <image mode='aspectFill' class='gender' wx:if='{{item.gender === "母"}}' src="../../images/card/card/female.png"></image>
           </block>
           <view wx:if='{{item.adopt}}' class='adopt'>{{adopt_desc[item.adopt]}}</view>
-          <view wx:if='{{item.to_star}}' class='to_star'>返回喵星</view>
+          <view wx:if='{{item.to_star}}' class='to_star'>{{text_cfg.genealogy.to_star_tip}}</view>
           <view class='popularity'>
             <image src='../../images/card/card/pop.png'></image>
             <text> ({{item.popularity + (item.photo_count_total? item.photo_count_total * photoPopWeight: 0) }})</text>
@@ -76,7 +76,7 @@
         </view>
         <view class='line' wx:if="{{item.birthday}}">
           <image mode='aspectFit' class='icon' src='../../images/card/card/birth.png'></image>
-          <text>{{item.birthday || '未知生日'}}</text>
+          <text>{{item.birthday}}</text>
         </view>
         <view class='line'>
           <image mode='aspectFit' class='icon' src='../../images/card/card/cat.png'></image>
@@ -84,7 +84,7 @@
         </view>
         <view class='line' wx:if="{{item.habit}}">
           <image mode='aspectFit' class='icon' src='../../images/card/card/heart.png'></image>
-          <text class="habit">{{item.habit || '性格未知'}}</text>
+          <text class="habit">{{item.habit}}</text>
         </view>
         <view class='line'>
           <image mode='aspectFit' class='icon' src='../../images/card/card/pos.png'></image>
@@ -100,24 +100,24 @@
   </block>
 
   <view class='loading' wx:if='{{!loadnomore}}'>
-    <image src='../../images/loading.gif'></image>
+    <image src='../../images/system/loading.gif'></image>
   </view>
   <view class='loadnomore' wx:else>
-    <image src='../../images/nomore.png'></image>
+    <image src='../../images/system/nomore.png'></image>
   </view>
 </scroll-view>
 
 <!-- 漂浮的领养logo -->
 <view wx:if="{{adopt_count && filters_empty}}" id="find-adopt" bindtap="clickAdoptBtn">
-  <image class="logo shake" src="../../images/find_adopt.png"></image>
-  <view class="count">{{adopt_count}}只小猫</view>
+  <image class="logo shake" src="../../images/button/find_adopt.png"></image>
+  <view class="count">{{adopt_count}}{{text_cfg.genealogy.adopt_btn}}</view>
 </view>
 <!-- 返回首页 -->
 <view wx:if="{{!filters_empty}}" id="back-to-firstpage" bindtap="clickBackFirstPageBtn">
-  <image class="back-btn" src="../../images/back_to_first_page.png"></image>
+  <image class="back-btn" src="../../images/button/back_to_first_page.png"></image>
 </view>
 <!-- 点击漂浮后的提示 -->
 <view class="adopt-filter-tip {{show_filter_tip? '': 'hide'}}">
   <view class="tri"></view>
-  <view class="content">点此进行筛选</view>
+  <view class="content">{{text_cfg.genealogy.filter_tip}}</view>
 </view>

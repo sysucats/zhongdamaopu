@@ -1,12 +1,16 @@
 // 云函数入口文件
 const cloud = require('wx-server-sdk')
-cloud.init()
+cloud.init({env: cloud.DYNAMIC_CURRENT_ENV})
 const db = cloud.database()
 const _ = db.command
 const MAX_LIMIT = 100
 
 // 这个函数称为数猫图，意思是计算一下每个猫的精选图有多少个，方便首页随机用
 exports.main = async (event, context) => {
+  if (event.deploy_test === true) {
+    // 进行部署检查
+    return;
+  }
   // 先取出mphoto更新时间为一小时前的猫猫（因为每小时自动执行一次）
   var frontOneHour = new Date(new Date().getTime() - 1 * 60 * 60 * 1000);
   var condition = _.or([{

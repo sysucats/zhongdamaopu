@@ -1,9 +1,9 @@
 <!--miniprogram/pages/info/feedback/feedback.wxml-->
 
 <view class='block'>
-  <view class='title'>留下反馈</view>
+  <view class='title'>{{text_cfg.feedback.feedback_tip_title}}</view>
   <view class='desc' style='text-align:center;'>
-    <text>每一条反馈我们都会认真看滴</text>
+    <text>{{text_cfg.feedback.feedback_tip}}</text>
   </view>
   <view style='flex-basis:100%;'>
     <view class='buttons'>
@@ -14,9 +14,9 @@
 </view>
 
 <view class='block'>
-  <view class='title'>新的猫猫</view>
+  <view class='title'>{{text_cfg.feedback.new_cat_tip_title}}</view>
   <view class='desc' style='text-align:center;'>
-    <text>提交猫谱中没有的猫猫信息，给猫猫上户口~</text>
+    <text>{{text_cfg.feedback.new_cat_tip}}</text>
   </view>
   <view style='flex-basis:100%;'>
     <button class="primary" bindtap='toNewCat'>点击填写</button>
@@ -24,8 +24,8 @@
 </view>
 
 <view class='block'>
-  <view class='title'>更多联系</view>
+  <view class='title'>{{text_cfg.feedback.contract_tip_title}}</view>
   <view class='desc'>
-    <text>有关猫猫信息添加、小程序的建议、照片维权、猫猫领养咨询等事项，可以关注<text class='hl'>笃行志愿服务队</text>公众号后留言，或发送邮件至：<text class='hl'>dxzyfwd@163.com</text></text>
+    <text>{{text_cfg.feedback.contract_tip}}</text>
   </view>
 </view>

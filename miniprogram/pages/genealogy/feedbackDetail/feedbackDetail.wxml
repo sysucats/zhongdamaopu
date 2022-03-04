@@ -2,9 +2,9 @@
   <view wx:if="{{!isAuth}}" class='unAuth'>
     <!-- <text>请授权后进行操作</text> -->
     <view class='userInfo'>
-      <image src='../../../images/user.png'></image>
+      <image src='../../../images/system/user.png'></image>
       <view>
-        <text>[等待授权]\n---准备为「<text style="font-weight:600;">{{cat? cat.name: '中大猫谱'}}</text>」反馈信息</text>
+        <text>[等待授权]\n---准备为「<text style="font-weight:600;">{{cat? cat.name: text_cfg.app_name}}</text>」反馈信息</text>
       </view>
     </view>
     <button class='long primary' bindtap='getUInfo'>点击授权</button>
@@ -14,25 +14,25 @@
     <view class='userInfo'>
       <image src='{{user.userInfo.avatarUrl}}'></image>
       <view>
-        <text>{{user.userInfo.nickName}}\n---正在为「<text style="font-weight:600;">{{cat? cat.name: '中大猫谱'}}</text>」反馈信息</text>
+        <text>{{user.userInfo.nickName}}\n---正在为「<text style="font-weight:600;">{{cat? cat.name: text_cfg.app_name}}</text>」反馈信息</text>
       </view>
     </view>
     <view class='inputColumns'>
       <view>
-        <text class='inputTitle'>反馈内容：</text>
-        <textarea class='feedbackColumn' placeholder="猫猫信息纠错、照片归属权、功能改进等~" name='feedbackInfo' maxlength='{{maxlength}}' bindinput='bindInput' />
-        <text class='lengthTips'>字数：{{length}}/{{maxlength}}</text>
+        <text class='inputTitle'>{{text_cfg.feedback_detail.feedback_title}}：</text>
+        <textarea class='feedbackColumn' placeholder="{{text_cfg.feedback_detail.feedback_tip}}" name='feedbackInfo' maxlength='{{maxlength}}' bindinput='bindInput' />
+        <text class='lengthTips'>{{text_cfg.feedback_detail.input_length_tip}}：{{length}}/{{maxlength}}</text>
       </view>
       <view style='margin-top:40rpx;'>
-        <text class="inputTitle">你的联系方式：</text>
-        <input placeholder="（选填）微信/QQ/邮箱" name='contactInfo' maxlength='30' />
+        <text class="inputTitle">{{text_cfg.feedback_detail.contract_title}}：</text>
+        <input placeholder="{{text_cfg.feedback_detail.contract_tip}}" name='contactInfo' maxlength='30' />
       </view>
     </view>
     <view class='submitButton'>
-      <button form-type='submit' bindtap="toSubmit">提交反馈</button>
+      <button form-type='submit' bindtap="toSubmit">{{text_cfg.feedback_detail.submit_button}}</button>
     </view>
   </block>
 </form>
 <view class='footnote'>
-  <text>*反馈内容仅后台工作人员可见</text>
+  <text>{{text_cfg.feedback_detail.submit_tip}}</text>
 </view>

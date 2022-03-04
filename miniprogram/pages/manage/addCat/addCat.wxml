@@ -18,21 +18,21 @@
   <view class='label characteristics'>外貌特点：</view>
   <input type='text' value='{{cat.characteristics}}' bindinput="inputText" data-key='characteristics'></input>
 
-  <view class='label tutorial'>撸猫指南：</view>
+  <view class='label tutorial'>{{text_cfg.detail_cat.label_tutorial}}：</view>
   <textarea type='text' value='{{cat.tutorial}}' bindinput="inputText" data-key='tutorial'></textarea>
 
   <view class='label habit'>性格：</view>
   <input type='text' value='{{cat.habit}}' bindinput="inputText" data-key='habit'></input>
 
-  <view class='label father'>父亲：</view>
+  <view class='label father'>{{text_cfg.detail_cat.label_father}}：</view>
   <input type='text' value='{{cat.father}}' bindinput="inputText" data-key='father'></input>
-  <view class='label mother'>母亲：</view>
+  <view class='label mother'>{{text_cfg.detail_cat.label_mother}}：</view>
   <input type='text' value='{{cat.mother}}' bindinput="inputText" data-key='mother'></input>
   <view class='label relation'>好友：</view>
   <input type='text' value='{{cat.relation}}' bindinput="inputText" data-key='relation'></input>
   <view class='label gender'>性别：</view>
   <picker mode="selector" range='{{pickers.gender}}' value='{{picker_selected.gender}}' bindchange='pickerChange' data-key='gender'>{{cat.gender == undefined? '请选择': cat.gender}}</picker>
-  <view class='label sterilized'>绝育：</view>
+  <view class='label sterilized'>绝育状态：</view>
   <picker mode="selector" range='{{pickers.sterilized}}' value='{{picker_selected.sterilized}}' bindchange='pickerChange' data-key='sterilized'>{{cat.sterilized == undefined? '请选择': cat.sterilized}}</picker>
   <view class='label adopt'>领养状态：</view>
   <picker mode="selector" range='{{pickers.adopt}}' range-key='desc' value='{{picker_selected.adopt}}' bindchange='pickerChange' data-key='adopt'>{{cat.adopt == undefined? '请选择': pickers.adopt[cat.adopt].desc}}</picker>

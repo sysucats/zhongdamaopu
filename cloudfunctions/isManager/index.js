@@ -1,12 +1,16 @@
 // 云函数入口文件
 const cloud = require('wx-server-sdk')
 
-cloud.init()
+cloud.init({env: cloud.DYNAMIC_CURRENT_ENV})
 const db = cloud.database();
 const _ = db.command;
 
 // 云函数入口函数
 exports.main = async (event, context) => {
+  if (event.deploy_test === true) {
+    // 进行部署检查
+    return;
+  }
   const wxContext = cloud.getWXContext();
   const openid = wxContext.OPENID || event.openid;
 

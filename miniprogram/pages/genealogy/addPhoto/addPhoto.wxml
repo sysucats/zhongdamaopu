@@ -1,8 +1,8 @@
 <view wx:if="{{!canUpload}}">
     <view class='userInfo'>
-      <image src='../../../images/user.png'></image>
+      <image src='../../../images/system/user.png'></image>
       <view>
-        <text>[请wx联系笃行添加照片] TAT\n</text>
+        <text>[普通用户暂无法上传] TAT...\n</text>
       </view>
     </view>
   <button class='long primary' bindtap="goBackIndex">返回首页</button>
@@ -12,12 +12,12 @@
   <view wx:if="{{!isAuth}}" class='unAuth'>
     <!-- <text>请授权后进行操作</text> -->
     <view class='userInfo'>
-      <image src='../../../images/user.png'></image>
+      <image src='../../../images/system/user.png'></image>
       <view>
         <text>[等待授权]\n---准备为「<text style="font-weight:600;">{{cat.name}}</text>」添加照片</text>
       </view>
     </view>
-    <button class='long primary' bindtap='getUInfo'>点击授权</button>
+    <button class='long primary' bindtap='getUInfo'>{{text_cfg.add_photo.auth_tip}}</button>
   </view>
   <block wx:else>
     <!-- <view>--已经授权--</view> -->
@@ -27,15 +27,6 @@
         <text>{{user.userInfo.nickName}}\n---正在为「<text style="font-weight:600;">{{cat.name}}</text>」添加照片</text>
       </view>
     </view>
-
-    <!-- 旧版模板消息，微信已下线
-    <view class='need-notice' bindtap="updateNoticeSetting">
-      <view class="my-checkbox {{user.notice? 'checked': ''}}">
-        <view class="my-checkbox-core"></view>
-      </view>
-      <text>收录结果微信通知</text>
-    </view>
-    -->
 
     <button bindtap='chooseImg' class='long primary'>选择照片</button>
     

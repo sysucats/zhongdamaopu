@@ -11,6 +11,7 @@ const sendVerifyNotice = msg.sendVerifyNotice;
 
 const config = require('../../../config.js');
 const notifyVerifyPhotoTplId = config.msg.notifyVerify.id;
+const text_cfg = config.text;
 
 // 准备发送通知的列表，姓名：审核详情
 var notice_list = {};
@@ -72,6 +73,9 @@ Page({
     // 后台处理缩略图和水印图
     wx.cloud.callFunction({
       name: "imProcess",
+      data: {
+        app_name: text_cfg.app_name
+      },
       success: (res) => {
         console.log('图片处理完成', res.result);
       }
@@ -79,6 +83,14 @@ Page({
 
     // 发送审核消息
     sendVerifyNotice(notice_list);
+
+    // 重新计算拍照月榜
+    wx.cloud.callFunction({
+      name: "getPhotoRank",
+      success: (res) => {
+        console.log('拍照月榜完成', res.result);
+      }
+    });
   },
 
   /**

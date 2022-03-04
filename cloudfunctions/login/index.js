@@ -4,7 +4,7 @@
 const cloud = require('wx-server-sdk')
 
 // 初始化 cloud
-cloud.init()
+cloud.init({env: cloud.DYNAMIC_CURRENT_ENV})
 
 /**
  * 这个示例将经自动鉴权过的小程序用户 openid 返回给小程序端
@@ -13,6 +13,10 @@ cloud.init()
  * 
  */
 exports.main = (event, context) => {
+  if (event.deploy_test === true) {
+    // 进行部署检查
+    return;
+  }
   console.log(event)
   console.log(context)
 

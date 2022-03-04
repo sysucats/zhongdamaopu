@@ -1,0 +1,53 @@
+/* pages/debug/deployTip/deployTip.wxss */
+
+page {
+  background-color: var(--color-gray-light);
+}
+
+.h1 {
+  background-color: white;
+  text-align: center;
+  font-weight: bold;
+  font-size: 50rpx;
+}
+
+.check {
+  margin-top: 10rpx;
+  background-color: white;
+}
+
+.line {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10rpx;
+  box-sizing: border-box;
+}
+
+.line .title {
+  font-weight: bold;
+}
+
+.line .status {
+  font-size: 24rpx;
+}
+
+.line .status.success {
+  color: green;
+}
+.line .status.fail {
+  color: red;
+}
+
+.tip {
+  width: 100%;
+  padding: 10rpx;
+  border-top: 1rpx solid var(--color-gray-dark);
+  font-size: 24rpx;
+  box-sizing: border-box;
+}
+
+.tip .highlight {
+  color: red;
+}

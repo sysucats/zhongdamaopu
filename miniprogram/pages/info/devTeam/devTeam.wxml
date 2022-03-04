@@ -1,14 +1,14 @@
 <view class='block'>
   <view class='title'>开发团队</view>
   <view class='desc'>
-    <text>程序开发：渔政、蓝卷、XD、zJ\n资料维护：Lo\n初期资料整理：hehe、玥琪、大米\n以及各校区猫群的小伙伴~\n非常欢迎新朋友加入设计开发哇~！</text>
+    <text>{{text_cfg.dev_team.team}}</text>
   </view>
 </view>
 
 <view class='block'>
   <view class='title'>开源代码</view>
   <view class='desc'>
-    <text selectable='true'>中大猫谱现在开源啦！配备部署教程及视频~\n{{github_link}}</text>
+    <text selectable='true'>小程序代码开源啦！配备部署教程及视频~\n{{github_link}}</text>
     <button class="primary" bindtap='copyOpenSourceLink'>点击复制到剪切板</button>
   </view>
 </view>

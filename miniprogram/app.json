@@ -21,16 +21,9 @@
     "pages/manage/checkFeedbacks/checkFeedbacks",
     "pages/manage/replyFeedback/replyFeedback",
     "pages/manage/rewards/rewards",
-    "pages/organization/orglist/orglist",
-    "pages/organization/applyorg/applyorg",
-    "pages/manage/manageOrgs/manageOrgs",
-    "pages/manage/modifyOrg/modifyOrg",
-    "pages/organization/org/org",
-    "pages/organization/orgsettings/orgsettings",
-    "pages/organization/addorgcat/addorgcat",
-    "pages/organization/detailorgcat/detailorgcat",
     "pages/recognize/recognize",
-    "pages/genealogy/commentBoard/commentBoard"
+    "pages/genealogy/commentBoard/commentBoard",
+    "pages/debug/deployTip/deployTip"
   ],
   "tabBar": {
     "selectedColor": "#000",

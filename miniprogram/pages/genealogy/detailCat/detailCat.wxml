@@ -40,54 +40,54 @@ next-margin='60rpx'>
 
   <view class="tags">
     <text class='tag' wx:if="{{cat.adopt != undefined}}">{{adopt_desc[cat.adopt]}}</text>
-    <text class='tag'>{{cat.sterilized? '已': '待'}}绝育</text>
-    <text class='tag to_star' wx:if='{{cat.to_star}}'>返回喵星</text>
+    <text class='tag'>{{cat.sterilized? text_cfg.detail_cat.sterilized_true: text_cfg.detail_cat.sterilized_false}}</text>
+    <text class='tag to_star' wx:if='{{cat.to_star}}'>{{text_cfg.genealogy.to_star_tip}}</text>
     
-    <text class='fb-button' bindtap='bindTapFeedback'>反馈猫猫信息</text>
+    <text class='fb-button' bindtap='bindTapFeedback'>{{text_cfg.detail_cat.button_feedback}}</text>
     <view class="mpcode" bindtap="bingMpTap">
-      <image src="../../../images/mpcode.png"></image>
+      <image src="../../../images/button/mpcode.png"></image>
     </view>
   </view>
   <view class='details'>
     <view class='item'>
       <view class='label'>
         <view class='label-block'></view>
-        昵称
+        {{text_cfg.detail_cat.label_nickname}}
       </view>
       <view class='value'>{{cat.nickname || '-'}}</view>
     </view>
     <view class='item'>
       <view class='label'>
         <view class='label-block'></view>
-        常驻地
+        {{text_cfg.detail_cat.label_location}}
       </view>
       <view class='value'>{{(cat.campus + cat.area) || '-'}}</view>
     </view>
     <view class='item'>
       <view class='label'>
         <view class='label-block'></view>
-        生日
+        {{text_cfg.detail_cat.label_birthday}}
       </view>
       <view class='value'>{{cat.birthday || '-'}}</view>
     </view>
     <view class='item'>
       <view class='label'>
         <view class='label-block'></view>
-        爸爸
+        {{text_cfg.detail_cat.label_father}}
       </view>
       <view class='value'>{{cat.father || '-'}}</view>
     </view>
     <view class='item'>
       <view class='label'>
         <view class='label-block'></view>
-        妈妈
+        {{text_cfg.detail_cat.label_mother}}
       </view>
       <view class='value'>{{cat.mother || '-'}}</view>
     </view>
     <view class='item'>
       <view class='label'>
         <view class='label-block'></view>
-        好友
+        {{text_cfg.detail_cat.label_friend}}
       </view>
       <view class='value'>{{cat.relation || '-'}}</view>
     </view>
@@ -95,7 +95,7 @@ next-margin='60rpx'>
     <view class='item long'>
       <view class='label'>
         <view class='label-block'></view>
-        特点
+        {{text_cfg.detail_cat.label_character}}
       </view>
       <view class='value'>
         <!-- 新猫特点Char是空的数组（以前的是空值），修改判定方式 -->
@@ -106,9 +106,9 @@ next-margin='60rpx'>
     <view class='item long'>
       <view class='label'>
         <view class='label-block'></view>
-        撸猫指南
+        {{text_cfg.detail_cat.label_tutorial}}
       </view>
-      <view class='value'>{{cat.tutorial || '暂时还没有'}}</view>
+      <view class='value'>{{cat.tutorial || text_cfg.detail_cat.label_tutorial_empty}}</view>
     </view>
   </view>
   
@@ -157,7 +157,9 @@ next-margin='60rpx'>
       <view class='time'>{{albumBlock.date[0]}}年{{albumBlock.date[1]}}月</view>
       <view wx:if='{{albumBlock.age[0] >= 0 && albumBlock.age[1] >= 0}}' class='age'>{{albumBlock.age[0]}}岁{{albumBlock.age[1]}}个月</view>
     </view>
-    <image mode='aspectFill' lazy-load='true' class='alb-image' wx:for="{{albumBlock.photos}}" src='{{item.photo_compressed || item.photo_id}}' wx:key="_id" bindtap='bindTapPhoto' data-index="{{item.index}}" data-kind='album'></image>
+    <image mode='aspectFill' lazy-load='true' class='alb-image' 
+      wx:for="{{albumBlock.photos}}" src='{{item.photo_compressed || item.photo_id}}' wx:key="_id"
+      bindtap='bindTapPhoto' data-index="{{item.index}}" data-kind='album'></image>
   </view>
   
   <view class='loading'>
@@ -166,15 +168,14 @@ next-margin='60rpx'>
 </view>
 <!-- album end -->
 
-<!-- <image wx:if="{{canUpload}}" id='add-photo-btn' src='../../../images/plus.png' bindtap='bindAddPhoto'></image> -->
 <view class="addPhoto" bindtap='bindAddPhoto'>
-<image class="icon" wx:if="{{canUpload}}" src='../../../images/addPhoto.png'></image>
+<image class="icon" wx:if="{{canUpload}}" src='../../../images/button/addPhoto.png'></image>
 </view>
 
 <!-- 进入留言板 -->
 <view id="comment-btn" bindtap="toComment">
-  <text>留言板</text>
-  <image src="../../../images/right_double_arrow.png" mode="aspectFit"></image>
+  <text>{{text_cfg.detail_cat.label_comment_board}}</text>
+  <image src="../../../images/button/right_double_arrow.png" mode="aspectFit"></image>
 </view>
 </scroll-view>
 
