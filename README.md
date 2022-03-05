@@ -29,17 +29,17 @@
 * 加入猫谱技术交流QQ群：956808218
 * 查看【猫谱-部署常见问题】文档（必看！），链接：https://docs.qq.com/doc/DSGFSU25jalpEZ2FO
 * 发邮件至：dxzyfwd@163.com
-* （近期将更新）在部署演示视频下留言，链接：https://www.bilibili.com/video/BV1zA411W7Rn/
+* 在部署演示视频下留言，链接：https://www.bilibili.com/video/BV1zA411W7Rn/
 * 在GitHub页面提issue
 
 ## 资料整理
 |资料名|类型|链接|
 |:----:|:----:|:----:|
-|（近期将更新）部署视频|视频|https://www.bilibili.com/video/BV1zA411W7Rn/|
+|部署视频|视频|https://www.bilibili.com/video/BV1Sb4y1W7gS|
 |猫谱-部署常见问题|文档|https://docs.qq.com/doc/DSGFSU25jalpEZ2FO|
 |猫谱-管理员手册|文档|https://docs.qq.com/doc/DSEl0aENOSEx5cmtE|
 |猫谱-升级代码|文档|https://docs.qq.com/doc/DSExBY2RsUHlOYlpj|
-|imProcess云函数部署|视频|https://www.bilibili.com/video/BV1zA411W7Rn?p=2|
+|imProcess云函数部署|视频|https://www.bilibili.com/video/BV1zA411W7Rn|
 |imProcess云函数环境|压缩包|https://wwu.lanzoui.com/iaENswzpkeb|
 
 # :scroll:部署
@@ -56,7 +56,7 @@
 
 ## 代码部署
 
-我们在2021年1月录制了一份代码部署视频（ https://www.bilibili.com/video/BV1zA411W7Rn/ ），希望这段视频能帮助你完成部署阶段最繁杂的部分。近期将更新此视频，其内容已过期，请先按照下面的文字说明进行操作。
+我们在2022年3月录制了一份代码部署视频（ https://www.bilibili.com/video/BV1Sb4y1W7gS ），希望这段视频能帮助你完成部署阶段最繁杂的部分。
 
 以下是一些你需要完成的关键操作，**如无特别说明**（:warning:符号），则与视频演示一致。
 
@@ -81,7 +81,7 @@
 期望：点开云开发可以看到面板数据，则说明开通成功。重新编译后，部署检查的第1、2项状态为通过。
 
 ### 特殊依赖安装
-对于 `imProcess` 云函数，无法云端自动安装图像处理依赖库，需要手动上传。这一步比较繁琐，可以参考[演示视频的P2](https://www.bilibili.com/video/BV1zA411W7Rn?p=2)（特别感谢happi0同学的实践经验）。
+对于 `imProcess` 云函数，无法云端自动安装图像处理依赖库，需要手动上传。这一步比较繁琐，可以参考[演示视频](https://www.bilibili.com/video/BV1zA411W7Rn)（特别感谢happi0同学的实践经验）。
 
 - [ ] 下载云函数运行环境压缩包`imProcess_node_modules.zip`，链接：https://wwu.lanzoui.com/iaENswzpkeb
 - [ ] 完成上一步的部署后，登录[腾讯云网页端-云开发CloudBase](https://console.cloud.tencent.com/tcb)，选择云开发环境，左侧云函数，记下`imProcess`函数的运行环境，例如`Nodejs12.16`或`Nodejs10.15`
@@ -141,7 +141,7 @@
 
 *PS：照片审核时，精选照片将出现在猫猫详情的顶栏，且会随机成为首页的猫猫大图。单纯的通过只会加入猫猫相册。删除操作将无法恢复。*
 
-*PPS：照片处理是利用小程序端canvas绘图能力给照片加水印、制作缩略图，有利于节省流量*
+*PPS：照片处理是利用小程序端canvas绘图能力给照片加水印、制作缩略图，有利于节省流量。现已用imProcess云函数实现自动化操作。*
 
 *PPPS：非常不建议进行猫猫删除操作，这可能会导致猫猫ID错乱等一系列后果。在有需要删除一只猫的时候，可以考虑将该猫修改名称，用作下一只猫猫的档案。*
 
