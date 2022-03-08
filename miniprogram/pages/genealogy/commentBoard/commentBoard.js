@@ -37,6 +37,7 @@ Page({
     comments: [],
     comment_count: 0,
     keyboard_height: 0,
+    text_cfg: text_cfg,
   },
 
   /**
