@@ -40,7 +40,7 @@
 |猫谱-管理员手册|文档|https://docs.qq.com/doc/DSEl0aENOSEx5cmtE|
 |猫谱-升级代码|文档|https://docs.qq.com/doc/DSExBY2RsUHlOYlpj|
 |imProcess云函数部署|视频|https://www.bilibili.com/video/BV1zA411W7Rn|
-|imProcess云函数环境|压缩包|https://wwu.lanzoui.com/iaENswzpkeb|
+|imProcess云函数环境|压缩包|https://wwz.lanzout.com/iefHj01u0ddi|
 
 # :scroll:部署
 
@@ -83,9 +83,9 @@
 ### 特殊依赖安装
 对于 `imProcess` 云函数，无法云端自动安装图像处理依赖库，需要手动上传。这一步比较繁琐，可以参考[演示视频](https://www.bilibili.com/video/BV1zA411W7Rn)（特别感谢happi0同学的实践经验）。
 
-- [ ] 下载云函数运行环境压缩包`imProcess_node_modules.zip`，链接：https://wwu.lanzoui.com/iaENswzpkeb
+- [ ] 下载云函数运行环境压缩包`imProcess_node_modules_v2.zip`，链接：https://wwz.lanzout.com/iefHj01u0ddi
 - [ ] 完成上一步的部署后，登录[腾讯云网页端-云开发CloudBase](https://console.cloud.tencent.com/tcb)，选择云开发环境，左侧云函数，记下`imProcess`函数的运行环境，例如`Nodejs12.16`或`Nodejs10.15`
-- [ ] 点击上方“层管理”，新建一个层，名称和描述随便填。把刚才下载的[imProcess_node_modules.zip](https://wwu.lanzoui.com/iaENswzpkeb)文件上传上去，环境选刚才记下的`Nodejs`版本
+- [ ] 点击上方“层管理”，新建一个层，名称和描述随便填。把刚才下载的[imProcess_node_modules_v2.zip](https://wwz.lanzout.com/iefHj01u0ddi)文件上传上去，环境选刚才记下的`Nodejs`版本
 - [ ] 再点击左侧云函数，选择`imProcess`，层管理中点击“绑定”，选择刚才创建的层
 - [ ] 另外，为了避免一次处理过多图片导致程序执行超时，需要在云开发面板中依次点击“云函数-imProcess-版本与配置-配置-高级配置”，将内存设置为384，超时时间调整为60
 
