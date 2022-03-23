@@ -48,6 +48,9 @@ Page({
       banner: config.ad_recognize_banner
     },
     text_cfg: text_cfg,
+
+    // 领养状态
+    adopt_desc: config.cat_status_adopt,
   },
 
   onLoad() {

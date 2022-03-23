@@ -77,7 +77,7 @@
             <image mode='aspectFill' class='gender' wx:if='{{item.gender === "公"}}' src="../../images/card/card/male.png"></image>
             <image mode='aspectFill' class='gender' wx:if='{{item.gender === "母"}}' src="../../images/card/card/female.png"></image>
           </block>
-          <view wx:if='{{item.adopt}}' class='adopt'>已领养</view>
+          <view wx:if='{{item.adopt != undefined}}' class='adopt'>{{adopt_desc[item.adopt]}}</view>
           <view wx:if='{{item.to_star}}' class='to_star'>{{text_cfg.genealogy.to_star_tip}}</view>
         </view>
         <view class='line'>
