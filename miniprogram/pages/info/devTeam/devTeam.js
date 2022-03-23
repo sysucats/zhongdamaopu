@@ -12,6 +12,12 @@ Page({
     text_cfg: text_cfg,
     github_link: "https://github.com/sysucats/zhongdamaopu",
     update_log: [{
+      version: "v1.7.6",
+      content: [
+        "修复识猫页显示错误",
+      ],
+      time: "2021/03/23"
+    }, {
       version: "v1.7.5",
       content: [
         "修复留言板按钮",
