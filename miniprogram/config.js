@@ -142,7 +142,7 @@ module.exports = {
       ad_success_tip: "多谢喵(ฅ'ω'ฅ)!",
       ad_fail_tip: "没播完喵...",
       reward_tip_title: "打赏罐头",
-      reward_tip: "感谢您对中大流浪猫的帮助与支持！\n喵(^･ｪ･^)",
+      reward_tip: "您的捐款及广告收入将用作猫猫救助，每月的收支都会在“笃行志愿服务队”公众号进行公开，感谢您对中大流浪猫的帮助与支持！\n喵(^･ｪ･^)",
       reward_count_tip: "* 每月统计一次，在公众号公示，多谢晒（鞠躬）",
       reward_title: "爱心捐款",
     },
