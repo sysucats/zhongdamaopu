@@ -42,7 +42,7 @@
   <!-- 识别结果 -->
   <view id="resultBox" wx:if="{{catList.length && showResultBox}}">
     <view class="tip" wx:if="{{catBoxList.length != 1}}">
-      <image mode='aspectFit' class='icon' src='../../images/button/tip.png'></image>
+      <image mode='aspectFit' class='icon' src='../../images/recognize/tip.png'></image>
       <text>{{!catBoxList.length ? text_cfg.recognize.no_cat_tip : text_cfg.recognize.multi_cat_tip}}</text>
     </view>
     <view class="title">{{!catBoxList.length ? text_cfg.recognize.no_cat_rec_tip : (catBoxList.length == 1 ? text_cfg.recognize.single_cat_rec_tip : text_cfg.recognize.multi_cat_rec_tip)}}</view>
@@ -77,8 +77,8 @@
             <image mode='aspectFill' class='gender' wx:if='{{item.gender === "公"}}' src="../../images/card/card/male.png"></image>
             <image mode='aspectFill' class='gender' wx:if='{{item.gender === "母"}}' src="../../images/card/card/female.png"></image>
           </block>
-          <view wx:if='{{item.adopt != undefined}}' class='adopt'>{{adopt_desc[item.adopt]}}</view>
           <view wx:if='{{item.to_star}}' class='to_star'>{{text_cfg.genealogy.to_star_tip}}</view>
+          <view wx:elif='{{item.adopt != undefined && item.adopt != 0}}' class='adopt'>{{adopt_desc[item.adopt]}}</view>
         </view>
         <view class='line'>
           <image mode='aspectFit' class='icon' src='../../images/card/card/cat.png'></image>
