@@ -12,6 +12,12 @@ Page({
     text_cfg: text_cfg,
     github_link: "https://github.com/sysucats/zhongdamaopu",
     update_log: [{
+      version: "v1.7.8",
+      content: [
+        "处理.HECI图像显示问题",
+      ],
+      time: "2021/04/01"
+    }, {
       version: "v1.7.7",
       content: [
         "修复二维码跳转问题",
