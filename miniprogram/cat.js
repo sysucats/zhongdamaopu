@@ -12,10 +12,12 @@ async function getAvatar(cat_id, total) {
     return undefined;
   }
   
+  // photo_id : 不以 HEIC 为文件后缀的字符串
   const qf = {
     cat_id: cat_id,
     verified: true,
-    best: true
+    best: true,
+    photo_id: /^((?!\.heic$).)*$/i
   };
 
   // TODO: 这里对于API调用的次数较多，需要修改

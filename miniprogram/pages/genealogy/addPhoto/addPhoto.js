@@ -15,6 +15,7 @@ const sendNotifyVertifyNotice = msg.sendNotifyVertifyNotice;
 const config = require('../../../config.js');
 const text_cfg = config.text;
 
+
 Page({
 
   /**
