@@ -13,6 +13,7 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
+    this.run_imProcess();
   },
 
   /**
@@ -63,7 +64,7 @@ Page({
   onShareAppMessage: function () {
 
   },
-  run_debug: function() {
+  deleteRawPhoto: function() {
     const that = this;
     wx.cloud.callFunction({
       name: "deleteRawPhoto",
@@ -88,5 +89,20 @@ Page({
         }, 1000)
       }
     })
+  },
+  async run_imProcess() {
+    for (let i = 0; i < 10; i++) {
+      try {
+        let res = await wx.cloud.callFunction({
+          name: "imProcess",
+          data: {
+            app_name: "中大猫谱",
+          }
+        });
+        console.log(res);
+      } catch {
+        continue;
+      }
+    }
   }
 })
