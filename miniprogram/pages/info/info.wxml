@@ -50,7 +50,7 @@
     <view class="right-arrow"><image mode='aspectFill' src="../../images/filter/right.png"></image></view> 
   </view>
   <view class="option" style="color: var(--color-gray-dark);" bindtap='clickbtn' data-to='/pages/manage/imProcess/imProcess'>
-    <view class="option-text">照片处理</view>
+    <view class="option-text">照片处理({{numImProcess}})</view>
     <view class="right-arrow"><image mode='aspectFill' src="../../images/filter/right.png"></image></view> 
   </view>
 </view></block>

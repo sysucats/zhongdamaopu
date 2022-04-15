@@ -1,3 +1,9 @@
+<wxs module="isHEIC">
+  module.exports.isHEIC = function (str) {
+    return str.indexOf(".HEIC") != -1
+  }
+</wxs>
+
 <block wx:if="{{auth}}">
   <view id='total-count'><text>目前共有 {{total}} 张待审核，点击图片可以放大，\n点击所属猫猫名字可以跳转到该猫猫详情。\n每次最多加载 20 张，请先审核完这些吧。\n完成后点“刷新状态”看看，注意流量消耗哈。</text></view>
   <block wx:for="{{photos}}" wx:key="_id">
@@ -8,6 +14,7 @@
       <view class='label user'>上传者：{{item.userInfo.nickName}}</view>
       <view class='label user'>摄影师：{{item.photographer || item.userInfo.nickName}}</view>
       <view class='label user shotTime'>拍摄时间：{{item.shooting_date}}</view>
+      <view wx:if='{{isHEIC.isHEIC(item.photo_id)}}' class='tip'>* 照片格式为.HEIC，可能会显示不出来</view>
       <button type='normal' bindtap='bindDelete' data-photo='{{item}}'>删除</button>
       <button type='normal' bindtap='bindCheck' data-photo='{{item}}' data-best='{{false}}'>通过</button>
       <button class='long primary' bindtap='bindCheck' data-photo='{{item}}' data-best='{{true}}'>通过+精选</button>

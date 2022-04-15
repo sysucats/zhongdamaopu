@@ -14,6 +14,7 @@ Page({
     showManager: false,
     numChkPhotos: 0,
     numFeedbacks: 0,
+    numImProcess: 0,
     friendLinkImgLoaded:false,
     text_cfg: text_cfg,
   },
@@ -45,10 +46,17 @@ Page({
             numChkPhotos: res.total,
           })
         })
-        this.data.numFeedbacks = db.collection('feedback').where({ dealed: false}).count().then(res => {
+        db.collection('feedback').where({ dealed: false}).count().then(res => {
           that.data.numFeedbacks = res.total;
           that.setData({
             numFeedbacks: res.total,
+          })
+        })
+        const qf = { photo_compressed: _.in([undefined, '']), verified: true, photo_id: /^((?!\.heic$).)*$/i };
+        db.collection('photo').where(qf).count().then(res => {
+          that.data.numImProcess = res.total;
+          that.setData({
+            numImProcess: res.total,
           })
         })
         that.setData({

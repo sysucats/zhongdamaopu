@@ -14,6 +14,7 @@ const setVisitedDate = cat_utils.setVisitedDate;
 
 const text_cfg = config.text;
 
+const no_heic = /^((?!\.heic$).)*$/i; // 正则表达式：不以 HEIC 为文件后缀的字符串
 
 // 页面设置，从global读取
 var page_settings = {};
@@ -208,7 +209,8 @@ Page({
   reloadPhotos() {
     // 这些是精选照片
     const db = wx.cloud.database();
-    const qf = { cat_id: cat_id, verified: true, best: true };
+    // 1/4处 屏蔽以 HEIC 为文件后缀的图片
+    const qf = { cat_id: cat_id, verified: true, best: true, photo_id: no_heic };
     db.collection('photo').where(qf).count().then(res => {
       photoMax = res.total;
       this.loadMorePhotos();
@@ -229,7 +231,8 @@ Page({
   reloadAlbum() {
     // 下面是相册的
     const db = wx.cloud.database();
-    const qf_album = { cat_id: cat_id, verified: true };
+    // 2/4处 屏蔽以 HEIC 为文件后缀的图片
+    const qf_album = { cat_id: cat_id, verified: true, photo_id: no_heic };
     db.collection('photo').where(qf_album).count().then(res => {
       albumMax = res.total;
       album_raw = [];
@@ -246,8 +249,8 @@ Page({
     if (this.data.cat.photo.length >= photoMax) {
       return false;
     }
-
-    const qf = { cat_id: cat_id, verified: true, best: true };
+    // 3/4处 屏蔽以 HEIC 为文件后缀的图片
+    const qf = { cat_id: cat_id, verified: true, best: true, photo_id: no_heic };
     const step = page_settings.photoStep;
     const now = cat.photo.length;
 
@@ -360,7 +363,8 @@ Page({
       })
       return false;
     }
-    const qf = { cat_id: cat_id, verified: true };
+    // 4/4处 屏蔽以 HEIC 为文件后缀的图片
+    const qf = { cat_id: cat_id, verified: true, photo_id: no_heic };
     const step = page_settings.albumStep;
     const now = album_raw.length;
 

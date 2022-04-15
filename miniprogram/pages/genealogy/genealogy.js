@@ -388,14 +388,16 @@ Page({
   },
 
   // 点击猫猫卡片
-  clickCatCard(e, isCatId = false) {
+  clickCatCard(e, isCatId) {
     const cat_id = isCatId ? e : e.currentTarget.dataset.cat_id;
     const index = this.data.cats.findIndex(cat => cat._id == cat_id);
     const detail_url = '/pages/genealogy/detailCat/detailCat';
 
-    this.setData({
-      [`cats[${index}].mphoto_new`]: false
-    });
+    if (index != -1) {
+      this.setData({
+        [`cats[${index}].mphoto_new`]: false
+      });
+    }
 
     wx.navigateTo({
       url: detail_url + '?cat_id=' + cat_id,

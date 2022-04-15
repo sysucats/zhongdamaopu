@@ -91,7 +91,7 @@ Page({
     const that = this;
     const db = wx.cloud.database();
     const _ = db.command;
-    db.collection('photo').where({ photo_compressed: _.in([undefined, '']), verified: true }).count().then(res => {
+    db.collection('photo').where({ photo_compressed: _.in([undefined, '']), verified: true, photo_id: /^((?!\.heic$).)*$/i }).count().then(res => {
       console.log(res);
       that.setData({
         total: res.total

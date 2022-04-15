@@ -15,6 +15,11 @@ function deepcopy(origin) {
   return res;
 }
 
+function random_string(len) {
+  var s = Math.random().toString(36);
+  return s.substr(s.length - len);
+}
+
 // 云函数入口函数
 exports.main = async (event, context) => {
   if (event.deploy_test === true) {
@@ -44,7 +49,17 @@ exports.main = async (event, context) => {
     // 是新猫
     console.log("开始添加新猫");
     const count = (await db.collection('cat').count()).total;
-    cat._no = 'c' + count;
+
+    var _no = 'c' + count;
+    while (true) {
+      var exist = (await db.collection('cat').where({_no: _no}).count()).total > 0;
+      if (!exist) {
+        break;
+      }
+      // 加上俩随机字符
+      _no += random_string(2);
+    }
+    cat._no = _no;
     return db.collection('cat').add({
       data: cat
     })

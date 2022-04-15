@@ -29,7 +29,7 @@
     </view>
 
     <button bindtap='chooseImg' class='long primary'>选择照片</button>
-    
+
     <view class='tip' hidden='{{photos && photos.length}}'>* 如果遇到闪退，清理后台应用再试试~</view>
 
     <view class='set-all' hidden='{{!photos || photos.length<2}}'>
@@ -44,13 +44,22 @@
       </view>
       <view class='tip'>* 在此填写会覆盖下面所有设置</view>
 
+
       <button class='long primary' bindtap='uploadAllClick' disabled="{{!uploading ? false: true}}">全部上传</button>
       
     </view>
     
+    <wxs module="isHEIC">
+      module.exports.isHEIC = function (str) {
+        return str.indexOf(".HEIC") != -1
+      }
+    </wxs>
 
     <view class='card' wx:for="{{photos}}" wx:key="path">
       <image class='selected-image' mode='aspectFit' src='{{item.file.path}}'></image>
+
+      <view wx:if='{{isHEIC.isHEIC(item.file.path)}}' class='tip'>* 照片格式为.HEIC，可能会显示不出来</view>
+
       <view class='label'>拍摄日期：</view>
       <view>
         <picker mode='date' fields='month' bindchange='pickDate' start='{{birth_date || "2008-01-01"}}' end='{{now_date}}' data-index='{{index}}'>{{item.shooting_date? item.shooting_date: '选择拍摄日期'}}</picker>
