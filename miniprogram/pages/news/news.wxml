@@ -1,0 +1,26 @@
+<view class='loading' wx:if='{{updateRequest}}'>
+    <image src='../../images/system/loading.gif'></image>
+</view>
+
+<scroll-view enable-flex='true' class='cards' style='height: {{heights.windowHeight - heights.filters}}px;' scroll-y='true' enable-back-to-top='true' bindscrolltolower='onRefresh' bindscroll='fScroll' lower-threshold='50'>
+
+    <view wx:if="{{showManager}}" class='verify-box'>
+        <view class="option" bindtap='clickCreateBtn'>
+            <view class="option-text">[管理员] 发布新公告</view>
+        </view>
+    </view>
+
+    <view class='verify-box' bindtap='clickScience'>
+        <view class='news title'>[置顶] 猫咪科普</view>
+        <view class='news content'>猫咪科普搬到这里来啦！</view>
+    </view>
+
+    <block wx:for='{{newsList}}' wx:key="_id">
+        <view class='verify-box' bindtap='clickNews' data-news_id='{{item._id}}'>
+            <view class='news title'>{{item.title}}</view>
+            <view class='news user'>{{item.userInfo.nickName}} </view>
+            <view class='news time'>{{item.ddate}} </view>
+        </view>
+    </block>
+
+</scroll-view>

@@ -1,0 +1,32 @@
+<!--pages/news/detailNews/detailNews.wxml-->
+
+<view class='loading' wx:if='{{updateRequest}}'>
+    <image src='../../../images/system/loading.gif'></image>
+</view>
+
+
+<scroll-view enable-flex='true' class='cards' style='height: {{heights.windowHeight - heights.filters}}px;' scroll-y='true' enable-back-to-top='true' bindscrolltolower='onRefresh' bindscroll='fScroll' lower-threshold='50'>
+
+    <view class='verify-box' wx:if='{{news != 0}}'>
+        <view class='news title'>{{news.title}}</view>
+        <view class='news content'>{{news.mainContent}}</view>
+
+        <view wx:if='{{news.userInfoLastModify}}'>
+            <view class='news user'>{{news.userInfoLastModify.nickName}} </view>
+            <view class='news time'>最近一次修改于：{{news.ddateLastModify}}</view>
+        </view>
+        <view wx:else>
+            <view class='news user'>{{news.userInfo.nickName}} </view>
+            <view class='news time'>发布于：{{news.ddate}} </view>
+        </view>
+
+        <view wx:if="{{showManager}}">
+            <button bindtap='removeNews'>删除</button>
+            <button bindtap='modifyNews'>修改</button>
+        </view>
+    </view>
+    <view class='verify-box' wx:if='{{err}}'>
+        <view class='news err'>喵公告消失了？</view>
+    </view>
+
+</scroll-view>

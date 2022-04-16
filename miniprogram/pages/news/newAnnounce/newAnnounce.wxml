@@ -1,0 +1,29 @@
+<!--pages/manage/manageNews/newAnnounce/newAnnounce.wxml-->
+
+<form bindsubmit="bindSubmit">
+    <view wx:if="{{!isAuth}}" class='unAuth'>
+        <!-- 请授权后操作 -->
+        <view class='userInfo'>
+            <image src='../../../images/system/user.png'></image>
+            <view>等待授权</view>
+        </view>
+        <button bindtap='getUInfo'>点击授权</button>
+    </view>
+    <block wx:else>
+        <block wx:if="{{auth}}">
+            <view class='userInfo'>{{user.userInfo.nickName}} 正在编写公告</view>
+
+            <view class='label'>标题：</view>
+            <input name='title' type='text' bindinput='bindInputTitle' maxlength='{{titlemaxlength}}'></input>
+            <view class='lengthTips'>字数：{{titlelength}}/{{titlemaxlength}}</view>
+
+            <view class='label'>正文：</view>
+            <textarea placeholder="添加图片/猫咪链接/标签 in future" name='mainContent' maxlength='{{maxlength}}' bindinput='bindInput' ></textarea>
+            <view class='lengthTips'>字数：{{length}}/{{maxlength}}</view>
+
+            <view class='submitButton'>
+                <button form-type='submit' bindtap="toSubmit">发布公告</button>
+            </view>
+        </block>
+    </block>
+</form>

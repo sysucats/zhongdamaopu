@@ -1,0 +1,97 @@
+/* pages/news/modifyNews/modifyNews.wxss */
+
+page {
+    width: 750rpx;
+    padding: 30rpx 30rpx;
+    box-sizing: border-box;
+}
+
+.label {
+    font-size: 30rpx;
+    font-weight: 600;
+    margin: 25rpx 0 5rpx 0;
+}
+
+.label.light {
+    font-weight: 400;
+    margin: 5rpx 0;
+}
+
+input,
+picker,
+textarea {
+    width: 670rpx;
+    border-bottom: 2rpx var(--color-primary) solid;
+    background-color: var(--color-white-dark);
+    padding: 15rpx;
+    color: var(--color-black-light);
+}
+
+button {
+    width: 100%;
+    font-size: 30rpx;
+    background-color: var(--color-primary);
+    margin: 10rpx;
+    border: 1rpx solid var(--color-gray-max);
+    border-radius: 20rpx;
+}
+
+.userInfo {
+    width: 100%;
+    padding: 0rpx 0rpx 30rpx 0;
+    display: flex;
+}
+
+.userInfo image {
+    height: 50rpx;
+    width: 50rpx;
+    margin-right: 10rpx;
+    border-radius: 5rpx;
+}
+
+.userInfo text {
+    height: 50rpx;
+    line-height: 50rpx;
+    font-size: 35rpx;
+}
+
+.lengthTips {
+    font-size: 26rpx;
+    color: var(--color-gray-max);
+    float: right;
+    margin-right: 10rpx;
+    margin-top: 5rpx;
+}
+
+.news {
+    font-weight: 300;
+    margin: 10rpx 0;
+}
+
+.news.title {
+    font-size: 40rpx;
+    font-weight: bold;
+}
+
+.news.content {
+    font-size: 32rpx;
+    margin-bottom: 20rpx;
+    white-space: pre-wrap;
+}
+
+.news.user {
+    font-size: 32rpx;
+    margin-bottom: 20rpx;
+}
+
+.news.time {
+    font-size: 24rpx;
+    margin-bottom: 20rpx;
+}
+
+.loading image {
+    width: 165.9rpx;
+    height: 90.3rpx;
+    margin: 10rpx 292rpx;
+    margin-top: 40rpx;
+}

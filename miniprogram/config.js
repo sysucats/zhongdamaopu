@@ -166,7 +166,7 @@ module.exports = {
     // 开发团队页，pages/info/devTeam/devTeam
     dev_team: {
       share_tip: "开发团队",
-      team: "程序开发：渔政、蓝卷、XD、zJ、ArcherJo\n资料维护：Lo\n初期资料整理：hehe、玥琪、大米\n以及各校区猫群的小伙伴~\n非常欢迎新朋友加入设计开发哇~！",
+      team: "程序开发：渔政、蓝卷、XD、zJ、ArcherJo、yw\n资料维护：Lo\n初期资料整理：hehe、玥琪、大米\n以及各校区猫群的小伙伴~\n非常欢迎新朋友加入设计开发哇~！",
     },
     // 识猫页，pages/recognize/recognize
     recognize: {

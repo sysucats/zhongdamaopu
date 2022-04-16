@@ -12,12 +12,18 @@ Page({
     text_cfg: text_cfg,
     github_link: "https://github.com/sysucats/zhongdamaopu",
     update_log: [{
+      version: "v1.8.0",
+      content: [
+        "新增公告栏模块",
+      ],
+      time: "2021/04/15"
+    },{
       version: "v1.7.9",
       content: [
-        "处理照片压缩和水印图问题",
+        "处理照片和压缩图水印问题",
       ],
       time: "2021/04/05"
-    }, {
+    },{
       version: "v1.7.8",
       content: [
         "处理.HECI图像显示问题",
