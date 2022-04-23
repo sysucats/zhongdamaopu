@@ -53,8 +53,9 @@ Page({
     canvas: {}, // 画布的宽高
     canUpload: false, // 是否可以上传照片
     showGallery: false,
-    imgCompressedUrls: [], // 预览组件使用的URLs
-    imgUrls: [], // 预览组件使用的URLs
+    galleryPhotos: [],
+    // imgCompressedUrls: [], // 预览组件使用的URLs
+    // imgUrls: [], // 预览组件使用的URLs
     currentImg: 0, // 预览组件当前预览的图片
     photoOrderSelectorRange: photoOrder,
     photoOrderSelectorKey: "name",
@@ -300,16 +301,17 @@ Page({
       var photos = album_raw;
     }
 
-    this.imgCompressedUrls = photos.map((photo) => {
-      return (photo.photo_compressed || photo.photo_watermark || photo.photo_id);
-    });
-    this.imgUrls = photos.map((photo) => {
-      return (photo.photo_watermark || photo.photo_id);
-    });
+    // this.imgCompressedUrls = photos.map((photo) => {
+    //   return (photo.photo_compressed || photo.photo_watermark || photo.photo_id);
+    // });
+    // this.imgUrls = photos.map((photo) => {
+    //   return (photo.photo_watermark || photo.photo_id);
+    // });
     this.setData({
       showGallery: true,
-      imgUrls: this.imgUrls,
-      imgCompressedUrls: this.imgCompressedUrls,
+      // imgUrls: this.imgUrls,
+      galleryPhotos: photos,
+      // imgCompressedUrls: this.imgCompressedUrls,
       currentImg: this.currentImg,
     });
     wx.hideLoading();
@@ -320,27 +322,29 @@ Page({
     this.currentImg = index; // 这里得记一下，保存的时候需要
     // preload逻辑
     const preload = page_settings.galleryPreload;
-    if (whichGallery == 'best' && this.imgUrls.length - index <= preload && this.imgUrls.length < photoMax) {
+    const photo_count = this.data.galleryPhotos.length;
+    if (whichGallery == 'best' && photo_count - index <= preload && photo_count < photoMax) {
       console.log("加载更多精选图");
       await this.loadMorePhotos(); //preload
       
       var photos = this.data.cat.photo;
-    } else if (whichGallery == 'album' && this.imgUrls.length - index <= preload && this.imgUrls.length < albumMax) { //album
+    } else if (whichGallery == 'album' && photo_count - index <= preload && photo_count < albumMax) { //album
       await this.loadMoreAlbum(); // preload
       var photos = album_raw;
     } else {
       return;
     }
     
-    this.imgCompressedUrls = photos.map((photo) => {
-      return (photo.photo_compressed || photo.photo_watermark || photo.photo_id);
-    });
-    this.imgUrls = photos.map((photo) => {
-      return (photo.photo_watermark || photo.photo_id);
-    });
+    // this.imgCompressedUrls = photos.map((photo) => {
+    //   return (photo.photo_compressed || photo.photo_watermark || photo.photo_id);
+    // });
+    // this.imgUrls = photos.map((photo) => {
+    //   return (photo.photo_watermark || photo.photo_id);
+    // });
     this.setData({
-      imgCompressedUrls: this.imgCompressedUrls,
-      imgUrls: this.imgUrls
+      // imgCompressedUrls: this.imgCompressedUrls,
+      // imgUrls: this.imgUrls,
+      galleryPhotos: photos,
     });
   },
 
@@ -428,7 +432,7 @@ Page({
         age: age
       });
     }
-    console.log(result);
+    // console.log(result);
     loadingAlbum = false;
     this.setData({
       album: result
@@ -508,40 +512,6 @@ Page({
     })
   },
 
-  async bindGalleryLongPress(e) {
-    const that = this;
-    wx.showActionSheet({
-      itemList: ['保存'],
-      async success(res) {
-        // 用户选择取消时不会回调success，不过还是判断一下吧
-        if (res.tapIndex == 0) {
-          console.log('保存图片');
-          wx.showLoading({
-            title: '正在保存...',
-            mask: true,
-          })
-          let downloadRes = await wx.cloud.downloadFile({
-            fileID: that.imgUrls[that.currentImg],
-          });
-          wx.hideLoading();
-          if (downloadRes.errMsg == 'downloadFile:ok') {
-            wx.saveImageToPhotosAlbum({
-              filePath: downloadRes.tempFilePath,
-              success(res) {
-                wx.showToast({
-                  title: '已保存到相册',
-                  icon: 'success',
-                })
-              }
-            });
-          } else {
-            console.log(downloadRes);
-          }
-        }
-      },
-    });
-  },
-
   showPopularityTip() {
     wx.showToast({
       title: text_cfg.detail_cat.popularity_tip,
@@ -561,5 +531,20 @@ Page({
     wx.navigateTo({
       url: url,
     })
+  },
+
+  likeCountChanged(e) {
+    console.log(e);
+    const current = e.detail.current;
+    const like_count = e.detail.like_count;
+    if (whichGallery == "best") {
+      console.log("update best photo", e.detail);
+      this.setData({
+        [`cat.photo[${current}].like_count`]: like_count,
+      }); 
+    } else if (whichGallery == "album") {
+      album_raw[current].like_count = like_count;
+      this.updateAlbum();
+    }
   }
 })

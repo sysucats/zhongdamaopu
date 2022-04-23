@@ -1,3 +1,5 @@
+const inter_utils = require("../../../inter.js");
+
 module.exports =
 /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
@@ -92,29 +94,36 @@ module.exports =
 
 "use strict";
 
+// 此锁为false时，不发送点赞请求
+var like_mutex = true;
 
 Component({
     options: {
         addGlobalClass: true
     },
     properties: {
-        imgCompressedUrls: {
+        galleryPhotos: {
             type: Array,
             value: [],
             observer: function observer(newVal, oldVal, changedPath) {
-                this.setData({ currentCompressedImgs: newVal });
-            }
-        },
-        imgUrls: {
-            type: Array,
-            value: [],
-            observer: function observer(newVal, oldVal, changedPath) {
-                this.setData({ currentImgs: newVal });
+                var imgCompressedUrls = newVal.map((photo) => {
+                    return (photo.photo_compressed || photo.photo_watermark || photo.photo_id);
+                });
+                var imgUrls = newVal.map((photo) => {
+                    return (photo.photo_watermark || photo.photo_id);
+                });
+                this.setData({
+                    photos: newVal,
+                    imgCompressedUrls: imgCompressedUrls,
+                    imgUrls: imgUrls
+                }, () => {
+                    this.checkLike(this.data.current);
+                });
             }
         },
         show: {
             type: Boolean,
-            value: true
+            value: true,
         },
         current: {
             type: Number,
@@ -130,34 +139,16 @@ Component({
         }
     },
     data: {
-        currentCompressedImgs: [],
-        currentImgs: []
+        canReverse: false,  // 是否可以取消点赞
+        liked: false,  // 是否点赞过当前照片
     },
-    ready: function ready() {
-        var data = this.data;
-        this.setData({ currentImgs: data.imgUrls });
-    },
-
     methods: {
         change: function change(e) {
             this.setData({
                 current: e.detail.current
             });
+            this.checkLike(e.detail.current);
             this.triggerEvent('change', { current: e.detail.current }, {});
-        },
-        deleteImg: function deleteImg() {
-            var data = this.data;
-            var imgs = data.currentImgs;
-            var url = imgs.splice(data.current, 1);
-            this.triggerEvent('delete', { url: url[0], index: data.current }, {});
-            if (imgs.length === 0) {
-                this.hideGallery();
-                return;
-            }
-            this.setData({
-                current: 0,
-                currentImgs: imgs
-            });
         },
         hideGallery: function hideGallery() {
             var data = this.data;
@@ -170,11 +161,87 @@ Component({
         },
         showOriginImg: function showOriginImg() {
             var data = this.data;
-            var url = data.currentImgs[data.current];
+            var url = data.imgUrls[data.current];
             wx.previewImage({
               urls: [url],
             });
-        }
+        },
+        checkLike: async function checkLike(i) {
+            if (!this.data.photos.length) {
+                return;
+            }
+            like_mutex = false;
+
+            const photo_id = this.data.photos[i]._id;
+            const liked = await inter_utils.like_check(photo_id);
+            this.setData({
+                liked: liked,
+            }, () => {
+                like_mutex = true;
+            });
+        },
+        clickLike: function clickLike(e) {
+            if (!like_mutex) {
+                return false;
+            }
+            var liked = !this.data.liked;
+            // 不能取消赞
+            if (!liked && !this.data.canReverse) {
+                return;
+            }
+
+            const current = this.data.current;
+            var like_count = this.data.photos[current].like_count || 0;
+            like_count = liked? like_count+1: like_count-1;
+            this.setData({
+                liked: liked,
+                [`photos[${current}].like_count`]: like_count,
+            });
+
+            // 执行数据库写入
+            if (liked) {
+                inter_utils.like_add(this.data.photos[current]._id, "photo");
+            } else {
+                // todo
+            }
+
+            this.triggerEvent("likecountchanged", {current: current, like_count: like_count}, {});
+        },
+        
+        async bindGalleryLongPress(e) {
+            const that = this;
+            wx.showActionSheet({
+            itemList: ['保存（压缩图）'],
+            async success(res) {
+                // 用户选择取消时不会回调success，不过还是判断一下吧
+                if (res.tapIndex == 0) {
+                console.log('保存图片');
+                wx.showLoading({
+                    title: '正在保存...',
+                    mask: true,
+                })
+                let downloadRes = await wx.cloud.downloadFile({
+                    fileID: that.data.imgUrls[that.data.current],
+                });
+                wx.hideLoading();
+                if (downloadRes.errMsg == 'downloadFile:ok') {
+                    wx.saveImageToPhotosAlbum({
+                    filePath: downloadRes.tempFilePath,
+                    success(res) {
+                        wx.showToast({
+                        title: '已保存到相册',
+                        icon: 'success',
+                        })
+                    }
+                    });
+                } else {
+                    console.log(downloadRes);
+                }
+                }
+            },
+            });
+        },
+
     }
 });
 
