@@ -268,12 +268,19 @@ swiper-item image {
   padding: 0 10rpx;
 }
 
-.album-block .alb-image {
+.album-block .album-image {
   width: 240rpx;
   height: 240rpx;
   box-sizing: border-box;
   margin: 6rpx 5rpx;
   background-color: white;
+
+  position: relative;
+}
+
+.album-image .alb-image {
+  width: 240rpx;
+  height: 240rpx;
 }
 
 .album .loading {
@@ -320,6 +327,7 @@ swiper-item image {
   position: fixed;
   top: 0;
   box-shadow: 0 5rpx 20rpx var(--color-gray);
+  z-index: 1;
 }
 
 
@@ -383,4 +391,40 @@ swiper-item image {
   width: 22rpx;
   height: 24rpx;
   margin-top: 12rpx;
+}
+
+.best-photo {
+  position: relative;
+}
+
+.best-photo .like-count {
+  position: absolute;
+  bottom: 30rpx;
+  left: 20rpx;
+  color: var(--color-gray-light);
+  display: flex;
+  align-items: center;
+  font-size: 26rpx;
+}
+
+.like-logo {
+  width: 30rpx;
+  height: 30rpx;
+  margin-right: 5rpx;
+}
+
+.album-image .like-count {
+  position: absolute;
+  bottom: 0rpx;
+  left: 10rpx;
+  color: var(--color-gray-light);
+  display: flex;
+  align-items: center;
+  font-size: 22rpx;
+}
+
+.like-logo.small {
+  width: 20rpx;
+  height: 20rpx;
+  margin-right: 5rpx;
 }

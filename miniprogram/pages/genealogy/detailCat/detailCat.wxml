@@ -15,8 +15,12 @@ indicator-dots='{{false}}'
 bindchange='swiperLast'
 previous-margin='60rpx'
 next-margin='60rpx'>
-  <swiper-item wx:for='{{cat.photo}}' wx:key="_id" bindtap='bindTapPhoto' data-index="{{item.index}}" data-kind='best'>
+  <swiper-item class="best-photo" wx:for='{{cat.photo}}' wx:key="_id" bindtap='bindTapPhoto' data-index="{{item.index}}" data-kind='best'>
     <image bindload='bindImageLoaded' mode='aspectFill' src='{{item.photo_compressed || item.photo_id}}'></image>
+    <item class="like-count" wx:if="{{item.like_count}}">
+      <image class="like-logo" mode='aspectFill' src="../../../images/button/heart.png"></image>
+      <text>{{item.like_count}}</text>
+    </item>
   </swiper-item>
 </swiper>
 
@@ -157,9 +161,13 @@ next-margin='60rpx'>
       <view class='time'>{{albumBlock.date[0]}}年{{albumBlock.date[1]}}月</view>
       <view wx:if='{{albumBlock.age[0] >= 0 && albumBlock.age[1] >= 0}}' class='age'>{{albumBlock.age[0]}}岁{{albumBlock.age[1]}}个月</view>
     </view>
-    <image mode='aspectFill' lazy-load='true' class='alb-image' 
-      wx:for="{{albumBlock.photos}}" src='{{item.photo_compressed || item.photo_id}}' wx:key="_id"
-      bindtap='bindTapPhoto' data-index="{{item.index}}" data-kind='album'></image>
+    <view class="album-image" wx:for="{{albumBlock.photos}}" wx:key="_id" bindtap='bindTapPhoto' data-index="{{item.index}}" data-kind='album'>
+      <image mode='aspectFill' class="alb-image" lazy-load='true' src='{{item.photo_compressed || item.photo_id}}'></image>
+      <item class="like-count" wx:if="{{item.like_count >= 3}}">
+        <image class="like-logo small" mode='aspectFill' src="../../../images/button/heart.png"></image>
+        <text>{{item.like_count}}</text>
+      </item>
+    </view>
   </view>
   
   <view class='loading'>
@@ -179,7 +187,8 @@ next-margin='60rpx'>
 </view>
 </scroll-view>
 
-<mp-gallery show="{{showGallery}}" 
+<mp-gallery show="{{showGallery}}" gallery-photos="{{galleryPhotos}}"
 img-compressed-urls="{{imgCompressedUrls}}" img-urls="{{imgUrls}}" current="{{currentImg}}"
 hide-on-click="{{true}}" 
-bindchange="bindGalleryChange"></mp-gallery>
+bindchange="bindGalleryChange"
+bindlikecountchanged="likeCountChanged"></mp-gallery>

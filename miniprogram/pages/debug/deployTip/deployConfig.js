@@ -139,6 +139,7 @@ module.exports = {
     "science": init_science,
     "setting": init_setting,
     "user": [{_id: "init"}],
+    "inter": default_init_data,
   },
   images: cfg.science_imgs.concat([cfg.reward_img, cfg.feedback_wj_img, cfg.mpcode_img]),
 }
