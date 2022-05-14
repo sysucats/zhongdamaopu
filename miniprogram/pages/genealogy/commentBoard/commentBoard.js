@@ -1,7 +1,7 @@
 const config = require('../../../config.js');
 const utils = require('../../../utils.js');
 const shareTo = utils.shareTo;
-const getCurrentPath = utils.getCurrentPath;
+const isManager = utils.isManager;
 const getGlobalSettings = utils.getGlobalSettings;
 const formatDate = utils.formatDate;
 
@@ -38,6 +38,7 @@ Page({
     comment_count: 0,
     keyboard_height: 0,
     text_cfg: text_cfg,
+    is_manager: false,
   },
 
   /**
@@ -54,7 +55,17 @@ Page({
       that.loadCat();
       that.loadMoreComment();
     })
-
+    
+    // 是否为管理员lv.1
+    isManager(res => {
+      if (res) {
+        that.setData({
+          is_manager: true
+        })
+      } else {
+        console.log("not a manager");
+      }
+    }, 1);
   },
 
   /**
@@ -356,6 +367,40 @@ Page({
       comments: comments
     });
 
+  },
+
+  deleteComment(e) {
+    const that = this;
+    const index = e.currentTarget.dataset.index;
+    const item = e.currentTarget.dataset.item;
+    const comment_id = item._id;
+    const username = item.userInfo.nickName;
+    // 弹窗提示一下
+    wx.showModal({
+      title: '提示',
+      content: `确定删除\"${username}\"的留言？`,
+      success (res) {
+        if (res.confirm) {
+          wx.cloud.callFunction({
+            name: "commentOp",
+            data: {
+              type: "delete_comment",
+              comment_id: comment_id,
+            },
+            success: () => {
+              wx.showToast({
+                title: '删除成功',
+              });
+              var comments = that.data.comments;
+              comments.splice(index, 1);
+              that.setData({
+                comments: comments,
+              })
+            }
+          });
+        }
+      }
+    })
   }
 
 })

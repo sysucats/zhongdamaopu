@@ -43,6 +43,13 @@ page {
   font-weight: 500;
 }
 
+.comment .right .delete {
+  font-size: 22rpx;
+  color: var(--color-black-light);
+  font-weight: lighter;
+  float: right;
+}
+
 .comment .right .datetime {
   font-size: 20rpx;
   color: var(--color-gray-max);
