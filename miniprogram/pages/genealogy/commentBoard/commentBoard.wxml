@@ -25,6 +25,9 @@
         <view class="datetime">{{item.datetime}}</view>
       </view>
       <view class="content">{{item.content}}</view>
+      <!-- <view class="operation">
+        <heart size="60" liked="{{liked}}"></heart>
+      </view> -->
       <!-- <view class="operation">点赞、回复、举报</view> -->
     </view>
   </view>
