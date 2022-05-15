@@ -181,7 +181,7 @@ next-margin='60rpx'>
 </view>
 
 <!-- 进入留言板 -->
-<view id="comment-btn" bindtap="toComment">
+<view id="comment-btn" bindtap="toComment" wx:if="{{canUpload}}">
   <text>{{text_cfg.detail_cat.label_comment_board}}</text>
   <image src="../../../images/button/right_double_arrow.png" mode="aspectFit"></image>
 </view>

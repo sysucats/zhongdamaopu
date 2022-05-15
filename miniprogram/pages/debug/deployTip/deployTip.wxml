@@ -7,6 +7,6 @@
       <view class="title">{{key}} {{item.title}}</view>
       <view class="status {{status_to_css[item.status]}}">{{status_to_text[item.status]}}</view>
     </view>
-    <view class="tip">提示：{{item.tip}}<text class="highlight">{{item.addition}}</text></view>
+    <view class="tip"><text>提示：{{item.tip}}<text class="highlight">{{item.addition}}</text></text></view>
   </view>
 </scroll-view>
