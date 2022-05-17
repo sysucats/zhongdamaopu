@@ -11,6 +11,7 @@ const { registerFont } = require('canvas');
 const text2png = require('text2png');
 // const sizeOf = require("buffer-image-size");
 // const { async } = require('../../miniprogram/packages/regenerator-runtime/runtime');
+var assert = require('assert');
 
 registerFont('./方正黑体-GBK.TTF', {family: 'FZHei'});
 
@@ -79,13 +80,11 @@ async function getWatermarkPhoto(origin, metadata, photo, app_name) {
 
 // 云函数入口函数
 exports.main = async (event, context) => {
+  const app_name = event.app_name || process.env.app_name;
+  assert(app_name != undefined, "empty app_name!");
   if (event.deploy_test === true) {
     // 进行部署检查
     return;
-  }
-  const app_name = event.app_name;
-  if (!app_name) {
-    throw "empty app_name!";
   }
   const limit_num = event.limit_num || 30;
   const qf = { photo_compressed: _.in([undefined, '']), verified: true, photo_id: /^((?!\.heic$).)*$/i };

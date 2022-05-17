@@ -5,8 +5,8 @@
   <view class='title'>{{text_cfg.reward.reward_tip_title}}</view>
   <view class='desc'>
     <text wx:if="{{canUpload}}">{{text_cfg.reward.reward_tip}}</text>
-    <!-- 只有当普通用户无法上传时，才会显示下面的提示 -->
-    <text wx:else>感谢您对本小程序的帮助与支持！\n喵(^･ｪ･^)</text>
+    <!-- 只有当普通用户无法上传时，才会显示下面的提示，正常不需要改这里 -->
+    <text wx:else>暂时无法打赏！感谢您对本小程序的帮助与支持！\n喵(^･ｪ･^)</text>
   </view>
   <view style='flex-basis:100%;'>
     <!-- 打开小程序 -->

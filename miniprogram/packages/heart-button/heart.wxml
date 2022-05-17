@@ -1,0 +1,4 @@
+<view
+  class="heart {{liked? 'liked': ''}}"
+  style="width: {{size}}rpx; height: {{size}}rpx; background-size: {{29 * size}}rpx; background-position: {{liked? -28*size: 0}}rpx 0;"
+></view>
