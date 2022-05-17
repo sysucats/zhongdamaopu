@@ -62,35 +62,35 @@ Page({
   onUnload: function () {
     console.log('页面退出');
 
-    // 自动数猫图
-    wx.cloud.callFunction({
-      name: "countPhoto",
-      success: (res) => {
-        console.log('数猫图完成', res.result);
-      }
-    });
+    // 自动数猫图（5分钟一次）
+    // wx.cloud.callFunction({
+    //   name: "countPhoto",
+    //   success: (res) => {
+    //     console.log('数猫图完成', res.result);
+    //   }
+    // });
 
-    // 后台处理缩略图和水印图
-    wx.cloud.callFunction({
-      name: "imProcess",
-      data: {
-        app_name: text_cfg.app_name
-      },
-      success: (res) => {
-        console.log('图片处理完成', res.result);
-      }
-    });
+    // 后台处理缩略图和水印图（改成5min一次）
+    // wx.cloud.callFunction({
+    //   name: "imProcess",
+    //   data: {
+    //     app_name: text_cfg.app_name
+    //   },
+    //   success: (res) => {
+    //     console.log('图片处理完成', res.result);
+    //   }
+    // });
 
     // 发送审核消息
     sendVerifyNotice(notice_list);
 
-    // 重新计算拍照月榜
-    wx.cloud.callFunction({
-      name: "getPhotoRank",
-      success: (res) => {
-        console.log('拍照月榜完成', res.result);
-      }
-    });
+    // 重新计算拍照月榜（改成5min一次）
+    // wx.cloud.callFunction({
+    //   name: "getPhotoRank",
+    //   success: (res) => {
+    //     console.log('拍照月榜完成', res.result);
+    //   }
+    // });
   },
 
   /**

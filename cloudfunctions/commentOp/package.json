@@ -1,5 +1,5 @@
 {
-  "name": "initDatabase",
+  "name": "interOp",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -9,7 +9,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "wx-server-sdk": "latest",
-    "@cloudbase/manager-node": "latest"
+    "wx-server-sdk": "~2.6.1"
   }
 }

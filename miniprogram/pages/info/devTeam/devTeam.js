@@ -12,6 +12,12 @@ Page({
     text_cfg: text_cfg,
     github_link: "https://github.com/sysucats/zhongdamaopu",
     update_log: [{
+      version: "v1.7.11",
+      content: [
+        "部署、管理流程优化",
+      ],
+      time: "2021/05/15"
+    }, {
       version: "v1.7.10",
       content: [
         "猫猫详情页可以点赞了",

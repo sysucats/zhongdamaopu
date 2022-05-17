@@ -21,6 +21,9 @@ async function checkCloud() {
 // 检查云函数是否都部署了
 async function checkFunctions() {
   wx.cloud.init({traceUser: true});
+  // 都部署好了，设置一下
+  var config_res = await setFuncConfigs();
+
   var fail_list = [];
   for (const func of dp_cfg.functions) {
     try {
@@ -36,13 +39,42 @@ async function checkFunctions() {
       console.error(func, error);
     }
   }
+  
 
-  if (fail_list.length == 0) {
+  if (fail_list.length == 0 && config_res.addition.length == 0) {
     return {status: STATUS_OK};
   }
-  var addition = "未部署函数：" + fail_list.join(", ") + "。";
-  return {status: STATUS_FAIL, addition: addition};
+  var addition = fail_list.length ? "未部署函数：" + fail_list.join(", ") + "。" : "";
+  return {status: STATUS_FAIL, addition: config_res.addition + addition};
 };
+
+// 设置云函数配置
+async function setFuncConfigs() {
+  const func_configs = dp_cfg.func_configs;
+  var fail_list = [];
+  for (const func_name in func_configs) {
+    const config = func_configs[func_name];
+    console.log("setFuncConfigs", func_name, config);
+    try {
+      await wx.cloud.callFunction({
+        name: "initDeploy",
+        data: {
+          type: "init_func",
+          func_name: func_name,
+          config: config,
+        }
+      });
+    } catch (error) {
+      fail_list.push(func_name);
+      console.error(func_name, error);
+    }
+  }
+  if (fail_list.length == 0) {
+    return {status: STATUS_OK, addition: ""};
+  }
+  var addition = "设置失败函数：" + fail_list.join(", ") + "。";
+  return {status: STATUS_FAIL, addition: addition};
+}
 
 // 检查云数据库是否创建完成
 async function checkDatabase() {
@@ -53,9 +85,9 @@ async function checkDatabase() {
     console.log(coll_name, init_data);
     try {
       await wx.cloud.callFunction({
-        name: "initDatabase",
+        name: "initDeploy",
         data: {
-          type: "init",
+          type: "init_db",
           collection: coll_name,
           init_data: init_data,
         }
@@ -120,7 +152,8 @@ Page({
         title: "部署云函数",
         status: STATUS_DOING,
         func: checkFunctions,
-        tip: "右键cloudfunctions目录下的每个文件夹，选择【上传并部署，云端安装依赖（不上传...）】，等待所有文件夹都呈绿色图标。注意imProcess函数需要特殊部署，请查看视频教程。",
+        tip: "右键cloudfunctions目录下的每个文件夹，选择【创建并部署，云端安装依赖（不上传...）】，等待所有文件夹都呈绿色图标。\n" + 
+              "\n* 对于imProcess函数，请下载“imProcess_node_module_v2.zip”，解压到imProcess文件夹下，得到node_modules文件夹，最后点击【创建并部署，所有文件】。",
         addition: ""
       },
       3: {
