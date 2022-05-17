@@ -321,7 +321,7 @@ Page({
         res.data = shuffle(res.data);
         for (var d of res.data) {
           d.photo = default_png;
-          d.characteristics_string = [(d.colour || '') + '猫'].concat(d.characteristics || []).join('，');
+          d.characteristics_string = [(d.colour || '') + ''].concat(d.characteristics || []).join('，');
           if (!d.mphoto) {
             d.mphoto_new = false;
           } else {

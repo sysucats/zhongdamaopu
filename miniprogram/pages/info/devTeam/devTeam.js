@@ -12,12 +12,24 @@ Page({
     text_cfg: text_cfg,
     github_link: "https://github.com/sysucats/zhongdamaopu",
     update_log: [{
-      version: "v1.8.0",
+      version: "v1.7.12",
       content: [
-        "新增公告栏模块",
+        "新增公告栏界面",
       ],
-      time: "2021/04/15"
-    },{
+      time: "2021/05/17"
+    }, {
+      version: "v1.7.11",
+      content: [
+        "部署、管理流程优化",
+      ],
+      time: "2021/05/15"
+    }, {
+      version: "v1.7.10",
+      content: [
+        "猫猫详情页可以点赞了",
+      ],
+      time: "2021/04/23"
+    }, {
       version: "v1.7.9",
       content: [
         "处理照片和压缩图水印问题",
