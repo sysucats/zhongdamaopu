@@ -1,5 +1,7 @@
 // pages/news/detailNews/detailNews.js
-const { keys } = require('../../../packages/regenerator-runtime/runtime.js');
+const {
+    keys
+} = require('../../../packages/regenerator-runtime/runtime.js');
 const utils = require('../../../utils.js');
 const isManager = utils.isManager;
 const shareTo = utils.shareTo;
@@ -16,6 +18,8 @@ Page({
         showManager: false,
         updateRequest: false,
         err: false,
+        photos_path: [],
+        cover_path: "",
     },
 
     /**
@@ -78,21 +82,32 @@ Page({
         const that = this;
         const db = wx.cloud.database();
         db.collection('news').where({
-            "_id": this.data.news_id
+            "_id": that.data.news_id
         }).get().then(res => {
             console.log("News Detail:", res);
-            if(res.data.length != 0){
+            if (res.data.length != 0) {
                 that.setData({
                     news: res.data[0],
+                    photos_path: res.data[0].photosPath,
+                    cover_path: res.data[0].coverPath,
                 })
-            }
-            else{
+            } else {
                 that.setData({
                     err: true,
                 })
             }
         });
     },
+
+    previewImg: function (event) {
+        const that = this;
+        console.log("Preveiw Image: ", event);
+        wx.previewImage({
+            current: that.data.photos_path[event.currentTarget.dataset.index],
+            urls: that.data.photos_path
+        })
+    },
+
 
     modifyNews() {
         const detail_url = '/pages/news/modifyNews/modifyNews';
@@ -112,7 +127,37 @@ Page({
             success: function (sm) {
                 console.log(sm);
                 if (sm.confirm) {
+                    // 删除云储存的图片
+                    if (that.data.photos_path.length > 0) {
+                        wx.cloud.deleteFile({
+                            fileList: that.data.photos_path,
+                            success() {
+                                that.setData({
+                                    photos_path: [],
+                                });
+                                console.log("成功删除云储存图片");
+                            },
+                            fail() {
+                                console.log("图片删除失败", that.data.photos_path);
+                            },
+                        });
+                    }
+                    if (that.data.cover_path.length > 0) {
+                        wx.cloud.deleteFile({
+                            fileList: [that.data.cover_path],
+                            success() {
+                                that.setData({
+                                    cover_path: "",
+                                });
+                                console.log("成功删除云储存封面");
+                            },
+                            fail() {
+                                console.log("封面删除失败:", that.data.cover_path);
+                            },
+                        });
+                    }
 
+                    // 删除公告在数据库中的记录
                     if (that.data.news_id) {
                         const db = wx.cloud.database()
                         db.collection('news').doc(that.data.news_id).remove({

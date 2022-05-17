@@ -1,14 +1,46 @@
 // miniprogram/pages/news/news.js
 const utils = require('../../utils.js');
+const config = require('../../config.js');
+
 
 const isManager = utils.isManager;
+const cates = ['猫咪救助', '撸猫指南', '猫咪领养', '猫咪喂养', '猫咪健康'];
+const text_cfg = config.text;
+const share_text = text_cfg.app_name + ' - ' + text_cfg.science.share_tip;
 
 
 Page({
     data: {
         newsList: [],
+        newsList_show: [],
         updateRequest: false,
-        showManager: false
+        showManager: false,
+        buttons: [{
+            id: -1,
+            name: '全部',
+            checked: true,
+            logo: '../../images/news/all.png'
+        }, {
+            id: 0,
+            name: '领养',
+            checked: false,
+            logo: '../../images/news/adopt.png'
+        }, {
+            id: 1,
+            name: '救助',
+            checked: false,
+            logo: '../../images/news/help.png'
+        }, {
+            id: 2,
+            name: '活动',
+            checked: false,
+            logo: '../../images/news/activity.png'
+        }, {
+            id: 3,
+            name: '其他',
+            checked: false,
+            logo: '../../images/news/other.png'
+        }],
     },
 
     /**
@@ -19,10 +51,28 @@ Page({
         const db = wx.cloud.database();
         db.collection('news').orderBy('date', 'desc').get().then(res => {
             that.setData({
-                newsList: res.data
+                newsList: res.data,
+                newsList_show: res.data,
             })
         });
         this.checkAuth();
+
+        // 科普部分
+        const fileSystem = wx.getFileSystemManager();
+        var coverPath = wx.getStorageSync('sciImgStorage' + Math.floor(Math.random() * 5));
+        if (coverPath) { // 已有缓存的图片地址
+            fileSystem.access({
+                path: coverPath,
+                success: res => { // 保存的图片文件本身未被清除
+                    that.setImagesList();
+                },
+                fail: res => { // 找不到保存的图片文件，重新下载设置
+                    that.downloadCoverImg();
+                }
+            })
+        } else { //缓存里没有图片地址
+            this.downloadCoverImg();
+        }
     },
 
 
@@ -49,7 +99,8 @@ Page({
         db.collection('news').orderBy('date', 'desc').get().then(res => {
             that.setData({
                 newsList: res.data,
-            })
+            });
+            that.filterNews();
         });
 
         wx.stopPullDownRefresh();
@@ -77,7 +128,7 @@ Page({
 
     clickCreateBtn(e) {
         wx.navigateTo({
-            url: '/pages/news/newAnnounce/newAnnounce',
+            url: '/pages/news/createNews/createNews',
         });
     },
 
@@ -90,6 +141,102 @@ Page({
                 });
             }
         }, 2)
+    },
+
+    filterNews() {
+        var button_chosen = "全部";
+        for (let i = 0; i < this.data.buttons.length; i++) {
+            if (this.data.buttons[i].checked) {
+                button_chosen = this.data.buttons[i].name;
+            }
+        }
+
+        if (button_chosen == "全部") {
+            this.setData({
+                newsList_show: this.data.newsList,
+            })
+        } else {
+            var newsList = this.data.newsList;
+            var newsList_show = [];
+            for (let i = 0; i < newsList.length; i++) {
+                if (newsList[i].class == button_chosen) {
+                    newsList_show.push(newsList[i]);
+                }
+            }
+            this.setData({
+                newsList_show: newsList_show,
+            })
+            console.log("Filter for New: ", newsList_show);
+        }
+    },
+
+    radioButtonTap: function (e) {
+        console.log("Radio Button Tap: ", e);
+        let id = e.currentTarget.dataset.id;
+        for (let i = 0; i < this.data.buttons.length; i++) {
+            if (this.data.buttons[i].id == id) {
+                this.data.buttons[i].checked = true;
+            } else {
+                this.data.buttons[i].checked = false;
+            }
+        }
+        this.setData({
+            buttons: this.data.buttons
+        });
+        this.filterNews();
+    },
+
+    goTop: function (e) {
+        wx.pageScrollTo({
+            scrollTop: 0
+        });
+    },
+
+    // 以下是原先 科普页 的代码
+    downloadCoverImg() {
+        // 下载并缓存，但本次先使用云端图片
+        this.setData({
+            images: config.science_imgs
+        })
+
+        const fileSystem = wx.getFileSystemManager();
+        this.setImagesList = this.setImagesList.bind(this);
+
+        for (let index = 0; index < config.science_imgs.length; index++) {
+            const coverImage = config.science_imgs[index];
+            wx.cloud.downloadFile({
+                fileID: coverImage,
+                success: res => { //下载成功
+                    fileSystem.saveFile({
+                        tempFilePath: res.tempFilePath,
+                        success: res => { //图片文件保存成功
+                            wx.setStorage({
+                                key: 'sciImgStorage' + index,
+                                data: res.savedFilePath,
+                            })
+                        }
+                    })
+                }
+            })
+        }
+    },
+
+    async setImagesList() {
+        var coverImgList = [];
+        for (let index = 0; index < config.science_imgs.length; index++) {
+            const coverPath = wx.getStorageSync('sciImgStorage' + index);
+            await coverImgList.push(coverPath);
+        }
+        this.setData({
+            images: coverImgList
+        })
+    },
+
+    gotoSciDetail(e) {
+        const cate = e.currentTarget.dataset.cate;
+        wx.navigateTo({
+            url: '/pages/science/sciDetail/sciDetail?cate=' + cate + '&coverImgList=' + this.data.images,
+        });
     },
 
 })

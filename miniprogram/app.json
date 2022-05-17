@@ -24,10 +24,10 @@
         "pages/recognize/recognize",
         "pages/genealogy/commentBoard/commentBoard",
         "pages/debug/deployTip/deployTip",
-        "pages/news/newAnnounce/newAnnounce",
         "pages/news/news",
         "pages/news/detailNews/detailNews",
-        "pages/news/modifyNews/modifyNews"
+        "pages/news/modifyNews/modifyNews",
+        "pages/news/createNews/createNews"
     ],
     "tabBar": {
         "selectedColor": "#000",

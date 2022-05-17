@@ -121,3 +121,15 @@
   <view class="tri"></view>
   <view class="content">{{text_cfg.genealogy.filter_tip}}</view>
 </view>
+
+<view class="news-container">
+  <newsModal id='newsModal' 
+      title="{{newsList[0].title}}"
+      content="{{newsList[0].mainContent}}"
+      newsClass="{{newsList[0].class}}"
+      time="{{newsList[0].ddate}}"
+      imagePath="{{ newsImage }}"
+      bind:cancelEvent="_cancelEvent"  
+      bind:confirmEvent="_confirmEvent">
+    </newsModal>
+</view>

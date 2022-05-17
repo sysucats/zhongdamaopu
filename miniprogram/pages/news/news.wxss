@@ -15,7 +15,7 @@ button {
     line-height: 40rpx;
     margin: 10rpx;
     padding: 16rpx 30rpx;
-    border: 1rpx solid var(--color-gray-max);
+    border-style: none;
     border-radius: 25rpx;
 }
 
@@ -55,3 +55,98 @@ button.primary {
     margin: 10rpx 292rpx;
     margin-top: 40rpx;
 }
+
+.cover-image {
+    width: 200rpx;
+    height: 200rpx;
+    border-radius: 25rpx;
+    margin: 5rpx 5rpx;
+    float: right;
+}
+
+.news.class {
+    width: 100rpx;
+    font-size: 28rpx;
+    text-align: center;
+    background-color: var(--color-primary);
+    color: var(--color-primary-dark);
+    border-radius: 20rpx;
+    margin-right: 20rpx;
+}
+
+.button_container {
+    display: flex;
+    flex-direction: row;
+    margin: 20rpx;
+    justify-content: space-around;
+}
+
+/* 按钮未选中 */
+.normal_button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    width: 15%;
+    border-style: none;
+    background-color: white;
+    border-radius: 10%;
+    padding-top: 5rpx;
+    padding-bottom: 3rpx;
+}
+
+/* 按钮选中 */
+.checked_button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    width: 15%;
+    border-style: none;
+    background-color: var(--color-primary);
+    color: white;
+    border-radius: 10%;
+    padding-top: 5rpx;
+    padding-bottom: 3rpx;
+}
+
+.tab-logo{
+    width: 60rpx;
+}
+
+.tab-text{
+    font-size: 24rpx;
+    text-align: center;
+}
+.GoTopBtn {
+    position: fixed;
+    bottom: 40rpx;
+    right: 40rpx;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    background-color: rgba(255, 255, 255, 0.6);
+    border-radius: 50rpx;
+    padding: 10rpx;
+}
+
+.GoTopBtn .logo {
+    width: 80rpx;
+    height: 80rpx;
+    display: block;
+}
+
+swiper {
+    width: 692rpx;
+    height: 261rpx;
+    margin: 20rpx 29rpx;
+    border-radius: 15rpx;
+    overflow: hidden;
+  }
+  
+  swiper image {
+    width: 692rpx;
+    height: 261rpx;
+    border-radius: 15rpx;
+  }

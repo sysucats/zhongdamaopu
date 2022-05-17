@@ -1,4 +1,4 @@
-/* pages/manage/manageNews/modifyNews/modifyNews.wxss */
+/* pages/manage/manageNews/createNews/createNews.wxss */
 page {
     width: 750rpx;
     padding: 30rpx 30rpx;

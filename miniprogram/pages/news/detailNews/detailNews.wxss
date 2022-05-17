@@ -2,12 +2,11 @@
 
 .verify-box {
     box-sizing: border-box;
-    padding: 30rpx 40rpx;
-    margin: 40rpx;
+    padding: 30rpx 30rpx;
+    margin: 20rpx;
     box-shadow: 0rpx 0rpx 30rpx var(--color-gray);
     border-radius: 20rpx;
     background-color: #FFFFFF;
-    box-sizing: border-box;
 }
 
 button {
@@ -62,9 +61,42 @@ button+button {
     margin-top: 40rpx;
 }
 
-.loading image {
-    width: 165.9rpx;
-    height: 90.3rpx;
-    margin: 10rpx 292rpx;
-    margin-top: 40rpx;
+.news.class {
+    width: 100rpx;
+    float: right;
+    font-size: 32rpx;
+    text-align: center;
+    background-color: var(--color-primary);
+    color: var(--color-gray-light);
+    border-radius: 20rpx;
+    margin-left: 5rpx;
+    margin-right: 15rpx;
+}
+
+.album {
+    width: 100%;
+    text-align: center;
+    background-color: var(--color-gray-light);
+    color: var(--color-gray);
+    font-size: 28rpx;
+    padding: 5rpx 0;
+    margin-bottom: 40rpx;
+}
+
+.album-block {
+    display: flex;
+    flex-wrap: wrap;
+    background-color: var(--color-gray-light);
+}
+
+.alb-image {
+    width: 207rpx;
+    height: 207rpx;
+    box-sizing: border-box;
+    margin: 5rpx 5rpx;
+    background-color: white;
+}
+
+.single-image {
+    width: 100%;
 }

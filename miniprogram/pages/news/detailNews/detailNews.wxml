@@ -8,16 +8,38 @@
 <scroll-view enable-flex='true' class='cards' style='height: {{heights.windowHeight - heights.filters}}px;' scroll-y='true' enable-back-to-top='true' bindscrolltolower='onRefresh' bindscroll='fScroll' lower-threshold='50'>
 
     <view class='verify-box' wx:if='{{news != 0}}'>
+        <view class='news class'>{{news.class}}</view>
         <view class='news title'>{{news.title}}</view>
         <view class='news content'>{{news.mainContent}}</view>
 
         <view wx:if='{{news.userInfoLastModify}}'>
-            <view class='news user'>{{news.userInfoLastModify.nickName}} </view>
+            <view wx:if='{{news.userNicknameLastModify}}'>
+                <view class='news user'>{{news.userNicknameLastModify}} </view>
+            </view>
+            <view wx:else>
+                <view class='news user'>{{news.userInfoLastModify.nickName}} </view>
+            </view>
             <view class='news time'>最近一次修改于：{{news.ddateLastModify}}</view>
         </view>
         <view wx:else>
-            <view class='news user'>{{news.userInfo.nickName}} </view>
+            <view wx:if='{{news.userNickname}}'>
+                <view class='news user'>{{news.userNickname}} </view>
+            </view>
+            <view wx:else>
+                <view class='news user'>{{news.userInfo.nickName}} </view>
+            </view>
             <view class='news time'>发布于：{{news.ddate}} </view>
+        </view>
+
+        <view wx:if='{{photos_path.length == 1}}'>
+            <image mode='widthFix' class="single-image" src='{{photos_path[0]}}' bindtap='previewImg'></image>
+        </view>
+        <view wx:else class='album'>
+            <view class='album-block'>
+                <block wx:for="{{photos_path}}" wx:key="_id" wx:for-index="idx">
+                    <image mode='aspectFill' class='alb-image' src='{{item}}' bindtap='previewImg' data-index="{{idx}}"></image>
+                </block>
+            </view>
         </view>
 
         <view wx:if="{{showManager}}">

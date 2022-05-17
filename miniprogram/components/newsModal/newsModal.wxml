@@ -1,0 +1,25 @@
+<!--components/newsModal/newsModal.wxml-->
+<view class='wx_modal_container' hidden="{{!isShow}}">
+  <view class='wx-mask'></view>
+
+
+  <view class='wx-modal'>
+    <image class="wx-modal-catlogo" mode='heightFix' src='../../images/news/cat.png'></image>
+    <view class='wx-modal-title'>{{ title }}</view>
+    <view class='wx-modal-time'>{{ time }}</view>
+    <view class='wx-modal-class'>{{ newsClass }}</view>
+
+    <scroll-view class='wx-modal-scroll' enable-flex='true' scroll-y='true' enable-back-to-top='true' lower-threshold='50'>
+      <view class='wx-modal-content' wx:if="{{content.length != 0}}">{{ content }}</view>
+      <view class='wx-modal-image' wx:if="{{ imagePath != '' }}">
+        <image mode='widthFix' src='{{ imagePath }}'></image>
+      </view>
+    </scroll-view>
+
+    <view class='wx-modal-footer'>
+      <view class='wx-modal-btn' catchtap='_cancelEvent'>{{ cancelText }}</view>
+      <view class='wx-modal-btn' catchtap='_confirmEvent'>{{ confirmText }}</view>
+    </view>
+  </view>
+
+</view>

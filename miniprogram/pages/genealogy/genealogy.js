@@ -70,6 +70,10 @@ Page({
       banner: config.ad_genealogy_banner
     },
 
+    // 需要弹出的公告
+    newsList: [],
+    newsImage: "",
+
     text_cfg: text_cfg
   },
 
@@ -86,7 +90,7 @@ Page({
     // 从扫描二维码扫进来，目前只用于猫猫二维码跳转
     if (options.scene) {
       const scene = decodeURIComponent(options.scene);
-      console.log("scene:",scene);
+      console.log("scene:", scene);
       if (scene.startsWith('toC=')) {
         const cat_No = scene.substr(4);
         const db = wx.cloud.database();
@@ -121,7 +125,7 @@ Page({
 
 
     var scene = wx.getLaunchOptionsSync().scene;
-    if(scene === 1154){//朋友圈内打开 “单页模式”
+    if (scene === 1154) { //朋友圈内打开 “单页模式”
       this.loadFilters();
       const db = wx.cloud.database();
       db.collection('setting').doc('pages').get().then(res => {
@@ -133,6 +137,10 @@ Page({
         catsStep = genealogySetting['catsStep']
       });
     }
+
+    // 载入公告信息
+    that.newsModal = this.selectComponent("#newsModal");
+    that.loadNews();
   },
 
   // onShow: function (options) {
@@ -187,7 +195,10 @@ Page({
       }
       filters.push(colour_item);
 
-      var adopt_status = [{name: "未知", value: null}];
+      var adopt_status = [{
+        name: "未知",
+        value: null
+      }];
       adopt_status = adopt_status.concat(config.cat_status_adopt.map((name, i) => {
         return {
           name: name,
@@ -241,7 +252,7 @@ Page({
     }
   },
 
-  onShareTimeline:function () {
+  onShareTimeline: function () {
     return {
       title: share_text,
       // query: 'cat_id=' + this.data.cat._id
@@ -279,7 +290,7 @@ Page({
         this.loadMoreCats();
       });
     });
-    
+
     // 加载待领养
     this.countWaitingAdopt();
   },
@@ -380,7 +391,7 @@ Page({
 
   },
 
-  bindImageLoaded(e){
+  bindImageLoaded(e) {
     const idx = e.currentTarget.dataset.index;
     this.setData({
       [`cats[${idx}].imageLoaded`]: true
@@ -585,8 +596,12 @@ Page({
       }
 
       console.log(key, selected);
-      res.push({[key]: _.in(selected)});
-      if (cateFilter) res.push({[cateKey]: _.in(cateSelected)});
+      res.push({
+        [key]: _.in(selected)
+      });
+      if (cateFilter) res.push({
+        [cateKey]: _.in(cateSelected)
+      });
     }
     // 判断一下filters生效没有
 
@@ -611,7 +626,11 @@ Page({
         regexp: search_str,
         options: 'igs',
       });
-      res.push(_.or([{name: regexp}, {nickname: regexp}]));
+      res.push(_.or([{
+        name: regexp
+      }, {
+        nickname: regexp
+      }]));
     }
     return res.length ? _.and(res) : {};
   },
@@ -664,7 +683,7 @@ Page({
     var that = this;
     this.setData({
       filters_input: ""
-    }, function() {
+    }, function () {
       that.fSearch();
     })
   },
@@ -712,12 +731,16 @@ Page({
   // 查找有多少只猫待领养
   countWaitingAdopt: function () {
     const target = config.cat_status_adopt_target;
-    const value = config.cat_status_adopt.findIndex((x) => {return x === target});
+    const value = config.cat_status_adopt.findIndex((x) => {
+      return x === target
+    });
 
-    
+
     const db = wx.cloud.database();
     const cat = db.collection('cat');
-    const query = {adopt: value};
+    const query = {
+      adopt: value
+    };
     cat.where(query).count().then(res => {
       this.setData({
         adopt_count: res.total
@@ -734,11 +757,15 @@ Page({
     this.lockBtn();
 
     var filters = this.data.filters;
-    var filters_sub = filters.findIndex((x) => {return x.key === "adopt"});
+    var filters_sub = filters.findIndex((x) => {
+      return x.key === "adopt"
+    });
 
     const target_status = config.cat_status_adopt_target;
     const category = filters[filters_sub].category[0];
-    const index = category.items.findIndex((x) => {return x.name === target_status}); // 寻找领养中
+    const index = category.items.findIndex((x) => {
+      return x.name === target_status
+    }); // 寻找领养中
 
     if (category.items[index].active) {
       // 已经激活了
@@ -754,7 +781,7 @@ Page({
     this.setData({
       filters: filters,
       filters_legal: fLegal
-    }, function() {
+    }, function () {
       this.reloadCats();
       this.showFilterTip();
     });
@@ -767,7 +794,7 @@ Page({
     });
 
     var that = this;
-    setTimeout(function() {
+    setTimeout(function () {
       that.setData({
         show_filter_tip: false
       })
@@ -802,6 +829,49 @@ Page({
     this.fReset();
     this.fSearchClear();
   },
+
+  loadNews() {
+    // 载入需要弹窗的公告
+    const that = this;
+    const db = wx.cloud.database();
+    db.collection('news').orderBy('date', 'desc').where({
+      setNewsModal: true
+    }).get().then(res => {
+      that.setData({
+        newsList: res.data,
+      });
+      console.log("Modal News: ", this.data.newsList);
+      if(res.data.length != 0){
+        if(res.data[0].coverPath){
+          that.setData({
+            newsImage: res.data[0].coverPath
+          })
+        }
+        else if(res.data[0].photosPath.length != 0){
+          that.setData({
+            newsImage: res.data[0].photosPath[0]
+          })
+        }
+        that.newsModal.showNewsModal();
+      }
+    });
+  },
+
+  // 取消事件
+  _cancelEvent(){
+    this.newsModal.hideNewsModal();
+  },
+  // 确认事件: 查看公告详情
+  _confirmEvent(){
+    this.newsModal.hideNewsModal();
+    const news_id = this.data.newsList[0]._id;
+        const detail_url = '/pages/news/detailNews/detailNews';
+        wx.navigateTo({
+            url: detail_url + '?news_id=' + news_id,
+        });
+  },
+
+
 
   // 上锁
   lockBtn() {
