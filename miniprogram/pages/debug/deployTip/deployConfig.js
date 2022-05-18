@@ -125,7 +125,7 @@ module.exports = {
   // 云函数的名称
   functions: [
     "addPop", "commentCheck", "commentOp", "countPhoto", "getAllSci", "getMpCode",
-    "getPhotoRank", "imProcess", "initDeploy", "interOp", "isManager", "login", "manageFeedback",
+    "getPhotoRank", "imProcess", "initDeploy", "interOp", "isManager", "manageFeedback",
     "managePhoto", "sendMsgV2", "updateCat", "updateFilter", "updateManager",
     "updateReward", "userOp"
   ],

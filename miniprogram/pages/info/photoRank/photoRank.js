@@ -103,7 +103,10 @@ Page({
     const that = this;
     const ranks = this.data.ranks;
     wx.cloud.callFunction({
-      name: 'login',
+      name: 'userOp',
+      data: {
+        op: "get",
+      },
       complete: (res) => {
         console.log(res);
         const openid = res.result.openid;

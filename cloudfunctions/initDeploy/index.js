@@ -77,47 +77,11 @@ async function initFunc(event) {
 
   config.name = func_name;
 
-  // if (func_name == "imProcess") {
-  //   var layer = await imProcess_deploy();
-  //   config.layers = [layer];
-  // }
-
   console.log(func_name, config);
 
   await manager.functions.updateFunctionConfig(config);
   await manager.functions.createFunctionTriggers(func_name, config.triggers);
   return ;
-}
-
-// 初始化imProcess层
-async function imProcess_deploy() {
-  var layer_name = "imProcess_node_module_v2";
-  var local_path = `${__dirname}/${layer_name}.zip`;
-  const layers = (await manager.functions.listLayers({searchKey: layer_name})).Layers;
-
-  console.log(layers);
-
-  // 删掉旧的版本
-  for (const layer of layers) {
-    await functions.deleteLayerVersion({
-      name: layer.LayerName,
-      version: layer.LayerVersion
-    })
-  }
-
-  // 新建层
-  await manager.functions.createLayer({
-    name: layer_name,
-    contentPath: local_path,
-    runtimes: ["Nodejs12.16"]
-  })
-
-  const layer = (await manager.functions.listLayers({searchKey: layer_name}))[0];
-  
-  return {
-    name: layer.LayerName,
-    version: layer.LayerVersion
-  }
 }
 
 exports.main = async (event, context) => {
