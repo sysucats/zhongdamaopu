@@ -91,8 +91,8 @@
 
 这一步已经实现了自动化，保证上一步操作完成后，部署指引页面会帮你完成数据库创建、数据初始化、权限配置操作。如果部署检查的第3项“创建数据库”的状态为通过，则不需要操作下面4步。
 
-- [ ] 创建9个数据集合：`cat, feedback, photo, photo_rank, reward, science, setting, user, comment`
-- [ ] 设置上述9个数据集合权限为第一项：“所有用户可读、仅创建者可读写”
+- [ ] 创建数据集合：`cat, comment, feedback, inter, news, photo, photo_rank, reward, science, setting, user`
+- [ ] 设置上述数据集合权限为第一项：“所有用户可读、仅创建者可读写”
 - [ ] 导入`initDatabase/database-setting.json`文件到`setting`数据集合
 - [ ] 导入`initDatabase/database-science.json`文件到`science`数据集合
 
