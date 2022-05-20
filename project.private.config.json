@@ -151,6 +151,20 @@
           "pathName": "pages/debug/deployTip/deployTip",
           "query": "",
           "scene": null
+        },
+        {
+          "name": "公告tab",
+          "pathName": "pages/news/news",
+          "query": "",
+          "launchMode": "default",
+          "scene": null
+        },
+        {
+          "name": "公告详情",
+          "pathName": "pages/news/detailNews/detailNews",
+          "query": "news_id=8f75309d6277381801e1c65e751bf2d0",
+          "scene": null,
+          "launchMode": "default"
         }
       ]
     }

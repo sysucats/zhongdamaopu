@@ -8,6 +8,7 @@ const cates = ['猫咪救助', '撸猫指南', '猫咪领养', '猫咪喂养', '
 const text_cfg = config.text;
 const share_text = text_cfg.app_name + ' - ' + text_cfg.science.share_tip;
 
+// 可以考虑下公告类别的自定义，文案也整合同步起来
 
 Page({
     data: {
@@ -60,17 +61,17 @@ Page({
         // 科普部分
         const fileSystem = wx.getFileSystemManager();
         var coverPath = wx.getStorageSync('sciImgStorage' + Math.floor(Math.random() * 5));
-        if (coverPath) { // 已有缓存的图片地址
+        if (coverPath) { // 缓存已有图片保存路径
             fileSystem.access({
                 path: coverPath,
-                success: res => { // 保存的图片文件本身未被清除
+                success: res => { // 路径下的图片文件未被清除
                     that.setImagesList();
                 },
-                fail: res => { // 找不到保存的图片文件，重新下载设置
+                fail: res => { // 路径下找不到保存的图片文件
                     that.downloadCoverImg();
                 }
             })
-        } else { //缓存里没有图片地址
+        } else { //缓存里没有图片保存路径
             this.downloadCoverImg();
         }
     },
@@ -186,32 +187,38 @@ Page({
         this.filterNews();
     },
 
-    goTop: function (e) {
-        wx.pageScrollTo({
-            scrollTop: 0
-        });
-    },
+    // goTop: function (e) {
+    //     wx.pageScrollTo({
+    //         scrollTop: 0
+    //     });
+    // },
 
-    // 以下是原先 科普页 的代码
+// 以下是原先 科普页 的代码
+
     downloadCoverImg() {
-        // 下载并缓存，但本次先使用云端图片
+        // 下载并缓存封面
+        // 本次先用云端图片 
+        const onlineImgs = config.science_imgs
         this.setData({
-            images: config.science_imgs
+            images: onlineImgs
         })
 
         const fileSystem = wx.getFileSystemManager();
         this.setImagesList = this.setImagesList.bind(this);
 
-        for (let index = 0; index < config.science_imgs.length; index++) {
-            const coverImage = config.science_imgs[index];
+        for (let i = 0; i < onlineImgs.length; i++) {
+            const coverImage = onlineImgs[i];
+
+            // 拆分缓存函数，参数：下载地址、存储key名
+            // 友链图标可用
             wx.cloud.downloadFile({
                 fileID: coverImage,
                 success: res => { //下载成功
                     fileSystem.saveFile({
                         tempFilePath: res.tempFilePath,
-                        success: res => { //图片文件保存成功
-                            wx.setStorage({
-                                key: 'sciImgStorage' + index,
+                        success: res => { //文件保存成功
+                            wx.setStorage({ //记录缓存路径
+                                key: 'sciImgStorage' + i,
                                 data: res.savedFilePath,
                             })
                         }
@@ -219,6 +226,11 @@ Page({
                 }
             })
         }
+    },
+
+    cacheFile(){
+
+
     },
 
     async setImagesList() {

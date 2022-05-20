@@ -6,7 +6,7 @@
     right: 0;
     left: 0;
     bottom: 0;
-    background: rgba(0, 0, 0, 0.3);
+    background: rgba(0, 0, 0, 0.4);
 }
 
 .wx-modal-catlogo {
@@ -27,25 +27,48 @@
     background-color: #FFFFFF;
     border-radius: 15rpx;
     overflow: visible;
+
+    padding: 20rpx 20rpx 0 20rpx;
 }
 
+.wx-modal-row{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: 8rpx;
+}
+
+
 .wx-modal-title {
-    font-size: 18px;
-    padding: 15px 15px 5px;
-    text-align: center;
+    /* padding: 15px 15px 5px; */
+    margin: 0 0 10rpx 5rpx;
+    text-align: left;
+    font-size: 33rpx;
+    font-weight: 600;
+
 }
 
 .wx-modal-content {
-    padding: 15px 15px 5px;
+    /* padding: 15px 15px 5px;
     min-height: 40px;
-    font-size: 16px;
     line-height: 1.3;
-    white-space: pre-wrap;
-    color: var(--color-gray-dark);
+    white-space: pre-wrap;*/
+
+
+    font-size: 28rpx;
+    font-weight: 400;
+
+    margin-bottom: 30rpx;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 4;
+
+    color: var(--color-gray-max);
 }
 
 .wx-modal-image {
-    margin: 30rpx;
+    margin: 10rpx;
 }
 
 .wx-modal-image image {
@@ -53,36 +76,44 @@
 }
 
 .wx-modal-scroll {
+    width: auto;
+    padding: 15rpx;
     height: 600rpx;
+    background-color: #FFFFFF;
 }
 
 .wx-modal-class {
-    width: 100rpx;
-    font-size: 24rpx;
-    text-align: center;
-    background-color: var(--color-primary);
-    color: var(--color-gray-light);
+    width: 80rpx;
+    height: 38rpx;
     border-radius: 15rpx;
-    margin: 20rpx;
-    margin-left: 40rpx;
+    margin: 0 12rpx 0 0;
+    
+    font-size: 24rpx;
+    font-weight: 500;
+    text-align: center;
+    line-height: 38rpx;
+
+    background-color: var(--color-primary-light);
+    color: var(--color-primary);
 }
 
 
 .wx-modal-time {
-    float: right;
-    font-size: 24rpx;
-    color: var(--color-primary);
-    margin: 20rpx;
-    text-align: center;
-    margin-right: 40rpx;
+    font-size: 26rpx;
+    color: var(--color-gray-dark);
+    flex-grow: 1;
+    text-align: right;
+    white-space: nowrap;  
+    text-overflow:ellipsis; 
+    overflow: hidden;
 }
 
 .wx-modal-footer {
     display: flex;
     align-items: center;
     position: relative;
-    line-height: 45px;
-    font-size: 17px;
+    line-height: 90rpx;
+    font-size: 32rpx;
 }
 
 .wx-modal-footer::before {
@@ -112,7 +143,7 @@
 }
 
 .wx-modal-footer .wx-modal-btn:nth-of-type(2) {
-    color: var(--color-primary-dark);
+    color: var(--color-primary);
 }
 
 .wx-modal-footer .wx-modal-btn:nth-of-type(2):after {
