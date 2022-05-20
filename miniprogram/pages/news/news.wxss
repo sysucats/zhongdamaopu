@@ -34,6 +34,7 @@
 .news.title {
     font-size: 33rpx;
     font-weight: 600;
+    margin-bottom: 6rpx;
 }
 
 .news .row-container{
@@ -76,7 +77,10 @@
     overflow: hidden;
 }
 
+.news.content-wrapper{
 
+    flex-grow: 1;
+}
 .news.content {
     font-size: 28rpx;
     font-weight: 400;
@@ -89,6 +93,7 @@
     -webkit-line-clamp: 2;
 
     color: var(--color-gray-max);
+
 }
 
 .loading image {
@@ -102,14 +107,12 @@
     width: 200rpx;
     height: 200rpx;
 
-    /* height: auto; */
-    /* width: auto; */
     border-radius: 10rpx;
     margin: 5rpx 5rpx 5rpx 30rpx;
     float: right;
 
     flex-shrink: 0;
-    flex-grow: 1;
+    /* flex-grow: 1; */
 }
 
 

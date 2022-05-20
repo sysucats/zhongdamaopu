@@ -30,8 +30,10 @@
 
             <view class='news infoBox'>
                 <view class='news title'>{{item.title}}</view>
-
-                <view class="news content">{{item.mainContent}}</view>
+                <view class="news content-wrapper">
+                    <!-- 兼容flex-grow和多行省略 -->
+                    <view class="news content">{{item.mainContent}}</view>
+                </view>
                 <view class="news row-container">
                     <view wx:if="{{item.class}}" class='news tag'>{{item.class}}</view>
                     <view class='news user'>{{item.userNicknameLastModify?item.userNicknameLastModify:item.userInfoLastModify.nickName}} </view>

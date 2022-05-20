@@ -52,8 +52,8 @@
     /* padding: 15px 15px 5px;
     min-height: 40px;
     line-height: 1.3;
-    white-space: pre-wrap;*/
-
+    */
+    white-space: pre-wrap;
 
     font-size: 28rpx;
     font-weight: 400;

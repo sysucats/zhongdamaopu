@@ -48,7 +48,7 @@
                 </block>
             </view>
         </view>
-        <view class='news editTime'>修改于：{{news.ddateLastModify}} </view>
+        <view wx:if='{{news.ddateLastModify}}' class='news editTime'>修改于：{{news.ddateLastModify}} </view>
 
         <view wx:if="{{showManager}}">
             <button bindtap='removeNews'>删除</button>

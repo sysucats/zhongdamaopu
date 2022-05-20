@@ -60,6 +60,7 @@ button+button {
     white-space: pre-wrap;
     font-weight: 400;
     color: var(--color-gray-max);
+
 }
 
 .news.editTime {
