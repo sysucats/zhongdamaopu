@@ -5,10 +5,14 @@ async function getCatCommentCount(cat_id) {
     return 0;
   }
   const db = wx.cloud.database();
+  const _ = db.command;
   const coll_comment = db.collection('comment');
-  return (await coll_comment.where({cat_id: cat_id}).count()).total;
+  return (await coll_comment.where({
+    cat_id: cat_id, 
+    deleted: _.neq(true)
+  }).count()).total;
 }
 
 module.exports = {
   getCatCommentCount,
-} 
+}

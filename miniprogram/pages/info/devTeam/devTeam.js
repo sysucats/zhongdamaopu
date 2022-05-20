@@ -14,9 +14,9 @@ Page({
     update_log: [{
       version: "v1.7.12",
       content: [
-        "新增公告栏界面",
+        "修复拍照月榜信息获取问题",
       ],
-      time: "2021/05/17"
+      time: "2021/05/18"
     }, {
       version: "v1.7.11",
       content: [

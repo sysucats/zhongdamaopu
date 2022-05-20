@@ -60,9 +60,6 @@ Page({
         })
         this.loadNews();
         this.checkAuth();
-        wx.enableAlertBeforeUnload({
-            message: "确认退出？修改未提交"
-        });
     },
 
     // 检查权限
@@ -249,34 +246,36 @@ Page({
             setNewsModal: setNewsModal,
         }
 
-        const db = wx.cloud.database();
         const that = this;
 
         wx.showModal({
             content: '确认修改',
-            success: function (sm) {
-                console.log(sm);
-                if (sm.confirm) {
-
-                    db.collection('news').where({
-                        "_id": that.data.news_id
-                    }).update({
-                        data: data,
-                        success: (res) => {
-                            console.log(res);
-                            wx.showToast({
-                                title: '修改成功',
-                                icon: 'success',
-                                duration: 1000
-                            })
-                            setTimeout(wx.navigateBack, 1000)
-                        },
-                        fail: console.error
-                    })
-
+            success: function (res) {
+                console.log(res);
+                if (res.confirm) {
+                    that.doModify(that.data.news_id, data)
                 }
             }
         })
-
-    }
+    },
+    doModify (item_id, item_data) {
+        wx.cloud.callFunction({
+            name: "newsOp",
+            data: {
+                type: "modify",
+                item_id: item_id,
+                item_data: item_data
+            },
+            success: (res) => {
+                console.log(res);
+                wx.showToast({
+                    title: '修改成功',
+                    icon: 'success',
+                    duration: 1000
+                })
+                setTimeout(wx.navigateBack, 1000)
+            },
+            fail: console.error
+        });
+    },
 })
