@@ -19,15 +19,19 @@
     "checkSiteMap": true,
     "uploadWithSourceMap": true,
     "compileHotReLoad": true,
+
     "useMultiFrameRuntime": true,
     "useApiHook": true,
     "useApiHostProcess": true,
+
     "babelSetting": {
       "ignore": [],
       "disablePlugins": [],
       "outputPath": ""
     },
+
     "useIsolateContext": true,
+
     "userConfirmedBundleSwitch": true,
     "packNpmManually": false,
     "packNpmRelationList": [],
@@ -35,7 +39,9 @@
     "disableUseStrict": false,
     "minifyWXML": true,
     "showES6CompileOption": false,
+
     "useCompilerPlugins": false
+
   },
   "appid": "wx5bd705b2bc91c73b",
   "projectname": "zhongdamaopu",
