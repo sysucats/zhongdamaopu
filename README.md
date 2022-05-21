@@ -78,7 +78,7 @@
 - [ ] 在云环境的“配额方案”中，[切换成按量付费](https://developers.weixin.qq.com/miniprogram/dev/wxcloud/billing/adjust-payment.html)，下一步才能部署超过15个云函数
 - [ ] 依次右键`cloudfunctions`文件夹中的云函数，点击“创建并部署：云端安装依赖”，直至所有文件夹变成绿色图标
 
-#### 特殊依赖安装
+#### 特殊依赖安装（:warning:与演示视频不同）
 对于 `imProcess` 云函数，无法云端自动安装图像处理依赖库，需要手动上传（不再需要看那个视频啦）：
 
 - [ ] 下载云函数运行环境压缩包`imProcess_node_modules_v2.zip`，链接：https://wwz.lanzout.com/iefHj01u0ddi
