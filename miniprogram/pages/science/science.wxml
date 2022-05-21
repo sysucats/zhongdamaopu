@@ -1,3 +1,0 @@
-<view class='card' wx:for="{{images}}" wx:key="unique" bindtap='gotoDetail' data-cate='{{index+1}}'>
-  <image class="cover" bindload="imageLoaded" src='{{item}}'></image>
-</view>

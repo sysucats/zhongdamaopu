@@ -3,8 +3,6 @@
         "pages/genealogy/genealogy",
         "pages/genealogy/addPhoto/addPhoto",
         "pages/genealogy/detailCat/detailCat",
-        "pages/science/science",
-        "pages/science/sciDetail/sciDetail",
         "pages/info/info",
         "pages/info/photoRank/photoRank",
         "pages/info/reward/reward",
@@ -27,7 +25,8 @@
         "pages/news/news",
         "pages/news/detailNews/detailNews",
         "pages/news/modifyNews/modifyNews",
-        "pages/news/createNews/createNews"
+        "pages/news/createNews/createNews",
+        "pages/news/sciDetail/sciDetail"
     ],
     "tabBar": {
         "selectedColor": "#000",
