@@ -172,69 +172,64 @@ Page({
         this.filterNews();
     },
 
-// 科普图相关缓存、跳转代码
+// 科普轮播图相关代码
 
     setSciImgs(){
-        const fileSystem = wx.getFileSystemManager();
         const sciImgList = config.science_imgs;
-        const fileName = 'sciImgStorage'; //缓存文件名前缀
+        const cacheKey = 'sciImgStorage'; 
+        const dataKey = 'images';
+
+        const fileSystem = wx.getFileSystemManager();
         const that = this;
 
-        var coverPath = wx.getStorageSync(fileName + Math.floor(Math.random() * sciImgList.length));
-        if (coverPath) { // 缓存有图片保存路径，查找路径下文件
-            fileSystem.access({
-                path: coverPath,
-                success: res => { 
-                    that.useCacheImg(fileName, sciImgList.length);
-                },
-                fail: res => { 
-                    that.useOLImg(sciImgList)
-                    that.cacheCoverImg(fileName,sciImgList);
-                }
-            })
-        } else { // 缓存无图片保存路径，使用在线图、重新缓存
-            this.useOLImg(sciImgList);
-            this.cacheCoverImg(fileName,sciImgList);
-        }
+        var cachePathList = wx.getStorageSync(cacheKey);
+        fileSystem.access({
+            path: cachePathList[0],
+            success: res => { 
+                that.useCacheImg(cacheKey, dataKey);
+            },
+            fail: res => { 
+                // console.log("accessFileFail",res);
+                that.useCloudImg(sciImgList, dataKey);
+                that.cacheCloudImg(cacheKey, sciImgList);
+            }
+        });
     },
 
-    useOLImg(onlineImgs){
+    useCacheImg(cacheKey, dataKey) {
+        var coverImgList = wx.getStorageSync(cacheKey);
         this.setData({
-            images: onlineImgs
+            [dataKey]: coverImgList
+        })
+    },
+    useCloudImg(onlineImgs, dataKey){
+        this.setData({
+            [dataKey]: onlineImgs
         })
     },
 
-    cacheCoverImg(fileName,olImgList) {
-        // 下载并缓存封面
+    cacheCloudImg(cacheKey,imgUrlList) { // 下载并缓存封面
         const fileSystem = wx.getFileSystemManager();
-        for (let i = 0; i < olImgList.length; i++) {
-            const coverImage = olImgList[i];
+        var promiseAll = new Array(imgUrlList.length);
+        var cachePathList = [];
 
-            wx.cloud.downloadFile({
-                fileID: coverImage,
-                success: res => { //下载成功、缓存文件
-                    fileSystem.saveFile({
-                        tempFilePath: res.tempFilePath,
-                        success: res => { 
-                            wx.setStorage({ //缓存成功、记录路径
-                                key: fileName + i, 
-                                data: res.savedFilePath,
-                            })
-                        }
-                    })
-                }
-            })
+        for (let i = 0; i < imgUrlList.length; i++) {
+            promiseAll[i] = new Promise(function(resolve,reject){
+                wx.cloud.downloadFile({
+                    fileID: imgUrlList[i],
+                    success: function (res) {
+                        var savedFilePath = fileSystem.saveFileSync(res.tempFilePath);
+                        cachePathList.push(savedFilePath);
+                        resolve(res);
+                    },
+                    fail: res => reject(res)
+                })
+            });
         }
-    },
 
-    async useCacheImg(fileName, fileNum) {
-        var coverImgList = [];
-        for (let index = 0; index < fileNum; index++) {
-            const coverPath = wx.getStorageSync(fileName + index);
-            await coverImgList.push(coverPath);
-        }
-        this.setData({
-            images: coverImgList
+        Promise.all(promiseAll).then(res =>{
+            // console.log("proAll:",res);
+            wx.setStorage({key: cacheKey, data: cachePathList});
         })
     },
 
