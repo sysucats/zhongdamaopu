@@ -158,7 +158,7 @@ module.exports = {
       triggers: [{
         name: "Trigger",
         type: "timer",
-        config: "* */10 * * * * *",
+        config: "0 */10 * * * * *",
       }],
     },
     managePhoto: {
@@ -169,14 +169,14 @@ module.exports = {
       triggers: [{
         name: "Trigger",
         type: "timer",
-        config: "* 0 * * * * *",
+        config: "0 0 * * * * *",
       }]
     },
     getPhotoRank: {
       triggers: [{
         name: "Trigger",
         type: "timer",
-        config: "* */30 * * * * *",
+        config: "0 */30 * * * * *",
       }]
     },
   }
