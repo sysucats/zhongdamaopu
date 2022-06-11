@@ -8,7 +8,6 @@ const cates = ['猫咪救助', '撸猫指南', '猫咪领养', '猫咪喂养', '
 const text_cfg = config.text;
 const share_text = text_cfg.app_name + ' - ' + text_cfg.science.share_tip;
 
-// 可以考虑下公告类别的自定义，文案也整合同步起来
 
 Page({
     data: {
@@ -59,21 +58,7 @@ Page({
         this.checkAuth();
 
         // 科普部分
-        const fileSystem = wx.getFileSystemManager();
-        var coverPath = wx.getStorageSync('sciImgStorage' + Math.floor(Math.random() * 5));
-        if (coverPath) { // 缓存已有图片保存路径
-            fileSystem.access({
-                path: coverPath,
-                success: res => { // 路径下的图片文件未被清除
-                    that.setImagesList();
-                },
-                fail: res => { // 路径下找不到保存的图片文件
-                    that.downloadCoverImg();
-                }
-            })
-        } else { //缓存里没有图片保存路径
-            this.downloadCoverImg();
-        }
+        this.setSciImgs();
     },
 
 
@@ -187,67 +172,71 @@ Page({
         this.filterNews();
     },
 
-    // goTop: function (e) {
-    //     wx.pageScrollTo({
-    //         scrollTop: 0
-    //     });
-    // },
+// 科普轮播图相关代码
 
-// 以下是原先 科普页 的代码
-
-    downloadCoverImg() {
-        // 下载并缓存封面
-        // 本次先用云端图片 
-        const onlineImgs = config.science_imgs
-        this.setData({
-            images: onlineImgs
-        })
+    setSciImgs(){
+        const sciImgList = config.science_imgs;
+        const cacheKey = 'sciImgStorage'; 
+        const dataKey = 'images';
 
         const fileSystem = wx.getFileSystemManager();
-        this.setImagesList = this.setImagesList.bind(this);
+        const that = this;
 
-        for (let i = 0; i < onlineImgs.length; i++) {
-            const coverImage = onlineImgs[i];
-
-            // 拆分缓存函数，参数：下载地址、存储key名
-            // 友链图标可用
-            wx.cloud.downloadFile({
-                fileID: coverImage,
-                success: res => { //下载成功
-                    fileSystem.saveFile({
-                        tempFilePath: res.tempFilePath,
-                        success: res => { //文件保存成功
-                            wx.setStorage({ //记录缓存路径
-                                key: 'sciImgStorage' + i,
-                                data: res.savedFilePath,
-                            })
-                        }
-                    })
-                }
-            })
-        }
+        var cachePathList = wx.getStorageSync(cacheKey);
+        fileSystem.access({
+            path: cachePathList[0],
+            success: res => { 
+                that.useCacheImg(cacheKey, dataKey);
+            },
+            fail: res => { 
+                // console.log("accessFileFail",res);
+                that.useCloudImg(sciImgList, dataKey);
+                that.cacheCloudImg(cacheKey, sciImgList);
+            }
+        });
     },
 
-    cacheFile(){
-
-
-    },
-
-    async setImagesList() {
-        var coverImgList = [];
-        for (let index = 0; index < config.science_imgs.length; index++) {
-            const coverPath = wx.getStorageSync('sciImgStorage' + index);
-            await coverImgList.push(coverPath);
-        }
+    useCacheImg(cacheKey, dataKey) {
+        var coverImgList = wx.getStorageSync(cacheKey);
         this.setData({
-            images: coverImgList
+            [dataKey]: coverImgList
+        })
+    },
+    useCloudImg(onlineImgs, dataKey){
+        this.setData({
+            [dataKey]: onlineImgs
+        })
+    },
+
+    cacheCloudImg(cacheKey,imgUrlList) { // 下载并缓存封面
+        const fileSystem = wx.getFileSystemManager();
+        var promiseAll = new Array(imgUrlList.length);
+        var cachePathList = [];
+
+        for (let i = 0; i < imgUrlList.length; i++) {
+            promiseAll[i] = new Promise(function(resolve,reject){
+                wx.cloud.downloadFile({
+                    fileID: imgUrlList[i],
+                    success: function (res) {
+                        var savedFilePath = fileSystem.saveFileSync(res.tempFilePath);
+                        cachePathList.push(savedFilePath);
+                        resolve(res);
+                    },
+                    fail: res => reject(res)
+                })
+            });
+        }
+
+        Promise.all(promiseAll).then(res =>{
+            // console.log("proAll:",res);
+            wx.setStorage({key: cacheKey, data: cachePathList});
         })
     },
 
     gotoSciDetail(e) {
         const cate = e.currentTarget.dataset.cate;
         wx.navigateTo({
-            url: '/pages/science/sciDetail/sciDetail?cate=' + cate + '&coverImgList=' + this.data.images,
+            url: '/pages/news/sciDetail/sciDetail?cate=' + cate + '&coverImgList=' + this.data.images,
         });
     },
 

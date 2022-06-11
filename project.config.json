@@ -36,7 +36,8 @@
     "minifyWXML": true,
     "showES6CompileOption": false,
     "useCompilerPlugins": false,
-    "useStaticServer": true
+    "useStaticServer": true,
+    "ignoreUploadUnusedFiles": true
   },
   "appid": "wx5bd705b2bc91c73b",
   "projectname": "zhongdamaopu",
