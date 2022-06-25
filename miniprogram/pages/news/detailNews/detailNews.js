@@ -6,6 +6,7 @@ const utils = require('../../../utils.js');
 const isManager = utils.isManager;
 const shareTo = utils.shareTo;
 const getCurrentPath = utils.getCurrentPath;
+const formatDate = utils.formatDate;
 
 Page({
 
@@ -81,21 +82,25 @@ Page({
     loadNews() {
         const that = this;
         const db = wx.cloud.database();
-        db.collection('news').where({
-            "_id": that.data.news_id
-        }).get().then(res => {
+        db.collection('news').doc(that.data.news_id).get().then(res => {
             console.log("News Detail:", res);
-            if (res.data.length != 0) {
-                that.setData({
-                    news: res.data[0],
-                    photos_path: res.data[0].photosPath,
-                    cover_path: res.data[0].coverPath,
-                })
-            } else {
-                that.setData({
-                    err: true,
-                })
+            if (!res.data) {
+              that.setData({
+                  err: true,
+              })
+              return;
             }
+
+            var news = res.data;
+            news.ddate = formatDate(news.date, "yyyy年MM月dd日 hh:mm:ss");
+            if (news.dateLastModify) {
+              news.ddateLastModify = formatDate(new Date(news.dateLastModify), "yyyy年MM月dd日 hh:mm:ss");
+            }
+            that.setData({
+                news: news,
+                photos_path: news.photosPath,
+                cover_path: news.coverPath,
+            })
         });
     },
 
@@ -116,71 +121,38 @@ Page({
         });
     },
 
+    _doRemove(item_id) {
+      wx.cloud.callFunction({
+        name: "newsOp",
+        data: {
+          type: "delete",
+          item_id: item_id,
+        }
+      }).then((res) => {
+        console.log(res);
+        if (!res) {
+          wx.showToast({
+            icon: 'none',
+            title: '删除失败',
+          });
+          return
+        }
+        setTimeout(wx.navigateBack, 1000);
+      });
+    },
+
     removeNews() {
         if (this.data.showManager == false) {
             return;
         }
-
-        const that = this;
+        
+        var that = this;
         wx.showModal({
             content: '确定要删除吗？',
             success: function (sm) {
                 console.log(sm);
                 if (sm.confirm) {
-                    // 删除云储存的图片
-                    if (that.data.photos_path.length > 0) {
-                        wx.cloud.deleteFile({
-                            fileList: that.data.photos_path,
-                            success() {
-                                that.setData({
-                                    photos_path: [],
-                                });
-                                console.log("成功删除云储存图片");
-                            },
-                            fail() {
-                                console.log("图片删除失败", that.data.photos_path);
-                            },
-                        });
-                    }
-                    if (that.data.cover_path.length > 0) {
-                        wx.cloud.deleteFile({
-                            fileList: [that.data.cover_path],
-                            success() {
-                                that.setData({
-                                    cover_path: "",
-                                });
-                                console.log("成功删除云储存封面");
-                            },
-                            fail() {
-                                console.log("封面删除失败:", that.data.cover_path);
-                            },
-                        });
-                    }
-
-                    // 删除公告在数据库中的记录
-                    if (that.data.news_id) {
-                        const db = wx.cloud.database()
-                        db.collection('news').doc(that.data.news_id).remove({
-                            success: res => {
-                                wx.showToast({
-                                    title: '删除成功',
-                                })
-                                that.setData({
-                                    news_id: 0,
-                                    news: 0,
-                                })
-                                setTimeout(wx.navigateBack, 1000)
-                            },
-                            fail: err => {
-                                wx.showToast({
-                                    icon: 'none',
-                                    title: '删除失败',
-                                })
-                                console.error('数据库删除记录失败：', err)
-                            }
-                        })
-                    }
-
+                  that._doRemove(that.data.news_id);
                 }
             }
         })

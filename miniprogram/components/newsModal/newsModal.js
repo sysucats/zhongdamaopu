@@ -67,13 +67,13 @@ Component({
       //隐藏弹框
       hideNewsModal(){
         this.setData({
-          isShow: !this.data.isShow
+          isShow: false
         })
       },
       //展示弹框
       showNewsModal(){
         this.setData({
-          isShow: !this.data.isShow
+          isShow: true
         })
       },
        /*

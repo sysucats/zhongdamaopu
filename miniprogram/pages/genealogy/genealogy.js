@@ -10,6 +10,9 @@ const regReplace = utils.regReplace;
 const getDeltaHours = utils.getDeltaHours;
 const checkDeploy = utils.checkDeploy;
 
+
+const cache = require('../../cache.js');
+
 const cat_utils = require('../../cat.js');
 const getAvatar = cat_utils.getAvatar;
 const getVisitedDate = cat_utils.getVisitedDate;
@@ -852,7 +855,9 @@ Page({
             newsImage: res.data[0].photosPath[0]
           })
         }
-        that.newsModal.showNewsModal();
+        if (!that.checkNewsVisited()) {
+          that.newsModal.showNewsModal();
+        }
       }
     });
   },
@@ -860,18 +865,32 @@ Page({
   // 取消事件
   _cancelEvent(){
     this.newsModal.hideNewsModal();
+    this.setNewsVisited();
   },
   // 确认事件: 查看公告详情
   _confirmEvent(){
     this.newsModal.hideNewsModal();
+    this.setNewsVisited();
     const news_id = this.data.newsList[0]._id;
-        const detail_url = '/pages/news/detailNews/detailNews';
-        wx.navigateTo({
-            url: detail_url + '?news_id=' + news_id,
-        });
+    const detail_url = '/pages/news/detailNews/detailNews';
+    wx.navigateTo({
+        url: detail_url + '?news_id=' + news_id,
+    });
   },
-
-
+  // 检测公告是否已读
+  checkNewsVisited() {
+    const news_id = this.data.newsList[0]._id;
+    var key = `visit-news-${news_id}`;
+    var visited = cache.getCacheDate(key);
+    console.log(visited);
+    return visited;
+  },
+  // 设置已读时间
+  setNewsVisited() {
+    const news_id = this.data.newsList[0]._id;
+    var key = `visit-news-${news_id}`;
+    cache.setCacheDate(key);
+  },
 
   // 上锁
   lockBtn() {

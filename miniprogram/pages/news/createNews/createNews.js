@@ -320,17 +320,6 @@ Page({
         }
 
         var date = new Date();
-        var year = date.getFullYear();
-        var month = date.getMonth() + 1;
-        var day = date.getDate();
-        var hour = date.getHours();
-        var min = date.getMinutes();
-        var date_str = year.toString() + "-" +
-            (month < 10 ? "0" + month.toString() : month.toString()) + "-" +
-            (day < 10 ? "0" + day.toString() : day.toString()) + " " +
-            (hour < 10 ? "0" + hour.toString() : hour.toString()) + ":" +
-            (min < 10 ? "0" + min.toString() : min.toString());
-
 
         // 上传图片
         await this.uploadCover();
@@ -352,7 +341,6 @@ Page({
             userInfo: that.data.user.userInfo,
             userNickname: submitData.name,
             date: date,
-            ddate: date_str,
             title: submitData.title,
             mainContent: submitData.mainContent,
             coverPath: that.data.cover_path,

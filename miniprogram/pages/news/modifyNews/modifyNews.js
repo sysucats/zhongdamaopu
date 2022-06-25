@@ -212,18 +212,6 @@ Page({
             return;
         }
 
-        var date = new Date();
-        var year = date.getFullYear();
-        var month = date.getMonth() + 1;
-        var day = date.getDate();
-        var hour = date.getHours();
-        var min = date.getMinutes();
-        var date_str = year.toString() + "-" +
-            (month < 10 ? "0" + month.toString() : month.toString()) + "-" +
-            (day < 10 ? "0" + day.toString() : day.toString()) + " " +
-            (hour < 10 ? "0" + hour.toString() : hour.toString()) + ":" +
-            (min < 10 ? "0" + min.toString() : min.toString());
-
         var classBelongto = "";
         for (let i = 0; i < this.data.buttons.length; i++) {
             if (this.data.buttons[i].checked == true) {
@@ -239,7 +227,7 @@ Page({
         var data = {
             userInfoLastModify: this.data.user.userInfo,
             userNicknameLastModify: submitData.name,
-            ddateLastModify: date_str,
+            dateLastModify: (new Date()),
             title: submitData.title,
             mainContent: submitData.mainContent,
             class: classBelongto,

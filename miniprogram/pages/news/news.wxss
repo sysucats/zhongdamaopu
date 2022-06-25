@@ -1,9 +1,4 @@
 /* pages/news/news.wxss */
-.newsScrollView{
-    display: flex;
-}
-
-
 .news-box {
     box-sizing: border-box;
     padding: 25rpx 25rpx 25rpx 30rpx;
@@ -132,22 +127,35 @@
     align-items: center;
     flex-direction: column;
     width: 15%;
-    border-style: none;
+    border-bottom: 5rpx solid transparent;
     background-color: white;
-    border-radius: 10%;
     padding: 8rpx 5rpx;
+    box-sizing: border-box;
+    transition: background-color 500ms ease,
+                border-color 500ms ease,
+                color 500ms ease,
+                font-weight 500ms ease;
 }
 
 /* 按钮选中 */
 .checked_button {
-    background-color: var(--color-primary);
-    color: white;
+    border-color: var(--color-primary-dark);
+    color: var(--color-primary-dark);
+    font-weight: bold;
 }
 
 .tab-logo{
-    width: 60rpx;
-    height: 70rpx;
-    margin: 8rpx 0 10rpx 0;
+    width: 80rpx;
+    height: 86rpx;
+    padding: 8rpx 10rpx;
+    transition: background-color 500ms ease,
+                border-color 500ms ease,
+                color 500ms ease,
+                font-weight 500ms ease;
+}
+.checked_button .tab-logo {
+  background-color: var(--color-primary-light);
+  border-radius: 10rpx;
 }
 
 .tab-text{
@@ -159,25 +167,6 @@
     color: white;
     font-weight: 500;
 }
-
-/* .GoTopBtn {
-    position: fixed;
-    bottom: 40rpx;
-    right: 40rpx;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
-    background-color: rgba(255, 255, 255, 0.6);
-    border-radius: 50rpx;
-    padding: 10rpx;
-}
-
-.GoTopBtn .logo {
-    width: 80rpx;
-    height: 80rpx;
-    display: block;
-} */
 
 swiper {
     width: 692rpx;

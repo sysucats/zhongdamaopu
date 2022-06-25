@@ -1,72 +1,36 @@
 <view class='loading' wx:if='{{updateRequest}}'>
-    <image src='../../images/system/loading.gif'></image>
+  <image src='../../images/system/loading.gif'></image>
 </view>
 
-<scroll-view enable-flex='true' class='cards' style='height: {{heights.windowHeight - heights.filters}}px;' scroll-y='true' enable-back-to-top='true' bindscrolltolower='onRefresh' bindscroll='fScroll' lower-threshold='50'>
+<swiper indicator-dots="1" indicator-active-color="var(--color-primary)" circular="1" current="{{cate_current-1}}" autoplay="true" interval="4000" duration="1000">
+  <swiper-item wx:for="{{images}}" wx:key="unique" bindtap='gotoSciDetail' data-cate='{{index+1}}'>
+    <image src='{{item}}'></image>
+  </swiper-item>
+</swiper>
 
-    <swiper indicator-dots="1" indicator-active-color="var(--color-primary)" circular="1" current="{{cate_current-1}}" autoplay="true" interval="4000" duration="1000">
-        <swiper-item wx:for="{{images}}" wx:key="unique" bindtap='gotoSciDetail' data-cate='{{index+1}}'>
-            <image src='{{item}}'></image>
-        </swiper-item>
-    </swiper>
-
-    <view class='button_container'>
-        <block wx:for="{{buttons}}" wx:key="buttons">
-            <view class='{{item.checked?"normal_button checked_button":"normal_button"}}' data-id='{{item.id}}' bindtap='radioButtonTap'>
-                <image class="tab-logo" mode='heightFix' src="{{item.logo}}"></image>
-                <view class="tab-text">{{item.name}}</view>
-            </view>
-        </block>
+<view class='button_container'>
+  <block wx:for="{{buttons}}" wx:key="buttons">
+    <view class='{{item.checked?"normal_button checked_button":"normal_button"}}' data-id='{{item.id}}' bindtap='radioButtonTap'>
+      <image class="tab-logo" mode='heightFix' src="{{item.logo}}"></image>
+      <view class="tab-text">{{item.name}}</view>
     </view>
+  </block>
+</view>
 
-    <!-- <view wx:if="{{showManager}}" class='verify-box'>
-        <view class="option" bindtap='clickCreateBtn'>
-            <view class="option-text">[管理员] 发布新公告</view>
-        </view>
-    </view> -->
+<view wx:for='{{newsList_show}}' wx:key="_id" class='news-box' bindtap='clickNews' data-news_id='{{item._id}}'>
+  <view class='news infoBox'>
+    <view class='news title'>{{item.title}}</view>
+    <view class="news content-wrapper">
+      <!-- 兼容flex-grow和多行省略 -->
+      <view class="news content">{{item.mainContent}}</view>
+    </view>
+    <view class="news row-container">
+      <view wx:if="{{item.class}}" class='news tag'>{{item.class}}</view>
+      <view class='news user'>{{item.userNicknameLastModify?item.userNicknameLastModify:item.userInfoLastModify.nickName}} </view>
+      <view class='news time'>{{item.ddate}}</view>
 
-    <block wx:for='{{newsList_show}}' wx:key="_id" class="newsScrollView">
-        <view class='news-box' bindtap='clickNews' data-news_id='{{item._id}}'>
+    </view>
+  </view>
 
-            <view class='news infoBox'>
-                <view class='news title'>{{item.title}}</view>
-                <view class="news content-wrapper">
-                    <!-- 兼容flex-grow和多行省略 -->
-                    <view class="news content">{{item.mainContent}}</view>
-                </view>
-                <view class="news row-container">
-                    <view wx:if="{{item.class}}" class='news tag'>{{item.class}}</view>
-                    <view class='news user'>{{item.userNicknameLastModify?item.userNicknameLastModify:item.userInfoLastModify.nickName}} </view>
-                    <!-- <view wx:if='{{item.userInfoLastModify}}'>
-                    <view wx:if='{{item.userNicknameLastModify}}'>
-                        <view class='news user'>{{item.userNicknameLastModify}} </view>
-                    </view>
-                    <view wx:else>
-                        <view class='news user'>{{item.userInfoLastModify.nickName}} </view>
-                    </view>
-                    
-                </view>
-                <view wx:else>
-                    <view wx:if='{{item.userNickname}}'>
-                        <view class='news user'>{{item.userNickname}} </view>
-                    </view>
-                    <view wx:else>
-                        <view class='news user'>{{item.userInfo.nickName}}</view>
-                    </view>
-
-                </view> -->
-                <view class='news time'>{{item.ddate}}</view>
-
-                </view>
-            </view>
-
-            <image mode='aspectFill' class='cover-image' wx:if='{{item.coverPath}}' src='{{item.coverPath}}'></image>
-        </view>
-    </block>
-
-    <!-- 漂浮的返回顶部按钮 -->
-    <!-- <view class="GoTopBtn" bindtap="goTop">
-        <image class="logo" src="../../images/system/go_top.png"></image>
-    </view> -->
-
-</scroll-view>
+  <image mode='aspectFill' class='cover-image' wx:if='{{item.coverPath}}' src='{{item.coverPath}}'></image>
+</view>

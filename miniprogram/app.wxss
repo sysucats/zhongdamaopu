@@ -17,6 +17,12 @@ page {
   --color-black-light: #222222;
 
   --color-black-transparent: rgba(0,0,0,0.5);
+
+  --color-red: #dc3545;
+  --color-red-dark: #8b0000;
+
+  --color-green: #22ad6d;
+  --color-green-dark: #015e32;
 }
 .container {
   display: flex;

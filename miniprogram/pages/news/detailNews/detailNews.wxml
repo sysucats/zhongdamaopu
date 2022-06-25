@@ -17,26 +17,6 @@
 
         <view class='news content'>{{news.mainContent}}</view>
 
-<!-- 
-        <view wx:if='{{news.userInfoLastModify}}'>
-            <view wx:if='{{news.userNicknameLastModify}}'>
-                <view class='news user'>{{news.userNicknameLastModify}} </view>
-            </view>
-            <view wx:else>
-                <view class='news user'>{{news.userInfoLastModify.nickName}} </view>
-            </view>
-            <view class='news time'>最近一次修改于：{{news.ddateLastModify}}</view>
-        </view>
-        <view wx:else>
-            <view wx:if='{{news.userNickname}}'>
-                <view class='news user'>{{news.userNickname}} </view>
-            </view>
-            <view wx:else>
-                <view class='news user'>{{news.userInfo.nickName}} </view>
-            </view>
-            <view class='news time'>发布于：{{news.ddate}} </view>
-        </view> -->
-
         <!-- 文字结束，单图/多图部分 -->
         <view wx:if='{{photos_path.length == 1}}'>
             <image mode='widthFix' class="single-image" src='{{photos_path[0]}}' bindtap='previewImg'></image>
