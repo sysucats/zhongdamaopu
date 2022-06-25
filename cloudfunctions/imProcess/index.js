@@ -30,8 +30,8 @@ async function getCompressPhoto(origin, metadata) {
   let ext = metadata.format;
   let compressPhoto = await (
     metadata.width > metadata.height ?
-    origin.clone().resize(Math.min(500, metadata.width)).toBuffer() :
-    origin.clone().resize(null, Math.min(500, metadata.height)).toBuffer()
+    origin.clone().resize(Math.min(500, metadata.width)).withMetadata().toBuffer() :
+    origin.clone().resize(null, Math.min(500, metadata.height)).withMetadata().toBuffer()
   )
   let compressFileId = (await cloud.uploadFile({
     fileContent: compressPhoto,
