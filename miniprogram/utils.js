@@ -38,7 +38,7 @@ function isManager(callback, req=1) {
       req: req
     }
   }).then(res => {
-    console.log(res);
+    // console.log(res);
     callback(res.result);
   });
 }

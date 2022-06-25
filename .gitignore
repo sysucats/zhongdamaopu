@@ -13,3 +13,4 @@ $RECYCLE.BIN/
 # Node.js
 node_modules/
 cloudfunctions/package-lock.json
+project.private.config.json

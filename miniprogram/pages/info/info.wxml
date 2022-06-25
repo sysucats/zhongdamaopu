@@ -33,6 +33,10 @@
     <view class="option-text">反馈处理({{numFeedbacks}})</view>
     <view class="right-arrow"><image mode='aspectFill' src="../../images/filter/right.png"></image></view> 
   </view>
+  <view class="option" bindtap='clickbtn' data-to='/pages/news/createNews/createNews'>
+    <view class="option-text">创建公告</view>
+    <view class="right-arrow"><image mode='aspectFill' src="../../images/filter/right.png"></image></view> 
+  </view>
   <view class="option" bindtap='clickbtn' data-to='/pages/manage/addCat/addCat'>
     <view class="option-text">添加新猫</view>
     <view class="right-arrow"><image mode='aspectFill' src="../../images/filter/right.png"></image></view> 
@@ -53,4 +57,5 @@
     <view class="option-text">照片处理({{numImProcess}})</view>
     <view class="right-arrow"><image mode='aspectFill' src="../../images/filter/right.png"></image></view> 
   </view>
+  
 </view></block>

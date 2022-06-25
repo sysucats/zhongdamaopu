@@ -1,5 +1,6 @@
 // 放置与cat对象有关的函数
 const utils = require('./utils.js');
+const cache = require('./cache.js');
 
 // 常用的一些对象
 const db = wx.cloud.database();
@@ -29,11 +30,12 @@ async function getAvatar(cat_id, total) {
 // 消除“有新相片”提示
 function getVisitedDate(cat_id) {
   const key = "visit-cat-" + cat_id;
-  return new Date(wx.getStorageSync(key));
+  return cache.getCacheDate(key);
 }
 function setVisitedDate(cat_id) {
   const key = "visit-cat-" + cat_id;
-  wx.setStorageSync(key, new Date());
+  cache.setCacheDate(key);
+  return;
 }
 
 export {

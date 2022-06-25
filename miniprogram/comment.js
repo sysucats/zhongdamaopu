@@ -15,4 +15,4 @@ async function getCatCommentCount(cat_id) {
 
 module.exports = {
   getCatCommentCount,
-} 
+}
