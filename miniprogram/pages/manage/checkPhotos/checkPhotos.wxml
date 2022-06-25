@@ -5,23 +5,32 @@
 </wxs>
 
 <block wx:if="{{auth}}">
-  <view id='total-count'><text>目前共有 {{total}} 张待审核，点击图片可以放大，\n点击所属猫猫名字可以跳转到该猫猫详情。\n每次最多加载 20 张，请先审核完这些吧。\n完成后点“刷新状态”看看，注意流量消耗哈。</text></view>
-  <block wx:for="{{photos}}" wx:key="_id">
+  <view id='total-count'><text>点击校区名展示待审核照片列表。\n先逐张标记处理方式，再点击“批量审核”。\n图片可以放大，点击名字跳转猫猫详情。\n每次展示前20张，注意流量消耗哈。</text></view>
+  <scroll-view scroll-x="1" class="campus-list">
+    <view class="campus {{index == active_campus ? 'active': ''}}" bindtap="bindClickCampus" data-key="{{index}}"
+      wx:for="{{campus_list}}" wx:key="key">{{index}}（{{item.length}}）</view>
+  </scroll-view>
+  <block wx:for="{{campus_list[active_campus]}}" wx:key="_id" wx:if="{{index < 20}}">
     <view class='verify-box'>
       <!-- <view class="imageShadowMask"></view> -->
       <image mode='aspectFill' src='{{item.photo_id}}' bindtap='openBigPhoto' data-pid='{{item.photo_id}}'></image>
-      <view class='label cat'>所属猫猫：<text bindtap="toCatDetail" data-cat_id="{{item.cat._id}}">{{item.cat.name}}（{{item.cat.campus}}）</text></view>
-      <view class='label user'>上传者：{{item.userInfo.nickName}}</view>
-      <view class='label user'>摄影师：{{item.photographer || item.userInfo.nickName}}</view>
-      <view class='label user shotTime'>拍摄时间：{{item.shooting_date}}</view>
-      <view wx:if='{{isHEIC.isHEIC(item.photo_id)}}' class='tip'>* 照片格式为.HEIC，可能会显示不出来</view>
-      <button type='normal' bindtap='bindDelete' data-photo='{{item}}'>删除</button>
-      <button type='normal' bindtap='bindCheck' data-photo='{{item}}' data-best='{{false}}'>通过</button>
-      <button class='long primary' bindtap='bindCheck' data-photo='{{item}}' data-best='{{true}}'>通过+精选</button>
+      <view class="info">
+        <view class='label cat'><text bindtap="toCatDetail" data-cat_id="{{item.cat._id}}">{{item.cat.name}}（{{item.cat.campus}}）</text></view>
+        <view class='label user'>上传者：{{item.userInfo.nickName}}</view>
+        <view class='label user'>摄影师：{{item.photographer || item.userInfo.nickName}}</view>
+        <view class='label user shotTime'>拍摄时间：{{item.shooting_date}}</view>
+        <view wx:if='{{isHEIC.isHEIC(item.photo_id)}}' class='label tip'>* 照片格式为.HEIC，可能会显示不出来</view>
+        <view class="buttons">
+          <view class="button delete {{item.mark == 'delete' ? 'marked' : ''}}" bindtap='bindMark' data-index='{{index}}' data-type="delete">删除</view>
+          <view class="button pass {{item.mark == 'pass' ? 'marked' : ''}}" bindtap='bindMark' data-index='{{index}}' data-type="pass">通过</view>
+          <view class="button best {{item.mark == 'best' ? 'marked' : ''}}" bindtap='bindMark' data-index='{{index}}' data-type="best">精选</view>
+        </view>
+      </view>
     </view>
   </block>
   <view class='bottom-bar'>
-    <button class='long primary' bindtap="reload">刷新状态</button>
+    <button class='' bindtap="requestSubscribeMessage">订阅通知</button>
+    <button class='primary' bindtap="bindCheckMulti">批量审核</button>
   </view>
   
 </block>

@@ -1,74 +1,77 @@
 {
-  "pages": [
-    "pages/genealogy/genealogy",
-    "pages/genealogy/addPhoto/addPhoto",
-    "pages/genealogy/detailCat/detailCat",
-    "pages/science/science",
-    "pages/science/sciDetail/sciDetail",
-    "pages/info/info",
-    "pages/info/photoRank/photoRank",
-    "pages/info/reward/reward",
-    "pages/info/feedback/feedback",
-    "pages/info/feedback/myFeedback/myFeedback",
-    "pages/info/devTeam/devTeam",
-    "pages/manage/addCat/addCat",
-    "pages/manage/imProcess/imProcess",
-    "pages/manage/checkPhotos/checkPhotos",
-    "pages/manage/filters/filters",
-    "pages/debug/debug",
-    "pages/manage/managers/managers",
-    "pages/genealogy/feedbackDetail/feedbackDetail",
-    "pages/manage/checkFeedbacks/checkFeedbacks",
-    "pages/manage/replyFeedback/replyFeedback",
-    "pages/manage/rewards/rewards",
-    "pages/recognize/recognize",
-    "pages/genealogy/commentBoard/commentBoard",
-    "pages/debug/deployTip/deployTip"
-  ],
-  "tabBar": {
-    "selectedColor": "#000",
-    "borderStyle": "white",
-    "list": [
-      {
-        "pagePath": "pages/genealogy/genealogy",
-        "iconPath": "./images/tabs/default/cat.png",
-        "selectedIconPath": "./images/tabs/active/cat.png",
-        "text": "猫谱"
-      },
-      {
-        "pagePath": "pages/recognize/recognize",
-        "iconPath": "./images/tabs/default/recog.png",
-        "selectedIconPath": "./images/tabs/active/recog.png",
-        "text": "识猫"
-      },
-      {
-        "pagePath": "pages/science/science",
-        "iconPath": "./images/tabs/default/sci.png",
-        "selectedIconPath": "./images/tabs/active/sci.png",
-        "text": "科普"
-      },
-      {
-        "pagePath": "pages/info/info",
-        "iconPath": "./images/tabs/default/info.png",
-        "selectedIconPath": "./images/tabs/active/info.png",
-        "text": "关于"
-      }
-    ]
-  },
-  "window": {
-    "backgroundColor": "#fff",
-    "backgroundTextStyle": "light",
-    "navigationBarBackgroundColor": "#ffd101",
-    "navigationBarTitleText": "中大猫谱",
-    "navigationBarTextStyle": "black"
-  },
-  "supportedMaterials": [
-    {
-      "materialType": "image/*",
-      "name": "用${nickname}识别",
-      "desc": "根据图片识别校园中相似的猫咪",
-      "path": "pages/recognize/recognize"
-    }
-  ],
-  "sitemapLocation": "sitemap.json"
+    "pages": [
+        "pages/genealogy/genealogy",
+        "pages/genealogy/addPhoto/addPhoto",
+        "pages/genealogy/detailCat/detailCat",
+        "pages/info/info",
+        "pages/info/photoRank/photoRank",
+        "pages/info/reward/reward",
+        "pages/info/feedback/feedback",
+        "pages/info/feedback/myFeedback/myFeedback",
+        "pages/info/devTeam/devTeam",
+        "pages/manage/addCat/addCat",
+        "pages/manage/imProcess/imProcess",
+        "pages/manage/checkPhotos/checkPhotos",
+        "pages/manage/filters/filters",
+        "pages/debug/debug",
+        "pages/manage/managers/managers",
+        "pages/genealogy/feedbackDetail/feedbackDetail",
+        "pages/manage/checkFeedbacks/checkFeedbacks",
+        "pages/manage/replyFeedback/replyFeedback",
+        "pages/manage/rewards/rewards",
+        "pages/recognize/recognize",
+        "pages/genealogy/commentBoard/commentBoard",
+        "pages/debug/deployTip/deployTip",
+        "pages/news/news",
+        "pages/news/detailNews/detailNews",
+        "pages/news/modifyNews/modifyNews",
+        "pages/news/createNews/createNews",
+        "pages/news/sciDetail/sciDetail"
+    ],
+    "tabBar": {
+        "selectedColor": "#000",
+        "borderStyle": "white",
+        "list": [
+            {
+                "pagePath": "pages/genealogy/genealogy",
+                "iconPath": "./images/tabs/default/cat.png",
+                "selectedIconPath": "./images/tabs/active/cat.png",
+                "text": "猫谱"
+            },
+            {
+                "pagePath": "pages/recognize/recognize",
+                "iconPath": "./images/tabs/default/recog.png",
+                "selectedIconPath": "./images/tabs/active/recog.png",
+                "text": "识猫"
+            },
+            {
+                "pagePath": "pages/news/news",
+                "iconPath": "./images/tabs/default/sci.png",
+                "selectedIconPath": "./images/tabs/active/sci.png",
+                "text": "公告"
+            },
+            {
+                "pagePath": "pages/info/info",
+                "iconPath": "./images/tabs/default/info.png",
+                "selectedIconPath": "./images/tabs/active/info.png",
+                "text": "关于"
+            }
+        ]
+    },
+    "window": {
+        "backgroundColor": "#fff",
+        "backgroundTextStyle": "light",
+        "navigationBarBackgroundColor": "#ffd101",
+        "navigationBarTitleText": "中大猫谱",
+        "navigationBarTextStyle": "black"
+    },
+    "supportedMaterials": [
+        {
+            "materialType": "image/*",
+            "name": "用${nickname}识别",
+            "desc": "根据图片识别校园中相似的猫咪",
+            "path": "pages/recognize/recognize"
+        }
+    ],
+    "sitemapLocation": "sitemap.json"
 }

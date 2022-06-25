@@ -86,7 +86,7 @@ scroll-view {
 .card .info .line.first{
   display: flex;
   align-items: center;
-  margin-bottom: 30rpx;
+  margin-bottom: 25rpx;
   margin-left: 3rpx;
 }
 
@@ -96,7 +96,7 @@ scroll-view {
   line-height: 30rpx;
 
   font-weight: 600;
-  letter-spacing: 3rpx;
+  letter-spacing: 2rpx;
 }
 
 .card .info image.gender {
@@ -142,7 +142,7 @@ scroll-view {
 }
 
 .card .info .comment {
-  margin-left: 10rpx;
+  margin-left: 15rpx;
   order: 2;
   display: flex;
   align-items: center;
@@ -153,11 +153,18 @@ scroll-view {
   margin-right: 8rpx;
 }
 
+.card .line {
+  color: var(--color-black-min);
+  /* line-height: 1.05rem; */
+}
+
 .card .line image.icon {
   height: 26rpx;
   width: 26rpx;
   min-width: 26rpx;
   margin-right: 20rpx;
+
+  vertical-align: text-top;
 }
 
 .card .line .index {
@@ -165,12 +172,15 @@ scroll-view {
   order:2;
   color: var(--color-gray);
 }
+
 .card .line .characteristics{
-  line-height: 0.9rem;
+  line-height: 1.05rem;
+  vertical-align: text-top;
 }
 
 .card .line .habit{
-  line-height: 0.9rem;
+  line-height: 1.05rem;
+  vertical-align: text-top;
 }
 
 .loading image {
