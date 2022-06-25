@@ -67,17 +67,14 @@
           <view wx:if='{{item.to_star}}' class='to_star'>{{text_cfg.genealogy.to_star_tip}}</view>
           <view class='popularity'>
             <image src='../../images/card/card/pop.png'></image>
-            <text> ({{item.popularity + (item.photo_count_total? item.photo_count_total * photoPopWeight: 0) }})</text>
+            <text> {{item.popularity + (item.photo_count_total? item.photo_count_total * photoPopWeight: 0) }}</text>
           </view>
           <view class='comment' wx:if="{{item.comment_count}}">
             <image src='../../images/card/card/comment.png'></image>
-            <text> ({{item.comment_count}})</text>
+            <text> {{item.comment_count}}</text>
           </view>
         </view>
-        <view class='line' wx:if="{{item.birthday}}">
-          <image mode='aspectFit' class='icon' src='../../images/card/card/birth.png'></image>
-          <text>{{item.birthday}}</text>
-        </view>
+
         <view class='line'>
           <image mode='aspectFit' class='icon' src='../../images/card/card/cat.png'></image>
           <text class="characteristics">{{item.characteristics_string}}</text>
@@ -90,6 +87,11 @@
           <image mode='aspectFit' class='icon' src='../../images/card/card/pos.png'></image>
           <text>{{(item.campus + item.area) || '-'}}</text>
           <view class='index'><text decode='true'>&lt; {{index+1}}/{{catsMax}} &gt;</text></view>
+        </view>
+
+        <view class='line' wx:if="{{item.birthday}}">
+          <image mode='aspectFit' class='icon' src='../../images/card/card/birth.png'></image>
+          <text>{{item.birthday}}</text>
         </view>
       </view>
     </view>
@@ -120,4 +122,18 @@
 <view class="adopt-filter-tip {{show_filter_tip? '': 'hide'}}">
   <view class="tri"></view>
   <view class="content">{{text_cfg.genealogy.filter_tip}}</view>
+</view>
+
+<!-- 公告弹窗 -->
+<view class="news-container">
+  <newsModal id='newsModal' 
+      title="{{newsList[0].title}}"
+      content="{{newsList[0].mainContent}}"
+      newsClass="{{newsList[0].class}}"
+      user="{{newsList[0].userNickname}}"
+      time="{{newsList[0].ddate}}"
+      imagePath="{{ newsImage }}"
+      bind:cancelEvent="_cancelEvent"  
+      bind:confirmEvent="_confirmEvent">
+    </newsModal>
 </view>

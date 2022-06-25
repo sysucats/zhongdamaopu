@@ -3,10 +3,12 @@ page {
   /* 定义一些颜色变量 */
   --color-primary: #ffd101;
   --color-primary-dark: #dfb600;
+  --color-primary-light: #fff7d4;
 
   --color-white-dark: #fafafa;
 
   --color-gray-light: #f7f7fa;
+  --color-gray-normal:#eeeeee;
   --color-gray: #dddddd;
   --color-gray-dark: #bbbbbb;
   --color-gray-max: #888;
@@ -15,6 +17,12 @@ page {
   --color-black-light: #222222;
 
   --color-black-transparent: rgba(0,0,0,0.5);
+
+  --color-red: #dc3545;
+  --color-red-dark: #8b0000;
+
+  --color-green: #22ad6d;
+  --color-green-dark: #015e32;
 }
 .container {
   display: flex;

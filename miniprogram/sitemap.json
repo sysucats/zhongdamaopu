@@ -14,7 +14,7 @@
     },
     {
       "action": "allow",
-      "page": "pages/science/science"
+      "page": "pages/news/news"
     },
     {
       "action": "disallow",
