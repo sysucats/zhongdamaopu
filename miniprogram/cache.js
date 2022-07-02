@@ -7,7 +7,8 @@ function getCacheItem(key) {
   }
 
   // 过期了
-  if (new Date() < new Date(data.expire_date)) {
+  if (new Date() > new Date(data.expire_date)) {
+    console.log(`${key} expired.`);
     return undefined;
   }
 

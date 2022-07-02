@@ -1,0 +1,69 @@
+<!--pages/manage/relations/addRelations/addRelations.wxml-->
+<view class="search-cat" hover-class="search-cat-click" bindtap="bindSearch" data-type="cat">
+  <image mode="aspectFill" class="search-cat-avatar" src="{{cat.avatar ? cat.avatar.photo_compressed || cat.avatar.photo_id : ''}}"></image>
+  <view class="search-cat-info">
+    <view class="search-cat-name">{{cat.name || "选择猫猫"}}</view>
+    <view class="search-cat-position">{{cat._id ? cat.campus +" "+ cat.area: ""}}</view>
+  </view>
+</view>
+
+<view class="label">关系列表</view>
+
+<view class="relation" wx:for="{{cat.relations}}" wx:key="_id">
+  <view class="relation-name" bindtap="bindSearch" data-type="relation" data-index="{{index}}">{{item.type || '选择关系'}}</view>
+  <view class="relation-cat" bindtap="bindSearch" data-type="cat" data-index="{{index}}">
+    <image mode="aspectFill" class="relation-cat-avatar" src="{{item.cat.avatar ? item.cat.avatar.photo_compressed || item.cat.avatar.photo_id : ''}}"></image>
+    <view class="relation-cat-name">{{item.cat.name || '选择猫猫'}}</view>
+  </view>
+  <view class="buttons">
+    <view class="button delete" hover-class="marked" bindtap='bindRelationTap' data-index='{{index}}' data-type="delete">删除</view>
+    <view class="button best {{index <= 0? 'disabled': ''}}" hover-class="marked" bindtap='bindRelationTap' data-index='{{index}}' data-type="up">↑</view>
+    <view class="button best {{index >= cat.relations.length-1? 'disabled': ''}}" hover-class="marked" bindtap='bindRelationTap' data-index='{{index}}' data-type="down">↓</view>
+  </view>
+</view>
+
+<block wx:if="{{cat._id}}">
+  <view class="relation add" bindtap="addRelation">+ 新增一条关系</view>
+  <button class="primary" bindtap="saveRelations">保存（检查完整性，下拉颜色）</button>
+</block>
+<view class="relation add" wx:else>请先选择猫猫</view>
+
+
+<view wx:if='{{showSearchCat || showSearchType}}' class="search-mask" bindtap="bindSearch" data-type="hide"></view>
+<view id='search' class='{{showSearchCat || showSearchType ? "": "hidden"}}'>
+  <block wx:if="{{showSearchCat}}">
+    <view class='input-block'>
+      <view class='input-icon'>
+        <image class="search-logo" mode='aspectFit' src="../../../images/filter/search.png"></image>
+      </view>
+      <input class='name' placeholder='搜索猫猫名称、昵称' placeholder-class='searchPlaceholderStyle' value='{{filters_input}}' maxlength='20' confirm-type='search' bindinput='fSearchInput' bindconfirm='doSearchCat'></input>
+    </view>
+    <scroll-view class="search-results" scroll-y="1">
+      <view class="search-cat" hover-class="search-cat-click" wx:for="{{searchCats}}" wx:key="_id" bindtap="searchSelectCat" data-index="{{index}}">
+        <image mode="aspectFill" class="search-cat-avatar" src="{{item.avatar ? item.avatar.photo_compressed || item.avatar.photo_id : ''}}"></image>
+        <view class="search-cat-info">
+          <view class="search-cat-name">{{item.name}}</view>
+          <view class="search-cat-position">{{item.campus}} {{item.area}}</view>
+        </view>
+      </view>
+      <view wx:if="{{!searchCats.length}}" class="search-empty">请搜索后进行选择</view>
+    </scroll-view>
+  </block>
+  <block wx:if="{{showSearchType}}">
+    <view class='input-block'>
+      <view class='input-icon'>
+        <image class="search-logo" mode='aspectFit' src="../../../images/card/card/cat.png"></image>
+      </view>
+      <input class='name' placeholder='输入关系名，如不存在则自动新建' placeholder-class='searchPlaceholderStyle' maxlength='10' confirm-type='done' bindconfirm='saveNewRelationType' value="{{relation_name}}"></input>
+    </view>
+    <scroll-view class="search-results" scroll-y="1">
+      <view class="search-relation-item" wx:for="{{relation_types}}" wx:key="item">
+        <view class="search-relation-name">{{item}}</view>
+        <view class="buttons">
+          <view class="button pass" hover-class="marked" bindtap='selectRelationType' data-index='{{index}}' data-type="pass">选择</view>
+          <view class="button delete" hover-class="marked" bindtap='deleteRelationType' data-index='{{index}}' data-type="delete">删除</view>
+        </view>
+      </view>
+    </scroll-view>
+  </block>
+</view>

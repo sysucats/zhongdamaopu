@@ -74,7 +74,7 @@ next-margin='60rpx'>
       </view>
       <view class='value'>{{cat.birthday || '-'}}</view>
     </view>
-    <view class='item'>
+    <!-- <view class='item'>
       <view class='label'>
         <view class='label-block'></view>
         {{text_cfg.detail_cat.label_father}}
@@ -94,7 +94,7 @@ next-margin='60rpx'>
         {{text_cfg.detail_cat.label_friend}}
       </view>
       <view class='value'>{{cat.relation || '-'}}</view>
-    </view>
+    </view> -->
     
     <view class='item long'>
       <view class='label'>
@@ -114,7 +114,29 @@ next-margin='60rpx'>
       </view>
       <view class='value'>{{cat.tutorial || text_cfg.detail_cat.label_tutorial_empty}}</view>
     </view>
+    
+    <!-- 关系 -->
+    <view class="item long">
+      <view class="label">
+        <view class='label-block'></view>
+        关系
+      </view>
+      <scroll-view scroll-x="1" class="relations">
+        <view class="relation-block">
+          <image class="relation-cat-avatar" src='{{cat.photo[1].photo_compressed || cat.photo[1].photo_id}}' mode="aspectFill"></image>
+          <view class="relation-name">好基友</view>
+          <view class="relation-cat-name">萌萌</view>
+        </view>
+        <view class="relation-block">
+          <image class="relation-cat-avatar" src='{{cat.photo[2].photo_compressed || cat.photo[2].photo_id}}' mode="aspectFill"></image>
+          <view class="relation-name">兄弟</view>
+          <view class="relation-cat-name">楼楼</view>
+        </view>
+      </scroll-view>
+    </view>
+
   </view>
+
   
 </view>
 <!-- info end -->

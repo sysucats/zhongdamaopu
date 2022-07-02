@@ -428,3 +428,31 @@ swiper-item image {
   height: 20rpx;
   margin-right: 5rpx;
 }
+
+/* 猫猫关系 */
+.relations {
+  width: 100%;
+  white-space: nowrap;
+}
+.relation-block {
+  width: 150rpx;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+}
+.relation-cat-avatar {
+  width: 100rpx;
+  height: 100rpx;
+  border-radius: 100%;
+}
+.relation-name {
+  margin-top: -20rpx;
+  font-size: 22rpx;
+  background-color: var(--color-primary-light);
+  padding: 5rpx 10rpx;
+  border-radius: 10rpx;
+}
+.relation-cat-name {
+  font-size: 28rpx;
+  color: var(--color-primary-dark);
+}

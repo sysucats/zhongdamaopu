@@ -118,6 +118,10 @@ const init_setting = [{
       "receiverNum": 2
     }
   },
+  {
+    "_id": "relation",
+    "types": ["好友", "情侣", "兄弟", "姐妹", "爸爸", "妈妈", "儿子", "女儿"]
+  }
 ]
 
 // 部署流程（不要修改！）
@@ -127,7 +131,7 @@ module.exports = {
     "addPop", "commentCheck", "commentOp", "countPhoto", "getAllSci", "getMpCode",
     "getPhotoRank", "imProcess", "initDeploy", "interOp", "isManager", "manageFeedback",
     "managePhoto", "sendMsgV2", "updateCat", "updateFilter", "updateManager",
-    "updateReward", "userOp", "newsOp"
+    "updateReward", "userOp", "newsOp", "relationOp"
   ],
   default_init_data_id: default_init_data_id,
   collections: {
@@ -138,6 +142,7 @@ module.exports = {
     "news": default_init_data,
     "photo": default_init_data,
     "photo_rank": default_init_data,
+    "relation": default_init_data,
     "reward": default_init_data,
     "science": init_science,
     "setting": init_setting,

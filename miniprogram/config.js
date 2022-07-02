@@ -188,5 +188,9 @@ module.exports = {
     science: {
       share_tip: "科普",
     },
+    // 关系管理页，pages/manage/relations/relations
+    relations: {
+      search_tip: "搜索猫猫名字或昵称"
+    }
   }
 }
