@@ -4,6 +4,7 @@
 
 page {
   padding: 20rpx 0 0 0;
+  background-color: transparent;
 }
 
 /* 上方处理部分 */
@@ -22,6 +23,12 @@ page {
   justify-content: space-between;
 }
 
+.relation-index {
+  font-size: 22rpx;
+  font-weight: lighter;
+  color: var(--color-black-min);
+}
+
 .relation-name {
   width: 130rpx;
   padding: 10rpx 20rpx;
@@ -32,6 +39,9 @@ page {
   overflow:hidden;
   text-align: center;
 }
+.relation-name.tap {
+  background-color: var(--color-primary);
+}
 
 .relation-cat {
   width: 120rpx;
@@ -39,6 +49,9 @@ page {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
+}
+.relation-cat.tap {
+  background-color: var(--color-gray-light);
 }
 
 .relation-cat-avatar {
@@ -56,8 +69,8 @@ page {
   white-space: nowrap;
   text-overflow:ellipsis;
   overflow:hidden;
-  background-color: var(--color-gray-light);
-  border: 2rpx solid var(--color-primary-dark);
+  background-color: var(--color-white-dark);
+  border: 2rpx solid var(--color-primary);
 }
 
 .buttons .button {
@@ -162,7 +175,7 @@ page {
   height: 60rpx;
   margin-left: 20rpx;
   display: flex;
-  align-items: flex-end;
+  align-items: center;
 }
 
 .search-cat-name {
@@ -191,4 +204,10 @@ page {
 .search-relation-name {
   font-size: 28rpx;
   color: var(--color-black-min);
+}
+
+/* 旧数据 */
+.old-data {
+  font-size: 20rpx;
+  color: var(--color-gray-dark);
 }

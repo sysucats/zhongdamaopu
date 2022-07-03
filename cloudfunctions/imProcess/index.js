@@ -9,8 +9,6 @@ const _ = db.command;
 const sharp = require('sharp');
 const { registerFont } = require('canvas');
 const text2png = require('text2png');
-// const sizeOf = require("buffer-image-size");
-// const { async } = require('../../miniprogram/packages/regenerator-runtime/runtime');
 var assert = require('assert');
 
 registerFont('./方正黑体-GBK.TTF', {family: 'FZHei'});

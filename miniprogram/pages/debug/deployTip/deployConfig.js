@@ -142,7 +142,6 @@ module.exports = {
     "news": default_init_data,
     "photo": default_init_data,
     "photo_rank": default_init_data,
-    "relation": default_init_data,
     "reward": default_init_data,
     "science": init_science,
     "setting": init_setting,

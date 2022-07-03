@@ -50,6 +50,9 @@ function setVisitedDate(cat_id) {
 
 // 获取猫猫信息
 async function getCatItem(cat_id) {
+  if (!cat_id) {
+    return undefined;
+  }
   var cacheKey = `cat-item-${cat_id}`;
   var cacheItem = cache.getCacheItem(cacheKey);
   if (cacheItem) {

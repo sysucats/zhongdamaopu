@@ -6,11 +6,14 @@ const getGlobalSettings = utils.getGlobalSettings;
 const checkCanUpload = utils.checkCanUpload;
 const checkMultiClick = utils.checkMultiClick;
 const formatDate = utils.formatDate;
+const isManager = utils.isManager;
 
 const getCatCommentCount = require('../../../comment.js').getCatCommentCount;
 
 const cat_utils = require('../../../cat.js');
 const setVisitedDate = cat_utils.setVisitedDate;
+const getAvatar = cat_utils.getAvatar;
+const getCatItem = cat_utils.getCatItem;
 
 const text_cfg = config.text;
 
@@ -80,16 +83,21 @@ Page({
         photoPopWeight: settings['photoPopWeight'] || 10
       });
       // 启动加载
-      that.loadCat();
+      that.loadCat().then();
       // 是否开启上传功能
-      
-      
       checkCanUpload().then(res => {
         that.setData({
           canUpload: res
         });
       })
-    })
+    });
+
+    // 判断是否为管理员
+    isManager(res=>{
+      this.setData({
+        is_manager: res,
+      });
+    }, 3);
     
     // 先判断一下这个用户在12小时之内有没有点击过这只猫
     if (!checkMultiClick(cat_id)) {
@@ -183,27 +191,46 @@ Page({
     }
   },
 
-  loadCat() {
+  async loadCat() {
     const db = wx.cloud.database();
-    db.collection('cat').doc(cat_id).get().then(res => {
-      console.log(res);
-      res.data.photo = [];
-      // res.data.characteristics_string = [(res.data.colour || '') + '猫'].concat(res.data.characteristics || []).join('，');
-      res.data.characteristics_string = (res.data.colour || '') + '猫';
-      // res.data.nickname = (res.data.nickname || []).join('、');
+    const cat = (await db.collection('cat').doc(cat_id).get()).data;
+    cat.photo = [];
+    cat.characteristics_string = (cat.colour || '') + '猫';
+    cat.avatar = await getAvatar(cat._id, cat.photo_count_best);
 
-      this.setData({
-        cat: res.data
-      }, ()=> {
-        this.reloadPhotos();
-        this.loadCommentCount();
-        var query = wx.createSelectorQuery();
-        query.select('#info-box').boundingClientRect();
-        query.exec((res) => {
-          console.log(res[0]);
-          infoHeight = res[0].height;
-        })
-      });
+    this.setData({
+      cat: cat
+    }, ()=> {
+      this.reloadPhotos();
+      this.loadCommentCount();
+      this.loadRelations();
+      var query = wx.createSelectorQuery();
+      query.select('#info-box').boundingClientRect();
+      query.exec((res) => {
+        console.log(res[0]);
+        infoHeight = res[0].height;
+      })
+    });
+  },
+  
+  // 更新关系列表
+  async loadRelations() {
+    var cat = this.data.cat;
+    var relations = this.data.cat.relations;
+    console.log(cat);
+    if (!cat._id || !relations) {
+      return false;
+    }
+
+    for (var relation of relations) {
+      relation.cat = await getCatItem(relation.cat_id)
+      relation.cat.avatar = await getAvatar(relation.cat_id, relation.cat.photo_count_best);
+    }
+
+    console.log(relations);
+
+    this.setData({
+      "cat.relations": relations,
     });
   },
 
@@ -301,17 +328,9 @@ Page({
       var photos = album_raw;
     }
 
-    // this.imgCompressedUrls = photos.map((photo) => {
-    //   return (photo.photo_compressed || photo.photo_watermark || photo.photo_id);
-    // });
-    // this.imgUrls = photos.map((photo) => {
-    //   return (photo.photo_watermark || photo.photo_id);
-    // });
     this.setData({
       showGallery: true,
-      // imgUrls: this.imgUrls,
       galleryPhotos: photos,
-      // imgCompressedUrls: this.imgCompressedUrls,
       currentImg: this.currentImg,
     });
     wx.hideLoading();
@@ -335,15 +354,7 @@ Page({
       return;
     }
     
-    // this.imgCompressedUrls = photos.map((photo) => {
-    //   return (photo.photo_compressed || photo.photo_watermark || photo.photo_id);
-    // });
-    // this.imgUrls = photos.map((photo) => {
-    //   return (photo.photo_watermark || photo.photo_id);
-    // });
     this.setData({
-      // imgCompressedUrls: this.imgCompressedUrls,
-      // imgUrls: this.imgUrls,
       galleryPhotos: photos,
     });
   },
@@ -546,5 +557,21 @@ Page({
       album_raw[current].like_count = like_count;
       this.updateAlbum();
     }
-  }
+  },
+  
+  toRelationCat(e) {
+    var cat_id = e.currentTarget.dataset.cat_id;
+    const url = `/pages/genealogy/detailCat/detailCat?cat_id=${cat_id}`;
+    wx.navigateTo({
+      url: url,
+    });
+  },
+
+  toAddRelation() {
+    var cat_id = this.data.cat._id;
+    const url = `/pages/manage/addRelations/addRelations?cat_id=${cat_id}`;
+    wx.navigateTo({
+      url: url,
+    });
+  },
 })

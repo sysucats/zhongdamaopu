@@ -34,9 +34,9 @@ Page({
    */
   onLoad(options) {
     this.checkAuth();
+    var that = this;
     if (options.cat_id) {
       // 输入了cat_id
-      var that = this;
       db.collection('cat').doc(options.cat_id).get().then(res => {
         var cat = res.data;
         getAvatar(cat._id, cat.photo_count_best).then(avatar => {
@@ -48,6 +48,10 @@ Page({
           });
         });
       })
+    } else {
+      setTimeout(function() {
+        that.bindSearch(null, "cat");
+      }, 700);
     }
   },
 
@@ -62,12 +66,12 @@ Page({
         that.loadRelationTypes();
       } else {
         that.setData({
-          tipText: '只有管理员Level-3能进入嗷',
+          tipText: '只有管理员Level-2能进入嗷',
           tipBtn: true,
         });
         console.log("Not a manager.");
       }
-    }, 3)
+    }, 2)
   },
 
   /**
@@ -194,26 +198,35 @@ Page({
     });
   },
 
-  bindSearch(e) {
-    var type = e.currentTarget.dataset.type;
-    if (type == "cat") {
-      selectRelationCatIdx = e.currentTarget.dataset.index;
-      this.setData({
-        showSearchCat: true,
-        showSearchType: false,
-      });
-    } else if (type == "relation") {
-      selectRelationTypeIdx = e.currentTarget.dataset.index;
-      this.setData({
-        showSearchCat: false,
-        showSearchType: true,
-      });
-    } else if (type == "hide") {
-      this.setData({
-        showSearchCat: false,
-        showSearchType: false,
-      });
+  bindSearch(e, type) {
+    if (!type) {
+      type = e.currentTarget.dataset.type;
     }
+
+    var that = this;
+    var fCat, fType;
+    if (type == "cat") {
+      selectRelationCatIdx = e ? e.currentTarget.dataset.index: undefined;
+      fCat = true;
+      fType = false;
+    } else if (type == "relation") {
+      selectRelationTypeIdx = e ? e.currentTarget.dataset.index: undefined;
+      fCat = false;
+      fType = true;
+    } else if (type == "hide") {
+      fCat = false;
+      fType = false;
+    }
+    this.setData({
+      showSearchCat: fCat,
+      showSearchType: fType,
+    });
+    setTimeout(()=>{
+      that.setData({
+        focusSearchCat: fCat,
+        focusSearchType: fType,
+      });
+    }, 400);
   },
 
   // 搜索猫猫
@@ -285,13 +298,16 @@ Page({
   // 更新关系列表
   async loadRelations() {
     var cat = this.data.cat;
+    var relations = this.data.cat.relations;
     console.log(cat);
-    if (!cat._id) {
+    if (!cat._id || !relations) {
       return false;
     }
 
-    var relations = this.data.cat.relations;
     for (var relation of relations) {
+      if (!relation.cat_id) {
+        continue;
+      }
       relation.cat = await getCatItem(relation.cat_id)
       relation.cat.avatar = await getAvatar(relation.cat_id, relation.cat.photo_count_best);
     }
@@ -336,8 +352,7 @@ Page({
   },
   // 保存关系列表
   async saveRelations() {
-    var cat = this.data.cat;
-    if (!cat._id) {
+    if (!await this.checkSaveRelations()) {
       return false;
     }
 
@@ -345,6 +360,7 @@ Page({
       title: '保存中...',
     });
     
+    var cat = this.data.cat;
     var relations = [];
     for (const r of cat.relations) {
       relations.push({
@@ -361,6 +377,29 @@ Page({
       }
     });
 
-    wx.hideLoading();
+    wx.showToast({
+      title: '保存成功',
+    });
+  },
+
+  async checkSaveRelations() {
+    var cat = this.data.cat;
+    if (!cat._id) {
+      return false;
+    }
+
+    for (let i = 0; i < cat.relations.length; i++) {
+      const r = cat.relations[i];
+      console.log(r);
+      if (!r.type || !r.cat_id) {
+        wx.showToast({
+          title: `#${i+1}号关系不完整~`,
+          icon: "error"
+        });
+        return false;
+      }
+    }
+
+    return true;
   }
 })

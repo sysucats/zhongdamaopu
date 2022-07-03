@@ -1,5 +1,4 @@
 // 负责用户表的管理、使用接口
-import { async } from './packages/regenerator-runtime/runtime.js';
 import { randomInt, userInfoEq } from './utils.js';
 
 // 获取当前用户
