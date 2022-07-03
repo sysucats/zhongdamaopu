@@ -243,13 +243,16 @@ swiper-item image {
 }
 
 .album-block .header {
+  display: flex;
+  align-items: center;
   width: 100%;
   padding: 30rpx 0 20rpx 35rpx;
 }
 
 .album-block .header image {
-  width: 32rpx;
-  height: 32rpx;
+  width: 35rpx;
+  height: 35rpx;
+  margin-right: 10rpx;
 }
 
 .album-block .header .time {
@@ -257,15 +260,16 @@ swiper-item image {
   font-size: 35rpx;
   line-height: 35rpx;
   display: inline-block;
-  padding: 0 10rpx;
+  margin-right: 10rpx;
+  color: var(--color-black-min);
 }
 .album-block .header .age {
   height: 28rpx;
   font-size: 28rpx;
   line-height: 28rpx;
   display: inline-block;
-  color: var(--color-black-light);
-  padding: 0 10rpx;
+  color: var(--color-gray-max);
+  margin-right: 10rpx;
 }
 
 .album-block .album-image {

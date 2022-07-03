@@ -77,19 +77,6 @@ scroll-view {
   padding: 35rpx 35rpx 20rpx 35rpx;
 }
 
-.card .info .line {
-  display: flex;
-  align-items: flex-start;
-  margin-bottom: 18rpx;
-}
-
-.card .info .line.first{
-  display: flex;
-  align-items: center;
-  margin-bottom: 25rpx;
-  margin-left: 3rpx;
-}
-
 .card .info .name {
   height: 30rpx;
   font-size: 33rpx;
@@ -154,16 +141,27 @@ scroll-view {
 }
 
 .card .line {
+  display: flex;
+  /* align-items: flex-start; */
+  vertical-align: baseline;
+  margin-bottom: 10rpx;
+
   color: var(--color-black-min);
-  /* line-height: 1.05rem; */
+  line-height: 1.05rem;
+}
+
+.card .line:first-child{
+  display: flex;
+  align-items: center;
+  margin-bottom: 20rpx;
+  margin-left: 3rpx;
 }
 
 .card .line image.icon {
-  height: 26rpx;
-  width: 26rpx;
+  height: 28rpx;
+  width: 28rpx;
   min-width: 26rpx;
   margin-right: 20rpx;
-
   vertical-align: text-top;
 }
 

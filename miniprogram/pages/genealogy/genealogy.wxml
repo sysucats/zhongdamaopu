@@ -57,7 +57,7 @@
         <view class='image-title' wx:else>{{item.photo.photo_id? (text_cfg.genealogy.photo_by_tip + (item.photo.photographer ||(item.photo.userInfo? item.photo.userInfo.nickName: text_cfg.genealogy.photo_by_unknow))): text_cfg.genealogy.photo_loading_tip}}</view>
       </view>
       <view class='info' hover-class="hoverInfo">
-        <view class='line first'>
+        <view class='line'>
           <text class='name'>{{item.name}}</text>
           <block wx:if='{{item.gender}}'>
             <image mode='aspectFill' class='gender' wx:if='{{item.gender === "公"}}' src="../../images/card/card/male.png"></image>
