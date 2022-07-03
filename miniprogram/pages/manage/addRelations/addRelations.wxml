@@ -11,8 +11,6 @@
     </view>
   </view>
 
-  <view class="label">关系列表</view>
-
   <view class="relation" wx:for="{{cat.relations}}" wx:key="_id">
     <view class="relation-index">#{{index+1}}</view>
     <view class="relation-name" hover-class="tap" bindtap="bindSearch" data-type="relation" data-index="{{index}}">{{item.type || '选择关系'}}</view>
@@ -29,7 +27,7 @@
 
   <block wx:if="{{cat._id}}">
     <view class="relation add" bindtap="addRelation">+ 新增一条关系</view>
-    <button class="primary" bindtap="saveRelations">保存（检查完整性）</button>
+    <button class="primary" bindtap="saveRelations">保存</button>
   </block>
   <view class="relation add" wx:else>请先选择猫猫</view>
 
