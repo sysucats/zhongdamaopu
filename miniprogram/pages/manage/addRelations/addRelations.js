@@ -224,7 +224,6 @@ Page({
     setTimeout(()=>{
       that.setData({
         focusSearchCat: fCat,
-        focusSearchType: fType,
       });
     }, 400);
   },
