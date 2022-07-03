@@ -231,15 +231,12 @@ scroll-view {
 /* 广告栏 */
 
 .card-ad {
-  /* margin: 20rpx 67.5rpx 50rpx 67.5rpx; */
   margin: 15rpx 0;
   width: 635rpx;
   border-radius: 15rpx;
   background-color: white;
   box-shadow: 13rpx 13rpx 30rpx var(--color-gray);
   overflow: hidden;
-  /* overflow: visible; */
-  /* flex-grow: 1; */
 
   display: flex;
   justify-content: center;

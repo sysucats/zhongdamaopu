@@ -34,6 +34,8 @@ var infoHeight = 0; // 单位是px
 
 var heights = {}; // 系统的各种heights
 
+var context = {}; // 切换页面时记录一下context
+
 // 获取照片的排序功能
 const photoOrder = [
   {key: 'shooting_date', order: 'desc', name: '最近拍摄'},
@@ -73,24 +75,12 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
+    if (cat_id != undefined) {
+      // 说明是从其他猫猫跳转过来的，记录下上下文
+      context.cat_id = cat_id;
+      context.album_raw = album_raw;
+    }
     cat_id = options.cat_id;
-    // 开始加载页面
-    const that = this;
-    getGlobalSettings('detailCat').then(settings => {
-      // 先把设置拿到
-      page_settings = settings;
-      that.setData({
-        photoPopWeight: settings['photoPopWeight'] || 10
-      });
-      // 启动加载
-      that.loadCat().then();
-      // 是否开启上传功能
-      checkCanUpload().then(res => {
-        that.setData({
-          canUpload: res
-        });
-      })
-    });
 
     // 判断是否为管理员
     isManager(res=>{
@@ -137,14 +127,30 @@ Page({
         }
       }
     });
+    
+    // 开始加载页面
+    const that = this;
+    getGlobalSettings('detailCat').then(settings => {
+      // 先把设置拿到
+      page_settings = settings;
+      that.setData({
+        photoPopWeight: settings['photoPopWeight'] || 10
+      });
+      // 启动加载
+      that.loadCat().then();
+      // 是否开启上传功能
+      checkCanUpload().then(res => {
+        that.setData({
+          canUpload: res
+        });
+      })
+    });
   },
 
   /**
    * 生命周期函数--监听页面显示
    */
-  onShow: function () {
-
-  },
+  onShow: function () {},
 
   /**
    * 生命周期函数--监听页面隐藏
@@ -157,7 +163,11 @@ Page({
    * 生命周期函数--监听页面卸载
    */
   onUnload: function () {
-
+    console.log("page unload, context:", context);
+    if (context.cat_id) {
+      cat_id = context.cat_id;
+      album_raw = context.album_raw;
+    }
   },
 
   /**
