@@ -1,8 +1,4 @@
-const regeneratorRuntime = require('./packages/regenerator-runtime/runtime.js');
-
 const sha256 = require('./packages/sha256/sha256.js');
-
-// import regeneratorRuntime from './packages/regenerator-runtime/runtime.js';
 
 function randomInt(min, max) {
   return Math.floor(Math.random() * (max - min)) + min;
@@ -263,7 +259,6 @@ function checkDeploy() {
 
 
 module.exports = {
-  regeneratorRuntime,
   sha256,
   randomInt,
   generateUUID,
