@@ -1,7 +1,4 @@
 // pages/news/detailNews/detailNews.js
-const {
-    keys
-} = require('../../../packages/regenerator-runtime/runtime.js');
 const utils = require('../../../utils.js');
 const isManager = utils.isManager;
 const shareTo = utils.shareTo;

@@ -5,190 +5,180 @@
 <view id='bg-yellow' style='{{hideBgBlock? "background-color: transparent;": ""}}'></view>
 <!-- 整个页面容器 -->
 <scroll-view id='container' scroll-y="1" bindscrolltolower='loadMoreAlbum' enable-back-to-top="true" bindscroll="bindContainerScroll">
-<!-- 半圆形下面的白底块 -->
-<view id='bg-big-circle'></view>
-<!-- 这是黄色的半圆形 -->
-<view id='big-circle'></view> 
+  <!-- 半圆形下面的白底块 -->
+  <view id='bg-big-circle'></view>
+  <!-- 这是黄色的半圆形 -->
+  <view id='big-circle'></view>
 
-<swiper
-indicator-dots='{{false}}'
-bindchange='swiperLast'
-previous-margin='60rpx'
-next-margin='60rpx'>
-  <swiper-item class="best-photo" wx:for='{{cat.photo}}' wx:key="_id" bindtap='bindTapPhoto' data-index="{{item.index}}" data-kind='best'>
-    <image bindload='bindImageLoaded' mode='aspectFill' src='{{item.photo_compressed || item.photo_id}}'></image>
-    <item class="like-count" wx:if="{{item.like_count}}">
-      <image class="like-logo" mode='aspectFill' src="../../../images/button/heart.png"></image>
-      <text>{{item.like_count}}</text>
-    </item>
-  </swiper-item>
-</swiper>
-
-
-<view class='info' id='info-box'>
-  <view class="identity">
-    <view class='name'>{{cat.name}}</view>
-    <block wx:if='{{cat.gender}}'>
-      <image mode='aspectFill' class='gender' wx:if='{{cat.gender === "公"}}' src="../../../images/card/card/male.png"></image>
-      <image mode='aspectFill' class='gender' wx:if='{{cat.gender === "母"}}' src="../../../images/card/card/female.png"></image>
-    </block>
-    <view class='popularity' bindtap="showPopularityTip" wx:if="{{cat.popularity != undefined}}">
-      <image src='../../../images/card/card/pop.png'></image>
-      <text> {{cat.popularity + (cat.photo_count_total? cat.photo_count_total * photoPopWeight: 0)}}</text>
-    </view>
-    <view class='comment' bindtap="showCommentTip" wx:if="{{cat.comment_count != undefined}}">
-      <image src='../../../images/card/card/comment.png'></image>
-      <text> {{cat.comment_count || 0}}</text>
-    </view>
-  </view>
-
-  <view class="tags">
-    <text class='tag' wx:if="{{cat.adopt != undefined}}">{{adopt_desc[cat.adopt]}}</text>
-    <text class='tag'>{{cat.sterilized? text_cfg.detail_cat.sterilized_true: text_cfg.detail_cat.sterilized_false}}</text>
-    <text class='tag to_star' wx:if='{{cat.to_star}}'>{{text_cfg.genealogy.to_star_tip}}</text>
-    
-    <text class='fb-button' bindtap='bindTapFeedback'>{{text_cfg.detail_cat.button_feedback}}</text>
-    <view class="mpcode" bindtap="bingMpTap">
-      <image src="../../../images/button/mpcode.png"></image>
-    </view>
-  </view>
-  <view class='details'>
-    <view class='item'>
-      <view class='label'>
-        <view class='label-block'></view>
-        {{text_cfg.detail_cat.label_nickname}}
-      </view>
-      <view class='value'>{{cat.nickname || '-'}}</view>
-    </view>
-    <view class='item'>
-      <view class='label'>
-        <view class='label-block'></view>
-        {{text_cfg.detail_cat.label_location}}
-      </view>
-      <view class='value'>{{(cat.campus + cat.area) || '-'}}</view>
-    </view>
-    <view class='item'>
-      <view class='label'>
-        <view class='label-block'></view>
-        {{text_cfg.detail_cat.label_birthday}}
-      </view>
-      <view class='value'>{{cat.birthday || '-'}}</view>
-    </view>
-    <view class='item'>
-      <view class='label'>
-        <view class='label-block'></view>
-        {{text_cfg.detail_cat.label_father}}
-      </view>
-      <view class='value'>{{cat.father || '-'}}</view>
-    </view>
-    <view class='item'>
-      <view class='label'>
-        <view class='label-block'></view>
-        {{text_cfg.detail_cat.label_mother}}
-      </view>
-      <view class='value'>{{cat.mother || '-'}}</view>
-    </view>
-    <view class='item'>
-      <view class='label'>
-        <view class='label-block'></view>
-        {{text_cfg.detail_cat.label_friend}}
-      </view>
-      <view class='value'>{{cat.relation || '-'}}</view>
-    </view>
-    
-    <view class='item long'>
-      <view class='label'>
-        <view class='label-block'></view>
-        {{text_cfg.detail_cat.label_character}}
-      </view>
-      <view class='value'>
-        <!-- 新猫特点Char是空的数组（以前的是空值），修改判定方式 -->
-        <text>{{(cat.characteristics || '') + (cat.characteristics.length?'\n':'') + (cat.habit || '-')}}</text>
-      </view>
-    </view>
-
-    <view class='item long'>
-      <view class='label'>
-        <view class='label-block'></view>
-        {{text_cfg.detail_cat.label_tutorial}}
-      </view>
-      <view class='value'>{{cat.tutorial || text_cfg.detail_cat.label_tutorial_empty}}</view>
-    </view>
-  </view>
-  
-</view>
-<!-- info end -->
-
-<view class='big-header'>
-  <image class='avatar' mode='aspectFill' src='{{cat.photo[0].photo_compressed || cat.photo[0].photo_id}}'></image>
-  <view class='name-and-count'>
-    <view class='name'>{{cat.name}}的相册</view>
-    <view class='count'>共{{albumMax}}张照片</view>
-  </view>
-  
-  <view class='sort-button'>
-    <picker bindchange="bindphotoOrderChange" value="{{photoOrderSelected}}" range="{{photoOrderSelectorRange}}" range-key="{{photoOrderSelectorKey}}">
-      <view class="picker">
-        <text class='type'>{{photoOrderSelectorRange[photoOrderSelected][photoOrderSelectorKey]}}</text>
-        <image class="icon" mode='aspectFill' src='../../../images/button/sort.png'></image>
-      </view>
-    </picker>
-  </view>
-</view>
-
-
-<view class='big-header fix' hidden='{{!showHoverHeader}}'>
-  <image class='avatar' mode='aspectFill' src='{{cat.photo[0].photo_compressed || cat.photo[0].photo_id}}'></image>
-  <view class='name-and-count'>
-    <view class='name'>{{cat.name}}的相册</view>
-    <view class='count'>共{{albumMax}}张照片</view>
-  </view>
-  
-  <view class='sort-button'>
-    <picker bindchange="bindphotoOrderChange" value="{{photoOrderSelected}}" range="{{photoOrderSelectorRange}}" range-key="{{photoOrderSelectorKey}}">
-      <view class="picker">
-        <text class="type">{{photoOrderSelectorRange[photoOrderSelected][photoOrderSelectorKey]}}</text>
-        <image class="icon" mode='aspectFill' src='../../../images/button/sort.png'></image>
-      </view>
-    </picker>
-  </view>
-</view>
-
-<view class='album'>
-  <view wx:for="{{album}}" class='album-block' wx:key='date' wx:for-item="albumBlock">
-    <view class='header'>
-      <image src='../../../images/card/card/time.png'></image>
-      <view class='time'>{{albumBlock.date[0]}}年{{albumBlock.date[1]}}月</view>
-      <view wx:if='{{albumBlock.age[0] >= 0 && albumBlock.age[1] >= 0}}' class='age'>{{albumBlock.age[0]}}岁{{albumBlock.age[1]}}个月</view>
-    </view>
-    <view class="album-image" wx:for="{{albumBlock.photos}}" wx:key="_id" bindtap='bindTapPhoto' data-index="{{item.index}}" data-kind='album'>
-      <image mode='aspectFill' class="alb-image" lazy-load='true' src='{{item.photo_compressed || item.photo_id}}'></image>
-      <item class="like-count" wx:if="{{item.like_count >= 3}}">
-        <image class="like-logo small" mode='aspectFill' src="../../../images/button/heart.png"></image>
+  <swiper indicator-dots='{{false}}' bindchange='swiperLast' previous-margin='60rpx' next-margin='60rpx'>
+    <swiper-item class="best-photo" wx:for='{{cat.photo}}' wx:key="_id" bindtap='bindTapPhoto' data-index="{{item.index}}" data-kind='best'>
+      <image bindload='bindImageLoaded' mode='aspectFill' src='{{item.photo_compressed || item.photo_id}}'></image>
+      <item class="like-count" wx:if="{{item.like_count}}">
+        <image class="like-logo" mode='aspectFill' src="../../../images/button/heart.png"></image>
         <text>{{item.like_count}}</text>
       </item>
+    </swiper-item>
+  </swiper>
+
+
+  <view class='info' id='info-box'>
+    <view class="identity">
+      <view class='name'>{{cat.name}}</view>
+      <block wx:if='{{cat.gender}}'>
+        <image mode='aspectFill' class='gender' wx:if='{{cat.gender === "公"}}' src="../../../images/card/card/male.png"></image>
+        <image mode='aspectFill' class='gender' wx:if='{{cat.gender === "母"}}' src="../../../images/card/card/female.png"></image>
+      </block>
+      <view class='popularity' bindtap="showPopularityTip" wx:if="{{cat.popularity != undefined}}">
+        <image src='../../../images/card/card/pop.png'></image>
+        <text> {{cat.popularity + (cat.photo_count_total? cat.photo_count_total * photoPopWeight: 0)}}</text>
+      </view>
+      <view class='comment' bindtap="showCommentTip" wx:if="{{cat.comment_count != undefined}}">
+        <image src='../../../images/card/card/comment.png'></image>
+        <text> {{cat.comment_count || 0}}</text>
+      </view>
+    </view>
+
+    <view class="tags">
+      <text class='tag' wx:if="{{cat.adopt != undefined}}">{{adopt_desc[cat.adopt]}}</text>
+      <text class='tag'>{{cat.sterilized? text_cfg.detail_cat.sterilized_true: text_cfg.detail_cat.sterilized_false}}</text>
+      <text class='tag to_star' wx:if='{{cat.to_star}}'>{{text_cfg.genealogy.to_star_tip}}</text>
+
+      <text class='fb-button' bindtap='bindTapFeedback'>{{text_cfg.detail_cat.button_feedback}}</text>
+      <view class="mpcode" bindtap="bingMpTap">
+        <image src="../../../images/button/mpcode.png"></image>
+      </view>
+    </view>
+    <view class='details'>
+      <view class='item'>
+        <view class='label'>
+          <view class='label-block'></view>
+          {{text_cfg.detail_cat.label_nickname}}
+        </view>
+        <view class='value'>{{cat.nickname || '-'}}</view>
+      </view>
+      <view class='item'>
+        <view class='label'>
+          <view class='label-block'></view>
+          {{text_cfg.detail_cat.label_location}}
+        </view>
+        <view class='value'>{{(cat.campus + cat.area) || '-'}}</view>
+      </view>
+      <view class='item'>
+        <view class='label'>
+          <view class='label-block'></view>
+          {{text_cfg.detail_cat.label_birthday}}
+        </view>
+        <view class='value'>{{cat.birthday || '-'}}</view>
+      </view>
+
+      <view class='item long'>
+        <view class='label'>
+          <view class='label-block'></view>
+          {{text_cfg.detail_cat.label_character}}
+        </view>
+        <view class='value'>
+          <!-- 新猫特点Char是空的数组（以前的是空值），修改判定方式 -->
+          <text>{{(cat.characteristics || '') + (cat.characteristics.length?'\n':'') + (cat.habit || '-')}}</text>
+        </view>
+      </view>
+
+      <view class='item long'>
+        <view class='label'>
+          <view class='label-block'></view>
+          {{text_cfg.detail_cat.label_tutorial}}
+        </view>
+        <view class='value'>{{cat.tutorial || text_cfg.detail_cat.label_tutorial_empty}}</view>
+      </view>
+
+      <!-- 关系 -->
+      <view class="item long" wx:if="{{is_manager || (cat.relations && cat.relations.length)}}">
+        <view class="label">
+          <view class='label-block'></view>
+          关系
+        </view>
+        <scroll-view scroll-x="1" class="relations">
+          <view class="relation-block" wx:for="{{cat.relations}}" wx:key="_id" bindtap="toRelationCat" data-cat_id="{{item.cat._id}}" hover-class="tap">
+            <image class="relation-cat-avatar" src='{{item.cat.avatar.photo_compressed || item.cat.avatar.photo_id}}' mode="aspectFill"></image>
+            <view class="relation-name">{{item.type}}</view>
+            <view class="relation-cat-name">{{item.cat.name}}</view>
+          </view>
+          <view class="relation-block add" hover-class="tap" wx:if="{{is_manager}}" bindtap="toAddRelation">
+            <image class="relation-cat-avatar" mode="aspectFill"></image>
+            <view class="relation-name">+</view>
+            <view class="relation-cat-name">添加关系</view>
+          </view>
+        </scroll-view>
+      </view>
     </view>
   </view>
-  
-  <view class='loading'>
-  {{bottomText}}
+  <!-- info end -->
+
+  <view class='big-header'>
+    <image class='avatar' mode='aspectFill' src='{{cat.avatar.photo_compressed || cat.avatar.photo_id}}'></image>
+    <view class='name-and-count'>
+      <view class='name'>{{cat.name}}的相册</view>
+      <view class='count'>共{{albumMax}}张照片</view>
+    </view>
+
+    <view class='sort-button'>
+      <picker bindchange="bindphotoOrderChange" value="{{photoOrderSelected}}" range="{{photoOrderSelectorRange}}" range-key="{{photoOrderSelectorKey}}">
+        <view class="picker">
+          <text class='type'>{{photoOrderSelectorRange[photoOrderSelected][photoOrderSelectorKey]}}</text>
+          <image class="icon" mode='aspectFill' src='../../../images/button/sort.png'></image>
+        </view>
+      </picker>
+    </view>
   </view>
-</view>
-<!-- album end -->
 
-<view class="addPhoto" bindtap='bindAddPhoto'>
-<image class="icon" wx:if="{{canUpload}}" src='../../../images/button/addPhoto.png'></image>
-</view>
 
-<!-- 进入留言板 -->
-<view id="comment-btn" bindtap="toComment" wx:if="{{canUpload}}">
-  <text>{{text_cfg.detail_cat.label_comment_board}}</text>
-  <image src="../../../images/button/right_double_arrow.png" mode="aspectFit"></image>
-</view>
+  <view class='big-header fix' hidden='{{!showHoverHeader}}'>
+    <image class='avatar' mode='aspectFill' src='{{cat.photo[0].photo_compressed || cat.photo[0].photo_id}}'></image>
+    <view class='name-and-count'>
+      <view class='name'>{{cat.name}}的相册</view>
+      <view class='count'>共{{albumMax}}张照片</view>
+    </view>
+
+    <view class='sort-button'>
+      <picker bindchange="bindphotoOrderChange" value="{{photoOrderSelected}}" range="{{photoOrderSelectorRange}}" range-key="{{photoOrderSelectorKey}}">
+        <view class="picker">
+          <text class="type">{{photoOrderSelectorRange[photoOrderSelected][photoOrderSelectorKey]}}</text>
+          <image class="icon" mode='aspectFill' src='../../../images/button/sort.png'></image>
+        </view>
+      </picker>
+    </view>
+  </view>
+
+  <view class='album'>
+    <view wx:for="{{album}}" class='album-block' wx:key='date' wx:for-item="albumBlock">
+      <view class='header'>
+        <image src='../../../images/card/card/time.png'></image>
+        <view class='time'>{{albumBlock.date[0]}}年{{albumBlock.date[1]}}月</view>
+        <view wx:if='{{albumBlock.age[0] >= 0 && albumBlock.age[1] >= 0}}' class='age'>{{albumBlock.age[0]}}岁{{albumBlock.age[1]}}个月</view>
+      </view>
+      <view class="album-image" wx:for="{{albumBlock.photos}}" wx:key="_id" bindtap='bindTapPhoto' data-index="{{item.index}}" data-kind='album'>
+        <image mode='aspectFill' class="alb-image" lazy-load='true' src='{{item.photo_compressed || item.photo_id}}'></image>
+        <item class="like-count" wx:if="{{item.like_count >= 3}}">
+          <image class="like-logo small" mode='aspectFill' src="../../../images/button/heart.png"></image>
+          <text>{{item.like_count}}</text>
+        </item>
+      </view>
+    </view>
+
+    <view class='loading'>
+      {{bottomText}}
+    </view>
+  </view>
+  <!-- album end -->
+
+  <view class="addPhoto" bindtap='bindAddPhoto'>
+    <image class="icon" wx:if="{{canUpload}}" src='../../../images/button/addPhoto.png'></image>
+  </view>
+
+  <!-- 进入留言板 -->
+  <view id="comment-btn" bindtap="toComment" wx:if="{{canUpload}}">
+    <text>{{text_cfg.detail_cat.label_comment_board}}</text>
+    <image src="../../../images/button/right_double_arrow.png" mode="aspectFit"></image>
+  </view>
 </scroll-view>
 
-<mp-gallery show="{{showGallery}}" gallery-photos="{{galleryPhotos}}"
-img-compressed-urls="{{imgCompressedUrls}}" img-urls="{{imgUrls}}" current="{{currentImg}}"
-hide-on-click="{{true}}" 
-bindchange="bindGalleryChange"
-bindlikecountchanged="likeCountChanged"></mp-gallery>
+<mp-gallery show="{{showGallery}}" gallery-photos="{{galleryPhotos}}" img-compressed-urls="{{imgCompressedUrls}}" img-urls="{{imgUrls}}" current="{{currentImg}}" hide-on-click="{{true}}" bindchange="bindGalleryChange" bindlikecountchanged="likeCountChanged"></mp-gallery>

@@ -5,12 +5,19 @@ const cache = require('./cache.js');
 // 常用的一些对象
 const db = wx.cloud.database();
 const coll_photo = db.collection('photo');
+const coll_cat = db.collection('cat');
 
 // 获取猫猫的封面图
-// TODO(zing): 可以搞个缓存
 async function getAvatar(cat_id, total) {
   if (!total || total === 0) {
     return undefined;
+  }
+
+  var cacheKey = `cat-avatar-${cat_id}`;
+  var cacheItem = cache.getCacheItem(cacheKey);
+  console.log(cacheKey, cacheItem);
+  if (cacheItem) {
+    return cacheItem;
   }
   
   // photo_id : 不以 HEIC 为文件后缀的字符串
@@ -24,7 +31,10 @@ async function getAvatar(cat_id, total) {
   // TODO: 这里对于API调用的次数较多，需要修改
   var index = utils.randomInt(0, total);
   var pho_src = (await coll_photo.where(qf).skip(index).limit(1).get()).data;
-  return pho_src[0];
+  cacheItem = pho_src[0];
+  
+  cache.setCacheItem(cacheKey, cacheItem, 24);
+  return cacheItem;
 }
 
 // 消除“有新相片”提示
@@ -38,8 +48,25 @@ function setVisitedDate(cat_id) {
   return;
 }
 
+// 获取猫猫信息
+async function getCatItem(cat_id) {
+  if (!cat_id) {
+    return undefined;
+  }
+  var cacheKey = `cat-item-${cat_id}`;
+  var cacheItem = cache.getCacheItem(cacheKey);
+  if (cacheItem) {
+    return cacheItem;
+  }
+
+  cacheItem = (await coll_cat.doc(cat_id).get()).data;
+  cache.setCacheItem(cacheKey, cacheItem, 24);
+  return cacheItem;
+}
+
 export {
   getAvatar,
   getVisitedDate,
   setVisitedDate,
+  getCatItem,
 }

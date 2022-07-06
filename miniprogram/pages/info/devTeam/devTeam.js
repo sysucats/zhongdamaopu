@@ -12,6 +12,19 @@ Page({
     text_cfg: text_cfg,
     github_link: "https://github.com/sysucats/zhongdamaopu",
     update_log: [{
+      version: "v1.8.3",
+      content: [
+        "优化管理页面",
+      ],
+      time: "2022/07/06"
+    }, {
+      version: "v1.8.2",
+      content: [
+        "新增猫猫关系",
+        "代码质量"
+      ],
+      time: "2022/07/02"
+    }, {
       version: "v1.8.1",
       content: [
         "管理员审核照片更顺手啦",
