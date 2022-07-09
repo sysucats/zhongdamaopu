@@ -12,6 +12,12 @@ Page({
     text_cfg: text_cfg,
     github_link: "https://github.com/sysucats/zhongdamaopu",
     update_log: [{
+      version: "v1.8.4",
+      content: [
+        "修复页面UI小问题",
+      ],
+      time: "2022/07/09"
+    }, {
       version: "v1.8.3",
       content: [
         "优化管理页面",
