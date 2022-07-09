@@ -75,6 +75,10 @@
           </view>
         </view>
 
+        <view class='line' wx:if="{{item.birthday}}">
+          <image mode='aspectFit' class='icon' src='../../images/card/card/birth.png'></image>
+          <text>{{item.birthday}}</text>
+        </view>
         <view class='line'>
           <image mode='aspectFit' class='icon' src='../../images/card/card/cat.png'></image>
           <text class="characteristics">{{item.characteristics_string}}</text>
@@ -89,10 +93,6 @@
           <view class='index'><text decode='true'>&lt; {{index+1}}/{{catsMax}} &gt;</text></view>
         </view>
 
-        <view class='line' wx:if="{{item.birthday}}">
-          <image mode='aspectFit' class='icon' src='../../images/card/card/birth.png'></image>
-          <text>{{item.birthday}}</text>
-        </view>
       </view>
     </view>
     <view wx:if="{{adStep && (index+1)%adStep===0}}" class="card-ad {{ad_show['ad-'+(index+1)]? '': 'hidden'}}">

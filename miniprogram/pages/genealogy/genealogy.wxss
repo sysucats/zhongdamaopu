@@ -74,7 +74,7 @@ scroll-view {
 
 .card .hoverInfo{
   background-color: var(--color-gray-light);
-  padding: 35rpx 35rpx 20rpx 35rpx;
+  border-radius: 15rpx;
 }
 
 .card .info .line {
