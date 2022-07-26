@@ -3,7 +3,7 @@ const use_wx_cloud = require('./config.js').use_wx_cloud;
 var cloud = wx.cloud;
 
 if (!use_wx_cloud) {
-  const cloud = require('laf-client-sdk').init({
+  cloud = require('laf-client-sdk').init({
     baseUrl: 'https://6ovcqp.sysucats.com:16778',
     // dbProxyUrl: '/proxy/miniprogram',
     getAccessToken: () => {
