@@ -4,6 +4,9 @@
 // 修改时频繁保存、频繁编译，发现改错了立马撤销
 
 module.exports = {
+  // 是否使用微信云开发后台，为 false 时使用 laf 后台
+  use_wx_cloud: false,
+
   // 科普页图片
   science_imgs: [
     "cloud://rel-eeeccf.7265-rel-eeeccf/系统/1.png",

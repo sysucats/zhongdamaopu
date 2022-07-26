@@ -1,0 +1,8 @@
+{
+  "dependencies": {
+    "laf-client-sdk": "^0.8.2"
+  },
+  "resolutions": {
+    "bson": "4.6.4"
+  }
+}

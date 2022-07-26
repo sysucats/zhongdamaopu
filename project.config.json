@@ -37,9 +37,11 @@
     "showES6CompileOption": false,
     "useCompilerPlugins": false,
     "useStaticServer": true,
-    "ignoreUploadUnusedFiles": true
+    "ignoreUploadUnusedFiles": true,
+    "lazyloadPlaceholderEnable": false,
+    "localPlugins": false
   },
-  "appid": "wx5bd705b2bc91c73b",
+  "appid": "wx1b733685bf7904be",
   "projectname": "zhongdamaopu",
   "libVersion": "2.19.6",
   "simulatorType": "wechat",
