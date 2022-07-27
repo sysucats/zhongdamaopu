@@ -53,8 +53,6 @@ if (!use_wx_cloud) {
     documentPrototype.set = function (options) {
       _set.call(this, options.data);
     }
-
-    console.log('替换后', documentPrototype);
   })();
 }
 
