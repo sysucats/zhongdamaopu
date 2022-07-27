@@ -46,12 +46,12 @@ if (!use_wx_cloud) {
 
     const _update = documentPrototype.update;
     documentPrototype.update = function (options) {
-      _update.call(this, options.data);
+      return _update.call(this, options.data);
     }
 
     const _set = documentPrototype.set;
     documentPrototype.set = function (options) {
-      _set.call(this, options.data);
+      return _set.call(this, options.data);
     }
   })();
 }
