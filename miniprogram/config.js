@@ -6,6 +6,8 @@
 module.exports = {
   // 是否使用微信云开发后台，为 false 时使用 laf 后台
   use_wx_cloud: false,
+  // 若使用 laf 后台，请填写下面的后台 url
+  laf_url: 'https://6ovcqp.sysucats.com:16778',
 
   // 科普页图片
   science_imgs: [
