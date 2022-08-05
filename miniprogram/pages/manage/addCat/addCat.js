@@ -10,6 +10,9 @@ var cat_id = undefined;
 const photoStep = 5; // 每次加载的图片数量
 var phers = {}; // 暂时存放摄影师名字
 
+const use_wx_cloud = config.use_wx_cloud; // 是否使用微信云，不然使用Laf云
+const cloud = use_wx_cloud ? wx.cloud : require('../../../cloudAccess.js').cloud;
+
 Page({
   /**
    * 页面的初始数据
@@ -121,7 +124,7 @@ Page({
       return false;
     }
 
-    const db = wx.cloud.database();
+    const db = cloud.database();
     db.collection('cat').doc(cat_id).get().then(res => {
       console.log(res);
       res.data.mphoto = String(new Date(res.data.mphoto));
@@ -155,7 +158,7 @@ Page({
   reloadPhotos() {
     const only_best_photo = this.data.only_best_photo;
     const qf = { cat_id: cat_id, verified: true, best: only_best_photo };
-    const db = wx.cloud.database();
+    const db = cloud.database();
     db.collection('photo').where(qf).count().then(res => {
       this.setData({
         photoMax: res.total,
@@ -204,7 +207,7 @@ Page({
     const qf = { cat_id: cat_id, verified: true, best: only_best_photo };
     const now = photo.length;
 
-    const db = wx.cloud.database();
+    const db = cloud.database();
     console.log(qf);
     db.collection('photo').where(qf).orderBy('mdate', 'desc').skip(now).limit(photoStep).get().then(res => {
       console.log(res);
@@ -216,7 +219,6 @@ Page({
   },
   // 输入了东西
   inputText(e) {
-    console.log(e);
     const key = e.currentTarget.dataset.key;
     const value = e.detail.value;
     // if (this.data.cat[key] instanceof Array) {
@@ -225,7 +227,6 @@ Page({
     //     ['cat.' + key]: value.split(',')
     //   });
     // } else {
-      
     // }
     this.setData({
       ['cat.' + key]: value
@@ -326,24 +327,38 @@ Page({
     wx.showLoading({
       title: '更新中...',
     });
-    wx.cloud.callFunction({
-      name: 'updateCat',
-      data: {
+    if (use_wx_cloud){ // 微信云
+      cloud.callFunction({
+        name: 'updateCat',
+        data: {
+          cat: this.data.cat,
+          cat_id: cat_id
+        }
+      }).then(res => {
+        console.log(res);
+        if (res.result._id) {
+          cat_id = res.result._id;
+        }
+        wx.showToast({
+          title: '操作成功',
+        });
+      })
+    }
+    else {
+      cloud.invokeFunction('updateCat', {
         cat: this.data.cat,
         cat_id: cat_id
-      }
-    }).then(res => {
-      console.log(res);
-      if (res.result._id) {
-        cat_id = res.result._id;
-      }
-
-      // wx.hideLoading();
-
-      wx.showToast({
-        title: '操作成功',
-      });
-    })
+      }).then(res => {
+        console.log(res);
+        if (res._id) {
+          cat_id = res._id;
+        }
+        wx.showToast({
+          title: '操作成功',
+        });
+      })
+    }
+    
   },
   deletePhoto(e) {
     console.log(e);
@@ -355,12 +370,30 @@ Page({
       success(res) {
         if (res.confirm) {
           console.log('开始删除');
-          wx.cloud.callFunction({
-            name: "managePhoto",
-            data: {
-              type: "delete",
-              photo: photo
-            }
+          if (use_wx_cloud) { // 微信云
+            cloud.callFunction({
+              name: "managePhoto",
+              data: {
+                type: "delete",
+                photo: photo
+              }
+            }).then(res => {
+              console.log("删除照片记录：" + photo._id);
+              wx.showModal({
+                title: '完成',
+                content: '删除成功',
+                showCancel: false,
+                success: (res) => {
+                  that.reloadPhotos();
+                }
+              });
+            })
+          }
+        }
+        else {
+          cloud.invokeFunction("managePhoto", {
+            type: "delete",
+            photo: photo
           }).then(res => {
             console.log("删除照片记录：" + photo._id);
             wx.showModal({
@@ -383,25 +416,45 @@ Page({
     const index = e.currentTarget.dataset.index;
     const that = this;
     const set_best = !photo.best;
-    wx.cloud.callFunction({
-      name: "managePhoto",
-      data: {
+    if(use_wx_cloud){ // 微信云
+      cloud.callFunction({
+        name: "managePhoto",
+        data: {
+          type: "setBest",
+          photo: photo,
+          best: set_best
+        }
+      }).then(res => {
+        wx.showModal({
+          title: '完成',
+          content: '设置成功',
+          showCancel: false,
+          success: (res) => {
+            that.setData({
+              ['photo[' + index + '].best']: set_best
+            });
+          }
+        });
+      })
+    }
+    else { // Laf 云
+      cloud.invokeFunction("managePhoto", {
         type: "setBest",
         photo: photo,
         best: set_best
-      }
-    }).then(res => {
-      wx.showModal({
-        title: '完成',
-        content: '设置成功',
-        showCancel: false,
-        success: (res) => {
-          that.setData({
-            ['photo[' + index + '].best']: set_best
-          });
-        }
-      });
-    })
+      }).then(res => {
+        wx.showModal({
+          title: '完成',
+          content: '设置成功',
+          showCancel: false,
+          success: (res) => {
+            that.setData({
+              ['photo[' + index + '].best']: set_best
+            });
+          }
+        });
+      })
+    }
   },
   inputPher(e) {
     const input = e.detail.value;
@@ -415,25 +468,45 @@ Page({
     const pid = photo._id;
     const photographer = phers[pid];
     const that = this;
-    wx.cloud.callFunction({
-      name: "managePhoto",
-      data: {
+    if (use_wx_cloud) { // 微信云
+      cloud.callFunction({
+        name: "managePhoto",
+        data: {
+          type: "setPher",
+          photo: photo,
+          photographer: photographer
+        }
+      }).then(res => {
+        wx.showModal({
+          title: '完成',
+          content: '设置成功',
+          showCancel: false,
+          success: (res) => {
+            that.setData({
+              ['photo[' + index + '].photographer']: photographer
+            });
+          }
+        });
+      })
+    }
+    else{
+      cloud.invokeFunction("managePhoto", {
         type: "setPher",
         photo: photo,
         photographer: photographer
-      }
-    }).then(res => {
-      wx.showModal({
-        title: '完成',
-        content: '设置成功',
-        showCancel: false,
-        success: (res) => {
-          that.setData({
-            ['photo[' + index + '].photographer']: photographer
-          });
-        }
-      });
-    })
+      }).then(res => {
+        wx.showModal({
+          title: '完成',
+          content: '设置成功',
+          showCancel: false,
+          success: (res) => {
+            that.setData({
+              ['photo[' + index + '].photographer']: photographer
+            });
+          }
+        });
+      })
+    }
   },
   switchOnlyBest() {
     const only_best_photo = this.data.only_best_photo;

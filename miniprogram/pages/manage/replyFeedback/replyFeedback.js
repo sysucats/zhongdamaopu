@@ -8,6 +8,10 @@ const formatDate = utils.formatDate;
 const msg = require('../../../msg.js');
 const sendReplyNotice = msg.sendReplyNotice;
 
+const config = require('../../../config.js');
+const use_wx_cloud = config.use_wx_cloud; // 是否使用微信云，不然使用Laf云
+const cloud = use_wx_cloud ? wx.cloud : require('../../../cloudAccess.js').cloud;
+
 Page({
 
   /**
@@ -57,7 +61,7 @@ Page({
       title: '加载中...',
     });
     const that = this;
-    const db = wx.cloud.database();
+    const db = cloud.database();
     db.collection('feedback').doc(options.fb_id).get().then(res => {
       console.log(res);
       res.data.openDateStr = formatDate(res.data.openDate, "yyyy-MM-dd hh:mm:ss");
@@ -99,14 +103,23 @@ Page({
           console.log(res);
           if (res.errCode == 0) {
             // 记录一下回复的内容和时间
-            await wx.cloud.callFunction({
-              name: "manageFeedback",
-              data: {
+            if(use_wx_cloud){ // wx
+              await cloud.callFunction({
+                name: "manageFeedback",
+                data: {
+                  operation: 'reply',
+                  feedback: that.data.feedback,
+                  replyInfo: submitData.replyInfo,
+                }
+              });
+            }
+            else{
+              await cloud.invokeFunction("manageFeedback", {
                 operation: 'reply',
                 feedback: that.data.feedback,
                 replyInfo: submitData.replyInfo,
-              }
-            });
+              });
+            }
             wx.hideLoading();
             wx.showToast({
               title: '回复成功',

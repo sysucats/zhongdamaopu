@@ -1,6 +1,9 @@
 // miniprogram/pages/news/news.js
+
 const utils = require('../../utils.js');
 const config = require('../../config.js');
+const use_wx_cloud = config.use_wx_cloud; // 是否使用微信云，不然使用Laf云
+const cloud = use_wx_cloud ? wx.cloud : require('../../cloudAccess.js').cloud;
 
 const isManager = utils.isManager;
 const text_cfg = config.text;
@@ -47,12 +50,13 @@ Page({
    */
   onLoad: function (options) {
     const that = this;
-    const db = wx.cloud.database();
+    const db = cloud.database();
     db.collection('news').orderBy('date', 'desc').get().then(res => {
       that.setData({
         newsList: res.data,
         newsList_show: res.data,
       })
+      console.log("News:", res);
     });
     this.checkAuth();
 
@@ -96,7 +100,7 @@ Page({
   // 重新载入数据库
   getData() {
     const that = this;
-    const db = wx.cloud.database();
+    const db = cloud.database();
     db.collection('news').orderBy('date', 'desc').get().then(res => {
       that.setData({
         newsList: res.data,
@@ -230,7 +234,7 @@ Page({
 
     for (let i = 0; i < imgUrlList.length; i++) {
       promiseAll[i] = new Promise(function (resolve, reject) {
-        wx.cloud.downloadFile({
+        cloud.downloadFile({
           fileID: imgUrlList[i],
           success: function (res) {
             var savedFilePath = fileSystem.saveFileSync(res.tempFilePath);

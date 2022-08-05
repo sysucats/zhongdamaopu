@@ -2,9 +2,13 @@
 
 const utils = require('../../../utils.js');
 const user = require('../../../user.js');
+const config = require('../../../config.js');
 const isManager = utils.isManager;
 
 const getCurUserInfoOrFalse = user.getCurUserInfoOrFalse;
+
+const use_wx_cloud = config.use_wx_cloud; // 是否使用微信云，不然使用Laf云
+const cloud = use_wx_cloud ? wx.cloud : require('../../../cloudAccess.js').cloud;
 
 Page({
 
@@ -76,7 +80,7 @@ Page({
 
     loadNews() {
         const that = this;
-        const db = wx.cloud.database();
+        const db = cloud.database();
         db.collection('news').where({
             "_id": this.data.news_id
         }).get().then(res => {
@@ -247,23 +251,42 @@ Page({
         })
     },
     doModify (item_id, item_data) {
-        wx.cloud.callFunction({
-            name: "newsOp",
-            data: {
+        if(use_wx_cloud){ // 使用微信云
+            cloud.callFunction({
+                name: "newsOp",
+                data: {
+                    type: "modify",
+                    item_id: item_id,
+                    item_data: item_data
+                },
+                success: (res) => {
+                    console.log(res);
+                    wx.showToast({
+                        title: '修改成功',
+                        icon: 'success',
+                        duration: 1000
+                    })
+                    setTimeout(wx.navigateBack, 1000)
+                },
+                fail: console.error
+            });
+        }
+        else{ // 使用腾讯云
+            cloud.invokeFunction("newsOp", {
                 type: "modify",
                 item_id: item_id,
-                item_data: item_data
-            },
-            success: (res) => {
-                console.log(res);
-                wx.showToast({
-                    title: '修改成功',
-                    icon: 'success',
-                    duration: 1000
-                })
-                setTimeout(wx.navigateBack, 1000)
-            },
-            fail: console.error
-        });
+                item_data: item_data,
+                success: (res) => {
+                    console.log(res);
+                    wx.showToast({
+                        title: '修改成功',
+                        icon: 'success',
+                        duration: 1000
+                    })
+                    setTimeout(wx.navigateBack, 1000)
+                },
+                fail: console.error
+            });
+        }
     },
 })

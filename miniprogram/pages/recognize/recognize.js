@@ -6,6 +6,9 @@ const getGlobalSettings = utils.getGlobalSettings;
 const randomInt = utils.randomInt;
 const loadFilter = utils.loadFilter;
 
+const use_wx_cloud = config.use_wx_cloud; // 是否使用微信云，不然使用Laf云
+const cloud = use_wx_cloud ? wx.cloud : require('../../cloudAccess.js').cloud;
+
 // 接口设置，onLoad中从数据库拉取。
 var interfaceURL;
 var secretKey;
@@ -387,14 +390,14 @@ Page({
   },
 
   async getCatInfo(cat) {
-    const db = wx.cloud.database();
+    const db = cloud.database();
     const catInfo = (await db.collection('cat').doc(cat.catID).get()).data;
     catInfo.score = cat.score;
     return catInfo;
   },
 
   async getCatPhoto(catInfo) {
-    const db = wx.cloud.database();
+    const db = cloud.database();
     const photo = db.collection('photo');
     // 从精选照片里随机挑选一张
     const query = {

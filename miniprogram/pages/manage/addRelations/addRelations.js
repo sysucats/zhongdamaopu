@@ -7,7 +7,11 @@ const cat_utils = require('../../../cat.js');
 const getAvatar = cat_utils.getAvatar;
 const getCatItem = cat_utils.getCatItem;
 
-const db = wx.cloud.database();
+const config = require('../../../config.js');
+const use_wx_cloud = config.use_wx_cloud; // 是否使用微信云，不然使用Laf云
+const cloud = use_wx_cloud ? wx.cloud : require('../../../cloudAccess.js').cloud;
+
+const db = cloud.database();
 const _ = db.command;
 
 // 运行状态
@@ -121,14 +125,22 @@ Page({
     var types = [];
     var data = (await db.collection('setting').where({_id: 'relation'}).get()).data;
     console.log(data);
-    if (data.length == 0) {
+    if (data.length == 0) { // 微信云：直接个更新数据库
       // 当数据库setting中不存在时，进行初始化
-      types = ["爸爸", "妈妈"]
-      await db.collection('setting').doc('relation').set({
-        data: {
-          types: types,
-        }
-      });
+      if(use_wx_cloud){
+        types = ["爸爸", "妈妈"]
+        await db.collection('setting').doc('relation').set({
+          data: {
+            types: types,
+          }
+        });
+      }
+      else{ // Laf云：通过调用云函数
+        await cloud.invokeFunction("relationOp", {
+          type: "init"
+        });
+      }
+      
     } else {
       types = data[0].types;
     }
@@ -150,13 +162,21 @@ Page({
       // 不存在
       types.push(t);
       console.log(types);
-      await wx.cloud.callFunction({
-        name: "relationOp",
-        data: {
+      if(use_wx_cloud){ // 微信云
+        await cloud.callFunction({
+          name: "relationOp",
+          data: {
+            type: "saveRelationTypes",
+            relationTypes: types,
+          }
+        });
+      }
+      else{ // Laf 云
+        await cloud.invokeFunction("relationOp", {
           type: "saveRelationTypes",
           relationTypes: types,
-        }
-      });
+        });
+      }
       idx = types.length - 1;
     }
 
@@ -199,13 +219,21 @@ Page({
   async doDeleteRelationType(idx) {
     var types = this.data.relation_types;
     types.splice(idx, 1);
-    await wx.cloud.callFunction({
-      name: "relationOp",
-      data: {
+    if(use_wx_cloud){ // 微信云
+      await cloud.callFunction({
+        name: "relationOp",
+        data: {
+          type: "saveRelationTypes",
+          relationTypes: types,
+        }
+      });
+    }
+    else{ // Laf云
+      await cloud.invokeiFunction("relationOp", {
         type: "saveRelationTypes",
         relationTypes: types,
-      }
-    });
+      });
+    }
     this.setData({
       relation_name: "",
       relation_types: types,
@@ -268,16 +296,21 @@ Page({
         regexp: search_str.join("|"),
         options: 'igs',
       });
+      console.log("RegExp:", regexp);
+
       filters.push(_.or([{
         name: regexp
       }, {
         nickname: regexp
       }]));
+      console.log("Filter:", filters);
     }
     
     // 准备搜索
     var query = filters.length ? _.and(filters) : {};
+    console.log("Query:", filters);
     var cats = (await db.collection('cat').where(query).get()).data;
+    console.log("Cats:", filters);
     // 获取头像
     for (var cat of cats) {
       cat.avatar = await getAvatar(cat._id, cat.photo_count_best);
@@ -381,14 +414,23 @@ Page({
         cat_id: r.cat_id,
       });
     }
-    await wx.cloud.callFunction({
-      name: "relationOp",
-      data: {
+    if(use_wx_cloud){ // 微信云
+      await cloud.callFunction({
+        name: "relationOp",
+        data: {
+          type: "saveRelation",
+          cat_id: cat._id,
+          relations: relations,
+        }
+      });
+    }
+    else{ // Laf云
+      await cloud.invokeFunction("relationOp", {
         type: "saveRelation",
         cat_id: cat._id,
         relations: relations,
-      }
-    });
+      });
+    }
 
     wx.showToast({
       title: '保存成功',

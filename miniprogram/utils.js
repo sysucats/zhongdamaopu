@@ -1,4 +1,8 @@
 const sha256 = require('./packages/sha256/sha256.js');
+const config = require('./config.js');
+
+const use_wx_cloud = config.use_wx_cloud; // 是否使用微信云，不然使用Laf云
+const cloud = use_wx_cloud ? wx.cloud : require('./cloudAccess.js').cloud;
 
 function randomInt(min, max) {
   return Math.floor(Math.random() * (max - min)) + min;
@@ -16,7 +20,7 @@ function generateUUID() {
 
 function loadFilter() {
   return new Promise(function(resolve, reject) {
-    const db = wx.cloud.database();
+    const db = cloud.database();
     db.collection('setting').doc('filter').get().then(res => {
       resolve(res.data);
     })
@@ -28,15 +32,23 @@ function isManager(callback, req=1) {
   // 为bool类型，当前用户为manager时为true，
   // 否则为false
   // req是要求的等级，是一个整数值
-  wx.cloud.callFunction({
-    name: 'isManager',
-    data: {
-      req: req
-    }
-  }).then(res => {
-    // console.log(res);
-    callback(res.result);
-  });
+  if(use_wx_cloud){
+    cloud.callFunction({
+      name: 'isManager',
+      data: {
+        req: req
+      }
+    }).then(res => {
+      // console.log(res);
+      callback(res.result);
+    });
+  }
+  else{
+    cloud.invokeFunction('isManager', {req: req}).then(res => {
+      // console.log(res);
+      callback(res);
+    });
+  }
 }
 
 function isWifi(callback) {
@@ -96,7 +108,7 @@ function getGlobalSettings(key) {
     }
 
     // 如果没有，那就获取一下
-    const db = wx.cloud.database();
+    const db = cloud.database();
     db.collection('setting').doc('pages').get().then(res => {
       app.globalData.settings = res.data;
       resolve(app.globalData.settings[key]);
@@ -183,12 +195,15 @@ function checkUpdateVersion() {
 */
 async function checkCanUpload() {
   // 如果是管理员，开启
-  let manager = (await wx.cloud.callFunction({
+  let manager = use_wx_cloud ? 
+  (await cloud.callFunction({
     name: 'isManager',
     data: {
       req: 1
     }
-  })).result;
+  })).result : (await cloud.invokeFunction('isManager', {req: 1}));
+
+
   let manageUpload = (await getGlobalSettings('detailCat')).manageUpload;
   if (manager && manageUpload) {
     return true;
@@ -246,7 +261,7 @@ async function arrayResort(oriArray) {
 function checkDeploy() {
   return new Promise(function (resolve, reject) {
     try {
-      const db = wx.cloud.database();
+      const db = cloud.database();
       db.collection('setting').doc('pages').get().then(res => {
         resolve(true);
       });

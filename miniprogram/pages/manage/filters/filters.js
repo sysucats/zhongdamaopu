@@ -1,8 +1,12 @@
 const utils = require('../../../utils.js');
+const config = require('../../../config.js');
 const regeneratorRuntime = utils.regeneratorRuntime;
 const randomInt = utils.randomInt;
 const isManager = utils.isManager;
 const loadFilter = utils.loadFilter;
+
+const use_wx_cloud = config.use_wx_cloud; // 是否使用微信云，不然使用Laf云
+const cloud = use_wx_cloud ? wx.cloud : require('../../../cloudAccess.js').cloud;
 
 Page({
 
@@ -227,7 +231,7 @@ Page({
     
     // 检查一下数据库里这个地址有没有猫，如果有就不能删
     const that = this;
-    const db = wx.cloud.database();
+    const db = cloud.database();
     var qf = { [mainF.key]: category.items[index].name };
     if (mainF.cateKey) {
       qf[mainF.cateKey] = category.name;
@@ -277,16 +281,28 @@ Page({
       }
     }
     const that = this;
-    wx.cloud.callFunction({
-      name: 'updateFilter',
-      data: {
+    if(use_wx_cloud){ // 使用微信云
+      cloud.callFunction({
+        name: 'updateFilter',
+        data: {
+          to_upload: {
+            area: area,
+            colour: colour
+          }
+        }
+      }).then(res => {
+        that.reloadFilter();
+      });
+    }
+    else{ // 使用 Laf 云
+      cloud.invokeFunction('updateFilter', {
         to_upload: {
           area: area,
           colour: colour
         }
-      }
-    }).then(res => {
-      that.reloadFilter();
-    });
+      }).then(res => {
+        that.reloadFilter();
+      });
+    }
   }
 })

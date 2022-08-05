@@ -31,8 +31,10 @@ var pageLoadingLock = true; // 用于点击按钮刷新加锁
 
 const tipInterval = 24; // 提示间隔时间 hours
 
-// 分享的标语
-const share_text = text_cfg.app_name + ' - ' + text_cfg.genealogy.share_tip;
+const share_text = text_cfg.app_name + ' - ' + text_cfg.genealogy.share_tip; // 分享的标语
+
+const use_wx_cloud = config.use_wx_cloud; // 是否使用微信云，不然使用Laf云
+const cloud = use_wx_cloud ? wx.cloud : require('../../cloudAccess.js').cloud;
 
 Page({
 
@@ -96,7 +98,8 @@ Page({
       console.log("scene:", scene);
       if (scene.startsWith('toC=')) {
         const cat_No = scene.substr(4);
-        const db = wx.cloud.database();
+        
+        const db = cloud.database();
         const that = this;
         db.collection('cat').where({
           _no: cat_No
@@ -130,7 +133,7 @@ Page({
     var scene = wx.getLaunchOptionsSync().scene;
     if (scene === 1154) { //朋友圈内打开 “单页模式”
       this.loadFilters();
-      const db = wx.cloud.database();
+      const db = cloud.database();
       db.collection('setting').doc('pages').get().then(res => {
         var genealogySetting = res.data['genealogy'];
         // console.log("genealogySetting",genealogySetting);
@@ -146,9 +149,6 @@ Page({
     that.loadNews();
   },
 
-  // onShow: function (options) {
-  //   console.log('onShow:', options);
-  // },
   loadFilters: function () {
     // 下面开始加载filters
     loadFilter().then(res => {
@@ -276,7 +276,7 @@ Page({
     // 增加lock
     loadingLock++;
     const nowLoadingLock = loadingLock;
-    const db = wx.cloud.database();
+    const db = cloud.database();
     const cat = db.collection('cat');
     const query = this.fGet();
     cat.where(query).count().then(res => {
@@ -293,7 +293,6 @@ Page({
         this.loadMoreCats();
       });
     });
-
     // 加载待领养
     this.countWaitingAdopt();
   },
@@ -311,7 +310,7 @@ Page({
     }, () => {
       var cats = that.data.cats;
       var step = catsStep;
-      const db = wx.cloud.database();
+      const db = cloud.database();
       const cat = db.collection('cat');
       const _ = db.command;
       const query = that.fGet();
@@ -561,7 +560,7 @@ Page({
     return true;
   },
   fGet: function () {
-    const db = wx.cloud.database();
+    const db = cloud.database();
     const _ = db.command;
     const filters = this.data.filters;
     var res = []; // 先把查询条件全部放进数组，最后用_.and包装，这样方便跨字段使用or逻辑
@@ -739,7 +738,7 @@ Page({
     });
 
 
-    const db = wx.cloud.database();
+    const db = cloud.database();
     const cat = db.collection('cat');
     const query = {
       adopt: value
@@ -836,7 +835,7 @@ Page({
   loadNews() {
     // 载入需要弹窗的公告
     const that = this;
-    const db = wx.cloud.database();
+    const db = cloud.database();
     db.collection('news').orderBy('date', 'desc').where({
       setNewsModal: true
     }).get().then(res => {

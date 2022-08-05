@@ -1,10 +1,14 @@
 // pages/manage/manageNews/createNews/createNews.js
 const utils = require('../../../utils.js');
 const user = require('../../../user.js');
+const user = require('../../../config.js');
 const generateUUID = utils.generateUUID;
 const isManager = utils.isManager;
 
 const getCurUserInfoOrFalse = user.getCurUserInfoOrFalse;
+
+const use_wx_cloud = config.use_wx_cloud; // 是否使用微信云，不然使用Laf云
+const cloud = use_wx_cloud ? wx.cloud : require('../../../cloudAccess.js').cloud;
 
 Page({
     /**
@@ -64,7 +68,7 @@ Page({
     // 检查权限
     checkAuth() {
         const that = this;
-        isManager(function (res) {
+        (function (res) {
             if (res) {
                 that.setData({
                     auth: true
@@ -257,7 +261,7 @@ Page({
         const index = tempFilePath.lastIndexOf(".");
         const ext = tempFilePath.substr(index + 1);
 
-        let upRes = await wx.cloud.uploadFile({
+        let upRes = await cloud.uploadFile({
             cloudPath: 'news' + '/' + generateUUID() + '.' + ext, // 上传至云端的路径
             filePath: tempFilePath, // 小程序临时文件路径
         });
@@ -349,7 +353,7 @@ Page({
             setNewsModal: setNewsModal
         };
 
-        const db = wx.cloud.database();
+        const db = cloud.database();
         db.collection('news').add({
             data: data,
             success: (res) => {

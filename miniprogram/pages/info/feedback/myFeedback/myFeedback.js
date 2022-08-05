@@ -5,6 +5,11 @@ const formatDate = utils.formatDate;
 const user = require('../../../../user.js');
 const getUser = user.getUser;
 
+
+const config = require('../../../../config.js');
+const use_wx_cloud = config.use_wx_cloud; // 是否使用微信云，不然使用Laf云
+const cloud = use_wx_cloud ? wx.cloud : require('../../../../cloudAccess.js').cloud;
+
 var currentUser;
 
 const step = 6;
@@ -37,7 +42,7 @@ Page({
       title: '加载中...',
     });
     const that = this;
-    const db = wx.cloud.database();
+    const db = cloud.database();
     db.collection('feedback').where({
       _openid: currentUser.openid
     }).count().then(res => {
@@ -54,7 +59,7 @@ Page({
   },
 
   async loadFeedbacks() {
-    const db = wx.cloud.database();
+    const db = cloud.database();
     const nowLoaded = this.data.feedbacks.length;
     var feedbacks = (await db.collection('feedback').where({
       _openid: currentUser.openid

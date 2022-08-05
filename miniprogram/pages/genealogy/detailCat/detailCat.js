@@ -19,6 +19,9 @@ const text_cfg = config.text;
 
 const no_heic = /^((?!\.heic$).)*$/i; // 正则表达式：不以 HEIC 为文件后缀的字符串
 
+const use_wx_cloud = config.use_wx_cloud; // 是否使用微信云，不然使用Laf云
+const cloud = use_wx_cloud ? wx.cloud : require('../../../cloudAccess.js').cloud;
+
 // 页面设置，从global读取
 var page_settings = {};
 var photoMax = 0;
@@ -97,14 +100,24 @@ Page({
         data: new Date(),
       });
       // 增加click数
-      wx.cloud.callFunction({
-        name: 'addPop',
-        data: {
+      if(use_wx_cloud){ // 微信云
+        cloud.callFunction({
+          name: 'addPop',
+          data: {
+            cat_id: cat_id
+          }
+        }).then(res => {
+          console.log("addPop(wx)", res);
+        });
+      }
+      else{ // Laf 云
+        cloud.invokeFunction('addPop', {
           cat_id: cat_id
-        }
-      }).then(res => {
-        console.log(res);
-      });
+        }).then(res => {
+          console.log("addPop(Laf)", res);
+        });
+      }
+      
     }
 
     // 记录访问时间，消除“有新相片”
@@ -202,7 +215,7 @@ Page({
   },
 
   async loadCat() {
-    const db = wx.cloud.database();
+    const db = cloud.database();
     const cat = (await db.collection('cat').doc(cat_id).get()).data;
     cat.photo = [];
     cat.characteristics_string = (cat.colour || '') + '猫';
@@ -246,7 +259,7 @@ Page({
 
   reloadPhotos() {
     // 这些是精选照片
-    const db = wx.cloud.database();
+    const db = cloud.database();
     // 1/4处 屏蔽以 HEIC 为文件后缀的图片
     const qf = { cat_id: cat_id, verified: true, best: true, photo_id: no_heic };
     db.collection('photo').where(qf).count().then(res => {
@@ -268,7 +281,7 @@ Page({
 
   reloadAlbum() {
     // 下面是相册的
-    const db = wx.cloud.database();
+    const db = cloud.database();
     // 2/4处 屏蔽以 HEIC 为文件后缀的图片
     const qf_album = { cat_id: cat_id, verified: true, photo_id: no_heic };
     db.collection('photo').where(qf_album).count().then(res => {
@@ -297,7 +310,7 @@ Page({
       mask: true
     })
 
-    const db = wx.cloud.database();
+    const db = cloud.database();
     console.log(qf);
     let res = await db.collection('photo').where(qf).orderBy('mdate', 'desc').skip(now).limit(step).get();
     console.log(res);
@@ -393,7 +406,7 @@ Page({
     const step = page_settings.albumStep;
     const now = album_raw.length;
 
-    const db = wx.cloud.database();
+    const db = cloud.database();
 
     loadingAlbum = true;
     const orderItem = photoOrder[this.data.photoOrderSelected];
@@ -512,25 +525,45 @@ Page({
     })
     const that = this;
     const cat = this.data.cat;
-    wx.cloud.callFunction({
-      name: 'getMpCode',
-      data: {
+    if (use_wx_cloud) { // 微信云
+      cloud.callFunction({
+        name: 'getMpCode',
+        data: {
+          _id: cat._id,
+          scene: 'toC=' + cat._no,
+          page: 'pages/genealogy/genealogy',
+          width: 500,
+        },
+        success: (res) => {
+          wx.hideLoading();
+          console.log(res);
+          wx.previewImage({
+            urls: [res.result],
+          });
+          that.setData({
+            'cat.mpcode': res.result
+          });
+        }
+      })
+    }
+    else { // Laf 云
+      cloud.invokeFunction('getMpCode', {
         _id: cat._id,
         scene: 'toC=' + cat._no,
         page: 'pages/genealogy/genealogy',
         width: 500,
-      },
-      success: (res) => {
-        wx.hideLoading();
-        console.log(res);
-        wx.previewImage({
-          urls: [res.result],
-        });
-        that.setData({
-          'cat.mpcode': res.result
-        });
-      }
-    })
+        success: (res) => {
+          wx.hideLoading();
+          console.log(res);
+          wx.previewImage({
+            urls: [res.result],
+          });
+          that.setData({
+            'cat.mpcode': res.result
+          });
+        }
+      })
+    }
   },
 
   showPopularityTip() {

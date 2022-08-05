@@ -1,7 +1,11 @@
 const getUser = require("./user.js").getUser;
 
+const config = require('./config.js');
+const use_wx_cloud = config.use_wx_cloud; // 是否使用微信云，不然使用Laf云
+const cloud = use_wx_cloud ? wx.cloud : require('./cloudAccess.js').cloud;
+
 // 常用的一些对象
-const db = wx.cloud.database();
+const db = cloud.database();
 const _ = db.command;
 const coll_inter = db.collection('inter');
 var user = undefined;
@@ -51,14 +55,23 @@ async function like_add(item_id, item_type) {
 
   // 加上去
   console.log("like", item_type, item_id);
-  await wx.cloud.callFunction({
-    name: "interOp",
-    data: {
+  if(use_wx_cloud){
+    await cloud.callFunction({
+      name: "interOp",
+      data: {
+        type: "like_add",
+        item_type: item_type,
+        item_id, item_id,
+      }
+    });
+  }
+  else{
+    await cloud.invokeFunction("interOp", {
       type: "like_add",
       item_type: item_type,
       item_id, item_id,
-    }
-  });
+    });
+  }
   return true;
 }
 

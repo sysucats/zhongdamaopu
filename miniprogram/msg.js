@@ -2,6 +2,10 @@ const formatDate = require("./utils").formatDate;
 const arrayResort = require("./utils").arrayResort;
 const msgConfig = require("./config").msg;
 
+const config = require('./config.js');
+const use_wx_cloud = config.use_wx_cloud; // 是否使用微信云，不然使用Laf云
+const cloud = use_wx_cloud ? wx.cloud : require('./cloudAccess.js').cloud;
+
 // 订阅请求
 async function requestNotice(template) {
   const cfg = msgConfig[template];
@@ -73,22 +77,34 @@ function sendVerifyNotice(notice_list) {
       },
     }
 
-    wx.cloud.callFunction({
-      name: 'sendMsgV2',
-      data: {
+    if(use_wx_cloud){
+      cloud.callFunction({
+        name: 'sendMsgV2',
+        data: {
+          touser: openid,
+          data: data,
+          templateId: cfg.id,
+          page: 'pages/genealogy/genealogy',
+        }
+      });
+    }
+    else{
+      cloud.invokeFunction('sendMsgV2', {
         touser: openid,
         data: data,
         templateId: cfg.id,
         page: 'pages/genealogy/genealogy',
-      }
-    });
+      }).then(res => {
+        console.log("sendMsgV2(pages/genealogy/genealogy) Result(laf):", res);
+      });
+    }    
   }
 }
 
 // 发送回复消息
 async function sendReplyNotice(openid, fb_id) {
   const cfg = msgConfig.feedback;
-  const db = wx.cloud.database();
+  const db = cloud.database();
   const doc = await db.collection('feedback').doc(fb_id).get();
   const feedback = doc.data;
   const content = feedback.feedbackInfo.length > 20 ? (feedback.feedbackInfo.substr(0, 18) + '..') : feedback.feedbackInfo;
@@ -105,22 +121,34 @@ async function sendReplyNotice(openid, fb_id) {
     },
   }
 
-  let res = await wx.cloud.callFunction({
-    name: 'sendMsgV2',
-    data: {
+  if(use_wx_cloud){
+    let res = await cloud.callFunction({
+      name: 'sendMsgV2',
+      data: {
+        touser: openid,
+        data: data,
+        templateId: cfg.id,
+        page: 'pages/info/feedback/myFeedback/myFeedback',
+      }
+    });
+    return res.result;
+  }
+  else{
+    let res = await cloud.invokeFunction('sendMsgV2', {
       touser: openid,
       data: data,
       templateId: cfg.id,
       page: 'pages/info/feedback/myFeedback/myFeedback',
-    }
-  });
-
-  return res.result;
+    });
+    console.log("sendMsgV2(pages/info/feedback/myFeedback/myFeedback) Result(laf):", res);
+    return res;
+  }
+  
 }
 
 // 发送提醒审核消息
 async function sendNotifyVertifyNotice(numUnchkPhotos) {
-  const db = wx.cloud.database();
+  const db = cloud.database();
   const _ = db.command;
 
   const subMsgSettings = await db.collection('setting').doc('subscribeMsg').get();
@@ -154,20 +182,36 @@ async function sendNotifyVertifyNotice(numUnchkPhotos) {
       },
     }
 
-    var res = await wx.cloud.callFunction({
-      name: 'sendMsgV2',
-      data: {
+    if(use_wx_cloud){
+      var res = await cloud.callFunction({
+        name: 'sendMsgV2',
+        data: {
+          touser: manager['openid'],
+          data: data,
+          templateId: cfg.id,
+          page: 'pages/manage/checkPhotos/checkPhotos',
+        }
+      });
+      if (res.result.errCode === 0) {
+        receiverCounter += 1;
+        if (receiverCounter >= maxReceiverNum) {
+          break;
+        }
+      }
+    }
+    else{
+      var res = await cloud.invokeFunction('sendMsgV2', {
         touser: manager['openid'],
         data: data,
         templateId: cfg.id,
         page: 'pages/manage/checkPhotos/checkPhotos',
-      }
-    });
-
-    if (res.result.errCode === 0) {
-      receiverCounter += 1;
-      if (receiverCounter >= maxReceiverNum) {
-        break;
+      });
+      console.log("sendMsgV2(pages/manage/checkPhotos/checkPhotos) Result(laf):", res);
+      if (res.errCode === 0) {
+        receiverCounter += 1;
+        if (receiverCounter >= maxReceiverNum) {
+          break;
+        }
       }
     }
   }
@@ -177,7 +221,7 @@ async function sendNotifyVertifyNotice(numUnchkPhotos) {
 async function sendNotifyChkFeeedback() {
   const dealFeedbackLevel = 1;
   
-  const db = wx.cloud.database();
+  const db = cloud.database();
   const _ = db.command;
 
   const subMsgSettings = await db.collection('setting').doc('subscribeMsg').get();
@@ -214,20 +258,37 @@ async function sendNotifyChkFeeedback() {
       },
     }
 
-    var res = await wx.cloud.callFunction({
-      name: 'sendMsgV2',
-      data: {
+    if(use_wx_cloud){
+      var res = await cloud.callFunction({
+        name: 'sendMsgV2',
+        data: {
+          touser: manager['openid'],
+          data: data,
+          templateId: cfg.id,
+          page: 'pages/manage/checkFeedbacks/checkFeedbacks',
+        }
+      });
+  
+      if (res.result.errCode === 0) {
+        receiverCounter += 1;
+        if (receiverCounter >= maxReceiverNum) {
+          break;
+        }
+      }
+    }
+    else{
+      var res = await cloud.invokeFunction('sendMsgV2', {
         touser: manager['openid'],
         data: data,
         templateId: cfg.id,
         page: 'pages/manage/checkFeedbacks/checkFeedbacks',
-      }
-    });
-
-    if (res.result.errCode === 0) {
-      receiverCounter += 1;
-      if (receiverCounter >= maxReceiverNum) {
-        break;
+      });
+      console.log("sendMsgV2(pages/manage/checkFeedbacks/checkFeedbacks) Result(laf):", res);
+      if (res.errCode === 0) {
+        receiverCounter += 1;
+        if (receiverCounter >= maxReceiverNum) {
+          break;
+        }
       }
     }
   }

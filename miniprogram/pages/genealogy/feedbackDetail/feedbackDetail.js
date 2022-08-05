@@ -14,6 +14,10 @@ const sendNotifyChkFeeedback = msg.sendNotifyChkFeeedback;
 
 const text_cfg = require('../../../config.js').text;
 
+const config = require('../../../config.js');
+const use_wx_cloud = config.use_wx_cloud; // 是否使用微信云，不然使用Laf云
+const cloud = use_wx_cloud ? wx.cloud : require('../../../cloudAccess.js').cloud;
+
 Page({
 
   /**
@@ -32,7 +36,7 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
-    const db = wx.cloud.database();
+    const db = cloud.database();
     if (options.cat_id != undefined) {
       db.collection('cat').doc(options.cat_id).field({ name: true, _id: true }).get().then(res => {
         console.log(res.data);
@@ -112,7 +116,7 @@ Page({
       data.cat_name = this.data.cat_name;
     }
     const that = this;
-    const db = wx.cloud.database();
+    const db = cloud.database();
     db.collection('feedback').add({
       data: data,
       success: (res) => {
@@ -140,7 +144,8 @@ Page({
   async toSubmit() {
     let repliable = await requestNotice('feedback'); // 请求订阅消息推送
 
-    const db = wx.cloud.database();
+    // 这里应该改成调用云函数
+    const db = cloud.database();
     // console.log('fbID:',this.data.feedbackId,'\n repliable:',repliable);
     db.collection('feedback').doc(this.data.feedbackId).update({
       data:{

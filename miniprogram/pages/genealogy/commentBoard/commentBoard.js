@@ -13,12 +13,15 @@ const getAvatar = require('../../../cat.js').getAvatar
 
 const getCatCommentCount = require('../../../comment.js').getCatCommentCount;
 
+const use_wx_cloud = config.use_wx_cloud; // 是否使用微信云，不然使用Laf云
+const cloud = use_wx_cloud ? wx.cloud : require('../../../cloudAccess.js').cloud;
+
 // 页面设置，从global读取
 var page_settings = {};
 var cat_id;
 
 // 常用的对象
-const db = wx.cloud.database();
+const db = cloud.database();
 const coll_comment = db.collection('comment');
 
 // 发送锁
@@ -146,7 +149,7 @@ Page({
   },
   
   async loadCat() {
-    const db = wx.cloud.database();
+    const db = cloud.database();
     var cat = (await db.collection('cat').doc(cat_id).get()).data;
     console.log(cat);
     
@@ -244,59 +247,117 @@ Page({
       create_date: new Date(),
       cat_id: cat_id,
     };
-    wx.cloud.callFunction({
-      // The name of the cloud function to be called
-      name: 'commentCheck',
-      // Parameter to be passed to the cloud function
-      data: {
-        content: content,
-        nickname: user.userInfo.nickName,
-      },
-      success: function(res) {
-        console.log(res);
 
-        // 检测接口的返回
-        res = res.result;
-        console.log(res);
-        if (res.errCode != 0 || res.result.suggest != "pass") {
-          // 内容检测未通过
-          const label_type = {
-            100: "正常",
-            10001: "广告",
-            20001: "时政",
-            20002: "色情",
-            20003: "辱骂",
-            20006: "违法犯罪",
-            20008: "欺诈",
-            20012: "低俗",
-            20013: "版权",
-            21000: "其他",
+    
+    if(use_wx_cloud){ // 使用微信云
+      console.log("CommentCheck(wx)");
+      cloud.callFunction({
+        // The name of the cloud function to be called
+        name: 'commentCheck',
+        // Parameter to be passed to the cloud function
+        data: {
+          content: content,
+          nickname: user.userInfo.nickName,
+        },
+        success: function(res) {
+          console.log(res);
+  
+          // 检测接口的返回
+          res = res.result;
+          console.log(res);
+          if (res.errCode != 0 || res.result.suggest != "pass") {
+            // 内容检测未通过
+            const label_type = {
+              100: "正常",
+              10001: "广告",
+              20001: "时政",
+              20002: "色情",
+              20003: "辱骂",
+              20006: "违法犯罪",
+              20008: "欺诈",
+              20012: "低俗",
+              20013: "版权",
+              21000: "其他",
+            }
+            console.log(res.result.label);
+            const label_code = res.result.label;
+            const label = label_type[label_code];
+            
+            wx.showModal({
+              title: "内容检测未通过",
+              content: `涉及[${label_code}]${label}内容，请修改嗷~~`,
+              showCancel: false,
+            });
+            that.doSendCommentEnd();
+            return false;
           }
-          console.log(res.result.label);
-          const label_code = res.result.label;
-          const label = label_type[label_code];
-          
+          // 检测通过
+          that.addComment(item, user);
+        },
+        fail: err => {
+          // handle error
           wx.showModal({
-            title: "内容检测未通过",
-            content: `涉及[${label_code}]${label}内容，请修改嗷~~`,
+            title: "内容检测失败",
+            content: "请开发者检查“commentCheck”云函数是否部署成功",
             showCancel: false,
           });
           that.doSendCommentEnd();
-          return false;
+        },
+      })    
+    }
+    else{ // 使用 Laf 云
+      console.log("CommentCheck(laf)");
+      cloud.invokeFunction('commentCheck', {
+        content: content,
+        nickname: user.userInfo.nickName,
+        success: function(res) {
+          console.log(res);
+  
+          // 检测接口的返回
+          res = res.result;
+          console.log(res);
+          if (res.errCode != 0 || res.result.suggest != "pass") {
+            // 内容检测未通过
+            const label_type = {
+              100: "正常",
+              10001: "广告",
+              20001: "时政",
+              20002: "色情",
+              20003: "辱骂",
+              20006: "违法犯罪",
+              20008: "欺诈",
+              20012: "低俗",
+              20013: "版权",
+              21000: "其他",
+            }
+            console.log(res.result.label);
+            const label_code = res.result.label;
+            const label = label_type[label_code];
+            
+            wx.showModal({
+              title: "内容检测未通过",
+              content: `涉及[${label_code}]${label}内容，请修改嗷~~`,
+              showCancel: false,
+            });
+            that.doSendCommentEnd();
+            return false;
+          }
+          // 检测通过
+          that.addComment(item, user);
+        },
+        fail: err => {
+          // handle error
+          wx.showModal({
+            title: "内容检测失败",
+            content: "请开发者检查“commentCheck”云函数是否部署成功",
+            showCancel: false,
+          });
+          that.doSendCommentEnd();
         }
-        // 检测通过
-        that.addComment(item, user);
-      },
-      fail: err => {
-        // handle error
-        wx.showModal({
-          title: "内容检测失败",
-          content: "请开发者检查“commentCheck”云函数是否部署成功",
-          showCancel: false,
-        });
-        that.doSendCommentEnd();
-      },
-    })
+      } )
+    }
+    
+
   },
 
   doSendCommentEnd() {
@@ -381,23 +442,41 @@ Page({
       content: `确定删除\"${username}\"的留言？`,
       success (res) {
         if (res.confirm) {
-          wx.cloud.callFunction({
-            name: "commentOp",
-            data: {
+          if(use_wx_cloud){ // 使用微信云
+            cloud.callFunction({
+              name: "commentOp",
+              data: {
+                type: "delete_comment",
+                comment_id: comment_id,
+              },
+              success: () => {
+                wx.showToast({
+                  title: '删除成功',
+                });
+                var comments = that.data.comments;
+                comments.splice(index, 1);
+                that.setData({
+                  comments: comments,
+                })
+              }
+            });
+          } 
+          else{ // 使用 Laf 云
+            cloud.invokeFunction("commentOp", {
               type: "delete_comment",
               comment_id: comment_id,
-            },
-            success: () => {
-              wx.showToast({
-                title: '删除成功',
-              });
-              var comments = that.data.comments;
-              comments.splice(index, 1);
-              that.setData({
-                comments: comments,
-              })
-            }
-          });
+              success: () => {
+                wx.showToast({
+                  title: '删除成功',
+                });
+                var comments = that.data.comments;
+                comments.splice(index, 1);
+                that.setData({
+                  comments: comments,
+                })
+              }
+            });
+          }
         }
       }
     })

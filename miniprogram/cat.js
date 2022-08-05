@@ -1,9 +1,12 @@
 // 放置与cat对象有关的函数
 const utils = require('./utils.js');
 const cache = require('./cache.js');
+const config = require('./config.js');
+const use_wx_cloud = config.use_wx_cloud; // 是否使用微信云，不然使用Laf云
+const cloud = use_wx_cloud ? wx.cloud : require('./cloudAccess.js').cloud;
 
 // 常用的一些对象
-const db = wx.cloud.database();
+const db = cloud.database();
 const coll_photo = db.collection('photo');
 const coll_cat = db.collection('cat');
 

@@ -1,9 +1,14 @@
 // pages/news/detailNews/detailNews.js
 const utils = require('../../../utils.js');
+const config = require('../../../config.js');
+const use_wx_cloud = config.use_wx_cloud; // 是否使用微信云，不然使用Laf云
+const cloud = use_wx_cloud ? wx.cloud : require('../../../cloudAccess.js').cloud;
+
 const isManager = utils.isManager;
 const shareTo = utils.shareTo;
 const getCurrentPath = utils.getCurrentPath;
 const formatDate = utils.formatDate;
+
 
 Page({
 
@@ -78,7 +83,7 @@ Page({
 
     loadNews() {
         const that = this;
-        const db = wx.cloud.database();
+        const db = cloud.database();
         db.collection('news').doc(that.data.news_id).get().then(res => {
             console.log("News Detail:", res);
             if (!res.data) {
@@ -119,23 +124,41 @@ Page({
     },
 
     _doRemove(item_id) {
-      wx.cloud.callFunction({
-        name: "newsOp",
-        data: {
-          type: "delete",
-          item_id: item_id,
+        if(use_wx_cloud){ // 使用微信云
+            cloud.callFunction({
+                name: "newsOp",
+                data: {
+                  type: "delete",
+                  item_id: item_id,
+                }
+            }).then((res) => {
+                console.log(res);
+                if (!res) {
+                    wx.showToast({
+                        icon: 'none',
+                        title: '删除失败',
+                    });
+                    return;
+                }
+                setTimeout(wx.navigateBack, 1000);
+            });
         }
-      }).then((res) => {
-        console.log(res);
-        if (!res) {
-          wx.showToast({
-            icon: 'none',
-            title: '删除失败',
-          });
-          return
+        else{ // 使用 Laf 云
+            cloud.invokeFunction("newsOp", {
+                type: "delete",
+                item_id: item_id
+            }).then((res) => {
+                console.log(res);
+                if (!res) {
+                    wx.showToast({
+                        icon: 'none',
+                        title: '删除失败',
+                    });
+                    return;
+                }
+                setTimeout(wx.navigateBack, 1000);
+            });
         }
-        setTimeout(wx.navigateBack, 1000);
-      });
     },
 
     removeNews() {

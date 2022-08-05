@@ -2,6 +2,10 @@
 const utils = require('../../../utils.js');
 const isManager = utils.isManager;
 
+const config = require('../../../config.js');
+const use_wx_cloud = config.use_wx_cloud; // 是否使用微信云，不然使用Laf云
+const cloud = use_wx_cloud ? wx.cloud : require('../../../cloudAccess.js').cloud;
+
 // 是否正在加载
 var loading = false;
 
@@ -104,7 +108,7 @@ Page({
       return false;
     }
     const that = this;
-    const db = wx.cloud.database();
+    const db = cloud.database();
     var users = this.data.users;
     loading = true;
     wx.showLoading({
@@ -196,26 +200,47 @@ Page({
     console.log("#"+index, _id, level);
 
     const that = this;
-    wx.cloud.callFunction({
-      name: "updateManager",
-      data: {
-        _id: _id,
-        level: level
-      },
-      success: (res) => {
-        console.log(res);
-        if (res.result.ok) {
+    if (use_wx_cloud){
+      cloud.callFunction({
+        name: "updateManager",
+        data: {
+          _id: _id,
+          level: level
+        },
+        success: (res) => {
+          console.log("updateManager Result(wx):", res);
+          if (res.result.ok) {
+            wx.showToast({
+              title: '更新成功',
+            });
+          } else {
+            wx.showToast({
+              title: '更新失败\r\n' + res.result.msg,
+              icon: 'none',
+            })
+          }
+        }
+      })
+    }
+    else{
+      cloud.invokeFunction("updateManager", {
+          _id: _id,
+          level: level
+      }).then(res => {
+        console.log("updateManager Result(laf):", res);
+        if (res.ok) {
           wx.showToast({
             title: '更新成功',
           });
         } else {
           wx.showToast({
-            title: '更新失败\r\n' + res.result.msg,
+            title: '更新失败\r\n' + res.msg,
             icon: 'none',
           })
         }
-      }
-    })
+      })
+      
+    }
   },
 
   // 改动了其中一个picker
