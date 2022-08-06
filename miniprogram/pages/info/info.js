@@ -2,6 +2,9 @@
 const utils = require('../../utils.js');
 const config = require('../../config.js');
 
+const use_wx_cloud = config.use_wx_cloud; // 是否使用微信云，不然使用Laf云
+const cloud = use_wx_cloud ? wx.cloud : require('../../cloudAccess.js').cloud;
+
 // console.log("utils:", utils);
 const isManager = utils.isManager;
 
@@ -24,7 +27,7 @@ Page({
    */
   onLoad: function (options) {
     const that = this;
-    const db = wx.cloud.database();
+    const db = cloud.database();
     db.collection('setting').doc('friendLink').get().then(res => {
       // that.friendApps = res.data.apps;
       that.setData({
@@ -38,7 +41,7 @@ Page({
     isManager(res => {
       if (res) {
         const that = this;
-        const db = wx.cloud.database();
+        const db = cloud.database();
         const _ = db.command;
         db.collection('photo').where({ verified: false}).count().then(res => {
           that.data.numChkPhotos = res.total;
@@ -73,7 +76,7 @@ Page({
 
     // this.setData = this.setData.bind(this);
     // if (options.scene === 1154) {
-      // const db = wx.cloud.database();
+      // const db = cloud.database();
       // db.collection('setting').doc('pages').get().then(res => {
       // });
     // } 

@@ -80,7 +80,6 @@ Page({
         return shareTo(share_text, path);
     },
 
-
     loadNews() {
         const that = this;
         const db = cloud.database();
@@ -94,7 +93,7 @@ Page({
             }
 
             var news = res.data;
-            news.ddate = formatDate(news.date, "yyyy年MM月dd日 hh:mm:ss");
+            news.ddate = formatDate(new Date(news.date), "yyyy年MM月dd日 hh:mm:ss");
             if (news.dateLastModify) {
               news.ddateLastModify = formatDate(new Date(news.dateLastModify), "yyyy年MM月dd日 hh:mm:ss");
             }

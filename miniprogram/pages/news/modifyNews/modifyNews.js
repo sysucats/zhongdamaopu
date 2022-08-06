@@ -276,16 +276,22 @@ Page({
                 type: "modify",
                 item_id: item_id,
                 item_data: item_data,
-                success: (res) => {
-                    console.log(res);
+            }).then(res => {
+                console.log("newOp(modify) Result(laf):", res);
+                if(res.ok){
                     wx.showToast({
                         title: '修改成功',
                         icon: 'success',
                         duration: 1000
                     })
                     setTimeout(wx.navigateBack, 1000)
-                },
-                fail: console.error
+                }
+                else{
+                    wx.showToast({
+                        title: '修改失败',
+                        duration: 1000
+                    })
+                }
             });
         }
     },

@@ -46,7 +46,7 @@ Page({
     db.collection('feedback').where({
       _openid: currentUser.openid
     }).count().then(res => {
-      console.log(res);
+      console.log("Reload Feedback:", res);
       this.data.total = res.total;
       this.data.feedbacks = []; // 清空，loadFeedbacks再填充
       that.setData({
@@ -64,7 +64,7 @@ Page({
     var feedbacks = (await db.collection('feedback').where({
       _openid: currentUser.openid
     }).orderBy('openDate', 'desc').skip(nowLoaded).limit(step).get()).data;
-    console.log(feedbacks);
+    console.log("Load Feedback:", feedbacks);
     // 获取对应猫猫信息；将Date对象转化为字符串；判断是否已回复
     for (let i = 0; i < feedbacks.length; ++i) {
       if (feedbacks[i].cat_id != undefined) {

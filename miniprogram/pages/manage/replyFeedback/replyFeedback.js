@@ -114,7 +114,7 @@ Page({
               });
             }
             else{
-              await cloud.invokeFunction("manageFeedback", {
+              await cloud.invokeFunction("feedbackOp", {
                 operation: 'reply',
                 feedback: that.data.feedback,
                 replyInfo: submitData.replyInfo,

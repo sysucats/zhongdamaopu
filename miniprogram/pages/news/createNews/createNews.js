@@ -1,7 +1,7 @@
 // pages/manage/manageNews/createNews/createNews.js
 const utils = require('../../../utils.js');
 const user = require('../../../user.js');
-const user = require('../../../config.js');
+const config = require('../../../config.js');
 const generateUUID = utils.generateUUID;
 const isManager = utils.isManager;
 
@@ -68,7 +68,7 @@ Page({
     // 检查权限
     checkAuth() {
         const that = this;
-        (function (res) {
+        isManager(function (res) {
             if (res) {
                 that.setData({
                     auth: true
@@ -76,6 +76,7 @@ Page({
             }
         }, 2)
     },
+    
 
     bindInputName(e) {
         var inputData = e.detail.value;
@@ -261,10 +262,18 @@ Page({
         const index = tempFilePath.lastIndexOf(".");
         const ext = tempFilePath.substr(index + 1);
 
-        let upRes = await cloud.uploadFile({
-            cloudPath: 'news' + '/' + generateUUID() + '.' + ext, // 上传至云端的路径
-            filePath: tempFilePath, // 小程序临时文件路径
-        });
+        // TODO
+        let upRes;
+        if(use_wx_cloud){
+            upRes = await cloud.uploadFile({
+                cloudPath: 'news' + '/' + generateUUID() + '.' + ext, // 上传至云端的路径
+                filePath: tempFilePath, // 小程序临时文件路径
+            });
+        }
+        else{
+
+        }
+        
 
         // 返回文件 ID
         if (type == 0) { // 上传普通图片，更新路径 photos_path
@@ -353,19 +362,32 @@ Page({
             setNewsModal: setNewsModal
         };
 
-        const db = cloud.database();
-        db.collection('news').add({
-            data: data,
-            success: (res) => {
-                console.log(res);
-                that.setData({
-                    news_id: res._id
-                })
-            },
-            fail: console.error
-        })
-
-
+        if(use_wx_cloud){ // 微信云：直接 add
+            const db = cloud.database();
+            db.collection('news').add({
+                data: data,
+                success: (res) => {
+                    console.log(res);
+                    that.setData({
+                        news_id: res._id
+                    })
+                },
+                fail: console.error
+            })
+        }
+        else{ // Laf云：调用云函数
+            cloud.invokeFunction("newsOp", {
+                type: "create",
+                item_data: data
+            }).then(res => {
+                console.log("newOp(create) Result:", res);
+                if(res.ok){
+                    that.setData({
+                        news_id: res._id
+                    })
+                }
+            });
+        }
         wx.showToast({
             title: '发布成功',
             icon: 'success',

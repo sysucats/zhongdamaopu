@@ -32,7 +32,7 @@ function isManager(callback, req=1) {
   // 为bool类型，当前用户为manager时为true，
   // 否则为false
   // req是要求的等级，是一个整数值
-  if(use_wx_cloud){
+  if(use_wx_cloud){ // 微信云
     cloud.callFunction({
       name: 'isManager',
       data: {
@@ -43,7 +43,7 @@ function isManager(callback, req=1) {
       callback(res.result);
     });
   }
-  else{
+  else{ // Laf云
     cloud.invokeFunction('isManager', {req: req}).then(res => {
       // console.log(res);
       callback(res);
@@ -144,6 +144,7 @@ function regReplace(raw) {
 }
 
 function formatDate(date, fmt) {
+  var date = new Date(date);
   var o = {
     "M+": date.getMonth() + 1, //月份 
     "d+": date.getDate(), //日 

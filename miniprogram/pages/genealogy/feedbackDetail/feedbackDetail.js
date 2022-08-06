@@ -116,48 +116,86 @@ Page({
       data.cat_name = this.data.cat_name;
     }
     const that = this;
-    const db = cloud.database();
-    db.collection('feedback').add({
-      data: data,
-      success: (res) => {
-        console.log(res);
-        sendNotifyChkFeeedback().then();
-        that.setData({
-          feedbackId : res._id
-        })
-        wx.hideLoading();
-        wx.showToast({
-          title: '收到你的反馈啦',
-          icon: 'success',
-          duration: 1000,
-          success: () => {
-            // setTimeout(() => {
-            //   wx.navigateBack();
-            // }, 1000)
-          }
-        })
-      },
-      fail: console.error
-    })
+    if(use_wx_cloud){ // 微信云：直接数据库操作
+      const db = cloud.database();
+      db.collection('feedback').add({
+        data: data,
+        success: (res) => {
+          console.log(res);
+          sendNotifyChkFeeedback().then();
+          that.setData({
+            feedbackId : res._id
+          })
+          wx.hideLoading();
+          wx.showToast({
+            title: '收到你的反馈啦',
+            icon: 'success',
+            duration: 1000
+          })
+        },
+        fail: console.error
+      })
+    }
+    else{ // Laf云：调用云函数
+      cloud.invokeFunction("feedbackOp", {
+        operation: "submit",
+        data: data
+      }).then(res => {
+        console.log("newOp(modify) Result(laf):", res);
+        if(res.ok){
+          sendNotifyChkFeeedback().then();
+          that.setData({
+            feedbackId : res.id
+          })
+          wx.hideLoading();
+          wx.showToast({
+            title: '收到你的反馈啦',
+            icon: 'success',
+            duration: 1000
+          })
+        }
+        else{
+          console.log('repliable record fail:\n',res);
+        }
+      });
+    }
   },
   
   async toSubmit() {
     let repliable = await requestNotice('feedback'); // 请求订阅消息推送
 
-    // 这里应该改成调用云函数
-    const db = cloud.database();
-    // console.log('fbID:',this.data.feedbackId,'\n repliable:',repliable);
-    db.collection('feedback').doc(this.data.feedbackId).update({
-      data:{
-        repliable:repliable
-      },
-      success:res=>{
-        wx.navigateBack();
-      },
-      fail:res=>{
-        console.log('repliable record fail:\n',res);
-      }
-    })
+    if(use_wx_cloud){ // 微信云：直接数据库操作
+      const db = cloud.database();
+      // console.log('fbID:',this.data.feedbackId,'\n repliable:',repliable);
+      db.collection('feedback').doc(this.data.feedbackId).update({
+        data:{
+          repliable:repliable
+        },
+        success:res=>{
+          wx.navigateBack();
+        },
+        fail:res=>{
+          console.log('repliable record fail:\n',res);
+        }
+      })
+    }
+    else{ // Laf云：调用云函数
+      const that = this;
+      cloud.invokeFunction("feedbackOp", {
+        operation: "update",
+        feedbackId: that.data.feedbackId,
+        repliable: repliable,
+      }).then(res => {
+        console.log("newOp(modify) Result(laf):", res);
+        if(res.ok){
+          wx.navigateBack();
+        }
+        else{
+          console.log('repliable record fail:\n',res);
+        }
+      });
+    }
+    
   }
 })
 

@@ -3,6 +3,11 @@ const regeneratorRuntime = utils.regeneratorRuntime;
 const randomInt = utils.randomInt;
 const isManager = utils.isManager;
 const formatDate = utils.formatDate;
+
+const config = require('../../../config.js');
+const use_wx_cloud = config.use_wx_cloud; // 是否使用微信云，不然使用Laf云
+const cloud = use_wx_cloud ? wx.cloud : require('../../../cloudAccess.js').cloud;
+
 Page({
 
   /**
@@ -47,7 +52,7 @@ Page({
       title: '加载打赏记录中',
     })
     const that = this;
-    const db = wx.cloud.database();
+    const db = cloud.database();
     db.collection('reward').orderBy('mdate', 'desc').get().then(res => {
       for (var r of res.data) {
         r.mdateStr = r.mdate.getFullYear() + '年' + (r.mdate.getMonth() + 1) + '月';
@@ -58,7 +63,7 @@ Page({
       that.setData({
         rewards: res.data
       });
-      console.log(res.data);
+      console.log("LoadingReward", res.data);
       wx.hideLoading();
     });
   },
@@ -88,14 +93,23 @@ Page({
       records: records_raw,
     }
     const that = this;
-    wx.cloud.callFunction({
-      name: 'updateReward',
-      data: {
-        reward_to_change: reward_to_change
-      }
-    }).then(res => {
-      that.loadRewards();
-    });
+    if(use_wx_cloud){
+      cloud.callFunction({
+        name: 'updateReward',
+        data: {
+          reward_to_change: reward_to_change
+        }
+      }).then(res => {
+        that.loadRewards();
+      });
+    }
+    else{
+      cloud.invokeFunction('updateReward', {
+          reward_to_change: reward_to_change
+      }).then(res => {
+        that.loadRewards();
+      });
+    }
   },
 
   addMonth(e) {
