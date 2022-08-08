@@ -3,6 +3,9 @@ const utils = require('../../../utils.js');
 const generateUUID = utils.generateUUID;
 const isManager = utils.isManager;
 
+const config = require("../../../config.js");
+const use_wx_cloud = config.use_wx_cloud; // 是否使用微信云，不然使用Laf云
+const cloud = use_wx_cloud ? wx.cloud : require('../../../cloudAccess.js').cloud;
 
 const ctx = wx.createCanvasContext('bigPhoto');
 const canvasMax = 2000; // 正方形画布的尺寸px
@@ -89,7 +92,7 @@ Page({
 
   loadProcess() {
     const that = this;
-    const db = wx.cloud.database();
+    const db = cloud.database();
     const _ = db.command;
     db.collection('photo').where({ photo_compressed: _.in([undefined, '']), verified: true, photo_id: /^((?!\.heic$).)*$/i }).count().then(res => {
       console.log(res);
@@ -131,7 +134,7 @@ Page({
 
   beginProcess: function () {
     const that = this;
-    const db = wx.cloud.database();
+    const db = cloud.database();
     const _ = db.command;
     db.collection('photo').where({ photo_compressed: _.in([undefined, '']), verified: true }).get().then(res => {
       console.log(res);
@@ -279,19 +282,25 @@ Page({
     const that = this;
     const filePath = this.data.images_path.compressed;
     const ext = this.data.origin.type;
-    wx.cloud.uploadFile({
-      cloudPath: 'compressed/' + generateUUID() + '.' + ext, // 上传至云端的路径
-      filePath: filePath,
-      success: res => {
-        global_fileID_compressed = res.fileID;
-        that.setData({
-          phase: 5
-        }, () => {
-          that.uploadWatermark();
-        })
-      },
-      fail: console.error
-    })
+    if(use_wx_cloud){ // 微信云
+      cloud.uploadFile({
+        cloudPath: 'compressed/' + generateUUID() + '.' + ext, // 上传至云端的路径
+        filePath: filePath,
+        success: res => {
+          global_fileID_compressed = res.fileID;
+          that.setData({
+            phase: 5
+          }, () => {
+            that.uploadWatermark();
+          })
+        },
+        fail: console.error
+      })
+    }
+    else{ // Laf云
+      // TODO: uploadFile
+    }
+    
   },
 
   // 上传水印图
@@ -299,45 +308,76 @@ Page({
     const that = this;
     const filePath = this.data.images_path.watermark;
     const ext = this.data.origin.type;
-    wx.cloud.uploadFile({
-      cloudPath: 'watermark/' + generateUUID() + '.' + ext, // 上传至云端的路径
-      filePath: filePath,
-      success: res => {
-        global_fileID_watermark = res.fileID;
-        that.setData({
-          phase: 6
-        }, () => {
-          that.updataDatabase();
-        })
-      },
-      fail: console.error
-    })
+    if(use_wx_cloud){ // 微信云
+      cloud.uploadFile({
+        cloudPath: 'watermark/' + generateUUID() + '.' + ext, // 上传至云端的路径
+        filePath: filePath,
+        success: res => {
+          global_fileID_watermark = res.fileID;
+          that.setData({
+            phase: 6
+          }, () => {
+            that.updataDatabase();
+          })
+        },
+        fail: console.error
+      })
+    }
+    else{ // Laf云
+      // TODO
+    }
+    
   },
 
   // 更新数据库
   updataDatabase: function() {
     const that = this;
-    wx.cloud.callFunction({
-      name: 'managePhoto',
-      data: {
+    if(use_wx_cloud){
+      cloud.callFunction({
+        name: 'managePhoto',
+        data: {
+          photo: global_photo,
+          type: 'setProcess',
+          compressed: global_fileID_compressed,
+          watermark: global_fileID_watermark,
+        },
+        success: () => {
+          that.setData({
+            phase: 7,
+            origin: {},
+            global_photo: '',
+            global_fileID_compressed: '',
+            global_fileID_watermark: '',
+          }, () => {
+            wx.hideLoading();
+            that.beginProcess();
+          });
+        }
+      })
+    }
+    else{
+      cloud.invokeFunction('managePhoto', {
         photo: global_photo,
         type: 'setProcess',
         compressed: global_fileID_compressed,
-        watermark: global_fileID_watermark,
-      },
-      success: () => {
-        that.setData({
-          phase: 7,
-          origin: {},
-          global_photo: '',
-          global_fileID_compressed: '',
-          global_fileID_watermark: '',
-        }, () => {
-          wx.hideLoading();
-          that.beginProcess();
-        });
-      }
-    })
+        watermark: global_fileID_watermark
+      }).then(res => {
+        if(res.ok){
+          that.setData({
+            phase: 7,
+            origin: {},
+            global_photo: '',
+            global_fileID_compressed: '',
+            global_fileID_watermark: '',
+          }, () => {
+            wx.hideLoading();
+            that.beginProcess();
+          });
+        }
+      })
+    }
+    
+
   },
 
   preview: function(e) {

@@ -36,21 +36,42 @@ async function like_add(item_id, item_type) {
   
   // 已有记录，但是不是点赞的
   if (res.length > 0) {
-    await coll_inter.doc(res[0]._id).update({
-      data: {
-        count: 1,
-      }
-    });
+    if(use_wx_cloud){ // 微信云
+      await coll_inter.doc(res[0]._id).update({
+        data: {
+          count: 1,
+        }
+      });
+    }
+    else{ // Laf云
+      await cloud.invokeFunction("interOp", {
+        type: "interRecordUpdate",
+        record_id: res[0]._id
+      });
+    }
   } else {
     // 没有记录
-    await coll_inter.add({
-      data: {
-        type: TYPE_LIKE,
-        uid: user.openid,
-        item_id: item_id,
-        count: 1
-      }
-    });
+    if(use_wx_cloud){ // 微信云
+      await coll_inter.add({
+        data: {
+          type: TYPE_LIKE,
+          uid: user.openid,
+          item_id: item_id,
+          count: 1
+        }
+      });
+    }
+    else{
+      await cloud.invokeFunction("interOp", {
+        type: "interRecordAdd",
+        record_item: {
+          type: TYPE_LIKE,
+          uid: user.openid,
+          item_id: item_id,
+          count: 1
+        }
+      });
+    }
   }
 
   // 加上去
@@ -67,7 +88,7 @@ async function like_add(item_id, item_type) {
   }
   else{
     await cloud.invokeFunction("interOp", {
-      type: "like_add",
+      type: "likeAdd",
       item_type: item_type,
       item_id, item_id,
     });

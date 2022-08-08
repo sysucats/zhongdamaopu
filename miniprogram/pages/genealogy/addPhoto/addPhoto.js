@@ -14,7 +14,6 @@ const sendNotifyVertifyNotice = msg.sendNotifyVertifyNotice;
 
 const config = require('../../../config.js');
 const text_cfg = config.text;
-
 const use_wx_cloud = config.use_wx_cloud; // 是否使用微信云，不然使用Laf云
 const cloud = use_wx_cloud ? wx.cloud : require('../../../cloudAccess.js').cloud;
 
@@ -215,26 +214,39 @@ Page({
     const index = tempFilePath.lastIndexOf(".");
     const ext = tempFilePath.substr(index + 1);
 
+    // TODO uploadFile
     let upRes = await cloud.uploadFile({
       cloudPath: cat.campus + '/' + generateUUID() + '.' + ext, // 上传至云端的路径
       filePath: tempFilePath, // 小程序临时文件路径
     });
     // 返回文件 ID
     console.log(upRes.fileID);
+
     // 添加记录
-    const db = cloud.database();
-    let dbAddRes = await db.collection('photo').add({
-      data: {
-        cat_id: cat._id,
-        photo_id: upRes.fileID,
-        userInfo: that.data.user.userInfo,
-        verified: false,
-        mdate: (new Date()),
-        shooting_date: photo.shooting_date,
-        photographer: photo.pher
-      }
-    });
-    console.log(dbAddRes);
+    let dbAddRes;
+    const params = {
+      cat_id: cat._id,
+      photo_id: upRes.fileID,
+      userInfo: that.data.user.userInfo,
+      verified: false,
+      mdate: (new Date()),
+      shooting_date: photo.shooting_date,
+      photographer: photo.pher
+    };
+    if(use_wx_cloud) { // 使用微信云，直接上传数据库
+      const db = cloud.database();
+      dbAddRes = await db.collection('photo').add({
+        data: params
+      });
+      console.log("addPhoto result(wx):", dbAddRes);
+    }
+    else{ // 使用Laf云，调用云函数
+      dbAddRes = await cloud.invokeFunction("photoOp", {
+        type: "addPhoto",
+        data: params
+      });
+      console.log("photoOp(addPhoto) result(laf):", dbAddRes);
+    }
   },
   
   pickDate(e) {

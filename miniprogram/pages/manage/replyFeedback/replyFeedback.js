@@ -103,7 +103,7 @@ Page({
           console.log(res);
           if (res.errCode == 0) {
             // 记录一下回复的内容和时间
-            if(use_wx_cloud){ // wx
+            if(use_wx_cloud){ // 微信云
               await cloud.callFunction({
                 name: "manageFeedback",
                 data: {
@@ -113,13 +113,14 @@ Page({
                 }
               });
             }
-            else{
+            else{ // Laf有
               await cloud.invokeFunction("feedbackOp", {
                 operation: 'reply',
                 feedback: that.data.feedback,
                 replyInfo: submitData.replyInfo,
               });
             }
+
             wx.hideLoading();
             wx.showToast({
               title: '回复成功',

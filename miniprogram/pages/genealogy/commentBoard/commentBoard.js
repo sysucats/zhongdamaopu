@@ -248,7 +248,23 @@ Page({
       cat_id: cat_id,
     };
 
+    const label_type = {
+      100: "正常",
+      10001: "广告",
+      20001: "时政",
+      20002: "色情",
+      20003: "辱骂",
+      20006: "违法犯罪",
+      20008: "欺诈",
+      20012: "低俗",
+      20013: "版权",
+      21000: "其他",
+    }
     
+    // 为测试，暂时跳过了违规检测（需同时注释"违规检测并提交"下面的代码）
+    // that.addComment(item, user);
+    
+    // 违规检测并提交
     if(use_wx_cloud){ // 使用微信云
       console.log("CommentCheck(wx)");
       cloud.callFunction({
@@ -267,18 +283,6 @@ Page({
           console.log(res);
           if (res.errCode != 0 || res.result.suggest != "pass") {
             // 内容检测未通过
-            const label_type = {
-              100: "正常",
-              10001: "广告",
-              20001: "时政",
-              20002: "色情",
-              20003: "辱骂",
-              20006: "违法犯罪",
-              20008: "欺诈",
-              20012: "低俗",
-              20013: "版权",
-              21000: "其他",
-            }
             console.log(res.result.label);
             const label_code = res.result.label;
             const label = label_type[label_code];
@@ -309,27 +313,14 @@ Page({
       console.log("CommentCheck(laf)");
       cloud.invokeFunction('commentCheck', {
         content: content,
-        nickname: user.userInfo.nickName,
-        success: function(res) {
-          console.log(res);
-  
+        nickname: user.userInfo.nickName
+      }).then(res => {
+        if(res){
+          console.log("CommentCheck(laf)", res);
           // 检测接口的返回
           res = res.result;
-          console.log(res);
           if (res.errCode != 0 || res.result.suggest != "pass") {
             // 内容检测未通过
-            const label_type = {
-              100: "正常",
-              10001: "广告",
-              20001: "时政",
-              20002: "色情",
-              20003: "辱骂",
-              20006: "违法犯罪",
-              20008: "欺诈",
-              20012: "低俗",
-              20013: "版权",
-              21000: "其他",
-            }
             console.log(res.result.label);
             const label_code = res.result.label;
             const label = label_type[label_code];
@@ -344,8 +335,8 @@ Page({
           }
           // 检测通过
           that.addComment(item, user);
-        },
-        fail: err => {
+        }
+        else{
           // handle error
           wx.showModal({
             title: "内容检测失败",
@@ -354,10 +345,8 @@ Page({
           });
           that.doSendCommentEnd();
         }
-      } )
+      });
     }
-    
-
   },
 
   doSendCommentEnd() {
@@ -367,39 +356,76 @@ Page({
 
   addComment(item, user) {
     const that = this;
-    coll_comment.add({
-      data: item,
-      success: function(res) {
-        // res 是一个对象，其中有 _id 字段标记刚创建的记录的 id
-        console.log(res, user);
-        
-        // 插入最新留言 + 清空输入框
-        console.log(item);
-        item.userInfo = user.userInfo;
-        item.datetime = formatDate(item.create_date, "yyyy-MM-dd hh:mm:ss")
-        var comments = that.data.comments;
-        comments.unshift(item);
-        that.setData({
-          comment_input: "",
-          comments: comments,
-        });
-
-        // 显示success toast
-        that.doSendCommentEnd();
-        wx.showToast({
-          title: '留言成功~',
-        });
-      },
-      fail: function(res) {
-        wx.showModal({
-          title: "留言失败",
-          content: "请开发者检查“comment”云数据库是否创建，权限是否设置为“双true”",
-          showCancel: false,
-        })
-        console.error(res);
-        that.doSendCommentEnd();
-      }
-    })
+    if(use_wx_cloud){
+      coll_comment.add({
+        data: item,
+        success: function(res) {
+          // res 是一个对象，其中有 _id 字段标记刚创建的记录的 id
+          console.log(res, user);
+  
+          // 插入最新留言 + 清空输入框
+          console.log(item);
+          item.userInfo = user.userInfo;
+          item.datetime = formatDate(item.create_date, "yyyy-MM-dd hh:mm:ss")
+          var comments = that.data.comments;
+          comments.unshift(item);
+          that.setData({
+            comment_input: "",
+            comments: comments,
+          });
+  
+          // 显示success toast
+          that.doSendCommentEnd();
+          wx.showToast({
+            title: '留言成功~',
+          });
+        },
+        fail: function(res) {
+          wx.showModal({
+            title: "留言失败",
+            content: "请开发者检查“comment”云数据库是否创建，权限是否设置为“双true”",
+            showCancel: false,
+          })
+          console.error(res);
+          that.doSendCommentEnd();
+        }
+      })
+    }
+    else{
+      cloud.invokeFunction("commentOp", {
+        type: "addComment",
+        data: item
+      }).then(res => {
+        if(res.ok){
+          console.log("commentOp(addComment) result(laf): ", res, user);
+          // 插入最新留言 + 清空输入框
+          console.log(item);
+          item.userInfo = user.userInfo;
+          item.datetime = formatDate(item.create_date, "yyyy-MM-dd hh:mm:ss")
+          var comments = that.data.comments;
+          comments.unshift(item);
+          that.setData({
+            comment_input: "",
+            comments: comments,
+          });
+  
+          // 显示success toast
+          that.doSendCommentEnd();
+          wx.showToast({
+            title: '留言成功~',
+          });
+        }
+        else{
+          wx.showModal({
+            title: "留言失败",
+            content: "请开发者检查“comment”云数据库是否创建，权限是否设置为“双true”",
+            showCancel: false,
+          })
+          console.error(res);
+          that.doSendCommentEnd();
+        }
+      })
+    }
   },
 
   // 加载更多留言
@@ -463,9 +489,10 @@ Page({
           } 
           else{ // 使用 Laf 云
             cloud.invokeFunction("commentOp", {
-              type: "delete_comment",
-              comment_id: comment_id,
-              success: () => {
+              type: "deleteComment",
+              comment_id: comment_id
+            }).then(res => {
+              if(res.ok){
                 wx.showToast({
                   title: '删除成功',
                 });
@@ -481,5 +508,4 @@ Page({
       }
     })
   }
-
 })

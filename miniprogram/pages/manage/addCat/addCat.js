@@ -350,7 +350,7 @@ Page({
         cat_id: cat_id
       }).then(res => {
         console.log(res);
-        if (res._id) {
+        if (res.ok) {
           cat_id = res._id;
         }
         wx.showToast({

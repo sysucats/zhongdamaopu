@@ -292,11 +292,23 @@ Page({
       for (const n of filters_input.trim().split(' ')) {
         search_str.push(`(.*${n}.*)`);
       }
-      let regexp = db.RegExp({
-        regexp: search_str.join("|"),
-        options: 'igs',
-      });
-      console.log("RegExp:", regexp);
+
+      let regexp;
+      if(use_wx_cloud){
+        regexp = db.RegExp({
+          regexp: search_str.join("|"),
+          options: 'igs',
+        });
+        console.log("RegExp:", regexp);
+      }
+      else { // Laf 的 db 不支持 option: p
+        regexp = db.RegExp({
+          regexp: search_str.join("|"),
+          options: 'is',
+        });
+        console.log("RegExp:", regexp);
+      }
+      
 
       filters.push(_.or([{
         name: regexp
@@ -308,9 +320,9 @@ Page({
     
     // 准备搜索
     var query = filters.length ? _.and(filters) : {};
-    console.log("Query:", filters);
+    console.log("Query:", query);
     var cats = (await db.collection('cat').where(query).get()).data;
-    console.log("Cats:", filters);
+    console.log("Cats:", cats);
     // 获取头像
     for (var cat of cats) {
       cat.avatar = await getAvatar(cat._id, cat.photo_count_best);

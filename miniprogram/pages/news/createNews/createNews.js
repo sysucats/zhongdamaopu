@@ -261,17 +261,16 @@ Page({
         //获取后缀
         const index = tempFilePath.lastIndexOf(".");
         const ext = tempFilePath.substr(index + 1);
-
-        // TODO
+       
         let upRes;
-        if(use_wx_cloud){
+        if(use_wx_cloud){ // 微信云
             upRes = await cloud.uploadFile({
                 cloudPath: 'news' + '/' + generateUUID() + '.' + ext, // 上传至云端的路径
                 filePath: tempFilePath, // 小程序临时文件路径
             });
         }
-        else{
-
+        else{ //Laf云
+            // TODO: uploadFile
         }
         
 

@@ -10,6 +10,10 @@ const sendVerifyNotice = msg.sendVerifyNotice;
 const config = require('../../../config.js');
 const notifyVerifyPhotoTplId = config.msg.notifyVerify.id;
 
+const use_wx_cloud = config.use_wx_cloud; // 是否使用微信云，不然使用Laf云
+const cloud = use_wx_cloud ? wx.cloud : require('../../../cloudAccess.js').cloud;
+
+
 const cache = require('../../../cache.js');
 
 const text_cfg = config.text;
@@ -115,7 +119,7 @@ Page({
     wx.showLoading({
       title: '加载中...',
     });
-    const db = wx.cloud.database();
+    const db = cloud.database();
     // 获取所有照片
     var total_count = (await db.collection('photo').where({
       verified: false
@@ -308,10 +312,16 @@ Page({
         best: photo.mark == "best",
       }
 
-      all_queries.push(wx.cloud.callFunction({
-        name: "managePhoto",
-        data: data
-      }))
+      if(use_wx_cloud){ // wx云
+        all_queries.push(cloud.callFunction({
+          name: "managePhoto",
+          data: data
+        }))
+      }
+      else{ // Laf云
+        all_queries.push(cloud.invokeFunction("managePhoto", data));
+      }
+
       that.addNotice(photo, (photo.mark != "delete"));
     }
     // 阻塞一下

@@ -117,7 +117,6 @@ Page({
           console.log("addPop(Laf)", res);
         });
       }
-      
     }
 
     // 记录访问时间，消除“有新相片”

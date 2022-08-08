@@ -123,7 +123,7 @@ Page({
     },
 
     _doRemove(item_id) {
-        if(use_wx_cloud){ // 使用微信云
+        if(use_wx_cloud){ // 微信云
             cloud.callFunction({
                 name: "newsOp",
                 data: {
@@ -142,7 +142,7 @@ Page({
                 setTimeout(wx.navigateBack, 1000);
             });
         }
-        else{ // 使用 Laf 云
+        else{ // Laf云
             cloud.invokeFunction("newsOp", {
                 type: "delete",
                 item_id: item_id
