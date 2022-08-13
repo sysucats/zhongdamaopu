@@ -10,6 +10,7 @@ const getCurUserInfoOrFalse = user.getCurUserInfoOrFalse;
 const use_wx_cloud = config.use_wx_cloud; // 是否使用微信云，不然使用Laf云
 const cloud = use_wx_cloud ? wx.cloud : require('../../../cloudAccess.js').cloud;
 
+
 Page({
     /**
      * 页面的初始数据
@@ -271,6 +272,11 @@ Page({
         }
         else{ //Laf云
             // TODO: uploadFile
+            // const cloudPath = 'news' + '/' + generateUUID() + '.' + ext
+            // uploadFile(cloudPath, photo, ext).then(res => {
+            //     console.log("uploadFile(laf):", res);
+            // });
+            // upRes = 1;
         }
         
 

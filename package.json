@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.142.0",
+    "laf-client-sdk": "^0.8.2"
+  }
+}
