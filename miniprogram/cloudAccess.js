@@ -60,7 +60,7 @@ if (!use_wx_cloud) {
   }
 
   const _set = documentPrototype.set;
-  documentPrototype.set = function (options) {
+  documentPrototype.set = async function (options) {
     try {
       const res = await _set.call(this, options.data);
       if (options.success) {
@@ -76,7 +76,7 @@ if (!use_wx_cloud) {
   }
 
   // TODO: 云函数调用兼容
-  
+
   // TODO: 为 laf 定义与微信版本兼容的云存储接口
 }
 
