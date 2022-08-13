@@ -41,19 +41,43 @@ if (!use_wx_cloud) {
   })();
   
   // 搞一些骚操作替换 laf 数据库接口，使其兼容微信版本接口
-  (function () {
-    const documentPrototype = cloud.database().collection('$').doc('$').__proto__;
+  const documentPrototype = cloud.database().collection('$').doc('$').__proto__;
 
-    const _update = documentPrototype.update;
-    documentPrototype.update = function (options) {
-      return _update.call(this, options.data);
+  const _update = documentPrototype.update;
+  documentPrototype.update = async function (options) {
+    try {
+      const res = await _update.call(this, options.data);
+      if (options.success) {
+        options.success(res);
+      }
+      return res;
+    } catch (err) {
+      if (options.fail) {
+        options.fail(err);
+      }
+      throw err;
     }
+  }
 
-    const _set = documentPrototype.set;
-    documentPrototype.set = function (options) {
-      return _set.call(this, options.data);
+  const _set = documentPrototype.set;
+  documentPrototype.set = function (options) {
+    try {
+      const res = await _set.call(this, options.data);
+      if (options.success) {
+        options.success(res);
+      }
+      return res;
+    } catch (err) {
+      if (options.fail) {
+        options.fail(err);
+      }
+      throw err;
     }
-  })();
+  }
+
+  // TODO: 云函数调用兼容
+  
+  // TODO: 为 laf 定义与微信版本兼容的云存储接口
 }
 
 /**
