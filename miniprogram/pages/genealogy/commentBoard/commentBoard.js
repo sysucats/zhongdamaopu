@@ -14,7 +14,7 @@ const getAvatar = require('../../../cat.js').getAvatar
 const getCatCommentCount = require('../../../comment.js').getCatCommentCount;
 
 const use_wx_cloud = config.use_wx_cloud; // 是否使用微信云，不然使用Laf云
-const cloud = use_wx_cloud ? wx.cloud : require('../../../cloudAccess.js').cloud;
+const cloud = require('../../../cloudAccess.js').cloud;
 
 // 页面设置，从global读取
 var page_settings = {};
@@ -261,92 +261,50 @@ Page({
       21000: "其他",
     }
     
-    // 为测试，暂时跳过了违规检测（需同时注释"违规检测并提交"下面的代码）
+    // 为测试，暂时跳过了违规检测（需同时注释"违规检测并提交"下面的代码段）
     // that.addComment(item, user);
     
     // 违规检测并提交
-    if(use_wx_cloud){ // 使用微信云
-      console.log("CommentCheck(wx)");
-      cloud.callFunction({
-        // The name of the cloud function to be called
-        name: 'commentCheck',
-        // Parameter to be passed to the cloud function
-        data: {
-          content: content,
-          nickname: user.userInfo.nickName,
-        },
-        success: function(res) {
-          console.log(res);
-  
-          // 检测接口的返回
-          res = res.result;
-          console.log(res);
-          if (res.errCode != 0 || res.result.suggest != "pass") {
-            // 内容检测未通过
-            console.log(res.result.label);
-            const label_code = res.result.label;
-            const label = label_type[label_code];
-            
-            wx.showModal({
-              title: "内容检测未通过",
-              content: `涉及[${label_code}]${label}内容，请修改嗷~~`,
-              showCancel: false,
-            });
-            that.doSendCommentEnd();
-            return false;
-          }
-          // 检测通过
-          that.addComment(item, user);
-        },
-        fail: err => {
-          // handle error
-          wx.showModal({
-            title: "内容检测失败",
-            content: "请开发者检查“commentCheck”云函数是否部署成功",
-            showCancel: false,
-          });
-          that.doSendCommentEnd();
-        },
-      })    
-    }
-    else{ // 使用 Laf 云
-      console.log("CommentCheck(laf)");
-      cloud.invokeFunction('commentCheck', {
+    cloud.callFunction({
+      // The name of the cloud function to be called
+      name: 'commentCheck',
+      // Parameter to be passed to the cloud function
+      data: {
         content: content,
-        nickname: user.userInfo.nickName
-      }).then(res => {
-        if(res){
-          console.log("CommentCheck(laf)", res);
-          // 检测接口的返回
-          res = res.result;
-          if (res.errCode != 0 || res.result.suggest != "pass") {
-            // 内容检测未通过
-            console.log(res.result.label);
-            const label_code = res.result.label;
-            const label = label_type[label_code];
-            
-            wx.showModal({
-              title: "内容检测未通过",
-              content: `涉及[${label_code}]${label}内容，请修改嗷~~`,
-              showCancel: false,
-            });
-            that.doSendCommentEnd();
-            return false;
-          }
-          // 检测通过
-          that.addComment(item, user);
-        }
-        else{
-          // handle error
+        nickname: user.userInfo.nickName,
+      },
+      success: function(res) {
+        console.log(res);
+
+        // 检测接口的返回
+        res = res.result;
+        console.log(res);
+        if (res.errCode != 0 || res.result.suggest != "pass") {
+          // 内容检测未通过
+          console.log(res.result.label);
+          const label_code = res.result.label;
+          const label = label_type[label_code];
           wx.showModal({
-            title: "内容检测失败",
-            content: "请开发者检查“commentCheck”云函数是否部署成功",
+            title: "内容检测未通过",
+            content: `涉及[${label_code}]${label}内容，请修改嗷~~`,
             showCancel: false,
           });
           that.doSendCommentEnd();
+          return false;
         }
-      });
-    }
+        // 检测通过
+        that.addComment(item, user);
+      },
+      fail: err => {
+        // handle error
+        wx.showModal({
+          title: "内容检测失败",
+          content: "请开发者检查“commentCheck”云函数是否部署成功",
+          showCancel: false,
+        });
+        that.doSendCommentEnd();
+      },
+    }) 
   },
 
   doSendCommentEnd() {
@@ -356,76 +314,45 @@ Page({
 
   addComment(item, user) {
     const that = this;
-    if(use_wx_cloud){
-      coll_comment.add({
-        data: item,
-        success: function(res) {
-          // res 是一个对象，其中有 _id 字段标记刚创建的记录的 id
-          console.log(res, user);
-  
-          // 插入最新留言 + 清空输入框
-          console.log(item);
-          item.userInfo = user.userInfo;
-          item.datetime = formatDate(item.create_date, "yyyy-MM-dd hh:mm:ss")
-          var comments = that.data.comments;
-          comments.unshift(item);
-          that.setData({
-            comment_input: "",
-            comments: comments,
-          });
-  
-          // 显示success toast
-          that.doSendCommentEnd();
-          wx.showToast({
-            title: '留言成功~',
-          });
-        },
-        fail: function(res) {
-          wx.showModal({
-            title: "留言失败",
-            content: "请开发者检查“comment”云数据库是否创建，权限是否设置为“双true”",
-            showCancel: false,
-          })
-          console.error(res);
-          that.doSendCommentEnd();
-        }
-      })
-    }
-    else{
-      cloud.invokeFunction("commentOp", {
-        type: "addComment",
+    
+    cloud.callFunction({
+      name: "curdOp", 
+      data: {
+        operation: "add",
+        collection: "comment",
         data: item
-      }).then(res => {
-        if(res.ok){
-          console.log("commentOp(addComment) result(laf): ", res, user);
-          // 插入最新留言 + 清空输入框
-          console.log(item);
-          item.userInfo = user.userInfo;
-          item.datetime = formatDate(item.create_date, "yyyy-MM-dd hh:mm:ss")
-          var comments = that.data.comments;
-          comments.unshift(item);
-          that.setData({
-            comment_input: "",
-            comments: comments,
-          });
-  
-          // 显示success toast
-          that.doSendCommentEnd();
-          wx.showToast({
-            title: '留言成功~',
-          });
-        }
-        else{
-          wx.showModal({
-            title: "留言失败",
-            content: "请开发者检查“comment”云数据库是否创建，权限是否设置为“双true”",
-            showCancel: false,
-          })
-          console.error(res);
-          that.doSendCommentEnd();
-        }
-      })
-    }
+      }
+    }).then(res => {
+      if(res.result.ok){
+        console.log("curdOp(add-Comment) result): ", res, user);
+        // 插入最新留言 + 清空输入框
+        console.log(item);
+        item.userInfo = user.userInfo;
+        item.datetime = formatDate(item.create_date, "yyyy-MM-dd hh:mm:ss")
+        var comments = that.data.comments;
+        comments.unshift(item);
+        that.setData({
+          comment_input: "",
+          comments: comments,
+        });
+
+        // 显示success toast
+        that.doSendCommentEnd();
+        wx.showToast({
+          title: '留言成功~',
+        });
+      }
+      else{
+        wx.showModal({
+          title: "留言失败",
+          content: "请开发者检查“comment”云数据库是否创建，权限是否设置为“双true”",
+          showCancel: false,
+        })
+        console.error(res);
+        that.doSendCommentEnd();
+      }
+    })
+    
   },
 
   // 加载更多留言
@@ -468,42 +395,25 @@ Page({
       content: `确定删除\"${username}\"的留言？`,
       success (res) {
         if (res.confirm) {
-          if(use_wx_cloud){ // 使用微信云
-            cloud.callFunction({
-              name: "commentOp",
-              data: {
-                type: "delete_comment",
-                comment_id: comment_id,
-              },
-              success: () => {
-                wx.showToast({
-                  title: '删除成功',
-                });
-                var comments = that.data.comments;
-                comments.splice(index, 1);
-                that.setData({
-                  comments: comments,
-                })
-              }
-            });
-          } 
-          else{ // 使用 Laf 云
-            cloud.invokeFunction("commentOp", {
-              type: "deleteComment",
-              comment_id: comment_id
-            }).then(res => {
-              if(res.ok){
-                wx.showToast({
-                  title: '删除成功',
-                });
-                var comments = that.data.comments;
-                comments.splice(index, 1);
-                that.setData({
-                  comments: comments,
-                })
-              }
-            });
-          }
+          cloud.callFunction({
+            name: "curdOp",
+            data: {
+              permissionLevel: 1,
+              operation: "remove",
+              collection: "comment",
+              item_id: comment_id
+            },
+            success: () => {
+              wx.showToast({
+                title: '删除成功',
+              });
+              var comments = that.data.comments;
+              comments.splice(index, 1);
+              that.setData({
+                comments: comments,
+              })
+            }
+          });
         }
       }
     })

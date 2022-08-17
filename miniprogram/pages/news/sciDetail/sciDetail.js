@@ -51,28 +51,17 @@ Page({
 
   getSci() {
     wx.showLoading({title:'加载中...'})
-    if (use_wx_cloud) { // 微信云
-      cloud.callFunction({
-        name: 'getAllSci',
-      }).then(res => {
-        console.log("getAllSci(wx):",res);
-        const data = res.result.data;
-        this.setData({
-          qnas: data
-        });
-        wx.hideLoading()
-      })
-    }
-    else { // Laf 云
-      cloud.invokeFunction('getAllSci').then(res => {
-        console.log("getAllSci(Laf):", res);
-        const data = res.data;
-        this.setData({
-          qnas: data
-        });
-        wx.hideLoading()
-      })
-    }
+
+    cloud.callFunction({
+      name: 'getAllSci',
+    }).then(res => {
+      console.log("getAllSci:",res);
+      const data = res.result.data;
+      this.setData({
+        qnas: data
+      });
+      wx.hideLoading()
+    })
     
   },
 

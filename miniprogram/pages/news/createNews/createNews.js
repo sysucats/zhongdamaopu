@@ -8,8 +8,7 @@ const isManager = utils.isManager;
 const getCurUserInfoOrFalse = user.getCurUserInfoOrFalse;
 
 const use_wx_cloud = config.use_wx_cloud; // 是否使用微信云，不然使用Laf云
-const cloud = use_wx_cloud ? wx.cloud : require('../../../cloudAccess.js').cloud;
-
+const cloud = require('../../../cloudAccess.js').cloud;
 
 Page({
     /**
@@ -262,36 +261,24 @@ Page({
         //获取后缀
         const index = tempFilePath.lastIndexOf(".");
         const ext = tempFilePath.substr(index + 1);
-       
-        let upRes;
-        if(use_wx_cloud){ // 微信云
-            upRes = await cloud.uploadFile({
-                cloudPath: 'news' + '/' + generateUUID() + '.' + ext, // 上传至云端的路径
-                filePath: tempFilePath, // 小程序临时文件路径
-            });
-        }
-        else{ //Laf云
-            // TODO: uploadFile
-            // const cloudPath = 'news' + '/' + generateUUID() + '.' + ext
-            // uploadFile(cloudPath, photo, ext).then(res => {
-            //     console.log("uploadFile(laf):", res);
-            // });
-            // upRes = 1;
-        }
         
+        const that = this;
+        const upRes = await cloud.uploadFile({
+            cloudPath: 'news' + '/' + generateUUID() + '.' + ext, // 上传至云端的路径
+            filePath: tempFilePath, // 小程序临时文件路径
+        });
 
-        // 返回文件 ID
+        console.log("upload Result: ", upRes);
         if (type == 0) { // 上传普通图片，更新路径 photos_path
-            this.data.photos_path.push(upRes.fileID);
-            this.setData({
-                photos_path: this.data.photos_path
+            that.data.photos_path.push(upRes.fileID);
+            that.setData({
+                photos_path: that.data.photos_path
             });
         } else { // 上传封面，更新路径 cover_path
-            this.setData({
+            that.setData({
                 cover_path: upRes.fileID
             });
         }
-        console.log("File Path: ", upRes.fileID);
     },
 
     radioButtonTap: function (e) {

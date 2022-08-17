@@ -123,41 +123,58 @@ Page({
     },
 
     _doRemove(item_id) {
-        if(use_wx_cloud){ // 微信云
-            cloud.callFunction({
-                name: "newsOp",
-                data: {
-                  type: "delete",
-                  item_id: item_id,
-                }
-            }).then((res) => {
-                console.log(res);
-                if (!res) {
-                    wx.showToast({
-                        icon: 'none',
-                        title: '删除失败',
-                    });
-                    return;
-                }
-                setTimeout(wx.navigateBack, 1000);
-            });
-        }
-        else{ // Laf云
-            cloud.invokeFunction("newsOp", {
-                type: "delete",
-                item_id: item_id
-            }).then((res) => {
-                console.log(res);
-                if (!res) {
-                    wx.showToast({
-                        icon: 'none',
-                        title: '删除失败',
-                    });
-                    return;
-                }
-                setTimeout(wx.navigateBack, 1000);
-            });
-        }
+        cloud.callFunction({
+            name: "newsOp",
+            data: {
+              type: "delete",
+              item_id: item_id,
+            }
+        }).then((res) => {
+            console.log(res);
+            if (!res) {
+                wx.showToast({
+                    icon: 'none',
+                    title: '删除失败',
+                });
+                return;
+            }
+            setTimeout(wx.navigateBack, 1000);
+        });
+        // if(use_wx_cloud){ // 微信云
+        //     cloud.callFunction({
+        //         name: "newsOp",
+        //         data: {
+        //           type: "delete",
+        //           item_id: item_id,
+        //         }
+        //     }).then((res) => {
+        //         console.log(res);
+        //         if (!res) {
+        //             wx.showToast({
+        //                 icon: 'none',
+        //                 title: '删除失败',
+        //             });
+        //             return;
+        //         }
+        //         setTimeout(wx.navigateBack, 1000);
+        //     });
+        // }
+        // else{ // Laf云
+        //     cloud.invokeFunction("newsOp", {
+        //         type: "delete",
+        //         item_id: item_id
+        //     }).then((res) => {
+        //         console.log(res);
+        //         if (!res) {
+        //             wx.showToast({
+        //                 icon: 'none',
+        //                 title: '删除失败',
+        //             });
+        //             return;
+        //         }
+        //         setTimeout(wx.navigateBack, 1000);
+        //     });
+        // }
     },
 
     removeNews() {

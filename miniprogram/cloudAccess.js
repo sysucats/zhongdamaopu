@@ -42,6 +42,7 @@ if (!use_wx_cloud) {
   
   // 搞一些骚操作替换 laf 数据库接口，使其兼容微信版本接口
   const documentPrototype = cloud.database().collection('$').doc('$').__proto__;
+  // console.log("DocumentPrototype:", documentPrototype);
 
   const _update = documentPrototype.update;
   documentPrototype.update = async function (options) {
@@ -75,10 +76,79 @@ if (!use_wx_cloud) {
     }
   }
 
-  // TODO: 云函数调用兼容
+  // 云函数调用兼容 cloud.callFunction
+  const cloudPrototype = cloud.__proto__;
+  const _invokeFunction = cloudPrototype.invokeFunction;
+  cloudPrototype.callFunction = async function (options) {
+    try {
+      const _res = await _invokeFunction.call(this, options.name, options.data);
+      const res = {
+        result: _res
+      };
 
-  // TODO: 为 laf 定义与微信版本兼容的云存储接口
+      if (options.success) {
+        options.success(res);
+      }
+      return res;
+    } catch (err) {
+      if (options.fail) {
+        options.fail(err);
+      }
+      throw err;
+    }
+  }
+
+  // 上传文件兼容 cloud.uploadFile
+  cloudPrototype.uploadFile = async function (options) {
+    try {
+      const res = uploadFile(options);
+      if (options.success) {
+        options.success(res);
+      }
+      return res;
+    } catch (err) {
+      if (options.fail) {
+        options.fail(err);
+      }
+      throw err;
+    }
+  }
+
+  // 下载文件兼容 cloud.downloadFile
+
+  console.log("Laf Cloud Prototype:", cloud.__proto__);
 }
+
+async function uploadFile(options) {
+  const fileName = options.cloudPath;
+  const filePath = options.filePath;
+  
+  const data = await cloud.invokeFunction("getURL", {
+      fileName: fileName
+  });
+
+  const formData = data.formData;
+  const postURL = data.postURL;
+  const ossPath = data.ossPath;
+  return new Promise((resolve, reject) =>{ 
+    wx.uploadFile({
+      url: postURL,
+      filePath: filePath,
+      name: "file",
+      formData: formData,
+      success(res) {
+        console.log('cloud.uploadFile(laf) success', res);
+        // wx.uploadFile 和 wx.cloud.uplaodFile 返回值不一样
+        // TODO 生成 fileID 按wxcloud生成的是图片的地址
+        res.fileID = ossPath + formData.key; 
+        resolve(res);
+      },
+      fail (err) {
+        reject(err);
+      }
+    })
+  });
+};
 
 /**
  * TODO: 使用 cloudAccess.cloud 替换其他文件中原来使用的 wx.cloud，示例：
@@ -94,3 +164,5 @@ if (!use_wx_cloud) {
 module.exports = {
   cloud: cloud
 };
+
+

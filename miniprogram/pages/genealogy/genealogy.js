@@ -34,7 +34,7 @@ const tipInterval = 24; // 提示间隔时间 hours
 const share_text = text_cfg.app_name + ' - ' + text_cfg.genealogy.share_tip; // 分享的标语
 
 const use_wx_cloud = config.use_wx_cloud; // 是否使用微信云，不然使用Laf云
-const cloud = use_wx_cloud ? wx.cloud : require('../../cloudAccess.js').cloud;
+const cloud = require('../../cloudAccess.js').cloud;
 
 Page({
 
