@@ -81,10 +81,7 @@ if (!use_wx_cloud) {
   const _invokeFunction = cloudPrototype.invokeFunction;
   cloudPrototype.callFunction = async function (options) {
     try {
-      const _res = await _invokeFunction.call(this, options.name, options.data);
-      const res = {
-        result: _res
-      };
+      const res = await _invokeFunction.call(this, options.name, options.data);
 
       if (options.success) {
         options.success(res);
@@ -129,7 +126,6 @@ async function uploadFile(options) {
 
   const formData = data.formData;
   const postURL = data.postURL;
-  const ossPath = data.ossPath;
   return new Promise((resolve, reject) =>{ 
     wx.uploadFile({
       url: postURL,
@@ -140,7 +136,7 @@ async function uploadFile(options) {
         console.log('cloud.uploadFile(laf) success', res);
         // wx.uploadFile 和 wx.cloud.uplaodFile 返回值不一样
         // TODO 生成 fileID 按wxcloud生成的是图片的地址
-        res.fileID = ossPath + formData.key; 
+        res.fileID = postURL + "/" + formData.key; 
         resolve(res);
       },
       fail (err) {

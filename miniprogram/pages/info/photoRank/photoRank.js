@@ -6,8 +6,8 @@ const config = require('../../../config.js');
 const text_cfg = config.text;
 const share_text = text_cfg.app_name + ' - ' + text_cfg.photo_rank.share_tip;
 
-const use_wx_cloud = config.use_wx_cloud; // 是否使用微信云，不然使用Laf云
-const cloud = use_wx_cloud ? wx.cloud : require('../../../cloudAccess.js').cloud;
+// 是否使用微信云，不然使用Laf云
+const cloud = require('../../../cloudAccess.js').cloud;
 Page({
 
   /**
@@ -104,32 +104,12 @@ Page({
     }
     const that = this;
     const ranks = this.data.ranks;
-    if(use_wx_cloud){
-      cloud.callFunction({
-        name: 'userOp',
-        data: {
-          op: "get",
-        },
-        complete: (res) => {
-          console.log(res);
-          const openid = res.result.openid;
-          console.log(ranks);
-          for (const i in ranks) {
-            if (ranks[i]._openid === openid) {
-              that.setData({
-                'userInfo.photo_rank': ranks[i].rank,
-                'userInfo.photo_count': ranks[i].count
-              });
-              return;
-            }
-          }
-        }
-      })
-    }
-    else{
-      cloud.invokeFunction('userOp', {
+    cloud.callFunction({
+      name: 'userOp',
+      data: {
         op: "get",
-      }).then(res => {
+      },
+      complete: (res) => {
         console.log(res);
         const openid = res.openid;
         console.log(ranks);
@@ -142,7 +122,7 @@ Page({
             return;
           }
         }
-      });
-    }    
+      }
+    })
   }
 })

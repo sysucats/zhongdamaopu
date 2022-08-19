@@ -10,7 +10,7 @@ const config = require("../../../config.js");
 const notifyChkFeedbackTplId = config.msg.notifyChkFeedback.id;
 
 const use_wx_cloud = config.use_wx_cloud; // 是否使用微信云，不然使用Laf云
-const cloud = use_wx_cloud ? wx.cloud : require('../../../cloudAccess.js').cloud;
+const cloud = require('../../../cloudAccess.js').cloud;
 
 const step = 6;
 

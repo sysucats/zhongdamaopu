@@ -50,7 +50,6 @@ Page({
       });
     })
     //this.checkUInfo();
-
     // 获取一下现在的日期，用在拍摄日前选择上
     const today = new Date();
     var now_date = today.getFullYear() + '-' + (today.getMonth()+1) + '-' + today.getDate();
@@ -181,7 +180,7 @@ Page({
     });
   },
   
-  async (){
+  async ifSendNotifyVeriftMsg(){
     const db = cloud.database(); 
     const subMsgSetting = await db.collection('setting').doc('subscribeMsg').get();
     const triggerNum = subMsgSetting.data.verifyPhoto.triggerNum; //几条未审核才触发

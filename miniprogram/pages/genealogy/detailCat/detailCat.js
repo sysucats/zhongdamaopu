@@ -19,8 +19,8 @@ const text_cfg = config.text;
 
 const no_heic = /^((?!\.heic$).)*$/i; // 正则表达式：不以 HEIC 为文件后缀的字符串
 
-const use_wx_cloud = config.use_wx_cloud; // 是否使用微信云，不然使用Laf云
-const cloud = use_wx_cloud ? wx.cloud : require('../../../cloudAccess.js').cloud;
+// 是否使用微信云，不然使用Laf云
+const cloud = require('../../../cloudAccess.js').cloud;
 
 // 页面设置，从global读取
 var page_settings = {};
@@ -100,23 +100,17 @@ Page({
         data: new Date(),
       });
       // 增加click数
-      if(use_wx_cloud){ // 微信云
-        cloud.callFunction({
-          name: 'addPop',
-          data: {
-            cat_id: cat_id
-          }
-        }).then(res => {
-          console.log("addPop(wx)", res);
-        });
-      }
-      else{ // Laf 云
-        cloud.invokeFunction('addPop', {
-          cat_id: cat_id
-        }).then(res => {
-          console.log("addPop(Laf)", res);
-        });
-      }
+      cloud.callFunction({
+        name: 'curdOp',
+        data: {
+          operation: "inc",
+          type: "pop",
+          collection: "cat",
+          item_id: cat_id
+        }
+      }).then(res => {
+        console.log("curdOp(inc-pop-cat) result: ", res);
+      });
     }
 
     // 记录访问时间，消除“有新相片”
@@ -524,45 +518,28 @@ Page({
     })
     const that = this;
     const cat = this.data.cat;
-    if (use_wx_cloud) { // 微信云
-      cloud.callFunction({
-        name: 'getMpCode',
-        data: {
-          _id: cat._id,
-          scene: 'toC=' + cat._no,
-          page: 'pages/genealogy/genealogy',
-          width: 500,
-        },
-        success: (res) => {
-          wx.hideLoading();
-          console.log(res);
-          wx.previewImage({
-            urls: [res.result],
-          });
-          that.setData({
-            'cat.mpcode': res.result
-          });
-        }
-      })
-    }
-    else { // Laf 云
-      cloud.invokeFunction('getMpCode', {
+
+    // [Warn] - 生成指定页面的二维码的前提是，小程序必须审核并发布
+    //    审核成功并发布的小程序才能正常调用二维码生成接口
+    cloud.callFunction({
+      name: 'getMpCode',
+      data: {
         _id: cat._id,
         scene: 'toC=' + cat._no,
         page: 'pages/genealogy/genealogy',
         width: 500,
-        success: (res) => {
-          wx.hideLoading();
-          console.log(res);
-          wx.previewImage({
-            urls: [res.result],
-          });
-          that.setData({
-            'cat.mpcode': res.result
-          });
-        }
-      })
-    }
+      },
+      success: (res) => {
+        wx.hideLoading();
+        console.log(res);
+        wx.previewImage({
+          urls: [res],
+        });
+        that.setData({
+          'cat.mpcode': res
+        });
+      }
+    })
   },
 
   showPopularityTip() {

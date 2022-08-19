@@ -277,7 +277,6 @@ Page({
         console.log(res);
 
         // 检测接口的返回
-        res = res.result;
         console.log(res);
         if (res.errCode != 0 || res.result.suggest != "pass") {
           // 内容检测未通过
@@ -323,7 +322,7 @@ Page({
         data: item
       }
     }).then(res => {
-      if(res.result.ok){
+      if(res.ok){
         console.log("curdOp(add-Comment) result): ", res, user);
         // 插入最新留言 + 清空输入框
         console.log(item);
