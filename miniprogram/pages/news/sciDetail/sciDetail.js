@@ -4,8 +4,8 @@ const cates = ['猫咪救助', '撸猫指南', '猫咪领养', '猫咪喂养', '
 const config = require('../../../config.js');
 const text_cfg = config.text;
 const share_text = text_cfg.app_name + ' - ' + text_cfg.science.share_tip;
-const use_wx_cloud = config.use_wx_cloud; // 是否使用微信云，不然使用Laf云
-const cloud = use_wx_cloud ? wx.cloud : require('../../../cloudAccess.js').cloud;
+
+const cloud = require('../../../cloudAccess.js').cloud;
 
 Page({
 
@@ -56,7 +56,7 @@ Page({
       name: 'getAllSci',
     }).then(res => {
       console.log("getAllSci:",res);
-      const data = res.result.data;
+      const data = res.data;
       this.setData({
         qnas: data
       });

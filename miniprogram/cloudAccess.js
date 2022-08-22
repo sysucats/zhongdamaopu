@@ -112,6 +112,25 @@ if (!use_wx_cloud) {
   }
 
   // 下载文件兼容 cloud.downloadFile
+  cloudPrototype.downloadFile = async function (options) {
+    const filePath = options.fileID;
+    wx.downloadFile({
+      url: filePath,
+      success(res) {
+        // console.log('cloud.downloadFile(laf) success', res);
+        if (options.success) {
+          options.success(res);
+        }
+        return res;
+      },
+      fail (err) {
+        if (options.fail) {
+          options.fail(err);
+        }
+        throw err;
+      }
+    })
+  }
 
   console.log("Laf Cloud Prototype:", cloud.__proto__);
 }
@@ -145,6 +164,23 @@ async function uploadFile(options) {
     })
   });
 };
+
+// async function downloadFile(options) {
+//   const filePath = options.fileID;
+//   // console.log("Download file", filePath); 
+//   return new Promise((resolve, reject) =>{ 
+//     wx.downloadFile({
+//       url: filePath,
+//       success(res) {
+//         console.log('cloud.downloadFile(laf) success', res);
+//         resolve(res);
+//       },
+//       fail (err) {
+//         reject(err);
+//       }
+//     })
+//   });
+// };
 
 /**
  * TODO: 使用 cloudAccess.cloud 替换其他文件中原来使用的 wx.cloud，示例：

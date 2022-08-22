@@ -131,7 +131,7 @@ Page({
       await cloud.callFunction({
         name: "curdOp",
         data: {
-          premissionLevel: 1,
+          permissionLevel: 1,
           operation: "set",
           collection: "setting",
           item_id: "relation",
@@ -163,7 +163,7 @@ Page({
       await cloud.callFunction({
         name: "curdOp",
         data: {
-          premissionLevel: 1,
+          permissionLevel: 1,
           operation: "update",
           collection: "setting",
           item_id: "relation",
@@ -217,7 +217,7 @@ Page({
     await cloud.callFunction({
       name: "curdOp",
       data: {
-        premissionLevel: 1,
+        permissionLevel: 1,
         operation: "update",
         document: "setting",
         item_id: "relation",
@@ -421,7 +421,7 @@ Page({
     await cloud.callFunction({
       name: "curdOp",
       data: {
-        premissionLevel: 1,
+        permissionLevel: 1,
         operation: "update",
         collection: "cat",
         item_id: cat._id,

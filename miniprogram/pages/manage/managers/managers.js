@@ -3,8 +3,7 @@ const utils = require('../../../utils.js');
 const isManager = utils.isManager;
 
 const config = require('../../../config.js');
-const use_wx_cloud = config.use_wx_cloud; // 是否使用微信云，不然使用Laf云
-const cloud = use_wx_cloud ? wx.cloud : require('../../../cloudAccess.js').cloud;
+const cloud = require('../../../cloudAccess.js').cloud;
 
 // 是否正在加载
 var loading = false;
@@ -198,37 +197,29 @@ Page({
       level = 99;
     }
     console.log("#"+index, _id, level);
-
-    const that = this;
-    if (use_wx_cloud){
-      cloud.callFunction({
-        name: "updateManager",
-        data: {
-          _id: _id,
-          level: level
-        },
-        success: (res) => {
-          console.log("updateManager Result(wx):", res);
-          if (res.result.ok) {
-            wx.showToast({
-              title: '更新成功',
-            });
-          } else {
-            wx.showToast({
-              title: '更新失败\r\n' + res.result.msg,
-              icon: 'none',
-            })
-          }
-        }
+    
+    if(level > 99){
+      wx.showToast({
+        title: '最高权限等级为99！\r\n' + res.msg,
+        icon: 'none',
       })
+      return;
     }
-    else{
-      cloud.invokeFunction("updateManager", {
-          _id: _id,
-          level: level
-      }).then(res => {
-        console.log("updateManager Result(laf):", res);
-        if (res.ok) {
+
+    cloud.callFunction({
+      name: "curdOp",
+      data: {
+        permissionLevel: 99,
+        operation: "update",
+        collection: "user",
+        item_id: _id,
+        data: {
+          manager: level
+        }
+      },
+      success: (res) => {
+        console.log("updateManager Result:", res);
+        if (res.ok && res.updated == 1) {
           wx.showToast({
             title: '更新成功',
           });
@@ -238,9 +229,8 @@ Page({
             icon: 'none',
           })
         }
-      })
-      
-    }
+      }
+    })
   },
 
   // 改动了其中一个picker

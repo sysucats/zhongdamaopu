@@ -1,35 +1,22 @@
 // 负责用户表的管理、使用接口
 import { randomInt, userInfoEq } from './utils.js';
 
-const config = require('./config.js');
-
-const use_wx_cloud = config.use_wx_cloud; // 是否使用微信云，不然使用Laf云
-const cloud = use_wx_cloud ? wx.cloud : require('./cloudAccess.js').cloud;
+const cloud = require('./cloudAccess.js').cloud;
 
 // 获取当前用户
 // 如果数据库中没有会后台自动新建并返回
 function getUser() {
   return new Promise(resolve => {
-    if(use_wx_cloud){ // 使用微信云
-      cloud.callFunction({
-        name: 'userOp',
-        data: {
-          op: 'get'
-        },
-        success: (res) => {
-          console.log(res);
-          resolve(res.result);
-        }
-      });
-    }
-    else{
-      cloud.invokeFunction('userOp', {
+    cloud.callFunction({
+      name: 'userOp',
+      data: {
         op: 'get'
-      }).then(res => {
-      console.log("userOp(get) Result(laf):", res);
-      resolve(res);
-    })
-    }
+      },
+      success: (res) => {
+        console.log(res);
+        resolve(res.result);
+      }
+    });
   });
 }
 
@@ -68,24 +55,13 @@ async function getCurUserInfoOrFalse() {
     console.log('需要更新');
     user.userInfo = res.userInfo;
     // 更新数据库的userInfo
-    if(use_wx_cloud){ //微信云
-      cloud.callFunction({
-        name: 'userOp',
-        data: {
-          op: 'update',
-          user: user
-        }
-      });
-    }
-    else{ // Laf云
-      cloud.invokeFunction('userOp', {
+    cloud.callFunction({
+      name: 'userOp',
+      data: {
         op: 'update',
         user: user
-      }).then(res => {
-        console.log("userOp(update) Result(laf):", res);
-      });
-    }
-    
+      }
+    });
   }
 
   // 合并重要属性

@@ -9,14 +9,24 @@ module.exports = {
   // 若使用 laf 后台，请填写下面的后台 url
   laf_url: 'https://6ovcqp.sysucats.com:16778',
 
-  // 科普页图片
+  // 科普页图片 For wx Cloud
+  // science_imgs: [
+  //   "cloud://rel-h8n9f.7265-rel-h8n9f-1302587287/系统/1.png",
+  //   "cloud://rel-h8n9f.7265-rel-h8n9f-1302587287/系统/2.png",
+  //   "cloud://rel-h8n9f.7265-rel-h8n9f-1302587287/系统/3.png",
+  //   "cloud://rel-h8n9f.7265-rel-h8n9f-1302587287/系统/4.png",
+  //   "cloud://rel-h8n9f.7265-rel-h8n9f-1302587287/系统/5.png"
+  // ],
+
+  // 科普页图片 For Laf Cloud
   science_imgs: [
-    "cloud://rel-h8n9f.7265-rel-h8n9f-1302587287/系统/1.png",
-    "cloud://rel-h8n9f.7265-rel-h8n9f-1302587287/系统/2.png",
-    "cloud://rel-h8n9f.7265-rel-h8n9f-1302587287/系统/3.png",
-    "cloud://rel-h8n9f.7265-rel-h8n9f-1302587287/系统/4.png",
-    "cloud://rel-h8n9f.7265-rel-h8n9f-1302587287/系统/5.png"
+    "https://oss.sysucats.com:16778/6ovcqp-cat/%E7%B3%BB%E7%BB%9F/1.png",
+    "https://oss.sysucats.com:16778/6ovcqp-cat/%E7%B3%BB%E7%BB%9F/2.png",
+    "https://oss.sysucats.com:16778/6ovcqp-cat/%E7%B3%BB%E7%BB%9F/3.png",
+    "https://oss.sysucats.com:16778/6ovcqp-cat/%E7%B3%BB%E7%BB%9F/4.png",
+    "https://oss.sysucats.com:16778/6ovcqp-cat/%E7%B3%BB%E7%BB%9F/5.png"
   ],
+
   // 赞赏码图片
   reward_img: "cloud://rel-eeeccf.7265-rel-eeeccf-1258586139/系统/reward.jpg",
   // 新猫问卷图片

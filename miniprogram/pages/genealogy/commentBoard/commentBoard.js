@@ -278,7 +278,7 @@ Page({
 
         // 检测接口的返回
         console.log(res);
-        if (res.errCode != 0 || res.result.suggest != "pass") {
+        if (res.errcode != 0 || res.result.suggest != "pass") {
           // 内容检测未通过
           console.log(res.result.label);
           const label_code = res.result.label;

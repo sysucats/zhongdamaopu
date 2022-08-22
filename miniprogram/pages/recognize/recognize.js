@@ -6,8 +6,7 @@ const getGlobalSettings = utils.getGlobalSettings;
 const randomInt = utils.randomInt;
 const loadFilter = utils.loadFilter;
 
-const use_wx_cloud = config.use_wx_cloud; // 是否使用微信云，不然使用Laf云
-const cloud = use_wx_cloud ? wx.cloud : require('../../cloudAccess.js').cloud;
+const cloud = require('../../cloudAccess.js').cloud;
 
 // 接口设置，onLoad中从数据库拉取。
 var interfaceURL;

@@ -4,9 +4,7 @@ const randomInt = utils.randomInt;
 const isManager = utils.isManager;
 const formatDate = utils.formatDate;
 
-const config = require('../../../config.js');
-const use_wx_cloud = config.use_wx_cloud; // 是否使用微信云，不然使用Laf云
-const cloud = use_wx_cloud ? wx.cloud : require('../../../cloudAccess.js').cloud;
+const cloud = require('../../../cloudAccess.js').cloud;
 
 Page({
 
@@ -55,7 +53,9 @@ Page({
     const db = cloud.database();
     db.collection('reward').orderBy('mdate', 'desc').get().then(res => {
       for (var r of res.data) {
-        r.mdateStr = r.mdate.getFullYear() + '年' + (r.mdate.getMonth() + 1) + '月';
+        console.log("Reward:", r);
+        var mdate = new Date(r.mdate);
+        r.mdateStr = mdate.getFullYear() + '年' + (mdate.getMonth() + 1) + '月';
         r.records_raw = r.records;
         r.records = r.records.replace(/^\#+|\#+$/g, '').split('#');
         r.changing = false;
@@ -93,19 +93,37 @@ Page({
       records: records_raw,
     }
     const that = this;
-    if(use_wx_cloud){
+
+    if (reward_to_change._id) { // Update
       cloud.callFunction({
-        name: 'updateReward',
+        name: 'curdOp',
         data: {
-          reward_to_change: reward_to_change
+          permissionLevel: 3,
+          operation: "update",
+          collection: "reward",
+          item_id: reward_to_change._id,
+          data: {
+            records: reward_to_change.records
+          }
         }
       }).then(res => {
         that.loadRewards();
       });
-    }
-    else{
-      cloud.invokeFunction('updateReward', {
-          reward_to_change: reward_to_change
+    } else { // Add 新月份
+      // TODO 这里有 Bug，上传参数 mdate 实际上是字符串，保存在数据库上也是字符串
+      // 而在云函数上创建的 mdate: new Date() 在数据库上虽然显示为字符串但实际上是 Date
+      // 导致 cloud orderby 结果出错
+      cloud.callFunction({
+        name: 'curdOp',
+        data: {
+          permissionLevel: 3,
+          operation: "add",
+          collection: "reward",
+          data: {
+            mdate: new Date(reward_to_change.mdate),
+            records: reward_to_change.records
+          }
+        }
       }).then(res => {
         that.loadRewards();
       });

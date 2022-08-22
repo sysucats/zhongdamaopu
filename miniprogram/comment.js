@@ -1,6 +1,4 @@
-const config = require('./config.js');
-const use_wx_cloud = config.use_wx_cloud; // 是否使用微信云，不然使用Laf云
-const cloud = use_wx_cloud ? wx.cloud : require('./cloudAccess.js').cloud;
+const cloud = require('./cloudAccess.js').cloud;
 
 // 使用openid来读取用户信息
 async function getCatCommentCount(cat_id) {

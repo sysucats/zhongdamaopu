@@ -1,13 +1,11 @@
 // pages/manage/manageNews/createNews/createNews.js
 const utils = require('../../../utils.js');
 const user = require('../../../user.js');
-const config = require('../../../config.js');
 const generateUUID = utils.generateUUID;
 const isManager = utils.isManager;
 
 const getCurUserInfoOrFalse = user.getCurUserInfoOrFalse;
 
-const use_wx_cloud = config.use_wx_cloud; // 是否使用微信云，不然使用Laf云
 const cloud = require('../../../cloudAccess.js').cloud;
 
 Page({
@@ -354,32 +352,23 @@ Page({
             setNewsModal: setNewsModal
         };
 
-        if(use_wx_cloud){ // 微信云：直接 add
-            const db = cloud.database();
-            db.collection('news').add({
-                data: data,
-                success: (res) => {
-                    console.log(res);
-                    that.setData({
-                        news_id: res._id
-                    })
-                },
-                fail: console.error
-            })
-        }
-        else{ // Laf云：调用云函数
-            cloud.invokeFunction("newsOp", {
-                type: "create",
-                item_data: data
-            }).then(res => {
-                console.log("newOp(create) Result:", res);
-                if(res.ok){
-                    that.setData({
-                        news_id: res._id
-                    })
-                }
-            });
-        }
+        cloud.callFunction({
+            name: "curdOp", 
+            data: {
+                permissionLevel: 3,
+                operation: "add",
+                collection: "news",
+                data: data
+        }}
+        ).then(res => {
+            console.log("newOp(create) Result:", res);
+            if(res.ok){
+                that.setData({
+                    news_id: res._id
+                })
+            }
+        });
+
         wx.showToast({
             title: '发布成功',
             icon: 'success',

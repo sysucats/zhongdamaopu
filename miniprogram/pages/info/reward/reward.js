@@ -82,7 +82,7 @@ Page({
     db.collection('reward').orderBy('mdate', 'desc').get().then(res => {
       console.log(res.data);
       for (var r of res.data) {
-        const tmp = r.mdate;
+        const tmp = new Date(r.mdate);
         r.mdate = tmp.getFullYear() + '年' + (tmp.getMonth()+1) + '月';
         r.records = r.records.replace(/^\#+|\#+$/g, '').split('#');
       }

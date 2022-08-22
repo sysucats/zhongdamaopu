@@ -9,7 +9,6 @@ const requestNotice = msg.requestNotice;
 const config = require("../../../config.js");
 const notifyChkFeedbackTplId = config.msg.notifyChkFeedback.id;
 
-const use_wx_cloud = config.use_wx_cloud; // 是否使用微信云，不然使用Laf云
 const cloud = require('../../../cloudAccess.js').cloud;
 
 const step = 6;
@@ -162,55 +161,35 @@ Page({
       success(res) {
         if (res.confirm) {
           console.log('确认反馈处理');
-          if(use_wx_cloud){
-            cloud.callFunction({
-              name: "manageFeedback",
+          cloud.callFunction({
+            name: "curdOp",
+            data: {
+              permissionLevel: 1,
+              operation: 'update',
+              collection: "feedback",
+              item_id: feedback._id,
               data: {
-                operation: 'deal',
-                feedback: feedback
+                dealed: true,
+                dealDate: new Date()
               }
-            }).then(res => {
-              console.log("反馈已处理：" + feedback._id);
-              console.log(res.data);
-              // 直接从列表里去掉这个反馈，不完全加载了
-              const feedbacks = that.data.feedbacks;
-              const new_feedbacks = feedbacks.filter((fb, index, arr) => {
-                // 这个feedback是用户点击的feedback，在上面定义的
-                return fb._id != feedback._id;
+            }
+          }).then(res => {
+            console.log("反馈已处理：" + feedback._id);
+            // 直接从列表里去掉这个反馈，不完全加载了
+            const feedbacks = that.data.feedbacks;
+            const new_feedbacks = feedbacks.filter((fb, index, arr) => {
+              // 这个feedback是用户点击的feedback，在上面定义的
+              return fb._id != feedback._id;
+            });
+            that.setData({
+              feedbacks: new_feedbacks,
+              total: that.data.total - 1
+            }, () => {
+              wx.showToast({
+                title: '反馈已处理',
               });
-              that.setData({
-                feedbacks: new_feedbacks,
-                total: that.data.total - 1
-              }, () => {
-                wx.showToast({
-                  title: '反馈已处理',
-                });
-              });
-            })
-          }
-          else{
-            cloud.invokeFunction("feedbackOp", {
-              operation: 'deal',
-              feedback: feedback
-            }).then(res => {
-              console.log("反馈已处理：" + feedback._id);
-              console.log(res.data);
-              // 直接从列表里去掉这个反馈，不完全加载了
-              const feedbacks = that.data.feedbacks;
-              const new_feedbacks = feedbacks.filter((fb, index, arr) => {
-                // 这个feedback是用户点击的feedback，在上面定义的
-                return fb._id != feedback._id;
-              });
-              that.setData({
-                feedbacks: new_feedbacks,
-                total: that.data.total - 1
-              }, () => {
-                wx.showToast({
-                  title: '反馈已处理',
-                });
-              });
-            })
-          }
+            });
+          })
         }
       }
     })
