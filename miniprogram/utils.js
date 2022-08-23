@@ -1,5 +1,4 @@
 const sha256 = require('./packages/sha256/sha256.js');
-const config = require('./config.js');
 
 const cloud = require('./cloudAccess.js').cloud;
 
@@ -38,7 +37,7 @@ function isManager(callback, req=1) {
     }
   }).then(res => {
     // console.log(res);
-    callback(res.result);
+    callback(res);
   });
 }
 

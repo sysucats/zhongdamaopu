@@ -5,7 +5,6 @@ const config = require('../../config.js');
 // 是否使用微信云，不然使用Laf云
 const cloud = require('../../cloudAccess.js').cloud;
 
-// console.log("utils:", utils);
 const isManager = utils.isManager;
 
 const text_cfg = config.text;

@@ -13,8 +13,8 @@ function getUser() {
         op: 'get'
       },
       success: (res) => {
-        console.log(res);
-        resolve(res.result);
+        console.log("userOp(get):", res);
+        resolve(res);
       }
     });
   });

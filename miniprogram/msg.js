@@ -2,7 +2,6 @@ const formatDate = require("./utils").formatDate;
 const arrayResort = require("./utils").arrayResort;
 const msgConfig = require("./config").msg;
 
-const config = require('./config.js');
 const cloud = require('./cloudAccess.js').cloud;
 
 // 订阅请求

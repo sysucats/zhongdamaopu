@@ -50,7 +50,7 @@ module.exports = {
   msg: {
     //审核结果通知模板
     verify: {
-      id: 'AtntuAUGnzoBumjfmGB8Yyc-67FUxRH5Cw7bnEYFCXo',
+      id: 'LixV04VF09l6Qk6XrTXhvWy2tjJzpB4FNoNOCLlP-hc',
       map: {
         title: "thing2", // 标题
         content: "thing7", // 内容
@@ -59,7 +59,7 @@ module.exports = {
     },
     // 提醒审核模版
     notifyVerify: {
-      id: 'jxcvND-iLSQZLZhlHD2A91gY0tLSfzyYc3bl39bxVuk',
+      id: '3WG7XgvD3m5kYb5Dav74WY2QU79_Sm0Odg2ql_nVguQ',
       map: {
         title: "thing2",
         number: "number5",
@@ -68,7 +68,7 @@ module.exports = {
     },
     // 提醒查看反馈模板
     notifyChkFeedback: {
-      id: 'jxcvND-iLSQZLZhlHD2A97jP3fm_FWV4wL_GFUcLxcQ',
+      id: '3WG7XgvD3m5kYb5Dav74WWjyTBImSLuj5Q6ck-4fSBA',
       map: {
         title: "thing2",
         number: "number5",
@@ -77,7 +77,7 @@ module.exports = {
     },
     // 反馈回复结果模板
     feedback: {
-      id: 'IeKS7nPSsBy62REOKiDC2zuz_M7RbKwR97ZiIy_ocmw',
+      id: 'KuXs7MgnlKokmTZQDgKT-1SCVE0MhXp-P8I3nX28DbM',
       map: {
         title: "thing3", // 标题
         content: "thing5", // 内容
