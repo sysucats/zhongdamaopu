@@ -519,8 +519,6 @@ Page({
     const that = this;
     const cat = this.data.cat;
 
-    // [Warn] - 生成指定页面的二维码的前提是，小程序必须审核并发布
-    //    审核成功并发布的小程序才能正常调用二维码生成接口
     cloud.callFunction({
       name: 'getMpCode',
       data: {
