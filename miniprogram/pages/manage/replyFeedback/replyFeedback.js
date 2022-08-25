@@ -110,7 +110,10 @@ Page({
                 collection: "feedback",
                 item_id: that.data.feedback._id, 
                 data: {
-                  replyDate: new Date(),
+                  // replyDate: new Date(),
+                  replyDate: {
+                    "$date": new Date().toISOString()
+                  },
                   replyInfo: submitData.replyInfo,
                 } 
               }

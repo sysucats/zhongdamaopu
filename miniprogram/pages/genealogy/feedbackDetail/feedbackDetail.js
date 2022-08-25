@@ -14,7 +14,6 @@ const sendNotifyChkFeeedback = msg.sendNotifyChkFeeedback;
 
 const text_cfg = require('../../../config.js').text;
 
-// 是否使用微信云，不然使用Laf云
 const cloud = require('../../../cloudAccess.js').cloud;
 
 Page({
@@ -104,7 +103,10 @@ Page({
     })
     var data = {
       userInfo: this.data.user.userInfo,
-      openDate: new Date(),
+      // openDate: new Date(),
+      openDate: {
+        "$date": new Date().toISOString()
+      },
       feedbackInfo: submitData.feedbackInfo,
       contactInfo: submitData.contactInfo,
       dealed: false,

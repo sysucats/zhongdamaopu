@@ -12,7 +12,6 @@ const canvasMax = 2000; // 正方形画布的尺寸px
 var global_photo; // 数据库项
 var global_fileID_compressed, global_fileID_watermark;
 
-const config = require('../../../config.js');
 const text_cfg = config.text;
 
 // 自动搞的数量

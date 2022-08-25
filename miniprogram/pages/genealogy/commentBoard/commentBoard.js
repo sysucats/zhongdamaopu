@@ -244,7 +244,10 @@ Page({
     var item = {
       content: content,
       user_openid: user.openid,
-      create_date: new Date(),
+      // create_date: new Date(),
+      create_date: {
+        "$date": new Date().toISOString()
+      },
       cat_id: cat_id,
     };
 

@@ -224,7 +224,10 @@ Page({
       photo_id: upRes.fileID,
       userInfo: that.data.user.userInfo,
       verified: false,
-      mdate: (new Date()),
+      // mdate: new Date(),
+      mdate: {
+        "$date": new Date().toISOString()
+      },
       shooting_date: photo.shooting_date,
       photographer: photo.pher
     };

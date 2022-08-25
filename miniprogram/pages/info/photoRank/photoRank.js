@@ -56,7 +56,6 @@ Page({
         console.log('未授权');
         return;
       }
-      console.log(res);
       that.setData({
         userInfo: res.userInfo,
       }, () => { that.getMyRank() })
@@ -66,12 +65,13 @@ Page({
     const that = this;
     const db = cloud.database();
     db.collection('photo_rank').orderBy('mdate', 'desc').limit(1).get().then(res => {
+      console.log("PhotoRank:", res.data);
       if (res.data.length == 0) {
-        // 还没有月榜
+        console.log("还没有月榜");
         return false;
       }
       const rank_stat = res.data[0].stat;
-      console.log(rank_stat);
+      console.log("RankState:", rank_stat);
       var ranks = [];
       for (const key in rank_stat) {
         ranks.push({
@@ -83,11 +83,11 @@ Page({
       ranks.sort((a, b) => {
         return parseInt(b.count) - parseInt(a.count)
       });
-      console.log(ranks);
+      console.log("Ranks:", ranks);
       for (var i = 0; i < ranks.length; i++) {
         ranks[i].rank = i+1;
       }
-      for (var i = 1; i<ranks.length; i++) {
+      for (var i = 1; i < ranks.length; i++) {
         if (ranks[i].count == ranks[i-1].count) {
           ranks[i].rank = ranks[i - 1].rank;
         }
@@ -109,10 +109,8 @@ Page({
       data: {
         op: "get",
       },
-      complete: (res) => {
-        console.log(res);
+      success: (res) => {
         const openid = res.openid;
-        console.log(ranks);
         for (const i in ranks) {
           if (ranks[i]._openid === openid) {
             that.setData({

@@ -322,8 +322,6 @@ Page({
             return;
         }
 
-        var date = new Date();
-
         // 上传图片
         await this.uploadCover();
         await this.uploadAllImg();
@@ -343,7 +341,10 @@ Page({
         var data = {
             userInfo: that.data.user.userInfo,
             userNickname: submitData.name,
-            date: date,
+            // date: new Date(),
+            date: {
+                "$date": new Date().toISOString()
+              },
             title: submitData.title,
             mainContent: submitData.mainContent,
             coverPath: that.data.cover_path,

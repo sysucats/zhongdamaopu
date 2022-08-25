@@ -170,7 +170,10 @@ Page({
               item_id: feedback._id,
               data: {
                 dealed: true,
-                dealDate: new Date()
+                // dealDate: new Date(),
+                dealDate: {
+                  "$date": new Date().toISOString()
+                }
               }
             }
           }).then(res => {

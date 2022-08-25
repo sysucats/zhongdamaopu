@@ -110,9 +110,7 @@ Page({
         that.loadRewards();
       });
     } else { // Add 新月份
-      // TODO 这里有 Bug，上传参数 mdate 实际上是字符串，保存在数据库上也是字符串
-      // 而在云函数上创建的 mdate: new Date() 在数据库上虽然显示为字符串但实际上是 Date
-      // 导致 cloud orderby 结果出错
+      // 这里注意前端 mdate 的上传格式
       cloud.callFunction({
         name: 'curdOp',
         data: {
@@ -120,7 +118,9 @@ Page({
           operation: "add",
           collection: "reward",
           data: {
-            mdate: new Date(reward_to_change.mdate),
+            mdate: {
+              "$date": new Date(reward_to_change.mdate).toISOString()
+            },
             records: reward_to_change.records
           }
         }

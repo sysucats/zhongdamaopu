@@ -230,7 +230,10 @@ Page({
         var data = {
             userInfoLastModify: this.data.user.userInfo,
             userNicknameLastModify: submitData.name,
-            dateLastModify: (new Date()),
+            // dateLastModify: (new Date()),
+            dateLastModify: {
+                "$date": new Date().toISOString()
+              },
             title: submitData.title,
             mainContent: submitData.mainContent,
             class: classBelongto,
