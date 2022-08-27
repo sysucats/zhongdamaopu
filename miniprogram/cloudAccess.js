@@ -98,7 +98,7 @@ if (!use_wx_cloud) {
   // 上传文件兼容 cloud.uploadFile
   cloudPrototype.uploadFile = async function (options) {
     try {
-      const res = uploadFile(options);
+      const res = await uploadFile(options);
       if (options.success) {
         options.success(res);
       }
@@ -156,6 +156,7 @@ async function uploadFile(options) {
         // wx.uploadFile 和 wx.cloud.uplaodFile 返回值不一样
         // TODO 生成 fileID 按wxcloud生成的是图片的地址
         res.fileID = postURL + "/" + formData.key; 
+        console.log("res.fileID", res.fileID);
         resolve(res);
       },
       fail (err) {

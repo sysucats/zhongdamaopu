@@ -93,7 +93,7 @@ Page({
     const db = cloud.database();
     const _ = db.command;
     db.collection('photo').where({ photo_compressed: _.in([undefined, '']), verified: true, photo_id: /^((?!\.heic$).)*$/i }).count().then(res => {
-      console.log(res);
+      console.log("imProcess loadProcess:", res);
       that.setData({
         total: res.total
       }, () => {
@@ -135,9 +135,8 @@ Page({
     const db = cloud.database();
     const _ = db.command;
     db.collection('photo').where({ photo_compressed: _.in([undefined, '']), verified: true }).get().then(res => {
-      console.log(res);
+      console.log("imProcess beginProcess", res);
       if(res.data.length) {
-
         // 自动下一步
         if (auto_count) {
           auto_count--;
@@ -150,7 +149,7 @@ Page({
             showCancel: false,
           });
         }
-        
+
       } else {
         wx.showModal({
           title: '处理完成',
@@ -164,7 +163,7 @@ Page({
   // 处理一张图片
   processOne: function (photo) {
     photo.mdate = new Date(photo.mdate).toJSON();
-    console.log(photo);
+    // console.log(photo);
     global_photo = photo;
     const that = this;
     this.setData({phase: 0});
@@ -172,7 +171,7 @@ Page({
     wx.getImageInfo({
       src: photo.photo_id,
       success: res => {
-        console.log(res);
+        console.log("imProcess processOne:", res);
         that.setData({
           now: that.data.now + 1,
           phase: 1,
@@ -284,6 +283,7 @@ Page({
       cloudPath: 'compressed/' + generateUUID() + '.' + ext, // 上传至云端的路径
       filePath: filePath,
       success: res => {
+        console.log("uploadCompressed res:", res);
         global_fileID_compressed = res.fileID;
         that.setData({
           phase: 5
@@ -305,6 +305,7 @@ Page({
       cloudPath: 'watermark/' + generateUUID() + '.' + ext, // 上传至云端的路径
       filePath: filePath,
       success: res => {
+        console.log("uploadWatermark res:", res);
         global_fileID_watermark = res.fileID;
         that.setData({
           phase: 6
@@ -319,6 +320,8 @@ Page({
   // 更新数据库
   updataDatabase: function() {
     const that = this;
+    // console.log("global_fileID_compressed:", global_fileID_compressed);
+    // console.log("global_fileID_watermark", global_fileID_watermark);
     cloud.callFunction({
       name: 'managePhoto',
       data: {
@@ -328,12 +331,16 @@ Page({
         watermark: global_fileID_watermark,
       },
       success: () => {
+        console.log("Finish one photo!");
+        global_photo = '';
+        global_fileID_compressed = '';
+        global_fileID_watermark = '';
         that.setData({
           phase: 7,
           origin: {},
-          global_photo: '',
-          global_fileID_compressed: '',
-          global_fileID_watermark: '',
+          // global_photo: '',
+          // global_fileID_compressed: '',
+          // global_fileID_watermark: '',
         }, () => {
           wx.hideLoading();
           that.beginProcess();
