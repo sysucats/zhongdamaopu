@@ -5,6 +5,26 @@ const laf_url = config.laf_url;
 
 var cloud = wx.cloud;
 
+async function ensureToken() {
+  const accessToken = wx.getStorageSync('accessToken');
+  if (!accessToken || accessToken.expiredAt < Math.floor(Date.now() / 1000)) {
+    console.log('开始获取 access token');
+    const code = (await wx.login()).code;
+    const res = await cloud.invokeFunction('login', { code });
+    if (res.msg === 'OK') {
+      console.log('成功获取 access token');
+      wx.setStorageSync('accessToken', {
+        token: res.token,
+        expiredAt: res.expiredAt
+      });
+    } else {
+      console.log('获取 access token 出错', res);
+    }
+  } else {
+    console.log('access token 尚未过期，跳过获取');
+  }
+}
+
 if (!use_wx_cloud) {
   cloud = require('laf-client-sdk').init({
     baseUrl: laf_url,
@@ -20,25 +40,7 @@ if (!use_wx_cloud) {
   });
   
   // 检查 accessToken 是否未取得/已过期，若是则去获取
-  (async function ensureToken() {
-    const accessToken = wx.getStorageSync('accessToken');
-    if (!accessToken || accessToken.expiredAt < Math.floor(Date.now() / 1000)) {
-      console.log('开始获取 access token');
-      const code = (await wx.login()).code;
-      const res = await cloud.invokeFunction('login', { code });
-      if (res.msg === 'OK') {
-        console.log('成功获取 access token');
-        wx.setStorageSync('accessToken', {
-          token: res.token,
-          expiredAt: res.expiredAt
-        });
-      } else {
-        console.log('获取 access token 出错', res);
-      }
-    } else {
-      console.log('access token 尚未过期，跳过获取');
-    }
-  })();
+  ensureToken();
   
   // 搞一些骚操作替换 laf 数据库接口，使其兼容微信版本接口
   const documentPrototype = cloud.database().collection('$').doc('$').__proto__;
