@@ -142,7 +142,7 @@ Page({
         }]
       }
       filters.push(colour_item);
-      console.log(filters);
+      console.log("Filters:", filters);
       this.setData({
         filters: filters
       })
@@ -207,7 +207,7 @@ Page({
     if (new_index < 0 || new_index >= len) {
       return false;
     }
-    console.log(direct);
+    console.log("Move direction:", direct);
     const temp = category.items[index];
     category.items[index] = category.items[new_index];
     category.items[new_index] = temp;
@@ -262,7 +262,7 @@ Page({
     wx.showLoading({
       title: '正在上传...',
     });
-    console.log(filters);
+    console.log("Upload filters:", filters);
     // 处理回数据库中的原始格式
     var area = [];
     var colour = [];
@@ -281,28 +281,20 @@ Page({
       }
     }
     const that = this;
-    if(use_wx_cloud){ // 使用微信云
-      cloud.callFunction({
-        name: 'updateFilter',
+    cloud.callFunction({
+      name: 'curdOp',
+      data: {
+        permissionLevel: 2,
+        operation: "update",
+        collection: "setting",
+        item_id: "filter",
         data: {
-          to_upload: {
-            area: area,
-            colour: colour
-          }
-        }
-      }).then(res => {
-        that.reloadFilter();
-      });
-    }
-    else{ // 使用 Laf 云
-      cloud.invokeFunction('updateFilter', {
-        to_upload: {
           area: area,
           colour: colour
         }
-      }).then(res => {
-        that.reloadFilter();
-      });
-    }
+      }
+    }).then(res => {
+      that.reloadFilter();
+    });
   }
 })

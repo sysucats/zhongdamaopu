@@ -1,8 +1,7 @@
 // pages/news/detailNews/detailNews.js
 const utils = require('../../../utils.js');
-const config = require('../../../config.js');
-const use_wx_cloud = config.use_wx_cloud; // 是否使用微信云，不然使用Laf云
-const cloud = use_wx_cloud ? wx.cloud : require('../../../cloudAccess.js').cloud;
+
+const cloud = require('../../../cloudAccess.js').cloud;
 
 const isManager = utils.isManager;
 const shareTo = utils.shareTo;
@@ -123,41 +122,25 @@ Page({
     },
 
     _doRemove(item_id) {
-        if(use_wx_cloud){ // 微信云
-            cloud.callFunction({
-                name: "newsOp",
-                data: {
-                  type: "delete",
-                  item_id: item_id,
-                }
-            }).then((res) => {
-                console.log(res);
-                if (!res) {
-                    wx.showToast({
-                        icon: 'none',
-                        title: '删除失败',
-                    });
-                    return;
-                }
-                setTimeout(wx.navigateBack, 1000);
-            });
-        }
-        else{ // Laf云
-            cloud.invokeFunction("newsOp", {
-                type: "delete",
+        cloud.callFunction({
+            name: "curdOp",
+            data: {
+                permissionLevel: 3,
+                operation: "remove", 
+                collection: "news",
                 item_id: item_id
-            }).then((res) => {
-                console.log(res);
-                if (!res) {
-                    wx.showToast({
-                        icon: 'none',
-                        title: '删除失败',
-                    });
-                    return;
-                }
-                setTimeout(wx.navigateBack, 1000);
-            });
-        }
+            }
+        }).then((res) => {
+            console.log(res);
+            if (res.ok == false) {
+                wx.showToast({
+                    icon: 'none',
+                    title: '删除失败',
+                });
+                return;
+            }
+            setTimeout(wx.navigateBack, 1000);
+        });
     },
 
     removeNews() {

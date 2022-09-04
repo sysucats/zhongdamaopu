@@ -1,15 +1,12 @@
 // pages/manage/manageNews/createNews/createNews.js
 const utils = require('../../../utils.js');
 const user = require('../../../user.js');
-const config = require('../../../config.js');
 const generateUUID = utils.generateUUID;
 const isManager = utils.isManager;
 
 const getCurUserInfoOrFalse = user.getCurUserInfoOrFalse;
 
-const use_wx_cloud = config.use_wx_cloud; // 是否使用微信云，不然使用Laf云
-const cloud = use_wx_cloud ? wx.cloud : require('../../../cloudAccess.js').cloud;
-
+const cloud = require('../../../cloudAccess.js').cloud;
 
 Page({
     /**
@@ -262,36 +259,24 @@ Page({
         //获取后缀
         const index = tempFilePath.lastIndexOf(".");
         const ext = tempFilePath.substr(index + 1);
-       
-        let upRes;
-        if(use_wx_cloud){ // 微信云
-            upRes = await cloud.uploadFile({
-                cloudPath: 'news' + '/' + generateUUID() + '.' + ext, // 上传至云端的路径
-                filePath: tempFilePath, // 小程序临时文件路径
-            });
-        }
-        else{ //Laf云
-            // TODO: uploadFile
-            // const cloudPath = 'news' + '/' + generateUUID() + '.' + ext
-            // uploadFile(cloudPath, photo, ext).then(res => {
-            //     console.log("uploadFile(laf):", res);
-            // });
-            // upRes = 1;
-        }
         
+        const that = this;
+        const upRes = await cloud.uploadFile({
+            cloudPath: 'news' + '/' + generateUUID() + '.' + ext, // 上传至云端的路径
+            filePath: tempFilePath, // 小程序临时文件路径
+        });
 
-        // 返回文件 ID
+        console.log("upload Result: ", upRes);
         if (type == 0) { // 上传普通图片，更新路径 photos_path
-            this.data.photos_path.push(upRes.fileID);
-            this.setData({
-                photos_path: this.data.photos_path
+            that.data.photos_path.push(upRes.fileID);
+            that.setData({
+                photos_path: that.data.photos_path
             });
         } else { // 上传封面，更新路径 cover_path
-            this.setData({
+            that.setData({
                 cover_path: upRes.fileID
             });
         }
-        console.log("File Path: ", upRes.fileID);
     },
 
     radioButtonTap: function (e) {
@@ -337,8 +322,6 @@ Page({
             return;
         }
 
-        var date = new Date();
-
         // 上传图片
         await this.uploadCover();
         await this.uploadAllImg();
@@ -358,7 +341,10 @@ Page({
         var data = {
             userInfo: that.data.user.userInfo,
             userNickname: submitData.name,
-            date: date,
+            // date: new Date(),
+            date: {
+                "$date": new Date().toISOString()
+              },
             title: submitData.title,
             mainContent: submitData.mainContent,
             coverPath: that.data.cover_path,
@@ -367,32 +353,23 @@ Page({
             setNewsModal: setNewsModal
         };
 
-        if(use_wx_cloud){ // 微信云：直接 add
-            const db = cloud.database();
-            db.collection('news').add({
-                data: data,
-                success: (res) => {
-                    console.log(res);
-                    that.setData({
-                        news_id: res._id
-                    })
-                },
-                fail: console.error
-            })
-        }
-        else{ // Laf云：调用云函数
-            cloud.invokeFunction("newsOp", {
-                type: "create",
-                item_data: data
-            }).then(res => {
-                console.log("newOp(create) Result:", res);
-                if(res.ok){
-                    that.setData({
-                        news_id: res._id
-                    })
-                }
-            });
-        }
+        cloud.callFunction({
+            name: "curdOp", 
+            data: {
+                permissionLevel: 3,
+                operation: "add",
+                collection: "news",
+                data: data
+        }}
+        ).then(res => {
+            console.log("newOp(create) Result:", res);
+            if(res.ok){
+                that.setData({
+                    news_id: res._id
+                })
+            }
+        });
+
         wx.showToast({
             title: '发布成功',
             icon: 'success',

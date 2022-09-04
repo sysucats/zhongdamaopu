@@ -14,8 +14,9 @@ const sendNotifyVertifyNotice = msg.sendNotifyVertifyNotice;
 
 const config = require('../../../config.js');
 const text_cfg = config.text;
-const use_wx_cloud = config.use_wx_cloud; // 是否使用微信云，不然使用Laf云
-const cloud = use_wx_cloud ? wx.cloud : require('../../../cloudAccess.js').cloud;
+
+// 是否使用微信云，不然使用Laf云
+const cloud = require('../../../cloudAccess.js').cloud;
 
 Page({
 
@@ -49,7 +50,6 @@ Page({
       });
     })
     //this.checkUInfo();
-
     // 获取一下现在的日期，用在拍摄日前选择上
     const today = new Date();
     var now_date = today.getFullYear() + '-' + (today.getMonth()+1) + '-' + today.getDate();
@@ -59,13 +59,11 @@ Page({
 
     // 加载设置、关闭上传功能
     const that = this;
-    
     checkCanUpload().then(res => {
       that.setData({
         canUpload: res
       });
     })
-
   },
 
   onUnload:function(options){
@@ -115,7 +113,6 @@ Page({
       },
     })
   },
-
 
   // 点击单个上传
   async uploadSingleClick(e) {
@@ -199,7 +196,6 @@ Page({
         console.log("toSendNVMsg");
       }
     })
-    
   },
 
   async uploadImg(photo) {
@@ -214,7 +210,6 @@ Page({
     const index = tempFilePath.lastIndexOf(".");
     const ext = tempFilePath.substr(index + 1);
 
-    // TODO uploadFile
     let upRes = await cloud.uploadFile({
       cloudPath: cat.campus + '/' + generateUUID() + '.' + ext, // 上传至云端的路径
       filePath: tempFilePath, // 小程序临时文件路径
@@ -229,24 +224,23 @@ Page({
       photo_id: upRes.fileID,
       userInfo: that.data.user.userInfo,
       verified: false,
-      mdate: (new Date()),
+      // mdate: new Date(),
+      mdate: {
+        "$date": new Date().toISOString()
+      },
       shooting_date: photo.shooting_date,
       photographer: photo.pher
     };
-    if(use_wx_cloud) { // 使用微信云，直接上传数据库
-      const db = cloud.database();
-      dbAddRes = await db.collection('photo').add({
+
+    dbAddRes = await cloud.callFunction({
+      name: "curdOp", 
+      data: {
+        operation: "add",
+        collection: "photo",
         data: params
-      });
-      console.log("addPhoto result(wx):", dbAddRes);
-    }
-    else{ // 使用Laf云，调用云函数
-      dbAddRes = await cloud.invokeFunction("photoOp", {
-        type: "addPhoto",
-        data: params
-      });
-      console.log("photoOp(addPhoto) result(laf):", dbAddRes);
-    }
+      }
+    });
+    console.log("curdOp(add-photo) result:", dbAddRes);
   },
   
   pickDate(e) {

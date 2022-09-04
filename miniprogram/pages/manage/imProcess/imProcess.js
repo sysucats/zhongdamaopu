@@ -4,20 +4,17 @@ const generateUUID = utils.generateUUID;
 const isManager = utils.isManager;
 
 const config = require("../../../config.js");
-const use_wx_cloud = config.use_wx_cloud; // 是否使用微信云，不然使用Laf云
-const cloud = use_wx_cloud ? wx.cloud : require('../../../cloudAccess.js').cloud;
+const cloud = require('../../../cloudAccess.js').cloud;
 
-const ctx = wx.createCanvasContext('bigPhoto');
-const canvasMax = 2000; // 正方形画布的尺寸px
+const drawUtils = require("./draw.js");
 
-var global_photo; // 数据库项
-var global_fileID_compressed, global_fileID_watermark;
 
-const config = require('../../../config.js');
 const text_cfg = config.text;
 
-// 自动搞的数量
-var auto_count = 0;
+const canvasMax = 2000; // 正方形画布的尺寸px
+const compressLength = 500; // 压缩图的最长边大小
+
+
 Page({
 
   /**
@@ -27,24 +24,29 @@ Page({
     tipText: '正在鉴权...',
     tipBtn: false,
     phase: 0,
-    phase2str: {
-      0: '准备开始',
-      1: '获取原图URL',
-      2: '已生成压缩图',
-      3: '已生成水印图',
-      4: '准备上传',
-      5: '已上传压缩图',
-      6: '已上传水印图',
-      7: '已写入数据库'
-    },
+    phase2str: [
+      '未开始',
+      '获取原图',
+      '生成压缩图',
+      '生成水印图',
+      '上传压缩图',
+      '上传水印图',
+      '写入数据库'
+    ],
     images_path: {},
     now: 0, // 当前状态
+    processing: false,
   },
 
   /**
    * 生命周期函数--监听页面加载
    */
   onLoad: function () {
+    this.checkAuth();
+    // this.tipAutoProcess();
+  },
+
+  tipAutoProcess: function () {
     const that = this;
     wx.showModal({
       title: '提示',
@@ -90,17 +92,18 @@ Page({
     });
   },
 
-  loadProcess() {
-    const that = this;
+  async loadProcess() {
     const db = cloud.database();
     const _ = db.command;
-    db.collection('photo').where({ photo_compressed: _.in([undefined, '']), verified: true, photo_id: /^((?!\.heic$).)*$/i }).count().then(res => {
-      console.log(res);
-      that.setData({
-        total: res.total
-      }, () => {
-        // that.beginProcess();
-      });
+    const total = (await db.collection('photo').where({
+      photo_compressed: _.in([undefined, '']),
+      verified: true,
+      photo_id: /^((?!\.heic$).)*$/i
+    }).count()).total;
+    console.log("imProcess loadProcess:", total);
+    this.setData({
+      total: total,
+      now: 0,
     });
   },
 
@@ -116,7 +119,7 @@ Page({
         that.setData({
           auth: true
         });
-        that.loadProcess();
+        that.loadProcess().then();
       } else {
         that.setData({
           tipText: '只有管理员Level-3能进入嗷',
@@ -127,262 +130,192 @@ Page({
     }, 3)
   },
 
-  clickBegin: function() {
-    auto_count = 30;
-    this.beginProcess();
+  clickProcessBtn: async function () {
+    this.data.processing = !this.data.processing;
+    this.setData({
+      processing: this.data.processing
+    });
+    // 开始处理
+    if (this.data.processing) {
+      drawUtils.initCanvas();
+      await this.beginProcess();
+      return;
+    }
+    // 停止处理，考虑放个mask
+    wx.showLoading({
+      title: '等待完成当前...',
+    });
   },
 
-  beginProcess: function () {
-    const that = this;
+  beginProcess: async function () {
     const db = cloud.database();
     const _ = db.command;
-    db.collection('photo').where({ photo_compressed: _.in([undefined, '']), verified: true }).get().then(res => {
-      console.log(res);
-      if(res.data.length) {
+    while (this.data.processing) {
+      const photos = (await db.collection('photo').where({
+        photo_compressed: _.in([undefined, '']),
+        verified: true
+      }).limit(1).get()).data;
+      console.log("imProcess beginProcess", photos);
 
-        // 自动下一步
-        if (auto_count) {
-          auto_count--;
-          console.log("还剩" + auto_count + "张自动上传");
-          that.processOne(res.data[0]);
-        } else {
-          wx.showModal({
-            title: '等待操作',
-            content: '继续处理请点击按钮',
-            showCancel: false,
-          });
-        }
-        
-      } else {
+      if (!photos.length) {
         wx.showModal({
           title: '处理完成',
           content: '没有等待处理的猫图啦',
           showCancel: false,
         });
+        this.setData({
+          processing: false
+        });
+        break;
       }
-    });
+      // 开始处理一张图
+      await this.processOne(photos[0]);
+      this.setData({
+        now: this.data.now + 1
+      });
+      wx.hideLoading();
+    }
+  },
+
+  setPhase: function(phase) {
+    this.setData({phase: phase});
   },
 
   // 处理一张图片
-  processOne: function (photo) {
-    photo.mdate = new Date(photo.mdate).toJSON();
-    console.log(photo);
-    global_photo = photo;
-    const that = this;
-    this.setData({phase: 0});
+  processOne: async function (photoInfo) {
+    photoInfo.mdate = new Date(photoInfo.mdate).toJSON();
     // 获取原图
-    wx.getImageInfo({
-      src: photo.photo_id,
-      success: res => {
-        console.log(res);
-        that.setData({
-          now: that.data.now + 1,
-          phase: 1,
-          origin: res
-        });
-        that.compress();
-      }
+    this.setPhase(1);
+    var photoObj = await wx.getImageInfo({
+      src: photoInfo.photo_id,
     });
+    console.log("imProcess processOne:", photoObj);
+    this.setData({
+      origin: photoObj
+    });
+    // 压缩图
+    this.setPhase(2);
+    const compressPath = await this.compress(photoObj);
+    console.log("compressPath", compressPath);
+    // 水印图
+    this.setPhase(3);
+    const watermarkPath = await this.watermark(photoObj, photoInfo);
+    console.log("watermarkPath", watermarkPath);
+    // 上传压缩图
+    const ext = photoObj.type;
+    this.setPhase(4);
+    const compressCloudPath = `compressed/${generateUUID()}.${ext}`;
+    const compressCloudID = await this.uploadImage(compressPath, compressCloudPath);
+    console.log("compressCloudID", compressCloudID);
+    // 上传水印图
+    this.setPhase(5);
+    const watermarkCloudPath = `watermark/${generateUUID()}.${ext}`;
+    const watermarkCloudID = await this.uploadImage(watermarkPath, watermarkCloudPath);
+    console.log("watermarkCloudID", watermarkCloudID);
+    // 更新数据库
+    this.setPhase(6);
+    await this.updataDatabase(photoInfo, compressCloudID, watermarkCloudID);
+    // 结束
+    this.setPhase(0);
   },
 
   // 获取压缩图
-  compress: function() {
-    const that = this;
-    const origin = this.data.origin;
+  compress: async function (oriPhotoObj) {
+    const origin = oriPhotoObj;
+
     const draw_rate = Math.max(origin.width, origin.height) / canvasMax;
     const draw_width = origin.width / draw_rate;
     const draw_height = origin.height / draw_rate;
+    console.log("draw size", draw_width, draw_height);
+
+    // 画上图片
+    await drawUtils.drawImage(origin.path, 0, 0, draw_width, draw_height);
 
     // 压缩后的大小
     var comp_width, comp_height;
     if (origin.width > origin.height) {
-      comp_width = 500;
-      comp_height = origin.height/origin.width * 500;
+      comp_width = compressLength;
+      comp_height = origin.height / origin.width * compressLength;
     } else {
-      comp_height = 500;
-      comp_width = origin.width/origin.height * 500;
+      comp_height = compressLength;
+      comp_width = origin.width / origin.height * compressLength;
     }
-    
-    ctx.drawImage(origin.path, 0, 0, draw_width, draw_height);
-    
-    // 写上水印
-    const photo = global_photo;
-    const userInfo = photo.userInfo;
-    ctx.setFontSize(draw_height * 0.03);
-    ctx.setFillStyle('white');
-    ctx.fillText(text_cfg.app_name + '@' + (photo.photographer || userInfo.nickName), 30, draw_height - (draw_height * 0.03));
-    
 
-    ctx.draw(false, function () {
-      // 变成图片显示
-      wx.canvasToTempFilePath({
-        canvasId: 'bigPhoto',
-        width: draw_width,
-        height: draw_height,
-        destWidth: comp_width,
-        destHeight: comp_height,
-        fileType: 'jpg',
-        success: function (res) {
-          that.setData({
-            phase: 2,
-            "images_path.compressed": res.tempFilePath
-          }, () => {
-            that.watermark();
-          });
-        }
-      }, that);
+    // 变成图片显示
+    var path = (await drawUtils.getTempPath({
+      width: draw_width,
+      height: draw_height,
+      destWidth: comp_width,
+      destHeight: comp_height,
+      fileType: origin.type,
+    })).tempFilePath;
+
+    this.setData({
+      "images_path.compressed": path
     });
+
+    return path;
   },
 
   // 打水印
-  watermark: function () {
-    const that = this;
-    const origin = this.data.origin;
+  watermark: async function (oriPhotoObj, photoInfo) {
+    const origin = oriPhotoObj;
+
     const draw_rate = Math.max(origin.width, origin.height) / canvasMax;
     const draw_width = origin.width / draw_rate;
     const draw_height = origin.height / draw_rate;
 
-    const photo = global_photo;
-    const userInfo = photo.userInfo;
-    // const shooting_date = photo.shooting_date;
-
-    ctx.drawImage(origin.path, 0, 0, draw_width, draw_height);
-    // ctx.drawImage(origin.path, 0, 0, draw_width, draw_height);
     // 写上水印
-    ctx.setFontSize(draw_height * 0.03);
-    ctx.setFillStyle('white');
-    ctx.fillText(text_cfg.app_name + '@' + (photo.photographer || userInfo.nickName), 30, draw_height - (draw_height * 0.03));
-    ctx.draw(false, function () {
-      // 变成图片显示
-      wx.canvasToTempFilePath({
-        canvasId: 'bigPhoto',
-        width: draw_width,
-        height: draw_height,
-        destWidth: origin.width,
-        destHeight: origin.height,
-        fileType: 'jpg',
-        success: function (res) {
-          that.setData({
-            phase: 3,
-            "images_path.watermark": res.tempFilePath
-          }, () => {
-            that.uploadCompressed();
-          })
-        }
-      }, that);
+    const text = `${text_cfg.app_name}@${photoInfo.photographer || photoInfo.userInfo.nickName}`
+    await drawUtils.writeWatermake({
+      fontSize: draw_height * 0.03,
+      fillStyle: "white",
+      text: text,
+      x: 30,
+      y: draw_height - (draw_height * 0.03)
     });
+
+    // 变成图片显示
+    var path = (await drawUtils.getTempPath({
+      width: draw_width,
+      height: draw_height,
+      destWidth: origin.width,
+      destHeight: origin.height,
+      fileType: origin.type,
+    })).tempFilePath;
+
+    this.setData({
+      "images_path.watermark": path
+    });
+
+    return path;
   },
 
-  // 上传压缩图
-  uploadCompressed: function() {
-    wx.showLoading({
-      title: '上传中',
-      mask: true,
-    });
-    const that = this;
-    const filePath = this.data.images_path.compressed;
-    const ext = this.data.origin.type;
-    if(use_wx_cloud){ // 微信云
-      cloud.uploadFile({
-        cloudPath: 'compressed/' + generateUUID() + '.' + ext, // 上传至云端的路径
-        filePath: filePath,
-        success: res => {
-          global_fileID_compressed = res.fileID;
-          that.setData({
-            phase: 5
-          }, () => {
-            that.uploadWatermark();
-          })
-        },
-        fail: console.error
-      })
-    }
-    else{ // Laf云
-      // TODO: uploadFile
-    }
-    
-  },
-
-  // 上传水印图
-  uploadWatermark: function () {
-    const that = this;
-    const filePath = this.data.images_path.watermark;
-    const ext = this.data.origin.type;
-    if(use_wx_cloud){ // 微信云
-      cloud.uploadFile({
-        cloudPath: 'watermark/' + generateUUID() + '.' + ext, // 上传至云端的路径
-        filePath: filePath,
-        success: res => {
-          global_fileID_watermark = res.fileID;
-          that.setData({
-            phase: 6
-          }, () => {
-            that.updataDatabase();
-          })
-        },
-        fail: console.error
-      })
-    }
-    else{ // Laf云
-      // TODO
-    }
-    
+  // 上传图片
+  uploadImage: async function (filePath, cloudPath) {
+    const res = (await cloud.uploadFile({
+      cloudPath: cloudPath,
+      filePath: filePath,
+    }));
+    return res.fileID;
   },
 
   // 更新数据库
-  updataDatabase: function() {
-    const that = this;
-    if(use_wx_cloud){
-      cloud.callFunction({
-        name: 'managePhoto',
-        data: {
-          photo: global_photo,
-          type: 'setProcess',
-          compressed: global_fileID_compressed,
-          watermark: global_fileID_watermark,
-        },
-        success: () => {
-          that.setData({
-            phase: 7,
-            origin: {},
-            global_photo: '',
-            global_fileID_compressed: '',
-            global_fileID_watermark: '',
-          }, () => {
-            wx.hideLoading();
-            that.beginProcess();
-          });
-        }
-      })
-    }
-    else{
-      cloud.invokeFunction('managePhoto', {
-        photo: global_photo,
+  updataDatabase: async function (oriPhoto, compressFileID, watermarkCloudID) {
+    await cloud.callFunction({
+      name: 'managePhoto',
+      data: {
+        photo: oriPhoto,
         type: 'setProcess',
-        compressed: global_fileID_compressed,
-        watermark: global_fileID_watermark
-      }).then(res => {
-        if(res.ok){
-          that.setData({
-            phase: 7,
-            origin: {},
-            global_photo: '',
-            global_fileID_compressed: '',
-            global_fileID_watermark: '',
-          }, () => {
-            wx.hideLoading();
-            that.beginProcess();
-          });
-        }
-      })
-    }
-    
-
+        compressed: compressFileID,
+        watermark: watermarkCloudID,
+      }
+    })
   },
 
-  preview: function(e) {
+  preview: function (e) {
     const src = e.currentTarget.dataset.src;
-    if(!src) {
+    if (!src) {
       return false;
     }
     wx.previewImage({

@@ -7,9 +7,10 @@ const cat_utils = require('../../../cat.js');
 const getAvatar = cat_utils.getAvatar;
 const getCatItem = cat_utils.getCatItem;
 
+
 const config = require('../../../config.js');
 const use_wx_cloud = config.use_wx_cloud; // 是否使用微信云，不然使用Laf云
-const cloud = use_wx_cloud ? wx.cloud : require('../../../cloudAccess.js').cloud;
+const cloud = require('../../../cloudAccess.js').cloud;
 
 const db = cloud.database();
 const _ = db.command;
@@ -124,27 +125,24 @@ Page({
   async loadRelationTypes() {
     var types = [];
     var data = (await db.collection('setting').where({_id: 'relation'}).get()).data;
-    console.log(data);
-    if (data.length == 0) { // 微信云：直接个更新数据库
+
+    if (data.length == 0) {
       // 当数据库setting中不存在时，进行初始化
-      if(use_wx_cloud){
-        types = ["爸爸", "妈妈"]
-        await db.collection('setting').doc('relation').set({
+      await cloud.callFunction({
+        name: "curdOp",
+        data: {
+          permissionLevel: 1,
+          operation: "set",
+          collection: "setting",
+          item_id: "relation",
           data: {
-            types: types,
+            types: ["爸爸", "妈妈"]
           }
-        });
-      }
-      else{ // Laf云：通过调用云函数
-        await cloud.invokeFunction("relationOp", {
-          type: "init"
-        });
-      }
-      
-    } else {
-      types = data[0].types;
+        }
+      });
+      data = (await db.collection('setting').where({_id: 'relation'}).get()).data;
     }
-    
+    types = data[0].types;
     this.setData({
       relation_types: types,
     });
@@ -162,21 +160,18 @@ Page({
       // 不存在
       types.push(t);
       console.log(types);
-      if(use_wx_cloud){ // 微信云
-        await cloud.callFunction({
-          name: "relationOp",
+      await cloud.callFunction({
+        name: "curdOp",
+        data: {
+          permissionLevel: 1,
+          operation: "update",
+          collection: "setting",
+          item_id: "relation",
           data: {
-            type: "saveRelationTypes",
-            relationTypes: types,
+              types: types
           }
-        });
-      }
-      else{ // Laf 云
-        await cloud.invokeFunction("relationOp", {
-          type: "saveRelationTypes",
-          relationTypes: types,
-        });
-      }
+        }
+      });
       idx = types.length - 1;
     }
 
@@ -219,21 +214,18 @@ Page({
   async doDeleteRelationType(idx) {
     var types = this.data.relation_types;
     types.splice(idx, 1);
-    if(use_wx_cloud){ // 微信云
-      await cloud.callFunction({
-        name: "relationOp",
+    await cloud.callFunction({
+      name: "curdOp",
+      data: {
+        permissionLevel: 1,
+        operation: "update",
+        document: "setting",
+        item_id: "relation",
         data: {
-          type: "saveRelationTypes",
-          relationTypes: types,
+            types: types
         }
-      });
-    }
-    else{ // Laf云
-      await cloud.invokeiFunction("relationOp", {
-        type: "saveRelationTypes",
-        relationTypes: types,
-      });
-    }
+      }
+    });
     this.setData({
       relation_name: "",
       relation_types: types,
@@ -426,23 +418,18 @@ Page({
         cat_id: r.cat_id,
       });
     }
-    if(use_wx_cloud){ // 微信云
-      await cloud.callFunction({
-        name: "relationOp",
+    await cloud.callFunction({
+      name: "curdOp",
+      data: {
+        permissionLevel: 1,
+        operation: "update",
+        collection: "cat",
+        item_id: cat._id,
         data: {
-          type: "saveRelation",
-          cat_id: cat._id,
-          relations: relations,
+          relations: relations  
         }
-      });
-    }
-    else{ // Laf云
-      await cloud.invokeFunction("relationOp", {
-        type: "saveRelation",
-        cat_id: cat._id,
-        relations: relations,
-      });
-    }
+      }
+    });
 
     wx.showToast({
       title: '保存成功',

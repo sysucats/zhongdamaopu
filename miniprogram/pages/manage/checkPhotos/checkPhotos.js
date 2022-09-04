@@ -11,8 +11,7 @@ const config = require('../../../config.js');
 const notifyVerifyPhotoTplId = config.msg.notifyVerify.id;
 
 const use_wx_cloud = config.use_wx_cloud; // 是否使用微信云，不然使用Laf云
-const cloud = use_wx_cloud ? wx.cloud : require('../../../cloudAccess.js').cloud;
-
+const cloud = require('../../../cloudAccess.js').cloud;
 
 const cache = require('../../../cache.js');
 
@@ -68,7 +67,7 @@ Page({
   onUnload: function () {
     console.log('页面退出');
 
-    // 发送审核消息
+    // TODO 发送审核消息
     sendVerifyNotice(notice_list);
   },
 
@@ -311,16 +310,12 @@ Page({
         photo: photo,
         best: photo.mark == "best",
       }
+      console.log("Data for managerPhoto:", data);
 
-      if(use_wx_cloud){ // wx云
-        all_queries.push(cloud.callFunction({
-          name: "managePhoto",
-          data: data
-        }))
-      }
-      else{ // Laf云
-        all_queries.push(cloud.invokeFunction("managePhoto", data));
-      }
+      all_queries.push(cloud.callFunction({
+        name: "managePhoto",
+        data: data
+      }))
 
       that.addNotice(photo, (photo.mark != "delete"));
     }

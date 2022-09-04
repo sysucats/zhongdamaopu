@@ -2,6 +2,7 @@
   "miniprogramRoot": "miniprogram/",
   "cloudfunctionRoot": "cloudfunctions/",
   "setting": {
+    "localPlugins": false,
     "urlCheck": true,
     "es6": true,
     "enhance": true,
@@ -18,7 +19,8 @@
     "checkInvalidKey": true,
     "checkSiteMap": true,
     "uploadWithSourceMap": true,
-    "compileHotReLoad": true,
+    "compileHotReLoad": false,
+    "lazyloadPlaceholderEnable": false,
     "useMultiFrameRuntime": true,
     "useApiHook": true,
     "useApiHostProcess": true,
@@ -36,10 +38,7 @@
     "minifyWXML": true,
     "showES6CompileOption": false,
     "useCompilerPlugins": false,
-    "useStaticServer": true,
-    "ignoreUploadUnusedFiles": true,
-    "lazyloadPlaceholderEnable": false,
-    "localPlugins": false
+    "ignoreUploadUnusedFiles": true
   },
   "appid": "wx1b733685bf7904be",
   "projectname": "zhongdamaopu",

@@ -9,8 +9,7 @@ const msg = require('../../../msg.js');
 const sendReplyNotice = msg.sendReplyNotice;
 
 const config = require('../../../config.js');
-const use_wx_cloud = config.use_wx_cloud; // 是否使用微信云，不然使用Laf云
-const cloud = use_wx_cloud ? wx.cloud : require('../../../cloudAccess.js').cloud;
+const cloud = require('../../../cloudAccess.js').cloud;
 
 Page({
 
@@ -103,23 +102,22 @@ Page({
           console.log(res);
           if (res.errCode == 0) {
             // 记录一下回复的内容和时间
-            if(use_wx_cloud){ // 微信云
-              await cloud.callFunction({
-                name: "manageFeedback",
+            await cloud.callFunction({
+              name: "curdOp",
+              data: {
+                permissionLevel: 1,
+                operation: 'update',
+                collection: "feedback",
+                item_id: that.data.feedback._id, 
                 data: {
-                  operation: 'reply',
-                  feedback: that.data.feedback,
+                  // replyDate: new Date(),
+                  replyDate: {
+                    "$date": new Date().toISOString()
+                  },
                   replyInfo: submitData.replyInfo,
-                }
-              });
-            }
-            else{ // Laf有
-              await cloud.invokeFunction("feedbackOp", {
-                operation: 'reply',
-                feedback: that.data.feedback,
-                replyInfo: submitData.replyInfo,
-              });
-            }
+                } 
+              }
+            });
 
             wx.hideLoading();
             wx.showToast({

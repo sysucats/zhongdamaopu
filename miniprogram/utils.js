@@ -1,8 +1,6 @@
 const sha256 = require('./packages/sha256/sha256.js');
-const config = require('./config.js');
 
-const use_wx_cloud = config.use_wx_cloud; // 是否使用微信云，不然使用Laf云
-const cloud = use_wx_cloud ? wx.cloud : require('./cloudAccess.js').cloud;
+const cloud = require('./cloudAccess.js').cloud;
 
 function randomInt(min, max) {
   return Math.floor(Math.random() * (max - min)) + min;
@@ -32,23 +30,15 @@ function isManager(callback, req=1) {
   // 为bool类型，当前用户为manager时为true，
   // 否则为false
   // req是要求的等级，是一个整数值
-  if(use_wx_cloud){ // 微信云
-    cloud.callFunction({
-      name: 'isManager',
-      data: {
-        req: req
-      }
-    }).then(res => {
-      // console.log(res);
-      callback(res.result);
-    });
-  }
-  else{ // Laf云
-    cloud.invokeFunction('isManager', {req: req}).then(res => {
-      // console.log(res);
-      callback(res);
-    });
-  }
+  cloud.callFunction({
+    name: 'isManager',
+    data: {
+      req: req
+    }
+  }).then(res => {
+    // console.log(res);
+    callback(res);
+  });
 }
 
 function isWifi(callback) {
@@ -196,13 +186,12 @@ function checkUpdateVersion() {
 */
 async function checkCanUpload() {
   // 如果是管理员，开启
-  let manager = use_wx_cloud ? 
-  (await cloud.callFunction({
+  let manager = (await cloud.callFunction({
     name: 'isManager',
     data: {
       req: 1
     }
-  })).result : (await cloud.invokeFunction('isManager', {req: 1}));
+  }));
 
 
   let manageUpload = (await getGlobalSettings('detailCat')).manageUpload;

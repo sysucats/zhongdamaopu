@@ -3,8 +3,8 @@ const config = require('../../../config.js');
 const utils = require('../../../utils.js');
 const checkCanUpload = utils.checkCanUpload;
 
-const use_wx_cloud = config.use_wx_cloud; // 是否使用微信云，不然使用Laf云
-const cloud = use_wx_cloud ? wx.cloud : require('../../../cloudAccess.js').cloud;
+// 是否使用微信云，不然使用Laf云
+const cloud = require('../../../cloudAccess.js').cloud;
 
 // 在页面中定义激励视频广告
 let videoAd = null
@@ -82,7 +82,7 @@ Page({
     db.collection('reward').orderBy('mdate', 'desc').get().then(res => {
       console.log(res.data);
       for (var r of res.data) {
-        const tmp = r.mdate;
+        const tmp = new Date(r.mdate);
         r.mdate = tmp.getFullYear() + '年' + (tmp.getMonth()+1) + '月';
         r.records = r.records.replace(/^\#+|\#+$/g, '').split('#');
       }

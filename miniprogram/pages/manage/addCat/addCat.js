@@ -10,8 +10,8 @@ var cat_id = undefined;
 const photoStep = 5; // 每次加载的图片数量
 var phers = {}; // 暂时存放摄影师名字
 
-const use_wx_cloud = config.use_wx_cloud; // 是否使用微信云，不然使用Laf云
-const cloud = use_wx_cloud ? wx.cloud : require('../../../cloudAccess.js').cloud;
+// 是否使用微信云，不然使用Laf云
+const cloud = require('../../../cloudAccess.js').cloud;
 
 Page({
   /**
@@ -327,38 +327,21 @@ Page({
     wx.showLoading({
       title: '更新中...',
     });
-    if (use_wx_cloud){ // 微信云
-      cloud.callFunction({
-        name: 'updateCat',
-        data: {
-          cat: this.data.cat,
-          cat_id: cat_id
-        }
-      }).then(res => {
-        console.log(res);
-        if (res.result._id) {
-          cat_id = res.result._id;
-        }
-        wx.showToast({
-          title: '操作成功',
-        });
-      })
-    }
-    else {
-      cloud.invokeFunction('updateCat', {
+    cloud.callFunction({
+      name: 'updateCat',
+      data: {
         cat: this.data.cat,
         cat_id: cat_id
-      }).then(res => {
-        console.log(res);
-        if (res.ok) {
-          cat_id = res._id;
-        }
-        wx.showToast({
-          title: '操作成功',
-        });
-      })
-    }
-    
+      }
+    }).then(res => {
+      console.log(res);
+      if (res.id) {
+        cat_id = res.id;
+      }
+      wx.showToast({
+        title: '操作成功',
+      });
+    })
   },
   deletePhoto(e) {
     console.log(e);
@@ -370,30 +353,12 @@ Page({
       success(res) {
         if (res.confirm) {
           console.log('开始删除');
-          if (use_wx_cloud) { // 微信云
-            cloud.callFunction({
-              name: "managePhoto",
-              data: {
-                type: "delete",
-                photo: photo
-              }
-            }).then(res => {
-              console.log("删除照片记录：" + photo._id);
-              wx.showModal({
-                title: '完成',
-                content: '删除成功',
-                showCancel: false,
-                success: (res) => {
-                  that.reloadPhotos();
-                }
-              });
-            })
-          }
-        }
-        else {
-          cloud.invokeFunction("managePhoto", {
-            type: "delete",
-            photo: photo
+          cloud.callFunction({
+            name: "managePhoto",
+            data: {
+              type: "delete",
+              photo: photo
+            }
           }).then(res => {
             console.log("删除照片记录：" + photo._id);
             wx.showModal({
@@ -416,45 +381,25 @@ Page({
     const index = e.currentTarget.dataset.index;
     const that = this;
     const set_best = !photo.best;
-    if(use_wx_cloud){ // 微信云
-      cloud.callFunction({
-        name: "managePhoto",
-        data: {
-          type: "setBest",
-          photo: photo,
-          best: set_best
-        }
-      }).then(res => {
-        wx.showModal({
-          title: '完成',
-          content: '设置成功',
-          showCancel: false,
-          success: (res) => {
-            that.setData({
-              ['photo[' + index + '].best']: set_best
-            });
-          }
-        });
-      })
-    }
-    else { // Laf 云
-      cloud.invokeFunction("managePhoto", {
+    cloud.callFunction({
+      name: "managePhoto",
+      data: {
         type: "setBest",
         photo: photo,
         best: set_best
-      }).then(res => {
-        wx.showModal({
-          title: '完成',
-          content: '设置成功',
-          showCancel: false,
-          success: (res) => {
-            that.setData({
-              ['photo[' + index + '].best']: set_best
-            });
-          }
-        });
-      })
-    }
+      }
+    }).then(res => {
+      wx.showModal({
+        title: '完成',
+        content: '设置成功',
+        showCancel: false,
+        success: (res) => {
+          that.setData({
+            ['photo[' + index + '].best']: set_best
+          });
+        }
+      });
+    })
   },
   inputPher(e) {
     const input = e.detail.value;
@@ -468,45 +413,25 @@ Page({
     const pid = photo._id;
     const photographer = phers[pid];
     const that = this;
-    if (use_wx_cloud) { // 微信云
-      cloud.callFunction({
-        name: "managePhoto",
-        data: {
-          type: "setPher",
-          photo: photo,
-          photographer: photographer
-        }
-      }).then(res => {
-        wx.showModal({
-          title: '完成',
-          content: '设置成功',
-          showCancel: false,
-          success: (res) => {
-            that.setData({
-              ['photo[' + index + '].photographer']: photographer
-            });
-          }
-        });
-      })
-    }
-    else{
-      cloud.invokeFunction("managePhoto", {
+    cloud.callFunction({
+      name: "managePhoto",
+      data: {
         type: "setPher",
         photo: photo,
         photographer: photographer
-      }).then(res => {
-        wx.showModal({
-          title: '完成',
-          content: '设置成功',
-          showCancel: false,
-          success: (res) => {
-            that.setData({
-              ['photo[' + index + '].photographer']: photographer
-            });
-          }
-        });
-      })
-    }
+      }
+    }).then(res => {
+      wx.showModal({
+        title: '完成',
+        content: '设置成功',
+        showCancel: false,
+        success: (res) => {
+          that.setData({
+            ['photo[' + index + '].photographer']: photographer
+          });
+        }
+      });
+    })
   },
   switchOnlyBest() {
     const only_best_photo = this.data.only_best_photo;
