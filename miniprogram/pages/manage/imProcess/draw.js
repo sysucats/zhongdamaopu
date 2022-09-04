@@ -1,4 +1,4 @@
-// 画图全局canvas
+// 画图全局canvas，依赖版本库：2.24.7
 var gCanvas = null;
 var gCtx = null;
 const canvasMax = 2000; // 正方形画布的尺寸px
@@ -23,7 +23,6 @@ function initCanvas() {
         canvas.width = renderWidth * dpr
         canvas.height = renderHeight * dpr
         ctx.scale(dpr, dpr);
-        console.log("ctx init dpr:", dpr);
 
         gCtx = ctx;
         gCanvas = canvas;

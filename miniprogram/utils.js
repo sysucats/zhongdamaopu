@@ -262,7 +262,6 @@ function checkDeploy() {
   });
 }
 
-
 module.exports = {
   sha256,
   randomInt,

@@ -8,6 +8,8 @@ const cloud = require('../../../cloudAccess.js').cloud;
 
 const drawUtils = require("./draw.js");
 
+const lockUtils = require("./lock.js");
+
 
 const text_cfg = config.text;
 
@@ -41,11 +43,44 @@ Page({
   /**
    * 生命周期函数--监听页面加载
    */
-  onLoad: function () {
+  onLoad: async function () {
     this.checkAuth();
+    this.setData({
+      gLockKey: await lockUtils.geneKey("device"),
+    });
+    await this.getLock();
     // this.tipAutoProcess();
   },
 
+  async getLock() {
+    const scene = "imProcess";
+    const key = this.data.gLockKey;
+    const limit = 1;
+    const expire_minutes = 5;
+    const res = await lockUtils.lock(scene, key, limit, expire_minutes);
+    const allLocks = await lockUtils.getLockList(scene);
+    this.setData({
+      gLocking: res,
+      allLocks: allLocks,
+    });
+    if (!res) {
+      wx.showToast({
+        title: '其他人还在操作...',
+        icon: "loading"
+      })
+    }
+  },
+
+  async releaseLock() {
+    const scene = "imProcess";
+    const key = this.data.gLockKey;
+    await lockUtils.unlock(scene, key);
+    this.setData({
+      gLocking: false
+    });
+  },
+
+  // 提示不要手动处理，在laf上不调用
   tipAutoProcess: function () {
     const that = this;
     wx.showModal({
@@ -90,6 +125,8 @@ Page({
     wx.setKeepScreenOn({
       keepScreenOn: false
     });
+    // 释放一下key
+    this.releaseLock().then();
   },
 
   async loadProcess() {
@@ -144,13 +181,14 @@ Page({
     // 停止处理，考虑放个mask
     wx.showLoading({
       title: '等待完成当前...',
+      mask: true
     });
   },
 
   beginProcess: async function () {
     const db = cloud.database();
     const _ = db.command;
-    while (this.data.processing) {
+    while (this.data.processing && (await this.getLock())) {
       const photos = (await db.collection('photo').where({
         photo_compressed: _.in([undefined, '']),
         verified: true
@@ -163,9 +201,6 @@ Page({
           content: '没有等待处理的猫图啦',
           showCancel: false,
         });
-        this.setData({
-          processing: false
-        });
         break;
       }
       // 开始处理一张图
@@ -173,8 +208,11 @@ Page({
       this.setData({
         now: this.data.now + 1
       });
-      wx.hideLoading();
     }
+    this.setData({
+      processing: false
+    });
+    wx.hideLoading();
   },
 
   setPhase: function(phase) {

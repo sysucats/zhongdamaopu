@@ -56,3 +56,9 @@ button.short {
   height: 220rpx;
   background-color: var(--color-gray-light);
 }
+
+/* 文字说明 */
+.info-block {
+  color: var(--color-black-min);
+  font-size: 22rpx;
+}

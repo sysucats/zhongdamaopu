@@ -1,0 +1,78 @@
+const utils = require('../../../utils.js');
+const cloud = require('../../../cloudAccess.js').cloud;
+
+const generateUUID = utils.generateUUID;
+
+const userUtils = require("../../../user.js");
+
+async function geneKey(type) {
+  if (type == "uuid") {
+    return generateUUID();
+  }
+
+  if (type == "device") {
+    return await geneUserDeviceKey();
+  }
+}
+
+async function geneUserDeviceKey() {
+  const user = await userUtils.getUser();
+  const device = await wx.getSystemInfoSync();
+  console.log(user, device);
+  const key = `${user.openid}-${user.userInfo.nickName}-${device.platform}-${device.model}-${device.version}-${device.SDKVersion}`;
+  return key;
+}
+
+async function lock(scene, key, limit, expire_minutes) {
+  var expire_date = new Date();
+  expire_date.setMinutes(expire_date.getMinutes() + expire_minutes);
+
+  let res = await cloud.callFunction({
+    name: 'globalLock',
+    data: {
+      op: "lock",
+      scene: scene,
+      key: key,
+      limit: limit,
+      expire_date: expire_date,
+    }
+  });
+  console.log("lock:", res);
+
+  return res;
+}
+
+async function unlock(scene, key) {
+  return await cloud.callFunction({
+    name: 'globalLock',
+    data: {
+      op: "unlock",
+      scene: scene,
+      key: key,
+    }
+  });
+}
+
+async function getLockList(scene) {
+  var res = await cloud.callFunction({
+    name: 'globalLock',
+    data: {
+      op: "getLockList",
+      scene: scene,
+    }
+  });
+
+  for (var item of res) {
+    item.expire_date = new Date(item.expire_date);
+    item.expire_date_str = item.expire_date.toLocaleString();
+  }
+
+  return res;
+}
+
+module.exports = {
+  geneKey: geneKey,
+  lock: lock,
+  unlock: unlock,
+  getLockList: getLockList,
+};
