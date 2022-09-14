@@ -26,7 +26,7 @@ Page({
     const cate_current = options.cate;
     this.setData({
       cate_current: cate_current,
-      cate_active: cates[cate_current-1]
+      cate_active: cates[cate_current]
     });
 
     //封面图缓存
