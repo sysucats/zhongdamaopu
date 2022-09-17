@@ -244,69 +244,22 @@ Page({
     var item = {
       content: content,
       user_openid: user.openid,
-      // create_date: new Date(),
-      create_date: {
-        "$date": new Date().toISOString()
-      },
+      create_date: new Date(),
+      // create_date: {
+      //   "$date": new Date().toISOString()
+      // },
       cat_id: cat_id,
     };
 
-    const label_type = {
-      100: "正常",
-      10001: "广告",
-      20001: "时政",
-      20002: "色情",
-      20003: "辱骂",
-      20006: "违法犯罪",
-      20008: "欺诈",
-      20012: "低俗",
-      20013: "版权",
-      21000: "其他",
+    const checkRes = await utils.contentSafeCheck(content, user.userInfo.nickName);
+    if (!checkRes) {
+      // 没有检测出问题
+      this.addComment(item, user);
+      return
     }
     
-    // 为测试，暂时跳过了违规检测（需同时注释"违规检测并提交"下面的代码段）
-    // that.addComment(item, user);
-    
-    // 违规检测并提交
-    cloud.callFunction({
-      // The name of the cloud function to be called
-      name: 'commentCheck',
-      // Parameter to be passed to the cloud function
-      data: {
-        content: content,
-        nickname: user.userInfo.nickName,
-      },
-      success: function(res) {
-        console.log(res);
-
-        // 检测接口的返回
-        console.log(res);
-        if (res.errcode != 0 || res.result.suggest != "pass") {
-          // 内容检测未通过
-          console.log(res.result.label);
-          const label_code = res.result.label;
-          const label = label_type[label_code];
-          wx.showModal({
-            title: "内容检测未通过",
-            content: `涉及[${label_code}]${label}内容，请修改嗷~~`,
-            showCancel: false,
-          });
-          that.doSendCommentEnd();
-          return false;
-        }
-        // 检测通过
-        that.addComment(item, user);
-      },
-      fail: err => {
-        // handle error
-        wx.showModal({
-          title: "内容检测失败",
-          content: "请开发者检查“commentCheck”云函数是否部署成功",
-          showCancel: false,
-        });
-        that.doSendCommentEnd();
-      },
-    }) 
+    wx.showModal(checkRes);
+    return false;
   },
 
   doSendCommentEnd() {

@@ -1,0 +1,12 @@
+<view class="top-margin-100"></view>
+
+<view class="label-small">头像</view>
+<button class="avatar-wrapper" open-type="chooseAvatar" bind:chooseavatar="onChooseAvatar">
+  <image class="avatar" src="{{user.userInfo.avatarUrl || defaultAvatarUrl}}" mode="aspectFill"></image>
+</button>
+
+<view class="label-small">昵称</view>
+<input type="nickname" class="nickname-input" placeholder="请输入昵称" value="{{user.userInfo.nickName}}" bindinput="onChangeNickName"/>
+
+
+<button class="primary" bindtap="clickUpload">提交</button>
