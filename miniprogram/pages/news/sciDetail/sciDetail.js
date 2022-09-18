@@ -24,7 +24,7 @@ Page({
     const cate_current = options.cate;
     this.setData({
       cate_current: cate_current,
-      cate_active: cates[cate_current-1]
+      cate_active: cates[cate_current]
     });
 
     //封面图缓存
@@ -64,6 +64,7 @@ Page({
   changeCate(e) {
     // 这个cate是0~n范围内的
     const cate = e.detail.current;
+    console.log("ChangeCate", cate);
     this.setData({
       cate_active: cates[cate]
     });

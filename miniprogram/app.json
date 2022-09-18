@@ -46,12 +46,6 @@
         "text": "识猫"
       },
       {
-        "pagePath": "pages/news/news",
-        "iconPath": "./images/tabs/default/sci.png",
-        "selectedIconPath": "./images/tabs/active/sci.png",
-        "text": "公告"
-      },
-      {
         "pagePath": "pages/info/info",
         "iconPath": "./images/tabs/default/info.png",
         "selectedIconPath": "./images/tabs/active/info.png",

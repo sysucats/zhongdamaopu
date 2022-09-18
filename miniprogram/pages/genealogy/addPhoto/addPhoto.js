@@ -7,6 +7,7 @@ const getGlobalSettings = utils.getGlobalSettings;
 
 const user = require('../../../user.js');
 const getCurUserInfoOrFalse = user.getCurUserInfoOrFalse;
+const getUser = user.getUser;
 
 const msg = require('../../../msg.js');
 const requestNotice = msg.requestNotice;
@@ -58,7 +59,19 @@ Page({
 
     // 加载设置、关闭上传功能
     const that = this;
-    
+
+    // 为应负沈河，检查用户是否上传过图片，只有上传过图片的用户才可以上传图片
+    // 1. 获取openid
+    // 2. 数据库count
+    // 3. 与下面res取并集
+    getUser().then(
+      res=>{
+        const openid = res.openid;
+        console.log("Openid", openid);
+        
+      }
+    );
+
     checkCanUpload().then(res => {
       that.setData({
         canUpload: res

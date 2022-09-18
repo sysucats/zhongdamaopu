@@ -156,8 +156,9 @@
   </view>
   <!-- album end -->
 
-  <view class="addPhoto" bindtap='bindAddPhoto'>
-    <image class="icon" wx:if="{{canUpload}}" src='../../../images/button/addPhoto.png'></image>
+  <!-- 点击上传图片 -->、
+  <view class="addPhoto" bindtap='bindAddPhoto'> 
+    <image class="icon" src='../../../images/button/addPhoto.png'></image>
   </view>
 
   <!-- 进入留言板 -->

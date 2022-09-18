@@ -12,6 +12,12 @@ Page({
     text_cfg: text_cfg,
     github_link: "https://github.com/sysucats/zhongdamaopu",
     update_log: [{
+      version: "v1.8.5",
+      content: [
+        "修复科普图片乱序",
+      ],
+      time: "2022/09/14"
+    }, {
       version: "v1.8.4",
       content: [
         "修复页面UI小问题",
