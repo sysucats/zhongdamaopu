@@ -3,10 +3,13 @@ const utils = require('../../../utils.js');
 const shareTo = utils.shareTo;
 const getCurrentPath = utils.getCurrentPath;
 const getGlobalSettings = utils.getGlobalSettings;
-const checkCanUpload = utils.checkCanUpload;
+const checkCanComment = utils.checkCanComment;
 const checkMultiClick = utils.checkMultiClick;
 const formatDate = utils.formatDate;
 const isManager = utils.isManager;
+
+const userUtils = require('../../../user.js');
+const checkCanUpload = userUtils.checkCanUpload;
 
 const getCatCommentCount = require('../../../comment.js').getCatCommentCount;
 
@@ -143,7 +146,13 @@ Page({
         that.setData({
           canUpload: res
         });
-      })
+      });
+      // 是否开启留言功能
+      checkCanComment().then(res => {
+        that.setData({
+          canComment: res
+        });
+      });
     });
   },
 
@@ -292,10 +301,10 @@ Page({
     const step = page_settings.photoStep;
     const now = cat.photo.length;
 
-    wx.showLoading({
-      title: '加载中...',
-      mask: true
-    })
+    // wx.showLoading({
+    //   title: '加载中...',
+    //   mask: true
+    // })
 
     const db = wx.cloud.database();
     console.log(qf);
@@ -371,7 +380,7 @@ Page({
 
   bindImageLoaded(e) {
     // console.log(e);
-    wx.hideLoading();
+    // wx.hideLoading();
   },
 
   // 下面开始加载相册咯

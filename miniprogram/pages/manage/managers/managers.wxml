@@ -9,7 +9,8 @@
     <!--分割线--><view class="line"></view>
     <view class='filters'>
       <checkbox-group bindchange="filterChange">
-        <checkbox value="manager-only" style="font-size: 28rpx">只看管理员</checkbox>
+        <checkbox value="manager-only" style="font-size: 28rpx;  margin-right: 20rpx;">只看管理员</checkbox>
+        <checkbox value="role1-only" style="font-size: 28rpx;">只看特邀</checkbox>
       </checkbox-group>
     </view>
   </view>
@@ -19,10 +20,13 @@
         <image class="avatar" src="{{item.userInfo.avatarUrl}}"></image>
         <view class="name-and-others">
           <view class="nickName">{{item.userInfo.nickName}}</view>
-          <block wx:if="{{item.userInfo.gender}}">
-            <view class="gender">{{item.userInfo.gender == 2? '女': '男'}}，</view>
-          </block>
-          <view class="area">{{item.userInfo.country || '-'}}, {{item.userInfo.province || '-'}}, {{item.userInfo.city || '-'}}</view>
+          <view class="info">
+            [{{item.role == 1 ? "特邀用户": "游客"}}]
+            <block wx:if="{{item.userInfo.gender}}">  
+              {{item.userInfo.gender == 2? '女': '男'}}
+            </block>
+            {{item.userInfo.country || '-'}}, {{item.userInfo.province || '-'}}, {{item.userInfo.city || '-'}}
+          </view>
         </view>
       </view>
       <view wx:else class="unknow-info info">匿名用户</view>

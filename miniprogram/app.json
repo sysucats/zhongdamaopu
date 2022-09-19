@@ -27,7 +27,8 @@
     "pages/news/modifyNews/modifyNews",
     "pages/news/createNews/createNews",
     "pages/news/sciDetail/sciDetail",
-    "pages/manage/addRelations/addRelations"
+    "pages/manage/addRelations/addRelations",
+    "pages/tools/updateUserRole/updateUserRole"
   ],
   "tabBar": {
     "selectedColor": "#000",
@@ -69,5 +70,5 @@
     }
   ],
   "sitemapLocation": "sitemap.json",
-  "lazyCodeLoading" : "requiredComponents"
+  "lazyCodeLoading": "requiredComponents"
 }

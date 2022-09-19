@@ -12,6 +12,18 @@ Page({
     text_cfg: text_cfg,
     github_link: "https://github.com/sysucats/zhongdamaopu",
     update_log: [{
+      version: "v1.8.7",
+      content: [
+        "修复问题TAT",
+      ],
+      time: "2022/09/19"
+    }, {
+      version: "v1.8.6",
+      content: [
+        "优化后台人员管理",
+      ],
+      time: "2022/09/18"
+    }, {
       version: "v1.8.5",
       content: [
         "修复科普图片乱序",
