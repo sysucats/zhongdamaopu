@@ -12,6 +12,12 @@ Page({
     text_cfg: text_cfg,
     github_link: "https://github.com/sysucats/zhongdamaopu",
     update_log: [{
+      version: "v1.8.8",
+      content: [
+        "首页校区筛选可缓存、分享",
+      ],
+      time: "2022/09/21"
+    }, {
       version: "v1.8.7",
       content: [
         "修复问题TAT",
