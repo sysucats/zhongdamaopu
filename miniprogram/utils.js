@@ -23,7 +23,7 @@ function loadFilter() {
   });
 }
 
-function isManager(callback, req=1) {
+function isManager(callback, req) {
   // 这里的callback将接受一个参数res，
   // 为bool类型，当前用户为manager时为true，
   // 否则为false
@@ -38,6 +38,17 @@ function isManager(callback, req=1) {
     callback(res.result);
   });
 }
+
+async function isManagerAsync(req) {
+  return (await wx.cloud.callFunction({
+    name: 'isManager',
+    data: {
+      req: req
+    }
+  })).result;
+}
+
+
 
 function isWifi(callback) {
   // 检查是不是Wifi网络正在访问
@@ -177,11 +188,17 @@ function checkUpdateVersion() {
   })
 }
 
+async function checkCanComment() {
+  // 加载设置、关闭留言板功能
+  const app = getApp();
+  let cantComment = (await getGlobalSettings('detailCat')).cantComment;
+  if ((cantComment !== '*') && (cantComment !== app.globalData.version)) {
+    return true;
+  }
+  return false;
+}
 
-/*
-* 检查是否开启上传通道（返回true为开启上传）
-*/
-async function checkCanUpload() {
+async function managerUpload() {
   // 如果是管理员，开启
   let manager = (await wx.cloud.callFunction({
     name: 'isManager',
@@ -191,15 +208,14 @@ async function checkCanUpload() {
   })).result;
   let manageUpload = (await getGlobalSettings('detailCat')).manageUpload;
   if (manager && manageUpload) {
+    wx.showToast({
+      title: '管理员可上传',
+      icon: "none",
+    })
     return true;
   }
-
-  // 加载设置、关闭上传功能
-  const app = getApp();
-  let cantUpload = (await getGlobalSettings('detailCat')).cantUpload;
-  return (cantUpload !== '*') && (cantUpload !== app.globalData.version);
+  return false;
 }
-
 
 // 切分org的filter
 function splitFilterLine(line) {
@@ -227,6 +243,12 @@ function getDeltaHours(lastTime) {
   var deltaHours = today - (new Date(lastTime)); // milliseconds
   deltaHours = deltaHours / 1000 / 3600; // hours
   return deltaHours;
+}
+
+function getDateWithDiffHours(diff) {
+  var res = new Date();
+  res.setHours(res.getHours() + diff);
+  return res;
 }
 
 async function arrayResort(oriArray) {
@@ -257,13 +279,13 @@ function checkDeploy() {
   });
 }
 
-
 module.exports = {
   sha256,
   randomInt,
   generateUUID,
   loadFilter,
   isManager,
+  isManagerAsync,
   isWifi,
   shuffle,
   shareTo,
@@ -273,10 +295,11 @@ module.exports = {
   regReplace,
   formatDate,
   checkUpdateVersion,
-  checkCanUpload,
+  checkCanComment,
   splitFilterLine,
   checkMultiClick,
   getDeltaHours,
   arrayResort,
   checkDeploy,
+  getDateWithDiffHours,
 };

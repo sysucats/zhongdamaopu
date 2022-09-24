@@ -112,7 +112,6 @@
     </view>
   </view>
   <!-- info end -->
-
   <view class='big-header'>
     <image class='avatar' mode='aspectFill' src='{{cat.avatar.photo_compressed || cat.avatar.photo_id}}'></image>
     <view class='name-and-count'>
@@ -157,7 +156,8 @@
       </view>
       <view class="album-image" wx:for="{{albumBlock.photos}}" wx:key="_id" bindtap='bindTapPhoto' data-index="{{item.index}}" data-kind='album'>
         <image mode='aspectFill' class="alb-image" lazy-load='true' src='{{item.photo_compressed || item.photo_id}}'></image>
-        <item class="like-count" wx:if="{{item.like_count >= 3}}">
+
+        <item class="like-count" wx:if="{{item.like_count}}">
           <image class="like-logo small" mode='aspectFill' src="../../../images/button/heart.png"></image>
           <text>{{item.like_count}}</text>
         </item>
@@ -168,14 +168,16 @@
       {{bottomText}}
     </view>
   </view>
+
   <!-- album end -->
 
-  <view class="addPhoto" bindtap='bindAddPhoto'>
-    <image class="icon" wx:if="{{canUpload}}" src='../../../images/button/addPhoto.png'></image>
+  <!-- 点击上传图片 -->、
+  <view class="addPhoto" bindtap='bindAddPhoto'> 
+    <image class="icon" src='../../../images/button/addPhoto.png'></image>
   </view>
 
   <!-- 进入留言板 -->
-  <view id="comment-btn" bindtap="toComment" wx:if="{{canUpload}}">
+  <view id="comment-btn" bindtap="toComment" wx:if="{{canComment}}">
     <text>{{text_cfg.detail_cat.label_comment_board}}</text>
     <image src="../../../images/button/right_double_arrow.png" mode="aspectFit"></image>
   </view>

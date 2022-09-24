@@ -2,11 +2,11 @@ const utils = require('../../../utils.js');
 const generateUUID = utils.generateUUID;
 const getCurrentPath = utils.getCurrentPath;
 const shareTo = utils.shareTo;
-const checkCanUpload = utils.checkCanUpload;
-const getGlobalSettings = utils.getGlobalSettings;
 
 const user = require('../../../user.js');
 const getCurUserInfoOrFalse = user.getCurUserInfoOrFalse;
+const getUser = user.getUser;
+const checkCanUpload = user.checkCanUpload;
 
 const msg = require('../../../msg.js');
 const requestNotice = msg.requestNotice;
@@ -58,7 +58,19 @@ Page({
 
     // 加载设置、关闭上传功能
     const that = this;
-    
+    getUser().then(
+      res=>{
+        if (!res.userInfo) {
+          this.getUInfo();
+          return;
+        }
+        that.setData({
+          isAuth: true,
+          user: res,
+        });
+      }
+    );
+
     checkCanUpload().then(res => {
       that.setData({
         canUpload: res

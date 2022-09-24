@@ -34,7 +34,9 @@
     <view class="right-arrow"><image mode='aspectFill' src="../../images/filter/right.png"></image></view> 
   </view>
   <view class="option" bindtap='clickbtn' data-to='/pages/manage/addRelations/addRelations'>
-    <view class="option-text">管理猫猫关系</view>
+
+    <view class="option-text">猫猫关系</view>
+
     <view class="right-arrow"><image mode='aspectFill' src="../../images/filter/right.png"></image></view> 
   </view>
   <view class="option" bindtap='clickbtn' data-to='/pages/news/createNews/createNews'>
@@ -50,11 +52,11 @@
     <view class="right-arrow"><image mode='aspectFill' src="../../images/filter/right.png"></image></view> 
   </view>
   <view class="option" bindtap='clickbtn' data-to='/pages/manage/filters/filters'>
-    <view class="option-text">区域/花色管理</view>
+    <view class="option-text">区域/花色</view>
     <view class="right-arrow"><image mode='aspectFill' src="../../images/filter/right.png"></image></view> 
   </view>
   <view class="option" bindtap='clickbtn' data-to='/pages/manage/rewards/rewards'>
-    <view class="option-text">打赏记录管理</view>
+    <view class="option-text">打赏记录</view>
     <view class="right-arrow"><image mode='aspectFill' src="../../images/filter/right.png"></image></view> 
   </view>
   <view class="option" style="color: var(--color-gray-dark);" bindtap='clickbtn' data-to='/pages/manage/imProcess/imProcess'>

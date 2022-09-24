@@ -118,7 +118,22 @@ Page({
 
   // 加载setting里的relation types
   async loadRelationTypes() {
-    var types = (await db.collection('setting').doc('relation').get()).data.types;
+
+    var types = [];
+    var data = (await db.collection('setting').where({_id: 'relation'}).get()).data;
+    console.log(data);
+    if (data.length == 0) {
+      // 当数据库setting中不存在时，进行初始化
+      types = ["爸爸", "妈妈"]
+      await db.collection('setting').doc('relation').set({
+        data: {
+          types: types,
+        }
+      });
+    } else {
+      types = data[0].types;
+    }
+    
     this.setData({
       relation_types: types,
     });

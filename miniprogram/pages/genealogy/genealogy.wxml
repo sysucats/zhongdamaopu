@@ -48,6 +48,16 @@
 </view>
 
 <scroll-view enable-flex='true' class='cards' style='height: {{heights.windowHeight - heights.filters}}px;' scroll-y='true' enable-back-to-top='true' bindscrolltolower='onReachBottom' bindscroll='fScroll' lower-threshold='{{main_lower_threshold}}'>
+  <!-- 校区外显筛选 -->
+  <scroll-view class="campus-list" scroll-x="1" wx:if="{{filters[0].category.length > 1}}">
+    <view class='campus-item {{item.all_active? "active": ""}}'  bindtap='fClickCampus' data-index='{{index}}'
+          wx:for="{{filters[0].category}}" wx:key="name">
+          <image class="location-logo" wx:if="{{! item.all_active}}" src="../../images/filter/location_gray.png" mode="aspectFit"></image>
+          <image class="location-logo" wx:else src="../../images/filter/location_active_dark.png" mode="aspectFit"></image>
+          {{item.name}}
+    </view>
+  </scroll-view>
+
   <block wx:for='{{cats}}' wx:key="_id">
     <view class='card' bindtap='clickCatCard' bindlongpress='bindManageCat' data-cat_id='{{item._id}}' data-index='{{index}}'>
       <view class='label' wx:if="{{item.mphoto_new}}">{{text_cfg.genealogy.new_photo_tip}}</view>
@@ -75,6 +85,10 @@
           </view>
         </view>
 
+        <view class='line' wx:if="{{item.birthday}}">
+          <image mode='aspectFit' class='icon' src='../../images/card/card/birth.png'></image>
+          <text>{{item.birthday}}</text>
+        </view>
         <view class='line'>
           <image mode='aspectFit' class='icon' src='../../images/card/card/cat.png'></image>
           <text class="characteristics">{{item.characteristics_string}}</text>
@@ -89,10 +103,6 @@
           <view class='index'><text decode='true'>&lt; {{index+1}}/{{catsMax}} &gt;</text></view>
         </view>
 
-        <view class='line' wx:if="{{item.birthday}}">
-          <image mode='aspectFit' class='icon' src='../../images/card/card/birth.png'></image>
-          <text>{{item.birthday}}</text>
-        </view>
       </view>
     </view>
     <view wx:if="{{adStep && (index+1)%adStep===0}}" class="card-ad {{ad_show['ad-'+(index+1)]? '': 'hidden'}}">

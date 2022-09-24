@@ -5,11 +5,13 @@
 </wxs>
 
 <block wx:if="{{auth}}">
-  <view id='total-count'><text>点击校区名展示待审核照片列表。\n先逐张标记处理方式，再点击“批量审核”。\n图片可以放大，点击名字跳转猫猫详情。\n每次展示前20张，注意流量消耗哈。</text></view>
-  <scroll-view scroll-x="1" class="campus-list">
+  <view id='total-count'><text>先逐张标记处理方式，再点击“批量审核”。\n图片可以放大，点击名字跳转猫猫详情。\n每次展示前20张，注意流量消耗哈。</text></view>
+  <view class="campus-list">
     <view class="campus {{index == active_campus ? 'active': ''}}" bindtap="bindClickCampus" data-key="{{index}}"
       wx:for="{{campus_list}}" wx:key="key">{{index}}（{{item.length}}）</view>
-  </scroll-view>
+  </view>
+  <view class="tip" wx:if="{{!campus_list || campus_list.length == 0}}">没有待审核的照片啦~</view>
+  <view class="tip" wx:elif="{{!campus_list[active_campus]}}">请在上方选择一个校区</view>
   <block wx:for="{{campus_list[active_campus]}}" wx:key="_id" wx:if="{{index < 20}}">
     <view class='verify-box'>
       <!-- <view class="imageShadowMask"></view> -->

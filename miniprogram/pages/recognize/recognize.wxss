@@ -20,7 +20,8 @@ page {
   width: 675rpx;
   background-color: white;
   box-shadow: 13rpx 13rpx 30rpx var(--color-gray);
-  border-radius: 15rpx;
+  border-bottom-left-radius: 15rpx;
+  border-bottom-right-radius: 15rpx;
   overflow: hidden;
   box-sizing: border-box;
   margin-bottom: 50rpx;

@@ -6,7 +6,9 @@
       <view class="search-cat-name">{{cat.name || "选择猫猫"}}</view>
       <view class="search-cat-position" wx:if="{{cat._id}}">
         <view>{{cat.campus +" "+ cat.area}}</view>
-        <view class="old-data">[旧数据] 父亲：{{cat.father||'-'}}，母亲：{{cat.mother||'-'}}，好友：{{cat.friend||'-'}}</view>
+
+        <view class="old-data">[旧数据] 父亲：{{cat.father||'-'}}，母亲：{{cat.mother||'-'}}，好友：{{cat.relation||'-'}}</view>
+
       </view>
     </view>
   </view>

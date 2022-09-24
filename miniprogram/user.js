@@ -97,8 +97,34 @@ async function getUserInfo(openid) {
   return value;
 }
 
+/*
+* 检查是否开启上传通道（返回true为开启上传）
+*/
+async function checkCanUpload() {
+  // 加载设置、关闭上传功能
+  const app = getApp();
+  let cantUpload = (await getGlobalSettings('detailCat')).cantUpload;
+  if ((cantUpload !== '*') && (cantUpload !== app.globalData.version)) {
+    return true;
+  }
+  
+  if (cantUpload == 'ALL') {
+    // 完全关闭上传
+    return await managerUpload();
+  }
+
+  // 特邀用户
+  const user = await getUser();
+  if (user.role == 1) {
+    return true;
+  }
+
+  return await managerUpload();
+}
+
 module.exports = {
   getUser,
   getCurUserInfoOrFalse,
   getUserInfo,
+  checkCanUpload,
 } 

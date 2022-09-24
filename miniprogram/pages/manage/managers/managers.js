@@ -118,6 +118,9 @@ Page({
     if (this.data.managerOnly) {
       query["manager"] = db.command.gt(0);
     }
+    if (this.data.role1Only) {
+      query["role"] = db.command.gt(0);
+    }
     console.log("query", query);
     db.collection('user').where(query).skip(users.length).limit(10).get().then(res => {
       console.log(res);
@@ -165,6 +168,7 @@ Page({
   filterChange(e) {
     let filters = e.detail.value;
     this.data.managerOnly = filters.indexOf('manager-only') != -1;
+    this.data.role1Only = filters.indexOf('role1-only') != -1;
     this.data.users = [];
     this.loadUsers(true);
   },

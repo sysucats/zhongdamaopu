@@ -1,7 +1,8 @@
 // miniprogram/pages/info/reward/reward.js
 const config = require('../../../config.js');
-const utils = require('../../../utils.js');
-const checkCanUpload = utils.checkCanUpload;
+
+const userUtils = require('../../../user.js');
+const checkCanUpload = userUtils.checkCanUpload;
 
 // 在页面中定义激励视频广告
 let videoAd = null

@@ -134,15 +134,28 @@ image {
 /* 校区选择器 */
 .campus-list {
   width: 100%;
-  white-space: nowrap;
 }
 
 .campus {
   display: inline-block;
-  margin: 10rpx 30rpx;
+  margin: 10rpx 10rpx;
+  padding: 0 10rpx;
   color: var(--color-black-min);
+  border: 3rpx solid transparent;
+  border-radius: 15rpx;
+  font-size: 28rpx;
 }
 
 .campus.active {
-  font-weight: bold;
+  /* font-weight: bold; */
+  border-left: 3rpx solid var(--color-primary);
+  border-right: 3rpx solid var(--color-primary);
+}
+
+/* 提示选择 */
+.tip {
+  width: 100%;
+  font-size: 24rpx;
+  color: var(--color-gray-dark);
+  text-align: center;
 }

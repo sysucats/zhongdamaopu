@@ -12,12 +12,57 @@ Page({
     text_cfg: text_cfg,
     github_link: "https://github.com/sysucats/zhongdamaopu",
     update_log: [{
+
+      version: "v1.8.9",
+      content: [
+        "增加精选tab，展示点赞照片",
+      ],
+      time: "2022/09/24"
+    }, {
+      version: "v1.8.8",
+      content: [
+        "首页校区筛选可缓存、分享",
+      ],
+      time: "2022/09/21"
+    }, {
+      version: "v1.8.7",
+      content: [
+        "修复问题TAT",
+      ],
+      time: "2022/09/19"
+    }, {
+      version: "v1.8.6",
+      content: [
+        "优化后台人员管理",
+      ],
+      time: "2022/09/18"
+    }, {
+      version: "v1.8.5",
+      content: [
+        "修复科普图片乱序",
+      ],
+      time: "2022/09/14"
+    }, {
+      version: "v1.8.4",
+      content: [
+        "修复页面UI小问题",
+      ],
+      time: "2022/07/09"
+    }, {
+      version: "v1.8.3",
+      content: [
+        "优化管理页面",
+      ],
+      time: "2022/07/06"
+    }, {
+
       version: "v1.8.2",
       content: [
         "新增猫猫关系",
         "代码质量"
       ],
-      time: "2022/06/25"
+
+      time: "2022/07/02"
     }, {
       version: "v1.8.1",
       content: [

@@ -22,6 +22,13 @@ page {
   font-size: 35rpx;
 }
 
+.update-userInfo {
+  font-size: 20rpx;
+  line-height: 50rpx;
+  color: var(--color-gray-dark);
+  margin-left: auto;
+}
+
 .need-notice {
   width: 100%;
   padding: 0rpx 0rpx 30rpx 0;
