@@ -112,7 +112,9 @@
     </view>
   </view>
   <!-- info end -->
-
+  
+  <!-- scroll-view包裹下sticky失效，再套个view作父容器 -->
+  <view>
   <view class='big-header'>
     <image class='avatar' mode='aspectFill' src='{{cat.avatar.photo_compressed || cat.avatar.photo_id}}'></image>
     <view class='name-and-count'>
@@ -131,23 +133,6 @@
   </view>
 
 
-  <view class='big-header fix' hidden='{{!showHoverHeader}}'>
-    <image class='avatar' mode='aspectFill' src='{{cat.photo[0].photo_compressed || cat.photo[0].photo_id}}'></image>
-    <view class='name-and-count'>
-      <view class='name'>{{cat.name}}的相册</view>
-      <view class='count'>共{{albumMax}}张照片</view>
-    </view>
-
-    <view class='sort-button'>
-      <picker bindchange="bindphotoOrderChange" value="{{photoOrderSelected}}" range="{{photoOrderSelectorRange}}" range-key="{{photoOrderSelectorKey}}">
-        <view class="picker">
-          <text class="type">{{photoOrderSelectorRange[photoOrderSelected][photoOrderSelectorKey]}}</text>
-          <image class="icon" mode='aspectFill' src='../../../images/button/sort.png'></image>
-        </view>
-      </picker>
-    </view>
-  </view>
-
   <view class='album'>
     <view wx:for="{{album}}" class='album-block' wx:key='date' wx:for-item="albumBlock">
       <view class='header'>
@@ -157,7 +142,7 @@
       </view>
       <view class="album-image" wx:for="{{albumBlock.photos}}" wx:key="_id" bindtap='bindTapPhoto' data-index="{{item.index}}" data-kind='album'>
         <image mode='aspectFill' class="alb-image" lazy-load='true' src='{{item.photo_compressed || item.photo_id}}'></image>
-        <item class="like-count" wx:if="{{item.like_count >= 3}}">
+        <item class="like-count" wx:if="{{item.like_count}}">
           <image class="like-logo small" mode='aspectFill' src="../../../images/button/heart.png"></image>
           <text>{{item.like_count}}</text>
         </item>
@@ -168,14 +153,16 @@
       {{bottomText}}
     </view>
   </view>
+  </view>
   <!-- album end -->
 
-  <view class="addPhoto" bindtap='bindAddPhoto'>
-    <image class="icon" wx:if="{{canUpload}}" src='../../../images/button/addPhoto.png'></image>
+  <!-- 点击上传图片 -->、
+  <view class="addPhoto" bindtap='bindAddPhoto'> 
+    <image class="icon" src='../../../images/button/addPhoto.png'></image>
   </view>
 
   <!-- 进入留言板 -->
-  <view id="comment-btn" bindtap="toComment" wx:if="{{canUpload}}">
+  <view id="comment-btn" bindtap="toComment" wx:if="{{canComment}}">
     <text>{{text_cfg.detail_cat.label_comment_board}}</text>
     <image src="../../../images/button/right_double_arrow.png" mode="aspectFit"></image>
   </view>

@@ -150,8 +150,15 @@ Page({
       campus_list[campus].push(photo);
     }
     
+    // 恢复最后一次审批的校区
+    var cache_active_campus = cache.getCacheItem("checkPhotoCampus");
+    if (!cache_active_campus || !campus_list[cache_active_campus]) {
+      cache_active_campus = undefined
+    }
+    
     this.setData({
       campus_list: campus_list,
+      active_campus: cache_active_campus,
     })
     
     wx.hideLoading();
@@ -268,7 +275,10 @@ Page({
           that.doCheckMulti();
         }
       }
-    })
+    });
+
+    // 记录一下最后一次审批的cache
+    cache.setCacheItem("checkPhotoCampus", active_campus, 24*7*31);
   },
 
   // 开始批量处理

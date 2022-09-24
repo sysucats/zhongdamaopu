@@ -56,6 +56,7 @@ swiper-item image {
   justify-content: center;
   align-content: center;
   background-color: white;
+  background-image: radial-gradient(circle at left bottom, #f7f7fa 15rpx, transparent 16rpx), radial-gradient(circle at right bottom, #f7f7fa 15rpx, transparent 16rpx);
 }
 
 .info .identity {
@@ -297,7 +298,9 @@ swiper-item image {
   background-color: var(--color-gray-light);
   color: var(--color-gray);
   font-size: 28rpx;
-  padding: 5rpx 0;
+  margin-top: 10rpx;
+  padding-bottom: constant(safe-area-inset-bottom);
+  padding-bottom: env(safe-area-inset-bottom);
 }
 
 .addPhoto {
@@ -312,6 +315,7 @@ swiper-item image {
   display: flex;
   justify-content: center;
   align-items: center;
+  z-index: 999;
 }
 
 .addPhoto .icon{
@@ -327,17 +331,15 @@ swiper-item image {
   display: flex;
   /* align-content: center; */
   align-items: center;
-
   border:solid var(--color-gray-light);
   border-width: 1rpx 0;
-}
-.big-header.fix {
-  position: fixed;
+  background-image: radial-gradient(circle at left top, #f7f7fa 15rpx, transparent 16rpx), radial-gradient(circle at right top, #f7f7fa 15rpx, transparent 16rpx);
+  box-shadow: 0  10rpx 15rpx var(--color-gray-normal);
+  position: sticky;
   top: 0;
-  box-shadow: 0 5rpx 20rpx var(--color-gray);
-  z-index: 1;
+  position: -webkit-sticky;
+  z-index: 99;
 }
-
 
 .big-header .avatar {
   width: 70rpx;
@@ -477,4 +479,14 @@ swiper-item image {
   white-space: nowrap;
   text-overflow:ellipsis;
   overflow:hidden;
+
+}
+
+/* 关掉关系板块滚动条，安卓滚动条略丑 */
+::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+  color: transparent;
+
 }

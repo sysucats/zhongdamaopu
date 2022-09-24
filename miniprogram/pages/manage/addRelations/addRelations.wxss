@@ -8,6 +8,11 @@ page {
 }
 
 /* 上方处理部分 */
+.relation-list {
+  max-height: 80vh;
+  background-color: transparent;
+  padding-bottom: 30rpx;
+}
 .relation {
   width: 100%;
   padding: 10rpx 30rpx;

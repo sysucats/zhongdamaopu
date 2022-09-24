@@ -165,16 +165,11 @@
           "scene": null
         },
         {
-          "name": "单页模式猫谱（分享到朋友圈）",
-          "pathName": "pages/genealogy/genealogy",
+          "name": ">>>部署指引<<<",
+          "pathName": "pages/debug/deployTip/deployTip",
           "query": "",
-          "scene": 1154
-        },
-        {
-          "name": "单页模式关于页",
-          "pathName": "pages/info/info",
-          "query": "",
-          "scene": 1154
+          "launchMode": "default",
+          "scene": null
         }
       ]
     }

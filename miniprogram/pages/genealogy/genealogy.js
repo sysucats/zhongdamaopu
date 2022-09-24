@@ -1,14 +1,11 @@
 // miniprogram/pages/genealogy/genealogy.js
 const utils = require('../../utils.js');
 const getGlobalSettings = utils.getGlobalSettings;
-const regeneratorRuntime = utils.regeneratorRuntime;
-const randomInt = utils.randomInt;
 const isManager = utils.isManager;
 const shuffle = utils.shuffle;
 const loadFilter = utils.loadFilter;
 const regReplace = utils.regReplace;
 const getDeltaHours = utils.getDeltaHours;
-const checkDeploy = utils.checkDeploy;
 
 
 const cache = require('../../cache.js');
@@ -84,6 +81,11 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
+    // 从缓存里读取options
+    var fcampus = options.fcampus;
+    if (!fcampus) {
+      fcampus = this.getFCampusCache();
+    }
     // 从分享点进来，到跳转到其他页面
     if (options.toPath) {
       wx.navigateTo({
@@ -117,7 +119,7 @@ Page({
       // 先把设置拿到
       catsStep = settings['catsStep'];
       // 启动加载
-      that.loadFilters();
+      that.loadFilters(fcampus);
 
       that.setData({
         main_lower_threshold: settings['main_lower_threshold'],
@@ -129,7 +131,7 @@ Page({
 
     var scene = wx.getLaunchOptionsSync().scene;
     if (scene === 1154) { //朋友圈内打开 “单页模式”
-      this.loadFilters();
+      this.loadFilters(fcampus);
       const db = wx.cloud.database();
       db.collection('setting').doc('pages').get().then(res => {
         var genealogySetting = res.data['genealogy'];
@@ -149,7 +151,7 @@ Page({
   // onShow: function (options) {
   //   console.log('onShow:', options);
   // },
-  loadFilters: function () {
+  loadFilters: function (fcampus) {
     // 下面开始加载filters
     loadFilter().then(res => {
 
@@ -180,6 +182,13 @@ Page({
       }
       for (let i = 0, len = res.campuses.length; i < len; ++i) {
         area_item.category.push(classifier[res.campuses[i]]);
+      }
+      // 把初始fcampus写入，例如"011000"
+      if (fcampus) {
+        for (let i = 0; i < fcampus.length; i++) {
+          const active = fcampus[i] == "1";
+          area_item.category[i].all_active = active;
+        }
       }
       filters.push(area_item);
 
@@ -250,9 +259,25 @@ Page({
    * 用户点击右上角分享
    */
   onShareAppMessage: function () {
+    // 分享是保留校区外显filter
+    const pagesStack = getCurrentPages();
+    const path = utils.getCurrentPath(pagesStack);
+    const fcampus = this.getFCampusStr();
+    const query = `${path}fcampus=${fcampus}`;
+    console.log(query);
     return {
-      title: share_text
+      title: share_text,
+      path: query
+    };
+  },
+
+  // 获取二进制的campus filter字符串
+  getFCampusStr: function() {
+    var fcampus = [];
+    for (var item of this.data.filters[0].category) {
+      fcampus.push(item.all_active ? "1": "0");
     }
+    return fcampus.join("");
   },
 
   onShareTimeline: function () {
@@ -296,6 +321,9 @@ Page({
 
     // 加载待领养
     this.countWaitingAdopt();
+
+    // 刷新cache一下
+    this.setFCampusCache();
   },
 
   // 加载更多的猫猫
@@ -486,7 +514,7 @@ Page({
     });
   },
   // 点击category filter，全选/反选该类下所有sub
-  fClickCategory: function (e) {
+  fClickCategory: async function (e) {
     var filters = this.data.filters;
     var filters_sub = this.data.filters_sub;
 
@@ -671,6 +699,15 @@ Page({
       // 确认过滤器并关闭展板
       that.fComfirm();
     });
+  },
+  // 点击外显的校区
+  fClickCampus: async function (e) {
+    if (pageLoadingLock) {
+      console.log("page is locking");
+      return false;
+    }
+    await this.fClickCategory(e);
+    await this.fComfirm();
   },
   // 发起文字搜索
   fSearchInput: function (e) {
@@ -901,5 +938,16 @@ Page({
   unlockBtn() {
     // console.log("unlock");
     pageLoadingLock = false;
+  },
+
+  // campus过滤器cache起来
+  setFCampusCache: function() {
+    const fc = this.getFCampusStr();
+    cache.setCacheItem("genealogy-fcampus", fc, 720);
+  },
+
+  // campus过滤器取cache
+  getFCampusCache: function() {
+    return cache.getCacheItem("genealogy-fcampus");
   }
 })

@@ -196,7 +196,7 @@ Page({
 
     const fileSystem = wx.getFileSystemManager();
     const that = this;
-
+    
     var cachePathList = wx.getStorageSync(cacheKey);
     fileSystem.access({
       path: cachePathList[0],
@@ -233,8 +233,6 @@ Page({
         wx.cloud.downloadFile({
           fileID: imgUrlList[i],
           success: function (res) {
-            var savedFilePath = fileSystem.saveFileSync(res.tempFilePath);
-            cachePathList.push(savedFilePath);
             resolve(res);
           },
           fail: res => reject(res)
@@ -243,7 +241,11 @@ Page({
     }
 
     Promise.all(promiseAll).then(res => {
-      // console.log("proAll:",res);
+      console.log("proAll:",res);
+      for(let i = 0; i < res.length; i++){
+        var savedFilePath = fileSystem.saveFileSync(res[i].tempFilePath);
+        cachePathList.push(savedFilePath);
+      }
       wx.setStorage({
         key: cacheKey,
         data: cachePathList

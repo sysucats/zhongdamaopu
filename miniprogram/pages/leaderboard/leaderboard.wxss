@@ -1,0 +1,98 @@
+page {
+  background: var(--color-white-dark);
+}
+
+.main {
+  display: flex;
+  align-items: flex-start;
+}
+
+.column {
+  width: 50%;
+}
+
+.column_item {
+  width: 350rpx;
+  background: #fff;
+  margin: 30rpx auto;
+  box-shadow: 5rpx 5rpx 10rpx 0 rgba(0, 0, 0, 0.3);
+  border-radius: 10rpx;
+  overflow: hidden;
+}
+
+.column_pic {
+  display: block;
+  width: 350rpx;
+  height: 350rpx;
+}
+
+.info {
+  width: 350rpx;
+  display: flex;
+  padding: 10rpx 0;
+  align-items: center;
+}
+
+.names {
+  display: inline-block;
+  width: 300rpx;
+  max-width: 300rpx;
+  padding-left: 30rpx;
+  box-sizing: border-box;
+}
+
+.cat-name {
+  font-size: 28rpx;
+  font-weight: bold;
+  letter-spacing: 2rpx;
+  color: var(--color-black-min);
+}
+.cat-name .campus {
+  font-size: 18rpx;
+  color: var(--color-gray-dark);
+  font-weight: lighter;
+}
+
+.pher-name, .photo-date {
+  font-size: 18rpx;
+  color: var(--color-black-min);
+}
+.photo-date {
+  font-size: 16rpx;
+}
+
+.like-button {
+  width: 100rpx;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+heart {
+  margin: -20rpx 0 -25rpx 0;
+}
+
+.like-num {
+  font-size: 20rpx;
+}
+
+.hide {
+  display: none;
+}
+
+.loading image {
+  width: 165.9rpx;
+  height: 90.3rpx;
+  margin: 10rpx 292rpx;
+}
+.loadnomore image {
+  width: 750rpx;
+  height: 100rpx;
+  margin: 10rpx 0;
+}
+
+.ellipsis-text {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}

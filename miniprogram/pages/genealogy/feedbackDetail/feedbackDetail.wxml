@@ -1,4 +1,4 @@
-<form bindsubmit="bindSubmit">
+<form bindsubmit="bindSubmit" wx:if="{{canUpload}}">
   <view wx:if="{{!isAuth}}" class='unAuth'>
     <!-- <text>请授权后进行操作</text> -->
     <view class='userInfo'>
@@ -33,6 +33,9 @@
     </view>
   </block>
 </form>
+<view class='footnote' wx:else>
+  <text>*暂不开放反馈信息功能</text>
+</view>
 <view class='footnote'>
   <text>{{text_cfg.feedback_detail.submit_tip}}</text>
 </view>
