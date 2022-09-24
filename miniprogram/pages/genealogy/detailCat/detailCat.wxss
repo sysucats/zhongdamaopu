@@ -272,6 +272,10 @@ swiper-item image {
   margin-right: 10rpx;
 }
 
+.album-block .header .birthday {
+  font-size: 28rpx;
+}
+
 .album-block .album-image {
   width: 240rpx;
   height: 240rpx;
@@ -469,7 +473,7 @@ swiper-item image {
 .relation-cat-name {
   max-width: 150rpx;
   font-size: 28rpx;
-  color: var(--color-primary-dark);
+  color: var(--color-primary);
   white-space: nowrap;
   text-overflow:ellipsis;
   overflow:hidden;
