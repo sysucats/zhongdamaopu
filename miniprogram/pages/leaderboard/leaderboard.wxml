@@ -1,6 +1,6 @@
 <view class="main">
-  <view wx:for="{{columns}}" wx:key="null" class="column">
-    <view wx:for="{{item}}"  wx:key="pic" class="column_item" wx:for-item="pics" wx:for-index="col">
+  <view wx:for="{{columns}}" wx:key="null" class="column" wx:for-index="col">
+    <view wx:for="{{item}}"  wx:key="pic" class="column_item" wx:for-item="pics">
       <image src="{{pics.pic}}" class="column_pic" mode="widthFix" bindtap="clickPhoto" data-url="{{pics.pic_prev}}" />
       <view class="info">
         <view class="names ellipsis-text" bindtap="clickCatName" data-cat_id="{{pics.cat_id}}">

@@ -109,10 +109,13 @@ Page({
     const curCount = this.data.columns[0].length + this.data.columns[1].length;
     const oneMonth = getDateWithDiffHours(-24*31);
     console.log(oneMonth);
-    const photos = (await db.collection('photo').where({
+    var photos = (await db.collection('photo').where({
       mdate: _.gte(oneMonth),
       like_count: _.gte(1),
     }).orderBy('like_count', 'desc').skip(curCount).limit(8).get()).data;
+
+    // 浏览过程中点赞，会导致序变化，但目前只会加点赞，因此只需要去重
+    photos = this.removeDupPhoto(photos);
 
     if (!photos.length) {
       this.jsData.isLoading = false;
@@ -141,6 +144,15 @@ Page({
     this.setData({
       tempPics: photos
     });
+  },
+  removeDupPhoto: function (photos) {
+    var m = {};
+    for (const col of this.data.columns) {
+      for (const p of col) {
+        m[p._id] = true
+      }
+    }
+    return photos.filter(p => !m[p._id]);
   },
   onLoad: function () {
     this.loadData()
