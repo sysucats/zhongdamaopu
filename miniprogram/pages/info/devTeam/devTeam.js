@@ -12,6 +12,12 @@ Page({
     text_cfg: text_cfg,
     github_link: "https://github.com/sysucats/zhongdamaopu",
     update_log: [{
+      version: "v1.8.9",
+      content: [
+        "增加精选tab，展示点赞照片",
+      ],
+      time: "2022/09/24"
+    }, {
       version: "v1.8.8",
       content: [
         "首页校区筛选可缓存、分享",

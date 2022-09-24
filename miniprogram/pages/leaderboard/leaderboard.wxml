@@ -1,0 +1,28 @@
+<view class="main">
+  <view wx:for="{{columns}}" wx:key="null" class="column">
+    <view wx:for="{{item}}"  wx:key="pic" class="column_item" wx:for-item="pics" wx:for-index="col">
+      <image src="{{pics.pic}}" class="column_pic" mode="widthFix" bindtap="clickPhoto" data-url="{{pics.pic_prev}}" />
+      <view class="info">
+        <view class="names ellipsis-text" bindtap="clickCatName" data-cat_id="{{pics.cat_id}}">
+          <view class="cat-name ellipsis-text">{{pics.cat.name}}<text class="campus"> [{{pics.cat.campus}}]</text></view>
+          <view class="pher-name ellipsis-text">@{{pics.photographer || pics.userInfo.nickName || "猫友"}}</view>
+          <view class="photo-date ellipsis-text">{{pics.mdate_str}}</view>
+        </view>
+        <view class="like-button" bindtap="clickLike" data-col="{{col}}" data-i="{{index}}">
+          <heart size="80" liked="{{pics.liked}}"></heart>
+          <view class="like-num">{{pics.like_count || 0}}</view>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>
+  
+<view class='loading' wx:if='{{!loadnomore}}'>
+  <image src='../../images/system/loading.gif'></image>
+</view>
+<view class='loadnomore' wx:else>
+  <image src='../../images/system/nomore.png'></image>
+</view>
+<view class="hide">
+  <image wx:for="{{tempPics}}" wx:key="null" src="{{item.pic}}" bindload="loadPic" binderror="loadPicError" data-index="{{index}}" />
+</view>

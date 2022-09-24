@@ -5,13 +5,21 @@ const db = wx.cloud.database();
 const _ = db.command;
 const coll_inter = db.collection('inter');
 var user = undefined;
-getUser().then((res) => {user = res;});
+
+async function ensureUser() {
+  if (user) {
+    return;
+  }
+  user = await getUser();
+  return;
+}
 
 // 定义数据库常量：
 const TYPE_LIKE = 10000;
 
 // 请求点赞记录
 async function like_get(item_id) {
+  await ensureUser();
   return await (await coll_inter.where({type: TYPE_LIKE, uid: user.openid, item_id: item_id}).get()).data;
 }
 
@@ -39,6 +47,7 @@ async function like_add(item_id, item_type) {
     });
   } else {
     // 没有记录
+    await ensureUser();
     await coll_inter.add({
       data: {
         type: TYPE_LIKE,

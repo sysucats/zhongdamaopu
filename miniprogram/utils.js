@@ -245,6 +245,12 @@ function getDeltaHours(lastTime) {
   return deltaHours;
 }
 
+function getDateWithDiffHours(diff) {
+  var res = new Date();
+  res.setHours(res.getHours() + diff);
+  return res;
+}
+
 async function arrayResort(oriArray) {
   var resortedArray = [];
   var len = oriArray.length;
@@ -295,4 +301,5 @@ module.exports = {
   getDeltaHours,
   arrayResort,
   checkDeploy,
+  getDateWithDiffHours,
 };

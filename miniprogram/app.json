@@ -28,7 +28,8 @@
     "pages/news/createNews/createNews",
     "pages/news/sciDetail/sciDetail",
     "pages/manage/addRelations/addRelations",
-    "pages/tools/updateUserRole/updateUserRole"
+    "pages/tools/updateUserRole/updateUserRole",
+    "pages/leaderboard/leaderboard"
   ],
   "tabBar": {
     "selectedColor": "#000",
@@ -39,6 +40,12 @@
         "iconPath": "./images/tabs/default/cat.png",
         "selectedIconPath": "./images/tabs/active/cat.png",
         "text": "猫谱"
+      },
+      {
+        "pagePath": "pages/leaderboard/leaderboard",
+        "iconPath": "./images/tabs/default/org.png",
+        "selectedIconPath": "./images/tabs/active/org.png",
+        "text": "精选"
       },
       {
         "pagePath": "pages/recognize/recognize",
