@@ -44,7 +44,7 @@ Page({
 
   loadRewards() {
     wx.showLoading({
-      title: '加载打赏记录中',
+      title: '加载投喂记录中',
     })
     const that = this;
     const db = wx.cloud.database();

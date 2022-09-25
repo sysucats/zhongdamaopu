@@ -106,7 +106,7 @@
           "scene": null
         },
         {
-          "name": "打赏",
+          "name": "打赏（投喂）",
           "pathName": "pages/info/reward/reward",
           "query": "",
           "scene": null
