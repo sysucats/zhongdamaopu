@@ -1,20 +1,19 @@
-const config = require('../../../config.js');
-const utils = require('../../../utils.js');
-const shareTo = utils.shareTo;
-const isManager = utils.isManager;
+
+// import { isManagerAsync, getGlobalSettings, formatDate } from "../../../utils.js";
+const utils = require("../../../utils.js");
+const isManagerAsync = utils.isManagerAsync;
 const getGlobalSettings = utils.getGlobalSettings;
 const formatDate = utils.formatDate;
+const config = require('../../../config.js');
 
 const user = require('../../../user.js');
-const getCurUserInfoOrFalse = user.getCurUserInfoOrFalse;
+const getPageUserInfo = user.getPageUserInfo;
 const getUserInfo = user.getUserInfo;
 
 const getAvatar = require('../../../cat.js').getAvatar
 
 const getCatCommentCount = require('../../../comment.js').getCatCommentCount;
 
-// 页面设置，从global读取
-var page_settings = {};
 var cat_id;
 
 // 常用的对象
@@ -44,28 +43,21 @@ Page({
   /**
    * 生命周期函数--监听页面加载
    */
-  onLoad: function (options) {
+  onLoad: async function (options) {
     cat_id = options.cat_id;
-    // 开始加载页面
-    const that = this;
-    getGlobalSettings('detailCat').then(settings => {
-      // 先把设置拿到
-      page_settings = settings;
-      // 启动加载
-      that.loadCat();
-      that.loadMoreComment();
-    })
+    // 启动加载
+    await this.loadCat();
+    await this.loadMoreComment();
     
     // 是否为管理员lv.1
-    isManager(res => {
-      if (res) {
-        that.setData({
-          is_manager: true
-        })
-      } else {
-        console.log("not a manager");
-      }
-    }, 1);
+    var manager = await isManagerAsync(1);
+    if (manager) {
+      this.setData({
+        is_manager: true
+      })
+    } else {
+      console.log("not a manager");
+    }
   },
 
   /**
@@ -124,13 +116,7 @@ Page({
   },
 
   onShareTimeline: function () {
-    const cat = this.data.cat;
-    const cat_name = cat.name;
-    const cat_avatar = cat.avatar.photo_compressed || cat.avatar.photo_id;
-    return {
-      title: `${cat_name}的留言板 - ${text_cfg.app_name}`,
-      imageUrl: cat_avatar,
-    }
+    return this.onShareAppMessage();
   },
 
   bindCommentScroll(e) {
@@ -183,20 +169,8 @@ Page({
   },
 
   // 授权个人信息
-  getUInfo() {
-    const that = this;
-    // 检查用户信息有没有拿到，如果有就更新this.data
-    getCurUserInfoOrFalse().then(res => {
-      if (!res) {
-        console.log('未授权');
-        return;
-      }
-      console.log(res);
-      that.setData({
-        isAuth: true,
-        user: res,
-      });
-    });
+  async getUInfo() {
+    await getPageUserInfo(this);
   },
 
   // 发送留言

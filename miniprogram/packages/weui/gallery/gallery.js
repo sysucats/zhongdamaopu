@@ -173,7 +173,7 @@ Component({
             like_mutex = false;
 
             const photo_id = this.data.photos[i]._id;
-            const liked = await inter_utils.like_check(photo_id);
+            const liked = (await inter_utils.likeCheck([photo_id]))[0];
             this.setData({
                 liked: liked,
             }, () => {
@@ -200,7 +200,7 @@ Component({
 
             // 执行数据库写入
             if (liked) {
-                inter_utils.like_add(this.data.photos[current]._id, "photo");
+                inter_utils.likeAdd(this.data.photos[current]._id, "photo");
             } else {
                 // todo
             }

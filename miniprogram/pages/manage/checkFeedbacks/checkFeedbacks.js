@@ -1,7 +1,7 @@
 // 处理反馈
 const utils = require('../../../utils.js');
-const isManager = utils.isManager;
 const formatDate = utils.formatDate;
+const checkAuth = utils.checkAuth;
 
 const msg = require('../../../msg.js');
 const requestNotice = msg.requestNotice;
@@ -27,32 +27,15 @@ Page({
   /**
    * 生命周期函数--监听页面加载
    */
-  onLoad: function (options) {
-    this.checkAuth();
+  onLoad: async function (options) {
+    if (await checkAuth(this, 1)) {
+      this.reload();
+    }
   },
 
   // 没有权限，返回上一页
   goBack() {
     wx.navigateBack();
-  },
-
-  // 检查权限
-  checkAuth() {
-    const that = this;
-    isManager(function (res) {
-      if (res) {
-        that.setData({
-          auth: true
-        });
-        that.reload();
-      } else {
-        that.setData({
-          tipText: '只有管理员Level-1能进入嗷',
-          tipBtn: true,
-        });
-        console.log("Not a manager.");
-      }
-    }, 1)
   },
 
   async loadFeedbacks() {
@@ -91,21 +74,18 @@ Page({
     wx.showLoading({
       title: '加载中...',
     });
-    const that = this;
     const db = wx.cloud.database();
-    db.collection('feedback').where({
+    var fbRes = db.collection('feedback').where({
       dealed: this.data.checkHistory
-    }).count().then(res => {
-      console.log(res);
-      this.data.total = res.total;
-      this.data.feedbacks = []; // 清空，loadFeedbacks再填充
-      that.setData({
-        total: this.data.total,
-      });
-      that.loadFeedbacks().then(() => {
-        wx.hideLoading();
-      });
+    }).count();
+
+    console.log(fbRes);
+    this.setData({
+      total: fbRes.total,
     });
+    this.data.feedbacks = []; // 清空，loadFeedbacks再填充
+    await this.loadFeedbacks();
+    wx.hideLoading();
   },
 
   async requestSubscribeMessage() {
@@ -150,42 +130,39 @@ Page({
     wx.hideLoading();
   },
 
-  bindCheck(e) {
+  async bindCheck(e) {
     const feedback = e.currentTarget.dataset.feedback;
-    const that = this;
-    wx.showModal({
+    const modalRes = await wx.showModal({
       title: '提示',
       content: '确定已完成该反馈处理？',
-      success(res) {
-        if (res.confirm) {
-          console.log('确认反馈处理');
-          wx.cloud.callFunction({
-            name: "manageFeedback",
-            data: {
-              operation: 'deal',
-              feedback: feedback
-            }
-          }).then(res => {
-            console.log("反馈已处理：" + feedback._id);
-            console.log(res.data);
-            // 直接从列表里去掉这个反馈，不完全加载了
-            const feedbacks = that.data.feedbacks;
-            const new_feedbacks = feedbacks.filter((fb, index, arr) => {
-              // 这个feedback是用户点击的feedback，在上面定义的
-              return fb._id != feedback._id;
-            });
-            that.setData({
-              feedbacks: new_feedbacks,
-              total: that.data.total - 1
-            }, () => {
-              wx.showToast({
-                title: '反馈已处理',
-              });
-            });
-          })
-        }
-      }
     })
+    if (!modalRes.confirm) {
+      return;
+    }
+
+    console.log('确认反馈处理');
+    await wx.cloud.callFunction({
+      name: "manageFeedback",
+      data: {
+        operation: 'deal',
+        feedback: feedback
+      }
+    });
+
+    console.log("反馈已处理：" + feedback._id);
+    // 直接从列表里去掉这个反馈，不完全加载了
+    const feedbacks = this.data.feedbacks;
+    const new_feedbacks = feedbacks.filter((fb) => {
+      // 这个feedback是用户点击的feedback，在上面定义的
+      return fb._id != feedback._id;
+    });
+    this.setData({
+      feedbacks: new_feedbacks,
+      total: this.data.total - 1
+    });
+    wx.showToast({
+      title: '反馈已处理',
+    });
   },
 
   bindCopy(e) {

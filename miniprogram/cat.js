@@ -4,6 +4,7 @@ const cache = require('./cache.js');
 
 // 常用的一些对象
 const db = wx.cloud.database();
+const _ = db.command;
 const coll_photo = db.collection('photo');
 const coll_cat = db.collection('cat');
 
@@ -64,9 +65,37 @@ async function getCatItem(cat_id) {
   return cacheItem;
 }
 
+// 获取多个猫猫信息
+async function getCatItemMulti(cat_ids) {
+  if (!cat_ids) {
+    return undefined;
+  }
+  var res = {};
+  var not_found = [];
+  for (var cat_id of cat_ids) {
+    var cacheKey = `cat-item-${cat_id}`;
+    var cacheItem = cache.getCacheItem(cacheKey);
+    if (cacheItem) {
+      res[cat_id] = cacheItem;
+      continue;
+    }
+    not_found.push(cat_id);
+  }
+
+  var db_res = (await coll_cat.where({_id: _.in(not_found)}).get()).data;
+  for (var c of db_res) {
+    var cacheKey = `cat-item-${c._id}`;
+    cache.setCacheItem(cacheKey, c, 24);
+    res[c._id] = c;
+  }
+  
+  return cat_ids.map(x => res[x]);
+}
+
 export {
   getAvatar,
   getVisitedDate,
   setVisitedDate,
   getCatItem,
+  getCatItemMulti
 }

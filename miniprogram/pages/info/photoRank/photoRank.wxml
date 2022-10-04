@@ -2,22 +2,22 @@
 
 <view id='top-block'></view>
 
-<view class='cen-block unAuth' wx:if='{{!userInfo}}'>
+<view class='cen-block unAuth' wx:if='{{!user}}'>
   <view class='title'>{{text_cfg.photo_rank.auth_tip_title}}</view>
   <button bindtap='getUInfo'>{{text_cfg.photo_rank.auth_tip}}</button>
 </view>
 <view class='cen-block my' wx:else>
   <view class='text left'>
     <view class='title'>排名</view>
-    <view class='number {{userInfo.photo_rank && userInfo.photo_rank <= 3? "active": ""}}'>{{userInfo.photo_rank || '---'}}</view>
+    <view class='number {{user.photo_rank && user.photo_rank <= 3? "active": ""}}'>{{user.photo_rank || '---'}}</view>
   </view>
   <view class='text cen my-info'>
-    <image mode='aspectFill' src='{{userInfo.avatarUrl}}'></image>
-    <view class='name'>{{userInfo.nickName}}</view>
+    <image mode='aspectFill' src='{{user.avatarUrl}}'></image>
+    <view class='name'>{{user.nickName}}</view>
   </view>
   <view class='text right'>
     <view class='title'>照片</view>
-    <view class='number {{userInfo.photo_rank && userInfo.photo_rank <= 3? "active": ""}}'>{{userInfo.photo_count || '---'}}</view>
+    <view class='number {{user.photo_rank && user.photo_rank <= 3? "active": ""}}'>{{user.photo_count || '---'}}</view>
   </view>
 </view>
 

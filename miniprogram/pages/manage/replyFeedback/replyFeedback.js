@@ -1,8 +1,6 @@
 // 处理反馈
 const utils = require('../../../utils.js');
-const regeneratorRuntime = utils.regeneratorRuntime;
-const randomInt = utils.regeneratorRuntime;
-const isManager = utils.isManager;
+const checkAuth = utils.checkAuth;
 const formatDate = utils.formatDate;
 
 const msg = require('../../../msg.js');
@@ -24,8 +22,10 @@ Page({
   /**
    * 生命周期函数--监听页面加载
    */
-  onLoad: function (options) {
-    this.checkAuth(options);
+  onLoad: async function (options) {
+    if (checkAuth(this, 1)) {
+      await this.reload(options);
+    }
   },
 
   // 没有权限，返回上一页
@@ -33,39 +33,18 @@ Page({
     wx.navigateBack();
   },
 
-  // 检查权限
-  checkAuth(options) {
-    const that = this;
-    isManager(function (res) {
-      if (res) {
-        that.setData({
-          auth: true
-        });
-        that.reload(options);
-      } else {
-        that.setData({
-          tipText: '只有管理员Level-1能进入嗷',
-          tipBtn: true,
-        });
-        console.log("Not a manager.");
-      }
-    }, 1)
-  },
-
-  reload(options) {
+  async reload(options) {
     wx.showLoading({
       title: '加载中...',
     });
-    const that = this;
     const db = wx.cloud.database();
-    db.collection('feedback').doc(options.fb_id).get().then(res => {
-      console.log(res);
-      res.data.openDateStr = formatDate(res.data.openDate, "yyyy-MM-dd hh:mm:ss");
-      that.data.feedback = res.data;
-      that.setData({
-        feedback: this.data.feedback
-      }, wx.hideLoading);
+    var res = await db.collection('feedback').doc(options.fb_id).get();
+    console.log(res);
+    res.data.openDateStr = formatDate(res.data.openDate, "yyyy-MM-dd hh:mm:ss");
+    this.setData({
+      feedback: res.data
     });
+    wx.hideLoading();
   },
 
   bindInput(e) {

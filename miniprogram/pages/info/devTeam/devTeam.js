@@ -12,6 +12,12 @@ Page({
     text_cfg: text_cfg,
     github_link: "https://github.com/sysucats/zhongdamaopu",
     update_log: [{
+      version: "v1.8.10",
+      content: [
+        "优化精选tab",
+      ],
+      time: "2022/10/02"
+    }, {
       version: "v1.8.9",
       content: [
         "增加精选tab，展示点赞照片",

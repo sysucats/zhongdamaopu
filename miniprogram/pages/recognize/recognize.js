@@ -53,7 +53,7 @@ Page({
     adopt_desc: config.cat_status_adopt,
   },
 
-  onLoad() {
+  async onLoad() {
     // 在页面onLoad回调事件中创建插屏广告实例
     if (wx.createInterstitialAd) {
       interstitialAd = wx.createInterstitialAd({
@@ -66,32 +66,23 @@ Page({
       interstitialAd.onClose(() => {})
     }
 
-    const that= this;
-    loadFilter().then(res => {
-      console.log('filterRes:', res);
-      that.setData({
-        campusList:['所有校区'].concat(res.campuses),
-        colourList:['所有花色'].concat(res.colour)
-      })
+    var res = await loadFilter();
+    console.log('filterRes:', res);
+    this.setData({
+      campusList:['所有校区'].concat(res.campuses),
+      colourList:['所有花色'].concat(res.colour)
     })
-
-    // var that = this;
-    // getGlobalSettings('recognize').then(settings => {
-    //   interfaceURL = settings.interfaceURL;
-    //   secretKey = settings.secretKey;
-    // })
 
     this.checkAuth();
   },
 
-  onShow() {
-    var that = this;
+  async onShow() {
     if (!interfaceURL || !secretKey) {
       console.log('__wxConfig.envVersion: ', __wxConfig.envVersion);
-      getGlobalSettings(__wxConfig.envVersion === 'release' ? 'recognize' : 'recognize_test').then(settings => {
-        interfaceURL = settings.interfaceURL;
-        secretKey = settings.secretKey;
-      }).then(that.recognizeChatImage);
+      var settings = await getGlobalSettings(__wxConfig.envVersion === 'release' ? 'recognize' : 'recognize_test');
+      interfaceURL = settings.interfaceURL;
+      secretKey = settings.secretKey;
+      await this.recognizeChatImage();
     } else { // 没杀后台回到聊天重新识别的情况
       this.recognizeChatImage()
     }

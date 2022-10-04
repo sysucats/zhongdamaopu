@@ -1,5 +1,5 @@
 page {
-  background: var(--color-white-dark);
+  /* background: var(--color-white-dark); */
 }
 
 .main {
@@ -73,6 +73,8 @@ heart {
 }
 
 .like-num {
+  width: 100rpx;
+  text-align: center;
   font-size: 20rpx;
 }
 

@@ -17,22 +17,27 @@ async function ensureUser() {
 // 定义数据库常量：
 const TYPE_LIKE = 10000;
 
-// 请求点赞记录
-async function like_get(item_id) {
+// 批量请求点赞记录，每个用户只能对每个item点赞一次，所以这里判断是合适的
+async function likeGet(item_ids) {
   await ensureUser();
-  return await (await coll_inter.where({type: TYPE_LIKE, uid: user.openid, item_id: item_id}).get()).data;
+  return (await coll_inter.where({type: TYPE_LIKE, uid: user.openid, item_id: _.in(item_ids)}).get()).data;
 }
 
-// 检查是否有点赞记录，item可以是photo、cat、comment
-async function like_check(item_id) {
-  var res = await like_get(item_id);
+// 批量检查是否有点赞记录，item可以是photo、cat、comment
+async function likeCheck(item_ids) {
+  var res = await likeGet(item_ids);
+  var found = {};
+  for (var x of res) {
+    found[x.item_id] = x.count > 0;
+  }
+  console.log(res, found);
   // 后续可能会支持点赞取消，用count来表示点赞次数
-  return res.length > 0 && res[0].count > 0;
+  return item_ids.map(x => Boolean(found[x]));
 }
 
 // 点赞操作
-async function like_add(item_id, item_type) {
-  var res = await like_get(item_id);
+async function likeAdd(item_id, item_type) {
+  var res = (await likeGet([item_id]))[0];
   // 已经赞过
   if (res.length > 0 && res[0].count > 0) {
     return false;
@@ -63,7 +68,7 @@ async function like_add(item_id, item_type) {
   await wx.cloud.callFunction({
     name: "interOp",
     data: {
-      type: "like_add",
+      type: "likeAdd",
       item_type: item_type,
       item_id, item_id,
     }
@@ -72,6 +77,6 @@ async function like_add(item_id, item_type) {
 }
 
 module.exports = {
-  like_check,
-  like_add,
+  likeCheck,
+  likeAdd,
 }

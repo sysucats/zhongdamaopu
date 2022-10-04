@@ -14,29 +14,10 @@ function generateUUID() {
   return uuid;
 };
 
-function loadFilter() {
-  return new Promise(function(resolve, reject) {
-    const db = wx.cloud.database();
-    db.collection('setting').doc('filter').get().then(res => {
-      resolve(res.data);
-    })
-  });
-}
-
-function isManager(callback, req) {
-  // 这里的callback将接受一个参数res，
-  // 为bool类型，当前用户为manager时为true，
-  // 否则为false
-  // req是要求的等级，是一个整数值
-  wx.cloud.callFunction({
-    name: 'isManager',
-    data: {
-      req: req
-    }
-  }).then(res => {
-    // console.log(res);
-    callback(res.result);
-  });
+async function loadFilter() {
+  const db = wx.cloud.database();
+  var res = await db.collection('setting').doc('filter').get();
+  return res.data;
 }
 
 async function isManagerAsync(req) {
@@ -48,6 +29,21 @@ async function isManagerAsync(req) {
   })).result;
 }
 
+// TODO，应该做成一个模块
+async function checkAuth(page, level) {
+  if (await isManagerAsync(level)) {
+    page.setData({
+      auth: true
+    });
+    return true;
+  }
+  
+  page.setData({
+    tipText: `只有管理员Level-${level}能进入嗷`,
+    tipBtn: true,
+  });
+  return false;
+}
 
 
 function isWifi(callback) {
@@ -98,21 +94,17 @@ function getCurrentPath(pagesStack) {
 }
 
 // 获取全局的设置
-function getGlobalSettings(key) {
-  return new Promise(function (resolve, reject) {
-    const app = getApp();
-    if (app.globalData.settings) {
-      resolve(app.globalData.settings[key]);
-      return;
-    }
+async function getGlobalSettings(key) {
+  const app = getApp();
+  if (app.globalData.settings) {
+    return app.globalData.settings[key]
+  }
 
-    // 如果没有，那就获取一下
-    const db = wx.cloud.database();
-    db.collection('setting').doc('pages').get().then(res => {
-      app.globalData.settings = res.data;
-      resolve(app.globalData.settings[key]);
-    });
-  });
+  // 如果没有，那就获取一下
+  const db = wx.cloud.database();
+  var res = await db.collection('setting').doc('pages').get();
+  app.globalData.settings = res.data;
+  return app.globalData.settings[key];
 }
 
 
@@ -265,26 +257,25 @@ async function arrayResort(oriArray) {
 
 
 // 检查部署情况，有错误就跳转到部署帮助页
-function checkDeploy() {
-  return new Promise(function (resolve, reject) {
-    try {
-      const db = wx.cloud.database();
-      db.collection('setting').doc('pages').get().then(res => {
-        resolve(true);
-      });
-      
-    } catch (error) {
-      resolve(false);
-    }
-  });
+async function checkDeploy() {
+  try {
+    const db = wx.cloud.database();
+    await db.collection('setting').doc('pages').get();
+  } catch (error) {
+    return false
+  }
+  
+  return true;
 }
+
+// 等待时间（ms）
+const sleep = m => new Promise(r => setTimeout(r, m))
 
 module.exports = {
   sha256,
   randomInt,
   generateUUID,
   loadFilter,
-  isManager,
   isManagerAsync,
   isWifi,
   shuffle,
@@ -302,4 +293,6 @@ module.exports = {
   arrayResort,
   checkDeploy,
   getDateWithDiffHours,
+  checkAuth,
+  sleep,
 };

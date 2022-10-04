@@ -4,7 +4,7 @@ const getCurrentPath = utils.getCurrentPath;
 const shareTo = utils.shareTo;
 
 const user = require('../../../user.js');
-const getCurUserInfoOrFalse = user.getCurUserInfoOrFalse;
+const getPageUserInfo = user.getPageUserInfo;
 const getUser = user.getUser;
 const checkCanUpload = user.checkCanUpload;
 
@@ -35,18 +35,14 @@ Page({
   /**
    * 生命周期函数--监听页面加载
    */
-  onLoad: function (options) {
+  onLoad: async function (options) {
     const db = wx.cloud.database();
-    const cat = db.collection('cat');
     const cat_id = options.cat_id;
-    cat.doc(cat_id).field({ birthday: true, name: true, campus: true, _id: true }).get().then(res => {
-      console.log(res.data);
-      const birthday = res.data.birthday;
-      this.setData({
-        cat: res.data,
-        birth_date: birthday || ''
-      });
-    })
+    var catRes = await db.collection('cat').doc(cat_id).field({ birthday: true, name: true, campus: true, _id: true }).get();
+    this.setData({
+      cat: catRes.data,
+      birth_date: catRes.data.birthday || ''
+    });
     //this.checkUInfo();
 
     // 获取一下现在的日期，用在拍摄日前选择上
@@ -57,26 +53,19 @@ Page({
     });
 
     // 加载设置、关闭上传功能
-    const that = this;
-    getUser().then(
-      res=>{
-        if (!res.userInfo) {
-          this.getUInfo();
-          return;
-        }
-        that.setData({
-          isAuth: true,
-          user: res,
-        });
-      }
-    );
+    const userRes = await getUser();
+    if (!userRes.userInfo) {
+      this.getPageUserInfo();
+      return;
+    }
+    this.setData({
+      isAuth: true,
+      user: userRes,
+    });
 
-    checkCanUpload().then(res => {
-      that.setData({
-        canUpload: res
-      });
-    })
-
+    this.setData({
+      canUpload: await checkCanUpload()
+    });
   },
 
   onUnload:function(options){
@@ -91,22 +80,6 @@ Page({
     const path = getCurrentPath(pagesStack);
     const share_text = `来给${this.data.cat.name}添加照片 - ${text_cfg.app_name}`;
     return shareTo(share_text, path);
-  },
-
-  getUInfo() {
-    const that = this;
-    // 检查用户信息有没有拿到，如果有就更新this.data
-    getCurUserInfoOrFalse().then(res => {
-      if (!res) {
-        console.log('未授权');
-        return;
-      }
-      console.log(res);
-      that.setData({
-        isAuth: true,
-        user: res,
-      });
-    });
   },
 
   chooseImg(e) {
@@ -199,17 +172,14 @@ Page({
     const subMsgSetting = await db.collection('setting').doc('subscribeMsg').get();
     const triggerNum = subMsgSetting.data.verifyPhoto.triggerNum; //几条未审核才触发
     // console.log("triggerN",triggerNum);
-    var numUnchkPhotos;
-    db.collection('photo').where({
+    var numUnchkPhotos = (await db.collection('photo').where({
       verified: false
-    }).count().then(res => {
-      // console.log("photoUnverify",res)
-      numUnchkPhotos = res.total;
-      if (numUnchkPhotos >= triggerNum) {
-        sendNotifyVertifyNotice(numUnchkPhotos).then();
-        console.log("toSendNVMsg");
-      }
-    })
+    }).count()).total;
+
+    if (numUnchkPhotos >= triggerNum) {
+      await sendNotifyVertifyNotice(numUnchkPhotos);
+      console.log("toSendNVMsg");
+    }
     
   },
 

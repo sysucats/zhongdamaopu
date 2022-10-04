@@ -3,19 +3,14 @@ import { randomInt, userInfoEq, getGlobalSettings } from './utils.js';
 
 // 获取当前用户
 // 如果数据库中没有会后台自动新建并返回
-function getUser() {
-  return new Promise(resolve => {
-    wx.cloud.callFunction({
-      name: 'userOp',
-      data: {
-        op: 'get'
-      },
-      success: (res) => {
-        console.log(res);
-        resolve(res.result);
-      }
-    });
+async function getUser() {
+  const userRes = await wx.cloud.callFunction({
+    name: 'userOp',
+    data: {
+      op: 'get'
+    }
   });
+  return userRes.result;
 }
 
 async function getCurUserInfoOrFalse() {
@@ -122,9 +117,28 @@ async function checkCanUpload() {
   return await managerUpload();
 }
 
+
+// 设置页面上的userInfo
+async function getPageUserInfo(page) {
+  // 检查用户信息有没有拿到，如果有就更新this.data
+  const userRes = await getCurUserInfoOrFalse();
+
+  if (!userRes) {
+    console.log('未授权');
+    return false;
+  }
+  console.log(userRes);
+  page.setData({
+    isAuth: true,
+    user: userRes,
+  });
+  return true;
+}
+
 module.exports = {
   getUser,
   getCurUserInfoOrFalse,
   getUserInfo,
   checkCanUpload,
+  getPageUserInfo,
 } 

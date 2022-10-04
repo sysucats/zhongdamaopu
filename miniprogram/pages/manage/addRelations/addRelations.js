@@ -1,7 +1,8 @@
 // 审核照片
 const utils = require('../../../utils.js');
-const isManager = utils.isManager;
 const regReplace = utils.regReplace;
+const checkAuth = utils.checkAuth;
+const sleep = utils.sleep;
 
 const cat_utils = require('../../../cat.js');
 const getAvatar = cat_utils.getAvatar;
@@ -32,46 +33,22 @@ Page({
   /**
    * 生命周期函数--监听页面加载
    */
-  onLoad(options) {
-    this.checkAuth();
-    var that = this;
+  async onLoad(options) {
+    if (await checkAuth(this, 2)) {
+      this.loadRelationTypes();
+    }
     if (options.cat_id) {
       // 输入了cat_id
-      db.collection('cat').doc(options.cat_id).get().then(res => {
-        var cat = res.data;
-        getAvatar(cat._id, cat.photo_count_best).then(avatar => {
-          cat.avatar = avatar;
-          that.setData({
-            cat: cat
-          }, () => {
-            that.loadRelations();
-          });
-        });
-      })
+      var cat = (await db.collection('cat').doc(options.cat_id).get()).data;
+      cat.avatar = await getAvatar(cat._id, cat.photo_count_best);
+      this.setData({
+        cat: cat
+      });
+      await this.loadRelations();
     } else {
-      setTimeout(function() {
-        that.bindSearch(null, "cat");
-      }, 700);
+      await sleep(700);
+      this.bindSearch(null, "cat");
     }
-  },
-
-  // 检查权限
-  checkAuth() {
-    const that = this;
-    isManager(function (res) {
-      if (res) {
-        that.setData({
-          auth: true
-        });
-        that.loadRelationTypes();
-      } else {
-        that.setData({
-          tipText: '只有管理员Level-2能进入嗷',
-          tipBtn: true,
-        });
-        console.log("Not a manager.");
-      }
-    }, 2)
   },
 
   /**
@@ -288,7 +265,7 @@ Page({
     wx.hideLoading();
   },
   // 选择猫猫
-  searchSelectCat(e) {
+  async searchSelectCat(e) {
     var idx = e.currentTarget.dataset.index;
     var cat = this.data.searchCats[idx];
     if (selectRelationCatIdx === undefined) {
@@ -297,7 +274,7 @@ Page({
         cat: cat,
         showSearchCat: false,
       });
-      this.loadRelations();
+      await this.loadRelations();
       return;
     }
 

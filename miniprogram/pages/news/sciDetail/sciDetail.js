@@ -19,7 +19,7 @@ Page({
   /**
    * 生命周期函数--监听页面加载
    */
-  onLoad: function (options) {
+  onLoad: async function (options) {
     // 切换到该分类
     const cate_current = options.cate;
     this.setData({
@@ -35,7 +35,7 @@ Page({
       this.setData({images:config.science_imgs})
     }
     
-    this.getSci();
+    await this.getSci();
   },
 
   /**
@@ -47,18 +47,17 @@ Page({
     }
   },
 
-  getSci() {
+  async getSci() {
     wx.showLoading({title:'加载中...'})
-    wx.cloud.callFunction({
+    var res = await wx.cloud.callFunction({
       name: 'getAllSci',
-    }).then(res => {
-      console.log(res);
-      const data = res.result.data;
-      this.setData({
-        qnas: data
-      });
-      wx.hideLoading()
-    })
+    });
+    console.log(res);
+    const data = res.result.data;
+    this.setData({
+      qnas: data
+    });
+    wx.hideLoading()
   },
 
   changeCate(e) {

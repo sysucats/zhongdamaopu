@@ -1,11 +1,10 @@
 // 审核照片
 const utils = require('../../../utils.js');
-const isManager = utils.isManager;
+const checkAuth = utils.checkAuth;
 
 const msg = require('../../../msg.js');
 const requestNotice = msg.requestNotice;
 const sendVerifyNotice = msg.sendVerifyNotice;
-// const verifyTplId = msg.verifyTplId;
 
 const config = require('../../../config.js');
 const notifyVerifyPhotoTplId = config.msg.notifyVerify.id;
@@ -32,9 +31,11 @@ Page({
   /**
    * 生命周期函数--监听页面加载
    */
-  onLoad: function (options) {
+  onLoad: async function (options) {
     notice_list = {};
-    this.checkAuth();
+    if (await checkAuth(this, 1)) {
+      this.loadAllPhotos();
+    }
   },
 
   /**
@@ -91,24 +92,6 @@ Page({
   // 没有权限，返回上一页
   goBack() {
     wx.navigateBack();
-  },
-  // 检查权限
-  checkAuth() {
-    const that = this;
-    isManager(function (res) {
-      if (res) {
-        that.setData({
-          auth: true
-        });
-        that.loadAllPhotos();
-      } else {
-        that.setData({
-          tipText: '只有管理员Level-1能进入嗷',
-          tipBtn: true,
-        });
-        console.log("Not a manager.");
-      }
-    }, 1)
   },
 
   async loadAllPhotos() {
@@ -246,7 +229,7 @@ Page({
   },
 
   // 确定处理
-  bindCheckMulti(e) {
+  async bindCheckMulti(e) {
     var active_campus = this.data.active_campus;
     var photos = this.data.campus_list[active_campus];
     var nums = {}, total_num = 0;
@@ -265,25 +248,22 @@ Page({
       return false;
     }
     
-    var that = this;
-    wx.showModal({
+    var modalRes = wx.showModal({
       title: '确定批量审核？',
       content: `删除${nums['delete'] || 0}张，通过${nums['pass'] || 0}张，精选${nums['best'] || 0}张`,
-      success(res) {
-        if (res.confirm) {
-          console.log('开始通过');
-          that.doCheckMulti();
-        }
-      }
     });
+
+    if (modalRes.confirm) {
+      console.log('开始通过');
+      await this.doCheckMulti();
+    }
 
     // 记录一下最后一次审批的cache
     cache.setCacheItem("checkPhotoCampus", active_campus, 24*7*31);
   },
 
   // 开始批量处理
-  doCheckMulti() {
-    var that = this;
+  async doCheckMulti() {
     wx.showLoading({
       title: '处理中...',
     })
@@ -312,17 +292,16 @@ Page({
         name: "managePhoto",
         data: data
       }))
-      that.addNotice(photo, (photo.mark != "delete"));
+      this.addNotice(photo, (photo.mark != "delete"));
     }
     // 阻塞一下
-    Promise.all(all_queries).then(_ => {
-      that.setData({
-        [`campus_list.${active_campus}`]: new_photos,
-      }, () => {
-        wx.showToast({
-          title: '审核通过',
-        });
-      });
+    await Promise.all(all_queries);
+    this.setData({
+      [`campus_list.${active_campus}`]: new_photos,
+    });
+
+    wx.showToast({
+      title: '审核通过',
     });
   },
 })

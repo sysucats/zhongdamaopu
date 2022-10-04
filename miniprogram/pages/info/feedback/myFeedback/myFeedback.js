@@ -38,19 +38,16 @@ Page({
     });
     const that = this;
     const db = wx.cloud.database();
-    db.collection('feedback').where({
+    const countRes = await db.collection('feedback').where({
       _openid: currentUser.openid
-    }).count().then(res => {
-      console.log(res);
-      this.data.total = res.total;
-      this.data.feedbacks = []; // 清空，loadFeedbacks再填充
-      that.setData({
-        total: this.data.total,
-      });
-      that.loadFeedbacks().then(() => {
-        wx.hideLoading();
-      });
+    }).count();
+    that.setData({
+      total: countRes.total,
     });
+    // 清空，loadFeedbacks再填充
+    this.data.feedbacks = [];
+    await this.loadFeedbacks();
+    wx.hideLoading();
   },
 
   async loadFeedbacks() {

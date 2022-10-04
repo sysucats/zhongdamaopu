@@ -10,7 +10,7 @@
         </view>
         <view class="like-button" bindtap="clickLike" data-col="{{col}}" data-i="{{index}}">
           <heart size="80" liked="{{pics.liked}}"></heart>
-          <view class="like-num">{{pics.like_count || 0}}</view>
+          <text class="like-num">{{pics.like_count || 0}}</text>
         </view>
       </view>
     </view>

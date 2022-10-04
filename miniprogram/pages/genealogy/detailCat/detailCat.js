@@ -6,7 +6,7 @@ const getGlobalSettings = utils.getGlobalSettings;
 const checkCanComment = utils.checkCanComment;
 const checkMultiClick = utils.checkMultiClick;
 const formatDate = utils.formatDate;
-const isManager = utils.isManager;
+const isManagerAsync = utils.isManagerAsync;
 
 const userUtils = require('../../../user.js');
 const checkCanUpload = userUtils.checkCanUpload;
@@ -77,7 +77,7 @@ Page({
   /**
    * 生命周期函数--监听页面加载
    */
-  onLoad: function (options) {
+  onLoad: async function (options) {
     if (cat_id != undefined) {
       // 说明是从其他猫猫跳转过来的，记录下上下文
       context.cat_id = cat_id;
@@ -86,11 +86,9 @@ Page({
     cat_id = options.cat_id;
 
     // 判断是否为管理员
-    isManager(res=>{
-      this.setData({
-        is_manager: res,
-      });
-    }, 3);
+    this.setData({
+      is_manager: (await isManagerAsync(3))
+    });
     
     // 先判断一下这个用户在12小时之内有没有点击过这只猫
     if (!checkMultiClick(cat_id)) {
@@ -100,24 +98,23 @@ Page({
         data: new Date(),
       });
       // 增加click数
-      wx.cloud.callFunction({
+      await wx.cloud.callFunction({
         name: 'addPop',
         data: {
           cat_id: cat_id
         }
-      }).then(res => {
-        console.log(res);
       });
     }
 
     // 记录访问时间，消除“有新相片”
+    // TODO：用cache
     setVisitedDate(cat_id);
   },
 
   /**
    * 生命周期函数--监听页面初次渲染完成
    */
-  onReady: function () {
+  onReady: async function () {
     // 获取一下屏幕高度
     wx.getSystemInfo({
       success: res => {
@@ -132,27 +129,19 @@ Page({
     });
     
     // 开始加载页面
-    const that = this;
-    getGlobalSettings('detailCat').then(settings => {
-      // 先把设置拿到
-      page_settings = settings;
-      that.setData({
-        photoPopWeight: settings['photoPopWeight'] || 10
-      });
-      // 启动加载
-      that.loadCat().then();
-      // 是否开启上传功能
-      checkCanUpload().then(res => {
-        that.setData({
-          canUpload: res
-        });
-      });
-      // 是否开启留言功能
-      checkCanComment().then(res => {
-        that.setData({
-          canComment: res
-        });
-      });
+    page_settings = await getGlobalSettings('detailCat');
+    this.setData({
+      photoPopWeight: page_settings['photoPopWeight'] || 10
+    });
+    // 加载猫猫，是否开启上传、留言功能
+    var [_, canUpload, canComment] = await Promise.all([
+      this.loadCat(),
+      checkCanUpload(),
+      checkCanComment()
+    ]);
+    this.setData({
+      canUpload: canUpload,
+      canComment: canComment
     });
   },
 
@@ -217,19 +206,22 @@ Page({
     cat.characteristics_string = (cat.colour || '') + '猫';
     cat.avatar = await getAvatar(cat._id, cat.photo_count_best);
 
-    this.setData({
+    await this.setData({
       cat: cat
-    }, ()=> {
-      this.reloadPhotos();
-      this.loadCommentCount();
-      this.loadRelations();
-      var query = wx.createSelectorQuery();
-      query.select('#info-box').boundingClientRect();
-      query.exec((res) => {
-        console.log(res[0]);
-        infoHeight = res[0].height;
-      })
     });
+
+    await Promise.all([
+      this.reloadPhotos(),
+      this.loadCommentCount(),
+      this.loadRelations(),
+    ]);
+
+    var query = wx.createSelectorQuery();
+    query.select('#info-box').boundingClientRect();
+    query.exec((res) => {
+      console.log(res[0]);
+      infoHeight = res[0].height;
+    })
   },
   
   // 更新关系列表
@@ -253,40 +245,36 @@ Page({
     });
   },
 
-  reloadPhotos() {
+  async reloadPhotos() {
     // 这些是精选照片
     const db = wx.cloud.database();
     // 1/4处 屏蔽以 HEIC 为文件后缀的图片
     const qf = { cat_id: cat_id, verified: true, best: true, photo_id: no_heic };
-    db.collection('photo').where(qf).count().then(res => {
-      photoMax = res.total;
-      this.loadMorePhotos();
-    });
-    this.reloadAlbum();
+    photoMax = (await db.collection('photo').where(qf).count()).total;
+    await Promise.all([
+      this.loadMorePhotos(),
+      this.reloadAlbum(),
+    ]);
   },
 
-  loadCommentCount() {
+  async loadCommentCount() {
     const that = this;
-    getCatCommentCount(cat_id).then(count => {
-      console.log(count);
-      that.setData({
-        "cat.comment_count": count
-      });
-    })
+
+    that.setData({
+      "cat.comment_count": await getCatCommentCount(cat_id)
+    });
   },
 
-  reloadAlbum() {
+  async reloadAlbum() {
     // 下面是相册的
     const db = wx.cloud.database();
     // 2/4处 屏蔽以 HEIC 为文件后缀的图片
     const qf_album = { cat_id: cat_id, verified: true, photo_id: no_heic };
-    db.collection('photo').where(qf_album).count().then(res => {
-      albumMax = res.total;
-      album_raw = [];
-      this.loadMoreAlbum();
-      this.setData({
-        albumMax: albumMax
-      });
+    albumMax = (await db.collection('photo').where(qf_album).count()).total;
+    album_raw = [];
+    await this.loadMoreAlbum();
+    this.setData({
+      albumMax: albumMax
     });
   },
 

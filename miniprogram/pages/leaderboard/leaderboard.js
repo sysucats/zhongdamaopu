@@ -1,9 +1,9 @@
 import {
-  getCatItem
+  getCatItemMulti
 } from "../../cat.js";
 import {
-  like_check,
-  like_add
+  likeCheck,
+  likeAdd
 } from "../../inter.js";
 import {getDateWithDiffHours, formatDate} from "../../utils.js";
 
@@ -112,7 +112,7 @@ Page({
     var photos = (await db.collection('photo').where({
       mdate: _.gte(oneMonth),
       like_count: _.gte(1),
-    }).orderBy('like_count', 'desc').skip(curCount).limit(8).get()).data;
+    }).orderBy('like_count', 'desc').skip(curCount).limit(5).get()).data;
 
     // 浏览过程中点赞，会导致序变化，但目前只会加点赞，因此只需要去重
     photos = this.removeDupPhoto(photos);
@@ -125,19 +125,17 @@ Page({
       return;
     }
 
-    var pms = [];
-    for (var p of photos) {
-      pms.push(getCatItem(p.cat_id));
-      pms.push(like_check(p._id));
-    }
     // 网络请求
-    var res = await Promise.all(pms);
+    var [cat_res, like_res] = await Promise.all([
+      getCatItemMulti(photos.map(p => p.cat_id)),
+      likeCheck(photos.map(p => p._id))
+    ]);
     for (let i = 0; i < photos.length; i++) {
       var p = photos[i];
       p.pic = p.photo_compressed || p.photo_id;
       p.pic_prev = p.photo_watermark || p.photo_id;
-      p.cat = res[i*2];
-      p.liked = res[i*2 + 1];
+      p.cat = cat_res[i];
+      p.liked = like_res[i];
       p.mdate_str = formatDate(p.mdate, "yyyy/MM/dd")
     }
     console.log(photos);
@@ -186,7 +184,7 @@ Page({
 
     // 执行数据库写入
     if (liked) {
-      await like_add(photo._id, "photo");
+      await likeAdd(photo._id, "photo");
     } else {
       // todo
     }

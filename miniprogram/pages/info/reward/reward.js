@@ -20,18 +20,16 @@ Page({
     text_cfg: text_cfg,
   },
 
-  onLoad: function (option) {
+  onLoad: async function (option) {
     this.loadReward();
-    var that = this;
     
     // 是否开启
-    checkCanUpload().then(res => {
-      that.setData({
-        canUpload: res
-      });
-    })
+    this.setData({
+      canUpload: await checkCanUpload()
+    });
     
     // 在页面onLoad回调事件中创建激励视频广告实例
+    var that = this;
     if (wx.createRewardedVideoAd) {
       videoAd = wx.createRewardedVideoAd({
         adUnitId: config.ad_reward_video
@@ -74,19 +72,18 @@ Page({
     }
   },
 
-  loadReward() {
-    const that = this;
+  async loadReward() {
     const db = wx.cloud.database();
-    db.collection('reward').orderBy('mdate', 'desc').get().then(res => {
-      console.log(res.data);
-      for (var r of res.data) {
-        const tmp = r.mdate;
-        r.mdate = tmp.getFullYear() + '年' + (tmp.getMonth()+1) + '月';
-        r.records = r.records.replace(/^\#+|\#+$/g, '').split('#');
-      }
-      that.setData({
-        reward: res.data
-      });
+    var rewardRes = await db.collection('reward').orderBy('mdate', 'desc').get();
+    
+    console.log(rewardRes.data);
+    for (var r of rewardRes.data) {
+      const tmp = r.mdate;
+      r.mdate = tmp.getFullYear() + '年' + (tmp.getMonth()+1) + '月';
+      r.records = r.records.replace(/^\#+|\#+$/g, '').split('#');
+    }
+    this.setData({
+      reward: rewardRes.data
     });
   },
 

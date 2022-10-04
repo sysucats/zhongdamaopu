@@ -2,9 +2,9 @@
 const utils = require('../../../utils.js');
 const user = require('../../../user.js');
 const generateUUID = utils.generateUUID;
-const isManager = utils.isManager;
+const checkAuth = utils.checkAuth;
 
-const getCurUserInfoOrFalse = user.getCurUserInfoOrFalse;
+const getPageUserInfo = user.getPageUserInfo;
 
 Page({
     /**
@@ -57,20 +57,8 @@ Page({
     /**
      * 生命周期函数--监听页面加载
      */
-    onLoad: function (options) {
-        this.checkAuth();
-    },
-
-    // 检查权限
-    checkAuth() {
-        const that = this;
-        isManager(function (res) {
-            if (res) {
-                that.setData({
-                    auth: true
-                });
-            }
-        }, 2)
+    onLoad: async function (options) {
+      await checkAuth(this, 2);
     },
 
     bindInputName(e) {
@@ -94,19 +82,8 @@ Page({
         })
     },
 
-    getUInfo() {
-        const that = this;
-        getCurUserInfoOrFalse().then(res => {
-            if (!res) {
-                console.log('未授权');
-                return;
-            }
-            console.log(res);
-            that.setData({
-                isAuth: true,
-                user: res,
-            });
-        });
+    async getUInfo() {
+      await getPageUserInfo(this);
     },
 
     chooseImg(e) {
