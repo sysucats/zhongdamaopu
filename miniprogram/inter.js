@@ -1,4 +1,4 @@
-const getUser = require("./user.js").getUser;
+import { getUser } from "./user.js";
 
 // 常用的一些对象
 const db = wx.cloud.database();

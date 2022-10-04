@@ -1,10 +1,5 @@
-// pages/news/modifyNews/modifyNews.js
-
-const utils = require('../../../utils.js');
-const user = require('../../../user.js');
-const checkAuth = utils.checkAuth;
-
-const getPageUserInfo = user.getPageUserInfo;
+import { checkAuth } from "../../../utils";
+import { getPageUserInfo } from "../../../user";
 
 Page({
 

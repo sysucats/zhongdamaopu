@@ -1,8 +1,6 @@
-// miniprogram/pages/science/sciDetail/sciDetail.js
-const cates = ['猫咪救助', '撸猫指南', '猫咪领养', '猫咪喂养', '猫咪健康'];
+import { text as text_cfg, science_imgs } from "../../../config";
 
-const config = require('../../../config.js');
-const text_cfg = config.text;
+const cates = ['猫咪救助', '撸猫指南', '猫咪领养', '猫咪喂养', '猫咪健康'];
 const share_text = text_cfg.app_name + ' - ' + text_cfg.science.share_tip;
 
 Page({
@@ -12,8 +10,6 @@ Page({
    */
   data: {
     cate_current: -1,
-    // 几张背景图
-    // images: config.science_imgs
   },
 
   /**
@@ -32,7 +28,7 @@ Page({
       const imgList = options.coverImgList.split(',')
       this.setData({images:imgList})
     } else {
-      this.setData({images:config.science_imgs})
+      this.setData({images:science_imgs})
     }
     
     await this.getSci();

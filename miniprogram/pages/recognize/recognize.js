@@ -1,10 +1,6 @@
-// pages/recognize/recognize.js
-const config = require('../../config.js');
-const utils = require('../../utils.js');
-const sha256 = utils.sha256;
-const getGlobalSettings = utils.getGlobalSettings;
-const randomInt = utils.randomInt;
-const loadFilter = utils.loadFilter;
+import { text as text_cfg, ad_recognize_banner, cat_status_adopt } from "../../config";
+import { hex_sha256, getGlobalSettings, randomInt, loadFilter } from "../../utils";
+
 
 // 接口设置，onLoad中从数据库拉取。
 var interfaceURL;
@@ -19,7 +15,6 @@ var recognizeResults = [];
 // 在页面中定义插屏广告
 let interstitialAd = null
 
-const text_cfg = config.text;
 const share_text = text_cfg.app_name + ' - ' + text_cfg.recognize.share_tip;
 
 Page({
@@ -45,12 +40,12 @@ Page({
     showResultBox: false, // 用来配合动画延时展示resultBox
     showAdBox: true, // 展示banner广告
     ad: {
-      banner: config.ad_recognize_banner
+      banner: ad_recognize_banner
     },
     text_cfg: text_cfg,
 
     // 领养状态
-    adopt_desc: config.cat_status_adopt,
+    adopt_desc: cat_status_adopt,
   },
 
   async onLoad() {
@@ -168,7 +163,7 @@ Page({
     // 计算签名
     const photoBase64 = wx.getFileSystemManager().readFileSync(compressPhotoPath, 'base64');
     const timestamp = Math.round(new Date().getTime() / 1000);
-    const signature = sha256.hex_sha256(photoBase64 + timestamp + secretKey);
+    const signature = hex_sha256(photoBase64 + timestamp + secretKey);
     // 调用服务端接口进行识别
     const that = this;
     const formData = {

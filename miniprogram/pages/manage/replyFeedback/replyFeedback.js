@@ -1,10 +1,6 @@
 // 处理反馈
-const utils = require('../../../utils.js');
-const checkAuth = utils.checkAuth;
-const formatDate = utils.formatDate;
-
-const msg = require('../../../msg.js');
-const sendReplyNotice = msg.sendReplyNotice;
+import { checkAuth, formatDate } from "../../../utils";
+import { sendReplyNotice } from "../../../msg";
 
 Page({
 

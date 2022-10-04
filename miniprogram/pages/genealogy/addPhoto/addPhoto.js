@@ -1,23 +1,19 @@
-const utils = require('../../../utils.js');
-const generateUUID = utils.generateUUID;
-const getCurrentPath = utils.getCurrentPath;
-const shareTo = utils.shareTo;
-
-const user = require('../../../user.js');
-const getPageUserInfo = user.getPageUserInfo;
-const getUser = user.getUser;
-const checkCanUpload = user.checkCanUpload;
-
-const msg = require('../../../msg.js');
-const requestNotice = msg.requestNotice;
-const sendNotifyVertifyNotice = msg.sendNotifyVertifyNotice;
-
-const config = require('../../../config.js');
-const text_cfg = config.text;
-
+import {
+  generateUUID,
+  getCurrentPath,
+  shareTo,
+} from "../../../utils";
+import {
+  getUser,
+  checkCanUpload
+} from "../../../user";
+import {
+  requestNotice,
+  sendNotifyVertifyNotice
+} from "../../../msg";
+import config from "../../../config";
 
 Page({
-
   /**
    * 页面的初始数据
    */
@@ -29,7 +25,7 @@ Page({
     photos: [],
     set_all: {},
     canUpload: false,
-    text_cfg: text_cfg,
+    text_cfg: config.text,
   },
 
   /**
@@ -38,7 +34,12 @@ Page({
   onLoad: async function (options) {
     const db = wx.cloud.database();
     const cat_id = options.cat_id;
-    var catRes = await db.collection('cat').doc(cat_id).field({ birthday: true, name: true, campus: true, _id: true }).get();
+    var catRes = await db.collection('cat').doc(cat_id).field({
+      birthday: true,
+      name: true,
+      campus: true,
+      _id: true
+    }).get();
     this.setData({
       cat: catRes.data,
       birth_date: catRes.data.birthday || ''
@@ -47,7 +48,7 @@ Page({
 
     // 获取一下现在的日期，用在拍摄日前选择上
     const today = new Date();
-    var now_date = today.getFullYear() + '-' + (today.getMonth()+1) + '-' + today.getDate();
+    var now_date = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
     this.setData({
       now_date: now_date
     });
@@ -68,7 +69,7 @@ Page({
     });
   },
 
-  onUnload:function(options){
+  onUnload: function (options) {
     this.ifSendNotifyVeriftMsg()
   },
 
@@ -78,7 +79,7 @@ Page({
   onShareAppMessage: function () {
     const pagesStack = getCurrentPages();
     const path = getCurrentPath(pagesStack);
-    const share_text = `来给${this.data.cat.name}添加照片 - ${text_cfg.app_name}`;
+    const share_text = `来给${this.data.cat.name}添加照片 - ${config.text.app_name}`;
     return shareTo(share_text, path);
   },
 
@@ -90,7 +91,9 @@ Page({
         console.log(res);
         var photos = [];
         for (const file of res.tempFiles) {
-          photos.push({file: file});
+          photos.push({
+            file: file
+          });
         }
         this.setData({
           photos: photos,
@@ -105,7 +108,7 @@ Page({
   async uploadSingleClick(e) {
     await requestNotice('verify');
     wx.showLoading({
-      title: text_cfg.add_photo.success_tip_title,
+      title: config.text.add_photo.success_tip_title,
       mask: true,
     });
     const currentIndex = e.currentTarget.dataset.index;
@@ -121,8 +124,8 @@ Page({
     });
     wx.hideLoading();
     wx.showModal({
-      title: text_cfg.add_photo.success_tip_title,
-      content: text_cfg.add_photo.success_tip_content,
+      title: config.text.add_photo.success_tip_title,
+      content: config.text.add_photo.success_tip_content,
       showCancel: false
     });
   },
@@ -137,8 +140,8 @@ Page({
     }
     if (photos.length == 0) {
       wx.showModal({
-        title: text_cfg.add_photo.unfinished_tip_title,
-        content: text_cfg.add_photo.unfinished_tip_content,
+        title: config.text.add_photo.unfinished_tip_title,
+        content: config.text.add_photo.unfinished_tip_content,
         showCancel: false
       });
       return;
@@ -161,14 +164,14 @@ Page({
     })
     wx.hideLoading();
     wx.showModal({
-      title: text_cfg.add_photo.success_tip_title,
-      content: text_cfg.add_photo.success_tip_content,
+      title: config.text.add_photo.success_tip_title,
+      content: config.text.add_photo.success_tip_content,
       showCancel: false
     });
   },
-  
-  async ifSendNotifyVeriftMsg(){
-    const db = wx.cloud.database(); 
+
+  async ifSendNotifyVeriftMsg() {
+    const db = wx.cloud.database();
     const subMsgSetting = await db.collection('setting').doc('subscribeMsg').get();
     const triggerNum = subMsgSetting.data.verifyPhoto.triggerNum; //几条未审核才触发
     // console.log("triggerN",triggerNum);
@@ -180,7 +183,7 @@ Page({
       await sendNotifyVertifyNotice(numUnchkPhotos);
       console.log("toSendNVMsg");
     }
-    
+
   },
 
   async uploadImg(photo) {
@@ -216,7 +219,7 @@ Page({
     });
     console.log(dbAddRes);
   },
-  
+
   pickDate(e) {
     console.log(e);
     const index = e.currentTarget.dataset.index;

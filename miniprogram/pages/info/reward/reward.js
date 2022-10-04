@@ -1,13 +1,10 @@
 // miniprogram/pages/info/reward/reward.js
-const config = require('../../../config.js');
-
-const userUtils = require('../../../user.js');
-const checkCanUpload = userUtils.checkCanUpload;
+import { text as text_cfg, reward_img, ad_reward_video } from "../../../config";
+import { checkCanUpload } from "../../../user";
 
 // 在页面中定义激励视频广告
 let videoAd = null
 
-const text_cfg = config.text;
 const share_text = text_cfg.app_name + ' - ' + text_cfg.reward.share_tip;
 
 Page({
@@ -32,7 +29,7 @@ Page({
     var that = this;
     if (wx.createRewardedVideoAd) {
       videoAd = wx.createRewardedVideoAd({
-        adUnitId: config.ad_reward_video
+        adUnitId: ad_reward_video
       })
       videoAd.onLoad(() => {
         that.setData({
@@ -89,7 +86,7 @@ Page({
 
   // 打开大图
   openImg(e) {
-    const src = config.reward_img;
+    const src = reward_img;
     wx.previewImage({
       urls: [src],
       success: (res) => {

@@ -1,6 +1,4 @@
-// pages/debug/deployTip/deployTip.js
-
-const dp_cfg = require("./deployConfig.js");
+import { dp_cfg } from "./deployConfig";
 
 const STATUS_DOING = 0;
 const STATUS_OK = 1;

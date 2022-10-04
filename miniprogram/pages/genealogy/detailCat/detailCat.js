@@ -1,24 +1,12 @@
-const config = require('../../../config.js');
-const utils = require('../../../utils.js');
-const shareTo = utils.shareTo;
-const getCurrentPath = utils.getCurrentPath;
-const getGlobalSettings = utils.getGlobalSettings;
-const checkCanComment = utils.checkCanComment;
-const checkMultiClick = utils.checkMultiClick;
-const formatDate = utils.formatDate;
-const isManagerAsync = utils.isManagerAsync;
-
-const userUtils = require('../../../user.js');
-const checkCanUpload = userUtils.checkCanUpload;
-
-const getCatCommentCount = require('../../../comment.js').getCatCommentCount;
-
-const cat_utils = require('../../../cat.js');
-const setVisitedDate = cat_utils.setVisitedDate;
-const getAvatar = cat_utils.getAvatar;
-const getCatItem = cat_utils.getCatItem;
-
-const text_cfg = config.text;
+import config from "../../../config";
+import { shareTo, getCurrentPath, getGlobalSettings,
+  checkCanComment,
+  checkMultiClick,
+  formatDate,
+  isManagerAsync } from "../../../utils";
+import { checkCanUpload } from "../../../user";
+import { getCatCommentCount } from "../../../comment";
+import { setVisitedDate, getAvatar, getCatItem } from "../../../cat";
 
 const no_heic = /^((?!\.heic$).)*$/i; // 正则表达式：不以 HEIC 为文件后缀的字符串
 
@@ -55,7 +43,7 @@ Page({
   data: {
     cat: {},
     album: [], // 所有照片
-    bottomText: text_cfg.detail_cat.bottom_text_loading,
+    bottomText: config.text.detail_cat.bottom_text_loading,
     showHoverHeader: false, // 显示浮动的相册标题
     hideBgBlock: false, // 隐藏背景黄块
     canvas: {}, // 画布的宽高
@@ -71,7 +59,7 @@ Page({
 
     // 领养状态
     adopt_desc: config.cat_status_adopt,
-    text_cfg: text_cfg,
+    text_cfg: config.text,
   },
 
   /**
@@ -187,7 +175,7 @@ Page({
   onShareAppMessage: function () {
     const pagesStack = getCurrentPages();
     const path = getCurrentPath(pagesStack);
-    const share_text = `${this.data.cat.name} - ${text_cfg.app_name}`;
+    const share_text = `${this.data.cat.name} - ${config.text.app_name}`;
     console.log(shareTo(share_text, path))
     return shareTo(share_text, path);
   },
@@ -381,7 +369,7 @@ Page({
 
     if (album_raw.length >= albumMax) {
       this.setData({
-        bottomText: text_cfg.detail_cat.bottom_text_end
+        bottomText: config.text.detail_cat.bottom_text_end
       })
       return false;
     }
@@ -532,14 +520,14 @@ Page({
 
   showPopularityTip() {
     wx.showToast({
-      title: text_cfg.detail_cat.popularity_tip,
+      title: config.text.detail_cat.popularity_tip,
       icon: "none"
     });
   },
 
   showCommentTip() {
     wx.showToast({
-      title: text_cfg.detail_cat.comment_tip,
+      title: config.text.detail_cat.comment_tip,
       icon: "none"
     });
   },

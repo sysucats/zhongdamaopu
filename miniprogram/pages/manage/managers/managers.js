@@ -1,6 +1,4 @@
-// miniprogram/pages/manage/managers.js
-const utils = require('../../../utils.js');
-const checkAuth = utils.checkAuth;
+import { checkAuth } from "../../../utils";
 
 // 是否正在加载
 var loading = false;

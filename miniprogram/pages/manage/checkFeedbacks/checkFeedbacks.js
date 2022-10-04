@@ -1,12 +1,8 @@
 // 处理反馈
-const utils = require('../../../utils.js');
-const formatDate = utils.formatDate;
-const checkAuth = utils.checkAuth;
+import { formatDate, checkAuth } from "../../../utils";
+import { requestNotice } from "../../../msg";
+import config from "../../../config";
 
-const msg = require('../../../msg.js');
-const requestNotice = msg.requestNotice;
-
-const config = require("../../../config.js");
 const notifyChkFeedbackTplId = config.msg.notifyChkFeedback.id;
 
 const step = 6;

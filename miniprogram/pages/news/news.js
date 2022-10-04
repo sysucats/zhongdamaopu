@@ -1,8 +1,6 @@
 // miniprogram/pages/news/news.js
 import { sleep, checkAuth } from "../../utils.js";
-const config = require('../../config.js');
-
-const text_cfg = config.text;
+import { text as text_cfg, science_imgs } from "../../config";
 const share_text = text_cfg.app_name + ' - ' + text_cfg.science.share_tip;
 
 
@@ -176,7 +174,7 @@ Page({
   // 科普轮播图相关代码
 
   setSciImgs() {
-    const sciImgList = config.science_imgs;
+    const sciImgList = science_imgs;
     const cacheKey = 'sciImgStorage';
     const dataKey = 'images';
 

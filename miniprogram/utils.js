@@ -1,4 +1,4 @@
-const sha256 = require('./packages/sha256/sha256.js');
+import { hex_sha256 } from "./packages/sha256/sha256";
 
 function randomInt(min, max) {
   return Math.floor(Math.random() * (max - min)) + min;
@@ -272,7 +272,7 @@ async function checkDeploy() {
 const sleep = m => new Promise(r => setTimeout(r, m))
 
 module.exports = {
-  sha256,
+  hex_sha256,
   randomInt,
   generateUUID,
   loadFilter,

@@ -1,6 +1,5 @@
-// miniprogram/pages/info/devTeam/devTeam.js
-const config = require('../../../config.js');
-const text_cfg = config.text;
+import { text as text_cfg } from "../../../config";
+
 const share_text = text_cfg.app_name + ' - ' + text_cfg.info.share_tip;
 
 Page({

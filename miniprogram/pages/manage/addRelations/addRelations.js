@@ -1,12 +1,6 @@
 // 审核照片
-const utils = require('../../../utils.js');
-const regReplace = utils.regReplace;
-const checkAuth = utils.checkAuth;
-const sleep = utils.sleep;
-
-const cat_utils = require('../../../cat.js');
-const getAvatar = cat_utils.getAvatar;
-const getCatItem = cat_utils.getCatItem;
+import { regReplace, checkAuth, sleep } from "../../../utils";
+import { getAvatar, getCatItem } from "../../../cat";
 
 const db = wx.cloud.database();
 const _ = db.command;

@@ -1,17 +1,10 @@
 // 审核照片
-const utils = require('../../../utils.js');
-const checkAuth = utils.checkAuth;
+import { checkAuth } from "../../../utils";
+import { requestNotice, sendVerifyNotice } from "../../../msg";
+import config from "../../../config";
+import cache from "../../../cache";
 
-const msg = require('../../../msg.js');
-const requestNotice = msg.requestNotice;
-const sendVerifyNotice = msg.sendVerifyNotice;
-
-const config = require('../../../config.js');
 const notifyVerifyPhotoTplId = config.msg.notifyVerify.id;
-
-const cache = require('../../../cache.js');
-
-const text_cfg = config.text;
 
 // 准备发送通知的列表，姓名：审核详情
 var notice_list = {};

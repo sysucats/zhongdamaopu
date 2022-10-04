@@ -1,4 +1,4 @@
-const inter_utils = require("../../../inter.js");
+import { likeAdd, likeCheck } from "../../../inter";
 
 module.exports =
 /******/ (function(modules) { // webpackBootstrap
@@ -173,7 +173,7 @@ Component({
             like_mutex = false;
 
             const photo_id = this.data.photos[i]._id;
-            const liked = (await inter_utils.likeCheck([photo_id]))[0];
+            const liked = (await likeCheck([photo_id]))[0];
             this.setData({
                 liked: liked,
             }, () => {
@@ -200,7 +200,7 @@ Component({
 
             // 执行数据库写入
             if (liked) {
-                inter_utils.likeAdd(this.data.photos[current]._id, "photo");
+                likeAdd(this.data.photos[current]._id, "photo");
             } else {
                 // todo
             }

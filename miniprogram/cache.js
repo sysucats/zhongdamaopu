@@ -41,7 +41,7 @@ function setCacheDate(key, date) {
   wx.setStorageSync(key, date);
 }
 
-export {
+module.exports = {
   getCacheDate,
   setCacheDate,
   getCacheItem,

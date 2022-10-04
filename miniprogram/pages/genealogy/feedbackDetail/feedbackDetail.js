@@ -1,18 +1,9 @@
-const utils = require('../../../utils.js');
-const getCurrentPath = utils.getCurrentPath;
-const shareTo = utils.shareTo;
-
-const user = require('../../../user.js');
-const getPageUserInfo = user.getPageUserInfo;
-
-const msg = require('../../../msg.js');
-const requestNotice = msg.requestNotice;
-const sendNotifyChkFeeedback = msg.sendNotifyChkFeeedback;
-
-const text_cfg = require('../../../config.js').text;
+import { getCurrentPath, shareTo } from "../../../utils";
+import { getPageUserInfo } from "../../../user";
+import { requestNotice, sendNotifyChkFeeedback } from "../../../msg";
+import { text as text_cfg } from "../../../config";
 
 Page({
-
   /**
    * 页面的初始数据
    */

@@ -1,11 +1,8 @@
 // miniprogram/pages/info/info.js
-const utils = require('../../utils.js');
-const userUtils = require('../../user.js');
-const config = require('../../config.js');
+import { isManagerAsync } from "../../utils.js";
+import { getUser } from "../../user.js";
+import { text as text_cfg, mpcode_img } from "../../config";
 
-const isManagerAsync = utils.isManagerAsync;
-
-const text_cfg = config.text;
 const share_text = text_cfg.app_name + ' - ' + text_cfg.info.share_tip;
 
 Page({
@@ -113,7 +110,7 @@ Page({
 
   showMpCode(e) {
     wx.previewImage({
-      urls: [config.mpcode_img],
+      urls: [mpcode_img],
       fail: function(e) {
         console.error(e)
       }
@@ -129,7 +126,7 @@ Page({
       console.log(`invite ${role} expired.`);
       return;
     }
-    var user = await userUtils.getUser();
+    var user = await getUser();
     console.log(user);
     if (user.role >= role) {
       // 已经是了

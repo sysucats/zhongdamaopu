@@ -1,10 +1,4 @@
-// pages/news/detailNews/detailNews.js
-const utils = require('../../../utils.js');
-const checkAuth = utils.checkAuth;
-const shareTo = utils.shareTo;
-const getCurrentPath = utils.getCurrentPath;
-const formatDate = utils.formatDate;
-const sleep = utils.sleep;
+import { checkAuth, shareTo, getCurrentPath, formatDate, sleep } from "../../../utils";
 
 Page({
 

@@ -1,6 +1,5 @@
-const utils = require('../../../utils.js');
-const checkAuth = utils.checkAuth;
-const formatDate = utils.formatDate;
+import { checkAuth, formatDate } from "../../../utils";
+
 Page({
 
   /**

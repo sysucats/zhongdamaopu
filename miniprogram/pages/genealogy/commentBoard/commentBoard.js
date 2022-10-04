@@ -1,18 +1,8 @@
-
-// import { isManagerAsync, getGlobalSettings, formatDate } from "../../../utils.js";
-const utils = require("../../../utils.js");
-const isManagerAsync = utils.isManagerAsync;
-const getGlobalSettings = utils.getGlobalSettings;
-const formatDate = utils.formatDate;
-const config = require('../../../config.js');
-
-const user = require('../../../user.js');
-const getPageUserInfo = user.getPageUserInfo;
-const getUserInfo = user.getUserInfo;
-
-const getAvatar = require('../../../cat.js').getAvatar
-
-const getCatCommentCount = require('../../../comment.js').getCatCommentCount;
+import { isManagerAsync, formatDate } from "../../../utils";
+import config from "../../../config";
+import { getPageUserInfo, getUserInfo, checkCanUpload } from "../../../user";
+import { getAvatar } from "../../../cat";
+import { getCatCommentCount } from "../../../comment";
 
 var cat_id;
 
@@ -22,8 +12,6 @@ const coll_comment = db.collection('comment');
 
 // 发送锁
 var sendLock = false;
-
-const text_cfg = config.text;
 
 Page({
 
@@ -36,8 +24,9 @@ Page({
     comments: [],
     comment_count: 0,
     keyboard_height: 0,
-    text_cfg: text_cfg,
+    text_cfg: config.text,
     is_manager: false,
+    canUpload: false,
   },
 
   /**
@@ -45,9 +34,21 @@ Page({
    */
   onLoad: async function (options) {
     cat_id = options.cat_id;
+    if (!await checkCanUpload()) {
+      wx.showToast({
+        title: '已暂时关闭..',
+        duration: 10000
+      });
+      return false;
+    }
+    this.setData({
+      canUpload: true
+    })
     // 启动加载
-    await this.loadCat();
-    await this.loadMoreComment();
+    await Promise.all([
+      this.loadCat(),
+      this.loadMoreComment()
+    ]);
     
     // 是否为管理员lv.1
     var manager = await isManagerAsync(1);
@@ -110,7 +111,7 @@ Page({
     const cat_name = cat.name;
     const cat_avatar = cat.avatar.photo_compressed || cat.avatar.photo_id;
     return {
-      title: `${cat_name}的留言板 - ${text_cfg.app_name}`,
+      title: `${cat_name}的留言板 - ${config.text.app_name}`,
       imageUrl: cat_avatar,
     }
   },
@@ -203,7 +204,7 @@ Page({
     if (user.cantComment) {
       wx.showModal({
         title: "无法留言",
-        content: text_cfg.comment_board.ban_tip,
+        content: config.text.comment_board.ban_tip,
         showCancel: false,
       })
       that.doSendCommentEnd();

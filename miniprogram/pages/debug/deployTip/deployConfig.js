@@ -1,4 +1,4 @@
-const cfg = require("../../../config.js");
+import config from "../../../config";
 
 // 用于初始化数据库的默认数据（不要修改！）
 const default_init_data_id = "deploy_test";
@@ -147,7 +147,7 @@ module.exports = {
     "setting": init_setting,
     "user": [{_id: "init"}],
   },
-  images: cfg.science_imgs.concat([cfg.reward_img, cfg.feedback_wj_img, cfg.mpcode_img]),
+  images: config.science_imgs.concat([config.reward_img, config.feedback_wj_img, config.mpcode_img]),
   func_configs: {
     initDeploy: {
       timeout: 59,  // s
@@ -157,7 +157,7 @@ module.exports = {
       timeout: 59,  // s
       // 环境变量
       envVariables: {
-        app_name: cfg.text.app_name
+        app_name: config.text.app_name
       },
       triggers: [{
         name: "Trigger",

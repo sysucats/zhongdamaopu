@@ -1,9 +1,5 @@
-// pages/info/feedback/myFeedback/myFeedback.js
-
-const utils = require('../../../../utils.js');
-const formatDate = utils.formatDate;
-const user = require('../../../../user.js');
-const getUser = user.getUser;
+import { formatDate } from "../../../../utils";
+import { getUser } from "../../../../user";
 
 var currentUser;
 

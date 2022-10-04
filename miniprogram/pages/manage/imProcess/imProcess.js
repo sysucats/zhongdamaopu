@@ -1,17 +1,11 @@
-// miniprogram/pages/imProcess/imProcess.js
-const utils = require('../../../utils.js');
-const generateUUID = utils.generateUUID;
-const checkAuth = utils.checkAuth;
-
+import { generateUUID, checkAuth } from "../../../utils";
+import { text as text_cfg } from "../../../config";
 
 const ctx = wx.createCanvasContext('bigPhoto');
 const canvasMax = 2000; // 正方形画布的尺寸px
 
 var global_photo; // 数据库项
 var global_fileID_compressed, global_fileID_watermark;
-
-const config = require('../../../config.js');
-const text_cfg = config.text;
 
 // 自动搞的数量
 var auto_count = 0;

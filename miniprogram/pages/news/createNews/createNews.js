@@ -1,10 +1,5 @@
-// pages/manage/manageNews/createNews/createNews.js
-const utils = require('../../../utils.js');
-const user = require('../../../user.js');
-const generateUUID = utils.generateUUID;
-const checkAuth = utils.checkAuth;
-
-const getPageUserInfo = user.getPageUserInfo;
+import { generateUUID, checkAuth } from "../../../utils";
+import { getPageUserInfo } from "../../../user";
 
 Page({
     /**

@@ -1,11 +1,5 @@
-const config = require('../../../config.js');
-const utils = require('../../../utils.js');
-const loadFilter = utils.loadFilter;
-const isManagerAsync = utils.isManagerAsync;
-const checkAuth = utils.checkAuth;
-
-const text_cfg = config.text;
-
+import { text as text_cfg, cat_status_adopt } from "../../../config";
+import { loadFilter, checkAuth } from "../../../utils";
 var cat_id = undefined;
 
 const photoStep = 5; // 每次加载的图片数量
@@ -20,7 +14,7 @@ Page({
     pickers: {
       gender: ['公', '母'],
       sterilized: [false, true],
-      adopt: config.cat_status_adopt.map((x) => { return {desc: x} }),
+      adopt: cat_status_adopt.map((x) => { return {desc: x} }),
       to_star: [false, true],
     },
     picker_selected: {},

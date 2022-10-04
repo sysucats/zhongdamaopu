@@ -1,9 +1,5 @@
-// miniprogram/pages/info/photoRank/photoRank.js
-const user = require('../../../user.js');
-const getPageUserInfo = user.getPageUserInfo;
-
-const config = require('../../../config.js');
-const text_cfg = config.text;
+import { getPageUserInfo } from "../../../user";
+import { text as text_cfg } from "../../../config";
 const share_text = text_cfg.app_name + ' - ' + text_cfg.photo_rank.share_tip;
 
 Page({

@@ -1,18 +1,22 @@
-// miniprogram/pages/genealogy/genealogy.js
-const utils = require('../../utils.js');
-import {getGlobalSettings, isManagerAsync, shuffle, loadFilter, regReplace, getDeltaHours, sleep} from "../../utils.js";
-
-
-const cache = require('../../cache.js');
-
-const cat_utils = require('../../cat.js');
-const getAvatar = cat_utils.getAvatar;
-const getVisitedDate = cat_utils.getVisitedDate;
-
-const getCatCommentCount = require('../../comment.js').getCatCommentCount;
-
-const config = require('../../config.js')
-const text_cfg = config.text
+import {
+  getGlobalSettings,
+  isManagerAsync,
+  shuffle,
+  loadFilter,
+  regReplace,
+  getDeltaHours,
+  sleep,
+  getCurrentPath
+} from "../../utils";
+import {
+  getAvatar,
+  getVisitedDate
+} from "../../cat";
+import {
+  getCatCommentCount
+} from "../../comment";
+import cache from "../../cache";
+import config from "../../config";
 
 const default_png = undefined;
 
@@ -24,7 +28,7 @@ var pageLoadingLock = true; // 用于点击按钮刷新加锁
 const tipInterval = 24; // 提示间隔时间 hours
 
 // 分享的标语
-const share_text = text_cfg.app_name + ' - ' + text_cfg.genealogy.share_tip;
+const share_text = config.text.app_name + ' - ' + config.text.genealogy.share_tip;
 
 Page({
 
@@ -69,7 +73,7 @@ Page({
     newsList: [],
     newsImage: "",
 
-    text_cfg: text_cfg
+    text_cfg: config.text
   },
 
   /**
@@ -99,7 +103,7 @@ Page({
         }).field({
           _no: true
         }).get()
-        
+
         if (!cat_res.data.length) {
           return;
         }
@@ -237,7 +241,7 @@ Page({
   onShareAppMessage: function () {
     // 分享是保留校区外显filter
     const pagesStack = getCurrentPages();
-    const path = utils.getCurrentPath(pagesStack);
+    const path = getCurrentPath(pagesStack);
     const fcampus = this.getFCampusStr();
     const query = `${path}fcampus=${fcampus}`;
     console.log(query);
@@ -281,7 +285,7 @@ Page({
     const cat = db.collection('cat');
     const query = this.fGet();
     const cat_count = (await cat.where(query).count()).total;
-    
+
     if (loadingLock != nowLoadingLock) {
       // 说明过期了
       return false;
@@ -293,7 +297,7 @@ Page({
       filters_empty: Object.keys(query).length === 0,
     });
     await Promise.all([
-      this.loadMoreCats(),  
+      this.loadMoreCats(),
       // 加载待领养
       this.countWaitingAdopt(),
       // 刷新cache一下
@@ -321,7 +325,7 @@ Page({
     const query = this.fGet();
     var new_cats = (await cat.where(query).orderBy('mphoto', 'desc').orderBy('popularity', 'desc').skip(cats.length).limit(step).get()).data
     new_cats = shuffle(new_cats);
-    
+
     if (loadingLock != nowLoadingLock) {
       // 说明过期了
       return false;
@@ -334,7 +338,7 @@ Page({
         d.mphoto_new = false;
         continue;
       }
-      
+
       const today = new Date();
       const modified_date = new Date(d.mphoto);
       const delta_date = today - modified_date; // milliseconds
@@ -448,7 +452,7 @@ Page({
 
   ////// 下面开始新的filter //////
   // mask滑动事件catch
-  voidMove: function () {},
+  voidMove: function () { },
   // toggle filters
   fToggle: function () {
     // 这里只管显示和隐藏，类似取消键的功能
@@ -841,7 +845,7 @@ Page({
     var newsList = (await db.collection('news').orderBy('date', 'desc').where({
       setNewsModal: true
     }).get()).data
-    
+
     this.setData({
       newsList: newsList,
     });

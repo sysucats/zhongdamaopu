@@ -1,6 +1,4 @@
-const utils = require('../../../utils.js');
-const checkAuth = utils.checkAuth;
-const loadFilter = utils.loadFilter;
+import { checkAuth, loadFilter } from "../../../utils";
 
 Page({
 
