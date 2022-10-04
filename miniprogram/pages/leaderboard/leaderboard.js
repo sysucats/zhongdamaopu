@@ -22,6 +22,20 @@ Page({
     ],
     tempPics: [],
     loadnomore: false,
+    filters: [{
+      name: "周精选",
+      hours: 24*7,
+    }, {
+      name: "月精选",
+      hours: 24*31,
+      active: true,
+    }, {
+      name: "年精选",
+      hours: 24*365
+    }, {
+      name: "总精选",
+      hours: 24*365*30
+    },]
   },
   //获取图片尺寸数据
   loadPic: function (e) {
@@ -97,17 +111,30 @@ Page({
     })
     that.jsData.columnsHeight = columnsHeight
   },
-  //加载数据
+  // 获取激活的时间范围
+  getTimeRange: function () {
+    for (const f of this.data.filters) {
+      if (!f.active) {
+        continue;
+      }
+      return f.hours;
+    }
+    // 兜底
+    return 24*356;
+  },
+  // 加载数据
   loadData: async function () {
     if (this.jsData.isLoading || this.data.loadnomore) {
       return;
     }
     this.jsData.isLoading = true
+    
 
     const db = wx.cloud.database();
     const _ = db.command;
     const curCount = this.data.columns[0].length + this.data.columns[1].length;
-    const oneMonth = getDateWithDiffHours(-24*31);
+    const timeRange = this.getTimeRange();
+    const oneMonth = getDateWithDiffHours(-timeRange);
     console.log(oneMonth);
     var photos = (await db.collection('photo').where({
       mdate: _.gte(oneMonth),
@@ -204,5 +231,34 @@ Page({
     wx.previewImage({
       urls: [url],
     });
-  }
+  },
+  // 点击时间筛选
+  fClickTime(e) {
+    var {index} = e.currentTarget.dataset;
+    const filters = this.data.filters;
+    if (this.jsData.isLoading || filters[index].active) {
+      return;
+    }
+
+    for (let i = 0; i < filters.length; i++) {
+      if (!filters[i].active) {
+        continue;
+      }
+
+      this.setData({
+        [`filters[${i}].active`]: false,
+        [`filters[${index}].active`]: true,
+      });
+      break;
+    }
+
+    this.reloadData();
+  },
+  async reloadData() {
+    await this.setData({
+      columns: [[], []],
+      loadnomore: false
+    })
+    await this.loadData();
+  },
 })

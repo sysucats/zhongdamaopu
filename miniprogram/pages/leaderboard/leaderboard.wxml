@@ -1,3 +1,13 @@
+<!-- 校区外显筛选 -->
+<scroll-view class="h-filter-list" scroll-x="1" wx:if="{{filters.length > 1}}">
+  <view class='h-filter-item long {{item.active? "active": ""}}'  bindtap='fClickTime' data-index='{{index}}'
+        wx:for="{{filters}}" wx:key="name">
+        <image class="time-logo" wx:if="{{!item.active}}" src="../../images/filter/time_gray.png" mode="aspectFit"></image>
+        <image class="time-logo" wx:else src="../../images/filter/time_active.png" mode="aspectFit"></image>
+        {{item.name}}
+  </view>
+</scroll-view>
+
 <view class="main">
   <view wx:for="{{columns}}" wx:key="null" class="column" wx:for-index="col">
     <view wx:for="{{item}}"  wx:key="pic" class="column_item" wx:for-item="pics">

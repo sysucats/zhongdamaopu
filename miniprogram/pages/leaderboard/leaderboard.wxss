@@ -1,6 +1,4 @@
-page {
-  /* background: var(--color-white-dark); */
-}
+@import "../../public/wxss/hFilter.wxss";
 
 .main {
   display: flex;
@@ -97,4 +95,8 @@ heart {
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
+}
+
+.h-filter-item.long {
+  margin-top: 20rpx;
 }
