@@ -1,13 +1,18 @@
 // 负责用户表的管理、使用接口
 import { randomInt, userInfoEq } from './utils';
 import { getGlobalSettings } from "./page";
+import { getCacheItem, setCacheItem } from "./cache";
 
 // 获取当前用户
 // 如果数据库中没有会后台自动新建并返回
-async function getUser() {
+async function getUser(options) {
+  options = options || {};
   const app = getApp();
-  if (app.globalData.currentUser) {
-    return app.globalData.currentUser
+
+  if (!options.nocache) {
+    if (app.globalData.currentUser) {
+      return app.globalData.currentUser
+    }
   }
 
   const userRes = await wx.cloud.callFunction({
@@ -17,7 +22,7 @@ async function getUser() {
     }
   });
   app.globalData.currentUser = userRes.result;
-  return app.globalData.currentUser;
+  return userRes.result;
 }
 
 async function getCurUserInfoOrFalse() {
@@ -73,10 +78,9 @@ async function getCurUserInfoOrFalse() {
 
 // 使用openid来读取用户信息
 async function getUserInfo(openid) {
-  const key = "uinfo-" + openid;
-  var value = wx.getStorageSync(key);
-  if (value && (new Date(value.expireDate)) > (new Date())) {
-    // 没有过期
+  const key = `uinfo-${openid}`;
+  var value = getCacheItem(key);
+  if (value != undefined) {
     return value;
   }
 
@@ -91,10 +95,7 @@ async function getUserInfo(openid) {
   }
 
   // 写入缓存（25-35min过期）
-  let timestamp = new Date().getTime();
-  timestamp = timestamp + randomInt(25, 35) * (60 * 1000);
-  value.expireDate = new Date(timestamp);
-  wx.setStorageSync(key, value);
+  setCacheItem(key, value, 0, randomInt(25, 35));
 
   return value;
 }
@@ -177,6 +178,15 @@ async function checkAuth(page, level) {
   return false;
 }
 
+// 去设置用户信息页
+function toSetUserInfo() {
+  const url = "/pages/info/userInfo/modifyUserInfo/modifyUserInfo";
+  console.log(url);
+  wx.navigateTo({
+    url: url,
+  })
+}
+
 
 module.exports = {
   getUser,
@@ -187,4 +197,5 @@ module.exports = {
   checkCanComment,
   isManagerAsync,
   checkAuth,
+  toSetUserInfo,
 } 

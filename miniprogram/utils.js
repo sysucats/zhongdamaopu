@@ -195,6 +195,57 @@ async function checkDeploy() {
 // 等待时间（ms）
 const sleep = m => new Promise(r => setTimeout(r, m))
 
+// 内容安全检查
+async function contentSafeCheck(content, nickName) {
+  const label_type = {
+    100: "正常",
+    10001: "广告",
+    20001: "时政",
+    20002: "色情",
+    20003: "辱骂",
+    20006: "违法犯罪",
+    20008: "欺诈",
+    20012: "低俗",
+    20013: "版权",
+    21000: "其他",
+  }
+  // 违规检测并提交
+  var res = (await wx.cloud.callFunction({
+    // The name of the cloud function to be called
+    name: 'commentCheck',
+    // Parameter to be passed to the cloud function
+    data: {
+      content: content,
+      nickname: nickName,
+    },
+  })).result;
+  // 检测接口的返回
+  console.log(res);
+  if (res.errCode != 0) {
+    const label_code = res.result.label;
+    const label = label_type[label_code];
+    return {
+      title: "内容检测未通过",
+      content: `涉及[${label_code}]${label}内容，请修改嗷~~`,
+      showCancel: false,
+    };
+  }
+  return;
+}
+
+// 字符串的字节长度
+String.prototype.gblen = function() {  
+  var len = 0;  
+  for (var i=0; i<this.length; i++) {  
+      if (this.charCodeAt(i)>127 || this.charCodeAt(i)==94) {  
+           len += 2;  
+       } else {  
+           len ++;  
+       }  
+   }  
+  return len;  
+}
+
 module.exports = {
   hex_sha256,
   randomInt,
@@ -214,4 +265,5 @@ module.exports = {
   checkDeploy,
   getDateWithDiffHours,
   sleep,
+  contentSafeCheck,
 };

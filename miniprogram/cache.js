@@ -15,9 +15,10 @@ function getCacheItem(key) {
   return data.item;
 }
 
-function setCacheItem(key, item, expire_hours) {
+function setCacheItem(key, item, expire_hours, expire_minutes) {
   var expire_date = new Date();
   expire_date.setHours(expire_date.getHours() + expire_hours);
+  expire_date.setMinutes(expire_date.getMinutes() + (expire_minutes || 0));
   var data = {
     item: item,
     expire_date: expire_date

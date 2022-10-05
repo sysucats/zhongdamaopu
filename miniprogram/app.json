@@ -30,7 +30,8 @@
     "pages/manage/addRelations/addRelations",
     "pages/tools/updateUserRole/updateUserRole",
     "pages/leaderboard/leaderboard",
-    "pages/manage/pageSettings/pageSettings"
+    "pages/manage/pageSettings/pageSettings",
+    "pages/info/userInfo/modifyUserInfo/modifyUserInfo"
   ],
   "tabBar": {
     "selectedColor": "#000",

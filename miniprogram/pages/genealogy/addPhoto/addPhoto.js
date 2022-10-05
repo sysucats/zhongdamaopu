@@ -5,7 +5,8 @@ import {
 } from "../../../utils";
 import {
   getUser,
-  checkCanUpload
+  checkCanUpload,
+  toSetUserInfo
 } from "../../../user";
 import {
   requestNotice,
@@ -53,19 +54,20 @@ Page({
       now_date: now_date
     });
 
+    this.setData({
+      canUpload: await checkCanUpload()
+    });
+  },
+
+  async onShow() {
     // 加载设置、关闭上传功能
     const userRes = await getUser();
     if (!userRes.userInfo) {
-      this.getPageUserInfo();
       return;
     }
     this.setData({
       isAuth: true,
       user: userRes,
-    });
-
-    this.setData({
-      canUpload: await checkCanUpload()
     });
   },
 
@@ -276,5 +278,9 @@ Page({
     wx.switchTab({
       url: '/pages/genealogy/genealogy',
     });
+  },
+
+  getUInfo(e) {
+    toSetUserInfo();
   }
 })
