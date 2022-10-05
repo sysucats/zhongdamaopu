@@ -1,4 +1,5 @@
-import { checkAuth, shareTo, getCurrentPath, formatDate, sleep } from "../../../utils";
+import { shareTo, getCurrentPath, formatDate, sleep } from "../../../utils";
+import { checkAuth } from "../../../user";
 
 Page({
 

@@ -82,11 +82,14 @@ async function getCatItemMulti(cat_ids) {
     not_found.push(cat_id);
   }
 
-  var db_res = (await coll_cat.where({_id: _.in(not_found)}).get()).data;
-  for (var c of db_res) {
-    var cacheKey = `cat-item-${c._id}`;
-    setCacheItem(cacheKey, c, 24);
-    res[c._id] = c;
+  // 请求没有的
+  if (not_found.length) {
+    var db_res = (await coll_cat.where({_id: _.in(not_found)}).get()).data;
+    for (var c of db_res) {
+      var cacheKey = `cat-item-${c._id}`;
+      setCacheItem(cacheKey, c, 24);
+      res[c._id] = c;
+    }
   }
   
   return cat_ids.map(x => res[x]);

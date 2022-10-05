@@ -14,38 +14,6 @@ function generateUUID() {
   return uuid;
 };
 
-async function loadFilter() {
-  const db = wx.cloud.database();
-  var res = await db.collection('setting').doc('filter').get();
-  return res.data;
-}
-
-async function isManagerAsync(req) {
-  return (await wx.cloud.callFunction({
-    name: 'isManager',
-    data: {
-      req: req
-    }
-  })).result;
-}
-
-// TODO，应该做成一个模块
-async function checkAuth(page, level) {
-  if (await isManagerAsync(level)) {
-    page.setData({
-      auth: true
-    });
-    return true;
-  }
-  
-  page.setData({
-    tipText: `只有管理员Level-${level}能进入嗷`,
-    tipBtn: true,
-  });
-  return false;
-}
-
-
 function isWifi(callback) {
   // 检查是不是Wifi网络正在访问
   // callback返回参数true/false
@@ -92,21 +60,6 @@ function getCurrentPath(pagesStack) {
   }
   return path;
 }
-
-// 获取全局的设置
-async function getGlobalSettings(key) {
-  const app = getApp();
-  if (app.globalData.settings) {
-    return app.globalData.settings[key]
-  }
-
-  // 如果没有，那就获取一下
-  const db = wx.cloud.database();
-  var res = await db.collection('setting').doc('pages').get();
-  app.globalData.settings = res.data;
-  return app.globalData.settings[key];
-}
-
 
 // 判断两个userInfo是否相同，初级版
 function userInfoEq(a, b) {
@@ -180,35 +133,6 @@ function checkUpdateVersion() {
   })
 }
 
-async function checkCanComment() {
-  // 加载设置、关闭留言板功能
-  const app = getApp();
-  let cantComment = (await getGlobalSettings('detailCat')).cantComment;
-  if ((cantComment !== '*') && (cantComment !== app.globalData.version)) {
-    return true;
-  }
-  return false;
-}
-
-async function managerUpload() {
-  // 如果是管理员，开启
-  let manager = (await wx.cloud.callFunction({
-    name: 'isManager',
-    data: {
-      req: 1
-    }
-  })).result;
-  let manageUpload = (await getGlobalSettings('detailCat')).manageUpload;
-  if (manager && manageUpload) {
-    wx.showToast({
-      title: '管理员可上传',
-      icon: "none",
-    })
-    return true;
-  }
-  return false;
-}
-
 // 切分org的filter
 function splitFilterLine(line) {
   if (!line) {
@@ -275,24 +199,19 @@ module.exports = {
   hex_sha256,
   randomInt,
   generateUUID,
-  loadFilter,
-  isManagerAsync,
   isWifi,
   shuffle,
   shareTo,
   getCurrentPath,
-  getGlobalSettings,
   userInfoEq,
   regReplace,
   formatDate,
   checkUpdateVersion,
-  checkCanComment,
   splitFilterLine,
   checkMultiClick,
   getDeltaHours,
   arrayResort,
   checkDeploy,
   getDateWithDiffHours,
-  checkAuth,
   sleep,
 };

@@ -1,6 +1,7 @@
 // 审核照片
-import { regReplace, checkAuth, sleep } from "../../../utils";
+import { regReplace, sleep } from "../../../utils";
 import { getAvatar, getCatItem } from "../../../cat";
+import { checkAuth } from "../../../user";
 
 const db = wx.cloud.database();
 const _ = db.command;

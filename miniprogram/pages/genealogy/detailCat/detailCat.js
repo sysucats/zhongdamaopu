@@ -1,12 +1,11 @@
 import config from "../../../config";
-import { shareTo, getCurrentPath, getGlobalSettings,
-  checkCanComment,
+import { shareTo, getCurrentPath,
   checkMultiClick,
-  formatDate,
-  isManagerAsync } from "../../../utils";
-import { checkCanUpload } from "../../../user";
+  formatDate } from "../../../utils";
+import { checkCanUpload, checkCanComment, isManagerAsync } from "../../../user";
 import { getCatCommentCount } from "../../../comment";
 import { setVisitedDate, getAvatar, getCatItem } from "../../../cat";
+import { getGlobalSettings } from "../../../page";
 
 const no_heic = /^((?!\.heic$).)*$/i; // 正则表达式：不以 HEIC 为文件后缀的字符串
 

@@ -1,5 +1,6 @@
 import { text as text_cfg, ad_recognize_banner, cat_status_adopt } from "../../config";
-import { hex_sha256, getGlobalSettings, randomInt, loadFilter } from "../../utils";
+import { hex_sha256, randomInt } from "../../utils";
+import { loadFilter, getGlobalSettings } from "../../page";
 
 
 // 接口设置，onLoad中从数据库拉取。

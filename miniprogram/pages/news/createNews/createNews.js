@@ -1,5 +1,5 @@
-import { generateUUID, checkAuth } from "../../../utils";
-import { getPageUserInfo } from "../../../user";
+import { generateUUID } from "../../../utils";
+import { getPageUserInfo, checkAuth } from "../../../user";
 
 Page({
     /**

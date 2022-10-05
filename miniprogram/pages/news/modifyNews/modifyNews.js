@@ -1,5 +1,4 @@
-import { checkAuth } from "../../../utils";
-import { getPageUserInfo } from "../../../user";
+import { getPageUserInfo, checkAuth } from "../../../user";
 
 Page({
 

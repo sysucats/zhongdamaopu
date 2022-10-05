@@ -1,16 +1,23 @@
 // 负责用户表的管理、使用接口
-import { randomInt, userInfoEq, getGlobalSettings } from './utils.js';
+import { randomInt, userInfoEq } from './utils';
+import { getGlobalSettings } from "./page";
 
 // 获取当前用户
 // 如果数据库中没有会后台自动新建并返回
 async function getUser() {
+  const app = getApp();
+  if (app.globalData.currentUser) {
+    return app.globalData.currentUser
+  }
+
   const userRes = await wx.cloud.callFunction({
     name: 'userOp',
     data: {
       op: 'get'
     }
   });
-  return userRes.result;
+  app.globalData.currentUser = userRes.result;
+  return app.globalData.currentUser;
 }
 
 async function getCurUserInfoOrFalse() {
@@ -117,6 +124,17 @@ async function checkCanUpload() {
   return await managerUpload();
 }
 
+// 看看能否评论
+async function checkCanComment() {
+  // 加载设置、关闭留言板功能
+  const app = getApp();
+  let cantComment = (await getGlobalSettings('detailCat')).cantComment;
+  if ((cantComment !== '*') && (cantComment !== app.globalData.version)) {
+    return true;
+  }
+  return false;
+}
+
 
 // 设置页面上的userInfo
 async function getPageUserInfo(page) {
@@ -135,10 +153,38 @@ async function getPageUserInfo(page) {
   return true;
 }
 
+async function isManagerAsync(req) {
+  const user = await getUser;
+  if (!req) {
+    req = 1;
+  }
+  return user.manager && user.manager >= req;
+}
+
+// TODO，应该做成一个模块
+async function checkAuth(page, level) {
+  if (await isManagerAsync(level)) {
+    page.setData({
+      auth: true
+    });
+    return true;
+  }
+  
+  page.setData({
+    tipText: `只有管理员Level-${level}能进入嗷`,
+    tipBtn: true,
+  });
+  return false;
+}
+
+
 module.exports = {
   getUser,
   getCurUserInfoOrFalse,
   getUserInfo,
   checkCanUpload,
   getPageUserInfo,
+  checkCanComment,
+  isManagerAsync,
+  checkAuth,
 } 

@@ -1,6 +1,7 @@
 // 处理反馈
-import { checkAuth, formatDate } from "../../../utils";
+import { formatDate } from "../../../utils";
 import { sendReplyNotice } from "../../../msg";
+import { checkAuth } from "../../../user";
 
 Page({
 

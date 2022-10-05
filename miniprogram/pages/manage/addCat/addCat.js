@@ -1,5 +1,6 @@
 import { text as text_cfg, cat_status_adopt } from "../../../config";
-import { loadFilter, checkAuth } from "../../../utils";
+import { checkAuth } from "../../../user";
+import { loadFilter } from "../../../page";
 var cat_id = undefined;
 
 const photoStep = 5; // 每次加载的图片数量

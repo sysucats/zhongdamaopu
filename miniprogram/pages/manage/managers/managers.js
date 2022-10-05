@@ -1,4 +1,4 @@
-import { checkAuth } from "../../../utils";
+import { checkAuth } from "../../../user";
 
 // 是否正在加载
 var loading = false;
@@ -15,7 +15,7 @@ Page({
     managerOnly: false,
     users: [],
     windowHeight: "300",
-    manager_types: ['0-非管理员', '1-审核照片、删除留言', '2-修改猫猫、校区、关系', '3-处理图片、发布公告', '99-管理成员']
+    manager_types: ['0-非管理员', '1-审核照片、删除留言', '2-修改猫猫、校区、关系', '3-处理图片、发布公告', '99-管理成员、页面设置']
   },
   /**
    * 生命周期函数--监听页面加载
@@ -174,7 +174,6 @@ Page({
     }
     console.log("#"+index, _id, level);
 
-    const that = this;
     wx.cloud.callFunction({
       name: "updateManager",
       data: {

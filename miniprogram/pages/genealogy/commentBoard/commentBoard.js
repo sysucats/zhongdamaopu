@@ -1,6 +1,6 @@
-import { isManagerAsync, formatDate } from "../../../utils";
+import { formatDate } from "../../../utils";
 import config from "../../../config";
-import { getPageUserInfo, getUserInfo, checkCanUpload } from "../../../user";
+import { getPageUserInfo, getUserInfo, checkCanUpload, isManagerAsync } from "../../../user";
 import { getAvatar } from "../../../cat";
 import { getCatCommentCount } from "../../../comment";
 

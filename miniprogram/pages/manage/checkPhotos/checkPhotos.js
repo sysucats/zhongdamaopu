@@ -1,5 +1,5 @@
 // 审核照片
-import { checkAuth } from "../../../utils";
+import { checkAuth } from "../../../user";
 import { requestNotice, sendVerifyNotice } from "../../../msg";
 import config from "../../../config";
 import cache from "../../../cache";

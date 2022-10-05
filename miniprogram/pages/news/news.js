@@ -1,6 +1,7 @@
 // miniprogram/pages/news/news.js
-import { sleep, checkAuth } from "../../utils.js";
+import { sleep } from "../../utils.js";
 import { text as text_cfg, science_imgs } from "../../config";
+import { checkAuth } from "../../user";
 const share_text = text_cfg.app_name + ' - ' + text_cfg.science.share_tip;
 
 

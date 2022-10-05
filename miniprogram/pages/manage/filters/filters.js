@@ -1,4 +1,5 @@
-import { checkAuth, loadFilter } from "../../../utils";
+import { checkAuth } from "../../../user";
+import { loadFilter } from "../../../page";
 
 Page({
 

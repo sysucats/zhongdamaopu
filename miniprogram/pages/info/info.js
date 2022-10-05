@@ -1,6 +1,5 @@
 // miniprogram/pages/info/info.js
-import { isManagerAsync } from "../../utils.js";
-import { getUser } from "../../user.js";
+import { getUser, isManagerAsync } from "../../user.js";
 import { text as text_cfg, mpcode_img } from "../../config";
 
 const share_text = text_cfg.app_name + ' - ' + text_cfg.info.share_tip;

@@ -29,7 +29,8 @@
     "pages/news/sciDetail/sciDetail",
     "pages/manage/addRelations/addRelations",
     "pages/tools/updateUserRole/updateUserRole",
-    "pages/leaderboard/leaderboard"
+    "pages/leaderboard/leaderboard",
+    "pages/manage/pageSettings/pageSettings"
   ],
   "tabBar": {
     "selectedColor": "#000",

@@ -1,5 +1,6 @@
-import { generateUUID, checkAuth } from "../../../utils";
+import { generateUUID } from "../../../utils";
 import { text as text_cfg } from "../../../config";
+import { checkAuth } from "../../../user";
 
 const ctx = wx.createCanvasContext('bigPhoto');
 const canvasMax = 2000; // 正方形画布的尺寸px

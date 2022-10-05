@@ -1,7 +1,8 @@
 // 处理反馈
-import { formatDate, checkAuth } from "../../../utils";
+import { formatDate } from "../../../utils";
 import { requestNotice } from "../../../msg";
 import config from "../../../config";
+import { checkAuth } from "../../../user";
 
 const notifyChkFeedbackTplId = config.msg.notifyChkFeedback.id;
 

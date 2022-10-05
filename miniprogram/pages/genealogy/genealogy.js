@@ -1,8 +1,5 @@
 import {
-  getGlobalSettings,
-  isManagerAsync,
   shuffle,
-  loadFilter,
   regReplace,
   getDeltaHours,
   sleep,
@@ -17,6 +14,8 @@ import {
 } from "../../comment";
 import cache from "../../cache";
 import config from "../../config";
+import { loadFilter, getGlobalSettings } from "../../page";
+import { isManagerAsync } from "../../user";
 
 const default_png = undefined;
 

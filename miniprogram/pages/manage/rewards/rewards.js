@@ -1,4 +1,5 @@
-import { checkAuth, formatDate } from "../../../utils";
+import { formatDate } from "../../../utils";
+import { checkAuth } from "../../../user";
 
 Page({
 
