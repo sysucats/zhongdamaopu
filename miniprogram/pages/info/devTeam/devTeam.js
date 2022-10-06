@@ -11,6 +11,12 @@ Page({
     text_cfg: text_cfg,
     github_link: "https://github.com/sysucats/zhongdamaopu",
     update_log: [{
+      version: "v1.8.12",
+      content: [
+        "优化下部署流程",
+      ],
+      time: "2022/10/06"
+    }, {
       version: "v1.8.11",
       content: [
         "代码优化请求次数",
