@@ -95,7 +95,7 @@ async function getPageUserInfo(page) {
   const userRes = await getUser();
   
   console.log(userRes);
-  if (!userRes.userInfo || !userRes.userInfo.length) {
+  if (!userRes.userInfo || !userRes.userInfo == {}) {
     console.log('无用户信息');
     return false;
   }

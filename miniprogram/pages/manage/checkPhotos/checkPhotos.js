@@ -3,6 +3,7 @@ import { checkAuth } from "../../../user";
 import { requestNotice, sendVerifyNotice } from "../../../msg";
 import config from "../../../config";
 import cache from "../../../cache";
+import { getCatItem } from "../../../cat";
 
 const notifyVerifyPhotoTplId = config.msg.notifyVerify.id;
 
@@ -109,16 +110,10 @@ Page({
 
     var campus_list = {};
     for (var photo of photos) {
-      var cache_key = `cat-${photo.cat_id}`;
-      var cat = cache.getCacheItem(cache_key);
-      if (!cat) {
-        var cat = (await db.collection('cat').doc(photo.cat_id).get()).data;
-        cache.setCacheItem(cache_key, cat, 3);
-      }
-      photo.cat = cat;
+      photo.cat = await getCatItem(photo.cat_id);
 
       // 分类记录到campus里
-      var campus = cat.campus;
+      var campus = photo.cat.campus;
       if (!campus_list[campus]) {
         campus_list[campus] = [];
       }
@@ -241,7 +236,7 @@ Page({
       return false;
     }
     
-    var modalRes = wx.showModal({
+    var modalRes = await wx.showModal({
       title: '确定批量审核？',
       content: `删除${nums['delete'] || 0}张，通过${nums['pass'] || 0}张，精选${nums['best'] || 0}张`,
     });

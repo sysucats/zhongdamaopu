@@ -12,7 +12,7 @@
     <view class='number {{user.photo_rank && user.photo_rank <= 3? "active": ""}}'>{{user.photo_rank || '---'}}</view>
   </view>
   <view class='text cen my-info'>
-    <image mode='aspectFill' src='{{user.avatarUrl}}'></image>
+    <image mode='aspectFill' src='{{user.userInfo.avatarUrl}}'></image>
     <view class='name'>{{user.nickName}}</view>
   </view>
   <view class='text right'>

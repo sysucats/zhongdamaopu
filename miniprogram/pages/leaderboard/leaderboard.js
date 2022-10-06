@@ -6,6 +6,9 @@ import {
   likeAdd
 } from "../../inter.js";
 import {getDateWithDiffHours, formatDate} from "../../utils.js";
+import config from "../../config";
+
+const share_text = config.text.app_name + ' - ' + config.text.genealogy.share_tip;
 
 Page({
   //不需要渲染到wxml的数据存储在jsData中
@@ -14,6 +17,7 @@ Page({
     isLoading: false,
     like_mutex: false,
     canReverse: false,
+    text_cfg: config.text
   },
   data: {
     columns: [
@@ -36,6 +40,14 @@ Page({
       name: "总精选",
       hours: 24*365*30
     },]
+  },
+  onShareAppMessage: function () {
+    return {
+      title: share_text,
+    };
+  },
+  onShareTimeline: function () {
+    return this.onShareAppMessage();
   },
   //获取图片尺寸数据
   loadPic: function (e) {

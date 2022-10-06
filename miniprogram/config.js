@@ -188,9 +188,9 @@ module.exports = {
     science: {
       share_tip: "科普",
     },
-    // 个人信息修改页，pages/info/userInfo/modifyUserInfo/modifyUserInfo
-    modifyUserInfo: {
-      defaultAvatarUrl: ""
-    }
+    // 精选，pages/leaderboard/leaderboard
+    leaderboard: {
+      share_tip: "精选照片",
+    },
   }
 }

@@ -1,14 +1,6 @@
 //app.js
 import { checkUpdateVersion } from "./utils";
 
-
-// {
-//   "pagePath": "pages/news/news",
-//   "iconPath": "/pages/public/images/tabs/default/sci.png",
-//   "selectedIconPath": "/pages/public/images/tabs/active/sci.png",
-//   "text": "公告"
-// },
-
 App({
   onLaunch: function () {
     
@@ -28,7 +20,7 @@ App({
     checkUpdateVersion();
 
     this.globalData = {
-      version: "v1.8.10"
+      version: "v1.8.11"
     }
   }
 })

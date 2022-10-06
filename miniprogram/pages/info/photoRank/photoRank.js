@@ -86,24 +86,18 @@ Page({
   },
 
   async getMyRank() {
-    if (!this.data.userRes || !this.data.ranks) {
+    if (!this.data.user || !this.data.ranks) {
       return false;
     }
     const ranks = this.data.ranks;
-    var res = wx.cloud.callFunction({
-      name: 'userOp',
-      data: {
-        op: "get",
-      }
-    })
   
-    const openid = res.result.openid;
+    const openid = this.data.user.openid;
     console.log(ranks);
     for (const i in ranks) {
       if (ranks[i]._openid === openid) {
         this.setData({
-          'userRes.photo_rank': ranks[i].rank,
-          'userRes.photo_count': ranks[i].count
+          'user.photo_rank': ranks[i].rank,
+          'user.photo_count': ranks[i].count
         });
         return;
       }

@@ -96,12 +96,13 @@ Page({
     const addRes = await db.collection('feedback').add({
       data: data
     });
-
-    await sendNotifyChkFeeedback();
+    console.log(addRes);
     this.setData({
       feedbackId : addRes._id
     })
+
     wx.hideLoading();
+    await sendNotifyChkFeeedback();
     wx.showToast({
       title: '收到你的反馈啦',
       icon: 'success',

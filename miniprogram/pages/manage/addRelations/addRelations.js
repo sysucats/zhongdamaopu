@@ -156,16 +156,14 @@ Page({
   async deleteRelationType(e) {
     var idx = e.currentTarget.dataset.index;
     var types = this.data.relation_types;
-    const that = this;
-    wx.showModal({
+    var res = await wx.showModal({
       title: '提示',
-      content: `确定删除\"${types[idx]}\"关系？`,
-      success(res) {
-        if (res.confirm) {
-          that.doDeleteRelationType(idx);
-        }
-      }
-    })
+      content: `确定删除\"${types[idx]}\"关系？`
+    });
+
+    if (res.confirm) {
+      this.doDeleteRelationType(idx);
+    }
   },
 
   async doDeleteRelationType(idx) {

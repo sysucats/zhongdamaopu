@@ -128,7 +128,7 @@ Page({
       return;
     }
     
-    var modalRes = wx.showModal({
+    var modalRes = await wx.showModal({
       content: '确定要删除吗？'
     });
 

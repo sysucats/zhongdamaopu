@@ -84,8 +84,8 @@ Page({
     });
 
     wx.hideLoading();
-    wx.navigateBack();
     await this.loadUser();
+    wx.navigateBack();
   },
 
   async uploadAvatar(tempFilePath) {

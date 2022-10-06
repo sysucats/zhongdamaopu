@@ -60,52 +60,50 @@ Page({
       })
       return;
     }
-    const that = this;
-    wx.showModal({
+    const res = await wx.showModal({
       title: '提示',
       content: '由于微信限制，每条反馈最多只能回复1次，确定回复吗？',
-      async success(res) {
-        if (res.confirm) {
-          console.log('确认提交回复');
-          wx.showLoading({
-            title: '正在提交...',
-            mask: true
-          });
-          let res = await sendReplyNotice(that.data.feedback._openid, that.data.feedback._id);
-          console.log(res);
-          if (res.errCode == 0) {
-            // 记录一下回复的内容和时间
-            await wx.cloud.callFunction({
-              name: "manageFeedback",
-              data: {
-                operation: 'reply',
-                feedback: that.data.feedback,
-                replyInfo: submitData.replyInfo,
-              }
-            });
-            wx.hideLoading();
-            wx.showToast({
-              title: '回复成功',
-              icon: 'success',
-              duration: 1000,
-              success: () => {
-                setTimeout(wx.navigateBack, 1000)
-              }
-            })
-          } else {
-            wx.hideLoading();
-            wx.showToast({
-              title: '回复失败，这可能是因为对方没有订阅或次数耗尽',
-              icon: 'none',
-              duration: 1500,
-              success: () => {
-                setTimeout(wx.navigateBack, 1500)
-              }
-            });
-          }
-        }
-      }
     });
+
+    if (res.confirm) {
+      console.log('确认提交回复');
+      wx.showLoading({
+        title: '正在提交...',
+        mask: true
+      });
+      let res = await sendReplyNotice(this.data.feedback._openid, this.data.feedback._id);
+      console.log(res);
+      if (res.errCode == 0) {
+        // 记录一下回复的内容和时间
+        await wx.cloud.callFunction({
+          name: "manageFeedback",
+          data: {
+            operation: 'reply',
+            feedback: this.data.feedback,
+            replyInfo: submitData.replyInfo,
+          }
+        });
+        wx.hideLoading();
+        wx.showToast({
+          title: '回复成功',
+          icon: 'success',
+          duration: 1000,
+          success: () => {
+            setTimeout(wx.navigateBack, 1000)
+          }
+        })
+      } else {
+        wx.hideLoading();
+        wx.showToast({
+          title: '回复失败，这可能是因为对方没有订阅或次数耗尽',
+          icon: 'none',
+          duration: 1500,
+          success: () => {
+            setTimeout(wx.navigateBack, 1500)
+          }
+        });
+      }
+    }
   }
 
 })
