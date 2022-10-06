@@ -80,6 +80,7 @@ const init_setting = [{
       "albumStep": 5,
       "photoStep": 3,
       "cantUpload": "*",
+      "cantComment": "*",
       "galleryPreload": 1,
       "galleryCompressed": false
     },
