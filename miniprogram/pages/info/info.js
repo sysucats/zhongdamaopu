@@ -1,6 +1,7 @@
 // miniprogram/pages/info/info.js
 import { getUser, isManagerAsync } from "../../user.js";
 import { text as text_cfg, mpcode_img } from "../../config";
+import { getCurrentPath } from "../../utils";
 
 const share_text = text_cfg.app_name + ' - ' + text_cfg.info.share_tip;
 
@@ -73,7 +74,7 @@ Page({
     }
     // 管理员分享时，邀请用户
     const pagesStack = getCurrentPages();
-    const path = utils.getCurrentPath(pagesStack);
+    const path = getCurrentPath(pagesStack);
     var expire_date = new Date();
     expire_date.setHours(expire_date.getHours() + 1);
     const query = `${path}inviteRole=1&expire=${encodeURIComponent(expire_date)}`;

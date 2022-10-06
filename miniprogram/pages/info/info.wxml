@@ -65,5 +65,4 @@
     <view class="option-text">照片处理({{numImProcess}})</view>
     <view class="right-arrow"><image mode='aspectFill' src="/pages/public/images/filter/right.png"></image></view> 
   </view>
-  
 </view></block>

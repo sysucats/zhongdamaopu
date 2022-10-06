@@ -61,9 +61,22 @@ Page({
     const db = wx.cloud.database();
     const _ = db.command;
     const $ = db.command.aggregate
+    var totalCount = await db.collection('photo').aggregate()
+      .group({
+        // 按 category 字段分组
+        _id: '$_openid',
+        count: $.sum(1),
+      })
+      .count('totalCount')
+      .end();
+    totalCount = totalCount.list[0].totalCount;
+    console.log(totalCount);
+    this.setData({
+      totalCount
+    })
     var count = 0;
     while (1) {
-      const users = (await await db.collection('photo').aggregate()
+      const users = (await db.collection('photo').aggregate()
       .group({
         // 按 category 字段分组
         _id: '$_openid',
@@ -77,9 +90,10 @@ Page({
       }
 
       count += users.length;
+      var reqs = [];
       for (const u of users) {
         console.log(u._id);
-        await wx.cloud.callFunction({
+        reqs.push(wx.cloud.callFunction({
           name: "userOp",
           data: {
             "op": "updateRole",
@@ -88,8 +102,12 @@ Page({
               role: 1
             },
           }
-        })
+        }));
       }
+      await Promise.all(reqs);
+      this.setData({
+        doneCount: count
+      })
     }
   }
 
