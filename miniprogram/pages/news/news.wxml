@@ -1,9 +1,9 @@
 <view class='loading' wx:if='{{updateRequest}}'>
-  <image src='../../images/system/loading.gif'></image>
+  <image src='/pages/public/images/system/loading.gif'></image>
 </view>
 
-<swiper indicator-dots="1" indicator-active-color="var(--color-primary)" circular="1" current="{{cate_current-1}}" autoplay="true" interval="4000" duration="1000">
-  <swiper-item wx:for="{{images}}" wx:key="unique" bindtap='gotoSciDetail' data-cate='{{index+1}}'>
+<swiper indicator-dots="1" indicator-active-color="var(--color-primary)" circular="1" autoplay="true" interval="4000" duration="1000">
+  <swiper-item wx:for="{{images}}" wx:key="unique" bindtap='gotoSciDetail' data-cate='{{index}}'>
     <image src='{{item}}'></image>
   </swiper-item>
 </swiper>

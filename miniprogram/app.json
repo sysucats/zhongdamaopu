@@ -27,7 +27,11 @@
     "pages/news/modifyNews/modifyNews",
     "pages/news/createNews/createNews",
     "pages/news/sciDetail/sciDetail",
-    "pages/manage/addRelations/addRelations"
+    "pages/manage/addRelations/addRelations",
+    "pages/tools/updateUserRole/updateUserRole",
+    "pages/leaderboard/leaderboard",
+    "pages/manage/pageSettings/pageSettings",
+    "pages/info/userInfo/modifyUserInfo/modifyUserInfo"
   ],
   "tabBar": {
     "selectedColor": "#000",
@@ -35,9 +39,15 @@
     "list": [
       {
         "pagePath": "pages/genealogy/genealogy",
-        "iconPath": "./images/tabs/default/cat.png",
-        "selectedIconPath": "./images/tabs/active/cat.png",
+        "iconPath": "/pages/public/images/tabs/default/cat.png",
+        "selectedIconPath": "/pages/public/images/tabs/active/cat.png",
         "text": "猫谱"
+      },
+      {
+        "pagePath": "pages/recognize/recognize",
+        "iconPath": "/pages/public/images/tabs/default/recog.png",
+        "selectedIconPath": "/pages/public/images/tabs/active/recog.png",
+        "text": "识猫"
       },
       {
         "pagePath": "pages/news/news",
@@ -46,9 +56,15 @@
         "text": "公告"
       },
       {
+        "pagePath": "pages/leaderboard/leaderboard",
+        "iconPath": "/pages/public/images/tabs/default/org.png",
+        "selectedIconPath": "/pages/public/images/tabs/active/org.png",
+        "text": "精选"
+      },
+      {
         "pagePath": "pages/info/info",
-        "iconPath": "./images/tabs/default/info.png",
-        "selectedIconPath": "./images/tabs/active/info.png",
+        "iconPath": "/pages/public/images/tabs/default/info.png",
+        "selectedIconPath": "/pages/public/images/tabs/active/info.png",
         "text": "关于"
       }
     ]
@@ -69,5 +85,5 @@
     }
   ],
   "sitemapLocation": "sitemap.json",
-  "lazyCodeLoading" : "requiredComponents"
+  "lazyCodeLoading": "requiredComponents"
 }

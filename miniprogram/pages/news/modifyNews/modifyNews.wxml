@@ -3,7 +3,7 @@
 <form bindsubmit="bindSubmit">
     <block wx:if="{{!isAuth}}" class='unAuth'>
         <view class='userInfo'>
-            <image src='../../../images/system/user.png'></image>
+            <image src='/pages/public/images/system/user.png'></image>
             <view>等待授权</view>
         </view>
         <button class="authButton" bindtap='getUInfo'>点击授权</button>

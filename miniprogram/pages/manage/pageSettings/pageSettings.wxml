@@ -1,0 +1,25 @@
+<!--pages/manage/system/system.wxml-->
+<!-- 记录一下设置项：
+1. 保持settings表不变进行设置保存
+2. 只需要设置_id = pages的文档
+3. 分多项展开来设置，不要叠加超过2层
+4. 设置项说明，放到js端吧 -->
+
+<block wx:if="{{auth}}">
+  <view wx:for="{{settings}}" wx:key="unique" wx:for-index="i">
+    <view class="setting-title">{{i}}</view>
+    <view class="setting-title-tip">{{desc[i].tip}}</view>
+    <view wx:for="{{settings[i]}}"  wx:key="unique" wx:for-index="j" class="form-input-block">
+      <view class="form-input-name">{{j}}</view>
+      <view class="form-input-tip">Tip: {{desc[i][j].tip}}</view>
+      <input class="form-input" type="{{desc[i][j].type}}" value="{{settings[i][j]}}" bindinput="inputChange" data-i="{{i}}" data-j="{{j}}"/>
+    </view>
+  </view>
+  <view class="confirm">
+    <button class="primary long" bindtap="uploadSetting">提交</button>
+  </view>
+</block>
+<view wx:else class='unAuth'>
+  <text>{{tipText}}</text>
+  <button bindtap='goBack' wx:if='{{tipBtn}}'>打扰了</button>
+</view>

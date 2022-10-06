@@ -1,10 +1,7 @@
-// pages/recognize/recognize.js
-const config = require('../../config.js');
-const utils = require('../../utils.js');
-const sha256 = utils.sha256;
-const getGlobalSettings = utils.getGlobalSettings;
-const randomInt = utils.randomInt;
-const loadFilter = utils.loadFilter;
+import { text as text_cfg, ad_recognize_banner, cat_status_adopt } from "../../config";
+import { hex_sha256, randomInt } from "../../utils";
+import { loadFilter, getGlobalSettings } from "../../page";
+
 
 // 接口设置，onLoad中从数据库拉取。
 var interfaceURL;
@@ -19,7 +16,6 @@ var recognizeResults = [];
 // 在页面中定义插屏广告
 let interstitialAd = null
 
-const text_cfg = config.text;
 const share_text = text_cfg.app_name + ' - ' + text_cfg.recognize.share_tip;
 
 Page({
@@ -45,15 +41,15 @@ Page({
     showResultBox: false, // 用来配合动画延时展示resultBox
     showAdBox: true, // 展示banner广告
     ad: {
-      banner: config.ad_recognize_banner
+      banner: ad_recognize_banner
     },
     text_cfg: text_cfg,
 
     // 领养状态
-    adopt_desc: config.cat_status_adopt,
+    adopt_desc: cat_status_adopt,
   },
 
-  onLoad() {
+  async onLoad() {
     // 在页面onLoad回调事件中创建插屏广告实例
     if (wx.createInterstitialAd) {
       interstitialAd = wx.createInterstitialAd({
@@ -66,32 +62,23 @@ Page({
       interstitialAd.onClose(() => {})
     }
 
-    const that= this;
-    loadFilter().then(res => {
-      console.log('filterRes:', res);
-      that.setData({
-        campusList:['所有校区'].concat(res.campuses),
-        colourList:['所有花色'].concat(res.colour)
-      })
+    var res = await loadFilter();
+    console.log('filterRes:', res);
+    this.setData({
+      campusList:['所有校区'].concat(res.campuses),
+      colourList:['所有花色'].concat(res.colour)
     })
-
-    // var that = this;
-    // getGlobalSettings('recognize').then(settings => {
-    //   interfaceURL = settings.interfaceURL;
-    //   secretKey = settings.secretKey;
-    // })
 
     this.checkAuth();
   },
 
-  onShow() {
-    var that = this;
+  async onShow() {
     if (!interfaceURL || !secretKey) {
       console.log('__wxConfig.envVersion: ', __wxConfig.envVersion);
-      getGlobalSettings(__wxConfig.envVersion === 'release' ? 'recognize' : 'recognize_test').then(settings => {
-        interfaceURL = settings.interfaceURL;
-        secretKey = settings.secretKey;
-      }).then(that.recognizeChatImage);
+      var settings = await getGlobalSettings(__wxConfig.envVersion === 'release' ? 'recognize' : 'recognize_test');
+      interfaceURL = settings.interfaceURL;
+      secretKey = settings.secretKey;
+      await this.recognizeChatImage();
     } else { // 没杀后台回到聊天重新识别的情况
       this.recognizeChatImage()
     }
@@ -177,7 +164,7 @@ Page({
     // 计算签名
     const photoBase64 = wx.getFileSystemManager().readFileSync(compressPhotoPath, 'base64');
     const timestamp = Math.round(new Date().getTime() / 1000);
-    const signature = sha256.hex_sha256(photoBase64 + timestamp + secretKey);
+    const signature = hex_sha256(photoBase64 + timestamp + secretKey);
     // 调用服务端接口进行识别
     const that = this;
     const formData = {
@@ -504,7 +491,7 @@ Page({
   onShareAppMessage() {
     return {
       title: share_text,
-      imageUrl: '../../images/recognize/share_cover.jpg'
+      imageUrl: '/pages/public/images/recognize/share_cover.jpg'
     };
   },
 

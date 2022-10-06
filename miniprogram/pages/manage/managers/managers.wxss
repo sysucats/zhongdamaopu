@@ -43,6 +43,7 @@ button.long {
   margin: 15rpx 0rpx;
 }
 
+
 .filters checkbox .wx-checkbox-input {
   width: 30rpx;
   height: 30rpx;
@@ -102,11 +103,9 @@ button.long {
   font-size: 32rpx;
 }
 
-.name-and-others .gender,
-.name-and-others .area {
-  font-size: 30rpx;
+.name-and-others .info {
+  font-size: 26rpx;
   color: var(--color-gray-max);
-  display: inline-block;
 }
 
 .operation {

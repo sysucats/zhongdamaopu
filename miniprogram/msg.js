@@ -1,6 +1,5 @@
-const formatDate = require("./utils").formatDate;
-const arrayResort = require("./utils").arrayResort;
-const msgConfig = require("./config").msg;
+import { formatDate, arrayResort } from "./utils";
+import { msg as msgConfig } from "./config";
 
 // 订阅请求
 async function requestNotice(template) {

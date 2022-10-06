@@ -39,7 +39,7 @@
     <block wx:if="{{showSearchCat}}">
       <view class='input-block'>
         <view class='input-icon'>
-          <image class="search-logo" mode='aspectFit' src="../../../images/filter/search.png"></image>
+          <image class="search-logo" mode='aspectFit' src="/pages/public/images/filter/search.png"></image>
         </view>
         <input class='name' placeholder='搜索猫猫名称、昵称' placeholder-class='searchPlaceholderStyle' focus="{{focusSearchCat}}" value='{{filters_input}}' maxlength='20' confirm-type='search' bindinput='fSearchInput' bindconfirm='doSearchCat'></input>
       </view>
@@ -57,7 +57,7 @@
     <block wx:if="{{showSearchType}}">
       <view class='input-block'>
         <view class='input-icon'>
-          <image class="search-logo" mode='aspectFit' src="../../../images/card/card/cat.png"></image>
+          <image class="search-logo" mode='aspectFit' src="/pages/public/images/card/card/cat.png"></image>
         </view>
         <input class='name' placeholder='输入关系名，如不存在则自动新建' placeholder-class='searchPlaceholderStyle' focus="{{focusSearchType}}" maxlength='10' confirm-type='done' bindconfirm='saveNewRelationType' value="{{relation_name}}"></input>
       </view>

@@ -3,14 +3,14 @@
 <view id='search' class='{{filters_show_shadow? "shadow": ""}}' style='height: {{heights.filters}}px'>
   <view class='input-block'>
     <view class='input-icon'>
-      <image mode='aspectFit' src="../../images/filter/search.png"></image>
+      <image mode='aspectFit' src="/pages/public/images/filter/search.png"></image>
     </view>
     <input class='name' placeholder='{{text_cfg.genealogy.search_tip}}' placeholder-class='searchPlaceholderStyle' value='{{filters_input}}' maxlength='20' confirm-type='search' bindinput='fSearchInput' bindconfirm='fSearch'></input>
   </view>
   
   <view class='filter-btn' bindtap='fToggle'>
-    <image wx:if='{{filters_active}}' mode='aspectFit' src="../../images/filter/filter_y.png"></image>
-    <image wx:else mode='aspectFit' src="../../images/filter/filter.png"></image>
+    <image wx:if='{{filters_active}}' mode='aspectFit' src="/pages/public/images/filter/filter_y.png"></image>
+    <image wx:else mode='aspectFit' src="/pages/public/images/filter/filter.png"></image>
   </view>
 </view>
 
@@ -24,7 +24,7 @@
         <text>{{item.name}}</text>
 
         <view class='right-arrow' wx:if='{{item.active}}'>
-          <image mode='aspectFill' src="../../images/filter/right.png"></image> 
+          <image mode='aspectFill' src="/pages/public/images/filter/right.png"></image> 
         </view>
       </view>
     </scroll-view>
@@ -48,6 +48,16 @@
 </view>
 
 <scroll-view enable-flex='true' class='cards' style='height: {{heights.windowHeight - heights.filters}}px;' scroll-y='true' enable-back-to-top='true' bindscrolltolower='onReachBottom' bindscroll='fScroll' lower-threshold='{{main_lower_threshold}}'>
+  <!-- 校区外显筛选 -->
+  <scroll-view class="h-filter-list" scroll-x="1" wx:if="{{filters[0].category.length > 1}}">
+    <view class='h-filter-item {{item.all_active? "active": ""}}'  bindtap='fClickCampus' data-index='{{index}}'
+          wx:for="{{filters[0].category}}" wx:key="name">
+          <image class="location-logo" wx:if="{{! item.all_active}}" src="/pages/public/images/filter/location_gray.png" mode="aspectFit"></image>
+          <image class="location-logo" wx:else src="/pages/public/images/filter/location_active_dark.png" mode="aspectFit"></image>
+          {{item.name}}
+    </view>
+  </scroll-view>
+
   <block wx:for='{{cats}}' wx:key="_id">
     <view class='card' bindtap='clickCatCard' bindlongpress='bindManageCat' data-cat_id='{{item._id}}' data-index='{{index}}'>
       <view class='label' wx:if="{{item.mphoto_new}}">{{text_cfg.genealogy.new_photo_tip}}</view>
@@ -60,35 +70,35 @@
         <view class='line first'>
           <text class='name'>{{item.name}}</text>
           <block wx:if='{{item.gender}}'>
-            <image mode='aspectFill' class='gender' wx:if='{{item.gender === "公"}}' src="../../images/card/card/male.png"></image>
-            <image mode='aspectFill' class='gender' wx:if='{{item.gender === "母"}}' src="../../images/card/card/female.png"></image>
+            <image mode='aspectFill' class='gender' wx:if='{{item.gender === "公"}}' src="/pages/public/images/card/card/male.png"></image>
+            <image mode='aspectFill' class='gender' wx:if='{{item.gender === "母"}}' src="/pages/public/images/card/card/female.png"></image>
           </block>
           <view wx:if='{{item.adopt}}' class='adopt'>{{adopt_desc[item.adopt]}}</view>
           <view wx:if='{{item.to_star}}' class='to_star'>{{text_cfg.genealogy.to_star_tip}}</view>
           <view class='popularity'>
-            <image src='../../images/card/card/pop.png'></image>
+            <image src='/pages/public/images/card/card/pop.png'></image>
             <text> {{item.popularity + (item.photo_count_total? item.photo_count_total * photoPopWeight: 0) }}</text>
           </view>
           <view class='comment' wx:if="{{item.comment_count}}">
-            <image src='../../images/card/card/comment.png'></image>
+            <image src='/pages/public/images/card/card/comment.png'></image>
             <text> {{item.comment_count}}</text>
           </view>
         </view>
 
         <view class='line' wx:if="{{item.birthday}}">
-          <image mode='aspectFit' class='icon' src='../../images/card/card/birth.png'></image>
+          <image mode='aspectFit' class='icon' src='/pages/public/images/card/card/birth.png'></image>
           <text>{{item.birthday}}</text>
         </view>
         <view class='line'>
-          <image mode='aspectFit' class='icon' src='../../images/card/card/cat.png'></image>
+          <image mode='aspectFit' class='icon' src='/pages/public/images/card/card/cat.png'></image>
           <text class="characteristics">{{item.characteristics_string}}</text>
         </view>
         <view class='line' wx:if="{{item.habit}}">
-          <image mode='aspectFit' class='icon' src='../../images/card/card/heart.png'></image>
+          <image mode='aspectFit' class='icon' src='/pages/public/images/card/card/heart.png'></image>
           <text class="habit">{{item.habit}}</text>
         </view>
         <view class='line'>
-          <image mode='aspectFit' class='icon' src='../../images/card/card/pos.png'></image>
+          <image mode='aspectFit' class='icon' src='/pages/public/images/card/card/pos.png'></image>
           <text>{{(item.campus + item.area) || '-'}}</text>
           <view class='index'><text decode='true'>&lt; {{index+1}}/{{catsMax}} &gt;</text></view>
         </view>
@@ -102,21 +112,21 @@
   </block>
 
   <view class='loading' wx:if='{{!loadnomore}}'>
-    <image src='../../images/system/loading.gif'></image>
+    <image src='/pages/public/images/system/loading.gif'></image>
   </view>
   <view class='loadnomore' wx:else>
-    <image src='../../images/system/nomore.png'></image>
+    <image src='/pages/public/images/system/nomore.png'></image>
   </view>
 </scroll-view>
 
 <!-- 漂浮的领养logo -->
 <view wx:if="{{adopt_count && filters_empty}}" id="find-adopt" bindtap="clickAdoptBtn">
-  <image class="logo shake" src="../../images/button/find_adopt.png"></image>
+  <image class="logo shake" src="/pages/public/images/button/find_adopt.png"></image>
   <view class="count">{{adopt_count}}{{text_cfg.genealogy.adopt_btn}}</view>
 </view>
 <!-- 返回首页 -->
 <view wx:if="{{!filters_empty}}" id="back-to-firstpage" bindtap="clickBackFirstPageBtn">
-  <image class="back-btn" src="../../images/button/back_to_first_page.png"></image>
+  <image class="back-btn" src="/pages/public/images/button/back_to_first_page.png"></image>
 </view>
 <!-- 点击漂浮后的提示 -->
 <view class="adopt-filter-tip {{show_filter_tip? '': 'hide'}}">

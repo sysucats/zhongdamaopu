@@ -1,4 +1,4 @@
-const cfg = require("../../../config.js");
+import config from "../../../config";
 
 // 用于初始化数据库的默认数据（不要修改！）
 const default_init_data_id = "deploy_test";
@@ -81,7 +81,6 @@ const init_setting = [{
       "photoStep": 3,
       "cantUpload": "*",
       "galleryPreload": 1,
-      "manageUpload": true,
       "galleryCompressed": false
     },
     "genealogy": {
@@ -104,7 +103,7 @@ const init_setting = [{
     "_id": "friendLink",
     "apps": [{
       "appid": "wx5bd705b2bc91c73b",
-      "logo": "../../images/system/zdmp_logo.png",
+      "logo": "/pages/public/images/system/zdmp_logo.png",
       "name": "中大猫谱"
     }]
   },
@@ -131,7 +130,7 @@ module.exports = {
     "addPop", "commentCheck", "commentOp", "countPhoto", "getAllSci", "getMpCode",
     "getPhotoRank", "imProcess", "initDeploy", "interOp", "isManager", "manageFeedback",
     "managePhoto", "sendMsgV2", "updateCat", "updateFilter", "updateManager",
-    "updateReward", "userOp", "newsOp", "relationOp"
+    "updateReward", "updateSetting", "userOp", "newsOp", "relationOp"
   ],
   default_init_data_id: default_init_data_id,
   collections: {
@@ -147,7 +146,7 @@ module.exports = {
     "setting": init_setting,
     "user": [{_id: "init"}],
   },
-  images: cfg.science_imgs.concat([cfg.reward_img, cfg.feedback_wj_img, cfg.mpcode_img]),
+  images: config.science_imgs.concat([config.reward_img, config.feedback_wj_img, config.mpcode_img]),
   func_configs: {
     initDeploy: {
       timeout: 59,  // s
@@ -157,7 +156,7 @@ module.exports = {
       timeout: 59,  // s
       // 环境变量
       envVariables: {
-        app_name: cfg.text.app_name
+        app_name: config.text.app_name
       },
       triggers: [{
         name: "Trigger",

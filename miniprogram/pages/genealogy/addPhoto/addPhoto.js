@@ -1,23 +1,20 @@
-const utils = require('../../../utils.js');
-const generateUUID = utils.generateUUID;
-const getCurrentPath = utils.getCurrentPath;
-const shareTo = utils.shareTo;
-const checkCanUpload = utils.checkCanUpload;
-const getGlobalSettings = utils.getGlobalSettings;
-
-const user = require('../../../user.js');
-const getCurUserInfoOrFalse = user.getCurUserInfoOrFalse;
-
-const msg = require('../../../msg.js');
-const requestNotice = msg.requestNotice;
-const sendNotifyVertifyNotice = msg.sendNotifyVertifyNotice;
-
-const config = require('../../../config.js');
-const text_cfg = config.text;
-
+import {
+  generateUUID,
+  getCurrentPath,
+  shareTo,
+} from "../../../utils";
+import {
+  getPageUserInfo,
+  checkCanUpload,
+  toSetUserInfo
+} from "../../../user";
+import {
+  requestNotice,
+  sendNotifyVertifyNotice
+} from "../../../msg";
+import config from "../../../config";
 
 Page({
-
   /**
    * 页面的初始数据
    */
@@ -29,45 +26,44 @@ Page({
     photos: [],
     set_all: {},
     canUpload: false,
-    text_cfg: text_cfg,
+    text_cfg: config.text,
   },
 
   /**
    * 生命周期函数--监听页面加载
    */
-  onLoad: function (options) {
+  onLoad: async function (options) {
     const db = wx.cloud.database();
-    const cat = db.collection('cat');
     const cat_id = options.cat_id;
-    cat.doc(cat_id).field({ birthday: true, name: true, campus: true, _id: true }).get().then(res => {
-      console.log(res.data);
-      const birthday = res.data.birthday;
-      this.setData({
-        cat: res.data,
-        birth_date: birthday || ''
-      });
-    })
+    var catRes = await db.collection('cat').doc(cat_id).field({
+      birthday: true,
+      name: true,
+      campus: true,
+      _id: true
+    }).get();
+    this.setData({
+      cat: catRes.data,
+      birth_date: catRes.data.birthday || ''
+    });
     //this.checkUInfo();
 
     // 获取一下现在的日期，用在拍摄日前选择上
     const today = new Date();
-    var now_date = today.getFullYear() + '-' + (today.getMonth()+1) + '-' + today.getDate();
+    var now_date = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
     this.setData({
       now_date: now_date
     });
 
-    // 加载设置、关闭上传功能
-    const that = this;
-    
-    checkCanUpload().then(res => {
-      that.setData({
-        canUpload: res
-      });
-    })
-
+    this.setData({
+      canUpload: await checkCanUpload()
+    });
   },
 
-  onUnload:function(options){
+  async onShow() {
+    await getPageUserInfo(this);
+  },
+
+  onUnload: function (options) {
     this.ifSendNotifyVeriftMsg()
   },
 
@@ -77,24 +73,8 @@ Page({
   onShareAppMessage: function () {
     const pagesStack = getCurrentPages();
     const path = getCurrentPath(pagesStack);
-    const share_text = `来给${this.data.cat.name}添加照片 - ${text_cfg.app_name}`;
+    const share_text = `来给${this.data.cat.name}添加照片 - ${config.text.app_name}`;
     return shareTo(share_text, path);
-  },
-
-  getUInfo() {
-    const that = this;
-    // 检查用户信息有没有拿到，如果有就更新this.data
-    getCurUserInfoOrFalse().then(res => {
-      if (!res) {
-        console.log('未授权');
-        return;
-      }
-      console.log(res);
-      that.setData({
-        isAuth: true,
-        user: res,
-      });
-    });
   },
 
   chooseImg(e) {
@@ -105,7 +85,9 @@ Page({
         console.log(res);
         var photos = [];
         for (const file of res.tempFiles) {
-          photos.push({file: file});
+          photos.push({
+            file: file
+          });
         }
         this.setData({
           photos: photos,
@@ -120,7 +102,7 @@ Page({
   async uploadSingleClick(e) {
     await requestNotice('verify');
     wx.showLoading({
-      title: text_cfg.add_photo.success_tip_title,
+      title: config.text.add_photo.success_tip_title,
       mask: true,
     });
     const currentIndex = e.currentTarget.dataset.index;
@@ -136,8 +118,8 @@ Page({
     });
     wx.hideLoading();
     wx.showModal({
-      title: text_cfg.add_photo.success_tip_title,
-      content: text_cfg.add_photo.success_tip_content,
+      title: config.text.add_photo.success_tip_title,
+      content: config.text.add_photo.success_tip_content,
       showCancel: false
     });
   },
@@ -152,8 +134,8 @@ Page({
     }
     if (photos.length == 0) {
       wx.showModal({
-        title: text_cfg.add_photo.unfinished_tip_title,
-        content: text_cfg.add_photo.unfinished_tip_content,
+        title: config.text.add_photo.unfinished_tip_title,
+        content: config.text.add_photo.unfinished_tip_content,
         showCancel: false
       });
       return;
@@ -176,29 +158,26 @@ Page({
     })
     wx.hideLoading();
     wx.showModal({
-      title: text_cfg.add_photo.success_tip_title,
-      content: text_cfg.add_photo.success_tip_content,
+      title: config.text.add_photo.success_tip_title,
+      content: config.text.add_photo.success_tip_content,
       showCancel: false
     });
   },
-  
-  async ifSendNotifyVeriftMsg(){
-    const db = wx.cloud.database(); 
+
+  async ifSendNotifyVeriftMsg() {
+    const db = wx.cloud.database();
     const subMsgSetting = await db.collection('setting').doc('subscribeMsg').get();
     const triggerNum = subMsgSetting.data.verifyPhoto.triggerNum; //几条未审核才触发
     // console.log("triggerN",triggerNum);
-    var numUnchkPhotos;
-    db.collection('photo').where({
+    var numUnchkPhotos = (await db.collection('photo').where({
       verified: false
-    }).count().then(res => {
-      // console.log("photoUnverify",res)
-      numUnchkPhotos = res.total;
-      if (numUnchkPhotos >= triggerNum) {
-        sendNotifyVertifyNotice(numUnchkPhotos).then();
-        console.log("toSendNVMsg");
-      }
-    })
-    
+    }).count()).total;
+
+    if (numUnchkPhotos >= triggerNum) {
+      await sendNotifyVertifyNotice(numUnchkPhotos);
+      console.log("toSendNVMsg");
+    }
+
   },
 
   async uploadImg(photo) {
@@ -234,7 +213,7 @@ Page({
     });
     console.log(dbAddRes);
   },
-  
+
   pickDate(e) {
     console.log(e);
     const index = e.currentTarget.dataset.index;
@@ -291,5 +270,9 @@ Page({
     wx.switchTab({
       url: '/pages/genealogy/genealogy',
     });
+  },
+
+  getUInfo(e) {
+    toSetUserInfo();
   }
 })

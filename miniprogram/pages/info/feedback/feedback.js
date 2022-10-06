@@ -1,7 +1,4 @@
-// miniprogram/pages/info/feedback/feedback.js
-const config = require('../../../config.js');
-
-const text_cfg = config.text;
+import { text as text_cfg, feedback_wj_img } from "../../../config";
 const share_text = text_cfg.app_name + ' - ' + text_cfg.feedback.share_tip;
 
 Page({
@@ -26,7 +23,7 @@ Page({
   },
 
   toNewCat() {
-    const src = config.feedback_wj_img;
+    const src = feedback_wj_img;
     wx.previewImage({
       urls: [src],
       success: (res) => {

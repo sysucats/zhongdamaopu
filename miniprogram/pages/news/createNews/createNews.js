@@ -1,10 +1,5 @@
-// pages/manage/manageNews/createNews/createNews.js
-const utils = require('../../../utils.js');
-const user = require('../../../user.js');
-const generateUUID = utils.generateUUID;
-const isManager = utils.isManager;
-
-const getCurUserInfoOrFalse = user.getCurUserInfoOrFalse;
+import { generateUUID } from "../../../utils";
+import { getPageUserInfo, checkAuth, toSetUserInfo } from "../../../user";
 
 Page({
     /**
@@ -57,20 +52,12 @@ Page({
     /**
      * 生命周期函数--监听页面加载
      */
-    onLoad: function (options) {
-        this.checkAuth();
+    onLoad: async function (options) {
+      await checkAuth(this, 2);
     },
 
-    // 检查权限
-    checkAuth() {
-        const that = this;
-        isManager(function (res) {
-            if (res) {
-                that.setData({
-                    auth: true
-                });
-            }
-        }, 2)
+    onShow: async function() {
+      await getPageUserInfo(this);
     },
 
     bindInputName(e) {
@@ -94,19 +81,8 @@ Page({
         })
     },
 
-    getUInfo() {
-        const that = this;
-        getCurUserInfoOrFalse().then(res => {
-            if (!res) {
-                console.log('未授权');
-                return;
-            }
-            console.log(res);
-            that.setData({
-                isAuth: true,
-                user: res,
-            });
-        });
+    async getUInfo() {
+      toSetUserInfo();
     },
 
     chooseImg(e) {

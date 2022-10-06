@@ -1,6 +1,6 @@
 <view wx:if="{{!canUpload}}">
     <view class='userInfo'>
-      <image src='../../../images/system/user.png'></image>
+      <image src='/pages/public/images/system/user.png'></image>
       <view>
         <text>[普通用户暂无法上传] TAT...\n</text>
       </view>
@@ -12,9 +12,9 @@
   <view wx:if="{{!isAuth}}" class='unAuth'>
     <!-- <text>请授权后进行操作</text> -->
     <view class='userInfo'>
-      <image src='../../../images/system/user.png'></image>
+      <image src='/pages/public/images/system/user.png'></image>
       <view>
-        <text>[等待授权]\n---准备为「<text style="font-weight:600;">{{cat.name}}</text>」添加照片</text>
+        <text>[等待授权]\n--- 准备为「<text style="font-weight:600;">{{cat.name}}</text>」添加照片</text>
       </view>
     </view>
     <button class='long primary' bindtap='getUInfo'>{{text_cfg.add_photo.auth_tip}}</button>
@@ -24,8 +24,9 @@
     <view class='userInfo'>
       <image src='{{user.userInfo.avatarUrl}}'></image>
       <view>
-        <text>{{user.userInfo.nickName}}\n---正在为「<text style="font-weight:600;">{{cat.name}}</text>」添加照片</text>
+        <text>{{user.userInfo.nickName}}\n--- 正在为「<text style="font-weight:600;">{{cat.name}}</text>」添加照片</text>
       </view>
+      <view class="update-userInfo" bindtap="getUInfo">[更新个人信息]</view>
     </view>
 
     <button bindtap='chooseImg' class='long primary'>选择照片</button>

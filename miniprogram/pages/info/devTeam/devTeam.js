@@ -1,6 +1,5 @@
-// miniprogram/pages/info/devTeam/devTeam.js
-const config = require('../../../config.js');
-const text_cfg = config.text;
+import { text as text_cfg } from "../../../config";
+
 const share_text = text_cfg.app_name + ' - ' + text_cfg.info.share_tip;
 
 Page({
@@ -12,6 +11,48 @@ Page({
     text_cfg: text_cfg,
     github_link: "https://github.com/sysucats/zhongdamaopu",
     update_log: [{
+      version: "v1.8.11",
+      content: [
+        "代码优化请求次数",
+      ],
+      time: "2022/10/06"
+    }, {
+      version: "v1.8.10",
+      content: [
+        "优化精选tab",
+      ],
+      time: "2022/10/02"
+    }, {
+      version: "v1.8.9",
+      content: [
+        "增加精选tab，展示点赞照片",
+      ],
+      time: "2022/09/24"
+    }, {
+      version: "v1.8.8",
+      content: [
+        "首页校区筛选可缓存、分享",
+      ],
+      time: "2022/09/21"
+    }, {
+      version: "v1.8.7",
+      content: [
+        "修复问题TAT",
+      ],
+      time: "2022/09/19"
+    }, {
+      version: "v1.8.6",
+      content: [
+        "优化后台人员管理",
+      ],
+      time: "2022/09/18"
+    }, {
+      version: "v1.8.5",
+      content: [
+        "修复科普图片乱序",
+      ],
+      time: "2022/09/14"
+    }, {
       version: "v1.8.4",
       content: [
         "修复页面UI小问题",

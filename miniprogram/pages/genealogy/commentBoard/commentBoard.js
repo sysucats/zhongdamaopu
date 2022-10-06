@@ -1,20 +1,9 @@
-const config = require('../../../config.js');
-const utils = require('../../../utils.js');
-const shareTo = utils.shareTo;
-const isManager = utils.isManager;
-const getGlobalSettings = utils.getGlobalSettings;
-const formatDate = utils.formatDate;
+import { formatDate, contentSafeCheck } from "../../../utils";
+import config from "../../../config";
+import { getPageUserInfo, getUserInfo, checkCanComment, isManagerAsync, toSetUserInfo } from "../../../user";
+import { getAvatar } from "../../../cat";
+import { getCatCommentCount } from "../../../comment";
 
-const user = require('../../../user.js');
-const getCurUserInfoOrFalse = user.getCurUserInfoOrFalse;
-const getUserInfo = user.getUserInfo;
-
-const getAvatar = require('../../../cat.js').getAvatar
-
-const getCatCommentCount = require('../../../comment.js').getCatCommentCount;
-
-// 页面设置，从global读取
-var page_settings = {};
 var cat_id;
 
 // 常用的对象
@@ -23,8 +12,6 @@ const coll_comment = db.collection('comment');
 
 // 发送锁
 var sendLock = false;
-
-const text_cfg = config.text;
 
 Page({
 
@@ -37,35 +24,40 @@ Page({
     comments: [],
     comment_count: 0,
     keyboard_height: 0,
-    text_cfg: text_cfg,
+    text_cfg: config.text,
     is_manager: false,
   },
 
   /**
    * 生命周期函数--监听页面加载
    */
-  onLoad: function (options) {
+  onLoad: async function (options) {
     cat_id = options.cat_id;
-    // 开始加载页面
-    const that = this;
-    getGlobalSettings('detailCat').then(settings => {
-      // 先把设置拿到
-      page_settings = settings;
-      // 启动加载
-      that.loadCat();
-      that.loadMoreComment();
+    if (!await checkCanComment()) {
+      wx.showToast({
+        title: '已暂时关闭..',
+        duration: 10000
+      });
+      return false;
+    }
+    this.setData({
+      canComment: true
     })
+    // 启动加载
+    await Promise.all([
+      this.loadCat(),
+      this.loadMoreComment(),
+    ]);
     
     // 是否为管理员lv.1
-    isManager(res => {
-      if (res) {
-        that.setData({
-          is_manager: true
-        })
-      } else {
-        console.log("not a manager");
-      }
-    }, 1);
+    var manager = await isManagerAsync(1);
+    if (manager) {
+      this.setData({
+        is_manager: true
+      })
+    } else {
+      console.log("not a manager");
+    }
   },
 
   /**
@@ -78,8 +70,8 @@ Page({
   /**
    * 生命周期函数--监听页面显示
    */
-  onShow: function () {
-
+  onShow: async function () {
+    await getPageUserInfo(this);
   },
 
   /**
@@ -118,19 +110,13 @@ Page({
     const cat_name = cat.name;
     const cat_avatar = cat.avatar.photo_compressed || cat.avatar.photo_id;
     return {
-      title: `${cat_name}的留言板 - ${text_cfg.app_name}`,
+      title: `${cat_name}的留言板 - ${config.text.app_name}`,
       imageUrl: cat_avatar,
     }
   },
 
   onShareTimeline: function () {
-    const cat = this.data.cat;
-    const cat_name = cat.name;
-    const cat_avatar = cat.avatar.photo_compressed || cat.avatar.photo_id;
-    return {
-      title: `${cat_name}的留言板 - ${text_cfg.app_name}`,
-      imageUrl: cat_avatar,
-    }
+    return this.onShareAppMessage();
   },
 
   bindCommentScroll(e) {
@@ -183,20 +169,8 @@ Page({
   },
 
   // 授权个人信息
-  getUInfo() {
-    const that = this;
-    // 检查用户信息有没有拿到，如果有就更新this.data
-    getCurUserInfoOrFalse().then(res => {
-      if (!res) {
-        console.log('未授权');
-        return;
-      }
-      console.log(res);
-      that.setData({
-        isAuth: true,
-        user: res,
-      });
-    });
+  async getUInfo() {
+    await toSetUserInfo();
   },
 
   // 发送留言
@@ -229,7 +203,7 @@ Page({
     if (user.cantComment) {
       wx.showModal({
         title: "无法留言",
-        content: text_cfg.comment_board.ban_tip,
+        content: config.text.comment_board.ban_tip,
         showCancel: false,
       })
       that.doSendCommentEnd();
@@ -244,59 +218,16 @@ Page({
       create_date: new Date(),
       cat_id: cat_id,
     };
-    wx.cloud.callFunction({
-      // The name of the cloud function to be called
-      name: 'commentCheck',
-      // Parameter to be passed to the cloud function
-      data: {
-        content: content,
-        nickname: user.userInfo.nickName,
-      },
-      success: function(res) {
-        console.log(res);
 
-        // 检测接口的返回
-        res = res.result;
-        console.log(res);
-        if (res.errCode != 0 || res.result.suggest != "pass") {
-          // 内容检测未通过
-          const label_type = {
-            100: "正常",
-            10001: "广告",
-            20001: "时政",
-            20002: "色情",
-            20003: "辱骂",
-            20006: "违法犯罪",
-            20008: "欺诈",
-            20012: "低俗",
-            20013: "版权",
-            21000: "其他",
-          }
-          console.log(res.result.label);
-          const label_code = res.result.label;
-          const label = label_type[label_code];
-          
-          wx.showModal({
-            title: "内容检测未通过",
-            content: `涉及[${label_code}]${label}内容，请修改嗷~~`,
-            showCancel: false,
-          });
-          that.doSendCommentEnd();
-          return false;
-        }
-        // 检测通过
-        that.addComment(item, user);
-      },
-      fail: err => {
-        // handle error
-        wx.showModal({
-          title: "内容检测失败",
-          content: "请开发者检查“commentCheck”云函数是否部署成功",
-          showCancel: false,
-        });
-        that.doSendCommentEnd();
-      },
-    })
+    const checkRes = await contentSafeCheck(content, user.userInfo.nickName);
+    if (!checkRes) {
+      // 没有检测出问题
+      this.addComment(item, user);
+      return
+    }
+    
+    wx.showModal(checkRes);
+    return false;
   },
 
   doSendCommentEnd() {

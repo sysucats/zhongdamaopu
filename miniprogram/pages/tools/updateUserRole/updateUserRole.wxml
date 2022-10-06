@@ -1,0 +1,2 @@
+<!--pages/tools/updateUserRole/updateUserRole.wxml-->
+<button bindtap="updateUserRole">更新有照片的用户为role=1</button>
