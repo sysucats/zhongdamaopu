@@ -44,15 +44,9 @@
         "text": "猫谱"
       },
       {
-        "pagePath": "pages/recognize/recognize",
-        "iconPath": "/pages/public/images/tabs/default/recog.png",
-        "selectedIconPath": "/pages/public/images/tabs/active/recog.png",
-        "text": "识猫"
-      },
-      {
         "pagePath": "pages/news/news",
-        "iconPath": "./images/tabs/default/sci.png",
-        "selectedIconPath": "./images/tabs/active/sci.png",
+        "iconPath": "/pages/public/images/tabs/default/sci.png",
+        "selectedIconPath": "/pages/public/images/tabs/active/sci.png",
         "text": "公告"
       },
       {
