@@ -53,6 +53,10 @@
     <view class="option-text">区域/花色</view>
     <view class="right-arrow"><image mode='aspectFill' src="/pages/public/images/filter/right.png"></image></view> 
   </view>
+  <view class="option" bindtap='clickbtn' data-to='/pages/manage/pageSettings/pageSettings'>
+    <view class="option-text">页面配置</view>
+    <view class="right-arrow"><image mode='aspectFill' src="/pages/public/images/filter/right.png"></image></view> 
+  </view>
   <view class="option" bindtap='clickbtn' data-to='/pages/manage/rewards/rewards'>
     <view class="option-text">投喂记录</view>
     <view class="right-arrow"><image mode='aspectFill' src="/pages/public/images/filter/right.png"></image></view> 

@@ -130,7 +130,7 @@ module.exports = {
     "addPop", "commentCheck", "commentOp", "countPhoto", "getAllSci", "getMpCode",
     "getPhotoRank", "imProcess", "initDeploy", "interOp", "isManager", "manageFeedback",
     "managePhoto", "sendMsgV2", "updateCat", "updateFilter", "updateManager",
-    "updateReward", "userOp", "newsOp", "relationOp"
+    "updateReward", "updateSetting", "userOp", "newsOp", "relationOp"
   ],
   default_init_data_id: default_init_data_id,
   collections: {
