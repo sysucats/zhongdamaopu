@@ -138,3 +138,10 @@ button.manager-update {
   margin-left: auto;
   display: inline-block;
 }
+
+.old-invite {
+  font-size: 26rpx;
+  color: var(--color-gray-dark);
+  text-align: center;
+  text-decoration: underline dotted;
+}

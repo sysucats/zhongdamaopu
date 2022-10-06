@@ -37,6 +37,9 @@ Page({
     console.log(JSON.stringify(settings));
     delete settings._id;
     delete settings.openid;
+    if (!settings.detailCat.cantComment) {
+      settings.detailCat.cantComment = settings.detailCat.cantUpload;
+    }
     this.setData({
       settings
     });

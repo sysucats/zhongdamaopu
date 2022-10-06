@@ -57,7 +57,12 @@ async function _checkFuncEnable(func) {
   // 加载设置、关闭上传功能
   const app = getApp();
   var funcSetting = funcToSettingName[func];
-  let banSetting = (await getGlobalSettings('detailCat'))[funcSetting];
+  var settings = await getGlobalSettings('detailCat');
+  let banSetting = settings[funcSetting];
+  if (func == "comment" && !banSetting) {
+    banSetting = settings["cantUpload"];
+  }
+  
   if ((banSetting !== '*') && (banSetting !== app.globalData.version)) {
     return true;
   }

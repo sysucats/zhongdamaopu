@@ -14,6 +14,8 @@
       </checkbox-group>
     </view>
   </view>
+  <navigator class="old-invite" url="/pages/tools/updateUserRole/updateUserRole">设置已传照片用户为特邀</navigator>
+
   <scroll-view style="height: {{windowHeight}}px;" scroll-y="true" enable-back-to-top="true" bindscrolltolower="scrollToReload">
     <view class="user-box" wx:for="{{users}}" wx:key="_id">
       <view wx:if="{{item.userInfo}}" class="info">
