@@ -246,6 +246,11 @@ String.prototype.gblen = function() {
   return len;  
 }
 
+// 深拷贝
+function deepcopy(obj) {
+  return JSON.parse(JSON.stringify(obj))
+}
+
 module.exports = {
   hex_sha256,
   randomInt,
@@ -266,4 +271,5 @@ module.exports = {
   getDateWithDiffHours,
   sleep,
   contentSafeCheck,
+  deepcopy,
 };

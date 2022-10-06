@@ -81,7 +81,6 @@ const init_setting = [{
       "photoStep": 3,
       "cantUpload": "*",
       "galleryPreload": 1,
-      "manageUpload": true,
       "galleryCompressed": false
     },
     "genealogy": {
@@ -104,7 +103,7 @@ const init_setting = [{
     "_id": "friendLink",
     "apps": [{
       "appid": "wx5bd705b2bc91c73b",
-      "logo": "../../images/system/zdmp_logo.png",
+      "logo": "/pages/public/images/system/zdmp_logo.png",
       "name": "中大猫谱"
     }]
   },

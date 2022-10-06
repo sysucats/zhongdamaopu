@@ -1,5 +1,5 @@
 // 负责用户表的管理、使用接口
-import { randomInt, userInfoEq } from './utils';
+import { randomInt } from './utils';
 import { getGlobalSettings } from "./page";
 import { getCacheItem, setCacheItem } from "./cache";
 
@@ -23,57 +23,6 @@ async function getUser(options) {
   });
   app.globalData.currentUser = userRes.result;
   return userRes.result;
-}
-
-async function getCurUserInfoOrFalse() {
-  if (!wx.getUserProfile) { // 如果不支持新接口，直接使用数据库中的旧数据，若无数据则提醒用户
-    var user = await getUser();
-    if (!user.userInfo) {
-      wx.showToast({
-        title: '当前微信版本不支持登陆，请先使用手机较新版本微信登陆',
-        icon: 'none'
-      });
-      return false;
-    }
-    return user;
-  }
-  // 使用新接口
-  var res = await new Promise(resolve => {
-    wx.getUserProfile({
-      desc: '获取你的头像和昵称',
-      success(res) {
-        resolve(res);
-      },
-      fail(err) {
-        console.log('failed getUserProfile', err);
-        resolve(false);
-      }
-    })
-  });
-  if (!res) {
-    return false;
-  }
-  var user = await getUser();
-  console.log(user);
-  if (!user.userInfo || !userInfoEq(res.userInfo, user.userInfo)) {
-    // 如果userInfo有更新，那么就更新数据库中的userInfo并返回更新后的
-    console.log('需要更新');
-    user.userInfo = res.userInfo;
-    // 更新数据库的userInfo
-    wx.cloud.callFunction({
-      name: 'userOp',
-      data: {
-        op: 'update',
-        user: user
-      }
-    });
-  }
-
-  // 合并重要属性
-  res.openid = user.openid;
-  res.cantComment = user.cantComment;
-
-  return res;
 }
 
 // 使用openid来读取用户信息
@@ -100,20 +49,22 @@ async function getUserInfo(openid) {
   return value;
 }
 
-/*
-* 检查是否开启上传通道（返回true为开启上传）
-*/
-async function checkCanUpload() {
+async function _checkFuncEnable(func) {
+  var funcToSettingName = {
+    "uploadImage": "cantUpload",
+    "comment": "cantComment",
+  }
   // 加载设置、关闭上传功能
   const app = getApp();
-  let cantUpload = (await getGlobalSettings('detailCat')).cantUpload;
-  if ((cantUpload !== '*') && (cantUpload !== app.globalData.version)) {
+  var funcSetting = funcToSettingName[func];
+  let banSetting = (await getGlobalSettings('detailCat'))[funcSetting];
+  if ((banSetting !== '*') && (banSetting !== app.globalData.version)) {
     return true;
   }
   
-  if (cantUpload == 'ALL') {
+  if (banSetting == 'ALL') {
     // 完全关闭上传
-    return await managerUpload();
+    return await isManagerAsync();
   }
 
   // 特邀用户
@@ -122,31 +73,32 @@ async function checkCanUpload() {
     return true;
   }
 
-  return await managerUpload();
+  return await isManagerAsync();
+}
+
+/*
+* 检查是否开启上传通道（返回true为开启上传）
+*/
+async function checkCanUpload() {
+  return await _checkFuncEnable("uploadImage");
 }
 
 // 看看能否评论
 async function checkCanComment() {
-  // 加载设置、关闭留言板功能
-  const app = getApp();
-  let cantComment = (await getGlobalSettings('detailCat')).cantComment;
-  if ((cantComment !== '*') && (cantComment !== app.globalData.version)) {
-    return true;
-  }
-  return false;
+  return await _checkFuncEnable("comment");
 }
 
 
 // 设置页面上的userInfo
 async function getPageUserInfo(page) {
   // 检查用户信息有没有拿到，如果有就更新this.data
-  const userRes = await getCurUserInfoOrFalse();
-
-  if (!userRes) {
-    console.log('未授权');
+  const userRes = await getUser();
+  
+  console.log(userRes);
+  if (!userRes.userInfo || !userRes.userInfo.length) {
+    console.log('无用户信息');
     return false;
   }
-  console.log(userRes);
   page.setData({
     isAuth: true,
     user: userRes,
@@ -155,7 +107,7 @@ async function getPageUserInfo(page) {
 }
 
 async function isManagerAsync(req) {
-  const user = await getUser;
+  const user = await getUser();
   if (!req) {
     req = 1;
   }
@@ -190,7 +142,6 @@ function toSetUserInfo() {
 
 module.exports = {
   getUser,
-  getCurUserInfoOrFalse,
   getUserInfo,
   checkCanUpload,
   getPageUserInfo,

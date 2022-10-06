@@ -491,7 +491,7 @@ Page({
   onShareAppMessage() {
     return {
       title: share_text,
-      imageUrl: '../../images/recognize/share_cover.jpg'
+      imageUrl: '/pages/public/images/recognize/share_cover.jpg'
     };
   },
 

@@ -5,13 +5,13 @@ module.exports = {
       type: "int",
       tip: "每次相册加载的照片数"
     },
-    cantComment: {
-      type: "string",
-      tip: "无法留言的版本号（*表示全部版本）"
-    },
     cantUpload: {
       type: "string",
-      tip: "无法上传照片的版本号（*表示全部版本）"
+      tip: "无法上传照片的版本号（ALL表示所有版本所有用户都无法上传；*表示所有版本，除特邀用户外无法上传；具体版本号表示仅该版本，除特邀用户外无法上传；管理员无视此项设置，都可以上传）"
+    },
+    cantComment: {
+      type: "string",
+      tip: "无法留言的版本号（参考cantUpload配置）"
     },
     galleryCompressed: {
       type: "bool",
@@ -20,10 +20,6 @@ module.exports = {
     galleryPreload: {
       type: "int",
       tip: "相册预加载的照片数"
-    },
-    manageUpload: {
-      type: "bool",
-      tip: "管理员是否可以上传"
     },
     photoStep: {
       type: "int",

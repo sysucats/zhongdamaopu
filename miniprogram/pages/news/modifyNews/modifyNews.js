@@ -1,4 +1,4 @@
-import { getPageUserInfo, checkAuth } from "../../../user";
+import { getPageUserInfo, checkAuth, toSetUserInfo } from "../../../user";
 
 Page({
 
@@ -56,6 +56,10 @@ Page({
       this.loadNews(),
       checkAuth(this, 2)
     ])
+  },
+
+  onShow: async function() {
+    await getPageUserInfo(this);
   },
 
   async loadNews() {

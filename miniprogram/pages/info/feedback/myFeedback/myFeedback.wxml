@@ -5,7 +5,7 @@
 <block wx:for="{{feedbacks}}" wx:key="_id">
 <view class='verify-box'>
   <view wx:if="{{item.cat}}" class='line'>
-    <image mode='aspectFit' class='icon' src='../../../../images/card/card/cat.png'></image>
+    <image mode='aspectFit' class='icon' src='..//pages/public/images/card/card/cat.png'></image>
     <text user-select='false' bindtap='toCatDetail' data-cat_id="{{item.cat_id}}">{{item.cat.name}}（{{item.cat.campus}}）</text>
   </view>
   <view wx:else class='line'>

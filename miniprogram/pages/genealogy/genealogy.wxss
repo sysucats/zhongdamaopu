@@ -1,5 +1,5 @@
 /* miniprogram/pages/genealogy/genealogy.wxss */
-@import "../../public/wxss/hFilter.wxss";
+@import "/pages/public/wxss/hFilter.wxss";
 
 page {
   height: 100%;

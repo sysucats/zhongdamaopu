@@ -4,7 +4,7 @@ import {
   shareTo,
 } from "../../../utils";
 import {
-  getUser,
+  getPageUserInfo,
   checkCanUpload,
   toSetUserInfo
 } from "../../../user";
@@ -60,15 +60,7 @@ Page({
   },
 
   async onShow() {
-    // 加载设置、关闭上传功能
-    const userRes = await getUser();
-    if (!userRes.userInfo) {
-      return;
-    }
-    this.setData({
-      isAuth: true,
-      user: userRes,
-    });
+    await getPageUserInfo(this);
   },
 
   onUnload: function (options) {

@@ -1,5 +1,5 @@
 import { getCurrentPath, shareTo } from "../../../utils";
-import { getPageUserInfo } from "../../../user";
+import { getPageUserInfo, checkCanUpload, toSetUserInfo } from "../../../user";
 import { requestNotice, sendNotifyChkFeeedback } from "../../../msg";
 import { text as text_cfg } from "../../../config";
 
@@ -27,6 +27,15 @@ Page({
         cat: catRes.data
       });
     }
+
+    // 检查是否可以上传
+    this.setData({
+      canUpload: await checkCanUpload()
+    });
+  },
+
+  async onShow() {
+    await getPageUserInfo(this);
   },
 
   /**
@@ -41,7 +50,7 @@ Page({
   },
 
   getUInfo() {
-    getPageUserInfo(page);
+    toSetUserInfo()
   },
 
   bindInput(e) {

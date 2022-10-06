@@ -1,4 +1,4 @@
-import { getPageUserInfo } from "../../../user";
+import { getPageUserInfo, toSetUserInfo } from "../../../user";
 import { text as text_cfg } from "../../../config";
 const share_text = text_cfg.app_name + ' - ' + text_cfg.photo_rank.share_tip;
 
@@ -28,8 +28,10 @@ Page({
   /**
    * 生命周期函数--监听页面显示
    */
-  onShow: function () {
+  onShow: async function () {
     this.getRank();
+    await getPageUserInfo(this);
+    await this.getMyRank();
   },
 
   /**
@@ -42,8 +44,7 @@ Page({
   },
 
   async getUInfo() {
-    await getPageUserInfo(this);
-    await this.getMyRank();
+    toSetUserInfo()
   },
 
   async getRank() {

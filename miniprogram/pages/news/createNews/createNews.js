@@ -1,5 +1,5 @@
 import { generateUUID } from "../../../utils";
-import { getPageUserInfo, checkAuth } from "../../../user";
+import { getPageUserInfo, checkAuth, toSetUserInfo } from "../../../user";
 
 Page({
     /**
@@ -56,6 +56,10 @@ Page({
       await checkAuth(this, 2);
     },
 
+    onShow: async function() {
+      await getPageUserInfo(this);
+    },
+
     bindInputName(e) {
         var inputData = e.detail.value;
         this.setData({
@@ -78,7 +82,7 @@ Page({
     },
 
     async getUInfo() {
-      await getPageUserInfo(this);
+      toSetUserInfo();
     },
 
     chooseImg(e) {

@@ -1,6 +1,6 @@
 import { formatDate, contentSafeCheck } from "../../../utils";
 import config from "../../../config";
-import { getPageUserInfo, getUserInfo, checkCanUpload, isManagerAsync } from "../../../user";
+import { getPageUserInfo, getUserInfo, checkCanComment, isManagerAsync, toSetUserInfo } from "../../../user";
 import { getAvatar } from "../../../cat";
 import { getCatCommentCount } from "../../../comment";
 
@@ -26,7 +26,6 @@ Page({
     keyboard_height: 0,
     text_cfg: config.text,
     is_manager: false,
-    canUpload: false,
   },
 
   /**
@@ -34,7 +33,7 @@ Page({
    */
   onLoad: async function (options) {
     cat_id = options.cat_id;
-    if (!await checkCanUpload()) {
+    if (!await checkCanComment()) {
       wx.showToast({
         title: '已暂时关闭..',
         duration: 10000
@@ -42,12 +41,12 @@ Page({
       return false;
     }
     this.setData({
-      canUpload: true
+      canComment: true
     })
     // 启动加载
     await Promise.all([
       this.loadCat(),
-      this.loadMoreComment()
+      this.loadMoreComment(),
     ]);
     
     // 是否为管理员lv.1
@@ -71,8 +70,8 @@ Page({
   /**
    * 生命周期函数--监听页面显示
    */
-  onShow: function () {
-
+  onShow: async function () {
+    await getPageUserInfo(this);
   },
 
   /**
@@ -171,7 +170,7 @@ Page({
 
   // 授权个人信息
   async getUInfo() {
-    await getPageUserInfo(this);
+    await toSetUserInfo();
   },
 
   // 发送留言

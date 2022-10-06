@@ -1,16 +1,16 @@
 <!--miniprogram/pages/info/info.wxml-->
 <!-- <text>miniprogram/pages/info/info.wxml</text> -->
 <view class='mina-info'>
-  <image src='../../images/app_logo.png' bindlongpress="showMpCode"></image>
+  <image src='/pages/public/images/app_logo.png' bindlongpress="showMpCode"></image>
   <view class='title'>{{text_cfg.app_name}}</view>
   <view class='dev'><text>{{version ? version + "\n" : ""}} {{text_cfg.info.slogan}}</text></view>
 </view>
 
 <view class='buttons'>
-    <image class='button' bindtap='clickbtn' data-to='/pages/info/reward/reward' src='../../images/info/btn/dashang.png'></image>
-    <image class='button' bindtap='clickbtn' data-to='/pages/info/photoRank/photoRank' src='../../images/info/btn/paizhao.png'></image>
-    <image class='button' bindtap='clickbtn' data-to='/pages/info/devTeam/devTeam' src='../../images/info/btn/tuandui.png'></image>
-    <image class='button' bindtap='clickbtn' data-to='/pages/info/feedback/feedback' src='../../images/info/btn/fankui.png'></image>
+    <image class='button' bindtap='clickbtn' data-to='/pages/info/reward/reward' src='/pages/public/images/info/btn/dashang.png'></image>
+    <image class='button' bindtap='clickbtn' data-to='/pages/info/photoRank/photoRank' src='/pages/public/images/info/btn/paizhao.png'></image>
+    <image class='button' bindtap='clickbtn' data-to='/pages/info/devTeam/devTeam' src='/pages/public/images/info/btn/tuandui.png'></image>
+    <image class='button' bindtap='clickbtn' data-to='/pages/info/feedback/feedback' src='/pages/public/images/info/btn/fankui.png'></image>
 </view>
 
 <view class='block-name'>友情链接</view>
@@ -27,39 +27,39 @@
 <view class='option-box'>
   <view class="option" bindtap='clickbtn' data-to='/pages/manage/checkPhotos/checkPhotos'>
     <view class="option-text">照片审核({{numChkPhotos}})</view>
-    <view class="right-arrow"><image mode='aspectFill' src="../../images/filter/right.png"></image></view> 
+    <view class="right-arrow"><image mode='aspectFill' src="/pages/public/images/filter/right.png"></image></view> 
   </view>
   <view class="option" bindtap='clickbtn' data-to='/pages/manage/checkFeedbacks/checkFeedbacks'>
     <view class="option-text">反馈处理({{numFeedbacks}})</view>
-    <view class="right-arrow"><image mode='aspectFill' src="../../images/filter/right.png"></image></view> 
+    <view class="right-arrow"><image mode='aspectFill' src="/pages/public/images/filter/right.png"></image></view> 
   </view>
   <view class="option" bindtap='clickbtn' data-to='/pages/manage/addRelations/addRelations'>
     <view class="option-text">猫猫关系</view>
-    <view class="right-arrow"><image mode='aspectFill' src="../../images/filter/right.png"></image></view> 
+    <view class="right-arrow"><image mode='aspectFill' src="/pages/public/images/filter/right.png"></image></view> 
   </view>
   <view class="option" bindtap='clickbtn' data-to='/pages/news/createNews/createNews'>
     <view class="option-text">创建公告</view>
-    <view class="right-arrow"><image mode='aspectFill' src="../../images/filter/right.png"></image></view> 
+    <view class="right-arrow"><image mode='aspectFill' src="/pages/public/images/filter/right.png"></image></view> 
   </view>
   <view class="option" bindtap='clickbtn' data-to='/pages/manage/addCat/addCat'>
     <view class="option-text">添加新猫</view>
-    <view class="right-arrow"><image mode='aspectFill' src="../../images/filter/right.png"></image></view> 
+    <view class="right-arrow"><image mode='aspectFill' src="/pages/public/images/filter/right.png"></image></view> 
   </view>
   <view class="option" bindtap='clickbtn' data-to='/pages/manage/managers/managers'>
     <view class="option-text">人员管理</view>
-    <view class="right-arrow"><image mode='aspectFill' src="../../images/filter/right.png"></image></view> 
+    <view class="right-arrow"><image mode='aspectFill' src="/pages/public/images/filter/right.png"></image></view> 
   </view>
   <view class="option" bindtap='clickbtn' data-to='/pages/manage/filters/filters'>
     <view class="option-text">区域/花色</view>
-    <view class="right-arrow"><image mode='aspectFill' src="../../images/filter/right.png"></image></view> 
+    <view class="right-arrow"><image mode='aspectFill' src="/pages/public/images/filter/right.png"></image></view> 
   </view>
   <view class="option" bindtap='clickbtn' data-to='/pages/manage/rewards/rewards'>
     <view class="option-text">投喂记录</view>
-    <view class="right-arrow"><image mode='aspectFill' src="../../images/filter/right.png"></image></view> 
+    <view class="right-arrow"><image mode='aspectFill' src="/pages/public/images/filter/right.png"></image></view> 
   </view>
   <view class="option" style="color: var(--color-gray-dark);" bindtap='clickbtn' data-to='/pages/manage/imProcess/imProcess'>
     <view class="option-text">照片处理({{numImProcess}})</view>
-    <view class="right-arrow"><image mode='aspectFill' src="../../images/filter/right.png"></image></view> 
+    <view class="right-arrow"><image mode='aspectFill' src="/pages/public/images/filter/right.png"></image></view> 
   </view>
   
 </view></block>

@@ -1,9 +1,8 @@
-// pages/info/userInfo/modifyUserInfo/modifyUserInfo.js
 import { getUser } from "../../../../user";
-import { contentSafeCheck } from "../../../../utils";
+import { contentSafeCheck, deepcopy } from "../../../../utils";
 
 const cloud = wx.cloud;
-const defaultAvatarUrl = "/pages/images/info/default_avatar.png"
+const defaultAvatarUrl = "/pages/public/images/info/default_avatar.png"
 
 
 Page({
@@ -38,6 +37,7 @@ Page({
     var user = await getUser({
       nocache: true,
     });
+    user = deepcopy(user);
     if (!user.userInfo) {
       user.userInfo = {};
     }

@@ -126,12 +126,12 @@ module.exports = {
     // 提交留言页，pages/genealogy/commentBoard/commentBoard
     comment_board: {
       ban_tip: "如有误封请在\"关于-信息反馈\"中留言~",
-      auth_tip: "授权后进行留言~",
+      auth_tip: "设置头像昵称后留言~",
       comment_tip: "发条友善的留言吧~"
     },
     // 添加照片，pages/genealogy/addPhoto/addPhoto
     add_photo: {
-      auth_tip: "授权后进行上传~",
+      auth_tip: "设置头像昵称后上传~",
       uploading_tip: "正在上传...",
       success_tip_title: "上传成功！",
       success_tip_content: "审核后就会展示出来啦",

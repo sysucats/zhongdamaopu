@@ -16,27 +16,27 @@ Page({
       id: -1,
       name: '全部',
       checked: true,
-      logo: '../../images/news/all.png'
+      logo: '/pages/public/images/news/all.png'
     }, {
       id: 0,
       name: '领养',
       checked: false,
-      logo: '../../images/news/adopt.png'
+      logo: '/pages/public/images/news/adopt.png'
     }, {
       id: 1,
       name: '救助',
       checked: false,
-      logo: '../../images/news/help.png'
+      logo: '/pages/public/images/news/help.png'
     }, {
       id: 2,
       name: '活动',
       checked: false,
-      logo: '../../images/news/activity.png'
+      logo: '/pages/public/images/news/activity.png'
     }, {
       id: 3,
       name: '其他',
       checked: false,
-      logo: '../../images/news/other.png'
+      logo: '/pages/public/images/news/other.png'
     }],
   },
 

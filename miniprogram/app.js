@@ -4,8 +4,8 @@ import { checkUpdateVersion } from "./utils";
 
 // {
 //   "pagePath": "pages/news/news",
-//   "iconPath": "./images/tabs/default/sci.png",
-//   "selectedIconPath": "./images/tabs/active/sci.png",
+//   "iconPath": "/pages/public/images/tabs/default/sci.png",
+//   "selectedIconPath": "/pages/public/images/tabs/active/sci.png",
 //   "text": "公告"
 // },
 

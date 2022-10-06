@@ -1,4 +1,4 @@
-@import "../../public/wxss/hFilter.wxss";
+@import "/pages/public/wxss/hFilter.wxss";
 
 .main {
   display: flex;
