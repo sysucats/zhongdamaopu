@@ -412,14 +412,24 @@ scroll-view {
 
 }
 
-#find-adopt, #back-to-firstpage {
+/* 寻找领养按钮 */
+#find-adopt {
   position: fixed;
-  bottom: 150rpx;
+  bottom: 200rpx;
   right: 30rpx;
   display: flex;
   justify-content: center;
   align-items: center;
   flex-direction: column;
+
+  filter: drop-shadow(0 0 5rpx var(--color-gray-dark));
+}
+
+/* 返回首页 */
+#back-to-firstpage {
+  position: fixed;
+  bottom: 100rpx;
+  right: 30rpx;
 
   filter: drop-shadow(0 0 5rpx var(--color-gray-dark));
 }

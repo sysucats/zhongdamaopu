@@ -1,13 +1,13 @@
-import { getCacheItem, setCacheItem } from "./cache";
+import { getCacheItem, setCacheItem, cacheTime } from "./cache";
 
 function _getSettingCacheKey(setting_id) {
   return `setting-${setting_id}-cache`;
 }
 
-async function _getSetting(_id) {
+async function _getSetting(_id, options) {
   const cacheKey = _getSettingCacheKey(_id);
 
-  var cacheItem = getCacheItem(cacheKey);
+  var cacheItem = getCacheItem(cacheKey, options);
   console.log(cacheKey, cacheItem);
   if (cacheItem) {
     return cacheItem;
@@ -16,17 +16,17 @@ async function _getSetting(_id) {
   const db = wx.cloud.database();
   cacheItem = (await db.collection('setting').doc(_id).get()).data;
   
-  setCacheItem(cacheKey, cacheItem, 1);
+  setCacheItem(cacheKey, cacheItem, cacheTime.pageSetting);
   return cacheItem;
 }
 
-async function loadFilter() {
-  return await _getSetting('filter');
+async function loadFilter(options) {
+  return await _getSetting('filter', options);
 }
 
 // 获取全局的设置
-async function getGlobalSettings(key) {
-  var res = await _getSetting('pages');
+async function getGlobalSettings(key, options) {
+  var res = await _getSetting('pages', options);
   return res[key];
 }
 

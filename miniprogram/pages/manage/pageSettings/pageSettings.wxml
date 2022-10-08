@@ -12,7 +12,7 @@
     <view wx:for="{{settings[i]}}"  wx:key="unique" wx:for-index="j" class="form-input-block">
       <view class="form-input-name">{{j}}</view>
       <view class="form-input-tip">Tip: {{desc[i][j].tip}}</view>
-      <input class="form-input" type="{{desc[i][j].type}}" value="{{settings[i][j]}}" bindinput="inputChange" data-i="{{i}}" data-j="{{j}}"/>
+      <input class="form-input" type="{{desc[i][j].type}}" disabled="{{desc[i][j].disabled}}" value="{{settings[i][j]}}" bindinput="inputChange" data-i="{{i}}" data-j="{{j}}"/>
     </view>
   </view>
   <view class="confirm">

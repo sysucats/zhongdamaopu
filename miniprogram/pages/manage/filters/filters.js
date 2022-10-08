@@ -80,7 +80,7 @@ Page({
     wx.showLoading({
       title: '加载中...',
     });
-    var filterRes = await loadFilter();
+    var filterRes = await loadFilter({nocache: true});
     var filters = [];
     var area_item = {
       key: 'area',

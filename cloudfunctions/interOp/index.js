@@ -15,6 +15,11 @@ async function like_add(item_type, item_id) {
 
 // 云函数入口函数
 exports.main = async (event, context) => {
+  if (event.deploy_test === true) {
+    // 进行部署检查
+    return "v1.0";
+  }
+
   const type = event.type;
 
   if (type == "like_add") {

@@ -9,7 +9,7 @@ const MAX_LIMIT = 100
 exports.main = async (event, context) => {
   if (event.deploy_test === true) {
     // 进行部署检查
-    return;
+    return "v1.0";
   }
   // 先取出mphoto更新时间为一小时前的猫猫（因为每小时自动执行一次）
   var frontOneHour = new Date(new Date().getTime() - 1 * 60 * 60 * 1000);

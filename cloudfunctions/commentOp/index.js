@@ -24,6 +24,10 @@ async function check_manager() {
 
 // 云函数入口函数
 exports.main = async (event, context) => {
+  if (event.deploy_test === true) {
+    // 进行部署检查
+    return "v1.0";
+  }
 
   const type = event.type;
 
