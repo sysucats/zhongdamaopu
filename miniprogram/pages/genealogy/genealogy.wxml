@@ -50,7 +50,7 @@
 <scroll-view enable-flex='true' class='cards' style='height: {{heights.windowHeight - heights.filters}}px;' scroll-y='true' enable-back-to-top='true' bindscrolltolower='onReachBottom' bindscroll='fScroll' lower-threshold='{{main_lower_threshold}}'>
   <!-- 校区外显筛选 -->
   <scroll-view class="h-filter-list" scroll-x="1" wx:if="{{filters[0].category.length > 1}}">
-    <view class='h-filter-item {{item.all_active? "active": ""}}'  bindtap='fClickCampus' data-index='{{index}}'
+    <view class='h-filter-item {{item.all_active? "active": ""}}'  bindtap='fClickCampus' data-index='{{index}}' data-filters_sub="0"
           wx:for="{{filters[0].category}}" wx:key="name">
           <image class="location-logo" wx:if="{{! item.all_active}}" src="/pages/public/images/filter/location_gray.png" mode="aspectFit"></image>
           <image class="location-logo" wx:else src="/pages/public/images/filter/location_active_dark.png" mode="aspectFit"></image>
@@ -120,7 +120,7 @@
 </scroll-view>
 
 <!-- 漂浮的领养logo -->
-<view wx:if="{{adopt_count && filters_empty}}" id="find-adopt" bindtap="clickAdoptBtn">
+<view wx:if="{{adopt_count}}" id="find-adopt" bindtap="clickAdoptBtn">
   <image class="logo shake" src="/pages/public/images/button/find_adopt.png"></image>
   <view class="count">{{adopt_count}}{{text_cfg.genealogy.adopt_btn}}</view>
 </view>

@@ -8,7 +8,7 @@ const db = cloud.database();
 exports.main = async (event, context) => {
   if (event.deploy_test === true) {
     // 进行部署检查
-    return;
+    return "v1.0";
   }
   const wxContext = cloud.getWXContext()
   const openid = wxContext.OPENID;

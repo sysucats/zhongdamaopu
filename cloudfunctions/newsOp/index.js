@@ -63,7 +63,7 @@ async function doDelete(item_id) {
 exports.main = async (event, context) => {
   if (event.deploy_test === true) {
     // 进行部署检查
-    return;
+    return "v1.0";
   }
   const type = event.type;
 

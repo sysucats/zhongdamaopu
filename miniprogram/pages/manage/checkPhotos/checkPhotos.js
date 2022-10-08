@@ -247,7 +247,7 @@ Page({
     }
 
     // 记录一下最后一次审批的cache
-    cache.setCacheItem("checkPhotoCampus", active_campus, 24*7*31);
+    cache.setCacheItem("checkPhotoCampus", active_campus, cache.cacheTime.checkPhotoCampus);
   },
 
   // 开始批量处理

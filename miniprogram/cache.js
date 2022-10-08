@@ -1,6 +1,12 @@
 // 缓存相关
 
-function getCacheItem(key) {
+function getCacheItem(key, options) {
+  options = options || {};
+  if (options.nocache) {
+    console.log("nocache=true")
+    return undefined;
+  }
+
   var data = wx.getStorageSync(key);
   if (!data) {
     return undefined;
@@ -42,9 +48,21 @@ function setCacheDate(key, date) {
   wx.setStorageSync(key, date);
 }
 
+// 缓存时长设置（单位默认为hours）
+const cacheTime = {
+  catAvatar: 6,  // 首页封面图
+  catItem: 6,  // 猫猫信息
+  commentCount: 2,  // 留言数量
+  likeItem: 72,  // 点赞行为
+  pageSetting: 1,  // 页面设置
+  genealogyFCampus: 1,  // 首页校区过滤选项
+  checkPhotoCampus: 24*7*31,  // 最后一次审核照片的校区
+}
+
 module.exports = {
   getCacheDate,
   setCacheDate,
   getCacheItem,
   setCacheItem,
+  cacheTime
 }

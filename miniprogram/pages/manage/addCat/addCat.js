@@ -1,6 +1,8 @@
 import { text as text_cfg, cat_status_adopt } from "../../../config";
 import { checkAuth } from "../../../user";
 import { loadFilter } from "../../../page";
+import { getCatItemMulti } from "../../../cat";
+
 var cat_id = undefined;
 
 const photoStep = 5; // 每次加载的图片数量
@@ -101,17 +103,16 @@ Page({
       return false;
     }
 
-    const db = wx.cloud.database();
-    var catRes = await db.collection('cat').doc(cat_id).get();
-    console.log(catRes);
-    catRes.data.mphoto = String(new Date(catRes.data.mphoto));
-    console.log(catRes.data.mphoto);
+    var cat = (await getCatItemMulti([cat_id], {nocache: true}))[0];
+    console.log(cat);
+    cat.mphoto = String(new Date(cat.mphoto));
+    console.log(cat.mphoto);
     // 处理一下picker
     var picker_selected = {};
     const pickers = this.data.pickers;
     for (const key in pickers) {
       const items = pickers[key];
-      const value = catRes.data[key];
+      const value = cat[key];
       if (value == undefined) {
         continue;
       }
@@ -124,7 +125,7 @@ Page({
       }
     }
     await this.setData({
-      cat: catRes.data,
+      cat: cat,
       picker_selected: picker_selected,
     });
 
@@ -314,6 +315,8 @@ Page({
     wx.showToast({
       title: '操作成功',
     });
+    // 刷新缓存
+    await getCatItemMulti([cat_id], {nocache: true});
   },
   async deletePhoto(e) {
     console.log(e);

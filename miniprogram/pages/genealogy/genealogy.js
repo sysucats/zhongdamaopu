@@ -271,6 +271,7 @@ Page({
       this.setData({
         loadnomore: true
       });
+      pageLoadingLock = false;
       return false;
     }
     return true;
@@ -302,6 +303,8 @@ Page({
       // 刷新cache一下
       this.setFCampusCache()
     ]);
+
+    this.unlockBtn();
   },
 
   // 加载更多的猫猫
@@ -327,6 +330,7 @@ Page({
 
     if (loadingLock != nowLoadingLock) {
       // 说明过期了
+      console.log(`过期了 ${loadingLock}, ${nowLoadingLock}`)
       return false;
     }
     console.log(new_cats);
@@ -393,8 +397,6 @@ Page({
     await this.setData({
       cats: new_cats
     });
-
-    this.unlockBtn();
   },
 
   bindImageLoaded(e) {
@@ -489,9 +491,12 @@ Page({
   // 点击category filter，全选/反选该类下所有sub
   fClickCategory: async function (e) {
     var filters = this.data.filters;
-    var filters_sub = this.data.filters_sub;
+    var {index, filters_sub} = e.target.dataset;
+    if (filters_sub == undefined) {
+      filters_sub = this.data.filters_sub;
+    }
 
-    const index = e.target.dataset.index;
+    console.log(e);
     const all_active = !filters[filters_sub].category[index].all_active;
     var category = filters[filters_sub].category[index];
     if (index == 0) { // 默认第0个是'全部'
@@ -647,6 +652,7 @@ Page({
 
     this.reloadCats();
     this.fHide();
+    this.unlockBtn();
   },
   fReset: async function () {
     // 重置所有分类
@@ -767,6 +773,7 @@ Page({
 
     var filters = this.data.filters;
     var filters_sub = filters.findIndex((x) => {
+      this.unlockBtn();
       return x.key === "adopt"
     });
 
@@ -778,6 +785,7 @@ Page({
 
     if (category.items[index].active) {
       // 已经激活了
+      this.unlockBtn();
       return false;
     }
 
@@ -796,6 +804,7 @@ Page({
       this.reloadCats(),
       this.showFilterTip()
     ])
+    this.unlockBtn();
   },
 
   // 显示过滤器的提示
@@ -836,6 +845,7 @@ Page({
 
     await this.fReset();
     await this.fSearchClear();
+    this.unlockBtn();
   },
 
   async loadNews() {
@@ -911,7 +921,7 @@ Page({
   // campus过滤器cache起来
   setFCampusCache: function () {
     const fc = this.getFCampusStr();
-    cache.setCacheItem("genealogy-fcampus", fc, 720);
+    cache.setCacheItem("genealogy-fcampus", fc, cache.cacheTime.genealogyFCampus);
   },
 
   // campus过滤器取cache

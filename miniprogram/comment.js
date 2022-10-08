@@ -1,4 +1,4 @@
-import { getCacheItem, setCacheItem, getCacheDate, setCacheDate } from "./cache";
+import { getCacheItem, setCacheItem, cacheTime } from "./cache";
 
 function _commentCountKey(cat_id) {
   return `cat-comment-count-${cat_id}`;
@@ -15,7 +15,7 @@ async function getCatCommentCount(cat_id) {
 
   cacheItem = await _doGetCatCommentCount(cat_id);
   
-  setCacheItem(cacheKey, cacheItem, 4);
+  setCacheItem(cacheKey, cacheItem, cacheTime.commentCount);
   return cacheItem;
 }
 

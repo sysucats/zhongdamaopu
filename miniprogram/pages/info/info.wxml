@@ -61,6 +61,11 @@
     <view class="option-text">投喂记录</view>
     <view class="right-arrow"><image mode='aspectFill' src="/pages/public/images/filter/right.png"></image></view> 
   </view>
+  <view class="option" style="color: var(--color-gray-dark);">
+    <button class="option-text" open-type="share">特邀用户</button>
+    <view class="right-arrow"><image mode='aspectFill' src="/pages/public/images/filter/right.png"></image></view> 
+  </view>
+  
   <view class="option" style="color: var(--color-gray-dark);" bindtap='clickbtn' data-to='/pages/manage/imProcess/imProcess'>
     <view class="option-text">照片处理({{numImProcess}})</view>
     <view class="right-arrow"><image mode='aspectFill' src="/pages/public/images/filter/right.png"></image></view> 

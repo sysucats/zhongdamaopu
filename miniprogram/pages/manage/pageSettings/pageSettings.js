@@ -40,8 +40,26 @@ Page({
     if (!settings.detailCat.cantComment) {
       settings.detailCat.cantComment = settings.detailCat.cantUpload;
     }
+    for (const i in settings) {
+      if (desc[i] == undefined) {
+        desc[i] = {
+          tip: "未知配置，请在desc.js中添加描述",
+        }
+      }
+      for (const j in settings[i]) {
+        console.log(desc[i][j], settings[i][j])
+        if (desc[i][j] == undefined) {
+          desc[i][j] = {
+            tip: "未知字段，请在desc.js中添加描述，该值无法被修改",
+            type: "origin",
+            disabled: true,
+          }
+        }
+      }
+    }
     this.setData({
-      settings
+      settings,
+      desc
     });
   },
 

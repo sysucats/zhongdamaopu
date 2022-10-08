@@ -127,12 +127,30 @@ const init_setting = [{
 // 部署流程（不要修改！）
 module.exports = {
   // 云函数的名称
-  functions: [
-    "addPop", "commentCheck", "commentOp", "countPhoto", "getAllSci", "getMpCode",
-    "getPhotoRank", "imProcess", "initDeploy", "interOp", "isManager", "manageFeedback",
-    "managePhoto", "sendMsgV2", "updateCat", "updateFilter", "updateManager",
-    "updateReward", "updateSetting", "userOp", "newsOp", "relationOp"
-  ],
+  functions: {
+    addPop: "v1.0",
+    commentCheck: "v1.0",
+    commentOp: "v1.0",
+    countPhoto: "v1.0",
+    getAllSci: "v1.0",
+    getMpCode: "v1.0",
+    getPhotoRank: "v1.0",
+    imProcess: "v1.0",
+    initDeploy: "v1.0",
+    interOp: "v1.0",
+    isManager: "v1.0",
+    manageFeedback: "v1.0",
+    managePhoto: "v1.0",
+    sendMsgV2: "v1.0",
+    updateCat: "v1.0",
+    updateFilter: "v1.0",
+    updateManager: "v1.0",
+    updateReward: "v1.0",
+    updateSetting: "v1.0",
+    userOp: "v1.0",
+    newsOp: "v1.0",
+    relationOp: "v1.0",
+  },
   default_init_data_id: default_init_data_id,
   collections: {
     "cat": default_init_data,

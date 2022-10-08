@@ -1,5 +1,5 @@
 import { getUser } from "./user";
-import { getCacheItem, setCacheItem } from "./cache";
+import { getCacheItem, setCacheItem, cacheTime } from "./cache";
 
 // 常用的一些对象
 const db = wx.cloud.database();
@@ -33,15 +33,17 @@ async function _likeGet(item_ids) {
 }
 
 // 批量检查是否有点赞记录，item可以是photo、cat、comment
-async function likeCheck(item_ids) {
+async function likeCheck(item_ids, options) {
   if (!item_ids) {
     return undefined;
   }
+
   var found = {};
   var not_found = [];
+
   for (var item_id of item_ids) {
     var cacheKey = _getLikeCacheKey(item_id);
-    var cacheItem = getCacheItem(cacheKey);
+    var cacheItem = getCacheItem(cacheKey, options);
     if (cacheItem) {
       found[item_id] = cacheItem;
       continue;
@@ -52,7 +54,7 @@ async function likeCheck(item_ids) {
   var res = await _likeGet(not_found);
   for (var x of res) {
     var cacheKey = _getLikeCacheKey(x.item_id);
-    setCacheItem(cacheKey, x, 24);
+    setCacheItem(cacheKey, x, cacheTime.likeItem);
     found[x.item_id] = x.count > 0;
   }
   // 后续可能会支持点赞取消，用count来表示点赞次数
@@ -61,41 +63,38 @@ async function likeCheck(item_ids) {
 
 // 点赞操作
 async function likeAdd(item_id, item_type) {
-  var res = (await _likeGet([item_id]))[0];
+  var res = (await likeCheck([item_id]))[0];
+  console.log(res);
   // 已经赞过
-  if (res.length > 0 && res[0].count > 0) {
+  if (res) {
     return false;
   }
-  
-  // 已有记录，但是不是点赞的
-  if (res.length > 0) {
-    await coll_inter.doc(res[0]._id).update({
-      data: {
-        count: 1,
-      }
-    });
-  } else {
-    // 没有记录
-    await ensureUser();
-    await coll_inter.add({
-      data: {
-        type: TYPE_LIKE,
-        uid: user.openid,
-        item_id: item_id,
-        count: 1
-      }
-    });
-  }
+
+  // 没有记录
+  await ensureUser();
+  await coll_inter.add({
+    data: {
+      type: TYPE_LIKE,
+      uid: user.openid,
+      item_id: item_id,
+      count: 1
+    }
+  });
 
   // 加上去
   console.log("like", item_type, item_id);
   await wx.cloud.callFunction({
     name: "interOp",
     data: {
-      type: "likeAdd",
+      type: "like_add",
       item_type: item_type,
       item_id, item_id,
     }
+  });
+
+  // 刷新缓存
+  await likeCheck([item_id], {
+    nocache: true
   });
   return true;
 }

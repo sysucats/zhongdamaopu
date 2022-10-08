@@ -1,6 +1,6 @@
 // 放置与cat对象有关的函数
 import { randomInt } from "./utils";
-import { getCacheItem, setCacheItem, getCacheDate, setCacheDate } from "./cache";
+import { getCacheItem, setCacheItem, getCacheDate, setCacheDate, cacheTime } from "./cache";
 
 // 常用的一些对象
 const db = wx.cloud.database();
@@ -34,7 +34,7 @@ async function getAvatar(cat_id, total) {
   var pho_src = (await coll_photo.where(qf).skip(index).limit(1).get()).data;
   cacheItem = pho_src[0];
   
-  setCacheItem(cacheKey, cacheItem, 24);
+  setCacheItem(cacheKey, cacheItem, cacheTime.catAvatar);
   return cacheItem;
 }
 
@@ -50,23 +50,23 @@ function setVisitedDate(cat_id) {
 }
 
 // 获取猫猫信息
-async function getCatItem(cat_id) {
+async function getCatItem(cat_id, options) {
   if (!cat_id) {
     return undefined;
   }
   var cacheKey = `cat-item-${cat_id}`;
-  var cacheItem = getCacheItem(cacheKey);
+  var cacheItem = getCacheItem(cacheKey, options);
   if (cacheItem) {
     return cacheItem;
   }
 
   cacheItem = (await coll_cat.doc(cat_id).get()).data;
-  setCacheItem(cacheKey, cacheItem, 24);
+  setCacheItem(cacheKey, cacheItem, cacheTime.catItem);
   return cacheItem;
 }
 
 // 获取多个猫猫信息
-async function getCatItemMulti(cat_ids) {
+async function getCatItemMulti(cat_ids, options) {
   if (!cat_ids) {
     return undefined;
   }
@@ -74,7 +74,7 @@ async function getCatItemMulti(cat_ids) {
   var not_found = [];
   for (var cat_id of cat_ids) {
     var cacheKey = `cat-item-${cat_id}`;
-    var cacheItem = getCacheItem(cacheKey);
+    var cacheItem = getCacheItem(cacheKey, options);
     if (cacheItem) {
       res[cat_id] = cacheItem;
       continue;
@@ -87,7 +87,7 @@ async function getCatItemMulti(cat_ids) {
     var db_res = (await coll_cat.where({_id: _.in(not_found)}).get()).data;
     for (var c of db_res) {
       var cacheKey = `cat-item-${c._id}`;
-      setCacheItem(cacheKey, c, 24);
+      setCacheItem(cacheKey, c, cacheTime.catItem);
       res[c._id] = c;
     }
   }

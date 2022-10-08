@@ -37,7 +37,7 @@ function getStat(all_photos) {
 exports.main = async (event, context) => {
   if (event.deploy_test === true) {
     // 进行部署检查
-    return;
+    return "v1.0";
   }
   // 只取这个月的
   const today = new Date(), y = today.getFullYear(), m = today.getMonth();
