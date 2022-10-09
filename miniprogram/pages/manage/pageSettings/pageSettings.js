@@ -31,15 +31,34 @@ Page({
     wx.navigateBack();
   },
 
+  setDefaultValues(settings) {
+    for (const i in desc) {
+      for (const j in desc[i]) {
+        var defaultValue = desc[i][j].default;
+        if (defaultValue == undefined) {
+          continue;
+        }
+        if (defaultValue.startsWith("#copy")) {
+          var [_, ci, cj] = defaultValue.split("-");
+          defaultValue = settings[ci][cj];
+        }
+        if (settings[i] == undefined) {
+          settings[i] = {}
+        }
+        if (settings[i][j] == undefined) {
+          settings[i][j] = defaultValue;
+        }
+      }
+    }
+  },
+
   // 加载数据库设置
   async reloadSettings() {
     const settings = (await db.collection("setting").doc("pages").get()).data;
     console.log(JSON.stringify(settings));
     delete settings._id;
     delete settings.openid;
-    if (!settings.detailCat.cantComment) {
-      settings.detailCat.cantComment = settings.detailCat.cantUpload;
-    }
+    this.setDefaultValues(settings);
     for (const i in settings) {
       if (desc[i] == undefined) {
         desc[i] = {

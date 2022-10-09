@@ -17,12 +17,22 @@ Component({
     activePath: null
   },
   async created() {
-    const { minTab, fullTab } = await getGlobalSettings("tabBar", {nocache: true});
+    const settings = await getGlobalSettings("tabBar", {nocache: true});
+    if (settings == undefined) {
+      console.log("no settings");
+      return;
+    }
+    const { minTab, fullTab } = settings;
     console.log("tabBar", minTab, fullTab);
     // 根据用户类型来确定底Tab
     var order = minTab;
     if (await checkCanFullTabBar()) {
       order = fullTab;
+    }
+
+    if (!order) {
+      this.toSettings();
+      return;
     }
     
     // 重新排序list
@@ -56,6 +66,11 @@ Component({
       const url = `/${path}`;
       console.log(url);
       wx.switchTab({url});
+    },
+    toSettings() {
+      wx.navigateTo({
+        url: '/pages/manage/pageSettings/pageSettings',
+      })
     }
   }
 })

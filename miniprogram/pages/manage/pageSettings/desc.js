@@ -11,7 +11,8 @@ module.exports = {
     },
     cantComment: {
       type: "text",
-      tip: "无法留言的版本号（参考cantUpload配置）"
+      tip: "无法留言的版本号（参考cantUpload配置）",
+      default: "#copy-detailCat-cantUpload"
     },
     galleryCompressed: {
       type: "number",
@@ -71,15 +72,18 @@ module.exports = {
     tip: "底部TabBar设置",
     fullTab: {
       type: "text",
-      tip: "完整的底部TabBar。形如“xxx,yyy,zzz”，用英文逗号将页面的key进行连接，可以隐藏部分tab。具体的key值需要与app.json中的tabBar.list对应。"
+      tip: "完整的底部TabBar。形如“xxx,yyy,zzz”，用英文逗号将页面的key进行连接，可以隐藏部分tab。具体的key值需要与app.json中的tabBar.list对应。",
+      default: "genealogy,recognize,news,leaderboard,info"
     },
     minTab: {
       type: "text",
-      tip: "普通用户看到的底部TabBar。配置方式参考fullTab。"
+      tip: "普通用户看到的底部TabBar。配置方式参考fullTab。",
+      default: "genealogy,leaderboard,info"
     },
     minVersion: {
       type: "text",
-      tip: "展示最小化底部Tab的版本。配置方式参考cantUpload。"
+      tip: "展示最小化底部Tab的版本。配置方式参考cantUpload。",
+      default: "#copy-detailCat-cantUpload"
     }
   }
 }
