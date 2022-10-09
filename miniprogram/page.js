@@ -27,6 +27,9 @@ async function loadFilter(options) {
 // 获取全局的设置
 async function getGlobalSettings(key, options) {
   var res = await _getSetting('pages', options);
+  if (key == null) {
+    return res;
+  }
   return res[key];
 }
 
@@ -54,9 +57,21 @@ function showTab(page) {
   })
 }
 
+// 跳转到设置页，并发起提示
+function toSettings(tip) {
+  const curPath = getCurrentPath();
+  const url = "pages/manage/pageSettings/pageSettings";
+  if (curPath == url) {
+    return;
+  }
+  wx.navigateTo({
+    url: `/${url}?tip=${encodeURIComponent(tip)}`,
+  })
+}
 module.exports = {
   loadFilter,
   getGlobalSettings,
   showTab,
   getCurrentPath,
+  toSettings,
 }

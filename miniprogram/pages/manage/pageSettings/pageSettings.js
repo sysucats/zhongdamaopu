@@ -1,5 +1,6 @@
 // pages/manage/pageSettings/pageSettings.js
 import { checkAuth } from "../../../user";
+import { getGlobalSettings } from "../../../page";
 import desc from "./desc";
 
 const db = wx.cloud.database();
@@ -23,6 +24,13 @@ Page({
   async onLoad(options) {
     if (await checkAuth(this, 99)) {
       await this.reloadSettings();
+      if (options.tip) {
+        wx.showModal({
+          title: "请修改设置",
+          content: decodeURIComponent(options.tip),
+          showCancel: false
+        });
+      }
     }
   },
 
@@ -54,7 +62,7 @@ Page({
 
   // 加载数据库设置
   async reloadSettings() {
-    const settings = (await db.collection("setting").doc("pages").get()).data;
+    const settings = await getGlobalSettings(null, {nocache: true});
     console.log(JSON.stringify(settings));
     delete settings._id;
     delete settings.openid;
@@ -139,6 +147,7 @@ Page({
     wx.showToast({
       title: '保存成功',
       icon: "success"
-    })
+    });
+    await this.reloadSettings();
   },
 })

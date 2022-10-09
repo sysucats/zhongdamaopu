@@ -1,4 +1,4 @@
-import { getGlobalSettings, getCurrentPath } from "../page";
+import { getGlobalSettings, getCurrentPath, toSettings } from "../page";
 import { checkCanFullTabBar } from "../user";
 import tab from "./tab";
 
@@ -17,10 +17,10 @@ Component({
     activePath: null
   },
   async created() {
-    const settings = await getGlobalSettings("tabBar", {nocache: true});
+    const settings = await getGlobalSettings("tabBar");
     if (settings == undefined) {
       console.log("no settings");
-      this.toSettings();
+      toSettings("缺失tabBar设置，已填入默认值，请检查后保存。");
       return;
     }
     const { minTab, fullTab } = settings;
@@ -32,7 +32,7 @@ Component({
     }
 
     if (!order) {
-      this.toSettings();
+      toSettings("缺失tabBar设置，已填入默认值，请检查后保存。");
       return;
     }
     
@@ -68,15 +68,5 @@ Component({
       console.log(url);
       wx.switchTab({url});
     },
-    toSettings() {
-      const curPath = getCurrentPath();
-      const url = "pages/manage/pageSettings/pageSettings";
-      if (curPath == url) {
-        return;
-      }
-      wx.navigateTo({
-        url: `/${url}`,
-      })
-    }
   }
 })
