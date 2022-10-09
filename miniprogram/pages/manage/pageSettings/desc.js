@@ -66,5 +66,20 @@ module.exports = {
       type: "text",
       tip: "识猫开发接口秘钥"
     },
+  },
+  tabBar: {
+    tip: "底部TabBar设置",
+    fullTab: {
+      type: "text",
+      tip: "完整的底部TabBar。形如“xxx,yyy,zzz”，用英文逗号将页面的key进行连接，可以隐藏部分tab。具体的key值需要与app.json中的tabBar.list对应。"
+    },
+    minTab: {
+      type: "text",
+      tip: "普通用户看到的底部TabBar。配置方式参考fullTab。"
+    },
+    minVersion: {
+      type: "text",
+      tip: "展示最小化底部Tab的版本。配置方式参考cantUpload。"
+    }
   }
 }

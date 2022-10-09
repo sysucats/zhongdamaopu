@@ -147,3 +147,6 @@
       bind:confirmEvent="_confirmEvent">
     </newsModal>
 </view>
+
+<!-- 底tab占位 -->
+<view style="height: {{tabBarHeight}}px;"></view>

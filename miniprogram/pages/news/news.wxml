@@ -34,3 +34,6 @@
 
   <image mode='aspectFill' class='cover-image' wx:if='{{item.coverPath}}' src='{{item.coverPath}}'></image>
 </view>
+
+<!-- 底tab占位 -->
+<view style="height: {{tabBarHeight}}px;"></view>

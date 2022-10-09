@@ -1,6 +1,6 @@
 import { text as text_cfg, ad_recognize_banner, cat_status_adopt } from "../../config";
 import { hex_sha256, randomInt } from "../../utils";
-import { loadFilter, getGlobalSettings } from "../../page";
+import { loadFilter, getGlobalSettings, showTab } from "../../page";
 
 
 // 接口设置，onLoad中从数据库拉取。
@@ -73,6 +73,8 @@ Page({
   },
 
   async onShow() {
+    // 切换自定义tab
+    showTab(this);
     if (!interfaceURL || !secretKey) {
       console.log('__wxConfig.envVersion: ', __wxConfig.envVersion);
       var settings = await getGlobalSettings(__wxConfig.envVersion === 'release' ? 'recognize' : 'recognize_test');

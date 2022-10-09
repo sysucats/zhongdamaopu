@@ -49,15 +49,16 @@ async function getUserInfo(openid) {
   return value;
 }
 
-async function _checkFuncEnable(func) {
+async function _checkFuncEnable(pageName, func) {
   var funcToSettingName = {
     "uploadImage": "cantUpload",
     "comment": "cantComment",
+    "fullTab": "minVersion",
   }
   // 加载设置、关闭上传功能
   const app = getApp();
   var funcSetting = funcToSettingName[func];
-  var settings = await getGlobalSettings('detailCat');
+  var settings = await getGlobalSettings(pageName);
   let banSetting = settings[funcSetting];
   if (func == "comment" && !banSetting) {
     banSetting = settings["cantUpload"];
@@ -85,12 +86,17 @@ async function _checkFuncEnable(func) {
 * 检查是否开启上传通道（返回true为开启上传）
 */
 async function checkCanUpload() {
-  return await _checkFuncEnable("uploadImage");
+  return await _checkFuncEnable("detailCat", "uploadImage");
 }
 
 // 看看能否评论
 async function checkCanComment() {
-  return await _checkFuncEnable("comment");
+  return await _checkFuncEnable("detailCat", "comment");
+}
+
+// 是否展示完整底Tab
+async function checkCanFullTabBar() {
+  return await _checkFuncEnable("tabBar", "fullTab");
 }
 
 
@@ -154,4 +160,5 @@ module.exports = {
   isManagerAsync,
   checkAuth,
   toSetUserInfo,
+  checkCanFullTabBar,
 } 

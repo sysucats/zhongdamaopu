@@ -37,7 +37,7 @@ function getStat(all_photos) {
 exports.main = async (event, context) => {
   if (event.deploy_test === true) {
     // 进行部署检查
-    return "v1.0";
+    return "v1.1";
   }
   // 只取这个月的
   const today = new Date(), y = today.getFullYear(), m = today.getMonth();
@@ -70,5 +70,12 @@ exports.main = async (event, context) => {
 
   const stat = getStat(all_photos.data);
   await db.collection('photo_rank').add({ data: { stat, mdate: today } })
+  
+  // 清理一周前的记录
+  var oneWeekAgo = new Date();
+  oneWeekAgo.setHours(oneWeekAgo.getHours() - 7*24);
+  await db.collection('photo_rank').where({
+    mdate: _.lt(oneWeekAgo)
+  }).remove()
   return { all_photos: all_photos, stat: stat };
 }

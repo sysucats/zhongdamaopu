@@ -14,7 +14,7 @@ import {
 } from "../../comment";
 import cache from "../../cache";
 import config from "../../config";
-import { loadFilter, getGlobalSettings } from "../../page";
+import { loadFilter, getGlobalSettings, showTab } from "../../page";
 import { isManagerAsync } from "../../user";
 
 const default_png = undefined;
@@ -128,9 +128,10 @@ Page({
     await this.loadNews();
   },
 
-  // onShow: function (options) {
-  //   console.log('onShow:', options);
-  // },
+  onShow: function () {
+    showTab(this);
+  },
+
   loadFilters: async function (fcampus) {
     // 下面开始加载filters
     var res = await loadFilter();

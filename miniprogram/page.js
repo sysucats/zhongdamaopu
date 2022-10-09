@@ -30,7 +30,33 @@ async function getGlobalSettings(key, options) {
   return res[key];
 }
 
+// 获取当前页面路径
+function getCurrentPath() {
+  const pages = getCurrentPages();
+ 
+  const currentPage = pages[pages.length - 1];
+  return currentPage.route;
+}
+
+// 切换自定义tab
+function showTab(page) {
+  if (typeof page.getTabBar != 'function' || !page.getTabBar()) {
+    return;
+  }
+  
+  const path = getCurrentPath();
+  console.log("current path:", path);
+  page.getTabBar().setData({
+    activePath: path,
+  });
+  page.setData({
+    tabBarHeight: wx.getStorageSync('tabBarHeight')
+  })
+}
+
 module.exports = {
   loadFilter,
-  getGlobalSettings
+  getGlobalSettings,
+  showTab,
+  getCurrentPath,
 }

@@ -71,3 +71,7 @@
     <view class="right-arrow"><image mode='aspectFill' src="/pages/public/images/filter/right.png"></image></view> 
   </view>
 </view></block>
+
+
+<!-- 底tab占位 -->
+<view style="height: {{tabBarHeight}}px;"></view>

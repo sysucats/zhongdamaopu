@@ -2,6 +2,7 @@
 import { sleep } from "../../utils.js";
 import { text as text_cfg, science_imgs } from "../../config";
 import { checkAuth } from "../../user";
+import { showTab } from "../../page";
 const share_text = text_cfg.app_name + ' - ' + text_cfg.science.share_tip;
 
 
@@ -55,6 +56,10 @@ Page({
 
     // 科普部分
     this.setSciImgs();
+  },
+  onShow: function () {
+    // 切换自定义tab
+    showTab(this);
   },
 
   /**

@@ -29,7 +29,6 @@ async function getAvatar(cat_id, total) {
     photo_id: /^((?!\.heic$).)*$/i
   };
 
-  // TODO: 这里对于API调用的次数较多，需要修改
   var index = randomInt(0, total);
   var pho_src = (await coll_photo.where(qf).skip(index).limit(1).get()).data;
   cacheItem = pho_src[0];

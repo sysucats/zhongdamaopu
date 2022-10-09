@@ -44,8 +44,6 @@ exports.main = async (event, context) => {
     const count_total = (await db.collection('photo').where({ cat_id: cat._id, verified: true }).count()).total;
     var stat = await db.collection('cat').doc(cat._id).update({
       data: {
-        // TODO: 过渡一下，后续清理数据库中的残留photo_count字段
-        // photo_count: count_best,
         photo_count_best: count_best,
         photo_count_total: count_total
       }

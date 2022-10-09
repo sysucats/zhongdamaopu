@@ -34,32 +34,25 @@
     "pages/info/userInfo/modifyUserInfo/modifyUserInfo"
   ],
   "tabBar": {
+    "custom": true,
+    "color": "#7A7E83",
     "selectedColor": "#000",
     "borderStyle": "white",
     "list": [
       {
-        "pagePath": "pages/genealogy/genealogy",
-        "iconPath": "/pages/public/images/tabs/default/cat.png",
-        "selectedIconPath": "/pages/public/images/tabs/active/cat.png",
-        "text": "猫谱"
+        "pagePath": "pages/genealogy/genealogy"
       },
       {
-        "pagePath": "pages/recognize/recognize",
-        "iconPath": "/pages/public/images/tabs/default/recog.png",
-        "selectedIconPath": "/pages/public/images/tabs/active/recog.png",
-        "text": "识猫"
+        "pagePath": "pages/recognize/recognize"
       },
       {
-        "pagePath": "pages/leaderboard/leaderboard",
-        "iconPath": "/pages/public/images/tabs/default/org.png",
-        "selectedIconPath": "/pages/public/images/tabs/active/org.png",
-        "text": "精选"
+        "pagePath": "pages/news/news"
       },
       {
-        "pagePath": "pages/info/info",
-        "iconPath": "/pages/public/images/tabs/default/info.png",
-        "selectedIconPath": "/pages/public/images/tabs/active/info.png",
-        "text": "关于"
+        "pagePath": "pages/leaderboard/leaderboard"
+      },
+      {
+        "pagePath": "pages/info/info"
       }
     ]
   },

@@ -7,6 +7,7 @@ import {
 } from "../../inter.js";
 import {getDateWithDiffHours, formatDate} from "../../utils.js";
 import config from "../../config";
+import { showTab } from "../../page";
 
 const share_text = config.text.app_name + ' - ' + config.text.genealogy.share_tip;
 
@@ -40,6 +41,10 @@ Page({
       name: "总精选",
       hours: 24*365*30
     },]
+  },
+  onShow: function () {
+    // 切换自定义tab
+    showTab(this);
   },
   onShareAppMessage: function () {
     return {
@@ -119,7 +124,8 @@ Page({
     }
     that.setData({
       columns: columns,
-      tempPics: []
+      tempPics: [],
+      loadnomore: true
     })
     that.jsData.columnsHeight = columnsHeight
   },
@@ -136,10 +142,13 @@ Page({
   },
   // 加载数据
   loadData: async function () {
-    if (this.jsData.isLoading || this.data.loadnomore) {
+    if (this.jsData.isLoading) {
       return;
     }
     this.jsData.isLoading = true
+    this.setData({
+      loadnomore: false
+    });
     
 
     const db = wx.cloud.database();
@@ -199,21 +208,24 @@ Page({
   },
   clickLike: async function clickLike(e) {
     if (this.jsData.like_mutex) {
+      console.log("like lock");
       return false;
     }
     this.jsData.like_mutex = true;
-
-    var liked = !this.data.liked;
-    // 不能取消赞
-    if (!liked && !this.jsData.canReverse) {
-      return;
-    }
 
     const {
       col,
       i
     } = e.currentTarget.dataset;
     var photo = this.data.columns[col][i];
+    console.log(photo);
+    var liked = !photo.liked;
+    // 不能取消赞
+    if (!liked && !this.jsData.canReverse) {
+      this.jsData.like_mutex = false;
+      return;
+    }
+
     var like_count = photo.like_count || 0;
     like_count = liked ? like_count + 1 : like_count - 1;
     this.setData({

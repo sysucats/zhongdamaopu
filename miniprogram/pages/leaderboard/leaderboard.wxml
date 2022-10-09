@@ -36,3 +36,6 @@
 <view class="hide">
   <image wx:for="{{tempPics}}" wx:key="null" src="{{item.pic}}" bindload="loadPic" binderror="loadPicError" data-index="{{index}}" />
 </view>
+
+<!-- 底tab占位 -->
+<view style="height: {{tabBarHeight}}px;"></view>

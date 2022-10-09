@@ -1,7 +1,8 @@
 // miniprogram/pages/info/info.js
-import { getUser, isManagerAsync } from "../../user.js";
+import { getUser, isManagerAsync } from "../../user";
 import { text as text_cfg, mpcode_img } from "../../config";
 import { getCurrentPath } from "../../utils";
+import { showTab } from "../../page";
 
 const share_text = text_cfg.app_name + ' - ' + text_cfg.info.share_tip;
 
@@ -38,6 +39,9 @@ Page({
 
   // 用 onShow 不用 onLoad，为了在返回这个页面时也能重新加载
   onShow: async function () {
+    // 切换自定义tab
+    showTab(this);
+
     // 获取version
     this.setData({
       version: getApp().globalData.version

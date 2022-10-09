@@ -415,7 +415,7 @@ scroll-view {
 /* 寻找领养按钮 */
 #find-adopt {
   position: fixed;
-  bottom: 200rpx;
+  bottom: 300rpx;
   right: 30rpx;
   display: flex;
   justify-content: center;
@@ -428,7 +428,7 @@ scroll-view {
 /* 返回首页 */
 #back-to-firstpage {
   position: fixed;
-  bottom: 100rpx;
+  bottom: 200rpx;
   right: 30rpx;
 
   filter: drop-shadow(0 0 5rpx var(--color-gray-dark));

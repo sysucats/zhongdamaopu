@@ -11,6 +11,14 @@ Page({
     text_cfg: text_cfg,
     github_link: "https://github.com/sysucats/zhongdamaopu",
     update_log: [{
+      version: "v1.8.14",
+      content: [
+        "优化月榜存储",
+        "重新实现TabBar",
+        "修复重复点赞的bug",
+      ],
+      time: "2022/10/08"
+    }, {
       version: "v1.8.13",
       content: [
         "修复一堆bug...",

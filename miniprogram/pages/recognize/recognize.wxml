@@ -99,4 +99,7 @@
     <ad unit-id="{{ad.banner}}" ad-intervals="30" bindload="adLoad" binderror="adError" bindclose="adClose"></ad>
   </view>
 
+  <!-- 底tab占位 -->
+  <view style="height: {{tabBarHeight}}px;"></view>
+
 </view><!-- positionWrapper -->
