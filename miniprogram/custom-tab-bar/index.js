@@ -1,4 +1,4 @@
-import { getGlobalSettings } from "../page";
+import { getGlobalSettings, getCurrentPath } from "../page";
 import { checkCanFullTabBar } from "../user";
 import tab from "./tab";
 
@@ -20,6 +20,7 @@ Component({
     const settings = await getGlobalSettings("tabBar", {nocache: true});
     if (settings == undefined) {
       console.log("no settings");
+      this.toSettings();
       return;
     }
     const { minTab, fullTab } = settings;
@@ -68,8 +69,13 @@ Component({
       wx.switchTab({url});
     },
     toSettings() {
+      const curPath = getCurrentPath();
+      const url = "pages/manage/pageSettings/pageSettings";
+      if (curPath == url) {
+        return;
+      }
       wx.navigateTo({
-        url: '/pages/manage/pageSettings/pageSettings',
+        url: `/${url}`,
       })
     }
   }
