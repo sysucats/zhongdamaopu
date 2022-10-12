@@ -31,7 +31,8 @@
     "pages/tools/updateUserRole/updateUserRole",
     "pages/leaderboard/leaderboard",
     "pages/manage/pageSettings/pageSettings",
-    "pages/info/userInfo/modifyUserInfo/modifyUserInfo"
+    "pages/info/userInfo/modifyUserInfo/modifyUserInfo",
+    "pages/tools/inviteUser/inviteUser"
   ],
   "tabBar": {
     "custom": true,

@@ -11,6 +11,13 @@ Page({
     text_cfg: text_cfg,
     github_link: "https://github.com/sysucats/zhongdamaopu",
     update_log: [{
+      version: "v1.8.15",
+      content: [
+        "修复底Tab样式",
+        "修复特邀问题",
+      ],
+      time: "2022/10/08"
+    }, {
       version: "v1.8.14",
       content: [
         "优化月榜存储",

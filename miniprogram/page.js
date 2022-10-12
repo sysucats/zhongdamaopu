@@ -52,8 +52,10 @@ function showTab(page) {
   page.getTabBar().setData({
     activePath: path,
   });
+
+  var tabBarHeight = wx.getStorageSync('tabBarHeight') || 40;
   page.setData({
-    tabBarHeight: wx.getStorageSync('tabBarHeight')
+    tabBarHeight: tabBarHeight
   })
 }
 

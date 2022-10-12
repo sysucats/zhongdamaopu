@@ -1,7 +1,6 @@
 // miniprogram/pages/info/info.js
-import { getUser, isManagerAsync } from "../../user";
+import { isManagerAsync } from "../../user";
 import { text as text_cfg, mpcode_img } from "../../config";
-import { getCurrentPath } from "../../utils";
 import { showTab } from "../../page";
 
 const share_text = text_cfg.app_name + ' - ' + text_cfg.info.share_tip;
@@ -21,11 +20,9 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: async function (options) {
-    const that = this;
     const db = wx.cloud.database();
-
     var friendLinkRes = await db.collection('setting').doc('friendLink').get();
-    that.setData({
+    this.setData({
       friendApps: friendLinkRes.data.apps,
     });
 
@@ -71,22 +68,9 @@ Page({
    * 用户点击右上角分享
    */
   onShareAppMessage: function () {
-    if (!this.data.showManager) {
-      return {
-        title: share_text
-      }
-    }
-    // 管理员分享时，邀请用户
-    const pagesStack = getCurrentPages();
-    const path = getCurrentPath(pagesStack);
-    var expire_date = new Date();
-    expire_date.setHours(expire_date.getHours() + 1);
-    const query = `${path}inviteRole=1&expire=${encodeURIComponent(expire_date)}`;
-    console.log(query);
     return {
-      title: share_text,
-      path: query
-    };
+      title: share_text
+    }
   },
 
   onShareTimeline:function () {
@@ -120,35 +104,4 @@ Page({
       }
     })
   },
-
-  async doInviteRole(options) {
-    var role = parseInt(options.inviteRole);
-    var expire = new Date(options.expire);
-    console.log("expire at", expire);
-    // 过期了
-    if (new Date() > expire) {
-      console.log(`invite ${role} expired.`);
-      return;
-    }
-    var user = await getUser();
-    console.log(user);
-    if (user.role >= role) {
-      // 已经是了
-      return;
-    }
-    await wx.cloud.callFunction({
-      name: "userOp",
-      data: {
-        "op": "updateRole",
-        "user": {
-          openid: user.openid,
-          role: role
-        },
-      }
-    });
-    wx.showToast({
-      title: '已成为特邀用户',
-      duration: 5000,
-    });
-  }
 })

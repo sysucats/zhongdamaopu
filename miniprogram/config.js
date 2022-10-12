@@ -192,5 +192,18 @@ module.exports = {
     leaderboard: {
       share_tip: "精选照片",
     },
+    // 精选，pages/inviteUser/inviteUser
+    inviteUser: {
+      share_tip: "该分享无法激活特邀哦",
+      share_title: "[6小时内] 点击成为特邀用户~",
+      default_tip: "哦吼，这里空空如也，去首页看看猫猫吧~",
+      invite_tip: "猫猫正在检查邀请函...",
+      manager_tip: "分享至聊天，普通用户点击后将成为特邀，邀请有效期6小时~",
+      expired_title: "出问题",
+      success_title: "完成",
+      expired_tip: "邀请链接已过期...请联系管理员~",
+      already_tip: "你已经是特邀用户啦~",
+      success_tip: "`已成为特邀用户~",
+    },
   }
 }

@@ -151,6 +151,20 @@ function toSetUserInfo() {
 }
 
 
+// 设置用户等级
+async function setUserRole(openid, role) {
+  return await wx.cloud.callFunction({
+    name: "userOp",
+    data: {
+      "op": "updateRole",
+      "user": {
+        openid: openid,
+        role: role
+      },
+    }
+  });
+}
+
 module.exports = {
   getUser,
   getUserInfo,
@@ -161,4 +175,5 @@ module.exports = {
   checkAuth,
   toSetUserInfo,
   checkCanFullTabBar,
+  setUserRole,
 } 
