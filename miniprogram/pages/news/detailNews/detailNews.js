@@ -1,5 +1,5 @@
 import { shareTo, getCurrentPath, formatDate, sleep } from "../../../utils";
-import { checkAuth } from "../../../user";
+import { checkAuth, isManagerAsync } from "../../../user";
 
 Page({
 
@@ -14,6 +14,7 @@ Page({
     err: false,
     photos_path: [],
     cover_path: "",
+    showManager: false,
   },
 
   /**
@@ -27,6 +28,12 @@ Page({
       this.loadNews(),
       checkAuth(this, 2)
     ]);
+
+    const res = await isManagerAsync(3);
+    this.setData({
+      showManager: res
+    })
+
   },
 
   /**

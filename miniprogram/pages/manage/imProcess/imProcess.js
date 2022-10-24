@@ -11,7 +11,7 @@ var global_fileID_compressed, global_fileID_watermark;
 // 自动搞的数量
 var auto_count = 0;
 Page({
-
+  
   /**
    * 页面的初始数据
    */
