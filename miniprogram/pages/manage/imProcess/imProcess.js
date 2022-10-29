@@ -68,8 +68,10 @@ Page({
       wx.showToast({
         title: '其他人还在操作...',
         icon: "loading"
-      })
+      });
+      return false;
     }
+    return true;
   },
 
   async releaseLock() {
@@ -156,7 +158,6 @@ Page({
       processing: this.data.processing
     });
     // 开始处理
-    console.log("Hi", this.data.processing);
     if (this.data.processing) {
       drawUtils.initCanvas();
       await this.beginProcess();
