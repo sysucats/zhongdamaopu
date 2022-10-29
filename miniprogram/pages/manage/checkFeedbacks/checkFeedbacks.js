@@ -1,15 +1,11 @@
 // 处理反馈
-const utils = require('../../../utils.js');
-const isManager = utils.isManager;
-const formatDate = utils.formatDate;
+import { formatDate } from "../../../utils";
+import { requestNotice } from "../../../msg";
+import config from "../../../config";
+import { checkAuth } from "../../../user";
+import { cloud } from "../../../cloudAccess";
 
-const msg = require('../../../msg.js');
-const requestNotice = msg.requestNotice;
-
-const config = require("../../../config.js");
 const notifyChkFeedbackTplId = config.msg.notifyChkFeedback.id;
-
-const cloud = require('../../../cloudAccess.js').cloud;
 
 const step = 6;
 
@@ -29,32 +25,15 @@ Page({
   /**
    * 生命周期函数--监听页面加载
    */
-  onLoad: function (options) {
-    this.checkAuth();
+  onLoad: async function (options) {
+    if (await checkAuth(this, 1)) {
+      this.reload();
+    }
   },
 
   // 没有权限，返回上一页
   goBack() {
     wx.navigateBack();
-  },
-
-  // 检查权限
-  checkAuth() {
-    const that = this;
-    isManager(function (res) {
-      if (res) {
-        that.setData({
-          auth: true
-        });
-        that.reload();
-      } else {
-        that.setData({
-          tipText: '只有管理员Level-1能进入嗷',
-          tipBtn: true,
-        });
-        console.log("Not a manager.");
-      }
-    }, 1)
   },
 
   async loadFeedbacks() {
@@ -63,7 +42,7 @@ Page({
     var feedbacks = (await db.collection('feedback').where({
       dealed: this.data.checkHistory
     }).orderBy('openDate', 'desc').skip(nowLoaded).limit(step).get()).data;
-    console.log(feedbacks);
+    console.log("[loadFeedbacks] -", feedbacks);
     // 获取对应猫猫信息；将Date对象转化为字符串；判断是否已回复
     for (let i = 0; i < feedbacks.length; ++i) {
       if (feedbacks[i].cat_id != undefined) {
@@ -93,44 +72,41 @@ Page({
     wx.showLoading({
       title: '加载中...',
     });
-    const that = this;
     const db = cloud.database();
-    db.collection('feedback').where({
+    var fbRes = await db.collection('feedback').where({
       dealed: this.data.checkHistory
-    }).count().then(res => {
-      console.log(res);
-      this.data.total = res.total;
-      this.data.feedbacks = []; // 清空，loadFeedbacks再填充
-      that.setData({
-        total: this.data.total,
-      });
-      that.loadFeedbacks().then(() => {
-        wx.hideLoading();
-      });
+    }).count();
+
+    console.log("[reload] - feedbacks: ", fbRes);
+    this.setData({
+      total: fbRes.total,
     });
+    this.data.feedbacks = []; // 清空，loadFeedbacks再填充
+    await this.loadFeedbacks();
+    wx.hideLoading();
   },
 
   async requestSubscribeMessage() {
     wx.getSetting({
       withSubscriptions: true,
       success: res => {
-        console.log("subscribeSet:", res);
+        console.log("[requestSubscribeMessage] - subscribeSet:", res);
         if ('subscriptionsSetting' in res) {
           if (!(notifyChkFeedbackTplId in res['subscriptionsSetting'])) {
             // 第一次请求
             requestNotice('notifyChkFeedback');
-            console.log("firstRequest");
+            // console.log("[requestSubscribeMessage] - firstRequest");
           } else if (res.subscriptionsSetting[notifyChkFeedbackTplId] === 'reject') {
             // console.log("已拒绝");// 不再请求/重复弹出toast
             // requestNotice('notifyChkFeedback');
           } else if (res.subscriptionsSetting[notifyChkFeedbackTplId] === 'accept') {
-            console.log('重新请求下个一次性订阅');
+            console.log('[requestSubscribeMessage] - 重新请求下个一次性订阅');
             requestNotice('notifyChkFeedback');
           }
         }
       },
       complete:res=>{
-        console.log("complete:",res);
+        console.log("[requestSubscribeMessage] - complete:",res);
       }
     })
   },
@@ -152,50 +128,47 @@ Page({
     wx.hideLoading();
   },
 
-  bindCheck(e) {
+  async bindCheck(e) {
     const feedback = e.currentTarget.dataset.feedback;
-    const that = this;
-    wx.showModal({
+    const modalRes = await wx.showModal({
       title: '提示',
       content: '确定已完成该反馈处理？',
-      success(res) {
-        if (res.confirm) {
-          console.log('确认反馈处理');
-          cloud.callFunction({
-            name: "curdOp",
-            data: {
-              permissionLevel: 1,
-              operation: 'update',
-              collection: "feedback",
-              item_id: feedback._id,
-              data: {
-                dealed: true,
-                // dealDate: new Date(),
-                dealDate: {
-                  "$date": new Date().toISOString()
-                }
-              }
-            }
-          }).then(res => {
-            console.log("反馈已处理：" + feedback._id);
-            // 直接从列表里去掉这个反馈，不完全加载了
-            const feedbacks = that.data.feedbacks;
-            const new_feedbacks = feedbacks.filter((fb, index, arr) => {
-              // 这个feedback是用户点击的feedback，在上面定义的
-              return fb._id != feedback._id;
-            });
-            that.setData({
-              feedbacks: new_feedbacks,
-              total: that.data.total - 1
-            }, () => {
-              wx.showToast({
-                title: '反馈已处理',
-              });
-            });
-          })
+    })
+    if (!modalRes.confirm) {
+      return;
+    }
+
+    console.log('[bindCheck] - 确认反馈处理');
+    await cloud.callFunction({
+      name: "curdOp",
+      data: {
+        permissionLevel: 1,
+        operation: 'update',
+        collection: "feedback",
+        item_id: feedback._id,
+        data: {
+          dealed: true,
+          dealDate: {
+            "$date": new Date().toISOString()
+          }
         }
       }
-    })
+    });
+
+    console.log("[bindCheck] - 反馈已处理：" + feedback._id);
+    // 直接从列表里去掉这个反馈，不完全加载了
+    const feedbacks = this.data.feedbacks;
+    const new_feedbacks = feedbacks.filter((fb) => {
+      // 这个feedback是用户点击的feedback，在上面定义的
+      return fb._id != feedback._id;
+    });
+    this.setData({
+      feedbacks: new_feedbacks,
+      total: this.data.total - 1
+    });
+    wx.showToast({
+      title: '反馈已处理',
+    });
   },
 
   bindCopy(e) {

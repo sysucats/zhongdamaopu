@@ -1,0 +1,49 @@
+.form-input-block {
+  margin: 10rpx 30rpx;
+  border: 1rpx solid var(--color-gray-dark);
+  border-radius: 20rpx;
+  padding: 10rpx;
+}
+
+.form-input-name {
+  font-size: 26rpx;
+  color: var(--color-black-min);
+}
+
+.form-input-tip {
+  font-size: 24rpx;
+  color: var(--color-gray-dark);
+}
+
+input.form-input {
+  border-bottom: 2rpx var(--color-primary) solid;
+  background-color: var(--color-white-dark);
+  padding: 15rpx;
+  color: var(--color-black-light);
+}
+
+
+button {
+  width: 45%;
+  display: inline-block;
+  font-size: 35rpx;
+  box-sizing: border-box;
+}
+
+button.primary {
+  background-color: var(--color-primary);
+}
+
+button.long {
+  margin: 20rpx 0 0 0;
+  width: 100%;
+}
+
+button.short {
+  width: 12%;
+  height: 100%;
+  margin: 2%;
+  padding: 2%;
+  font-size: 24rpx;
+  line-height: 24rpx;
+}

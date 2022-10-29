@@ -1,8 +1,8 @@
-<form bindsubmit="bindSubmit">
+<form bindsubmit="bindSubmit" wx:if="{{canUpload}}">
   <view wx:if="{{!isAuth}}" class='unAuth'>
     <!-- <text>请授权后进行操作</text> -->
     <view class='userInfo'>
-      <image src='../../../images/system/user.png'></image>
+      <image src='/pages/public/images/system/user.png'></image>
       <view>
         <text>[等待授权]\n---准备为「<text style="font-weight:600;">{{cat? cat.name: text_cfg.app_name}}</text>」反馈信息</text>
       </view>
@@ -33,6 +33,9 @@
     </view>
   </block>
 </form>
+<view class='footnote' wx:else>
+  <text>*暂不开放反馈信息功能</text>
+</view>
 <view class='footnote'>
   <text>{{text_cfg.feedback_detail.submit_tip}}</text>
 </view>

@@ -1,15 +1,11 @@
 // miniprogram/pages/info/reward/reward.js
-const config = require('../../../config.js');
-const utils = require('../../../utils.js');
-const checkCanUpload = utils.checkCanUpload;
-
-// 是否使用微信云，不然使用Laf云
-const cloud = require('../../../cloudAccess.js').cloud;
+import { text as text_cfg, reward_img, ad_reward_video } from "../../../config";
+import { checkCanUpload } from "../../../user";
+import { cloud } from "../../../cloudAccess";
 
 // 在页面中定义激励视频广告
 let videoAd = null
 
-const text_cfg = config.text;
 const share_text = text_cfg.app_name + ' - ' + text_cfg.reward.share_tip;
 
 Page({
@@ -22,21 +18,19 @@ Page({
     text_cfg: text_cfg,
   },
 
-  onLoad: function (option) {
+  onLoad: async function (option) {
     this.loadReward();
-    var that = this;
     
     // 是否开启
-    checkCanUpload().then(res => {
-      that.setData({
-        canUpload: res
-      });
-    })
+    this.setData({
+      canUpload: await checkCanUpload()
+    });
     
     // 在页面onLoad回调事件中创建激励视频广告实例
+    var that = this;
     if (wx.createRewardedVideoAd) {
       videoAd = wx.createRewardedVideoAd({
-        adUnitId: config.ad_reward_video
+        adUnitId: ad_reward_video
       })
       videoAd.onLoad(() => {
         that.setData({
@@ -76,25 +70,24 @@ Page({
     }
   },
 
-  loadReward() {
-    const that = this;
+  async loadReward() {
     const db = cloud.database();
-    db.collection('reward').orderBy('mdate', 'desc').get().then(res => {
-      console.log(res.data);
-      for (var r of res.data) {
-        const tmp = new Date(r.mdate);
-        r.mdate = tmp.getFullYear() + '年' + (tmp.getMonth()+1) + '月';
-        r.records = r.records.replace(/^\#+|\#+$/g, '').split('#');
-      }
-      that.setData({
-        reward: res.data
-      });
+    var rewardRes = await db.collection('reward').orderBy('mdate', 'desc').get();
+    
+    console.log(rewardRes.data);
+    for (var r of rewardRes.data) {
+      const tmp = r.mdate;
+      r.mdate = tmp.getFullYear() + '年' + (tmp.getMonth()+1) + '月';
+      r.records = r.records.replace(/^\#+|\#+$/g, '').split('#');
+    }
+    this.setData({
+      reward: rewardRes.data
     });
   },
 
   // 打开大图
   openImg(e) {
-    const src = config.reward_img;
+    const src = reward_img;
     wx.previewImage({
       urls: [src],
       success: (res) => {

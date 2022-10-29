@@ -1,16 +1,8 @@
 // 审核照片
-const utils = require('../../../utils.js');
-const isManager = utils.isManager;
-const regReplace = utils.regReplace;
-
-const cat_utils = require('../../../cat.js');
-const getAvatar = cat_utils.getAvatar;
-const getCatItem = cat_utils.getCatItem;
-
-
-const config = require('../../../config.js');
-const use_wx_cloud = config.use_wx_cloud; // 是否使用微信云，不然使用Laf云
-const cloud = require('../../../cloudAccess.js').cloud;
+import { regReplace, sleep } from "../../../utils";
+import { getAvatar, getCatItem } from "../../../cat";
+import { checkAuth } from "../../../user";
+import { cloud } from "../../../cloudAccess";
 
 const db = cloud.database();
 const _ = db.command;
@@ -37,46 +29,22 @@ Page({
   /**
    * 生命周期函数--监听页面加载
    */
-  onLoad(options) {
-    this.checkAuth();
-    var that = this;
+  async onLoad(options) {
+    if (await checkAuth(this, 2)) {
+      this.loadRelationTypes();
+    }
     if (options.cat_id) {
       // 输入了cat_id
-      db.collection('cat').doc(options.cat_id).get().then(res => {
-        var cat = res.data;
-        getAvatar(cat._id, cat.photo_count_best).then(avatar => {
-          cat.avatar = avatar;
-          that.setData({
-            cat: cat
-          }, () => {
-            that.loadRelations();
-          });
-        });
-      })
+      var cat = (await db.collection('cat').doc(options.cat_id).get()).data;
+      cat.avatar = await getAvatar(cat._id, cat.photo_count_best);
+      this.setData({
+        cat: cat
+      });
+      await this.loadRelations();
     } else {
-      setTimeout(function() {
-        that.bindSearch(null, "cat");
-      }, 700);
+      await sleep(700);
+      this.bindSearch(null, "cat");
     }
-  },
-
-  // 检查权限
-  checkAuth() {
-    const that = this;
-    isManager(function (res) {
-      if (res) {
-        that.setData({
-          auth: true
-        });
-        that.loadRelationTypes();
-      } else {
-        that.setData({
-          tipText: '只有管理员Level-2能进入嗷',
-          tipBtn: true,
-        });
-        console.log("Not a manager.");
-      }
-    }, 2)
   },
 
   /**
@@ -150,7 +118,7 @@ Page({
 
   // 保存新的关系类型
   async saveNewRelationType(e) {
-    console.log(e);
+    // console.log(e);
     const t = e.detail.value;
     var types = this.data.relation_types;
 
@@ -159,7 +127,7 @@ Page({
     if (idx == -1) {
       // 不存在
       types.push(t);
-      console.log(types);
+      // console.log(types);
       await cloud.callFunction({
         name: "curdOp",
         data: {
@@ -188,7 +156,7 @@ Page({
       idx = e.currentTarget.dataset.index;
     }
     var type =  this.data.relation_types[idx];
-    console.log(type);
+    // console.log(type);
     this.setData({
       [`cat.relations[${selectRelationTypeIdx}].type`]: type,
       showSearchCat: false,
@@ -199,16 +167,14 @@ Page({
   async deleteRelationType(e) {
     var idx = e.currentTarget.dataset.index;
     var types = this.data.relation_types;
-    const that = this;
-    wx.showModal({
+    var res = await wx.showModal({
       title: '提示',
-      content: `确定删除\"${types[idx]}\"关系？`,
-      success(res) {
-        if (res.confirm) {
-          that.doDeleteRelationType(idx);
-        }
-      }
-    })
+      content: `确定删除\"${types[idx]}\"关系？`
+    });
+
+    if (res.confirm) {
+      this.doDeleteRelationType(idx);
+    }
   },
 
   async doDeleteRelationType(idx) {
@@ -284,37 +250,20 @@ Page({
       for (const n of filters_input.trim().split(' ')) {
         search_str.push(`(.*${n}.*)`);
       }
-
-      let regexp;
-      if(use_wx_cloud){
-        regexp = db.RegExp({
-          regexp: search_str.join("|"),
-          options: 'igs',
-        });
-        console.log("RegExp:", regexp);
-      }
-      else { // Laf 的 db 不支持 option: p
-        regexp = db.RegExp({
-          regexp: search_str.join("|"),
-          options: 'is',
-        });
-        console.log("RegExp:", regexp);
-      }
-      
-
+      let regexp = db.RegExp({
+        regexp: search_str.join("|"),
+        options: 'is',
+      });
       filters.push(_.or([{
         name: regexp
       }, {
         nickname: regexp
       }]));
-      console.log("Filter:", filters);
     }
     
     // 准备搜索
     var query = filters.length ? _.and(filters) : {};
-    console.log("Query:", query);
     var cats = (await db.collection('cat').where(query).get()).data;
-    console.log("Cats:", cats);
     // 获取头像
     for (var cat of cats) {
       cat.avatar = await getAvatar(cat._id, cat.photo_count_best);
@@ -325,7 +274,7 @@ Page({
     wx.hideLoading();
   },
   // 选择猫猫
-  searchSelectCat(e) {
+  async searchSelectCat(e) {
     var idx = e.currentTarget.dataset.index;
     var cat = this.data.searchCats[idx];
     if (selectRelationCatIdx === undefined) {
@@ -334,7 +283,7 @@ Page({
         cat: cat,
         showSearchCat: false,
       });
-      this.loadRelations();
+      await this.loadRelations();
       return;
     }
 
@@ -349,7 +298,7 @@ Page({
   async loadRelations() {
     var cat = this.data.cat;
     var relations = this.data.cat.relations;
-    console.log(cat);
+    // console.log(cat);
     if (!cat._id || !relations) {
       return false;
     }
@@ -362,7 +311,7 @@ Page({
       relation.cat.avatar = await getAvatar(relation.cat_id, relation.cat.photo_count_best);
     }
 
-    console.log(relations);
+    console.log("[loadRelations] -", relations);
 
     this.setData({
       "cat.relations": relations,
@@ -444,7 +393,7 @@ Page({
 
     for (let i = 0; i < cat.relations.length; i++) {
       const r = cat.relations[i];
-      console.log(r);
+      // console.log(r);
       if (!r.type || !r.cat_id) {
         wx.showToast({
           title: `#${i+1}号关系不完整~`,
@@ -455,5 +404,10 @@ Page({
     }
 
     return true;
+  },
+
+  // 没有权限，返回上一页
+  goBack() {
+    wx.navigateBack();
   }
 })

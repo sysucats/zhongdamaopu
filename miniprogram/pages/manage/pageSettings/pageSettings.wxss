@@ -1,0 +1,18 @@
+/* pages/manage/pageSettings/pageSettings.wxss */
+@import "/pages/public/wxss/form.wxss";
+
+.setting-title {
+  text-align: center;
+  font-size: 36rpx;
+  margin: 30rpx 0;
+}
+
+.setting-title-tip {
+  color: var(--color-black-min);
+  text-align: center;
+  font-size: 26rpx;
+}
+
+.confirm {
+  padding: 10rpx 30rpx 50rpx 30rpx;
+}

@@ -1,20 +1,8 @@
-const utils = require('../../../utils.js');
-const generateUUID = utils.generateUUID;
-const getCurrentPath = utils.getCurrentPath;
-const shareTo = utils.shareTo;
-const getGlobalSettings = utils.getGlobalSettings;
-
-const user = require('../../../user.js');
-const getCurUserInfoOrFalse = user.getCurUserInfoOrFalse;
-const toggleUserNoticeSetting = user.toggleUserNoticeSetting;
-
-const msg = require('../../../msg.js');
-const requestNotice = msg.requestNotice;
-const sendNotifyChkFeeedback = msg.sendNotifyChkFeeedback;
-
-const text_cfg = require('../../../config.js').text;
-
-const cloud = require('../../../cloudAccess.js').cloud;
+import { getCurrentPath, shareTo } from "../../../utils";
+import { getPageUserInfo, checkCanUpload, toSetUserInfo } from "../../../user";
+import { requestNotice, sendNotifyChkFeeedback } from "../../../msg";
+import { text as text_cfg } from "../../../config";
+import { cloud } from "../../../cloudAccess";
 
 Page({
 
@@ -33,18 +21,23 @@ Page({
   /**
    * 生命周期函数--监听页面加载
    */
-  onLoad: function (options) {
+  onLoad: async function (options) {
     const db = cloud.database();
     if (options.cat_id != undefined) {
-      db.collection('cat').doc(options.cat_id).field({ name: true, _id: true }).get().then(res => {
-        console.log(res.data);
-        this.data.cat = res.data;
-        this.setData({
-          cat: this.data.cat
-        });
-      })
+      const catRes = await db.collection('cat').doc(options.cat_id).field({ name: true, _id: true }).get();
+      this.setData({
+        cat: catRes.data
+      });
     }
-    //this.checkUInfo();
+
+    // 检查是否可以上传
+    this.setData({
+      canUpload: await checkCanUpload()
+    });
+  },
+
+  async onShow() {
+    await getPageUserInfo(this);
   },
 
   /**
@@ -59,19 +52,7 @@ Page({
   },
 
   getUInfo() {
-    const that = this;
-    // 检查用户信息有没有拿到，如果有就更新this.data
-    getCurUserInfoOrFalse().then(res => {
-      if (!res) {
-        console.log('未授权');
-        return;
-      }
-      console.log(res);
-      that.setData({
-        isAuth: true,
-        user: res,
-      });
-    });
+    toSetUserInfo()
   },
 
   bindInput(e) {
@@ -103,7 +84,6 @@ Page({
     })
     var data = {
       userInfo: this.data.user.userInfo,
-      // openDate: new Date(),
       openDate: {
         "$date": new Date().toISOString()
       },
@@ -117,38 +97,38 @@ Page({
       data.cat_name = this.data.cat_name;
     }
     const that = this;
-    cloud.callFunction({
+    const res = await cloud.callFunction({
       name: "curdOp", 
       data: {
         operation: "add",
         collection: "feedback",
         data: data
       }
-  }).then(res => {
-      console.log("curdOp(add-feedback) result:", res);
-      if(res.ok){
-        sendNotifyChkFeeedback().then();
-        that.setData({
-          feedbackId : res.id
-        })
-        wx.hideLoading();
-        wx.showToast({
-          title: '收到你的反馈啦',
-          icon: 'success',
-          duration: 1000
-        })
-      }
-      else{
-        console.log('repliable record fail:\n');
-      }
     });
+
+    console.log("curdOp(add-feedback) result:", res);
+    if(res.ok){
+      that.setData({
+        feedbackId : res.id
+      })
+      wx.hideLoading();
+      await sendNotifyChkFeeedback();
+      wx.showToast({
+        title: '收到你的反馈啦',
+        icon: 'success',
+        duration: 1000
+      })
+    }
+    else{
+      console.log('repliable record fail:\n');
+    }
   },
   
   async toSubmit() {
     let repliable = await requestNotice('feedback'); // 请求订阅消息推送
 
     const that = this;
-    cloud.callFunction({
+    const res = await cloud.callFunction({
       name: "curdOp", 
       data: {
         operation: "update",
@@ -156,16 +136,16 @@ Page({
         item_id: that.data.feedbackId,
         data: { repliable: repliable },
       }
-    }).then(res => {
-      console.log("curdOp(feedback-update) result:", res);
-      if(res.ok){
-        wx.navigateBack();
-      }
-      else{
-        console.log('repliable record fail:\n',res);
-      }
     });
-    
+
+    console.log("curdOp(feedback-update) result:", res);
+    if(res.ok){
+      wx.navigateBack();
+    }
+    else{
+      console.log('repliable record fail:\n',res);
+    }
+     
   }
 })
 

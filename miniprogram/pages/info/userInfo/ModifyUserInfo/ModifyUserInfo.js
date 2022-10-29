@@ -1,9 +1,8 @@
-// pages/info/userInfo/ModifyUserInfo/ModifyUserInfo.js
-const defaultAvatarUrl = 'https://mmbiz.qpic.cn/mmbiz/icTdbqWNOwNRna42FI242Lcia07jQodd2FJGIYQfG0LAJGFxM4FbnQP6yfMxBgJ0F3YRqJCJ1aPAK2dQagdusBZg/0'
+import { getUser } from "../../../../user";
+import { contentSafeCheck, deepcopy } from "../../../../utils";
+import { cloud } from "../../../../cloudAccess";
 
-const userUtils = require("../../../../user.js");
-const cloud = require("../../../../cloudAccess.js").cloud;
-const utils = require("../../../../utils.js");
+const defaultAvatarUrl = "/pages/public/images/info/default_avatar.png"
 
 Page({
   data: {
@@ -30,7 +29,14 @@ Page({
    * 生命周期函数--监听页面加载
    */
   async onLoad(options) {
-    var user = await userUtils.getUser();
+    await this.loadUser();
+  },
+
+  async loadUser() {
+    var user = await getUser({
+      nocache: true,
+    });
+    user = deepcopy(user);
     if (!user.userInfo) {
       user.userInfo = {};
     }
@@ -58,6 +64,10 @@ Page({
       return false;
     }
 
+    if (!user.userInfo.avatarUrl) {
+      user.userInfo.avatarUrl = defaultAvatarUrl;
+    }
+
     user.userInfo.avatarUrl = await this.uploadAvatar(user.userInfo.avatarUrl);
 
     console.log(user);
@@ -73,6 +83,7 @@ Page({
     });
 
     wx.hideLoading();
+    await this.loadUser();
     wx.navigateBack();
   },
 
@@ -100,11 +111,11 @@ Page({
       });
       return false;
     }
-    const checkRes = await utils.contentSafeCheck("empty", name);
+    const checkRes = await contentSafeCheck("empty", name);
     if (!checkRes) {
       return true;
     }
     wx.showModal(checkRes);
     return false;
-  },
+  }
 })

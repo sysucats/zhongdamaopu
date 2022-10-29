@@ -1,39 +1,43 @@
-// pages/news/detailNews/detailNews.js
-const utils = require('../../../utils.js');
-
-const cloud = require('../../../cloudAccess.js').cloud;
-
-const isManager = utils.isManager;
-const shareTo = utils.shareTo;
-const getCurrentPath = utils.getCurrentPath;
-const formatDate = utils.formatDate;
+import { shareTo, getCurrentPath, formatDate, sleep } from "../../../utils";
+import { checkAuth, isManagerAsync } from "../../../user";
+import { cloud } from "../../../cloudAccess";
 
 
 Page({
 
-    /**
-     * 页面的初始数据
-     */
-    data: {
-        news_id: 0,
-        news: 0,
-        showManager: false,
-        updateRequest: false,
-        err: false,
-        photos_path: [],
-        cover_path: "",
-    },
+  /**
+   * 页面的初始数据
+   */
+  data: {
+    news_id: 0,
+    news: 0,
+    auth: false,
+    updateRequest: false,
+    err: false,
+    photos_path: [],
+    cover_path: "",
+    showManager: false,
+  },
 
-    /**
-     * 生命周期函数--监听页面加载
-     */
-    onLoad: function (options) {
-        this.setData({
-            news_id: options.news_id
-        })
-        this.loadNews();
-        this.checkAuth();
-    },
+  /**
+   * 生命周期函数--监听页面加载
+   */
+  onLoad: async function (options) {
+    this.setData({
+      news_id: options.news_id
+    })
+
+    await Promise.all([
+      this.loadNews(),
+      checkAuth(this, 2)
+    ]);
+
+    const res = await isManagerAsync(3);
+    this.setData({
+      showManager: res
+    })
+
+  },
 
     /**
      * 页面相关事件处理函数--监听用户下拉动作
@@ -57,17 +61,6 @@ Page({
         wx.stopPullDownRefresh();
     },
 
-    checkAuth() {
-        const that = this;
-        isManager(function (res) {
-            if (res) {
-                that.setData({
-                    showManager: true
-                });
-            }
-        }, 2)
-    },
-
     /**
      * 用户点击右上角分享
      */
@@ -75,15 +68,15 @@ Page({
         const pagesStack = getCurrentPages();
         const path = getCurrentPath(pagesStack);
         const share_text = `${this.data.news.title}`;
-        console.log(shareTo(share_text, path))
+        console.log("[onShareAppMessage] -", shareTo(share_text, path))
         return shareTo(share_text, path);
     },
 
-    loadNews() {
+    async loadNews() {
         const that = this;
         const db = cloud.database();
-        db.collection('news').doc(that.data.news_id).get().then(res => {
-            console.log("News Detail:", res);
+        var res =  await db.collection('news').doc(that.data.news_id).get();
+        console.log("[loadNews] - NewsDetail:", res);
             if (!res.data) {
               that.setData({
                   err: true,
@@ -101,16 +94,15 @@ Page({
                 photos_path: news.photosPath,
                 cover_path: news.coverPath,
             })
-        });
     },
 
     previewImg: function (event) {
-        const that = this;
-        console.log("Preveiw Image: ", event);
-        wx.previewImage({
-            current: that.data.photos_path[event.currentTarget.dataset.index],
-            urls: that.data.photos_path
-        })
+      const that = this;
+      console.log("[previewImg] -", event);
+      wx.previewImage({
+        current: that.data.photos_path[event.currentTarget.dataset.index],
+        urls: that.data.photos_path
+      })
     },
 
 
@@ -121,42 +113,40 @@ Page({
         });
     },
 
-    _doRemove(item_id) {
-        cloud.callFunction({
-            name: "curdOp",
-            data: {
-                permissionLevel: 3,
-                operation: "remove", 
-                collection: "news",
-                item_id: item_id
-            }
-        }).then((res) => {
-            console.log(res);
-            if (res.ok == false) {
-                wx.showToast({
-                    icon: 'none',
-                    title: '删除失败',
-                });
-                return;
-            }
-            setTimeout(wx.navigateBack, 1000);
+    async _doRemove(item_id) {
+      var res = await cloud.callFunction({
+        name: "curdOp",
+        data: {
+          permissionLevel: 3,
+          operation: "remove", 
+          collection: "news",
+          item_id: item_id
+        }
+      });
+      
+      console.log("curdOp(remove) res:", res);
+      if (!res) {
+        wx.showToast({
+          icon: 'none',
+          title: '删除失败',
         });
+        return
+      }
+      await sleep(1000);
+      wx.navigateBack();
     },
 
-    removeNews() {
-        if (this.data.showManager == false) {
-            return;
-        }
-        
-        var that = this;
-        wx.showModal({
-            content: '确定要删除吗？',
-            success: function (sm) {
-                console.log(sm);
-                if (sm.confirm) {
-                  that._doRemove(that.data.news_id);
-                }
-            }
-        })
+    async removeNews() {
+      if (this.data.auth == false) {
+        return;
+      }
+      
+      var modalRes = await wx.showModal({
+        content: '确定要删除吗？'
+      });
+  
+      if (modalRes.confirm) {
+        await this._doRemove(this.data.news_id);
+      }
     },
-})
+  })

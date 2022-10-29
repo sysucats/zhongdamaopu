@@ -1,0 +1,6 @@
+<!--pages/tools/updateUserRole/updateUserRole.wxml-->
+<button bindtap="updateUserRole">更新有照片的用户为role=1</button>
+<view class="tip-title">--- 处理进度 ---</view>
+<view class="tip-item center">{{doneCount || 0}}/{{totalCount || 0}}</view>
+<view class="tip-title">--- Tip ---</view>
+<view class="tip-item">该操作会进行很多次网络请求，仅需要在部署结束后操作一次</view>

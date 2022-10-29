@@ -1,0 +1,58 @@
+
+.h-filter-list {
+  width: 750rpx;
+  display: flex;
+  flex-direction: row;
+  padding: 0 20rpx;
+  white-space: nowrap;
+  box-sizing: border-box;
+}
+
+.h-filter-item {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 30rpx;
+  border: 5rpx solid var(--color-gray);
+  padding: 8rpx 15rpx;
+  margin: 1rpx 10rpx;
+
+  font-size: 22rpx;
+  line-height: 26rpx;
+  color: var(--color-gray-dark);
+  transition: color 100ms ease,
+        background-color 200ms ease,
+        border-color 200ms ease,
+        font-weight 200ms ease;
+  box-sizing: border-box;
+}
+
+.h-filter-item.long {
+  width: 150rpx;
+  justify-content: center;
+}
+
+.h-filter-item.active {
+  border: 5rpx solid var(--color-primary);
+  color: var(--color-primary-dark);
+  background-color: var(--color-primary-light);
+  /* font-weight: bold; */
+}
+
+.h-filter-item .location-logo {
+  width: 24rpx;
+  height: 24rpx;
+  margin-right: 4rpx;
+}
+
+
+.h-filter-item .time-logo {
+  width: 28rpx;
+  height: 28rpx;
+  margin-right: 4rpx;
+}
+
+::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+  color: transparent;
+}

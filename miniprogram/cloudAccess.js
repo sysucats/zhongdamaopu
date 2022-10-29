@@ -1,7 +1,4 @@
-const config = require('./config.js');
-
-const use_wx_cloud = config.use_wx_cloud;
-const laf_url = config.laf_url;
+import { use_wx_cloud, laf_url } from "./config"
 
 var cloud = wx.cloud;
 
@@ -116,22 +113,19 @@ if (!use_wx_cloud) {
   // 下载文件兼容 cloud.downloadFile
   cloudPrototype.downloadFile = async function (options) {
     const filePath = options.fileID;
-    wx.downloadFile({
-      url: filePath,
-      success(res) {
-        // console.log('cloud.downloadFile(laf) success', res);
-        if (options.success) {
-          options.success(res);
-        }
-        return res;
-      },
-      fail (err) {
-        if (options.fail) {
-          options.fail(err);
-        }
-        throw err;
-      }
-    })
+    return new Promise(function (resolve, reject) {
+      wx.downloadFile({
+        url: filePath,
+        success(res) {
+          console.log('cloud.downloadFile(laf) success', res);
+          if (options.success) {
+            options.success(res);
+          }
+          resolve(res);
+        },
+        fail: res => reject(res)
+      });
+    });
   }
 
   console.log("Laf Cloud Prototype:", cloud.__proto__);

@@ -1,17 +1,11 @@
 // miniprogram/pages/imProcess/imProcess.js
-const utils = require('../../../utils.js');
-const generateUUID = utils.generateUUID;
-const isManager = utils.isManager;
+import { generateUUID } from "../../../utils";
+import { text as text_cfg } from "../../../config";
+import { checkAuth } from "../../../user";
+import { cloud } from "../../../cloudAccess";
 
-const config = require("../../../config.js");
-const cloud = require('../../../cloudAccess.js').cloud;
-
-const drawUtils = require("./draw.js");
-
-const lockUtils = require("./lock.js");
-
-
-const text_cfg = config.text;
+import drawUtils from "./draw";
+import lockUtils from "./lock";
 
 const canvasMax = 2000; // 正方形画布的尺寸px
 const compressLength = 500; // 压缩图的最长边大小
@@ -44,7 +38,14 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: async function () {
-    this.checkAuth();
+    if (await checkAuth(this, 3)) {
+      await this.loadProcess();
+    } else {
+      wx.navigateBack({
+        delta: 1
+      });
+    }
+
     this.setData({
       gLockKey: await lockUtils.geneKey("device"),
     });
@@ -120,13 +121,13 @@ Page({
     });
   },
 
-  onUnload: function () {
+  onUnload: async function () {
     console.log('取消屏幕常亮');
     wx.setKeepScreenOn({
       keepScreenOn: false
     });
     // 释放一下key
-    this.releaseLock().then();
+    await this.releaseLock();
   },
 
   async loadProcess() {
@@ -148,24 +149,6 @@ Page({
   goBack() {
     wx.navigateBack();
   },
-  // 检查权限
-  checkAuth() {
-    const that = this;
-    isManager(function (res) {
-      if (res) {
-        that.setData({
-          auth: true
-        });
-        that.loadProcess().then();
-      } else {
-        that.setData({
-          tipText: '只有管理员Level-3能进入嗷',
-          tipBtn: true,
-        });
-        console.log("Not a manager.");
-      }
-    }, 3)
-  },
 
   clickProcessBtn: async function () {
     this.data.processing = !this.data.processing;
@@ -173,6 +156,7 @@ Page({
       processing: this.data.processing
     });
     // 开始处理
+    console.log("Hi", this.data.processing);
     if (this.data.processing) {
       drawUtils.initCanvas();
       await this.beginProcess();

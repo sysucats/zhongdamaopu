@@ -1,4 +1,4 @@
-/* pages/info/userInfo/ModifyUserInfo/ModifyUserInfo.wxss */
+/* pages/info/userInfo/modifyUserInfo/modifyUserInfo.wxss */
 
 page {
   display: flex;
@@ -33,9 +33,15 @@ picker, input {
 }
 
 .label-small {
+  font-size: 28rpx;
+  color: var(--color-black-min);
+  margin-top: 30rpx;
+}
+
+.label-tip {
   font-size: 20rpx;
   color: var(--color-gray-dark);
-  margin-top: 30rpx;
+  margin-bottom: 10rpx;
 }
 
 .nickname-input {

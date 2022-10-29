@@ -28,11 +28,11 @@ module.exports = {
   ],
 
   // 赞赏码图片
-  reward_img: "cloud://rel-eeeccf.7265-rel-eeeccf-1258586139/系统/reward.jpg",
+  reward_img: "https://oss.sysucats.com:16778/6ovcqp-cat/%E7%B3%BB%E7%BB%9F/%E8%B5%9E%E8%B5%8F%E7%A0%81.jpg",
   // 新猫问卷图片
-  feedback_wj_img: "cloud://rel-eeeccf.7265-rel-eeeccf-1258586139/系统/新猫问卷.png",
+  feedback_wj_img: "https://oss.sysucats.com:16778/6ovcqp-cat/%E7%B3%BB%E7%BB%9F/%E6%96%B0%E7%8C%AB%E9%97%AE%E5%8D%B7.png",
   // 小程序菊花码图片
-  mpcode_img: "cloud://rel-eeeccf.7265-rel-eeeccf-1258586139/系统/菊花码.jpg",
+  mpcode_img: "https://oss.sysucats.com:16778/6ovcqp-cat/%E7%B3%BB%E7%BB%9F/%E8%8F%8A%E8%8A%B1%E7%A0%81.jpg",
 
   // 首页banner广告
   ad_genealogy_banner: "adunit-9a7dcb84fe2c4db1",
@@ -46,6 +46,7 @@ module.exports = {
   // 首页漂浮的领养Logo对应的状态
   cat_status_adopt_target: "寻找领养中",
 
+  // TODO: ID of msg need to change
   // 订阅消息的统一配置（只修改引号内的）
   msg: {
     //审核结果通知模板
@@ -141,12 +142,12 @@ module.exports = {
     // 提交留言页，pages/genealogy/commentBoard/commentBoard
     comment_board: {
       ban_tip: "如有误封请在\"关于-信息反馈\"中留言~",
-      auth_tip: "授权后进行留言~",
+      auth_tip: "设置头像昵称后留言~",
       comment_tip: "发条友善的留言吧~"
     },
     // 添加照片，pages/genealogy/addPhoto/addPhoto
     add_photo: {
-      auth_tip: "授权后进行上传~",
+      auth_tip: "设置头像昵称后上传~",
       uploading_tip: "正在上传...",
       success_tip_title: "上传成功！",
       success_tip_content: "审核后就会展示出来啦",
@@ -155,11 +156,11 @@ module.exports = {
     },
     // 赞赏页，pages/info/reward/reward
     reward: {
-      share_tip: "打赏罐头",
+      share_tip: "投喂罐头",
       ad_success_tip: "多谢喵(ฅ'ω'ฅ)!",
       ad_fail_tip: "没播完喵...",
-      reward_tip_title: "打赏罐头",
-      reward_tip: "您的捐款及广告收入将用作猫猫救助，每月的收支都会在“笃行志愿服务队”公众号进行公开，感谢您对中大流浪猫的帮助与支持！\n喵(^･ｪ･^)",
+      reward_tip_title: "投喂罐头",
+      reward_tip: "您的投喂及广告收入将用作猫猫救助，每月的收支都会在“笃行志愿服务队”公众号进行公开，感谢您对中大流浪猫的帮助与支持！\n喵(^･ｪ･^)",
       reward_count_tip: "* 每月统计一次，在公众号公示，多谢晒（鞠躬）",
       reward_title: "爱心捐款",
     },
@@ -202,6 +203,23 @@ module.exports = {
     // 科普页，pages/science/science
     science: {
       share_tip: "科普",
+    },
+    // 精选，pages/leaderboard/leaderboard
+    leaderboard: {
+      share_tip: "精选照片",
+    },
+    // 精选，pages/inviteUser/inviteUser
+    inviteUser: {
+      share_tip: "该分享无法激活特邀哦",
+      share_title: "[6小时内] 点击成为特邀用户~",
+      default_tip: "哦吼，这里空空如也，去首页看看猫猫吧~",
+      invite_tip: "猫猫正在检查邀请函...",
+      manager_tip: "分享至聊天，普通用户点击后将成为特邀，邀请有效期6小时~",
+      expired_title: "出问题",
+      success_title: "完成",
+      expired_tip: "邀请链接已过期...请联系管理员~",
+      already_tip: "你已经是特邀用户啦~",
+      success_tip: "`已成为特邀用户~",
     },
   }
 }

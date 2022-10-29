@@ -1,12 +1,6 @@
-const utils = require('../../../utils.js');
-const config = require('../../../config.js');
-const regeneratorRuntime = utils.regeneratorRuntime;
-const randomInt = utils.randomInt;
-const isManager = utils.isManager;
-const loadFilter = utils.loadFilter;
-
-const use_wx_cloud = config.use_wx_cloud; // 是否使用微信云，不然使用Laf云
-const cloud = use_wx_cloud ? wx.cloud : require('../../../cloudAccess.js').cloud;
+import { checkAuth } from "../../../user";
+import { loadFilter } from "../../../page";
+import { cloud } from "../../../cloudAccess";
 
 Page({
 
@@ -22,8 +16,10 @@ Page({
   /**
    * 生命周期函数--监听页面加载
    */
-  onLoad: function (options) {
-    this.checkAuth();
+  onLoad: async function (options) {
+    if (await checkAuth(this, 2)) {
+      await this.reloadFilter();
+    }
   },
 
   /**
@@ -79,75 +75,54 @@ Page({
   goBack() {
     wx.navigateBack();
   },
-  // 检查权限
-  checkAuth() {
-    const that = this;
-    isManager(function (res) {
-      if (res) {
-        that.setData({
-          auth: true
-        });
-        that.reloadFilter();
-      } else {
-        that.setData({
-          tipText: '只有管理员Level-2才能进入嗷',
-          tipBtn: true,
-        });
-        console.log("Not a manager.");
-      }
-    }, 2);
-  },
 
   // 加载数据库里的filters，应该只有一个
-  reloadFilter() {
+  async reloadFilter() {
     wx.showLoading({
       title: '加载中...',
     });
-    const that = this;
-    loadFilter().then(res => {
-      var filters = [];
-
-      var area_item = {
-        key: 'area',
-        cateKey: 'campus',
-        name: '校区',
-        category: [],
+    var filterRes = await loadFilter({nocache: true});
+    var filters = [];
+    var area_item = {
+      key: 'area',
+      cateKey: 'campus',
+      name: '校区',
+      category: [],
+    };
+    // 用个object当作字典，把area分下类
+    var classifier = {};
+    for (let i = 0, len = filterRes.campuses.length; i < len; ++i) {
+      classifier[filterRes.campuses[i]] = {
+        name: filterRes.campuses[i],
+        items: [],    // 记录属于这个校区的area
+        adding: false,
       };
-      // 用个object当作字典，把area分下类
-      var classifier = {};
-      for (let i = 0, len = res.campuses.length; i < len; ++i) {
-        classifier[res.campuses[i]] = {
-          name: res.campuses[i],
-          items: [],    // 记录属于这个校区的area
-          adding: false,
-        };
-      }
-      for (let k = 0, len = res.area.length; k < len; ++k) {
-        classifier[res.area[k].campus].items.push(res.area[k]);
-      }
-      for (let i = 0, len = res.campuses.length; i < len; ++i) {
-        area_item.category.push(classifier[res.campuses[i]]);
-      }
-      filters.push(area_item);
+    }
+    for (let k = 0, len = filterRes.area.length; k < len; ++k) {
+      classifier[filterRes.area[k].campus].items.push(filterRes.area[k]);
+    }
+    for (let i = 0, len = filterRes.campuses.length; i < len; ++i) {
+      area_item.category.push(classifier[filterRes.campuses[i]]);
+    }
+    filters.push(area_item);
 
-      var colour_item = {
-        key: 'colour',
+    var colour_item = {
+      key: 'colour',
+      name: '花色',
+      category: [{
         name: '花色',
-        category: [{
-          name: '花色',
-          items: res.colour.map(name => {
-            return { name: name };
-          }),
-          adding: false,
-        }]
-      }
-      filters.push(colour_item);
-      console.log("Filters:", filters);
-      this.setData({
-        filters: filters
-      })
-      wx.hideLoading();
+        items: filterRes.colour.map(name => {
+          return { name: name };
+        }),
+        adding: false,
+      }]
+    }
+    filters.push(colour_item);
+    console.log("[reloadFilter] -", filters);
+    this.setData({
+      filters: filters
     })
+    wx.hideLoading();
   },
 
   // 增加option
@@ -207,14 +182,14 @@ Page({
     if (new_index < 0 || new_index >= len) {
       return false;
     }
-    console.log("Move direction:", direct);
+    console.log("[moveOption] -", direct);
     const temp = category.items[index];
     category.items[index] = category.items[new_index];
     category.items[new_index] = temp;
     this.setData({ filters: filters });
   },
 
-  deleteOption(e) {
+  async deleteOption(e) {
     wx.showLoading({
       title: '检查中...',
       mask: true
@@ -230,39 +205,38 @@ Page({
     const delete_value = category.items[index];
     
     // 检查一下数据库里这个地址有没有猫，如果有就不能删
-    const that = this;
     const db = cloud.database();
     var qf = { [mainF.key]: category.items[index].name };
     if (mainF.cateKey) {
       qf[mainF.cateKey] = category.name;
     }
-    db.collection('cat').where(qf).count().then(res => {
-      console.log(res);
-      if (res.total) {
-        wx.showToast({
-          title: '无法删除有猫猫的选项',
-          icon: 'none',
-        });
-        return false;
-      }
-      // 执行删除
-      category.items = category.items.filter(val => val != delete_value);
-      this.setData({ filters: filters }, () => {
-        wx.showToast({
-          title: '删除成功',
-        });
+    var catCountRes = await db.collection('cat').where(qf).count();
+    
+    console.log("[deleteOption] -", catCountRes);
+    if (catCountRes.total) {
+      wx.showToast({
+        title: '无法删除有猫猫的选项',
+        icon: 'none',
+      });
+      return false;
+    }
+    // 执行删除
+    category.items = category.items.filter(val => val != delete_value);
+    this.setData({ filters: filters }, () => {
+      wx.showToast({
+        title: '删除成功',
       });
     });
   },
 
   // 确定上传
-  uploadFilters() {
+  async uploadFilters() {
     var filters = this.data.filters;
     // 开始上传
     wx.showLoading({
       title: '正在上传...',
     });
-    console.log("Upload filters:", filters);
+    console.log("[uploadFilters] -", filters);
     // 处理回数据库中的原始格式
     var area = [];
     var colour = [];
@@ -280,8 +254,8 @@ Page({
         }
       }
     }
-    const that = this;
-    cloud.callFunction({
+    
+    await cloud.callFunction({
       name: 'curdOp',
       data: {
         permissionLevel: 2,
@@ -293,8 +267,7 @@ Page({
           colour: colour
         }
       }
-    }).then(res => {
-      that.reloadFilter();
     });
+    await this.reloadFilter();
   }
 })

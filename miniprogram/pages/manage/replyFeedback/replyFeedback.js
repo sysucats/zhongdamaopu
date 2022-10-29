@@ -1,15 +1,8 @@
 // 处理反馈
-const utils = require('../../../utils.js');
-const regeneratorRuntime = utils.regeneratorRuntime;
-const randomInt = utils.regeneratorRuntime;
-const isManager = utils.isManager;
-const formatDate = utils.formatDate;
-
-const msg = require('../../../msg.js');
-const sendReplyNotice = msg.sendReplyNotice;
-
-const config = require('../../../config.js');
-const cloud = require('../../../cloudAccess.js').cloud;
+import { formatDate } from "../../../utils";
+import { sendReplyNotice } from "../../../msg";
+import { checkAuth } from "../../../user";
+import { cloud } from "../../../cloudAccess";
 
 Page({
 
@@ -27,8 +20,10 @@ Page({
   /**
    * 生命周期函数--监听页面加载
    */
-  onLoad: function (options) {
-    this.checkAuth(options);
+  onLoad: async function (options) {
+    if (checkAuth(this, 1)) {
+      await this.reload(options);
+    }
   },
 
   // 没有权限，返回上一页
@@ -36,39 +31,18 @@ Page({
     wx.navigateBack();
   },
 
-  // 检查权限
-  checkAuth(options) {
-    const that = this;
-    isManager(function (res) {
-      if (res) {
-        that.setData({
-          auth: true
-        });
-        that.reload(options);
-      } else {
-        that.setData({
-          tipText: '只有管理员Level-1能进入嗷',
-          tipBtn: true,
-        });
-        console.log("Not a manager.");
-      }
-    }, 1)
-  },
-
-  reload(options) {
+  async reload(options) {
     wx.showLoading({
       title: '加载中...',
     });
-    const that = this;
     const db = cloud.database();
-    db.collection('feedback').doc(options.fb_id).get().then(res => {
-      console.log(res);
-      res.data.openDateStr = formatDate(res.data.openDate, "yyyy-MM-dd hh:mm:ss");
-      that.data.feedback = res.data;
-      that.setData({
-        feedback: this.data.feedback
-      }, wx.hideLoading);
+    var res = await db.collection('feedback').doc(options.fb_id).get();
+    console.log(res);
+    res.data.openDateStr = formatDate(res.data.openDate, "yyyy-MM-dd hh:mm:ss");
+    this.setData({
+      feedback: res.data
     });
+    wx.hideLoading();
   },
 
   bindInput(e) {
@@ -87,61 +61,60 @@ Page({
       })
       return;
     }
-    const that = this;
-    wx.showModal({
+    const res = await wx.showModal({
       title: '提示',
       content: '由于微信限制，每条反馈最多只能回复1次，确定回复吗？',
-      async success(res) {
-        if (res.confirm) {
-          console.log('确认提交回复');
-          wx.showLoading({
-            title: '正在提交...',
-            mask: true
-          });
-          let res = await sendReplyNotice(that.data.feedback._openid, that.data.feedback._id);
-          console.log(res);
-          if (res.errCode == 0) {
-            // 记录一下回复的内容和时间
-            await cloud.callFunction({
-              name: "curdOp",
-              data: {
-                permissionLevel: 1,
-                operation: 'update',
-                collection: "feedback",
-                item_id: that.data.feedback._id, 
-                data: {
-                  // replyDate: new Date(),
-                  replyDate: {
-                    "$date": new Date().toISOString()
-                  },
-                  replyInfo: submitData.replyInfo,
-                } 
-              }
-            });
-
-            wx.hideLoading();
-            wx.showToast({
-              title: '回复成功',
-              icon: 'success',
-              duration: 1000,
-              success: () => {
-                setTimeout(wx.navigateBack, 1000)
-              }
-            })
-          } else {
-            wx.hideLoading();
-            wx.showToast({
-              title: '回复失败，这可能是因为对方没有订阅或次数耗尽',
-              icon: 'none',
-              duration: 1500,
-              success: () => {
-                setTimeout(wx.navigateBack, 1500)
-              }
-            });
-          }
-        }
-      }
     });
+
+    if (res.confirm) {
+      console.log('确认提交回复');
+      wx.showLoading({
+        title: '正在提交...',
+        mask: true
+      });
+      let res = await sendReplyNotice(this.data.feedback._openid, this.data.feedback._id);
+      console.log("[bindReply] - sendReplyNotice res", res);
+      const that = this;
+      if (res.errCode == 0) {
+        // 记录一下回复的内容和时间
+        await cloud.callFunction({
+          name: "curdOp",
+          data: {
+            permissionLevel: 1,
+            operation: 'update',
+            collection: "feedback",
+            item_id: that.data.feedback._id, 
+            data: {
+              // replyDate: new Date(),
+              replyDate: {
+                "$date": new Date().toISOString()
+              },
+              replyInfo: submitData.replyInfo,
+            } 
+          }
+        });
+        wx.hideLoading();
+        wx.showToast({
+          title: '回复成功',
+          icon: 'success',
+          duration: 1000,
+          success: () => {
+            setTimeout(wx.navigateBack, 1000)
+          }
+        })
+      } else {
+        wx.hideLoading();
+        wx.showToast({
+          title: '回复失败，这可能是因为对方没有订阅或次数耗尽',
+          icon: 'none',
+          duration: 1500,
+          success: () => {
+            setTimeout(wx.navigateBack, 1500)
+          }
+        });
+      }
+    }
   }
 
 })
+

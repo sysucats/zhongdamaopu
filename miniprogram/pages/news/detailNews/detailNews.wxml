@@ -1,7 +1,7 @@
 <!--pages/news/detailNews/detailNews.wxml-->
 
 <view class='loading' wx:if='{{updateRequest}}'>
-    <image src='../../../images/system/loading.gif'></image>
+    <image src='/pages/public/images/system/loading.gif'></image>
 </view>
 
 

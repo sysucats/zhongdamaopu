@@ -1,23 +1,10 @@
-const config = require('../../../config.js');
-const utils = require('../../../utils.js');
-const shareTo = utils.shareTo;
-const isManager = utils.isManager;
-const getGlobalSettings = utils.getGlobalSettings;
-const formatDate = utils.formatDate;
+import { formatDate, contentSafeCheck } from "../../../utils";
+import config from "../../../config";
+import { getPageUserInfo, getUserInfo, checkCanComment, isManagerAsync, toSetUserInfo } from "../../../user";
+import { getAvatar } from "../../../cat";
+import { getCatCommentCount } from "../../../comment";
+import { cloud } from "../../../cloudAccess";
 
-const user = require('../../../user.js');
-const getCurUserInfoOrFalse = user.getCurUserInfoOrFalse;
-const getUserInfo = user.getUserInfo;
-
-const getAvatar = require('../../../cat.js').getAvatar
-
-const getCatCommentCount = require('../../../comment.js').getCatCommentCount;
-
-const use_wx_cloud = config.use_wx_cloud; // 是否使用微信云，不然使用Laf云
-const cloud = require('../../../cloudAccess.js').cloud;
-
-// 页面设置，从global读取
-var page_settings = {};
 var cat_id;
 
 // 常用的对象
@@ -26,8 +13,6 @@ const coll_comment = db.collection('comment');
 
 // 发送锁
 var sendLock = false;
-
-const text_cfg = config.text;
 
 Page({
 
@@ -40,35 +25,40 @@ Page({
     comments: [],
     comment_count: 0,
     keyboard_height: 0,
-    text_cfg: text_cfg,
+    text_cfg: config.text,
     is_manager: false,
   },
 
   /**
    * 生命周期函数--监听页面加载
    */
-  onLoad: function (options) {
+  onLoad: async function (options) {
     cat_id = options.cat_id;
-    // 开始加载页面
-    const that = this;
-    getGlobalSettings('detailCat').then(settings => {
-      // 先把设置拿到
-      page_settings = settings;
-      // 启动加载
-      that.loadCat();
-      that.loadMoreComment();
+    if (!await checkCanComment()) {
+      wx.showToast({
+        title: '已暂时关闭..',
+        duration: 10000
+      });
+      return false;
+    }
+    this.setData({
+      canComment: true
     })
+    // 启动加载
+    await Promise.all([
+      this.loadCat(),
+      this.loadMoreComment(),
+    ]);
     
     // 是否为管理员lv.1
-    isManager(res => {
-      if (res) {
-        that.setData({
-          is_manager: true
-        })
-      } else {
-        console.log("not a manager");
-      }
-    }, 1);
+    var manager = await isManagerAsync(1);
+    if (manager) {
+      this.setData({
+        is_manager: true
+      })
+    } else {
+      console.log("not a manager");
+    }
   },
 
   /**
@@ -81,8 +71,8 @@ Page({
   /**
    * 生命周期函数--监听页面显示
    */
-  onShow: function () {
-
+  onShow: async function () {
+    await getPageUserInfo(this);
   },
 
   /**
@@ -121,19 +111,13 @@ Page({
     const cat_name = cat.name;
     const cat_avatar = cat.avatar.photo_compressed || cat.avatar.photo_id;
     return {
-      title: `${cat_name}的留言板 - ${text_cfg.app_name}`,
+      title: `${cat_name}的留言板 - ${config.text.app_name}`,
       imageUrl: cat_avatar,
     }
   },
 
   onShareTimeline: function () {
-    const cat = this.data.cat;
-    const cat_name = cat.name;
-    const cat_avatar = cat.avatar.photo_compressed || cat.avatar.photo_id;
-    return {
-      title: `${cat_name}的留言板 - ${text_cfg.app_name}`,
-      imageUrl: cat_avatar,
-    }
+    return this.onShareAppMessage();
   },
 
   bindCommentScroll(e) {
@@ -186,20 +170,8 @@ Page({
   },
 
   // 授权个人信息
-  getUInfo() {
-    const that = this;
-    // 检查用户信息有没有拿到，如果有就更新this.data
-    getCurUserInfoOrFalse().then(res => {
-      if (!res) {
-        console.log('未授权');
-        return;
-      }
-      console.log(res);
-      that.setData({
-        isAuth: true,
-        user: res,
-      });
-    });
+  async getUInfo() {
+    await toSetUserInfo();
   },
 
   // 发送留言
@@ -232,7 +204,7 @@ Page({
     if (user.cantComment) {
       wx.showModal({
         title: "无法留言",
-        content: text_cfg.comment_board.ban_tip,
+        content: config.text.comment_board.ban_tip,
         showCancel: false,
       })
       that.doSendCommentEnd();
@@ -241,17 +213,17 @@ Page({
     
     // 插入留言
     const that = this;
+    const create_date = new Date();
     var item = {
       content: content,
       user_openid: user.openid,
-      create_date: new Date(),
-      // create_date: {
-      //   "$date": new Date().toISOString()
-      // },
+      create_date: {
+        "$date": create_date.toISOString()
+      },
       cat_id: cat_id,
     };
 
-    const checkRes = await utils.contentSafeCheck(content, user.userInfo.nickName);
+    const checkRes = await contentSafeCheck(content, user.userInfo.nickName);
     if (!checkRes) {
       // 没有检测出问题
       this.addComment(item, user);
@@ -283,7 +255,7 @@ Page({
         // 插入最新留言 + 清空输入框
         console.log(item);
         item.userInfo = user.userInfo;
-        item.datetime = formatDate(item.create_date, "yyyy-MM-dd hh:mm:ss")
+        item.datetime = formatDate(new Date(item.create_date["$date"]), "yyyy-MM-dd hh:mm:ss")
         var comments = that.data.comments;
         comments.unshift(item);
         that.setData({

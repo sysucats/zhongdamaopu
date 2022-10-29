@@ -1,11 +1,9 @@
 // miniprogram/pages/news/news.js
-
-const utils = require('../../utils.js');
-const config = require('../../config.js');
-const cloud = require('../../cloudAccess.js').cloud;
-
-const isManager = utils.isManager;
-const text_cfg = config.text;
+import { sleep } from "../../utils.js";
+import { text as text_cfg, science_imgs } from "../../config";
+import { checkAuth } from "../../user";
+import { showTab } from "../../page";
+import { cloud } from "../../cloudAccess";
 const share_text = text_cfg.app_name + ' - ' + text_cfg.science.share_tip;
 
 
@@ -15,52 +13,54 @@ Page({
     newsList: [],
     newsList_show: [],
     updateRequest: false,
-    showManager: false,
+    auth: false,
     buttons: [{
       id: -1,
       name: '全部',
       checked: true,
-      logo: '../../images/news/all.png'
+      logo: '/pages/public/images/news/all.png'
     }, {
       id: 0,
       name: '领养',
       checked: false,
-      logo: '../../images/news/adopt.png'
+      logo: '/pages/public/images/news/adopt.png'
     }, {
       id: 1,
       name: '救助',
       checked: false,
-      logo: '../../images/news/help.png'
+      logo: '/pages/public/images/news/help.png'
     }, {
       id: 2,
       name: '活动',
       checked: false,
-      logo: '../../images/news/activity.png'
+      logo: '/pages/public/images/news/activity.png'
     }, {
       id: 3,
       name: '其他',
       checked: false,
-      logo: '../../images/news/other.png'
+      logo: '/pages/public/images/news/other.png'
     }],
   },
 
   /**
    * 生命周期函数--监听页面加载
    */
-  onLoad: function (options) {
-    const that = this;
+  onLoad: async function (options) {
     const db = cloud.database();
-    db.collection('news').orderBy('date', 'desc').get().then(res => {
-      that.setData({
-        newsList: res.data,
-        newsList_show: res.data,
-      })
-      console.log("News:", res);
-    });
-    this.checkAuth();
+    var res = await db.collection('news').orderBy('date', 'desc').get();
+
+    this.setData({
+      newsList: res.data,
+      newsList_show: res.data,
+    })
+    await checkAuth(this, 2);
 
     // 科普部分
     this.setSciImgs();
+  },
+  onShow: function () {
+    // 切换自定义tab
+    showTab(this);
   },
 
   /**
@@ -79,8 +79,6 @@ Page({
     }
   },
 
-
-
   /**
    * 页面相关事件处理函数--监听用户下拉动作
    */
@@ -97,23 +95,23 @@ Page({
   },
 
   // 重新载入数据库
-  getData() {
+  async getData() {
     const that = this;
     const db = cloud.database();
-    db.collection('news').orderBy('date', 'desc').get().then(res => {
-      that.setData({
-        newsList: res.data,
-      });
-      that.filterNews();
+    const res = await db.collection('news').orderBy('date', 'desc').get();
+
+    that.setData({
+      newsList: res.data,
     });
+    await that.filterNews();
 
     wx.stopPullDownRefresh();
 
-    setTimeout(function () {
-      that.setData({
-        updateRequest: false,
-      })
-    }, 1000)
+    await sleep(1000);
+
+    this.setData({
+      updateRequest: false,
+    });
   },
 
   clickNews(e) {
@@ -134,17 +132,6 @@ Page({
     wx.navigateTo({
       url: '/pages/news/createNews/createNews',
     });
-  },
-
-  checkAuth() {
-    const that = this;
-    isManager(function (res) {
-      if (res) {
-        that.setData({
-          showManager: true
-        });
-      }
-    }, 2)
   },
 
   filterNews() {
@@ -170,12 +157,12 @@ Page({
       this.setData({
         newsList_show: newsList_show,
       })
-      console.log("Filter for New: ", newsList_show);
+      console.log("[filterNews] -", newsList_show);
     }
   },
 
   radioButtonTap: function (e) {
-    console.log("Radio Button Tap: ", e);
+    console.log("[radioButtonTap] -", e);
     let id = e.currentTarget.dataset.id;
     for (let i = 0; i < this.data.buttons.length; i++) {
       if (this.data.buttons[i].id == id) {
@@ -193,26 +180,20 @@ Page({
   // 科普轮播图相关代码
 
   setSciImgs() {
-    const sciImgList = config.science_imgs;
+    const sciImgList = science_imgs;
     const cacheKey = 'sciImgStorage';
     const dataKey = 'images';
 
     const fileSystem = wx.getFileSystemManager();
-    const that = this;
-
+    
     var cachePathList = wx.getStorageSync(cacheKey);
-
-    fileSystem.access({
-      path: cachePathList[0],
-      success: res => {
-        that.useCacheImg(cacheKey, dataKey);
-      },
-      fail: res => {
-        // console.log("accessFileFail",res);
-        that.useCloudImg(sciImgList, dataKey);
-        that.cacheCloudImg(cacheKey, sciImgList);
-      }
-    });
+    try {
+      fileSystem.accessSync(cachePathList[0]);
+      this.useCacheImg(cacheKey, dataKey);
+    } catch(e) {
+      this.useCloudImg(sciImgList, dataKey);
+      this.cacheCloudImg(cacheKey, sciImgList);
+    }
   },
 
   useCacheImg(cacheKey, dataKey) {
@@ -227,34 +208,28 @@ Page({
     })
   },
 
-  cacheCloudImg(cacheKey, imgUrlList) { // 下载并缓存封面
+  async cacheCloudImg(cacheKey, imgUrlList) { // 下载并缓存封面
     const fileSystem = wx.getFileSystemManager();
-    var promiseAll = new Array(imgUrlList.length);
+    var promiseAll = [];
     var cachePathList = [];
-
+    
     for (let i = 0; i < imgUrlList.length; i++) {
-      promiseAll[i] = new Promise(function (resolve, reject) {
-        cloud.downloadFile({
-          fileID: imgUrlList[i],
-          success: function (res) {
-            resolve(res);
-          },
-          fail: res => reject(res)
-        })
-      });
+      promiseAll.push(cloud.downloadFile({
+        fileID: imgUrlList[i],
+      }));
     }
 
-    Promise.all(promiseAll).then(res => {
-      console.log("proAll:",res);
-      for(let i = 0; i < res.length; i++){
-        var savedFilePath = fileSystem.saveFileSync(res[i].tempFilePath);
-        cachePathList.push(savedFilePath);
-      }
-      wx.setStorage({
-        key: cacheKey,
-        data: cachePathList
-      });
-    })
+    var res = await Promise.all(promiseAll);
+
+    console.log("[cacheCloudImg] -",res);
+    for(let i = 0; i < res.length; i++){
+      var savedFilePath = fileSystem.saveFileSync(res[i].tempFilePath);
+      cachePathList.push(savedFilePath);
+    }
+    wx.setStorage({
+      key: cacheKey,
+      data: cachePathList
+    });
   },
 
   gotoSciDetail(e) {

@@ -1,9 +1,6 @@
 // miniprogram/pages/manage/managers.js
-const utils = require('../../../utils.js');
-const isManager = utils.isManager;
-
-const config = require('../../../config.js');
-const cloud = require('../../../cloudAccess.js').cloud;
+import { checkAuth } from "../../../user";
+import { cloud } from "../../../cloudAccess";
 
 // 是否正在加载
 var loading = false;
@@ -20,14 +17,16 @@ Page({
     managerOnly: false,
     users: [],
     windowHeight: "300",
-    manager_types: ['0-非管理员', '1-审核照片、删除留言', '2-修改猫猫、校区、关系', '3-处理图片、发布公告', '99-管理成员']
+    manager_types: ['0-非管理员', '1-审核照片、删除留言', '2-修改猫猫、校区、关系', '3-处理图片、发布公告', '99-管理成员、页面设置']
   },
   /**
    * 生命周期函数--监听页面加载
    */
-  onLoad: function (options) {
-    this.checkAuth();
-    this.getHeights();
+  onLoad: async function (options) {
+    if (await checkAuth(this, 99)) {
+      await this.loadUsers(true);
+      this.getHeights();
+    }
   },
 
   /**
@@ -82,31 +81,12 @@ Page({
   goBack() {
     wx.navigateBack();
   },
-  // 检查权限
-  checkAuth() {
-    const that = this;
-    isManager(function (res) {
-      if (res) {
-        that.setData({
-          auth: true
-        });
-        that.loadUsers(true);
-      } else {
-        that.setData({
-          tipText: '只有管理员Level-99能进入嗷',
-          tipBtn: true,
-        });
-        console.log("Not a manager.");
-      }
-    }, 99)
-  },
 
   // 读取用户列表
-  loadUsers: function(reload=false) {
+  loadUsers: async function(reload) {
     if (loading) {
       return false;
     }
-    const that = this;
     const db = cloud.database();
     var users = this.data.users;
     loading = true;
@@ -121,34 +101,35 @@ Page({
     if (this.data.managerOnly) {
       query["manager"] = db.command.gt(0);
     }
+    if (this.data.role1Only) {
+      query["role"] = db.command.gt(0);
+    }
     console.log("query", query);
-    db.collection('user').where(query).skip(users.length).limit(10).get().then(res => {
-      console.log(res);
-      wx.hideLoading();
-      if (reload) {
-        users = res.data;
-      } else {
-        if (!res.data.length) {
-          wx.showToast({
-            title: '加载完啦',
-            icon: 'none',
-          })
-          loading = false;
-          return;
-        }
-        users = users.concat(res.data);
-      }
-      that.setData({
-        users: users
-      }, ()=>{
+    var userRes = await db.collection('user').where(query).skip(users.length).limit(10).get();
+    console.log(userRes);
+    wx.hideLoading();
+    if (reload) {
+      users = userRes.data;
+    } else {
+      if (!userRes.data.length) {
+        wx.showToast({
+          title: '加载完啦',
+          icon: 'none',
+        })
         loading = false;
-      });
+        return;
+      }
+      users = users.concat(userRes.data);
+    }
+    this.setData({
+      users: users
     });
+    loading = false;
   },
 
   // 滑到底部来reload
-  scrollToReload: function(e) {
-    this.loadUsers();
+  scrollToReload: async function(e) {
+    await this.loadUsers();
   },
 
   fSearchInput: function (e) {
@@ -159,28 +140,25 @@ Page({
   },
 
   // 搜索
-  fSearch: function(e) {
+  fSearch: async function(e) {
     this.data.users = [];
-    this.loadUsers(true);
+    await this.loadUsers(true);
   },
 
   // 筛选条件复选框
-  filterChange(e) {
+  async filterChange(e) {
     let filters = e.detail.value;
     this.data.managerOnly = filters.indexOf('manager-only') != -1;
+    this.data.role1Only = filters.indexOf('role1-only') != -1;
     this.data.users = [];
-    this.loadUsers(true);
+    await this.loadUsers(true);
   },
 
   // 获取一下页面高度，铺满scroll-view
   getHeights() {
-    wx.getSystemInfo({
-      success: res => {
-        console.log(res);
-        this.setData({
-          "windowHeight": res.windowHeight,
-        });
-      }
+    const res = wx.getSystemInfoSync();
+    this.setData({
+      "windowHeight": res.windowHeight,
     });
   },
 
@@ -197,14 +175,6 @@ Page({
       level = 99;
     }
     console.log("#"+index, _id, level);
-    
-    if(level > 99){
-      wx.showToast({
-        title: '最高权限等级为99！\r\n' + res.msg,
-        icon: 'none',
-      })
-      return;
-    }
 
     cloud.callFunction({
       name: "curdOp",

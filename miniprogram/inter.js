@@ -1,70 +1,96 @@
-const getUser = require("./user.js").getUser;
-
-const cloud = require('./cloudAccess.js').cloud;
+import { getUser } from "./user";
+import { getCacheItem, setCacheItem, cacheTime } from "./cache";
+import { cloud } from "./cloudAccess";
 
 // 常用的一些对象
 const db = cloud.database();
 const _ = db.command;
 const coll_inter = db.collection('inter');
 var user = undefined;
-getUser().then((res) => {user = res;});
+
+async function ensureUser() {
+  if (user) {
+    return;
+  }
+  user = await getUser();
+  return;
+}
 
 // 定义数据库常量：
 const TYPE_LIKE = 10000;
 
-// 请求点赞记录
-async function like_get(item_id) {
-  return (await coll_inter.where({type: TYPE_LIKE, uid: user.openid, item_id: item_id}).get()).data;
+// 获取缓存key
+function _getLikeCacheKey(item_id) {
+  return `like-item-${item_id}`;
 }
 
-// 检查是否有点赞记录，item可以是photo、cat、comment
-async function like_check(item_id) {
-  var res = await like_get(item_id);
-  // 后续可能会支持点赞取消，用count来表示点赞次数
-  return res.length > 0 && res[0].count > 0;
+// 批量请求点赞记录，每个用户只能对每个item点赞一次，所以这里用Get判断是合适的
+async function _likeGet(item_ids) {
+  if (!item_ids) {
+    return [];
+  }
+  await ensureUser();
+  return (await coll_inter.where({type: TYPE_LIKE, uid: user.openid, item_id: _.in(item_ids)}).get()).data;
 }
+
+// 批量检查是否有点赞记录，item可以是photo、cat、comment
+async function likeCheck(item_ids, options) {
+  if (!item_ids) {
+    return undefined;
+  }
+
+  var found = {};
+  var not_found = [];
+
+  for (var item_id of item_ids) {
+    var cacheKey = _getLikeCacheKey(item_id);
+    var cacheItem = getCacheItem(cacheKey, options);
+    if (cacheItem) {
+      found[item_id] = cacheItem;
+      continue;
+    }
+    not_found.push(item_id);
+  }
+
+  var res = await _likeGet(not_found);
+  for (var x of res) {
+    var cacheKey = _getLikeCacheKey(x.item_id);
+    setCacheItem(cacheKey, x, cacheTime.likeItem);
+    found[x.item_id] = x.count > 0;
+  }
+  // 后续可能会支持点赞取消，用count来表示点赞次数
+  return item_ids.map(x => Boolean(found[x]));
+}
+
 
 // 点赞操作
-async function like_add(item_id, item_type) {
-  var res = await like_get(item_id);
+async function likeAdd(item_id, item_type) {
+  var res = (await likeCheck([item_id]))[0];
+  console.log(res);
   // 已经赞过
-  if (res.length > 0 && res[0].count > 0) {
+  if (res) {
     return false;
   }
-  
-  // 已有记录，但是不是点赞的
-  if (res.length > 0) {
-    await cloud.callFunction({
-      name: "curdOp",
+
+  // 没有记录
+  await ensureUser();
+  await cloud.callFunction({
+    name: "curdOp",
+    data: {
+      operation: "add",
+      collection: "inter",
       data: {
-        operation: "update",
-        collection: "inter",
-        item_id: res[0]._id,
-        data: {
-          count: 1
-        }
+        type: TYPE_LIKE,
+        uid: user.openid,
+        item_id: item_id,
+        count: 1
       }
-    });
-  } else {
-    // 没有记录
-    await cloud.callFunction({
-      name: "curdOp",
-      data: {
-        operation: "add",
-        collection: "inter",
-        data: {
-          type: TYPE_LIKE,
-          uid: user.openid,
-          item_id: item_id,
-          count: 1
-        }
-      }
-    });
-  }
+    }
+  });
 
   // 加上去
   console.log("like", item_type, item_id);
-  const result = await cloud.callFunction({
+  await cloud.callFunction({
     name: "curdOp",
     data: {
       operation: "inc",
@@ -74,10 +100,14 @@ async function like_add(item_id, item_type) {
     }
   });
 
-  return result.ok;
+  // 刷新缓存
+  await likeCheck([item_id], {
+    nocache: true
+  });
+  return true;
 }
 
 module.exports = {
-  like_check,
-  like_add,
+  likeCheck,
+  likeAdd,
 }

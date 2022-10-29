@@ -1,6 +1,5 @@
-const sha256 = require('./packages/sha256/sha256.js');
-
-const cloud = require('./cloudAccess.js').cloud;
+import { hex_sha256 } from "./packages/sha256/sha256";
+import { cloud } from "./cloudAccess";
 
 function randomInt(min, max) {
   return Math.floor(Math.random() * (max - min)) + min;
@@ -15,31 +14,6 @@ function generateUUID() {
   });
   return uuid;
 };
-
-function loadFilter() {
-  return new Promise(function(resolve, reject) {
-    const db = cloud.database();
-    db.collection('setting').doc('filter').get().then(res => {
-      resolve(res.data);
-    })
-  });
-}
-
-function isManager(callback, req=1) {
-  // 这里的callback将接受一个参数res，
-  // 为bool类型，当前用户为manager时为true，
-  // 否则为false
-  // req是要求的等级，是一个整数值
-  cloud.callFunction({
-    name: 'isManager',
-    data: {
-      req: req
-    }
-  }).then(res => {
-    // console.log(res);
-    callback(res);
-  });
-}
 
 function isWifi(callback) {
   // 检查是不是Wifi网络正在访问
@@ -88,25 +62,6 @@ function getCurrentPath(pagesStack) {
   return path;
 }
 
-// 获取全局的设置
-function getGlobalSettings(key) {
-  return new Promise(function (resolve, reject) {
-    const app = getApp();
-    if (app.globalData.settings) {
-      resolve(app.globalData.settings[key]);
-      return;
-    }
-
-    // 如果没有，那就获取一下
-    const db = cloud.database();
-    db.collection('setting').doc('pages').get().then(res => {
-      app.globalData.settings = res.data;
-      resolve(app.globalData.settings[key]);
-    });
-  });
-}
-
-
 // 判断两个userInfo是否相同，初级版
 function userInfoEq(a, b) {
   try {
@@ -134,7 +89,6 @@ function regReplace(raw) {
 }
 
 function formatDate(date, fmt) {
-  var date = new Date(date);
   var o = {
     "M+": date.getMonth() + 1, //月份 
     "d+": date.getDate(), //日 
@@ -180,32 +134,6 @@ function checkUpdateVersion() {
   })
 }
 
-
-/*
-* 检查是否开启上传通道（返回true为开启上传）
-*/
-async function checkCanUpload() {
-  // 如果是管理员，开启
-  let manager = (await cloud.callFunction({
-    name: 'isManager',
-    data: {
-      req: 1
-    }
-  }));
-
-
-  let manageUpload = (await getGlobalSettings('detailCat')).manageUpload;
-  if (manager && manageUpload) {
-    return true;
-  }
-
-  // 加载设置、关闭上传功能
-  const app = getApp();
-  let cantUpload = (await getGlobalSettings('detailCat')).cantUpload;
-  return (cantUpload !== '*') && (cantUpload !== app.globalData.version);
-}
-
-
 // 切分org的filter
 function splitFilterLine(line) {
   if (!line) {
@@ -234,6 +162,12 @@ function getDeltaHours(lastTime) {
   return deltaHours;
 }
 
+function getDateWithDiffHours(diff) {
+  var res = new Date();
+  res.setHours(res.getHours() + diff);
+  return res;
+}
+
 async function arrayResort(oriArray) {
   var resortedArray = [];
   var len = oriArray.length;
@@ -248,20 +182,21 @@ async function arrayResort(oriArray) {
 
 
 // 检查部署情况，有错误就跳转到部署帮助页
-function checkDeploy() {
-  return new Promise(function (resolve, reject) {
-    try {
-      const db = cloud.database();
-      db.collection('setting').doc('pages').get().then(res => {
-        resolve(true);
-      });
-      
-    } catch (error) {
-      resolve(false);
-    }
-  });
+async function checkDeploy() {
+  try {
+    const db = cloud.database();
+    await db.collection('setting').doc('pages').get();
+  } catch (error) {
+    return false
+  }
+  
+  return true;
 }
 
+// 等待时间（ms）
+const sleep = m => new Promise(r => setTimeout(r, m))
+
+// 内容安全检查
 async function contentSafeCheck(content, nickName) {
   const label_type = {
     100: "正常",
@@ -286,19 +221,17 @@ async function contentSafeCheck(content, nickName) {
     },
   });
   // 检测接口的返回
-  console.log(res);
-  if (res.errcode == 0 && res.result.suggest == "pass") {
-    return;
+  console.log("contentSafeCheck", res);
+  if (res.errcode != 0) {
+    const label_code = res.result.label;
+    const label = label_type[label_code];
+    return {
+      title: "内容检测未通过",
+      content: `涉及[${label_code}]${label}内容，请修改嗷~~`,
+      showCancel: false,
+    };
   }
-  // 内容检测未通过
-  console.log(res.result.label);
-  const label_code = res.result.label;
-  const label = label_type[label_code];
-  return {
-    title: "内容检测未通过",
-    content: `涉及[${label_code}]${label}内容，请修改嗷~~`,
-    showCancel: false,
-  };
+  return;
 }
 
 // 字符串的字节长度
@@ -314,26 +247,30 @@ String.prototype.gblen = function() {
   return len;  
 }
 
+// 深拷贝
+function deepcopy(obj) {
+  return JSON.parse(JSON.stringify(obj))
+}
+
 module.exports = {
-  sha256,
+  hex_sha256,
   randomInt,
   generateUUID,
-  loadFilter,
-  isManager,
   isWifi,
   shuffle,
   shareTo,
   getCurrentPath,
-  getGlobalSettings,
   userInfoEq,
   regReplace,
   formatDate,
   checkUpdateVersion,
-  checkCanUpload,
   splitFilterLine,
   checkMultiClick,
   getDeltaHours,
   arrayResort,
   checkDeploy,
+  getDateWithDiffHours,
+  sleep,
   contentSafeCheck,
+  deepcopy,
 };

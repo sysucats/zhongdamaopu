@@ -1,8 +1,6 @@
-const formatDate = require("./utils").formatDate;
-const arrayResort = require("./utils").arrayResort;
-const msgConfig = require("./config").msg;
-
-const cloud = require('./cloudAccess.js').cloud;
+import { formatDate, arrayResort } from "./utils";
+import { msg as msgConfig } from "./config";
+import { cloud } from "./cloudAccess";
 
 // 订阅请求
 async function requestNotice(template) {
@@ -83,7 +81,7 @@ function sendVerifyNotice(notice_list) {
         templateId: cfg.id,
         page: 'pages/genealogy/genealogy',
       }
-    });  
+    });
   }
 }
 
@@ -116,6 +114,7 @@ async function sendReplyNotice(openid, fb_id) {
       page: 'pages/info/feedback/myFeedback/myFeedback',
     }
   });
+
   return res;
 }
 
@@ -164,6 +163,7 @@ async function sendNotifyVertifyNotice(numUnchkPhotos) {
         page: 'pages/manage/checkPhotos/checkPhotos',
       }
     });
+
     if (res.errCode === 0) {
       receiverCounter += 1;
       if (receiverCounter >= maxReceiverNum) {

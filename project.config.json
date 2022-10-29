@@ -22,8 +22,6 @@
     "compileHotReLoad": false,
     "lazyloadPlaceholderEnable": false,
     "useMultiFrameRuntime": true,
-    "useApiHook": true,
-    "useApiHostProcess": true,
     "babelSetting": {
       "ignore": [],
       "disablePlugins": [],
@@ -38,20 +36,14 @@
     "minifyWXML": true,
     "showES6CompileOption": false,
     "useCompilerPlugins": false,
-    "ignoreUploadUnusedFiles": true
+    "ignoreDevUnusedFiles": false,
+    "ignoreUploadUnusedFiles": false
   },
-  "appid": "wx1b733685bf7904be",
-  "projectname": "zhongdamaopu",
-  "libVersion": "2.19.6",
   "simulatorType": "wechat",
   "simulatorPluginLibVersion": {},
   "compileType": "miniprogram",
   "cloudfunctionTemplateRoot": "cloudfunctionTemplate/",
   "srcMiniprogramRoot": "miniprogram/",
-  "packOptions": {
-    "ignore": [],
-    "include": []
-  },
   "editorSetting": {
     "tabIndent": "insertSpaces",
     "tabSize": 2
@@ -175,5 +167,10 @@
         }
       ]
     }
-  }
+  },
+  "packOptions": {
+    "ignore": [],
+    "include": []
+  },
+  "appid": "wx1b733685bf7904be"
 }

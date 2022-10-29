@@ -1,13 +1,6 @@
-// pages/info/feedback/myFeedback/myFeedback.js
-
-const utils = require('../../../../utils.js');
-const formatDate = utils.formatDate;
-const user = require('../../../../user.js');
-const getUser = user.getUser;
-
-
-// 是否使用微信云，不然使用Laf云
-const cloud = require('../../../../cloudAccess.js').cloud;
+import { formatDate } from "../../../../utils";
+import { getUser } from "../../../../user";
+import { cloud } from "../../../../cloudAccess";
 
 var currentUser;
 
@@ -42,19 +35,16 @@ Page({
     });
     const that = this;
     const db = cloud.database();
-    db.collection('feedback').where({
+    const countRes = await db.collection('feedback').where({
       _openid: currentUser.openid
-    }).count().then(res => {
-      console.log("Reload Feedback:", res);
-      this.data.total = res.total;
-      this.data.feedbacks = []; // 清空，loadFeedbacks再填充
-      that.setData({
-        total: this.data.total,
-      });
-      that.loadFeedbacks().then(() => {
-        wx.hideLoading();
-      });
+    }).count();
+    that.setData({
+      total: countRes.total,
     });
+    // 清空，loadFeedbacks再填充
+    this.data.feedbacks = [];
+    await this.loadFeedbacks();
+    wx.hideLoading();
   },
 
   async loadFeedbacks() {
@@ -63,7 +53,7 @@ Page({
     var feedbacks = (await db.collection('feedback').where({
       _openid: currentUser.openid
     }).orderBy('openDate', 'desc').skip(nowLoaded).limit(step).get()).data;
-    console.log("Load Feedback:", feedbacks);
+    console.log(feedbacks);
     // 获取对应猫猫信息；将Date对象转化为字符串；判断是否已回复
     for (let i = 0; i < feedbacks.length; ++i) {
       if (feedbacks[i].cat_id != undefined) {
