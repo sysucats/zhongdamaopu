@@ -26,13 +26,6 @@ Page({
     this.setData({
       friendApps: friendLinkRes.data.apps,
     });
-
-    // 设置为特邀用户
-    const {query} = wx.getLaunchOptionsSync();
-    console.log("query", query);
-    if (query.inviteRole) {
-      this.doInviteRole(options);
-    }
   },
 
   // 用 onShow 不用 onLoad，为了在返回这个页面时也能重新加载
