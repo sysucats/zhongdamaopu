@@ -207,12 +207,11 @@ Page({
         content: config.text.comment_board.ban_tip,
         showCancel: false,
       })
-      that.doSendCommentEnd();
+      this.doSendCommentEnd();
       return false;
     }
     
     // 插入留言
-    const that = this;
     const create_date = new Date();
     var item = {
       content: content,
@@ -226,7 +225,7 @@ Page({
     const checkRes = await contentSafeCheck(content, user.userInfo.nickName);
     if (!checkRes) {
       // 没有检测出问题
-      this.addComment(item, user);
+      await this.addComment(item, user);
       return
     }
     
@@ -239,46 +238,45 @@ Page({
     sendLock = false;
   },
 
-  addComment(item, user) {
-    const that = this;
-    
-    cloud.callFunction({
+  async addComment(item, user) {
+    var res = await cloud.callFunction({
       name: "curdOp", 
       data: {
         operation: "add",
         collection: "comment",
         data: item
       }
-    }).then(res => {
-      if(res.ok){
-        console.log("curdOp(add-Comment) result): ", res, user);
-        // 插入最新留言 + 清空输入框
-        console.log(item);
-        item.userInfo = user.userInfo;
-        item.datetime = formatDate(new Date(item.create_date["$date"]), "yyyy-MM-dd hh:mm:ss")
-        var comments = that.data.comments;
-        comments.unshift(item);
-        that.setData({
-          comment_input: "",
-          comments: comments,
-        });
-
-        // 显示success toast
-        that.doSendCommentEnd();
-        wx.showToast({
-          title: '留言成功~',
-        });
-      }
-      else{
-        wx.showModal({
-          title: "留言失败",
-          content: "请开发者检查“comment”云数据库是否创建，权限是否设置为“双true”",
-          showCancel: false,
-        })
-        console.error(res);
-        that.doSendCommentEnd();
-      }
     })
+    
+    if(res.ok){
+      console.log("curdOp(add-Comment) result): ", res, user);
+      // 插入最新留言 + 清空输入框
+      console.log(item);
+      item.userInfo = user.userInfo;
+      item.datetime = formatDate(new Date(item.create_date["$date"]), "yyyy-MM-dd hh:mm:ss")
+      var comments = this.data.comments;
+      comments.unshift(item);
+      this.setData({
+        comment_input: "",
+        comments: comments,
+        comment_count: this.data.comment_count + 1,
+      });
+
+      // 显示success toast
+      this.doSendCommentEnd();
+      wx.showToast({
+        title: '留言成功~',
+      });
+    }
+    else{
+      wx.showModal({
+        title: "留言失败",
+        content: "请开发者检查“comment”云数据库是否创建，权限是否设置为“双true”",
+        showCancel: false,
+      })
+      console.error(res);
+      this.doSendCommentEnd();
+    }
     
   },
 
