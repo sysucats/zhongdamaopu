@@ -61,6 +61,7 @@ Page({
   changeCate(e) {
     // 这个cate是0~n范围内的
     const cate = e.detail.current;
+    console.log("ChangeCate", cate);
     this.setData({
       cate_active: cates[cate]
     });

@@ -5,7 +5,6 @@ import { text as text_cfg } from "../../../config";
 import { cloud } from "../../../cloudAccess";
 
 Page({
-
   /**
    * 页面的初始数据
    */

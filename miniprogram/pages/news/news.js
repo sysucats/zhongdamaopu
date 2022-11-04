@@ -96,14 +96,13 @@ Page({
 
   // 重新载入数据库
   async getData() {
-    const that = this;
     const db = cloud.database();
     const res = await db.collection('news').orderBy('date', 'desc').get();
 
-    that.setData({
+    this.setData({
       newsList: res.data,
     });
-    await that.filterNews();
+    await this.filterNews();
 
     wx.stopPullDownRefresh();
 

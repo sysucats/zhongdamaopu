@@ -11,19 +11,19 @@ exports.main = async (event, context) => {
   }
   const wxContext = cloud.getWXContext();
   const openid = wxContext.OPENID;
-  const isManager = (await cloud.callFunction({ name: 'isManager', data: { openid: openid, req: 2 } }));
+  const isManager = (await cloud.callFunction({ name: 'isManager', data: { openid: openid, req: 99 } }));
   if (!isManager.result) {
     return { msg: 'not a manager', result: isManager };
   }
 
   
-  const filter_id = event.filter_id;
+  const doc_id = event.doc_id;
   var to_upload = event.to_upload;
   
   to_upload.openid = wxContext.OPENID;
 
   const db = cloud.database();
-  return db.collection('setting').doc('filter').update({
+  return db.collection('setting').doc(doc_id).update({
     data: to_upload
   });
 }

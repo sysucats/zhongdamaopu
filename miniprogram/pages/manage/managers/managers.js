@@ -214,5 +214,5 @@ Page({
     this.setData({
       ["users[" + index + "].manager"]: value
     });
-  }
+  },
 })

@@ -274,6 +274,7 @@ Page({
   },
   async loadPickers() {
     var filterRes = await loadFilter();
+    console.log(filterRes);
     // 把area按campus分类
     var area_category = {};
     for (const campus of filterRes.campuses) {

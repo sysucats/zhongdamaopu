@@ -82,7 +82,7 @@ exports.main = async (event, context) => {
   assert(app_name != undefined, "empty app_name!");
   if (event.deploy_test === true) {
     // 进行部署检查
-    return;
+    return "v1.0";
   }
   const limit_num = event.limit_num || 30;
   const qf = { photo_compressed: _.in([undefined, '']), verified: true, photo_id: /^((?!\.heic$).)*$/i };

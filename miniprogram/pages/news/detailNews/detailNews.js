@@ -26,7 +26,6 @@ Page({
     this.setData({
       news_id: options.news_id
     })
-
     await Promise.all([
       this.loadNews(),
       checkAuth(this, 2)
@@ -38,28 +37,6 @@ Page({
     })
 
   },
-
-    /**
-     * 页面相关事件处理函数--监听用户下拉动作
-     */
-    onPullDownRefresh: function () {
-        this.onRefresh();
-    },
-
-    // 下拉刷新
-    onRefresh() {
-        this.setData({
-            updateRequest: true
-        })
-        this.loadNews();
-        const that = this;
-        setTimeout(function () {
-            that.setData({
-                updateRequest: false
-            })
-        }, 1000)
-        wx.stopPullDownRefresh();
-    },
 
     /**
      * 用户点击右上角分享

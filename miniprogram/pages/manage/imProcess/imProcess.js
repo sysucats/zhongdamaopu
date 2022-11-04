@@ -12,7 +12,7 @@ const compressLength = 500; // 压缩图的最长边大小
 
 
 Page({
-
+  
   /**
    * 页面的初始数据
    */
@@ -94,19 +94,15 @@ Page({
       cancelColor: '#cd0000',
       confirmText: '离开',
       confirmColor: '#32cd32',
-      success: (res) => {
-        if (res.cancel) {
-          that.checkAuth();
-        } else {
-          wx.navigateBack({
-            delta: 1
-          });
-        }
-      },
-      fail: (err) => {
-        console.log(err);
-      }
     });
+    
+    if (res.cancel && (await checkAuth(this, 3))) {
+      await this.loadProcess();
+    } else {
+      wx.navigateBack({
+        delta: 1
+      });
+    }
   },
 
   onShow: function () {
@@ -182,8 +178,8 @@ Page({
 
       if (!photos.length) {
         wx.showModal({
-          title: '处理完成',
-          content: '没有等待处理的猫图啦',
+          title: '等待操作',
+          content: '继续处理请点击按钮',
           showCancel: false,
         });
         break;

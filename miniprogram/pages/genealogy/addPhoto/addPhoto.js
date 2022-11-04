@@ -50,7 +50,7 @@ Page({
 
     // 获取一下现在的日期，用在拍摄日前选择上
     const today = new Date();
-    var now_date = today.getFullYear() + '-' + (today.getMonth()+1) + '-' + today.getDate();
+    var now_date = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
     this.setData({
       now_date: now_date
     });
@@ -220,7 +220,7 @@ Page({
     })).result;
     console.log("curdOp(add-photo) result:", dbAddRes);
   },
-  
+
   pickDate(e) {
     console.log(e);
     const index = e.currentTarget.dataset.index;

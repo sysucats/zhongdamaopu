@@ -38,7 +38,7 @@ module.exports = {
   ad_genealogy_banner: "adunit-9a7dcb84fe2c4db1",
   // 识猫banner广告
   ad_recognize_banner: "adunit-1b69cda0d1b8c703",
-  // 打赏video广告
+  // 投喂video广告
   ad_reward_video: "adunit-eac4513e7b770f93",
 
   // 猫猫领养状态字符串，对应数据库cat.adopt中的数字下标
