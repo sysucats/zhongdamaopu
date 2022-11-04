@@ -62,35 +62,6 @@ async function likeCheck(item_ids, options) {
   return item_ids.map(x => Boolean(found[x]));
 }
 
-// 批量检查是否有点赞记录，item可以是photo、cat、comment
-async function likeCheck(item_ids, options) {
-  if (!item_ids) {
-    return undefined;
-  }
-
-  var found = {};
-  var not_found = [];
-
-  for (var item_id of item_ids) {
-    var cacheKey = _getLikeCacheKey(item_id);
-    var cacheItem = getCacheItem(cacheKey, options);
-    if (cacheItem) {
-      found[item_id] = cacheItem;
-      continue;
-    }
-    not_found.push(item_id);
-  }
-
-  var res = await _likeGet(not_found);
-  for (var x of res) {
-    var cacheKey = _getLikeCacheKey(x.item_id);
-    setCacheItem(cacheKey, x, cacheTime.likeItem);
-    found[x.item_id] = x.count > 0;
-  }
-  // 后续可能会支持点赞取消，用count来表示点赞次数
-  return item_ids.map(x => Boolean(found[x]));
-}
-
 
 // 点赞操作
 async function likeAdd(item_id, item_type) {

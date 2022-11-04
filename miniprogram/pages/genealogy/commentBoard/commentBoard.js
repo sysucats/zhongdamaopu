@@ -292,7 +292,7 @@ Page({
       if (res) {
         item.userInfo = res.userInfo;
       }
-      item.datetime = formatDate(item.create_date, "yyyy-MM-dd hh:mm:ss")
+      item.datetime = formatDate(new Date(item.create_date), "yyyy-MM-dd hh:mm:ss")
       comments.push(item);
     }
 
