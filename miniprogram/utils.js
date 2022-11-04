@@ -211,7 +211,7 @@ async function contentSafeCheck(content, nickName) {
     21000: "其他",
   }
   // 违规检测并提交
-  var res = await cloud.callFunction({
+  var res = (await cloud.callFunction({
     // The name of the cloud function to be called
     name: 'commentCheck',
     // Parameter to be passed to the cloud function
@@ -219,10 +219,10 @@ async function contentSafeCheck(content, nickName) {
       content: content,
       nickname: nickName,
     },
-  });
+  })).result;
   // 检测接口的返回
   console.log("contentSafeCheck", res);
-  if (res.errcode != 0) {
+  if (res.errCode != 0) {
     const label_code = res.result.label;
     const label = label_type[label_code];
     return {

@@ -91,9 +91,7 @@ Page({
           operation: "add",
           collection: "reward",
           data: {
-            mdate: {
-              "$date": new Date(reward_to_change.mdate).toISOString()
-            },
+            mdate: new Date(reward_to_change.mdate),
             records: reward_to_change.records
           }
         }

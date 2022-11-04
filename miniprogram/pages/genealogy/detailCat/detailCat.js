@@ -514,10 +514,10 @@ Page({
       success: (res) => {
         wx.hideLoading();
         wx.previewImage({
-          urls: [res],
+          urls: [res.result],
         });
         that.setData({
-          'cat.mpcode': res
+          'cat.mpcode': res.result
         });
       }
     })

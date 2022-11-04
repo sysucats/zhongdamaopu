@@ -84,9 +84,7 @@ Page({
     })
     var data = {
       userInfo: this.data.user.userInfo,
-      openDate: {
-        "$date": new Date().toISOString()
-      },
+      openDate: new Date(),
       feedbackInfo: submitData.feedbackInfo,
       contactInfo: submitData.contactInfo,
       dealed: false,
@@ -97,14 +95,14 @@ Page({
       data.cat_name = this.data.cat_name;
     }
     const that = this;
-    const res = await cloud.callFunction({
+    const res = (await cloud.callFunction({
       name: "curdOp", 
       data: {
         operation: "add",
         collection: "feedback",
         data: data
       }
-    });
+    })).result;
 
     console.log("curdOp(add-feedback) result:", res);
     if(res.ok){
@@ -128,7 +126,7 @@ Page({
     let repliable = await requestNotice('feedback'); // 请求订阅消息推送
 
     const that = this;
-    const res = await cloud.callFunction({
+    const res = (await cloud.callFunction({
       name: "curdOp", 
       data: {
         operation: "update",
@@ -136,7 +134,7 @@ Page({
         item_id: that.data.feedbackId,
         data: { repliable: repliable },
       }
-    });
+    })).result;
 
     console.log("curdOp(feedback-update) result:", res);
     if(res.ok){

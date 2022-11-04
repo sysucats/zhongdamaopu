@@ -205,21 +205,19 @@ Page({
       photo_id: upRes.fileID,
       userInfo: that.data.user.userInfo,
       verified: false,
-      mdate: {
-        "$date": new Date().toISOString()
-      },
+      mdate: new Date(),
       shooting_date: photo.shooting_date,
       photographer: photo.pher
     };
 
-    let dbAddRes = await cloud.callFunction({
+    let dbAddRes = (await cloud.callFunction({
       name: "curdOp", 
       data: {
         operation: "add",
         collection: "photo",
         data: params
       }
-    });
+    })).result;
     console.log("curdOp(add-photo) result:", dbAddRes);
   },
   

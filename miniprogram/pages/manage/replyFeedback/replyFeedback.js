@@ -86,9 +86,7 @@ Page({
             item_id: that.data.feedback._id, 
             data: {
               // replyDate: new Date(),
-              replyDate: {
-                "$date": new Date().toISOString()
-              },
+              replyDate: new Date(),
               replyInfo: submitData.replyInfo,
             } 
           }

@@ -178,6 +178,7 @@ Page({
   sendComment() {
     // 发送中
     if (sendLock) {
+      console.log("locking...");
       return false;
     }
     
@@ -194,6 +195,7 @@ Page({
     });
     // 实际发送
     this.doSendComment();
+    this.doSendCommentEnd();
   },
 
   async doSendComment() {
@@ -207,18 +209,14 @@ Page({
         content: config.text.comment_board.ban_tip,
         showCancel: false,
       })
-      this.doSendCommentEnd();
       return false;
     }
     
     // 插入留言
-    const create_date = new Date();
     var item = {
       content: content,
       user_openid: user.openid,
-      create_date: {
-        "$date": create_date.toISOString()
-      },
+      create_date: new Date(),
       cat_id: cat_id,
     };
 
@@ -239,21 +237,21 @@ Page({
   },
 
   async addComment(item, user) {
-    var res = await cloud.callFunction({
-      name: "curdOp", 
-      data: {
-        operation: "add",
-        collection: "comment",
-        data: item
-      }
-    })
-    
-    if(res.ok){
+    try {
+      var res = (await cloud.callFunction({
+        name: "curdOp", 
+        data: {
+          operation: "add",
+          collection: "comment",
+          data: item
+        }
+      })).result;
+      
       console.log("curdOp(add-Comment) result): ", res, user);
       // 插入最新留言 + 清空输入框
       console.log(item);
       item.userInfo = user.userInfo;
-      item.datetime = formatDate(new Date(item.create_date["$date"]), "yyyy-MM-dd hh:mm:ss")
+      item.datetime = formatDate(new Date(item.create_date), "yyyy-MM-dd hh:mm:ss")
       var comments = this.data.comments;
       comments.unshift(item);
       this.setData({
@@ -263,21 +261,17 @@ Page({
       });
 
       // 显示success toast
-      this.doSendCommentEnd();
       wx.showToast({
         title: '留言成功~',
       });
-    }
-    else{
+    } catch {
       wx.showModal({
         title: "留言失败",
         content: "请开发者检查“comment”云数据库是否创建，权限是否设置为“双true”",
         showCancel: false,
       })
       console.error(res);
-      this.doSendCommentEnd();
     }
-    
   },
 
   // 加载更多留言
@@ -308,6 +302,7 @@ Page({
 
   },
 
+  // TODO 改成async写法
   deleteComment(e) {
     const that = this;
     const index = e.currentTarget.dataset.index;

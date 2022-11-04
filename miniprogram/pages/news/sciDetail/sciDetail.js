@@ -46,9 +46,9 @@ Page({
   async getSci() {
     wx.showLoading({title:'加载中...'})
 
-    const res = await cloud.callFunction({
+    const res = (await cloud.callFunction({
       name: 'getAllSci',
-    });
+    })).result;
 
     console.log("getAllSci:", res);
     const data = res.data;

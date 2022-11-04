@@ -148,9 +148,7 @@ Page({
         item_id: feedback._id,
         data: {
           dealed: true,
-          dealDate: {
-            "$date": new Date().toISOString()
-          }
+          dealDate: new Date()
         }
       }
     });

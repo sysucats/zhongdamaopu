@@ -128,7 +128,7 @@ const init_setting = [{
 module.exports = {
   // 云函数的名称
   functions: [
-    "addPop", "commentCheck", "commentOp", "countPhoto", "getAllSci", "getMpCode",
+    "addPop", "commentCheck", "commentOp", "countPhoto", "curdOp", "getAllSci", "getMpCode",
     "getPhotoRank", "imProcess", "initDeploy", "interOp", "isManager", "manageFeedback",
     "managePhoto", "sendMsgV2", "updateCat", "updateFilter", "updateManager",
     "updateReward", "userOp", "newsOp", "relationOp"

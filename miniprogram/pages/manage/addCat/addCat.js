@@ -294,13 +294,13 @@ Page({
     wx.showLoading({
       title: '更新中...',
     });
-    var res = await cloud.callFunction({
+    var res = (await cloud.callFunction({
       name: 'updateCat',
       data: {
         cat: this.data.cat,
         cat_id: cat_id
       }
-    });
+    })).result;
     console.log("updateCat res:", res);
     if (res.id) {
       cat_id = res.id;

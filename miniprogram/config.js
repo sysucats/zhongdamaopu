@@ -5,34 +5,34 @@
 
 module.exports = {
   // 是否使用微信云开发后台，为 false 时使用 laf 后台
-  use_wx_cloud: false,
+  use_wx_cloud: true,
   // 若使用 laf 后台，请填写下面的后台 url
   laf_url: 'https://6ovcqp.sysucats.com:16778',
 
   // 科普页图片 For wx Cloud
-  // science_imgs: [
-  //   "cloud://rel-h8n9f.7265-rel-h8n9f-1302587287/系统/1.png",
-  //   "cloud://rel-h8n9f.7265-rel-h8n9f-1302587287/系统/2.png",
-  //   "cloud://rel-h8n9f.7265-rel-h8n9f-1302587287/系统/3.png",
-  //   "cloud://rel-h8n9f.7265-rel-h8n9f-1302587287/系统/4.png",
-  //   "cloud://rel-h8n9f.7265-rel-h8n9f-1302587287/系统/5.png"
-  // ],
-
-  // 科普页图片 For Laf Cloud
   science_imgs: [
-    "https://oss.sysucats.com:16778/6ovcqp-cat/%E7%B3%BB%E7%BB%9F/1.png",
-    "https://oss.sysucats.com:16778/6ovcqp-cat/%E7%B3%BB%E7%BB%9F/2.png",
-    "https://oss.sysucats.com:16778/6ovcqp-cat/%E7%B3%BB%E7%BB%9F/3.png",
-    "https://oss.sysucats.com:16778/6ovcqp-cat/%E7%B3%BB%E7%BB%9F/4.png",
-    "https://oss.sysucats.com:16778/6ovcqp-cat/%E7%B3%BB%E7%BB%9F/5.png"
+    "cloud://rel-eeeccf.7265-rel-eeeccf/系统/1.png",
+    "cloud://rel-eeeccf.7265-rel-eeeccf/系统/2.png",
+    "cloud://rel-eeeccf.7265-rel-eeeccf/系统/3.png",
+    "cloud://rel-eeeccf.7265-rel-eeeccf/系统/4.png",
+    "cloud://rel-eeeccf.7265-rel-eeeccf/系统/5.png"
   ],
 
+  // 科普页图片 For Laf Cloud
+  // science_imgs: [
+  //   "https://oss.sysucats.com:16778/6ovcqp-cat/%E7%B3%BB%E7%BB%9F/1.png",
+  //   "https://oss.sysucats.com:16778/6ovcqp-cat/%E7%B3%BB%E7%BB%9F/2.png",
+  //   "https://oss.sysucats.com:16778/6ovcqp-cat/%E7%B3%BB%E7%BB%9F/3.png",
+  //   "https://oss.sysucats.com:16778/6ovcqp-cat/%E7%B3%BB%E7%BB%9F/4.png",
+  //   "https://oss.sysucats.com:16778/6ovcqp-cat/%E7%B3%BB%E7%BB%9F/5.png"
+  // ],
+
   // 赞赏码图片
-  reward_img: "https://oss.sysucats.com:16778/6ovcqp-cat/%E7%B3%BB%E7%BB%9F/%E8%B5%9E%E8%B5%8F%E7%A0%81.jpg",
+  reward_img: "cloud://rel-eeeccf.7265-rel-eeeccf/%E7%B3%BB%E7%BB%9F/%E8%B5%9E%E8%B5%8F%E7%A0%81.jpg",
   // 新猫问卷图片
-  feedback_wj_img: "https://oss.sysucats.com:16778/6ovcqp-cat/%E7%B3%BB%E7%BB%9F/%E6%96%B0%E7%8C%AB%E9%97%AE%E5%8D%B7.png",
+  feedback_wj_img: "cloud://rel-eeeccf.7265-rel-eeeccf/%E7%B3%BB%E7%BB%9F/%E6%96%B0%E7%8C%AB%E9%97%AE%E5%8D%B7.png",
   // 小程序菊花码图片
-  mpcode_img: "https://oss.sysucats.com:16778/6ovcqp-cat/%E7%B3%BB%E7%BB%9F/%E8%8F%8A%E8%8A%B1%E7%A0%81.jpg",
+  mpcode_img: "cloud://rel-eeeccf.7265-rel-eeeccf/%E7%B3%BB%E7%BB%9F/%E8%8F%8A%E8%8A%B1%E7%A0%81.jpg",
 
   // 首页banner广告
   ad_genealogy_banner: "adunit-9a7dcb84fe2c4db1",

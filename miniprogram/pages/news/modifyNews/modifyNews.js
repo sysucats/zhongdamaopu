@@ -209,28 +209,25 @@ Page({
     var data = {
       userInfoLastModify: this.data.user.userInfo,
       userNicknameLastModify: submitData.name,
-      dateLastModify: {
-        "$date": new Date().toISOString()
-      },
+      dateLastModify: new Date(),
       title: submitData.title,
       mainContent: submitData.mainContent,
       class: classBelongto,
       setNewsModal: setNewsModal,
     }
 
-    const that = this;
-    wx.showModal({
-      content: '确认修改',
-      success: function (res) {
-        if (res.confirm) {
-          that.doModify(that.data.news_id, data)
-        }
-      }
+    const resModal = await wx.showModal({
+      content: '确认修改'
     })
+    
+    if (resModal.confirm) {
+      await this.doModify(this.data.news_id, data)
+    }
   },
 
-  doModify(item_id, item_data) {
-    cloud.callFunction({
+  async doModify(item_id, item_data) {
+    console.log(item_id, item_data);
+    const res = await cloud.callFunction({
       name: "curdOp",
       data: {
         permissionLevel: 3,
@@ -239,16 +236,14 @@ Page({
         item_id: item_id,
         data: item_data
       },
-      success: (res) => {
-        console.log("[doModify] - 修改成功", res);
-        wx.showToast({
-          title: '修改成功',
-          icon: 'success',
-          duration: 1000
-        })
-        setTimeout(wx.navigateBack, 1000)
-      },
-      fail: console.error
     });
+    
+    console.log("[doModify] - 修改成功", res);
+    wx.showToast({
+      title: '修改成功',
+      icon: 'success',
+      duration: 1000
+    })
+    setTimeout(wx.navigateBack, 1000)
   },
 })

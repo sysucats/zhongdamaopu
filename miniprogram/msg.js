@@ -115,7 +115,7 @@ async function sendReplyNotice(openid, fb_id) {
     }
   });
 
-  return res;
+  return res.result;
 }
 
 // 发送提醒审核消息
@@ -164,7 +164,7 @@ async function sendNotifyVertifyNotice(numUnchkPhotos) {
       }
     });
 
-    if (res.errCode === 0) {
+    if (res.result.errCode === 0) {
       receiverCounter += 1;
       if (receiverCounter >= maxReceiverNum) {
         break;
@@ -224,7 +224,7 @@ async function sendNotifyChkFeeedback() {
       }
     });
 
-    if (res.errCode === 0) {
+    if (res.result.errCode === 0) {
       receiverCounter += 1;
       if (receiverCounter >= maxReceiverNum) {
         break;

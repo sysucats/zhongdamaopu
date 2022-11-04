@@ -114,7 +114,7 @@ Page({
     },
 
     async _doRemove(item_id) {
-      var res = await cloud.callFunction({
+      var res = (await cloud.callFunction({
         name: "curdOp",
         data: {
           permissionLevel: 3,
@@ -122,7 +122,7 @@ Page({
           collection: "news",
           item_id: item_id
         }
-      });
+      })).result;
       
       console.log("curdOp(remove) res:", res);
       if (!res) {

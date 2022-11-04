@@ -10,10 +10,8 @@ async function getUser(options) {
   options = options || {};
   const app = getApp();
 
-  if (!options.nocache) {
-    if (app.globalData.currentUser) {
-      return app.globalData.currentUser
-    }
+  if (!options.nocache && app.globalData.currentUser) {
+    return app.globalData.currentUser;
   }
 
   const wx_code = (await wx.login()).code;
@@ -26,7 +24,7 @@ async function getUser(options) {
     }
   });
 
-  app.globalData.currentUser = userRes;
+  app.globalData.currentUser = userRes.result;
   return userRes;
 }
 
@@ -158,7 +156,7 @@ function toSetUserInfo() {
 
 // 设置用户等级
 async function setUserRole(openid, role) {
-  return await cloud.callFunction({
+  return (await cloud.callFunction({
     name: "userOp",
     data: {
       "op": "updateRole",
@@ -167,7 +165,7 @@ async function setUserRole(openid, role) {
         role: role
       },
     }
-  });
+  })).result;
 }
 
 module.exports = {

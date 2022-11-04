@@ -320,9 +320,7 @@ Page({
     var data = {
       userInfo: that.data.user.userInfo,
       userNickname: submitData.name,
-      date: {
-        "$date": new Date().toISOString()
-      },
+      date: new Date(),
       title: submitData.title,
       mainContent: submitData.mainContent,
       coverPath: that.data.cover_path,
@@ -331,7 +329,7 @@ Page({
       setNewsModal: setNewsModal
     };
 
-    const res = await cloud.callFunction({
+    const res = (await cloud.callFunction({
       name: "curdOp",
       data: {
         permissionLevel: 3,
@@ -339,7 +337,7 @@ Page({
         collection: "news",
         data: data
       }
-    });
+    })).result;
     console.log("newOp(create) Result:", res);
     if (res.ok) {
       that.setData({

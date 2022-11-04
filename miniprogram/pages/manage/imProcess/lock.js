@@ -27,7 +27,7 @@ async function lock(scene, key, limit, expire_minutes) {
   var expire_date = new Date();
   expire_date.setMinutes(expire_date.getMinutes() + expire_minutes);
 
-  let res = await cloud.callFunction({
+  let res = (await cloud.callFunction({
     name: 'globalLock',
     data: {
       op: "lock",
@@ -36,31 +36,31 @@ async function lock(scene, key, limit, expire_minutes) {
       limit: limit,
       expire_date: expire_date,
     }
-  });
+  })).result;
   console.log("lock:", res);
 
   return res;
 }
 
 async function unlock(scene, key) {
-  return await cloud.callFunction({
+  return (await cloud.callFunction({
     name: 'globalLock',
     data: {
       op: "unlock",
       scene: scene,
       key: key,
     }
-  });
+  })).result;
 }
 
 async function getLockList(scene) {
-  var res = await cloud.callFunction({
+  var res = (await cloud.callFunction({
     name: 'globalLock',
     data: {
       op: "getLockList",
       scene: scene,
     }
-  });
+  })).result;
 
   for (var item of res) {
     item.expire_date = new Date(item.expire_date);

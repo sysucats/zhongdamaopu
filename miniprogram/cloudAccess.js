@@ -80,7 +80,9 @@ if (!use_wx_cloud) {
   const _invokeFunction = cloudPrototype.invokeFunction;
   cloudPrototype.callFunction = async function (options) {
     try {
-      const res = await _invokeFunction.call(this, options.name, options.data);
+      const res = {
+        result: await _invokeFunction.call(this, options.name, options.data)
+      };
 
       if (options.success) {
         options.success(res);
