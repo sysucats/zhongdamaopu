@@ -84,8 +84,7 @@ Page({
   },
 
   // 提示不要手动处理，在laf上不调用
-  tipAutoProcess: function () {
-    const that = this;
+  tipAutoProcess: async function () {
     wx.showModal({
       title: '提示',
       content: '目前后台已实现自动处理图片，在该功能正常的情况下管理员无需再手动处理图片。',
