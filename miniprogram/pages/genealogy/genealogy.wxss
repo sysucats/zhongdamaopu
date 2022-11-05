@@ -1,6 +1,6 @@
 /* miniprogram/pages/genealogy/genealogy.wxss */
+@import "/pages/public/wxss/hFilter.wxss";
 
-/* 上面的是旧的东西 */
 page {
   height: 100%;
   background-color: var(--color-gray-light);
@@ -410,14 +410,24 @@ scroll-view {
 
 }
 
-#find-adopt, #back-to-firstpage {
+/* 寻找领养按钮 */
+#find-adopt {
   position: fixed;
-  bottom: 150rpx;
+  bottom: 300rpx;
   right: 30rpx;
   display: flex;
   justify-content: center;
   align-items: center;
   flex-direction: column;
+
+  filter: drop-shadow(0 0 5rpx var(--color-gray-dark));
+}
+
+/* 返回首页 */
+#back-to-firstpage {
+  position: fixed;
+  bottom: 200rpx;
+  right: 30rpx;
 
   filter: drop-shadow(0 0 5rpx var(--color-gray-dark));
 }
@@ -547,48 +557,4 @@ scroll-view {
   height: 80rpx;
   margin: 0rpx 10rpx;
   display: block;
-}
-
-.campus-list {
-  width: 750rpx;
-  display: flex;
-  flex-direction: row;
-  padding: 0 0 0 30rpx;
-  white-space: nowrap;
-}
-
-.campus-item {
-  display: inline-flex;
-  align-items: center;
-  border-radius: 30rpx;
-  border: 5rpx solid var(--color-gray);
-  padding: 8rpx 15rpx;
-  margin: 1rpx 10rpx;
-
-  font-size: 22rpx;
-  line-height: 22rpx;
-  color: var(--color-black-min);
-  transition: color 100ms ease,
-        background-color 200ms ease,
-        border-color 200ms ease,
-        font-weight 200ms ease;
-}
-
-.campus-item.active {
-  border: 5rpx solid var(--color-primary);
-  color: var(--color-primary-dark);
-  background-color: var(--color-primary-light);
-  font-weight: bold;
-}
-
-.campus-item .location-logo {
-  width: 24rpx;
-  height: 24rpx;
-  margin-right: 4rpx;
-}
-
-::-webkit-scrollbar {
-  width: 0;
-  height: 0;
-  color: transparent;
 }

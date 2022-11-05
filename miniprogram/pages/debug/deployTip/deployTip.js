@@ -1,6 +1,4 @@
-// pages/debug/deployTip/deployTip.js
-
-const dp_cfg = require("./deployConfig.js");
+import dp_cfg from "./deployConfig";
 
 const STATUS_DOING = 0;
 const STATUS_OK = 1;
@@ -25,14 +23,21 @@ async function checkFunctions() {
   var config_res = await setFuncConfigs();
 
   var fail_list = [];
-  for (const func of dp_cfg.functions) {
+  var wrong_version = [];
+  for (const func in dp_cfg.functions) {
+    const version = dp_cfg.functions[func];
     try {
-      await wx.cloud.callFunction({
+      var res = await wx.cloud.callFunction({
         name: func,
         data: {
           deploy_test: true,
         }
-      })
+      });
+      if (res.result != version) {
+        wrong_version.push(func);
+        console.error(Error(`function ${func} got wrong version ${res.result}, should be ${version}`));
+        continue;
+      }
       console.log(`function ${func} ok.`);
     } catch (error) {
       fail_list.push(func);
@@ -41,10 +46,11 @@ async function checkFunctions() {
   }
   
 
-  if (fail_list.length == 0 && config_res.addition.length == 0) {
+  if (fail_list.length == 0 && wrong_version.length == 0 && config_res.addition.length == 0) {
     return {status: STATUS_OK};
   }
-  var addition = fail_list.length ? "未部署函数：" + fail_list.join(", ") + "。" : "";
+  var addition = fail_list.length ? `未部署函数：${fail_list.join(", ")}。` : "";
+  addition += wrong_version.length ? `版本错误：${wrong_version.join(", ")}。` : "";
   return {status: STATUS_FAIL, addition: config_res.addition + addition};
 };
 

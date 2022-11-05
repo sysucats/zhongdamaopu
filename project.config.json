@@ -40,7 +40,7 @@
   },
   "appid": "wx5bd705b2bc91c73b",
   "projectname": "zhongdamaopu",
-  "libVersion": "2.19.6",
+  "libVersion": "2.17.0",
   "simulatorType": "wechat",
   "simulatorPluginLibVersion": {},
   "compileType": "miniprogram",
@@ -105,7 +105,7 @@
           "scene": null
         },
         {
-          "name": "打赏",
+          "name": "打赏（投喂）",
           "pathName": "pages/info/reward/reward",
           "query": "",
           "scene": null

@@ -1,4 +1,4 @@
-const sha256 = require('./packages/sha256/sha256.js');
+import { hex_sha256 } from "./packages/sha256/sha256";
 
 function randomInt(min, max) {
   return Math.floor(Math.random() * (max - min)) + min;
@@ -13,42 +13,6 @@ function generateUUID() {
   });
   return uuid;
 };
-
-function loadFilter() {
-  return new Promise(function(resolve, reject) {
-    const db = wx.cloud.database();
-    db.collection('setting').doc('filter').get().then(res => {
-      resolve(res.data);
-    })
-  });
-}
-
-function isManager(callback, req) {
-  // 这里的callback将接受一个参数res，
-  // 为bool类型，当前用户为manager时为true，
-  // 否则为false
-  // req是要求的等级，是一个整数值
-  wx.cloud.callFunction({
-    name: 'isManager',
-    data: {
-      req: req
-    }
-  }).then(res => {
-    // console.log(res);
-    callback(res.result);
-  });
-}
-
-async function isManagerAsync(req) {
-  return (await wx.cloud.callFunction({
-    name: 'isManager',
-    data: {
-      req: req
-    }
-  })).result;
-}
-
-
 
 function isWifi(callback) {
   // 检查是不是Wifi网络正在访问
@@ -96,25 +60,6 @@ function getCurrentPath(pagesStack) {
   }
   return path;
 }
-
-// 获取全局的设置
-function getGlobalSettings(key) {
-  return new Promise(function (resolve, reject) {
-    const app = getApp();
-    if (app.globalData.settings) {
-      resolve(app.globalData.settings[key]);
-      return;
-    }
-
-    // 如果没有，那就获取一下
-    const db = wx.cloud.database();
-    db.collection('setting').doc('pages').get().then(res => {
-      app.globalData.settings = res.data;
-      resolve(app.globalData.settings[key]);
-    });
-  });
-}
-
 
 // 判断两个userInfo是否相同，初级版
 function userInfoEq(a, b) {
@@ -188,35 +133,6 @@ function checkUpdateVersion() {
   })
 }
 
-async function checkCanComment() {
-  // 加载设置、关闭留言板功能
-  const app = getApp();
-  let cantComment = (await getGlobalSettings('detailCat')).cantComment;
-  if ((cantComment !== '*') && (cantComment !== app.globalData.version)) {
-    return true;
-  }
-  return false;
-}
-
-async function managerUpload() {
-  // 如果是管理员，开启
-  let manager = (await wx.cloud.callFunction({
-    name: 'isManager',
-    data: {
-      req: 1
-    }
-  })).result;
-  let manageUpload = (await getGlobalSettings('detailCat')).manageUpload;
-  if (manager && manageUpload) {
-    wx.showToast({
-      title: '管理员可上传',
-      icon: "none",
-    })
-    return true;
-  }
-  return false;
-}
-
 // 切分org的filter
 function splitFilterLine(line) {
   if (!line) {
@@ -265,41 +181,95 @@ async function arrayResort(oriArray) {
 
 
 // 检查部署情况，有错误就跳转到部署帮助页
-function checkDeploy() {
-  return new Promise(function (resolve, reject) {
-    try {
-      const db = wx.cloud.database();
-      db.collection('setting').doc('pages').get().then(res => {
-        resolve(true);
-      });
-      
-    } catch (error) {
-      resolve(false);
-    }
-  });
+async function checkDeploy() {
+  try {
+    const db = wx.cloud.database();
+    await db.collection('setting').doc('pages').get();
+  } catch (error) {
+    return false
+  }
+  
+  return true;
+}
+
+// 等待时间（ms）
+const sleep = m => new Promise(r => setTimeout(r, m))
+
+// 内容安全检查
+async function contentSafeCheck(content, nickName) {
+  const label_type = {
+    100: "正常",
+    10001: "广告",
+    20001: "时政",
+    20002: "色情",
+    20003: "辱骂",
+    20006: "违法犯罪",
+    20008: "欺诈",
+    20012: "低俗",
+    20013: "版权",
+    21000: "其他",
+  }
+  // 违规检测并提交
+  var res = (await wx.cloud.callFunction({
+    // The name of the cloud function to be called
+    name: 'commentCheck',
+    // Parameter to be passed to the cloud function
+    data: {
+      content: content,
+      nickname: nickName,
+    },
+  })).result;
+  // 检测接口的返回
+  console.log(res);
+  if (res.errCode != 0) {
+    const label_code = res.result.label;
+    const label = label_type[label_code];
+    return {
+      title: "内容检测未通过",
+      content: `涉及[${label_code}]${label}内容，请修改嗷~~`,
+      showCancel: false,
+    };
+  }
+  return;
+}
+
+// 字符串的字节长度
+String.prototype.gblen = function() {  
+  var len = 0;  
+  for (var i=0; i<this.length; i++) {  
+      if (this.charCodeAt(i)>127 || this.charCodeAt(i)==94) {  
+           len += 2;  
+       } else {  
+           len ++;  
+       }  
+   }  
+  return len;  
+}
+
+// 深拷贝
+function deepcopy(obj) {
+  return JSON.parse(JSON.stringify(obj))
 }
 
 module.exports = {
-  sha256,
+  hex_sha256,
   randomInt,
   generateUUID,
-  loadFilter,
-  isManager,
-  isManagerAsync,
   isWifi,
   shuffle,
   shareTo,
   getCurrentPath,
-  getGlobalSettings,
   userInfoEq,
   regReplace,
   formatDate,
   checkUpdateVersion,
-  checkCanComment,
   splitFilterLine,
   checkMultiClick,
   getDeltaHours,
   arrayResort,
   checkDeploy,
   getDateWithDiffHours,
+  sleep,
+  contentSafeCheck,
+  deepcopy,
 };

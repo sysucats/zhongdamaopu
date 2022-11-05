@@ -1,11 +1,7 @@
 // 审核照片
-const utils = require('../../../utils.js');
-const isManager = utils.isManager;
-const regReplace = utils.regReplace;
-
-const cat_utils = require('../../../cat.js');
-const getAvatar = cat_utils.getAvatar;
-const getCatItem = cat_utils.getCatItem;
+import { regReplace, sleep } from "../../../utils";
+import { getAvatar, getCatItem } from "../../../cat";
+import { checkAuth } from "../../../user";
 
 const db = wx.cloud.database();
 const _ = db.command;
@@ -32,46 +28,22 @@ Page({
   /**
    * 生命周期函数--监听页面加载
    */
-  onLoad(options) {
-    this.checkAuth();
-    var that = this;
+  async onLoad(options) {
+    if (await checkAuth(this, 2)) {
+      this.loadRelationTypes();
+    }
     if (options.cat_id) {
       // 输入了cat_id
-      db.collection('cat').doc(options.cat_id).get().then(res => {
-        var cat = res.data;
-        getAvatar(cat._id, cat.photo_count_best).then(avatar => {
-          cat.avatar = avatar;
-          that.setData({
-            cat: cat
-          }, () => {
-            that.loadRelations();
-          });
-        });
-      })
+      var cat = (await db.collection('cat').doc(options.cat_id).get()).data;
+      cat.avatar = await getAvatar(cat._id, cat.photo_count_best);
+      this.setData({
+        cat: cat
+      });
+      await this.loadRelations();
     } else {
-      setTimeout(function() {
-        that.bindSearch(null, "cat");
-      }, 700);
+      await sleep(700);
+      this.bindSearch(null, "cat");
     }
-  },
-
-  // 检查权限
-  checkAuth() {
-    const that = this;
-    isManager(function (res) {
-      if (res) {
-        that.setData({
-          auth: true
-        });
-        that.loadRelationTypes();
-      } else {
-        that.setData({
-          tipText: '只有管理员Level-2能进入嗷',
-          tipBtn: true,
-        });
-        console.log("Not a manager.");
-      }
-    }, 2)
   },
 
   /**
@@ -184,16 +156,14 @@ Page({
   async deleteRelationType(e) {
     var idx = e.currentTarget.dataset.index;
     var types = this.data.relation_types;
-    const that = this;
-    wx.showModal({
+    var res = await wx.showModal({
       title: '提示',
-      content: `确定删除\"${types[idx]}\"关系？`,
-      success(res) {
-        if (res.confirm) {
-          that.doDeleteRelationType(idx);
-        }
-      }
-    })
+      content: `确定删除\"${types[idx]}\"关系？`
+    });
+
+    if (res.confirm) {
+      this.doDeleteRelationType(idx);
+    }
   },
 
   async doDeleteRelationType(idx) {
@@ -288,7 +258,7 @@ Page({
     wx.hideLoading();
   },
   // 选择猫猫
-  searchSelectCat(e) {
+  async searchSelectCat(e) {
     var idx = e.currentTarget.dataset.index;
     var cat = this.data.searchCats[idx];
     if (selectRelationCatIdx === undefined) {
@@ -297,7 +267,7 @@ Page({
         cat: cat,
         showSearchCat: false,
       });
-      this.loadRelations();
+      await this.loadRelations();
       return;
     }
 

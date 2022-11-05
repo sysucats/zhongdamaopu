@@ -1,8 +1,6 @@
-// miniprogram/pages/science/sciDetail/sciDetail.js
-const cates = ['猫咪救助', '撸猫指南', '猫咪领养', '猫咪喂养', '猫咪健康'];
+import { text as text_cfg, science_imgs } from "../../../config";
 
-const config = require('../../../config.js');
-const text_cfg = config.text;
+const cates = ['猫咪救助', '撸猫指南', '猫咪领养', '猫咪喂养', '猫咪健康'];
 const share_text = text_cfg.app_name + ' - ' + text_cfg.science.share_tip;
 
 Page({
@@ -12,14 +10,12 @@ Page({
    */
   data: {
     cate_current: -1,
-    // 几张背景图
-    // images: config.science_imgs
   },
 
   /**
    * 生命周期函数--监听页面加载
    */
-  onLoad: function (options) {
+  onLoad: async function (options) {
     // 切换到该分类
     const cate_current = options.cate;
     this.setData({
@@ -32,10 +28,10 @@ Page({
       const imgList = options.coverImgList.split(',')
       this.setData({images:imgList})
     } else {
-      this.setData({images:config.science_imgs})
+      this.setData({images:science_imgs})
     }
     
-    this.getSci();
+    await this.getSci();
   },
 
   /**
@@ -47,18 +43,17 @@ Page({
     }
   },
 
-  getSci() {
+  async getSci() {
     wx.showLoading({title:'加载中...'})
-    wx.cloud.callFunction({
+    var res = await wx.cloud.callFunction({
       name: 'getAllSci',
-    }).then(res => {
-      console.log(res);
-      const data = res.result.data;
-      this.setData({
-        qnas: data
-      });
-      wx.hideLoading()
-    })
+    });
+    console.log(res);
+    const data = res.result.data;
+    this.setData({
+      qnas: data
+    });
+    wx.hideLoading()
   },
 
   changeCate(e) {

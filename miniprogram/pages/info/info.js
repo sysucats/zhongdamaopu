@@ -1,12 +1,8 @@
 // miniprogram/pages/info/info.js
-const utils = require('../../utils.js');
-const userUtils = require('../../user.js');
-const config = require('../../config.js');
+import { isManagerAsync } from "../../user";
+import { text as text_cfg, mpcode_img } from "../../config";
+import { showTab } from "../../page";
 
-// console.log("utils:", utils);
-const isManager = utils.isManager;
-
-const text_cfg = config.text;
 const share_text = text_cfg.app_name + ' - ' + text_cfg.info.share_tip;
 
 Page({
@@ -23,14 +19,11 @@ Page({
   /**
    * 生命周期函数--监听页面加载
    */
-  onLoad: function (options) {
-    const that = this;
+  onLoad: async function (options) {
     const db = wx.cloud.database();
-    db.collection('setting').doc('friendLink').get().then(res => {
-      // that.friendApps = res.data.apps;
-      that.setData({
-        friendApps: res.data.apps,
-      })
+    var friendLinkRes = await db.collection('setting').doc('friendLink').get();
+    this.setData({
+      friendApps: friendLinkRes.data.apps,
     });
 
     // 设置为特邀用户
@@ -42,71 +35,42 @@ Page({
   },
 
   // 用 onShow 不用 onLoad，为了在返回这个页面时也能重新加载
-  onShow: function (options) {
-    isManager(res => {
-      if (res) {
-        const that = this;
-        const db = wx.cloud.database();
-        const _ = db.command;
-        db.collection('photo').where({ verified: false}).count().then(res => {
-          that.data.numChkPhotos = res.total;
-          that.setData({
-            numChkPhotos: res.total,
-          })
-        })
-        db.collection('feedback').where({ dealed: false}).count().then(res => {
-          that.data.numFeedbacks = res.total;
-          that.setData({
-            numFeedbacks: res.total,
-          })
-        })
-        const qf = { photo_compressed: _.in([undefined, '']), verified: true, photo_id: /^((?!\.heic$).)*$/i };
-        db.collection('photo').where(qf).count().then(res => {
-          that.data.numImProcess = res.total;
-          that.setData({
-            numImProcess: res.total,
-          })
-        })
-        that.setData({
-          showManager: true,
-        });
-      }
-    });
+  onShow: async function () {
+    // 切换自定义tab
+    showTab(this);
 
     // 获取version
-    const app = getApp();
     this.setData({
-      version: app.globalData.version
+      version: getApp().globalData.version
     });
 
-    // this.setData = this.setData.bind(this);
-    // if (options.scene === 1154) {
-      // const db = wx.cloud.database();
-      // db.collection('setting').doc('pages').get().then(res => {
-      // });
-    // } 
+    if (!await isManagerAsync()) {
+      return;
+    }
+    const db = wx.cloud.database();
+    const _ = db.command;
+
+    const imProcessQf = { photo_compressed: _.in([undefined, '']), verified: true, photo_id: /^((?!\.heic$).)*$/i };
+    var [numChkPhotos, numFeedbacks, numImProcess] = await Promise.all([
+      db.collection('photo').where({ verified: false}).count(),
+      db.collection('feedback').where({ dealed: false}).count(),
+      db.collection('photo').where(imProcessQf).count(),
+    ]);
+    this.setData({
+      numChkPhotos: numChkPhotos.total,
+      numFeedbacks: numFeedbacks.total,
+      numImProcess: numImProcess.total,
+      showManager: true,
+    });
   },
 
   /**
    * 用户点击右上角分享
    */
   onShareAppMessage: function () {
-    if (!this.data.showManager) {
-      return {
-        title: share_text
-      }
-    }
-    // 管理员分享时，邀请用户
-    const pagesStack = getCurrentPages();
-    const path = utils.getCurrentPath(pagesStack);
-    var expire_date = new Date();
-    expire_date.setHours(expire_date.getHours() + 1);
-    const query = `${path}inviteRole=1&expire=${encodeURIComponent(expire_date)}`;
-    console.log(query);
     return {
-      title: share_text,
-      path: query
-    };
+      title: share_text
+    }
   },
 
   onShareTimeline:function () {
@@ -134,41 +98,10 @@ Page({
 
   showMpCode(e) {
     wx.previewImage({
-      urls: [config.mpcode_img],
+      urls: [mpcode_img],
       fail: function(e) {
         console.error(e)
       }
     })
   },
-
-  async doInviteRole(options) {
-    var role = parseInt(options.inviteRole);
-    var expire = new Date(options.expire);
-    console.log("expire at", expire);
-    // 过期了
-    if (new Date() > expire) {
-      console.log(`invite ${role} expired.`);
-      return;
-    }
-    var user = await userUtils.getUser();
-    console.log(user);
-    if (user.role >= role) {
-      // 已经是了
-      return;
-    }
-    await wx.cloud.callFunction({
-      name: "userOp",
-      data: {
-        "op": "updateRole",
-        "user": {
-          openid: user.openid,
-          role: role
-        },
-      }
-    });
-    wx.showToast({
-      title: '已成为特邀用户',
-      duration: 5000,
-    });
-  }
 })

@@ -9,7 +9,7 @@ const MAX_LIMIT = 100
 exports.main = async (event, context) => {
   if (event.deploy_test === true) {
     // 进行部署检查
-    return;
+    return "v1.0";
   }
   // 先取出mphoto更新时间为一小时前的猫猫（因为每小时自动执行一次）
   var frontOneHour = new Date(new Date().getTime() - 1 * 60 * 60 * 1000);
@@ -44,8 +44,6 @@ exports.main = async (event, context) => {
     const count_total = (await db.collection('photo').where({ cat_id: cat._id, verified: true }).count()).total;
     var stat = await db.collection('cat').doc(cat._id).update({
       data: {
-        // TODO: 过渡一下，后续清理数据库中的残留photo_count字段
-        // photo_count: count_best,
         photo_count_best: count_best,
         photo_count_total: count_total
       }

@@ -1,21 +1,9 @@
-const utils = require('../../../utils.js');
-const generateUUID = utils.generateUUID;
-const getCurrentPath = utils.getCurrentPath;
-const shareTo = utils.shareTo;
-const getGlobalSettings = utils.getGlobalSettings;
-
-const user = require('../../../user.js');
-const getCurUserInfoOrFalse = user.getCurUserInfoOrFalse;
-const toggleUserNoticeSetting = user.toggleUserNoticeSetting;
-
-const msg = require('../../../msg.js');
-const requestNotice = msg.requestNotice;
-const sendNotifyChkFeeedback = msg.sendNotifyChkFeeedback;
-
-const text_cfg = require('../../../config.js').text;
+import { getCurrentPath, shareTo } from "../../../utils";
+import { getPageUserInfo, checkCanUpload, toSetUserInfo } from "../../../user";
+import { requestNotice, sendNotifyChkFeeedback } from "../../../msg";
+import { text as text_cfg } from "../../../config";
 
 Page({
-
   /**
    * 页面的初始数据
    */
@@ -31,18 +19,23 @@ Page({
   /**
    * 生命周期函数--监听页面加载
    */
-  onLoad: function (options) {
+  onLoad: async function (options) {
     const db = wx.cloud.database();
     if (options.cat_id != undefined) {
-      db.collection('cat').doc(options.cat_id).field({ name: true, _id: true }).get().then(res => {
-        console.log(res.data);
-        this.data.cat = res.data;
-        this.setData({
-          cat: this.data.cat
-        });
-      })
+      const catRes = await db.collection('cat').doc(options.cat_id).field({ name: true, _id: true }).get();
+      this.setData({
+        cat: catRes.data
+      });
     }
-    //this.checkUInfo();
+
+    // 检查是否可以上传
+    this.setData({
+      canUpload: await checkCanUpload()
+    });
+  },
+
+  async onShow() {
+    await getPageUserInfo(this);
   },
 
   /**
@@ -57,19 +50,7 @@ Page({
   },
 
   getUInfo() {
-    const that = this;
-    // 检查用户信息有没有拿到，如果有就更新this.data
-    getCurUserInfoOrFalse().then(res => {
-      if (!res) {
-        console.log('未授权');
-        return;
-      }
-      console.log(res);
-      that.setData({
-        isAuth: true,
-        user: res,
-      });
-    });
+    toSetUserInfo()
   },
 
   bindInput(e) {
@@ -111,29 +92,21 @@ Page({
       data.cat_id = this.data.cat._id;
       data.cat_name = this.data.cat_name;
     }
-    const that = this;
     const db = wx.cloud.database();
-    db.collection('feedback').add({
-      data: data,
-      success: (res) => {
-        console.log(res);
-        sendNotifyChkFeeedback().then();
-        that.setData({
-          feedbackId : res._id
-        })
-        wx.hideLoading();
-        wx.showToast({
-          title: '收到你的反馈啦',
-          icon: 'success',
-          duration: 1000,
-          success: () => {
-            // setTimeout(() => {
-            //   wx.navigateBack();
-            // }, 1000)
-          }
-        })
-      },
-      fail: console.error
+    const addRes = await db.collection('feedback').add({
+      data: data
+    });
+    console.log(addRes);
+    this.setData({
+      feedbackId : addRes._id
+    })
+
+    wx.hideLoading();
+    await sendNotifyChkFeeedback();
+    wx.showToast({
+      title: '收到你的反馈啦',
+      icon: 'success',
+      duration: 1000
     })
   },
   

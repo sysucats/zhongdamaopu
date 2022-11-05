@@ -1,8 +1,6 @@
-// miniprogram/pages/imProcess/imProcess.js
-const utils = require('../../../utils.js');
-const generateUUID = utils.generateUUID;
-const isManager = utils.isManager;
-
+import { generateUUID } from "../../../utils";
+import { text as text_cfg } from "../../../config";
+import { checkAuth } from "../../../user";
 
 const ctx = wx.createCanvasContext('bigPhoto');
 const canvasMax = 2000; // 正方形画布的尺寸px
@@ -10,13 +8,10 @@ const canvasMax = 2000; // 正方形画布的尺寸px
 var global_photo; // 数据库项
 var global_fileID_compressed, global_fileID_watermark;
 
-const config = require('../../../config.js');
-const text_cfg = config.text;
-
 // 自动搞的数量
 var auto_count = 0;
 Page({
-
+  
   /**
    * 页面的初始数据
    */
@@ -41,9 +36,8 @@ Page({
   /**
    * 生命周期函数--监听页面加载
    */
-  onLoad: function () {
-    const that = this;
-    wx.showModal({
+  onLoad: async function () {
+    const res = await wx.showModal({
       title: '提示',
       content: '目前后台已实现自动处理图片，在该功能正常的情况下管理员无需再手动处理图片。',
       showCancel: true,
@@ -51,19 +45,15 @@ Page({
       cancelColor: '#cd0000',
       confirmText: '离开',
       confirmColor: '#32cd32',
-      success: (res) => {
-        if (res.cancel) {
-          that.checkAuth();
-        } else {
-          wx.navigateBack({
-            delta: 1
-          });
-        }
-      },
-      fail: (err) => {
-        console.log(err);
-      }
     });
+    
+    if (res.cancel && (await checkAuth(this, 3))) {
+      await this.loadProcess();
+    } else {
+      wx.navigateBack({
+        delta: 1
+      });
+    }
   },
 
   onShow: function () {
@@ -87,17 +77,15 @@ Page({
     });
   },
 
-  loadProcess() {
-    const that = this;
+  async loadProcess() {
     const db = wx.cloud.database();
     const _ = db.command;
-    db.collection('photo').where({ photo_compressed: _.in([undefined, '']), verified: true, photo_id: /^((?!\.heic$).)*$/i }).count().then(res => {
-      console.log(res);
-      that.setData({
-        total: res.total
-      }, () => {
-        // that.beginProcess();
-      });
+    const qf = { photo_compressed: _.in([undefined, '']), verified: true, photo_id: /^((?!\.heic$).)*$/i }
+    const photoCountRes = await db.collection('photo').where(qf).count();
+    
+    console.log(photoCountRes);
+    this.setData({
+      total: photoCountRes.total
     });
   },
 
@@ -105,59 +93,37 @@ Page({
   goBack() {
     wx.navigateBack();
   },
-  // 检查权限
-  checkAuth() {
-    const that = this;
-    isManager(function (res) {
-      if (res) {
-        that.setData({
-          auth: true
-        });
-        that.loadProcess();
-      } else {
-        that.setData({
-          tipText: '只有管理员Level-3能进入嗷',
-          tipBtn: true,
-        });
-        console.log("Not a manager.");
-      }
-    }, 3)
-  },
-
   clickBegin: function() {
     auto_count = 30;
     this.beginProcess();
   },
 
-  beginProcess: function () {
-    const that = this;
+  beginProcess: async function () {
     const db = wx.cloud.database();
     const _ = db.command;
-    db.collection('photo').where({ photo_compressed: _.in([undefined, '']), verified: true }).get().then(res => {
-      console.log(res);
-      if(res.data.length) {
-
-        // 自动下一步
-        if (auto_count) {
-          auto_count--;
-          console.log("还剩" + auto_count + "张自动上传");
-          that.processOne(res.data[0]);
-        } else {
-          wx.showModal({
-            title: '等待操作',
-            content: '继续处理请点击按钮',
-            showCancel: false,
-          });
-        }
-        
+    var res = await db.collection('photo').where({ photo_compressed: _.in([undefined, '']), verified: true }).get();
+    console.log(res);
+    if(res.data.length) {
+      // 自动下一步
+      if (auto_count) {
+        auto_count--;
+        console.log("还剩" + auto_count + "张自动上传");
+        this.processOne(res.data[0]);
       } else {
         wx.showModal({
-          title: '处理完成',
-          content: '没有等待处理的猫图啦',
+          title: '等待操作',
+          content: '继续处理请点击按钮',
           showCancel: false,
         });
       }
-    });
+      
+    } else {
+      wx.showModal({
+        title: '处理完成',
+        content: '没有等待处理的猫图啦',
+        showCancel: false,
+      });
+    }
   },
 
   // 处理一张图片

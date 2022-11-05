@@ -1,6 +1,5 @@
-// miniprogram/pages/info/devTeam/devTeam.js
-const config = require('../../../config.js');
-const text_cfg = config.text;
+import { text as text_cfg } from "../../../config";
+
 const share_text = text_cfg.app_name + ' - ' + text_cfg.info.share_tip;
 
 Page({
@@ -12,6 +11,45 @@ Page({
     text_cfg: text_cfg,
     github_link: "https://github.com/sysucats/zhongdamaopu",
     update_log: [{
+      version: "v1.8.15",
+      content: [
+        "修复底Tab样式",
+        "修复特邀问题",
+      ],
+      time: "2022/10/08"
+    }, {
+      version: "v1.8.14",
+      content: [
+        "优化月榜存储",
+        "重新实现TabBar",
+        "修复重复点赞的bug",
+      ],
+      time: "2022/10/08"
+    }, {
+      version: "v1.8.13",
+      content: [
+        "修复一堆bug...",
+      ],
+      time: "2022/10/08"
+    }, {
+      version: "v1.8.12",
+      content: [
+        "优化下部署流程",
+      ],
+      time: "2022/10/06"
+    }, {
+      version: "v1.8.11",
+      content: [
+        "代码优化请求次数",
+      ],
+      time: "2022/10/06"
+    }, {
+      version: "v1.8.10",
+      content: [
+        "优化精选tab",
+      ],
+      time: "2022/10/02"
+    }, {
       version: "v1.8.9",
       content: [
         "增加精选tab，展示点赞照片",

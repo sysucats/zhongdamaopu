@@ -1,9 +1,5 @@
-// miniprogram/pages/info/photoRank/photoRank.js
-const user = require('../../../user.js');
-const getCurUserInfoOrFalse = user.getCurUserInfoOrFalse;
-
-const config = require('../../../config.js');
-const text_cfg = config.text;
+import { getPageUserInfo, toSetUserInfo } from "../../../user";
+import { text as text_cfg } from "../../../config";
 const share_text = text_cfg.app_name + ' - ' + text_cfg.photo_rank.share_tip;
 
 Page({
@@ -25,16 +21,17 @@ Page({
   /**
    * 生命周期函数--监听页面初次渲染完成
    */
-  onReady: function () {
+  onReady: async function () {
 
   },
 
   /**
    * 生命周期函数--监听页面显示
    */
-  onShow: function () {
-    //this.checkUInfo();
+  onShow: async function () {
     this.getRank();
+    await getPageUserInfo(this);
+    await this.getMyRank();
   },
 
   /**
@@ -46,82 +43,64 @@ Page({
     }
   },
 
-  getUInfo() {
-    const that = this;
-    // 检查用户信息有没有拿到，如果有就更新this.data
-    getCurUserInfoOrFalse().then(res => {
-      if (!res) {
-        console.log('未授权');
-        return;
-      }
-      console.log(res);
-      that.setData({
-        userInfo: res.userInfo,
-      }, () => { that.getMyRank() })
-    });
-  },
-  getRank(event) {
-    const that = this;
-    const db = wx.cloud.database();
-    db.collection('photo_rank').orderBy('mdate', 'desc').limit(1).get().then(res => {
-      if (res.data.length == 0) {
-        // 还没有月榜
-        return false;
-      }
-      const rank_stat = res.data[0].stat;
-      console.log(rank_stat);
-      var ranks = [];
-      for (const key in rank_stat) {
-        ranks.push({
-          _openid: key,
-          count: rank_stat[key].count,
-          userInfo: rank_stat[key].userInfo,
-        })
-      }
-      ranks.sort((a, b) => {
-        return parseInt(b.count) - parseInt(a.count)
-      });
-      console.log(ranks);
-      for (var i = 0; i < ranks.length; i++) {
-        ranks[i].rank = i+1;
-      }
-      for (var i = 1; i<ranks.length; i++) {
-        if (ranks[i].count == ranks[i-1].count) {
-          ranks[i].rank = ranks[i - 1].rank;
-        }
-      }
-      that.setData({
-        ranks: ranks
-      }, () => { that.getMyRank() })
-    });
+  async getUInfo() {
+    toSetUserInfo()
   },
 
-  getMyRank() {
-    if (!this.data.userInfo || !this.data.ranks) {
+  async getRank() {
+    const db = wx.cloud.database();
+    var rankRes = await db.collection('photo_rank').orderBy('mdate', 'desc').limit(1).get();
+    
+    if (rankRes.data.length == 0) {
+      // 还没有月榜
       return false;
     }
-    const that = this;
-    const ranks = this.data.ranks;
-    wx.cloud.callFunction({
-      name: 'userOp',
-      data: {
-        op: "get",
-      },
-      complete: (res) => {
-        console.log(res);
-        const openid = res.result.openid;
-        console.log(ranks);
-        for (const i in ranks) {
-          if (ranks[i]._openid === openid) {
-            that.setData({
-              'userInfo.photo_rank': ranks[i].rank,
-              'userInfo.photo_count': ranks[i].count
-            });
-            return;
-          }
-        }
+    const rank_stat = rankRes.data[0].stat;
+    console.log(rank_stat);
+    var ranks = [];
+    for (const key in rank_stat) {
+      ranks.push({
+        _openid: key,
+        count: rank_stat[key].count,
+        userInfo: rank_stat[key].userInfo,
+      })
+    }
+    ranks.sort((a, b) => {
+      return parseInt(b.count) - parseInt(a.count)
+    });
+    console.log(ranks);
+    for (var i = 0; i < ranks.length; i++) {
+      ranks[i].rank = i+1;
+    }
+    for (var i = 1; i<ranks.length; i++) {
+      if (ranks[i].count == ranks[i-1].count) {
+        ranks[i].rank = ranks[i - 1].rank;
       }
-    })
-    
+    }
+
+    await this.setData({
+      ranks: ranks
+    });
+
+    await this.getMyRank();
+  },
+
+  async getMyRank() {
+    if (!this.data.user || !this.data.ranks) {
+      return false;
+    }
+    const ranks = this.data.ranks;
+  
+    const openid = this.data.user.openid;
+    console.log(ranks);
+    for (const i in ranks) {
+      if (ranks[i]._openid === openid) {
+        this.setData({
+          'user.photo_rank': ranks[i].rank,
+          'user.photo_count': ranks[i].count
+        });
+        return;
+      }
+    }
   }
 })

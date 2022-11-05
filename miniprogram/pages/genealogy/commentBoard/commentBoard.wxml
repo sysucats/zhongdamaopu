@@ -1,6 +1,6 @@
 <!--pages/genealogy/commentBoard.wxml-->
 
-<scroll-view id="comment-list" scroll-y="true" bindscrolltolower='loadMoreComment' enable-back-to-top="true" bindscroll="bindCommentScroll" wx:if="{{canUpload}}">
+<scroll-view id="comment-list" scroll-y="true" bindscrolltolower='loadMoreComment' enable-back-to-top="true" bindscroll="bindCommentScroll" wx:if="{{canComment}}">
   <!-- 猫猫名称 -->
   <view class='big-header'>
     <image class='avatar' mode='aspectFill' src='{{cat.avatar.photo_compressed || cat.avatar.photo_id}}'></image>
@@ -14,7 +14,7 @@
   <view class="comment" wx:for="{{comments}}" wx:key="_id">
     <view class="left">
       <image wx:if="{{item.userInfo}}" class="avatar" src="{{item.userInfo.avatarUrl}}" mode='aspectFit'></image>
-      <image wx:else class="avatar" src="../../../images/app_logo.png" mode='aspectFit'></image>
+      <image wx:else class="avatar" src="/pages/public/images/app_logo.png" mode='aspectFit'></image>
     </view>
     <view class="right">
       <view class="info-block">
@@ -37,7 +37,7 @@
 </scroll-view>
 
 <!-- 悬浮的猫猫名称栏 -->
-<view class='big-header fix' hidden="{{!show_fix_header}}" wx:if="{{canUpload}}">
+<view class='big-header fix' hidden="{{!show_fix_header}}" wx:if="{{canComment}}">
   <image class='avatar' mode='aspectFill' src='{{cat.avatar.photo_compressed || cat.avatar.photo_id}}'></image>
   <view class='name-and-count'>
     <view class='name'>{{cat.name}}的留言板</view>
@@ -46,7 +46,7 @@
 </view>
 
 
-<view id="input-block" style="margin-bottom: {{keyboard_height}}px;" class="{{keyboard_height>0 ? 'active': ''}}" wx:if="{{canUpload}}">
+<view id="input-block" style="margin-bottom: {{keyboard_height}}px;" class="{{keyboard_height>0 ? 'active': ''}}" wx:if="{{canComment}}">
   <button wx:if="{{!isAuth}}" class='long primary' bindtap='getUInfo'>{{text_cfg.comment_board.auth_tip}}</button>
   <block wx:else>
     <textarea id="comment-input" value="{{comment_input}}" auto-height="{{true}}" show-confirm-bar="{{false}}"

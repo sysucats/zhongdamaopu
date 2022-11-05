@@ -4,7 +4,7 @@
 
 
   <view class='wx-modal'>
-    <image class="wx-modal-catlogo" mode='heightFix' src='../../images/news/cat.png'></image>
+    <image class="wx-modal-catlogo" mode='heightFix' src='/pages/public/images/news/cat.png'></image>
     <view class='wx-modal-title'>{{ title }}</view>
     <view class="wx-modal-row">
       <view class='wx-modal-class'>{{ newsClass }}</view>

@@ -1,8 +1,6 @@
-const utils = require('../../../utils.js');
-const regeneratorRuntime = utils.regeneratorRuntime;
-const randomInt = utils.randomInt;
-const isManager = utils.isManager;
-const formatDate = utils.formatDate;
+import { formatDate } from "../../../utils";
+import { checkAuth } from "../../../user";
+
 Page({
 
   /**
@@ -19,48 +17,29 @@ Page({
   /**
    * 生命周期函数--监听页面加载
    */
-  onLoad: function (options) {
-    this.checkAuth();
+  onLoad: async function (options) {
+    if (await checkAuth(this, 3)) {
+      await this.loadRewards();
+    }
   },
 
-  // 检查权限
-  checkAuth() {
-    const that = this;
-    isManager(function (res) {
-      if (res) {
-        that.setData({
-          auth: true
-        });
-        that.loadRewards();
-      } else {
-        that.setData({
-          tipText: '只有管理员Level-3才能进入嗷',
-          tipBtn: true,
-        });
-        console.log("Not a manager.");
-      }
-    }, 3);
-  },
-
-  loadRewards() {
+  async loadRewards() {
     wx.showLoading({
-      title: '加载打赏记录中',
+      title: '加载投喂记录中',
     })
-    const that = this;
     const db = wx.cloud.database();
-    db.collection('reward').orderBy('mdate', 'desc').get().then(res => {
-      for (var r of res.data) {
-        r.mdateStr = r.mdate.getFullYear() + '年' + (r.mdate.getMonth() + 1) + '月';
-        r.records_raw = r.records;
-        r.records = r.records.replace(/^\#+|\#+$/g, '').split('#');
-        r.changing = false;
-      }
-      that.setData({
-        rewards: res.data
-      });
-      console.log(res.data);
-      wx.hideLoading();
+    var res = await db.collection('reward').orderBy('mdate', 'desc').get();
+    for (var r of res.data) {
+      r.mdateStr = r.mdate.getFullYear() + '年' + (r.mdate.getMonth() + 1) + '月';
+      r.records_raw = r.records;
+      r.records = r.records.replace(/^\#+|\#+$/g, '').split('#');
+      r.changing = false;
+    }
+    this.setData({
+      rewards: res.data
     });
+    console.log(res.data);
+    wx.hideLoading();
   },
 
   clickChange(e) {
@@ -72,7 +51,7 @@ Page({
     })
   },
 
-  changeConfirm(e) {
+  async changeConfirm(e) {
     wx.showLoading({
       title: '正在提交',
       mask: true
@@ -87,15 +66,14 @@ Page({
       mdate: rewards[index].mdate,
       records: records_raw,
     }
-    const that = this;
-    wx.cloud.callFunction({
+    
+    await wx.cloud.callFunction({
       name: 'updateReward',
       data: {
         reward_to_change: reward_to_change
       }
-    }).then(res => {
-      that.loadRewards();
     });
+    await this.loadRewards();
   },
 
   addMonth(e) {

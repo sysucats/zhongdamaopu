@@ -1,23 +1,21 @@
-// miniprogram/pages/genealogy/genealogy.js
-const utils = require('../../utils.js');
-const getGlobalSettings = utils.getGlobalSettings;
-const isManager = utils.isManager;
-const shuffle = utils.shuffle;
-const loadFilter = utils.loadFilter;
-const regReplace = utils.regReplace;
-const getDeltaHours = utils.getDeltaHours;
-
-
-const cache = require('../../cache.js');
-
-const cat_utils = require('../../cat.js');
-const getAvatar = cat_utils.getAvatar;
-const getVisitedDate = cat_utils.getVisitedDate;
-
-const getCatCommentCount = require('../../comment.js').getCatCommentCount;
-
-const config = require('../../config.js')
-const text_cfg = config.text
+import {
+  shuffle,
+  regReplace,
+  getDeltaHours,
+  sleep,
+  getCurrentPath
+} from "../../utils";
+import {
+  getAvatar,
+  getVisitedDate
+} from "../../cat";
+import {
+  getCatCommentCount
+} from "../../comment";
+import cache from "../../cache";
+import config from "../../config";
+import { loadFilter, getGlobalSettings, showTab } from "../../page";
+import { isManagerAsync } from "../../user";
 
 const default_png = undefined;
 
@@ -29,7 +27,7 @@ var pageLoadingLock = true; // 用于点击按钮刷新加锁
 const tipInterval = 24; // 提示间隔时间 hours
 
 // 分享的标语
-const share_text = text_cfg.app_name + ' - ' + text_cfg.genealogy.share_tip;
+const share_text = config.text.app_name + ' - ' + config.text.genealogy.share_tip;
 
 Page({
 
@@ -74,13 +72,13 @@ Page({
     newsList: [],
     newsImage: "",
 
-    text_cfg: text_cfg
+    text_cfg: config.text
   },
 
   /**
    * 生命周期函数--监听页面加载
    */
-  onLoad: function (options) {
+  onLoad: async function (options) {
     // 从缓存里读取options
     var fcampus = options.fcampus;
     if (!fcampus) {
@@ -99,146 +97,128 @@ Page({
       if (scene.startsWith('toC=')) {
         const cat_No = scene.substr(4);
         const db = wx.cloud.database();
-        const that = this;
-        db.collection('cat').where({
+        var cat_res = await db.collection('cat').where({
           _no: cat_No
         }).field({
           _no: true
-        }).get().then(res => {
-          if (!res.data.length) {
-            return;
-          }
-          const _id = res.data[0]._id;
-          that.clickCatCard(_id, true);
-        })
+        }).get()
+
+        if (!cat_res.data.length) {
+          return;
+        }
+        const _id = cat_res.data[0]._id;
+        this.clickCatCard(_id, true);
       }
     }
     // 开始加载页面
-    const that = this;
-    getGlobalSettings('genealogy').then(settings => {
-      // 先把设置拿到
-      catsStep = settings['catsStep'];
-      // 启动加载
-      that.loadFilters(fcampus);
+    const settings = await getGlobalSettings('genealogy');
+    // 先把设置拿到
+    catsStep = settings['catsStep'];
+    // 启动加载
+    this.loadFilters(fcampus);
 
-      that.setData({
-        main_lower_threshold: settings['main_lower_threshold'],
-        adStep: settings['adStep'],
-        photoPopWeight: settings['photoPopWeight'] || 10
-      });
-    })
-
-
-    var scene = wx.getLaunchOptionsSync().scene;
-    if (scene === 1154) { //朋友圈内打开 “单页模式”
-      this.loadFilters(fcampus);
-      const db = wx.cloud.database();
-      db.collection('setting').doc('pages').get().then(res => {
-        var genealogySetting = res.data['genealogy'];
-        // console.log("genealogySetting",genealogySetting);
-        that.setData({
-          main_lower_threshold: genealogySetting['main_lower_threshold'],
-        })
-        catsStep = genealogySetting['catsStep']
-      });
-    }
+    this.setData({
+      main_lower_threshold: settings['main_lower_threshold'],
+      adStep: settings['adStep'],
+      photoPopWeight: settings['photoPopWeight'] || 10
+    });
 
     // 载入公告信息
-    that.newsModal = this.selectComponent("#newsModal");
-    that.loadNews();
+    this.newsModal = this.selectComponent("#newsModal");
+    await this.loadNews();
   },
 
-  // onShow: function (options) {
-  //   console.log('onShow:', options);
-  // },
-  loadFilters: function (fcampus) {
+  onShow: function () {
+    showTab(this);
+  },
+
+  loadFilters: async function (fcampus) {
     // 下面开始加载filters
-    loadFilter().then(res => {
+    var res = await loadFilter();
 
-      var filters = [];
 
-      var area_item = {
-        key: 'area',
-        cateKey: 'campus',
-        name: '校区',
-        category: []
+    var filters = [];
+
+    var area_item = {
+      key: 'area',
+      cateKey: 'campus',
+      name: '校区',
+      category: []
+    };
+    area_item.category.push({
+      name: '全部校区',
+      items: [], // '全部校区'特殊处理
+      all_active: true
+    });
+    // 用个object当作字典，把area分下类
+    var classifier = {};
+    for (let i = 0, len = res.campuses.length; i < len; ++i) {
+      classifier[res.campuses[i]] = {
+        name: res.campuses[i],
+        items: [], // 记录属于这个校区的area
+        all_active: false
       };
-      area_item.category.push({
-        name: '全部校区',
-        items: [], // '全部校区'特殊处理
+    }
+    for (let k = 0, len = res.area.length; k < len; ++k) {
+      classifier[res.area[k].campus].items.push(res.area[k]);
+    }
+    for (let i = 0, len = res.campuses.length; i < len; ++i) {
+      area_item.category.push(classifier[res.campuses[i]]);
+    }
+    // 把初始fcampus写入，例如"011000"
+    if (fcampus) {
+      for (let i = 0; i < fcampus.length; i++) {
+        const active = fcampus[i] == "1";
+        area_item.category[i].all_active = active;
+      }
+    }
+    filters.push(area_item);
+
+    var colour_item = {
+      key: 'colour',
+      name: '花色',
+      category: [{
+        name: '全部花色',
+        items: res.colour.map(name => {
+          return {
+            name: name
+          };
+        }),
         all_active: true
-      });
-      // 用个object当作字典，把area分下类
-      var classifier = {};
-      for (let i = 0, len = res.campuses.length; i < len; ++i) {
-        classifier[res.campuses[i]] = {
-          name: res.campuses[i],
-          items: [], // 记录属于这个校区的area
-          all_active: false
-        };
-      }
-      for (let k = 0, len = res.area.length; k < len; ++k) {
-        classifier[res.area[k].campus].items.push(res.area[k]);
-      }
-      for (let i = 0, len = res.campuses.length; i < len; ++i) {
-        area_item.category.push(classifier[res.campuses[i]]);
-      }
-      // 把初始fcampus写入，例如"011000"
-      if (fcampus) {
-        for (let i = 0; i < fcampus.length; i++) {
-          const active = fcampus[i] == "1";
-          area_item.category[i].all_active = active;
-        }
-      }
-      filters.push(area_item);
+      }]
+    }
+    filters.push(colour_item);
 
-      var colour_item = {
-        key: 'colour',
-        name: '花色',
-        category: [{
-          name: '全部花色',
-          items: res.colour.map(name => {
-            return {
-              name: name
-            };
-          }),
-          all_active: true
-        }]
-      }
-      filters.push(colour_item);
+    var adopt_status = [{
+      name: "未知",
+      value: null
+    }];
+    adopt_status = adopt_status.concat(config.cat_status_adopt.map((name, i) => {
+      return {
+        name: name,
+        value: i, // 数据库里存的
+      };
+    }));
 
-      var adopt_status = [{
-        name: "未知",
-        value: null
-      }];
-      adopt_status = adopt_status.concat(config.cat_status_adopt.map((name, i) => {
-        return {
-          name: name,
-          value: i, // 数据库里存的
-        };
-      }));
+    var adopt_item = {
+      key: 'adopt',
+      name: '领养',
+      category: [{
+        name: '全部状态',
+        items: adopt_status,
+        all_active: true
+      }]
+    }
+    filters.push(adopt_item);
 
-      var adopt_item = {
-        key: 'adopt',
-        name: '领养',
-        category: [{
-          name: '全部状态',
-          items: adopt_status,
-          all_active: true
-        }]
-      }
-      filters.push(adopt_item);
-
-      // 默认把第一个先激活了
-      filters[0].active = true;
-      console.log(filters);
-      this.newUserTip();
-      this.setData({
-        filters: filters,
-      }, () => {
-        this.reloadCats();
-      });
-    })
+    // 默认把第一个先激活了
+    filters[0].active = true;
+    console.log(filters);
+    this.newUserTip();
+    await this.setData({
+      filters: filters,
+    });
+    await this.reloadCats();
   },
 
   /**
@@ -251,8 +231,8 @@ Page({
   /**
    * 页面上拉触底事件的处理函数
    */
-  onReachBottom: function () {
-    this.loadMoreCats();
+  onReachBottom: async function () {
+    await this.loadMoreCats();
   },
 
   /**
@@ -261,7 +241,7 @@ Page({
   onShareAppMessage: function () {
     // 分享是保留校区外显filter
     const pagesStack = getCurrentPages();
-    const path = utils.getCurrentPath(pagesStack);
+    const path = getCurrentPath(pagesStack);
     const fcampus = this.getFCampusStr();
     const query = `${path}fcampus=${fcampus}`;
     console.log(query);
@@ -272,10 +252,10 @@ Page({
   },
 
   // 获取二进制的campus filter字符串
-  getFCampusStr: function() {
+  getFCampusStr: function () {
     var fcampus = [];
     for (var item of this.data.filters[0].category) {
-      fcampus.push(item.all_active ? "1": "0");
+      fcampus.push(item.all_active ? "1" : "0");
     }
     return fcampus.join("");
   },
@@ -292,94 +272,97 @@ Page({
       this.setData({
         loadnomore: true
       });
+      pageLoadingLock = false;
       return false;
     }
     return true;
   },
 
-  reloadCats() {
+  async reloadCats() {
     // 增加lock
     loadingLock++;
     const nowLoadingLock = loadingLock;
     const db = wx.cloud.database();
     const cat = db.collection('cat');
     const query = this.fGet();
-    cat.where(query).count().then(res => {
-      if (loadingLock != nowLoadingLock) {
-        // 说明过期了
-        return false;
-      }
-      this.setData({
-        cats: [],
-        catsMax: res.total,
-        loadnomore: false,
-        filters_empty: Object.keys(query).length === 0,
-      }, function () {
-        this.loadMoreCats();
-      });
+    const cat_count = (await cat.where(query).count()).total;
+
+    if (loadingLock != nowLoadingLock) {
+      // 说明过期了
+      return false;
+    }
+    this.setData({
+      cats: [],
+      catsMax: cat_count,
+      loadnomore: false,
+      filters_empty: Object.keys(query).length === 0,
     });
+    await Promise.all([
+      this.loadMoreCats(),
+      // 加载待领养
+      this.countWaitingAdopt(),
+      // 刷新cache一下
+      this.setFCampusCache()
+    ]);
 
-    // 加载待领养
-    this.countWaitingAdopt();
-
-    // 刷新cache一下
-    this.setFCampusCache();
+    this.unlockBtn();
   },
 
   // 加载更多的猫猫
-  loadMoreCats() {
+  async loadMoreCats() {
     // 加载lock
     const nowLoadingLock = loadingLock;
     if (!this.checkNeedLoad() || this.data.loading) {
       return false;
     }
-    const that = this;
-    this.setData({
+
+    await this.setData({
       loading: true,
-    }, () => {
-      var cats = that.data.cats;
-      var step = catsStep;
-      const db = wx.cloud.database();
-      const cat = db.collection('cat');
-      const _ = db.command;
-      const query = that.fGet();
-      cat.where(query).orderBy('mphoto', 'desc').orderBy('popularity', 'desc').skip(cats.length).limit(step).get().then(res => {
-        if (loadingLock != nowLoadingLock) {
-          // 说明过期了
-          return false;
-        }
-        console.log(res.data);
-        res.data = shuffle(res.data);
-        for (var d of res.data) {
-          d.photo = default_png;
-          d.characteristics_string = [(d.colour || '') + ''].concat(d.characteristics || []).join('，');
-          if (!d.mphoto) {
-            d.mphoto_new = false;
-          } else {
-            const today = new Date();
-            const modified_date = new Date(d.mphoto);
-            const delta_date = today - modified_date; // milliseconds
-
-            // 小于7天
-            d.mphoto_new = ((delta_date / 1000 / 3600 / 24) < 7);
-
-            // 是否最近看过了
-            const visit_date = getVisitedDate(d._id);
-            if (visit_date >= modified_date) {
-              d.mphoto_new = false;
-            }
-          }
-        }
-        const new_cats = cats.concat(res.data);
-        that.setData({
-          cats: new_cats,
-          loading: false,
-          loadnomore: Boolean(new_cats.length === that.data.catsMax)
-        }, () => {
-          that.loadCatsPhoto().then();
-        });
-      });
     });
+
+    var cats = this.data.cats;
+    var step = catsStep;
+    const db = wx.cloud.database();
+    const cat = db.collection('cat');
+    const _ = db.command;
+    const query = this.fGet();
+    var new_cats = (await cat.where(query).orderBy('mphoto', 'desc').orderBy('popularity', 'desc').skip(cats.length).limit(step).get()).data
+    new_cats = shuffle(new_cats);
+
+    if (loadingLock != nowLoadingLock) {
+      // 说明过期了
+      console.log(`过期了 ${loadingLock}, ${nowLoadingLock}`)
+      return false;
+    }
+    console.log(new_cats);
+    for (var d of new_cats) {
+      d.photo = default_png;
+      d.characteristics_string = [(d.colour || '') + ''].concat(d.characteristics || []).join('，');
+      if (!d.mphoto) {
+        d.mphoto_new = false;
+        continue;
+      }
+
+      const today = new Date();
+      const modified_date = new Date(d.mphoto);
+      const delta_date = today - modified_date; // milliseconds
+
+      // 小于7天
+      d.mphoto_new = ((delta_date / 1000 / 3600 / 24) < 7);
+
+      // 是否最近看过了
+      const visit_date = getVisitedDate(d._id);
+      if (visit_date >= modified_date) {
+        d.mphoto_new = false;
+      }
+    }
+    new_cats = cats.concat(new_cats);
+    await this.setData({
+      cats: new_cats,
+      loading: false,
+      loadnomore: Boolean(new_cats.length === this.data.catsMax)
+    });
+    await this.loadCatsPhoto();
   },
 
   async loadCatsPhoto() {
@@ -412,14 +395,9 @@ Page({
       }
     }
 
-    var that = this;
-
-    this.setData({
+    await this.setData({
       cats: new_cats
-    }, () => {
-      that.unlockBtn();
     });
-
   },
 
   bindImageLoaded(e) {
@@ -462,23 +440,21 @@ Page({
     });
   },
   // 管理员判断，其实可以存到global里
-  bindManageCat(e) {
-    const that = this;
-    isManager(res => {
-      if (res) {
-        const cat_id = e.currentTarget.dataset.cat_id;
-        wx.navigateTo({
-          url: '/pages/manage/addCat/addCat?cat_id=' + cat_id,
-        });
-      } else {
-        console.log("not a manager");
-      }
-    })
+  async bindManageCat(e) {
+    var res = await isManagerAsync();
+    if (res) {
+      const cat_id = e.currentTarget.dataset.cat_id;
+      wx.navigateTo({
+        url: '/pages/manage/addCat/addCat?cat_id=' + cat_id,
+      });
+      return;
+    }
+    console.log("not a manager");
   },
 
   ////// 下面开始新的filter //////
   // mask滑动事件catch
-  voidMove: function () {},
+  voidMove: function () { },
   // toggle filters
   fToggle: function () {
     // 这里只管显示和隐藏，类似取消键的功能
@@ -516,9 +492,12 @@ Page({
   // 点击category filter，全选/反选该类下所有sub
   fClickCategory: async function (e) {
     var filters = this.data.filters;
-    var filters_sub = this.data.filters_sub;
+    var {index, filters_sub} = e.target.dataset;
+    if (filters_sub == undefined) {
+      filters_sub = this.data.filters_sub;
+    }
 
-    const index = e.target.dataset.index;
+    console.log(e);
     const all_active = !filters[filters_sub].category[index].all_active;
     var category = filters[filters_sub].category[index];
     if (index == 0) { // 默认第0个是'全部'
@@ -674,8 +653,9 @@ Page({
 
     this.reloadCats();
     this.fHide();
+    this.unlockBtn();
   },
-  fReset: function () {
+  fReset: async function () {
     // 重置所有分类
     var filters = this.data.filters;
     // const filters_sub = this.data.filters_sub;
@@ -691,14 +671,13 @@ Page({
     }
 
     const fLegal = this.fCheckLegal(filters);
-    const that = this;
-    this.setData({
+    await this.setData({
       filters: filters,
       filters_legal: fLegal
-    }, () => {
-      // 确认过滤器并关闭展板
-      that.fComfirm();
     });
+
+    // 确认过滤器并关闭展板
+    await this.fComfirm();
   },
   // 点击外显的校区
   fClickCampus: async function (e) {
@@ -719,13 +698,11 @@ Page({
   fSearch: function (e) {
     this.reloadCats();
   },
-  fSearchClear: function () {
-    var that = this;
-    this.setData({
+  fSearchClear: async function () {
+    await this.setData({
       filters_input: ""
-    }, function () {
-      that.fSearch();
-    })
+    });
+    this.fSearch();
   },
   // 搜索框是否要显示阴影
   fScroll: function (e) {
@@ -769,7 +746,7 @@ Page({
   },
 
   // 查找有多少只猫待领养
-  countWaitingAdopt: function () {
+  countWaitingAdopt: async function () {
     const target = config.cat_status_adopt_target;
     const value = config.cat_status_adopt.findIndex((x) => {
       return x === target
@@ -781,15 +758,14 @@ Page({
     const query = {
       adopt: value
     };
-    cat.where(query).count().then(res => {
-      this.setData({
-        adopt_count: res.total
-      });
+
+    this.setData({
+      adopt_count: (await cat.where(query).count()).total
     });
   },
 
   // 点击领养按钮
-  clickAdoptBtn: function (e) {
+  clickAdoptBtn: async function (e) {
     if (pageLoadingLock) {
       console.log("page is locking");
       return false;
@@ -798,6 +774,7 @@ Page({
 
     var filters = this.data.filters;
     var filters_sub = filters.findIndex((x) => {
+      this.unlockBtn();
       return x.key === "adopt"
     });
 
@@ -809,6 +786,7 @@ Page({
 
     if (category.items[index].active) {
       // 已经激活了
+      this.unlockBtn();
       return false;
     }
 
@@ -821,24 +799,24 @@ Page({
     this.setData({
       filters: filters,
       filters_legal: fLegal
-    }, function () {
-      this.reloadCats();
-      this.showFilterTip();
     });
+
+    await Promise.all([
+      this.reloadCats(),
+      this.showFilterTip()
+    ])
+    this.unlockBtn();
   },
 
   // 显示过滤器的提示
-  showFilterTip() {
-    this.setData({
+  async showFilterTip() {
+    await this.setData({
       show_filter_tip: true
     });
-
-    var that = this;
-    setTimeout(function () {
-      that.setData({
-        show_filter_tip: false
-      })
-    }, 3000);
+    await sleep(3000);
+    await this.setData({
+      show_filter_tip: false
+    });
   },
 
   newUserTip() {
@@ -858,7 +836,7 @@ Page({
   },
 
   // 返回首页
-  clickBackFirstPageBtn() {
+  async clickBackFirstPageBtn() {
     if (pageLoadingLock) {
       console.log("page is locking");
       return false;
@@ -866,52 +844,53 @@ Page({
 
     this.lockBtn();
 
-    this.fReset();
-    this.fSearchClear();
+    await this.fReset();
+    await this.fSearchClear();
+    this.unlockBtn();
   },
 
-  loadNews() {
+  async loadNews() {
     // 载入需要弹窗的公告
-    const that = this;
     const db = wx.cloud.database();
-    db.collection('news').orderBy('date', 'desc').where({
+    var newsList = (await db.collection('news').orderBy('date', 'desc').where({
       setNewsModal: true
-    }).get().then(res => {
-      that.setData({
-        newsList: res.data,
-      });
-      console.log("Modal News: ", this.data.newsList);
-      if(res.data.length != 0){
-        if(res.data[0].coverPath){
-          that.setData({
-            newsImage: res.data[0].coverPath
-          })
-        }
-        else if(res.data[0].photosPath.length != 0){
-          that.setData({
-            newsImage: res.data[0].photosPath[0]
-          })
-        }
-        if (!that.checkNewsVisited()) {
-          that.newsModal.showNewsModal();
-        }
-      }
+    }).get()).data
+
+    this.setData({
+      newsList: newsList,
     });
+    console.log("Modal News: ", this.data.newsList);
+    if (newsList.length == 0) {
+      return;
+    }
+
+    if (newsList[0].coverPath) {
+      this.setData({
+        newsImage: newsList[0].coverPath
+      })
+    } else if (newsList[0].photosPath.length != 0) {
+      this.setData({
+        newsImage: newsList[0].photosPath[0]
+      })
+    }
+    if (!this.checkNewsVisited()) {
+      this.newsModal.showNewsModal();
+    }
   },
 
   // 取消事件
-  _cancelEvent(){
+  _cancelEvent() {
     this.newsModal.hideNewsModal();
     this.setNewsVisited();
   },
   // 确认事件: 查看公告详情
-  _confirmEvent(){
+  _confirmEvent() {
     this.newsModal.hideNewsModal();
     this.setNewsVisited();
     const news_id = this.data.newsList[0]._id;
     const detail_url = '/pages/news/detailNews/detailNews';
     wx.navigateTo({
-        url: detail_url + '?news_id=' + news_id,
+      url: detail_url + '?news_id=' + news_id,
     });
   },
   // 检测公告是否已读
@@ -941,13 +920,13 @@ Page({
   },
 
   // campus过滤器cache起来
-  setFCampusCache: function() {
+  setFCampusCache: function () {
     const fc = this.getFCampusStr();
-    cache.setCacheItem("genealogy-fcampus", fc, 720);
+    cache.setCacheItem("genealogy-fcampus", fc, cache.cacheTime.genealogyFCampus);
   },
 
   // campus过滤器取cache
-  getFCampusCache: function() {
+  getFCampusCache: function () {
     return cache.getCacheItem("genealogy-fcampus");
   }
 })
