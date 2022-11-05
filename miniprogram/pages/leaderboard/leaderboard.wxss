@@ -6,6 +6,7 @@ page {
 .main {
   display: flex;
   align-items: flex-start;
+  padding: 0 8rpx;
 }
 
 .column {
@@ -15,7 +16,7 @@ page {
 .column_item {
   width: 350rpx;
   background: #fff;
-  margin: 30rpx auto;
+  margin: 0rpx auto 30rpx auto;
   border-radius: 10rpx;
   overflow: hidden;
 }
@@ -58,7 +59,7 @@ page {
 .info {
   width: 350rpx;
   display: flex;
-  padding: 10rpx 30rpx 20rpx 30rpx;
+  padding: 10rpx 0rpx 20rpx 30rpx;
   align-items: center;
   box-sizing: border-box;
   justify-content: space-between;
@@ -83,11 +84,16 @@ page {
   font-weight: lighter;
 }
 
+.photo-info{
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
 .pher-name{
   font-size: 22rpx;
   color: var(--color-gray-dark);
+  margin-right: 16rpx;
 }
-
 .photo-date {
   font-size: 22rpx;
   color: var(--color-gray-dark);
@@ -136,5 +142,5 @@ heart {
 }
 
 .h-filter-item.long {
-  margin-top: 20rpx;
+  margin: 20rpx 20rpx 20rpx 0rpx;
 }
