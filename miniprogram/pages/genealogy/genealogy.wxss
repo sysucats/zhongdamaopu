@@ -553,7 +553,7 @@ scroll-view {
   width: 750rpx;
   display: flex;
   flex-direction: row;
-  padding: 0 20rpx;
+  padding: 0 0 0 30rpx;
   white-space: nowrap;
 }
 

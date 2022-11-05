@@ -1,5 +1,5 @@
 page {
-  background: var(--color-white-dark);
+  background: var(--color-gray-light);
 }
 
 .main {
@@ -15,29 +15,58 @@ page {
   width: 350rpx;
   background: #fff;
   margin: 30rpx auto;
-  box-shadow: 5rpx 5rpx 10rpx 0 rgba(0, 0, 0, 0.3);
   border-radius: 10rpx;
   overflow: hidden;
 }
 
 .column_pic {
-  display: block;
-  width: 350rpx;
-  height: 350rpx;
+  position: relative;
+  /* width: 100%; */
+  overflow: hidden;
+}
+.column_pic image{
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+.location{
+  position: absolute;
+  bottom: 30rpx;
+  right: 15rpx;
+  color: var(--color-white-dark);
+  text-align:end;
+  font-size: 18rpx;
+  background-color:var(--color-black-transparent);
+  padding:5rpx 10rpx;
+  border-radius: 10rpx;
+}
+.dark_mask{
+  position: absolute;
+  bottom: 0rpx;
+  height: 120rpx;
+  width: 100%;
+
+  opacity: 0.7;
+  background-image: linear-gradient(180deg, rgba(0,0,0,0.00) 0%, #000000 100%);
+
+  color: var(--color-white-dark);
+  text-align:end;
+  font-size: 18rpx
 }
 
 .info {
   width: 350rpx;
   display: flex;
-  padding: 10rpx 0;
+  padding: 10rpx 30rpx 20rpx 30rpx;
   align-items: center;
+  box-sizing: border-box;
+  justify-content: space-between;
 }
 
 .names {
   display: inline-block;
   width: 300rpx;
   max-width: 300rpx;
-  padding-left: 30rpx;
   box-sizing: border-box;
 }
 
@@ -53,16 +82,19 @@ page {
   font-weight: lighter;
 }
 
-.pher-name, .photo-date {
-  font-size: 18rpx;
-  color: var(--color-black-min);
-}
-.photo-date {
-  font-size: 16rpx;
+.pher-name{
+  font-size: 22rpx;
+  color: var(--color-gray-dark);
 }
 
+.photo-date {
+  font-size: 22rpx;
+  color: var(--color-gray-dark);
+}
+
+
 .like-button {
-  width: 100rpx;
+  /* width: 100rpx; */
   display: inline-flex;
   flex-direction: column;
   align-items: center;
@@ -74,16 +106,19 @@ heart {
 
 .like-num {
   font-size: 20rpx;
+  color: var(--color-gray-max);
 }
 
 .hide {
   display: none;
 }
 
+
 .loading image {
   width: 165.9rpx;
   height: 90.3rpx;
   margin: 10rpx 292rpx;
+
 }
 .loadnomore image {
   width: 750rpx;
