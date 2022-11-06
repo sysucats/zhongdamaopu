@@ -1,0 +1,5 @@
+{"_id":"pages","detailCat":{"albumStep":5,"photoStep":3,"cantUpload":"*","cantComment":"*","galleryPreload":1,"galleryCompressed":false},"genealogy":{"catsStep":3,"main_lower_threshold":50,"adStep":6,"photoPopWeight":10},"checkFeedback":{"step":6},"recognize":{"interfaceURL":"https://your.domain.com/recognizeCatPhoto","secretKey":"changeToYourKey"},"recognize_test":{"interfaceURL":"https://your.domain.com/recognizeCatPhoto_test","secretKey":"changeToYourKey"},"tabBar":{"minTab":"genealogy,leaderboard,info","fullTab":"genealogy,recognize,news,leaderboard,info","minVersion":"*"}}
+{"_id":"filter","colour":["橘","白","黑","橘白","三花","狸花","奶牛","玳瑁"],"campuses":["新校区"],"area":[]}
+{"_id":"friendLink","apps":[{"appid":"wx5bd705b2bc91c73b","logo":"/pages/public/images/system/zdmp_logo.png","name":"中大猫谱"}]}
+{"_id":"subscribeMsg","verifyPhoto":{"receiverNum":2,"triggerNum":6},"chkFeedback":{"receiverNum":2}}
+{"_id":"relation","types":["好友","情侣","兄弟","姐妹","爸爸","妈妈","儿子","女儿"]}

@@ -16,13 +16,13 @@ async function getUser(options) {
 
   const wx_code = (await wx.login()).code;
   console.log(wx_code);
-  const userRes = await cloud.callFunction({
+  const userRes = (await cloud.callFunction({
     name: 'userOp',
     data: {
       op: 'get',
       wx_code: wx_code
     }
-  });
+  })).result;
 
   app.globalData.currentUser = userRes.result;
   return userRes;

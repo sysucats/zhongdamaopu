@@ -101,7 +101,6 @@ const init_setting = [{
         "interfaceURL": "https://your.domain.com/recognizeCatPhoto_test",
         "secretKey": "changeToYourKey"
     },
-    "openid": "oGT1H43qQmSz3XFG1VxeagZavxWA",
     "tabBar": {
         "minTab": "genealogy,leaderboard,info",
         "fullTab": "genealogy,recognize,news,leaderboard,info",
