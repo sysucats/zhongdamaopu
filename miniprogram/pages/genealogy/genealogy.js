@@ -910,12 +910,12 @@ Page({
 
   // 上锁
   lockBtn() {
-    console.log("lock");
+    // console.log("lock");
     pageLoadingLock = true;
   },
   // 解锁
   unlockBtn() {
-    console.log("unlock");
+    // console.log("unlock");
     pageLoadingLock = false;
   },
 

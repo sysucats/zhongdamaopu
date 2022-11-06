@@ -143,7 +143,7 @@ module.exports = {
     comment_board: {
       ban_tip: "如有误封请在\"关于-信息反馈\"中留言~",
       auth_tip: "设置头像昵称后留言~",
-      comment_tip: "发条友善的留言吧~"
+      comment_tip: "给猫咪留个言吧~"
     },
     // 添加照片，pages/genealogy/addPhoto/addPhoto
     add_photo: {

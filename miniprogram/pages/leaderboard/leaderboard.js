@@ -207,6 +207,7 @@ Page({
   onReachBottom: function () {
     this.loadData()
   },
+  
   clickLike: async function clickLike(e) {
     if (this.jsData.like_mutex) {
       console.log("like lock");
@@ -242,6 +243,8 @@ Page({
     }
     this.jsData.like_mutex = false;
   },
+
+
   // 点击猫猫名称
   clickCatName(e) {
     const detail_url = '/pages/genealogy/detailCat/detailCat';

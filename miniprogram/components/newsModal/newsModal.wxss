@@ -28,7 +28,7 @@
     border-radius: 15rpx;
     overflow: visible;
 
-    padding: 20rpx 20rpx 0 20rpx;
+    padding: 20rpx 35rpx 0 35rpx;
 }
 
 .wx-modal-row{
@@ -77,7 +77,7 @@
 
 .wx-modal-scroll {
     width: auto;
-    padding: 15rpx;
+    padding: 15rpx 5rpx;
     height: 600rpx;
     background-color: #FFFFFF;
 }
