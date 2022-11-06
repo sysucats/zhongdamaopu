@@ -1,9 +1,10 @@
 // pages/manage/pageSettings/pageSettings.js
 import { checkAuth } from "../../../user";
 import { getGlobalSettings } from "../../../page";
+import { cloud } from "../../../cloudAccess";
 import desc from "./desc";
 
-const db = wx.cloud.database();
+const db = cloud.database();
 const _ = db.command;
 
 Page({
@@ -136,11 +137,14 @@ Page({
 
     const { settings } = this.data;
 
-    await wx.cloud.callFunction({
-      name: "updateSetting",
+    await cloud.callFunction({
+      name: "curdOp",
       data: {
-        doc_id: "pages",
-        to_upload: settings
+        permissionLevel: 99,
+        operation: "update",
+        collection: "setting",
+        item_id: "pages",
+        data: settings
       }
     })
 

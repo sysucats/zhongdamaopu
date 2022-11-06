@@ -2,6 +2,7 @@
 import { randomInt } from './utils';
 import { getGlobalSettings } from "./page";
 import { getCacheItem, setCacheItem } from "./cache";
+import { cloud } from "./cloudAccess";
 
 // 获取当前用户
 // 如果数据库中没有会后台自动新建并返回
@@ -9,20 +10,22 @@ async function getUser(options) {
   options = options || {};
   const app = getApp();
 
-  if (!options.nocache) {
-    if (app.globalData.currentUser) {
-      return app.globalData.currentUser
-    }
+  if (!options.nocache && app.globalData.currentUser) {
+    return app.globalData.currentUser;
   }
 
-  const userRes = await wx.cloud.callFunction({
+  const wx_code = (await wx.login()).code;
+  console.log(wx_code);
+  const userRes = (await cloud.callFunction({
     name: 'userOp',
     data: {
-      op: 'get'
+      op: 'get',
+      wx_code: wx_code
     }
-  });
+  })).result;
+
   app.globalData.currentUser = userRes.result;
-  return userRes.result;
+  return userRes;
 }
 
 // 使用openid来读取用户信息
@@ -34,7 +37,7 @@ async function getUserInfo(openid) {
   }
 
   // 重新获取
-  const db = wx.cloud.database();
+  const db = cloud.database();
   const coll_user = db.collection('user');
   value = (await coll_user.where({openid: openid}).get()).data[0];
 
@@ -153,7 +156,7 @@ function toSetUserInfo() {
 
 // 设置用户等级
 async function setUserRole(openid, role) {
-  return await wx.cloud.callFunction({
+  return (await cloud.callFunction({
     name: "userOp",
     data: {
       "op": "updateRole",
@@ -162,7 +165,7 @@ async function setUserRole(openid, role) {
         role: role
       },
     }
-  });
+  })).result;
 }
 
 module.exports = {

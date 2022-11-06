@@ -3,6 +3,7 @@ import { formatDate } from "../../../utils";
 import { requestNotice } from "../../../msg";
 import config from "../../../config";
 import { checkAuth } from "../../../user";
+import { cloud } from "../../../cloudAccess";
 
 const notifyChkFeedbackTplId = config.msg.notifyChkFeedback.id;
 
@@ -36,12 +37,12 @@ Page({
   },
 
   async loadFeedbacks() {
-    const db = wx.cloud.database();
+    const db = cloud.database();
     const nowLoaded = this.data.feedbacks.length;
     var feedbacks = (await db.collection('feedback').where({
       dealed: this.data.checkHistory
     }).orderBy('openDate', 'desc').skip(nowLoaded).limit(step).get()).data;
-    console.log(feedbacks);
+    console.log("[loadFeedbacks] -", feedbacks);
     // 获取对应猫猫信息；将Date对象转化为字符串；判断是否已回复
     for (let i = 0; i < feedbacks.length; ++i) {
       if (feedbacks[i].cat_id != undefined) {
@@ -71,12 +72,12 @@ Page({
     wx.showLoading({
       title: '加载中...',
     });
-    const db = wx.cloud.database();
-    var fbRes = db.collection('feedback').where({
+    const db = cloud.database();
+    var fbRes = await db.collection('feedback').where({
       dealed: this.data.checkHistory
     }).count();
 
-    console.log(fbRes);
+    console.log("[reload] - feedbacks: ", fbRes);
     this.setData({
       total: fbRes.total,
     });
@@ -89,23 +90,23 @@ Page({
     wx.getSetting({
       withSubscriptions: true,
       success: res => {
-        console.log("subscribeSet:", res);
+        console.log("[requestSubscribeMessage] - subscribeSet:", res);
         if ('subscriptionsSetting' in res) {
           if (!(notifyChkFeedbackTplId in res['subscriptionsSetting'])) {
             // 第一次请求
             requestNotice('notifyChkFeedback');
-            console.log("firstRequest");
+            // console.log("[requestSubscribeMessage] - firstRequest");
           } else if (res.subscriptionsSetting[notifyChkFeedbackTplId] === 'reject') {
             // console.log("已拒绝");// 不再请求/重复弹出toast
             // requestNotice('notifyChkFeedback');
           } else if (res.subscriptionsSetting[notifyChkFeedbackTplId] === 'accept') {
-            console.log('重新请求下个一次性订阅');
+            console.log('[requestSubscribeMessage] - 重新请求下个一次性订阅');
             requestNotice('notifyChkFeedback');
           }
         }
       },
       complete:res=>{
-        console.log("complete:",res);
+        console.log("[requestSubscribeMessage] - complete:",res);
       }
     })
   },
@@ -137,16 +138,22 @@ Page({
       return;
     }
 
-    console.log('确认反馈处理');
-    await wx.cloud.callFunction({
-      name: "manageFeedback",
+    console.log('[bindCheck] - 确认反馈处理');
+    await cloud.callFunction({
+      name: "curdOp",
       data: {
-        operation: 'deal',
-        feedback: feedback
+        permissionLevel: 1,
+        operation: 'update',
+        collection: "feedback",
+        item_id: feedback._id,
+        data: {
+          dealed: true,
+          dealDate: new Date()
+        }
       }
     });
 
-    console.log("反馈已处理：" + feedback._id);
+    console.log("[bindCheck] - 反馈已处理：" + feedback._id);
     // 直接从列表里去掉这个反馈，不完全加载了
     const feedbacks = this.data.feedbacks;
     const new_feedbacks = feedbacks.filter((fb) => {

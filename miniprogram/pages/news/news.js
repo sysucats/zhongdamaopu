@@ -3,6 +3,7 @@ import { sleep } from "../../utils.js";
 import { text as text_cfg, science_imgs } from "../../config";
 import { checkAuth } from "../../user";
 import { showTab } from "../../page";
+import { cloud } from "../../cloudAccess";
 const share_text = text_cfg.app_name + ' - ' + text_cfg.science.share_tip;
 
 
@@ -45,7 +46,7 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: async function (options) {
-    const db = wx.cloud.database();
+    const db = cloud.database();
     var res = await db.collection('news').orderBy('date', 'desc').get();
 
     this.setData({
@@ -78,8 +79,6 @@ Page({
     }
   },
 
-
-
   /**
    * 页面相关事件处理函数--监听用户下拉动作
    */
@@ -97,9 +96,9 @@ Page({
 
   // 重新载入数据库
   async getData() {
-    const db = wx.cloud.database();
-    var res = await db.collection('news').orderBy('date', 'desc').get();
-    
+    const db = cloud.database();
+    const res = await db.collection('news').orderBy('date', 'desc').get();
+
     this.setData({
       newsList: res.data,
     });
@@ -157,12 +156,12 @@ Page({
       this.setData({
         newsList_show: newsList_show,
       })
-      console.log("Filter for New: ", newsList_show);
+      console.log("[filterNews] -", newsList_show);
     }
   },
 
   radioButtonTap: function (e) {
-    console.log("Radio Button Tap: ", e);
+    console.log("[radioButtonTap] -", e);
     let id = e.currentTarget.dataset.id;
     for (let i = 0; i < this.data.buttons.length; i++) {
       if (this.data.buttons[i].id == id) {
@@ -212,16 +211,16 @@ Page({
     const fileSystem = wx.getFileSystemManager();
     var promiseAll = [];
     var cachePathList = [];
-
+    
     for (let i = 0; i < imgUrlList.length; i++) {
-      promiseAll.push(wx.cloud.downloadFile({
+      promiseAll.push(cloud.downloadFile({
         fileID: imgUrlList[i],
       }));
     }
 
     var res = await Promise.all(promiseAll);
 
-    console.log("proAll:",res);
+    console.log("[cacheCloudImg] -",res);
     for(let i = 0; i < res.length; i++){
       var savedFilePath = fileSystem.saveFileSync(res[i].tempFilePath);
       cachePathList.push(savedFilePath);

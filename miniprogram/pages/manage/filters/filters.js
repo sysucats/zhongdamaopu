@@ -1,5 +1,6 @@
 import { checkAuth } from "../../../user";
 import { loadFilter } from "../../../page";
+import { cloud } from "../../../cloudAccess";
 
 Page({
 
@@ -117,7 +118,7 @@ Page({
       }]
     }
     filters.push(colour_item);
-    console.log(filters);
+    console.log("[reloadFilter] -", filters);
     this.setData({
       filters: filters
     })
@@ -181,7 +182,7 @@ Page({
     if (new_index < 0 || new_index >= len) {
       return false;
     }
-    console.log(direct);
+    console.log("[moveOption] -", direct);
     const temp = category.items[index];
     category.items[index] = category.items[new_index];
     category.items[new_index] = temp;
@@ -204,14 +205,14 @@ Page({
     const delete_value = category.items[index];
     
     // 检查一下数据库里这个地址有没有猫，如果有就不能删
-    const db = wx.cloud.database();
+    const db = cloud.database();
     var qf = { [mainF.key]: category.items[index].name };
     if (mainF.cateKey) {
       qf[mainF.cateKey] = category.name;
     }
     var catCountRes = await db.collection('cat').where(qf).count();
     
-    console.log(catCountRes);
+    console.log("[deleteOption] -", catCountRes);
     if (catCountRes.total) {
       wx.showToast({
         title: '无法删除有猫猫的选项',
@@ -235,7 +236,7 @@ Page({
     wx.showLoading({
       title: '正在上传...',
     });
-    console.log(filters);
+    console.log("[uploadFilters] -", filters);
     // 处理回数据库中的原始格式
     var area = [];
     var colour = [];
@@ -254,10 +255,14 @@ Page({
       }
     }
     
-    await wx.cloud.callFunction({
-      name: 'updateFilter',
+    await cloud.callFunction({
+      name: 'curdOp',
       data: {
-        to_upload: {
+        permissionLevel: 2,
+        operation: "update",
+        collection: "setting",
+        item_id: "filter",
+        data: {
           area: area,
           colour: colour
         }

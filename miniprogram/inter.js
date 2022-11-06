@@ -1,8 +1,9 @@
 import { getUser } from "./user";
 import { getCacheItem, setCacheItem, cacheTime } from "./cache";
+import { cloud } from "./cloudAccess";
 
 // 常用的一些对象
-const db = wx.cloud.database();
+const db = cloud.database();
 const _ = db.command;
 const coll_inter = db.collection('inter');
 var user = undefined;
@@ -61,6 +62,7 @@ async function likeCheck(item_ids, options) {
   return item_ids.map(x => Boolean(found[x]));
 }
 
+
 // 点赞操作
 async function likeAdd(item_id, item_type) {
   var res = (await likeCheck([item_id]))[0];
@@ -72,22 +74,28 @@ async function likeAdd(item_id, item_type) {
 
   // 没有记录
   await ensureUser();
-  await coll_inter.add({
+  await cloud.callFunction({
+    name: "curdOp",
     data: {
-      type: TYPE_LIKE,
-      uid: user.openid,
-      item_id: item_id,
-      count: 1
+      operation: "add",
+      collection: "inter",
+      data: {
+        type: TYPE_LIKE,
+        uid: user.openid,
+        item_id: item_id,
+        count: 1
+      }
     }
   });
 
   // 加上去
   console.log("like", item_type, item_id);
-  await wx.cloud.callFunction({
-    name: "interOp",
+  await cloud.callFunction({
+    name: "curdOp",
     data: {
-      type: "like_add",
-      item_type: item_type,
+      operation: "inc",
+      type: "like",
+      collection: item_type,
       item_id, item_id,
     }
   });

@@ -3,11 +3,12 @@ import config from "../../../config";
 import { getPageUserInfo, getUserInfo, checkCanComment, isManagerAsync, toSetUserInfo } from "../../../user";
 import { getAvatar } from "../../../cat";
 import { getCatCommentCount } from "../../../comment";
+import { cloud } from "../../../cloudAccess";
 
 var cat_id;
 
 // 常用的对象
-const db = wx.cloud.database();
+const db = cloud.database();
 const coll_comment = db.collection('comment');
 
 // 发送锁
@@ -132,7 +133,7 @@ Page({
   },
   
   async loadCat() {
-    const db = wx.cloud.database();
+    const db = cloud.database();
     var cat = (await db.collection('cat').doc(cat_id).get()).data;
     console.log(cat);
     
@@ -177,6 +178,7 @@ Page({
   sendComment() {
     // 发送中
     if (sendLock) {
+      console.log("locking...");
       return false;
     }
     
@@ -193,6 +195,7 @@ Page({
     });
     // 实际发送
     this.doSendComment();
+    this.doSendCommentEnd();
   },
 
   async doSendComment() {
@@ -206,12 +209,10 @@ Page({
         content: config.text.comment_board.ban_tip,
         showCancel: false,
       })
-      that.doSendCommentEnd();
       return false;
     }
     
     // 插入留言
-    const that = this;
     var item = {
       content: content,
       user_openid: user.openid,
@@ -222,7 +223,7 @@ Page({
     const checkRes = await contentSafeCheck(content, user.userInfo.nickName);
     if (!checkRes) {
       // 没有检测出问题
-      this.addComment(item, user);
+      await this.addComment(item, user);
       return
     }
     
@@ -235,41 +236,42 @@ Page({
     sendLock = false;
   },
 
-  addComment(item, user) {
-    const that = this;
-    coll_comment.add({
-      data: item,
-      success: function(res) {
-        // res 是一个对象，其中有 _id 字段标记刚创建的记录的 id
-        console.log(res, user);
-        
-        // 插入最新留言 + 清空输入框
-        console.log(item);
-        item.userInfo = user.userInfo;
-        item.datetime = formatDate(item.create_date, "yyyy-MM-dd hh:mm:ss")
-        var comments = that.data.comments;
-        comments.unshift(item);
-        that.setData({
-          comment_input: "",
-          comments: comments,
-        });
+  async addComment(item, user) {
+    try {
+      var res = (await cloud.callFunction({
+        name: "curdOp", 
+        data: {
+          operation: "add",
+          collection: "comment",
+          data: item
+        }
+      })).result;
+      
+      console.log("curdOp(add-Comment) result): ", res, user);
+      // 插入最新留言 + 清空输入框
+      console.log(item);
+      item.userInfo = user.userInfo;
+      item.datetime = formatDate(new Date(item.create_date), "yyyy-MM-dd hh:mm:ss")
+      var comments = this.data.comments;
+      comments.unshift(item);
+      this.setData({
+        comment_input: "",
+        comments: comments,
+        comment_count: this.data.comment_count + 1,
+      });
 
-        // 显示success toast
-        that.doSendCommentEnd();
-        wx.showToast({
-          title: '留言成功~',
-        });
-      },
-      fail: function(res) {
-        wx.showModal({
-          title: "留言失败",
-          content: "请开发者检查“comment”云数据库是否创建，权限是否设置为“双true”",
-          showCancel: false,
-        })
-        console.error(res);
-        that.doSendCommentEnd();
-      }
-    })
+      // 显示success toast
+      wx.showToast({
+        title: '留言成功~',
+      });
+    } catch {
+      wx.showModal({
+        title: "留言失败",
+        content: "请开发者检查“comment”云数据库是否创建，权限是否设置为“双true”",
+        showCancel: false,
+      })
+      console.error(res);
+    }
   },
 
   // 加载更多留言
@@ -290,7 +292,7 @@ Page({
       if (res) {
         item.userInfo = res.userInfo;
       }
-      item.datetime = formatDate(item.create_date, "yyyy-MM-dd hh:mm:ss")
+      item.datetime = formatDate(new Date(item.create_date), "yyyy-MM-dd hh:mm:ss")
       comments.push(item);
     }
 
@@ -300,6 +302,7 @@ Page({
 
   },
 
+  // TODO 改成async写法
   deleteComment(e) {
     const that = this;
     const index = e.currentTarget.dataset.index;
@@ -312,11 +315,13 @@ Page({
       content: `确定删除\"${username}\"的留言？`,
       success (res) {
         if (res.confirm) {
-          wx.cloud.callFunction({
-            name: "commentOp",
+          cloud.callFunction({
+            name: "curdOp",
             data: {
-              type: "delete_comment",
-              comment_id: comment_id,
+              permissionLevel: 1,
+              operation: "remove",
+              collection: "comment",
+              item_id: comment_id
             },
             success: () => {
               wx.showToast({
@@ -333,5 +338,4 @@ Page({
       }
     })
   }
-
 })

@@ -16,6 +16,7 @@ import cache from "../../cache";
 import config from "../../config";
 import { loadFilter, getGlobalSettings, showTab } from "../../page";
 import { isManagerAsync } from "../../user";
+import { cloud } from "../../cloudAccess";
 
 const default_png = undefined;
 
@@ -96,7 +97,7 @@ Page({
       console.log("scene:", scene);
       if (scene.startsWith('toC=')) {
         const cat_No = scene.substr(4);
-        const db = wx.cloud.database();
+        const db = cloud.database();
         var cat_res = await db.collection('cat').where({
           _no: cat_No
         }).field({
@@ -282,7 +283,7 @@ Page({
     // 增加lock
     loadingLock++;
     const nowLoadingLock = loadingLock;
-    const db = wx.cloud.database();
+    const db = cloud.database();
     const cat = db.collection('cat');
     const query = this.fGet();
     const cat_count = (await cat.where(query).count()).total;
@@ -322,7 +323,7 @@ Page({
 
     var cats = this.data.cats;
     var step = catsStep;
-    const db = wx.cloud.database();
+    const db = cloud.database();
     const cat = db.collection('cat');
     const _ = db.command;
     const query = this.fGet();
@@ -568,7 +569,7 @@ Page({
     return true;
   },
   fGet: function () {
-    const db = wx.cloud.database();
+    const db = cloud.database();
     const _ = db.command;
     const filters = this.data.filters;
     var res = []; // 先把查询条件全部放进数组，最后用_.and包装，这样方便跨字段使用or逻辑
@@ -605,7 +606,7 @@ Page({
         }
       }
 
-      console.log(key, selected);
+      // console.log(key, selected);
       res.push({
         [key]: _.in(selected)
       });
@@ -682,7 +683,7 @@ Page({
   // 点击外显的校区
   fClickCampus: async function (e) {
     if (pageLoadingLock) {
-      console.log("page is locking");
+      console.log("Page is locking");
       return false;
     }
     await this.fClickCategory(e);
@@ -752,8 +753,7 @@ Page({
       return x === target
     });
 
-
-    const db = wx.cloud.database();
+    const db = cloud.database();
     const cat = db.collection('cat');
     const query = {
       adopt: value
@@ -767,7 +767,7 @@ Page({
   // 点击领养按钮
   clickAdoptBtn: async function (e) {
     if (pageLoadingLock) {
-      console.log("page is locking");
+      console.log("[点击领养按钮] Page is locking");
       return false;
     }
     this.lockBtn();
@@ -838,7 +838,7 @@ Page({
   // 返回首页
   async clickBackFirstPageBtn() {
     if (pageLoadingLock) {
-      console.log("page is locking");
+      console.log("[返回首页] page is locking");
       return false;
     }
 
@@ -851,7 +851,7 @@ Page({
 
   async loadNews() {
     // 载入需要弹窗的公告
-    const db = wx.cloud.database();
+    const db = cloud.database();
     var newsList = (await db.collection('news').orderBy('date', 'desc').where({
       setNewsModal: true
     }).get()).data
@@ -859,7 +859,7 @@ Page({
     this.setData({
       newsList: newsList,
     });
-    console.log("Modal News: ", this.data.newsList);
+    console.log("公告弹出模块: ", this.data.newsList);
     if (newsList.length == 0) {
       return;
     }
@@ -898,7 +898,7 @@ Page({
     const news_id = this.data.newsList[0]._id;
     var key = `visit-news-${news_id}`;
     var visited = cache.getCacheDate(key);
-    console.log(visited);
+    // console.log(visited);
     return visited;
   },
   // 设置已读时间
@@ -910,12 +910,12 @@ Page({
 
   // 上锁
   lockBtn() {
-    console.log("lock");
+    // console.log("lock");
     pageLoadingLock = true;
   },
   // 解锁
   unlockBtn() {
-    console.log("unlock");
+    // console.log("unlock");
     pageLoadingLock = false;
   },
 

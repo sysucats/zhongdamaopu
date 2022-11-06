@@ -2,6 +2,7 @@ import { getCurrentPath, shareTo } from "../../../utils";
 import { getPageUserInfo, checkCanUpload, toSetUserInfo } from "../../../user";
 import { requestNotice, sendNotifyChkFeeedback } from "../../../msg";
 import { text as text_cfg } from "../../../config";
+import { cloud } from "../../../cloudAccess";
 
 Page({
   /**
@@ -20,7 +21,7 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: async function (options) {
-    const db = wx.cloud.database();
+    const db = cloud.database();
     if (options.cat_id != undefined) {
       const catRes = await db.collection('cat').doc(options.cat_id).field({ name: true, _id: true }).get();
       this.setData({
@@ -92,40 +93,56 @@ Page({
       data.cat_id = this.data.cat._id;
       data.cat_name = this.data.cat_name;
     }
-    const db = wx.cloud.database();
-    const addRes = await db.collection('feedback').add({
-      data: data
-    });
-    console.log(addRes);
-    this.setData({
-      feedbackId : addRes._id
-    })
+    const that = this;
+    const res = (await cloud.callFunction({
+      name: "curdOp", 
+      data: {
+        operation: "add",
+        collection: "feedback",
+        data: data
+      }
+    })).result;
 
-    wx.hideLoading();
-    await sendNotifyChkFeeedback();
-    wx.showToast({
-      title: '收到你的反馈啦',
-      icon: 'success',
-      duration: 1000
-    })
+    console.log("curdOp(add-feedback) result:", res);
+    if(res.ok){
+      that.setData({
+        feedbackId : res.id
+      })
+      wx.hideLoading();
+      await sendNotifyChkFeeedback();
+      wx.showToast({
+        title: '收到你的反馈啦',
+        icon: 'success',
+        duration: 1000
+      })
+    }
+    else{
+      console.log('repliable record fail:\n');
+    }
   },
   
   async toSubmit() {
     let repliable = await requestNotice('feedback'); // 请求订阅消息推送
 
-    const db = wx.cloud.database();
-    // console.log('fbID:',this.data.feedbackId,'\n repliable:',repliable);
-    db.collection('feedback').doc(this.data.feedbackId).update({
-      data:{
-        repliable:repliable
-      },
-      success:res=>{
-        wx.navigateBack();
-      },
-      fail:res=>{
-        console.log('repliable record fail:\n',res);
+    const that = this;
+    const res = (await cloud.callFunction({
+      name: "curdOp", 
+      data: {
+        operation: "update",
+        collection: "feedback",
+        item_id: that.data.feedbackId,
+        data: { repliable: repliable },
       }
-    })
+    })).result;
+
+    console.log("curdOp(feedback-update) result:", res);
+    if(res.ok){
+      wx.navigateBack();
+    }
+    else{
+      console.log('repliable record fail:\n',res);
+    }
+     
   }
 })
 

@@ -2,8 +2,9 @@
 import { regReplace, sleep } from "../../../utils";
 import { getAvatar, getCatItem } from "../../../cat";
 import { checkAuth } from "../../../user";
+import { cloud } from "../../../cloudAccess";
 
-const db = wx.cloud.database();
+const db = cloud.database();
 const _ = db.command;
 
 // 运行状态
@@ -92,19 +93,24 @@ Page({
   async loadRelationTypes() {
     var types = [];
     var data = (await db.collection('setting').where({_id: 'relation'}).get()).data;
-    console.log(data);
+
     if (data.length == 0) {
       // 当数据库setting中不存在时，进行初始化
-      types = ["爸爸", "妈妈"]
-      await db.collection('setting').doc('relation').set({
+      await cloud.callFunction({
+        name: "curdOp",
         data: {
-          types: types,
+          permissionLevel: 1,
+          operation: "set",
+          collection: "setting",
+          item_id: "relation",
+          data: {
+            types: ["爸爸", "妈妈"]
+          }
         }
       });
-    } else {
-      types = data[0].types;
+      data = (await db.collection('setting').where({_id: 'relation'}).get()).data;
     }
-    
+    types = data[0].types;
     this.setData({
       relation_types: types,
     });
@@ -112,7 +118,7 @@ Page({
 
   // 保存新的关系类型
   async saveNewRelationType(e) {
-    console.log(e);
+    // console.log(e);
     const t = e.detail.value;
     var types = this.data.relation_types;
 
@@ -121,12 +127,17 @@ Page({
     if (idx == -1) {
       // 不存在
       types.push(t);
-      console.log(types);
-      await wx.cloud.callFunction({
-        name: "relationOp",
+      // console.log(types);
+      await cloud.callFunction({
+        name: "curdOp",
         data: {
-          type: "saveRelationTypes",
-          relationTypes: types,
+          permissionLevel: 1,
+          operation: "update",
+          collection: "setting",
+          item_id: "relation",
+          data: {
+              types: types
+          }
         }
       });
       idx = types.length - 1;
@@ -145,7 +156,7 @@ Page({
       idx = e.currentTarget.dataset.index;
     }
     var type =  this.data.relation_types[idx];
-    console.log(type);
+    // console.log(type);
     this.setData({
       [`cat.relations[${selectRelationTypeIdx}].type`]: type,
       showSearchCat: false,
@@ -169,11 +180,16 @@ Page({
   async doDeleteRelationType(idx) {
     var types = this.data.relation_types;
     types.splice(idx, 1);
-    await wx.cloud.callFunction({
-      name: "relationOp",
+    await cloud.callFunction({
+      name: "curdOp",
       data: {
-        type: "saveRelationTypes",
-        relationTypes: types,
+        permissionLevel: 1,
+        operation: "update",
+        document: "setting",
+        item_id: "relation",
+        data: {
+            types: types
+        }
       }
     });
     this.setData({
@@ -236,7 +252,7 @@ Page({
       }
       let regexp = db.RegExp({
         regexp: search_str.join("|"),
-        options: 'igs',
+        options: 'is',
       });
       filters.push(_.or([{
         name: regexp
@@ -282,7 +298,7 @@ Page({
   async loadRelations() {
     var cat = this.data.cat;
     var relations = this.data.cat.relations;
-    console.log(cat);
+    // console.log(cat);
     if (!cat._id || !relations) {
       return false;
     }
@@ -295,7 +311,7 @@ Page({
       relation.cat.avatar = await getAvatar(relation.cat_id, relation.cat.photo_count_best);
     }
 
-    console.log(relations);
+    console.log("[loadRelations] -", relations);
 
     this.setData({
       "cat.relations": relations,
@@ -351,12 +367,16 @@ Page({
         cat_id: r.cat_id,
       });
     }
-    await wx.cloud.callFunction({
-      name: "relationOp",
+    await cloud.callFunction({
+      name: "curdOp",
       data: {
-        type: "saveRelation",
-        cat_id: cat._id,
-        relations: relations,
+        permissionLevel: 1,
+        operation: "update",
+        collection: "cat",
+        item_id: cat._id,
+        data: {
+          relations: relations  
+        }
       }
     });
 
@@ -373,7 +393,7 @@ Page({
 
     for (let i = 0; i < cat.relations.length; i++) {
       const r = cat.relations[i];
-      console.log(r);
+      // console.log(r);
       if (!r.type || !r.cat_id) {
         wx.showToast({
           title: `#${i+1}号关系不完整~`,
@@ -384,5 +404,10 @@ Page({
     }
 
     return true;
+  },
+
+  // 没有权限，返回上一页
+  goBack() {
+    wx.navigateBack();
   }
 })

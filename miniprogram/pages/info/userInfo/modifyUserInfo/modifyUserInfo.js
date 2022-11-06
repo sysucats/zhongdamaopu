@@ -1,9 +1,8 @@
 import { getUser } from "../../../../user";
 import { contentSafeCheck, deepcopy } from "../../../../utils";
+import { cloud } from "../../../../cloudAccess";
 
-const cloud = wx.cloud;
 const defaultAvatarUrl = "/pages/public/images/info/default_avatar.png"
-
 
 Page({
   data: {
@@ -118,5 +117,5 @@ Page({
     }
     wx.showModal(checkRes);
     return false;
-  },
+  }
 })

@@ -1,4 +1,6 @@
 // pages/tools/updateUserRole/updateUserRole.js
+import { cloud } from "../../../cloudAccess";
+
 Page({
 
   /**
@@ -58,7 +60,7 @@ Page({
   },
 
   async updateUserRole() {
-    const db = wx.cloud.database();
+    const db = cloud.database();
     const _ = db.command;
     const $ = db.command.aggregate
     var totalCount = await db.collection('photo').aggregate()
@@ -93,7 +95,7 @@ Page({
       var reqs = [];
       for (const u of users) {
         console.log(u._id);
-        reqs.push(wx.cloud.callFunction({
+        reqs.push(cloud.callFunction({
           name: "userOp",
           data: {
             "op": "updateRole",

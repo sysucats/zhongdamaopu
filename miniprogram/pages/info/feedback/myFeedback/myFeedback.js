@@ -1,5 +1,6 @@
 import { formatDate } from "../../../../utils";
 import { getUser } from "../../../../user";
+import { cloud } from "../../../../cloudAccess";
 
 var currentUser;
 
@@ -33,7 +34,7 @@ Page({
       title: '加载中...',
     });
     const that = this;
-    const db = wx.cloud.database();
+    const db = cloud.database();
     const countRes = await db.collection('feedback').where({
       _openid: currentUser.openid
     }).count();
@@ -47,7 +48,7 @@ Page({
   },
 
   async loadFeedbacks() {
-    const db = wx.cloud.database();
+    const db = cloud.database();
     const nowLoaded = this.data.feedbacks.length;
     var feedbacks = (await db.collection('feedback').where({
       _openid: currentUser.openid

@@ -2,6 +2,8 @@ import { getPageUserInfo, toSetUserInfo } from "../../../user";
 import { text as text_cfg } from "../../../config";
 const share_text = text_cfg.app_name + ' - ' + text_cfg.photo_rank.share_tip;
 
+// 是否使用微信云，不然使用Laf云
+const cloud = require('../../../cloudAccess.js').cloud;
 Page({
 
   /**
@@ -48,7 +50,7 @@ Page({
   },
 
   async getRank() {
-    const db = wx.cloud.database();
+    const db = cloud.database();
     var rankRes = await db.collection('photo_rank').orderBy('mdate', 'desc').limit(1).get();
     
     if (rankRes.data.length == 0) {

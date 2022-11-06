@@ -1,4 +1,5 @@
 import { likeAdd, likeCheck } from "../../../inter";
+import { cloud } from "../../../cloudAccess";
 
 module.exports =
 /******/ (function(modules) { // webpackBootstrap
@@ -220,7 +221,7 @@ Component({
                     title: '正在保存...',
                     mask: true,
                 })
-                let downloadRes = await wx.cloud.downloadFile({
+                let downloadRes = await cloud.downloadFile({
                     fileID: that.data.imgUrls[that.data.current],
                 });
                 wx.hideLoading();

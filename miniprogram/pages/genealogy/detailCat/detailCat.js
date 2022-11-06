@@ -6,6 +6,7 @@ import { checkCanUpload, checkCanComment, isManagerAsync } from "../../../user";
 import { getCatCommentCount } from "../../../comment";
 import { setVisitedDate, getAvatar, getCatItem } from "../../../cat";
 import { getGlobalSettings } from "../../../page";
+import { cloud } from "../../../cloudAccess";
 
 const no_heic = /^((?!\.heic$).)*$/i; // 正则表达式：不以 HEIC 为文件后缀的字符串
 
@@ -79,16 +80,19 @@ Page({
     
     // 先判断一下这个用户在12小时之内有没有点击过这只猫
     if (!checkMultiClick(cat_id)) {
-      console.log("add click!");
+      console.log("[onLoad] - Add click for cat", cat_id);
       wx.setStorage({
         key: cat_id,
         data: new Date(),
       });
       // 增加click数
-      await wx.cloud.callFunction({
-        name: 'addPop',
+      await cloud.callFunction({
+        name: 'curdOp',
         data: {
-          cat_id: cat_id
+          operation: "inc",
+          type: "pop",
+          collection: "cat",
+          item_id: cat_id
         }
       });
     }
@@ -105,7 +109,7 @@ Page({
     // 获取一下屏幕高度
     wx.getSystemInfo({
       success: res => {
-        console.log(res);
+        console.log("[onReady] -", res);
         heights = {
           "screenHeight": res.screenHeight,
           "windowHeight": res.windowHeight,
@@ -148,7 +152,7 @@ Page({
    * 生命周期函数--监听页面卸载
    */
   onUnload: function () {
-    console.log("page unload, context:", context);
+    console.log("[onUnload] - page unload, context:", context);
     if (context.cat_id) {
       cat_id = context.cat_id;
       album_raw = context.album_raw;
@@ -175,7 +179,7 @@ Page({
     const pagesStack = getCurrentPages();
     const path = getCurrentPath(pagesStack);
     const share_text = `${this.data.cat.name} - ${config.text.app_name}`;
-    console.log(shareTo(share_text, path))
+    console.log("[onShareAppMessage] -", shareTo(share_text, path))
     return shareTo(share_text, path);
   },
 
@@ -187,7 +191,7 @@ Page({
   },
 
   async loadCat() {
-    const db = wx.cloud.database();
+    const db = cloud.database();
     const cat = (await db.collection('cat').doc(cat_id).get()).data;
     cat.photo = [];
     cat.characteristics_string = (cat.colour || '') + '猫';
@@ -206,7 +210,7 @@ Page({
     var query = wx.createSelectorQuery();
     query.select('#info-box').boundingClientRect();
     query.exec((res) => {
-      console.log(res[0]);
+      console.log("[loadCat] - ", res[0]);
       infoHeight = res[0].height;
     })
   },
@@ -215,7 +219,7 @@ Page({
   async loadRelations() {
     var cat = this.data.cat;
     var relations = this.data.cat.relations;
-    console.log(cat);
+    console.log("[loadRelations] - ", cat);
     if (!cat._id || !relations) {
       return false;
     }
@@ -225,7 +229,7 @@ Page({
       relation.cat.avatar = await getAvatar(relation.cat_id, relation.cat.photo_count_best);
     }
 
-    console.log(relations);
+    console.log("[loadRelations] - ", relations);
 
     this.setData({
       "cat.relations": relations,
@@ -234,8 +238,7 @@ Page({
 
   async reloadPhotos() {
     // 这些是精选照片
-    const db = wx.cloud.database();
-    // 1/4处 屏蔽以 HEIC 为文件后缀的图片
+    const db = cloud.database();
     const qf = { cat_id: cat_id, verified: true, best: true, photo_id: no_heic };
     photoMax = (await db.collection('photo').where(qf).count()).total;
     await Promise.all([
@@ -254,8 +257,7 @@ Page({
 
   async reloadAlbum() {
     // 下面是相册的
-    const db = wx.cloud.database();
-    // 2/4处 屏蔽以 HEIC 为文件后缀的图片
+    const db = cloud.database();
     const qf_album = { cat_id: cat_id, verified: true, photo_id: no_heic };
     albumMax = (await db.collection('photo').where(qf_album).count()).total;
     album_raw = [];
@@ -271,7 +273,6 @@ Page({
     if (this.data.cat.photo.length >= photoMax) {
       return false;
     }
-    // 3/4处 屏蔽以 HEIC 为文件后缀的图片
     const qf = { cat_id: cat_id, verified: true, best: true, photo_id: no_heic };
     const step = page_settings.photoStep;
     const now = cat.photo.length;
@@ -281,10 +282,9 @@ Page({
     //   mask: true
     // })
 
-    const db = wx.cloud.database();
-    console.log(qf);
+    const db = cloud.database();
     let res = await db.collection('photo').where(qf).orderBy('mdate', 'desc').skip(now).limit(step).get();
-    console.log(res);
+    console.log("[loadMorePhotos] -", res);
     const offset = cat.photo.length;
     for (let i = 0; i < res.data.length; ++i) {
       res.data[i].index = offset + i; // 把index加上，gallery预览要用到
@@ -294,6 +294,7 @@ Page({
       cat: cat
     });
   },
+
   bindTapFeedback() {
     wx.navigateTo({
       url: '/pages/genealogy/feedbackDetail/feedbackDetail?cat_id=' + this.data.cat._id,
@@ -305,6 +306,7 @@ Page({
       url: '/pages/genealogy/addPhoto/addPhoto?cat_id=' + this.data.cat._id,
     });
   },
+
   async bindTapPhoto(e) {
     wx.showLoading({
       title: '正在加载...',
@@ -337,7 +339,7 @@ Page({
     const preload = page_settings.galleryPreload;
     const photo_count = this.data.galleryPhotos.length;
     if (whichGallery == 'best' && photo_count - index <= preload && photo_count < photoMax) {
-      console.log("加载更多精选图");
+      console.log("[bindGalleryChange] - 加载更多精选图");
       await this.loadMorePhotos(); //preload
       
       var photos = this.data.cat.photo;
@@ -354,7 +356,6 @@ Page({
   },
 
   bindImageLoaded(e) {
-    // console.log(e);
     // wx.hideLoading();
   },
 
@@ -372,16 +373,23 @@ Page({
       })
       return false;
     }
-    // 4/4处 屏蔽以 HEIC 为文件后缀的图片
     const qf = { cat_id: cat_id, verified: true, photo_id: no_heic };
     const step = page_settings.albumStep;
     const now = album_raw.length;
 
-    const db = wx.cloud.database();
+    const db = cloud.database();
 
     loadingAlbum = true;
     const orderItem = photoOrder[this.data.photoOrderSelected];
-    let res = await db.collection('photo').where(qf).orderBy(orderItem.key, orderItem.order).orderBy('mdate', 'desc').skip(now).limit(step).get();
+
+    let res;
+    if(orderItem.name == "最早收录"){
+      res = await db.collection('photo').where(qf).orderBy(orderItem.key, orderItem.order).skip(now).limit(step).get();
+    }
+    else{
+      res = await db.collection('photo').where(qf).orderBy(orderItem.key, orderItem.order).orderBy('mdate', 'desc').skip(now).limit(step).get();
+    }
+    
     const offset = album_raw.length;
     for (let i = 0; i < res.data.length; ++i) {
       res.data[i].index = offset + i; // 把index加上，gallery预览要用到
@@ -401,7 +409,7 @@ Page({
       if (orderKey == 'shooting_date') {
         date = pic.shooting_date;
       } else if (orderKey == 'mdate') {
-        date = formatDate(pic.mdate, 'yyyy-MM')
+        date = formatDate(pic.mdate, 'yyyy-MM');
       }
       if (!date) {
         continue;
@@ -437,7 +445,6 @@ Page({
         age: age
       });
     }
-    // console.log(result);
     loadingAlbum = false;
     this.setData({
       album: result
@@ -452,6 +459,7 @@ Page({
       this.reloadAlbum();
     })
   },
+  
   // 处理主容器滑动时的行为
   bindContainerScroll(e) {
     const rpx2px = heights.rpx2px;
@@ -468,7 +476,6 @@ Page({
         });
       }
 
-      
       const hideBgBlock = this.data.hideBgBlock;
       // 判断是否要隐藏背景颜色块的高度
       const hide_bg_thred = 150;
@@ -490,13 +497,13 @@ Page({
       return false;
     }
     // 如果目前没有，那就先生成一个，再显示
-    console.log('生成mpcode');
+    console.log('[bingMpTap] - 生成mpcode');
     wx.showLoading({
       title: '生成ing...',
     })
     const that = this;
     const cat = this.data.cat;
-    wx.cloud.callFunction({
+    cloud.callFunction({
       name: 'getMpCode',
       data: {
         _id: cat._id,
@@ -506,7 +513,6 @@ Page({
       },
       success: (res) => {
         wx.hideLoading();
-        console.log(res);
         wx.previewImage({
           urls: [res.result],
         });
@@ -539,11 +545,11 @@ Page({
   },
 
   likeCountChanged(e) {
-    console.log(e);
+    console.log("[likeCountChanged] -", e);
     const current = e.detail.current;
     const like_count = e.detail.like_count;
     if (whichGallery == "best") {
-      console.log("update best photo", e.detail);
+      console.log("[likeCountChanged] - update best photo", e.detail);
       this.setData({
         [`cat.photo[${current}].like_count`]: like_count,
       }); 

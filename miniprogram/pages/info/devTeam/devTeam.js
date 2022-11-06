@@ -11,6 +11,13 @@ Page({
     text_cfg: text_cfg,
     github_link: "https://github.com/sysucats/zhongdamaopu",
     update_log: [{
+      version: "v1.9.0",
+      content: [
+        "后台迁移到laf",
+        "识猫、精选页UI优化",
+      ],
+      time: "2022/11/06"
+    }, {
       version: "v1.8.15",
       content: [
         "修复底Tab样式",

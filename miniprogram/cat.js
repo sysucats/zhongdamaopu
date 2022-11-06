@@ -1,9 +1,10 @@
 // 放置与cat对象有关的函数
 import { randomInt } from "./utils";
 import { getCacheItem, setCacheItem, getCacheDate, setCacheDate, cacheTime } from "./cache";
+import { cloud } from "./cloudAccess" 
 
 // 常用的一些对象
-const db = wx.cloud.database();
+const db = cloud.database();
 const _ = db.command;
 const coll_photo = db.collection('photo');
 const coll_cat = db.collection('cat');

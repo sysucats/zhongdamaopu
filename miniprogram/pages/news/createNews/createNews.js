@@ -6,13 +6,15 @@ import {
   checkAuth,
   toSetUserInfo
 } from "../../../user";
+import {
+  cloud
+} from "../../../cloudAccess";
 
 Page({
   /**
    * 页面的初始数据
    */
   data: {
-    isAuth: false,
     auth: false,
     user: {},
     news_id: 0,
@@ -105,7 +107,6 @@ Page({
       count: 9 - that.data.photos.length,
       sizeType: ["compressed"],
       success: (res) => {
-        console.log(res);
         var photos = that.data.photos;
         for (const file of res.tempFiles) {
           photos.push({
@@ -117,7 +118,7 @@ Page({
         });
       },
     })
-    console.log("Photos: ", that.data.photos);
+    console.log("[chooseImg] -", that.data.photos);
   },
 
   deleteImg(event) {
@@ -137,7 +138,7 @@ Page({
   },
 
   previewImg: function (event) {
-    console.log(event);
+    console.log("[previewImg] -", event);
     wx.previewImage({
       urls: [event.currentTarget.dataset.url]
     })
@@ -157,7 +158,6 @@ Page({
       count: 1,
       sizeType: ["compressed"],
       success: (res) => {
-        console.log(res);
         for (const file of res.tempFiles) {
           that.setData({
             cover: file
@@ -165,7 +165,7 @@ Page({
         }
       },
     })
-    console.log("Cover: ", that.data.photos);
+    console.log("[chooseCover] -", that.data.photos);
   },
 
   deleteCover(event) {
@@ -239,29 +239,28 @@ Page({
     const index = tempFilePath.lastIndexOf(".");
     const ext = tempFilePath.substr(index + 1);
 
-    let upRes = await wx.cloud.uploadFile({
+    const that = this;
+    const upRes = await cloud.uploadFile({
       cloudPath: 'news' + '/' + generateUUID() + '.' + ext, // 上传至云端的路径
       filePath: tempFilePath, // 小程序临时文件路径
     });
 
-    // 返回文件 ID
+    console.log("[uploadImg] - upload Result: ", upRes);
     if (type == 0) { // 上传普通图片，更新路径 photos_path
-      this.data.photos_path.push(upRes.fileID);
-      this.setData({
-        photos_path: this.data.photos_path
+      that.data.photos_path.push(upRes.fileID);
+      that.setData({
+        photos_path: that.data.photos_path
       });
     } else { // 上传封面，更新路径 cover_path
-      this.setData({
+      that.setData({
         cover_path: upRes.fileID
       });
     }
-    console.log("File Path: ", upRes.fileID);
   },
 
   radioButtonTap: function (e) {
-    console.log("Radio Button Tap: ", e);
+    console.log("[radioButtonTap] -", e);
     let id = e.currentTarget.dataset.id;
-    console.log(id);
     for (let i = 0; i < this.data.buttons.length; i++) {
       if (this.data.buttons[i].id == id) {
         this.data.buttons[i].checked = true;
@@ -292,7 +291,7 @@ Page({
   async bindSubmit(e) {
     var submitData = e.detail.value;
     const that = this;
-    console.log(submitData);
+    console.log("[bindSubmit] - submit data: ", submitData);
     if (!submitData.title) {
       wx.showToast({
         title: '请填写标题后再发布哦',
@@ -300,8 +299,6 @@ Page({
       })
       return;
     }
-
-    var date = new Date();
 
     // 上传图片
     await this.uploadCover();
@@ -322,7 +319,7 @@ Page({
     var data = {
       userInfo: that.data.user.userInfo,
       userNickname: submitData.name,
-      date: date,
+      date: new Date(),
       title: submitData.title,
       mainContent: submitData.mainContent,
       coverPath: that.data.cover_path,
@@ -331,24 +328,31 @@ Page({
       setNewsModal: setNewsModal
     };
 
-    const db = wx.cloud.database();
-    db.collection('news').add({
-      data: data,
-      success: (res) => {
-        console.log(res);
-        that.setData({
-          news_id: res._id
-        })
-      },
-      fail: console.error
-    })
-
-
-    wx.showToast({
-      title: '发布成功',
-      icon: 'success',
-      duration: 1000
-    });
+    const res = (await cloud.callFunction({
+      name: "curdOp",
+      data: {
+        permissionLevel: 3,
+        operation: "add",
+        collection: "news",
+        data: data
+      }
+    })).result;
+    console.log("newOp(create) Result:", res);
+    if (res.ok) {
+      that.setData({
+        news_id: res._id
+      });
+      wx.showToast({
+        title: '发布成功',
+        icon: 'success',
+        duration: 1000
+      });
+    }
     setTimeout(wx.navigateBack, 1000);
+  },
+
+  // 没有权限，返回上一页
+  goBack() {
+    wx.navigateBack();
   }
 })

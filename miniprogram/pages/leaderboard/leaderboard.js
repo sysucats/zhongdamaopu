@@ -8,6 +8,7 @@ import {
 import {getDateWithDiffHours, formatDate} from "../../utils.js";
 import config from "../../config";
 import { showTab } from "../../page";
+import { cloud } from "../../cloudAccess";
 
 const share_text = config.text.app_name + ' - ' + config.text.genealogy.share_tip;
 
@@ -151,7 +152,7 @@ Page({
     });
     
 
-    const db = wx.cloud.database();
+    const db = cloud.database();
     const _ = db.command;
     const curCount = this.data.columns[0].length + this.data.columns[1].length;
     const timeRange = this.getTimeRange();
@@ -206,6 +207,7 @@ Page({
   onReachBottom: function () {
     this.loadData()
   },
+  
   clickLike: async function clickLike(e) {
     if (this.jsData.like_mutex) {
       console.log("like lock");
@@ -241,6 +243,8 @@ Page({
     }
     this.jsData.like_mutex = false;
   },
+
+
   // 点击猫猫名称
   clickCatName(e) {
     const detail_url = '/pages/genealogy/detailCat/detailCat';

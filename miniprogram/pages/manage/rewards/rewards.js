@@ -1,5 +1,6 @@
 import { formatDate } from "../../../utils";
 import { checkAuth } from "../../../user";
+import { cloud } from "../../../cloudAccess";
 
 Page({
 
@@ -27,7 +28,7 @@ Page({
     wx.showLoading({
       title: '加载投喂记录中',
     })
-    const db = wx.cloud.database();
+    const db = cloud.database();
     var res = await db.collection('reward').orderBy('mdate', 'desc').get();
     for (var r of res.data) {
       r.mdateStr = r.mdate.getFullYear() + '年' + (r.mdate.getMonth() + 1) + '月';
@@ -66,14 +67,37 @@ Page({
       mdate: rewards[index].mdate,
       records: records_raw,
     }
-    
-    await wx.cloud.callFunction({
-      name: 'updateReward',
-      data: {
-        reward_to_change: reward_to_change
-      }
-    });
-    await this.loadRewards();
+    const that = this;
+
+    if (reward_to_change._id) { // Update
+      await cloud.callFunction({
+        name: 'curdOp',
+        data: {
+          permissionLevel: 3,
+          operation: "update",
+          collection: "reward",
+          item_id: reward_to_change._id,
+          data: {
+            records: reward_to_change.records
+          }
+        }
+      });
+      that.loadRewards();
+    } else { // Add 新月份
+      await cloud.callFunction({
+        name: 'curdOp',
+        data: {
+          permissionLevel: 3,
+          operation: "add",
+          collection: "reward",
+          data: {
+            mdate: new Date(reward_to_change.mdate),
+            records: reward_to_change.records
+          }
+        }
+      });
+      that.loadRewards();
+    }
   },
 
   addMonth(e) {
@@ -107,6 +131,10 @@ Page({
     this.setData({
       rewards: rewards
     })
-  }
+  },
 
+  // 没有权限，返回上一页
+  goBack() {
+    wx.navigateBack();
+  }
 })

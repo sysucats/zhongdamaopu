@@ -1,4 +1,5 @@
 import { hex_sha256 } from "./packages/sha256/sha256";
+import { cloud } from "./cloudAccess";
 
 function randomInt(min, max) {
   return Math.floor(Math.random() * (max - min)) + min;
@@ -183,7 +184,7 @@ async function arrayResort(oriArray) {
 // 检查部署情况，有错误就跳转到部署帮助页
 async function checkDeploy() {
   try {
-    const db = wx.cloud.database();
+    const db = cloud.database();
     await db.collection('setting').doc('pages').get();
   } catch (error) {
     return false
@@ -210,7 +211,7 @@ async function contentSafeCheck(content, nickName) {
     21000: "其他",
   }
   // 违规检测并提交
-  var res = (await wx.cloud.callFunction({
+  var res = (await cloud.callFunction({
     // The name of the cloud function to be called
     name: 'commentCheck',
     // Parameter to be passed to the cloud function
@@ -220,7 +221,7 @@ async function contentSafeCheck(content, nickName) {
     },
   })).result;
   // 检测接口的返回
-  console.log(res);
+  console.log("contentSafeCheck", res);
   if (res.errCode != 0) {
     const label_code = res.result.label;
     const label = label_type[label_code];

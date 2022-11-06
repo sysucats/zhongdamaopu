@@ -1,4 +1,6 @@
+// miniprogram/pages/manage/managers.js
 import { checkAuth } from "../../../user";
+import { cloud } from "../../../cloudAccess";
 
 // 是否正在加载
 var loading = false;
@@ -85,7 +87,7 @@ Page({
     if (loading) {
       return false;
     }
-    const db = wx.cloud.database();
+    const db = cloud.database();
     var users = this.data.users;
     loading = true;
     wx.showLoading({
@@ -174,21 +176,26 @@ Page({
     }
     console.log("#"+index, _id, level);
 
-    wx.cloud.callFunction({
-      name: "updateManager",
+    cloud.callFunction({
+      name: "curdOp",
       data: {
-        _id: _id,
-        level: level
+        permissionLevel: 99,
+        operation: "update",
+        collection: "user",
+        item_id: _id,
+        data: {
+          manager: level
+        }
       },
       success: (res) => {
-        console.log(res);
-        if (res.result.ok) {
+        console.log("updateManager Result:", res);
+        if (res.ok && res.updated == 1) {
           wx.showToast({
             title: '更新成功',
           });
         } else {
           wx.showToast({
-            title: '更新失败\r\n' + res.result.msg,
+            title: '更新失败\r\n' + res.msg,
             icon: 'none',
           })
         }

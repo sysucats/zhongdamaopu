@@ -10,6 +10,8 @@
 <!-- 压缩图片用 -->
 <canvas style="width: 500px; height: 500px; border: 1px solid red; left: 100000px; position: fixed;" canvas-id="canvasForCompress"></canvas>
 
+<image class="bgImg" src="../public/images/recognize/background.svg"></image>
+
 <view id="positionWrapper" class="{{catList.length ? 'flowUp' : ''}}">
 
   <view id="photoBox">

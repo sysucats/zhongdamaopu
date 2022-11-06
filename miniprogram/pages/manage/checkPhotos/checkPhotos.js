@@ -4,6 +4,7 @@ import { requestNotice, sendVerifyNotice } from "../../../msg";
 import config from "../../../config";
 import cache from "../../../cache";
 import { getCatItem } from "../../../cat";
+import { cloud } from "../../../cloudAccess";
 
 const notifyVerifyPhotoTplId = config.msg.notifyVerify.id;
 
@@ -57,7 +58,7 @@ Page({
    * 生命周期函数--监听页面卸载
    */
   onUnload: function () {
-    console.log('页面退出');
+    console.log('[onUnload] - 页面退出');
 
     // 发送审核消息
     sendVerifyNotice(notice_list);
@@ -92,7 +93,7 @@ Page({
     wx.showLoading({
       title: '加载中...',
     });
-    const db = wx.cloud.database();
+    const db = cloud.database();
     // 获取所有照片
     var total_count = (await db.collection('photo').where({
       verified: false
@@ -117,7 +118,7 @@ Page({
       if (!campus_list[campus]) {
         campus_list[campus] = [];
       }
-      console.log(campus, photo);
+      console.log("[loadAllPhotos] - ", campus, photo);
       campus_list[campus].push(photo);
     }
     
@@ -138,7 +139,7 @@ Page({
   bindClickCampus(e) {
     var campus = e.currentTarget.dataset.key;
     var active_campus = this.data.active_campus;
-    console.log(campus);
+    // console.log(campus);
 
     if (active_campus == campus) {
       return;
@@ -153,7 +154,7 @@ Page({
     wx.getSetting({
       withSubscriptions: true,
       success: res => {
-        console.log("subscribeSet:", res);
+        console.log("[requestSubscribeMessage] - subscribeSet:", res);
         if ('subscriptionsSetting' in res) {
           if (!(notifyVerifyPhotoTplId in res['subscriptionsSetting'])) {
             // 第一次申请或只点了取消，未永久拒绝也未允许
@@ -162,7 +163,7 @@ Page({
           } else if (res.subscriptionsSetting[notifyVerifyPhotoTplId] === 'reject') {
             // console.log("已拒绝");// 不再请求/重复弹出toast
           } else if (res.subscriptionsSetting[notifyVerifyPhotoTplId] === 'accept') {
-            console.log('重新请求下个一次性订阅');
+            console.log('[requestSubscribeMessage] - 重新请求下个一次性订阅');
             requestNotice('notifyVerify');
           }
         }
@@ -221,6 +222,13 @@ Page({
     var active_campus = this.data.active_campus;
     var photos = this.data.campus_list[active_campus];
     var nums = {}, total_num = 0;
+    if(photos == undefined || photos.length == 0){
+      wx.showToast({
+        title: '无审核图片',
+      });
+      return;
+    }
+    
     for (const photo of photos) {
       if (!photo.mark || photo.mark == "") {
         continue;
@@ -242,7 +250,7 @@ Page({
     });
 
     if (modalRes.confirm) {
-      console.log('开始通过');
+      console.log('[bindCheckMulti] - 开始通过');
       await this.doCheckMulti();
     }
 
@@ -276,7 +284,7 @@ Page({
         best: photo.mark == "best",
       }
 
-      all_queries.push(wx.cloud.callFunction({
+      all_queries.push(cloud.callFunction({
         name: "managePhoto",
         data: data
       }))

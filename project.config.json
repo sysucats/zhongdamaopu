@@ -2,6 +2,7 @@
   "miniprogramRoot": "miniprogram/",
   "cloudfunctionRoot": "cloudfunctions/",
   "setting": {
+    "localPlugins": false,
     "urlCheck": true,
     "es6": true,
     "enhance": true,
@@ -18,10 +19,9 @@
     "checkInvalidKey": true,
     "checkSiteMap": true,
     "uploadWithSourceMap": true,
-    "compileHotReLoad": true,
+    "compileHotReLoad": false,
+    "lazyloadPlaceholderEnable": false,
     "useMultiFrameRuntime": true,
-    "useApiHook": true,
-    "useApiHostProcess": true,
     "babelSetting": {
       "ignore": [],
       "disablePlugins": [],
@@ -36,21 +36,14 @@
     "minifyWXML": true,
     "showES6CompileOption": false,
     "useCompilerPlugins": false,
-    "useStaticServer": true,
-    "ignoreUploadUnusedFiles": true
+    "ignoreDevUnusedFiles": false,
+    "ignoreUploadUnusedFiles": false
   },
-  "appid": "wx5bd705b2bc91c73b",
-  "projectname": "zhongdamaopu",
-  "libVersion": "2.17.0",
   "simulatorType": "wechat",
   "simulatorPluginLibVersion": {},
   "compileType": "miniprogram",
   "cloudfunctionTemplateRoot": "cloudfunctionTemplate/",
   "srcMiniprogramRoot": "miniprogram/",
-  "packOptions": {
-    "ignore": [],
-    "include": []
-  },
   "editorSetting": {
     "tabIndent": "insertSpaces",
     "tabSize": 2
@@ -106,7 +99,7 @@
           "scene": null
         },
         {
-          "name": "打赏（投喂）",
+          "name": "打赏",
           "pathName": "pages/info/reward/reward",
           "query": "",
           "scene": null
@@ -174,5 +167,12 @@
         }
       ]
     }
-  }
+  },
+  "packOptions": {
+    "ignore": [],
+    "include": []
+  },
+  "appid": "wx5bd705b2bc91c73b",
+  "projectname": "zhongdamaopu",
+  "libVersion": "2.24.7"
 }

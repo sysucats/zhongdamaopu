@@ -4,12 +4,6 @@ page {
   box-sizing: border-box;
 }
 
-image {
-  width: 690rpx;
-  height: 690rpx;
-  background-color: linen;
-}
-
 button {
   width: 45%;
   display: inline-block;
@@ -35,8 +29,36 @@ button.short {
   line-height: 24rpx;
 }
 
-.title {
+.image-blocks {
+  display: flex;
+  justify-content: space-between;
+}
+
+.image-block {
+  width: 220rpx;
+}
+
+.image-block .title {
+  width: 220rpx;
   text-align: center;
   font-weight: bold;
   margin: 30rpx 0 10rpx 0;
+}
+
+.image-block image {
+  width: 220rpx;
+  height: 220rpx;
+  background-color: linen;
+}
+
+.image-block .no-image {
+  width: 220rpx;
+  height: 220rpx;
+  background-color: var(--color-gray-light);
+}
+
+/* 文字说明 */
+.info-block {
+  color: var(--color-black-min);
+  font-size: 22rpx;
 }

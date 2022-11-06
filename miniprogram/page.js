@@ -1,4 +1,5 @@
 import { getCacheItem, setCacheItem, cacheTime } from "./cache";
+import { cloud } from "./cloudAccess";
 
 function _getSettingCacheKey(setting_id) {
   return `setting-${setting_id}-cache`;
@@ -13,7 +14,7 @@ async function _getSetting(_id, options) {
     return cacheItem;
   }
 
-  const db = wx.cloud.database();
+  const db = cloud.database();
   cacheItem = (await db.collection('setting').doc(_id).get()).data;
   
   setCacheItem(cacheKey, cacheItem, cacheTime.pageSetting);
@@ -53,7 +54,7 @@ function showTab(page) {
     activePath: path,
   });
 
-  var tabBarHeight = wx.getStorageSync('tabBarHeight') || 40;
+  var tabBarHeight = wx.getStorageSync('tabBarHeight') || 80;
   page.setData({
     tabBarHeight: tabBarHeight
   })

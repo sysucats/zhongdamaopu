@@ -1,5 +1,6 @@
 import { formatDate, arrayResort } from "./utils";
 import { msg as msgConfig } from "./config";
+import { cloud } from "./cloudAccess";
 
 // 订阅请求
 async function requestNotice(template) {
@@ -72,7 +73,7 @@ function sendVerifyNotice(notice_list) {
       },
     }
 
-    wx.cloud.callFunction({
+    cloud.callFunction({
       name: 'sendMsgV2',
       data: {
         touser: openid,
@@ -87,7 +88,7 @@ function sendVerifyNotice(notice_list) {
 // 发送回复消息
 async function sendReplyNotice(openid, fb_id) {
   const cfg = msgConfig.feedback;
-  const db = wx.cloud.database();
+  const db = cloud.database();
   const doc = await db.collection('feedback').doc(fb_id).get();
   const feedback = doc.data;
   const content = feedback.feedbackInfo.length > 20 ? (feedback.feedbackInfo.substr(0, 18) + '..') : feedback.feedbackInfo;
@@ -104,7 +105,7 @@ async function sendReplyNotice(openid, fb_id) {
     },
   }
 
-  let res = await wx.cloud.callFunction({
+  let res = await cloud.callFunction({
     name: 'sendMsgV2',
     data: {
       touser: openid,
@@ -119,7 +120,7 @@ async function sendReplyNotice(openid, fb_id) {
 
 // 发送提醒审核消息
 async function sendNotifyVertifyNotice(numUnchkPhotos) {
-  const db = wx.cloud.database();
+  const db = cloud.database();
   const _ = db.command;
 
   const subMsgSettings = await db.collection('setting').doc('subscribeMsg').get();
@@ -153,7 +154,7 @@ async function sendNotifyVertifyNotice(numUnchkPhotos) {
       },
     }
 
-    var res = await wx.cloud.callFunction({
+    var res = await cloud.callFunction({
       name: 'sendMsgV2',
       data: {
         touser: manager['openid'],
@@ -176,7 +177,7 @@ async function sendNotifyVertifyNotice(numUnchkPhotos) {
 async function sendNotifyChkFeeedback() {
   const dealFeedbackLevel = 1;
   
-  const db = wx.cloud.database();
+  const db = cloud.database();
   const _ = db.command;
 
   const subMsgSettings = await db.collection('setting').doc('subscribeMsg').get();
@@ -213,7 +214,7 @@ async function sendNotifyChkFeeedback() {
       },
     }
 
-    var res = await wx.cloud.callFunction({
+    var res = await cloud.callFunction({
       name: 'sendMsgV2',
       data: {
         touser: manager['openid'],

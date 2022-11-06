@@ -1,5 +1,5 @@
 import { text as text_cfg, science_imgs } from "../../../config";
-
+import { cloud } from "../../../cloudAccess";
 const cates = ['猫咪救助', '撸猫指南', '猫咪领养', '猫咪喂养', '猫咪健康'];
 const share_text = text_cfg.app_name + ' - ' + text_cfg.science.share_tip;
 
@@ -45,15 +45,17 @@ Page({
 
   async getSci() {
     wx.showLoading({title:'加载中...'})
-    var res = await wx.cloud.callFunction({
+
+    const res = (await cloud.callFunction({
       name: 'getAllSci',
-    });
-    console.log(res);
-    const data = res.result.data;
+    })).result;
+
+    console.log("getAllSci:", res);
+    const data = res.data;
     this.setData({
       qnas: data
     });
-    wx.hideLoading()
+    wx.hideLoading();
   },
 
   changeCate(e) {

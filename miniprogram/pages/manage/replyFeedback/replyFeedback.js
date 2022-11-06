@@ -2,6 +2,7 @@
 import { formatDate } from "../../../utils";
 import { sendReplyNotice } from "../../../msg";
 import { checkAuth } from "../../../user";
+import { cloud } from "../../../cloudAccess";
 
 Page({
 
@@ -34,7 +35,7 @@ Page({
     wx.showLoading({
       title: '加载中...',
     });
-    const db = wx.cloud.database();
+    const db = cloud.database();
     var res = await db.collection('feedback').doc(options.fb_id).get();
     console.log(res);
     res.data.openDateStr = formatDate(res.data.openDate, "yyyy-MM-dd hh:mm:ss");
@@ -72,15 +73,22 @@ Page({
         mask: true
       });
       let res = await sendReplyNotice(this.data.feedback._openid, this.data.feedback._id);
-      console.log(res);
+      console.log("[bindReply] - sendReplyNotice res", res);
+      const that = this;
       if (res.errCode == 0) {
         // 记录一下回复的内容和时间
-        await wx.cloud.callFunction({
-          name: "manageFeedback",
+        await cloud.callFunction({
+          name: "curdOp",
           data: {
-            operation: 'reply',
-            feedback: this.data.feedback,
-            replyInfo: submitData.replyInfo,
+            permissionLevel: 1,
+            operation: 'update',
+            collection: "feedback",
+            item_id: that.data.feedback._id, 
+            data: {
+              // replyDate: new Date(),
+              replyDate: new Date(),
+              replyInfo: submitData.replyInfo,
+            } 
           }
         });
         wx.hideLoading();
@@ -107,3 +115,4 @@ Page({
   }
 
 })
+

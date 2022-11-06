@@ -1,4 +1,11 @@
-import { getPageUserInfo, checkAuth, toSetUserInfo } from "../../../user";
+import {
+  getPageUserInfo,
+  checkAuth,
+  toSetUserInfo
+} from "../../../user";
+import {
+  cloud
+} from "../../../cloudAccess";
 
 Page({
 
@@ -45,6 +52,7 @@ Page({
       checked: false,
     }],
   },
+
   /**
    * 生命周期函数--监听页面加载
    */
@@ -58,19 +66,20 @@ Page({
     ])
   },
 
-  onShow: async function() {
+  onShow: async function () {
     await getPageUserInfo(this);
   },
-
+  
   async loadNews() {
-    const db = wx.cloud.database();
-    var res = await db.collection('news').where({
+    const that = this;
+    const db = cloud.database();
+    const res = await db.collection('news').where({
       "_id": this.data.news_id
     }).get();
-    console.log("News Detail:", res);
-    for (var i = 0; i < this.data.buttons.length; i++) {
-      if (this.data.buttons[i].name == res.data[0].class) {
-        this.data.buttons[i].checked = true;
+    console.log("[loadNews] - NewsDetail:", res);
+    for (var i = 0; i < that.data.buttons.length; i++) {
+      if (that.data.buttons[i].name == res.data[0].class) {
+        that.data.buttons[i].checked = true;
       }
     }
     var modalButtons = [{
@@ -93,19 +102,19 @@ Page({
         checked: true,
       }];
     }
-    this.setData({
+    that.setData({
       news: res.data[0],
       photos_path: res.data[0].photosPath,
       titlelength: res.data[0].title.length,
       length: res.data[0].mainContent.length,
-      buttons: this.data.buttons,
+      buttons: that.data.buttons,
       modalButtons: modalButtons,
     })
   },
 
   previewImg: function (event) {
     const that = this;
-    console.log("Preveiw Image: ", event);
+    console.log("[previewImg] -", event);
     wx.previewImage({
       current: that.data.photos_path[event.currentTarget.dataset.index],
       urls: that.data.photos_path
@@ -113,7 +122,7 @@ Page({
   },
 
   previewCover: function (event) {
-    console.log("Preveiw Image: ", event);
+    console.log("[previewCover] -", event);
     wx.previewImage({
       urls: [event.currentTarget.dataset.url]
     })
@@ -125,7 +134,6 @@ Page({
       namelength: inputData.length
     })
   },
-
 
   bindInputTitle(e) {
     var inputData = e.detail.value;
@@ -146,9 +154,8 @@ Page({
   },
 
   radioButtonTap: function (e) {
-    console.log("Radio Button Tap: ", e);
-    let id = e.currentTarget.dataset.id
-    console.log(id)
+    console.log("[radioButtonTap] -", e);
+    let id = e.currentTarget.dataset.id;
     for (let i = 0; i < this.data.buttons.length; i++) {
       if (this.data.buttons[i].id == id) {
         this.data.buttons[i].checked = true;
@@ -202,43 +209,41 @@ Page({
     var data = {
       userInfoLastModify: this.data.user.userInfo,
       userNicknameLastModify: submitData.name,
-      dateLastModify: (new Date()),
+      dateLastModify: new Date(),
       title: submitData.title,
       mainContent: submitData.mainContent,
       class: classBelongto,
       setNewsModal: setNewsModal,
     }
 
-    const that = this;
-
-    wx.showModal({
-      content: '确认修改',
-      success: function (res) {
-        console.log(res);
-        if (res.confirm) {
-          that.doModify(that.data.news_id, data)
-        }
-      }
+    const resModal = await wx.showModal({
+      content: '确认修改'
     })
+    
+    if (resModal.confirm) {
+      await this.doModify(this.data.news_id, data)
+    }
   },
-  doModify(item_id, item_data) {
-    wx.cloud.callFunction({
-      name: "newsOp",
+
+  async doModify(item_id, item_data) {
+    console.log(item_id, item_data);
+    const res = await cloud.callFunction({
+      name: "curdOp",
       data: {
-        type: "modify",
+        permissionLevel: 3,
+        operation: "update",
+        collection: "news",
         item_id: item_id,
-        item_data: item_data
+        data: item_data
       },
-      success: (res) => {
-        console.log(res);
-        wx.showToast({
-          title: '修改成功',
-          icon: 'success',
-          duration: 1000
-        })
-        setTimeout(wx.navigateBack, 1000)
-      },
-      fail: console.error
     });
+    
+    console.log("[doModify] - 修改成功", res);
+    wx.showToast({
+      title: '修改成功',
+      icon: 'success',
+      duration: 1000
+    })
+    setTimeout(wx.navigateBack, 1000)
   },
 })

@@ -13,6 +13,7 @@ import {
   sendNotifyVertifyNotice
 } from "../../../msg";
 import config from "../../../config";
+import { cloud } from "../../../cloudAccess";
 
 Page({
   /**
@@ -33,7 +34,7 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: async function (options) {
-    const db = wx.cloud.database();
+    const db = cloud.database();
     const cat_id = options.cat_id;
     var catRes = await db.collection('cat').doc(cat_id).field({
       birthday: true,
@@ -96,7 +97,6 @@ Page({
       },
     })
   },
-
 
   // 点击单个上传
   async uploadSingleClick(e) {
@@ -163,9 +163,9 @@ Page({
       showCancel: false
     });
   },
-
+  
   async ifSendNotifyVeriftMsg() {
-    const db = wx.cloud.database();
+    const db = cloud.database();
     const subMsgSetting = await db.collection('setting').doc('subscribeMsg').get();
     const triggerNum = subMsgSetting.data.verifyPhoto.triggerNum; //几条未审核才触发
     // console.log("triggerN",triggerNum);
@@ -192,26 +192,33 @@ Page({
     const index = tempFilePath.lastIndexOf(".");
     const ext = tempFilePath.substr(index + 1);
 
-    let upRes = await wx.cloud.uploadFile({
+    let upRes = await cloud.uploadFile({
       cloudPath: cat.campus + '/' + generateUUID() + '.' + ext, // 上传至云端的路径
       filePath: tempFilePath, // 小程序临时文件路径
     });
     // 返回文件 ID
     console.log(upRes.fileID);
+
     // 添加记录
-    const db = wx.cloud.database();
-    let dbAddRes = await db.collection('photo').add({
+    const params = {
+      cat_id: cat._id,
+      photo_id: upRes.fileID,
+      userInfo: that.data.user.userInfo,
+      verified: false,
+      mdate: new Date(),
+      shooting_date: photo.shooting_date,
+      photographer: photo.pher
+    };
+
+    let dbAddRes = (await cloud.callFunction({
+      name: "curdOp", 
       data: {
-        cat_id: cat._id,
-        photo_id: upRes.fileID,
-        userInfo: that.data.user.userInfo,
-        verified: false,
-        mdate: (new Date()),
-        shooting_date: photo.shooting_date,
-        photographer: photo.pher
+        operation: "add",
+        collection: "photo",
+        data: params
       }
-    });
-    console.log(dbAddRes);
+    })).result;
+    console.log("curdOp(add-photo) result:", dbAddRes);
   },
 
   pickDate(e) {

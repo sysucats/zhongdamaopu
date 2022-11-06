@@ -2,6 +2,7 @@ import { text as text_cfg, cat_status_adopt } from "../../../config";
 import { checkAuth } from "../../../user";
 import { loadFilter } from "../../../page";
 import { getCatItemMulti } from "../../../cat";
+import { cloud } from "../../../cloudAccess";
 
 var cat_id = undefined;
 
@@ -104,9 +105,8 @@ Page({
     }
 
     var cat = (await getCatItemMulti([cat_id], {nocache: true}))[0];
-    console.log(cat);
+    console.log("[loadCat] -", cat);
     cat.mphoto = String(new Date(cat.mphoto));
-    console.log(cat.mphoto);
     // 处理一下picker
     var picker_selected = {};
     const pickers = this.data.pickers;
@@ -131,10 +131,11 @@ Page({
 
     await this.reloadPhotos();
   },
+
   async reloadPhotos() {
     const only_best_photo = this.data.only_best_photo;
     const qf = { cat_id: cat_id, verified: true, best: only_best_photo };
-    const db = wx.cloud.database();
+    const db = cloud.database();
     var photoRes = await db.collection('photo').where(qf).count();
     this.setData({
       photoMax: photoRes.total,
@@ -149,7 +150,7 @@ Page({
         bottomText: "-- 没有更多猫图了 --",
         noMorePhoto: true,
       });
-      console.log("Check no more");
+      console.log("[checkNeedLoad] - Check no more");
       return false;
     } else {
       this.setData({
@@ -181,19 +182,17 @@ Page({
     const qf = { cat_id: cat_id, verified: true, best: only_best_photo };
     const now = photo.length;
 
-    const db = wx.cloud.database();
-    console.log(qf);
+    const db = cloud.database();
     var newPhotos = await db.collection('photo').where(qf).orderBy('mdate', 'desc').skip(now).limit(photoStep).get();
     
-    console.log(newPhotos);
+    console.log("[loadMorePhotos] -", newPhotos);
     photo = photo.concat(newPhotos.data);
     this.setData({
       photo: photo
     });
   },
-  // 输入了东西
-  inputText(e) {
-    console.log(e);
+   // 输入了东西
+   inputText(e) {
     const key = e.currentTarget.dataset.key;
     const value = e.detail.value;
     // if (this.data.cat[key] instanceof Array) {
@@ -202,7 +201,6 @@ Page({
     //     ['cat.' + key]: value.split(',')
     //   });
     // } else {
-      
     // }
     this.setData({
       ['cat.' + key]: value
@@ -210,7 +208,6 @@ Page({
   },
   // 选择了东西
   pickerChange(e) {
-    console.log(e);
     const key = e.currentTarget.dataset.key;
     const index = e.detail.value;
     var value = this.data.pickers[key][index];
@@ -225,7 +222,6 @@ Page({
   },
   // 选择了出生日期
   pickerDateChange(e) {
-    console.log(e);
     const key = e.currentTarget.dataset.key;
     const value = e.detail.value;
     this.setData({
@@ -299,19 +295,17 @@ Page({
     wx.showLoading({
       title: '更新中...',
     });
-    var updateRes = await wx.cloud.callFunction({
+    var res = (await cloud.callFunction({
       name: 'updateCat',
       data: {
         cat: this.data.cat,
         cat_id: cat_id
       }
-    });
-
-    console.log(updateRes);
-    if (updateRes.result._id) {
-      cat_id = updateRes.result._id;
+    })).result;
+    console.log("updateCat res:", res);
+    if (res.id) {
+      cat_id = res.id;
     }
-
     wx.showToast({
       title: '操作成功',
     });
@@ -319,7 +313,7 @@ Page({
     await getCatItemMulti([cat_id], {nocache: true});
   },
   async deletePhoto(e) {
-    console.log(e);
+    console.log("[deletePhoto] -", e);
     const photo = e.currentTarget.dataset.photo;
     const modalRes = await wx.showModal({
       title: '提示',
@@ -331,7 +325,7 @@ Page({
     }
 
     console.log('开始删除');
-    await wx.cloud.callFunction({
+    await cloud.callFunction({
       name: "managePhoto",
       data: {
         type: "delete",
@@ -349,11 +343,10 @@ Page({
   },
   // 设置 / 取消 照片精选
   async reverseBest(e) {
-    console.log(e);
     const photo = e.currentTarget.dataset.photo;
     const index = e.currentTarget.dataset.index;
     const set_best = !photo.best;
-    await wx.cloud.callFunction({
+    await cloud.callFunction({
       name: "managePhoto",
       data: {
         type: "setBest",
@@ -378,12 +371,11 @@ Page({
     phers[pid] = input;
   },
   async updatePher(e) {
-    console.log(e);
     const photo = e.currentTarget.dataset.photo;
     const index = e.currentTarget.dataset.index;
     const pid = photo._id;
     const photographer = phers[pid];
-    await wx.cloud.callFunction({
+    await cloud.callFunction({
       name: "managePhoto",
       data: {
         type: "setPher",

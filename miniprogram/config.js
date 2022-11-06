@@ -4,20 +4,35 @@
 // 修改时频繁保存、频繁编译，发现改错了立马撤销
 
 module.exports = {
-  // 科普页图片
+  // 是否使用微信云开发后台，为 false 时使用 laf 后台
+  use_wx_cloud: false,
+  // 若使用 laf 后台，请填写下面的后台 url
+  laf_url: 'https://cohbpk.mplaf.sysucats.com:9443',
+
+  // 科普页图片 For wx Cloud
+  // science_imgs: [
+  //   "cloud://rel-eeeccf.7265-rel-eeeccf/系统/1.png",
+  //   "cloud://rel-eeeccf.7265-rel-eeeccf/系统/2.png",
+  //   "cloud://rel-eeeccf.7265-rel-eeeccf/系统/3.png",
+  //   "cloud://rel-eeeccf.7265-rel-eeeccf/系统/4.png",
+  //   "cloud://rel-eeeccf.7265-rel-eeeccf/系统/5.png"
+  // ],
+
+  // 科普页图片 For Laf Cloud
   science_imgs: [
-    "cloud://rel-eeeccf.7265-rel-eeeccf/系统/1.png",
-    "cloud://rel-eeeccf.7265-rel-eeeccf/系统/2.png",
-    "cloud://rel-eeeccf.7265-rel-eeeccf/系统/3.png",
-    "cloud://rel-eeeccf.7265-rel-eeeccf/系统/4.png",
-    "cloud://rel-eeeccf.7265-rel-eeeccf/系统/5.png"
+    "https://oss.mplaf.sysucats.com:9443/cohbpk-cat/%E7%B3%BB%E7%BB%9F/1.png",
+    "https://oss.mplaf.sysucats.com:9443/cohbpk-cat/%E7%B3%BB%E7%BB%9F/2.png",
+    "https://oss.mplaf.sysucats.com:9443/cohbpk-cat/%E7%B3%BB%E7%BB%9F/3.png",
+    "https://oss.mplaf.sysucats.com:9443/cohbpk-cat/%E7%B3%BB%E7%BB%9F/4.png",
+    "https://oss.mplaf.sysucats.com:9443/cohbpk-cat/%E7%B3%BB%E7%BB%9F/5.png"
   ],
+
   // 赞赏码图片
-  reward_img: "cloud://rel-eeeccf.7265-rel-eeeccf-1258586139/系统/reward.jpg",
+  reward_img: "https://oss.mplaf.sysucats.com:9443/cohbpk-cat/%E7%B3%BB%E7%BB%9F/%E8%B5%9E%E8%B5%8F%E7%A0%81.jpg",
   // 新猫问卷图片
-  feedback_wj_img: "cloud://rel-eeeccf.7265-rel-eeeccf-1258586139/系统/新猫问卷.png",
+  feedback_wj_img: "https://oss.mplaf.sysucats.com:9443/cohbpk-cat/%E7%B3%BB%E7%BB%9F/%E6%96%B0%E7%8C%AB%E9%97%AE%E5%8D%B7.png",
   // 小程序菊花码图片
-  mpcode_img: "cloud://rel-eeeccf.7265-rel-eeeccf-1258586139/系统/菊花码.jpg",
+  mpcode_img: "https://oss.mplaf.sysucats.com:9443/cohbpk-cat/%E7%B3%BB%E7%BB%9F/%E8%8F%8A%E8%8A%B1%E7%A0%81.jpg",
 
   // 首页banner广告
   ad_genealogy_banner: "adunit-9a7dcb84fe2c4db1",
@@ -35,7 +50,7 @@ module.exports = {
   msg: {
     //审核结果通知模板
     verify: {
-      id: 'AtntuAUGnzoBumjfmGB8Yyc-67FUxRH5Cw7bnEYFCXo',
+      id: 'LixV04VF09l6Qk6XrTXhvWy2tjJzpB4FNoNOCLlP-hc',
       map: {
         title: "thing2", // 标题
         content: "thing7", // 内容
@@ -44,7 +59,7 @@ module.exports = {
     },
     // 提醒审核模版
     notifyVerify: {
-      id: 'jxcvND-iLSQZLZhlHD2A91gY0tLSfzyYc3bl39bxVuk',
+      id: '3WG7XgvD3m5kYb5Dav74WY2QU79_Sm0Odg2ql_nVguQ',
       map: {
         title: "thing2",
         number: "number5",
@@ -53,7 +68,7 @@ module.exports = {
     },
     // 提醒查看反馈模板
     notifyChkFeedback: {
-      id: 'jxcvND-iLSQZLZhlHD2A97jP3fm_FWV4wL_GFUcLxcQ',
+      id: '3WG7XgvD3m5kYb5Dav74WWjyTBImSLuj5Q6ck-4fSBA',
       map: {
         title: "thing2",
         number: "number5",
@@ -62,7 +77,7 @@ module.exports = {
     },
     // 反馈回复结果模板
     feedback: {
-      id: 'IeKS7nPSsBy62REOKiDC2zuz_M7RbKwR97ZiIy_ocmw',
+      id: 'KuXs7MgnlKokmTZQDgKT-1SCVE0MhXp-P8I3nX28DbM',
       map: {
         title: "thing3", // 标题
         content: "thing5", // 内容
@@ -127,7 +142,7 @@ module.exports = {
     comment_board: {
       ban_tip: "如有误封请在\"关于-信息反馈\"中留言~",
       auth_tip: "设置头像昵称后留言~",
-      comment_tip: "发条友善的留言吧~"
+      comment_tip: "给猫咪留个言吧~"
     },
     // 添加照片，pages/genealogy/addPhoto/addPhoto
     add_photo: {

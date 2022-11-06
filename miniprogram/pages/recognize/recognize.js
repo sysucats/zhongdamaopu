@@ -1,7 +1,7 @@
 import { text as text_cfg, ad_recognize_banner, cat_status_adopt } from "../../config";
 import { hex_sha256, randomInt } from "../../utils";
 import { loadFilter, getGlobalSettings, showTab } from "../../page";
-
+import { cloud } from "../../cloudAccess";
 
 // 接口设置，onLoad中从数据库拉取。
 var interfaceURL;
@@ -376,14 +376,14 @@ Page({
   },
 
   async getCatInfo(cat) {
-    const db = wx.cloud.database();
+    const db = cloud.database();
     const catInfo = (await db.collection('cat').doc(cat.catID).get()).data;
     catInfo.score = cat.score;
     return catInfo;
   },
 
   async getCatPhoto(catInfo) {
-    const db = wx.cloud.database();
+    const db = cloud.database();
     const photo = db.collection('photo');
     // 从精选照片里随机挑选一张
     const query = {
