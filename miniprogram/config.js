@@ -46,7 +46,6 @@ module.exports = {
   // 首页漂浮的领养Logo对应的状态
   cat_status_adopt_target: "寻找领养中",
 
-  // TODO: ID of msg need to change
   // 订阅消息的统一配置（只修改引号内的）
   msg: {
     //审核结果通知模板
