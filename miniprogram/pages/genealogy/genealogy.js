@@ -635,7 +635,7 @@ Page({
       // res['name'] = _.in(filters_input.trim().split(' '));
       let regexp = db.RegExp({
         regexp: search_str,
-        options: 'igs',
+        options: 'is',  // 'g' 在 laf 这边会报错
       });
       res.push(_.or([{
         name: regexp

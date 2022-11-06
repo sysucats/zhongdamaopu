@@ -1,6 +1,6 @@
 {
   "dependencies": {
-    "laf-client-sdk": "^0.8.2"
+    "laf-client-sdk": "^0.8.13"
   },
   "resolutions": {
     "bson": "4.6.4"
