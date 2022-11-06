@@ -1,7 +1,8 @@
+@import "/pages/public/wxss/hFilter.wxss";
+
 page {
   background: var(--color-gray-light);
 }
-@import "/pages/public/wxss/hFilter.wxss";
 
 .main {
   display: flex;
@@ -91,12 +92,12 @@ page {
 }
 .pher-name{
   font-size: 22rpx;
-  color: var(--color-gray-dark);
+  color: var(--color-gray-max);
   margin-right: 16rpx;
 }
 .photo-date {
   font-size: 22rpx;
-  color: var(--color-gray-dark);
+  color: var(--color-gray-max);
 }
 
 
