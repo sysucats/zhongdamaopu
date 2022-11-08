@@ -248,9 +248,9 @@
 
 本项目的开发工作100%用爱发电:sparkles:，特别感谢每一位为此付出的小伙伴。
 
-:computer:代码开发：渔政、XD、zJ
+:computer:代码开发：渔政、XD、zJ、yw
 
-:black_nib:UI设计：蓝卷、zJ
+:black_nib:UI设计：蓝卷、zJ、yw
 
 :notebook:资料整理：笃行志愿服务队及各校区小伙伴
 
