@@ -253,6 +253,25 @@ function deepcopy(obj) {
   return JSON.parse(JSON.stringify(obj))
 }
 
+// 强制压缩
+async function compressImage(src, size, isIOS) {
+  console.log("compressImage", src, size);
+  let quality = 100
+  // ios因为自己有压缩机制，压缩到极致就不会再压，因此往小了写
+  if (isIOS) {
+    quality = 0.1
+  } else {
+    let temp = 30 - parseInt(size / 1024 / 1024)
+    quality = temp < 10 ? 10 : temp
+  }
+  var res = await wx.compressImage({
+    src, // 图片路径
+    quality, // 压缩质量
+  })
+  return res.tempFilePath;
+}
+
+
 module.exports = {
   hex_sha256,
   randomInt,
@@ -274,4 +293,5 @@ module.exports = {
   sleep,
   contentSafeCheck,
   deepcopy,
+  compressImage,
 };

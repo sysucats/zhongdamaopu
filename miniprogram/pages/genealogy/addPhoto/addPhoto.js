@@ -2,6 +2,7 @@ import {
   generateUUID,
   getCurrentPath,
   shareTo,
+  compressImage
 } from "../../../utils";
 import {
   getPageUserInfo,
@@ -86,31 +87,6 @@ Page({
     return shareTo(share_text, path);
   },
 
-  // 强制压缩
-  compressImage(src, size) {
-    console.log("compressImage", src, size);
-    return new Promise((resolve, reject) => {
-      let quality = 100
-      // ios因为自己有压缩机制，压缩到极致就不会再压，因此往小了写
-      if (this.data.isIOS) {
-        quality = 0.1
-      } else {
-        let temp = 30 - parseInt(size / 1024 / 1024)
-        quality = temp < 10 ? 10 : temp
-      }
-      wx.compressImage({
-        src, // 图片路径
-        quality, // 压缩质量
-        success: function (res) {
-          resolve(res.tempFilePath)
-        },
-        fail: function (err) {
-          resolve(src)
-        }
-      })
-    })
-  },
-
   async chooseImg(e) {
     var res = await wx.chooseMedia({
       count: 20,
@@ -122,7 +98,7 @@ Page({
     for (var file of res.tempFiles) {
       // 需要压缩
       if (file.size > 512 * 1024) {
-        file.path = await this.compressImage(file.tempFilePath, file.size);
+        file.path = await compressImage(file.tempFilePath, file.size, this.data.isIOS);
         console.log("compressed path:", file.path);
       } else {
         file.path = file.tempFilePath;

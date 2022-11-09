@@ -1,4 +1,5 @@
 // 画图全局canvas，依赖版本库：2.24.7
+import {compressImage} from "../../../utils";
 var gCanvas = null;
 var gCtx = null;
 
@@ -61,7 +62,9 @@ function drawImage(imgSrc, dx, dy, weight, height) {
 // 获得temp文件路径
 async function getTempPath(options) {
   options.canvas = gCanvas;
-  return await wx.canvasToTempFilePath(options);
+  var tempFilePath = (await wx.canvasToTempFilePath(options)).tempFilePath;
+  console.log(tempFilePath);
+  return await compressImage(tempFilePath, 0, null);
 }
 
 

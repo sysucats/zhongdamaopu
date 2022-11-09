@@ -1,5 +1,5 @@
 // miniprogram/pages/imProcess/imProcess.js
-import { generateUUID } from "../../../utils";
+import { generateUUID, compressImage } from "../../../utils";
 import { text as text_cfg } from "../../../config";
 import { checkAuth } from "../../../user";
 import { cloud } from "../../../cloudAccess";
@@ -260,13 +260,13 @@ Page({
     }
 
     // 变成图片显示
-    var path = (await drawUtils.getTempPath({
+    var path = await drawUtils.getTempPath({
       width: draw_width,
       height: draw_height,
       destWidth: comp_width,
       destHeight: comp_height,
       fileType: "jpg",
-    })).tempFilePath;
+    });
 
     this.setData({
       "images_path.compressed": path
@@ -294,13 +294,13 @@ Page({
     });
 
     // 变成图片显示
-    var path = (await drawUtils.getTempPath({
+    var path = await drawUtils.getTempPath({
       width: draw_width,
       height: draw_height,
       destWidth: origin.width,
       destHeight: origin.height,
       fileType: "jpg",
-    })).tempFilePath;
+    });
 
     this.setData({
       "images_path.watermark": path
