@@ -1,15 +1,16 @@
 // 画图全局canvas，依赖版本库：2.24.7
 var gCanvas = null;
 var gCtx = null;
-const canvasMax = 2000; // 正方形画布的尺寸px
 
 // 初始化canvas接口
 function initCanvas() {
   return new Promise((resolve) => {
+    console.log("initCanvas start");
     wx.createSelectorQuery()
     .select('#bigPhoto') // 在 WXML 中填入的 id
     .fields({ node: true, size: true })
     .exec((res) => {
+        console.log("initCanvas res", res);
         // Canvas 对象
         const canvas = res[0].node
         // Canvas 画布的实际绘制宽高
@@ -27,6 +28,7 @@ function initCanvas() {
         gCtx = ctx;
         gCanvas = canvas;
 
+        console.log("initCanvas return", gCtx, gCanvas);
         resolve({
           canvas: canvas,
           ctx: ctx
@@ -37,6 +39,7 @@ function initCanvas() {
 
 // 包装一个画图接口
 function drawImage(imgSrc, dx, dy, weight, height) {
+  console.log("drawImage", gCtx, imgSrc);
   return new Promise((resolve) => {
     const image = gCanvas.createImage()
     image.onload = () => {

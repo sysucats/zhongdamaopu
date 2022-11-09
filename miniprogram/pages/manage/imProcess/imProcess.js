@@ -7,7 +7,7 @@ import { cloud } from "../../../cloudAccess";
 import drawUtils from "./draw";
 import lockUtils from "./lock";
 
-const canvasMax = 2000; // 正方形画布的尺寸px
+const canvasMax = 1200; // 正方形画布的尺寸px
 const compressLength = 500; // 压缩图的最长边大小
 
 
@@ -154,7 +154,7 @@ Page({
     });
     // 开始处理
     if (this.data.processing) {
-      drawUtils.initCanvas();
+      await drawUtils.initCanvas();
       await this.beginProcess();
       return;
     }
@@ -265,7 +265,7 @@ Page({
       height: draw_height,
       destWidth: comp_width,
       destHeight: comp_height,
-      fileType: origin.type,
+      fileType: "jpg",
     })).tempFilePath;
 
     this.setData({
@@ -299,7 +299,7 @@ Page({
       height: draw_height,
       destWidth: origin.width,
       destHeight: origin.height,
-      fileType: origin.type,
+      fileType: "jpg",
     })).tempFilePath;
 
     this.setData({

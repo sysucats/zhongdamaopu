@@ -13,7 +13,9 @@ import {
   sendNotifyVertifyNotice
 } from "../../../msg";
 import config from "../../../config";
-import { cloud } from "../../../cloudAccess";
+import {
+  cloud
+} from "../../../cloudAccess";
 
 Page({
   /**
@@ -58,6 +60,12 @@ Page({
     this.setData({
       canUpload: await checkCanUpload()
     });
+
+    // 获取一下手机平台
+    const device = await wx.getSystemInfoSync();
+    this.setData({
+      isIOS: device.platform == 'ios'
+    });
   },
 
   async onShow() {
@@ -78,24 +86,56 @@ Page({
     return shareTo(share_text, path);
   },
 
-  chooseImg(e) {
-    wx.chooseImage({
-      count: 9,
-      sizeType: ["compressed"],
-      success: (res) => {
-        console.log(res);
-        var photos = [];
-        for (const file of res.tempFiles) {
-          photos.push({
-            file: file
-          });
+  // 强制压缩
+  compressImage(src, size) {
+    console.log("compressImage", src, size);
+    return new Promise((resolve, reject) => {
+      let quality = 100
+      // ios因为自己有压缩机制，压缩到极致就不会再压，因此往小了写
+      if (this.data.isIOS) {
+        quality = 0.1
+      } else {
+        let temp = 30 - parseInt(size / 1024 / 1024)
+        quality = temp < 10 ? 10 : temp
+      }
+      wx.compressImage({
+        src, // 图片路径
+        quality, // 压缩质量
+        success: function (res) {
+          resolve(res.tempFilePath)
+        },
+        fail: function (err) {
+          resolve(src)
         }
-        this.setData({
-          photos: photos,
-          set_all: {},
-        });
-      },
+      })
     })
+  },
+
+  async chooseImg(e) {
+    var res = await wx.chooseMedia({
+      count: 20,
+      mediaType: ['image'],
+      sizeType: ["compressed"],
+      sourceType: ['album', 'camera'],
+    })
+    var photos = [];
+    for (var file of res.tempFiles) {
+      // 需要压缩
+      if (file.size > 512 * 1024) {
+        file.path = await this.compressImage(file.tempFilePath, file.size);
+        console.log("compressed path:", file.path);
+      } else {
+        file.path = file.tempFilePath;
+      }
+
+      photos.push({
+        file: file
+      });
+    }
+    this.setData({
+      photos: photos,
+      set_all: {},
+    });
   },
 
   // 点击单个上传
@@ -163,7 +203,7 @@ Page({
       showCancel: false
     });
   },
-  
+
   async ifSendNotifyVeriftMsg() {
     const db = cloud.database();
     const subMsgSetting = await db.collection('setting').doc('subscribeMsg').get();
@@ -211,7 +251,7 @@ Page({
     };
 
     let dbAddRes = (await cloud.callFunction({
-      name: "curdOp", 
+      name: "curdOp",
       data: {
         operation: "add",
         collection: "photo",

@@ -1,5 +1,5 @@
 <block wx:if="{{auth}}">
-  <canvas style="width: 2000px; height: 2000px; left: 1000000px; position: fixed;" id="bigPhoto" type="2d"></canvas>
+  <canvas style="width: 1200px; height: 1200px; left: 1000px; position: fixed;" id="bigPhoto" type="2d"></canvas>
 
   <view class="image-blocks">
     <view class="image-block">

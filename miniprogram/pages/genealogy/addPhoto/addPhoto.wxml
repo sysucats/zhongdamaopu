@@ -57,7 +57,7 @@
     </wxs>
 
     <view class='card' wx:for="{{photos}}" wx:key="path">
-      <image class='selected-image' mode='aspectFit' src='{{item.file.path}}'></image>
+      <image class='selected-image' mode='aspectFit' src='{{item.file.path}}'	show-menu-by-longpress="1"></image>
 
       <view wx:if='{{isHEIC.isHEIC(item.file.path)}}' class='tip'>* 照片格式为.HEIC，可能会显示不出来</view>
 
