@@ -223,7 +223,7 @@ async function contentSafeCheck(content, nickName) {
   })).result;
   // 检测接口的返回
   console.log("contentSafeCheck", res);
-  if (res.errCode != 0) {
+  if (res.errCode != 0 && res.errcode != 0) {
     const label_code = res.result.label;
     const label = label_type[label_code];
     return {

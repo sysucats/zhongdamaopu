@@ -11,6 +11,12 @@ Page({
     text_cfg: text_cfg,
     github_link: "https://github.com/sysucats/zhongdamaopu",
     update_log: [{
+      version: "v1.9.2",
+      content: [
+        "修复内容检测接口",
+      ],
+      time: "2022/11/11"
+    }, {
       version: "v1.9.1",
       content: [
         "图片存储传输优化",
