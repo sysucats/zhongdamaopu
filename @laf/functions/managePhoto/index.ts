@@ -42,13 +42,13 @@ exports.main = async function (ctx: FunctionContext) {
       console.log("删除照片：" + photoIDs);
     });
 
-    updateMphoto(photo.cat_id);
+    // updateMphoto(photo.cat_id);
     const res = await db.collection('photo').doc(photo._id).remove();
     console.log("delete res:", res);
   }
   else if (type == "setBest") {
     const best = body.best;
-    updateMphoto(photo.cat_id);
+    // updateMphoto(photo.cat_id);
     const res = await db.collection('photo').doc(photo._id).update({
       best: best
     });

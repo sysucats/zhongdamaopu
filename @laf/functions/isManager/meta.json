@@ -1,1 +1,1 @@
-{"name":"isManager","label":"isManager","hash":"29a608e8f5ffa271663820baa4c4e334","tags":[],"description":null,"enableHTTP":true,"status":1,"triggers":[],"version":0}
+{"name":"isManager","label":"isManager","hash":"29a608e8f5ffa271663820baa4c4e334","tags":["内部函数"],"description":null,"enableHTTP":false,"status":1,"triggers":[],"version":2}

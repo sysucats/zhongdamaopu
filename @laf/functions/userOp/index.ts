@@ -45,6 +45,7 @@ exports.main = async function (ctx: FunctionContext) {
       const _id = user._id;
       delete user._id; // 因为数据库不能更新_id
       delete user.openid; // 这个键唯一
+      delete user.manager; // 不能用这个函数更新
       await db.collection('user').doc(_id).update( user );
       return (await db.collection('user').where({ 'openid': openid }).get()).data[0];
     }

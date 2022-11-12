@@ -1,7 +1,4 @@
-
-
 import cloud from '@/cloud-sdk'
-import axios from 'axios';
 
 exports.main = async function (ctx: FunctionContext) {
   // body, query 为请求参数, auth 是授权对象

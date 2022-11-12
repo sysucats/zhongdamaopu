@@ -16,23 +16,24 @@ exports.main = async function (ctx: FunctionContext) {
       grant_type: 'authorization_code'
     }
   });
-  if (resp.data.openid) {
-    console.log('成功取得 openid', resp.data);
-    const payload = {
-      openid: resp.data.openid,
-      exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 7 // 默认 7 天过期
-    };
-    const token = cloud.getToken(payload);
-    return {
-      token,
-      openid: resp.data.openid,
-      expiredAt: payload.exp,
-      msg: 'OK'
-    };
-  } else {
+  
+  if (!resp.data.openid) {
     console.log('获取 openid 失败', resp.data);
     return {
       msg: resp.data.errmsg
     };
   }
+  
+  console.log('成功取得 openid', resp.data);
+  const payload = {
+    openid: resp.data.openid,
+    exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 7 // 默认 7 天过期
+  };
+  const token = cloud.getToken(payload);
+  return {
+    token,
+    openid: resp.data.openid,
+    expiredAt: payload.exp,
+    msg: 'OK'
+  };
 }

@@ -1,1 +1,1 @@
-{"name":"deleteFiles","label":"deleteFiles","hash":"95d79bd8a8aa200e9bfabcd2f961281b","tags":[],"description":null,"enableHTTP":true,"status":1,"triggers":[],"version":2}
+{"name":"deleteFiles","label":"deleteFiles","hash":"95d79bd8a8aa200e9bfabcd2f961281b","tags":["内部函数"],"description":null,"enableHTTP":false,"status":1,"triggers":[],"version":4}
