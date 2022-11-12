@@ -251,10 +251,13 @@ Page({
       item.datetime = formatDate(new Date(), "yyyy-MM-dd hh:mm:ss")
       var comments = this.data.comments;
       comments.unshift(item);
+      
+      // 获取总数
+      var comment_count = await getCatCommentCount(item.cat_id, {nocache: true});
       this.setData({
         comment_input: "",
         comments: comments,
-        comment_count: this.data.comment_count + 1,
+        comment_count: comment_count,
       });
 
       // 显示success toast

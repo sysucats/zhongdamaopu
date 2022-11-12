@@ -5,10 +5,10 @@ function _commentCountKey(cat_id) {
   return `cat-comment-count-${cat_id}`;
 }
 
-// 使用openid来读取用户信息
-async function getCatCommentCount(cat_id) {
+// 获取猫的留言数量
+async function getCatCommentCount(cat_id, options) {
   var cacheKey = _commentCountKey(cat_id);
-  var cacheItem = getCacheItem(cacheKey);
+  var cacheItem = getCacheItem(cacheKey, options);
   console.log("getCatCommentCount", cacheKey, cacheItem);
   if (cacheItem) {
     return cacheItem;
