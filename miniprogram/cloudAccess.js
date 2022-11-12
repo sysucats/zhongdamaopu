@@ -28,7 +28,12 @@ if (!use_wx_cloud) {
 
   // 自定义请求函数
   const WxmpRequest = require('laf-client-sdk').WxmpRequest;
-  const apikey = require('./appSecret').apikey;
+  var apikey = "";
+  try {
+    apikey = require('./appSecret').apikey;
+  } catch {
+    console.log("no apikey");
+  }
   class MyRequest extends WxmpRequest {
     async request(url, data) {
       const res = await super.request(url, data)
