@@ -11,8 +11,8 @@
 <view class="main">
   <view wx:for="{{columns}}" wx:key="null" class="column" wx:for-index="col">
     <view wx:for="{{item}}"  wx:key="pic" class="column_item" wx:for-item="pics">
-      <view class="column_pic" bindtap="clickPhoto">
-        <image src="{{pics.pic}}" mode="widthFix" data-url="{{pics.pic_prev}}" />
+      <view class="column_pic" bindtap="clickPhoto" data-url="{{pics.pic_prev}}">
+        <image src="{{pics.pic}}" mode="widthFix" />
         <!-- <view class="dark_mask"></view> -->
         <view class="location">{{pics.cat.campus}}</view>
       </view>

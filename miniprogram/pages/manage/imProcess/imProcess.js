@@ -39,7 +39,7 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: async function () {
-    if (await checkAuth(this, 3)) {
+    if (await checkAuth(this, 99)) {
       await this.loadProcess();
     } else {
       wx.navigateBack({
