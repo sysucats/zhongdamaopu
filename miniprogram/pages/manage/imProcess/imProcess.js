@@ -155,7 +155,6 @@ Page({
     });
     // 开始处理
     if (this.data.processing) {
-      await drawUtils.initCanvas();
       await this.beginProcess();
       return;
     }
@@ -185,6 +184,8 @@ Page({
         break;
       }
       // 开始处理一张图
+      // 强行重置一下canvas
+      await drawUtils.initCanvas();
       await this.processOne(photos[0]);
       this.setData({
         now: this.data.now + 1
@@ -221,14 +222,13 @@ Page({
     const watermarkPath = await this.watermark(photoObj, photoInfo);
     console.log("watermarkPath", watermarkPath);
     // 上传压缩图
-    const ext = photoObj.type;
     this.setPhase(4);
-    const compressCloudPath = `compressed/${generateUUID()}.${ext}`;
+    const compressCloudPath = `compressed/${generateUUID()}.jpg`;
     const compressCloudID = await this.uploadImage(compressPath, compressCloudPath);
     console.log("compressCloudID", compressCloudID);
     // 上传水印图
     this.setPhase(5);
-    const watermarkCloudPath = `watermark/${generateUUID()}.${ext}`;
+    const watermarkCloudPath = `watermark/${generateUUID()}.jpg`;
     const watermarkCloudID = await this.uploadImage(watermarkPath, watermarkCloudPath);
     console.log("watermarkCloudID", watermarkCloudID);
     // 更新数据库

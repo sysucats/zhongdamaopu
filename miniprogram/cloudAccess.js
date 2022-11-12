@@ -43,7 +43,6 @@ if (!use_wx_cloud) {
     getHeaders(token) {
       var headers = super.getHeaders(token);
       headers.apikey = apikey;
-      console.log(headers);
       return headers;
     }
   }

@@ -221,7 +221,7 @@ async function compressImage(src, size, isIOS) {
   let quality = 100
   // ios因为自己有压缩机制，压缩到极致就不会再压，因此往小了写
   if (isIOS) {
-    quality = 0.1
+    quality = 10
   } else {
     let temp = 30 - parseInt(size / 1024 / 1024)
     quality = temp < 10 ? 10 : temp
