@@ -24,7 +24,24 @@ async function ensureToken() {
 
 if (!use_wx_cloud) {
   const sysInfo = wx.getSystemInfoSync();
-  console.log(sysInfo.platform)
+  console.log(sysInfo.platform);
+
+  // 自定义请求函数
+  const WxmpRequest = require('laf-client-sdk').WxmpRequest;
+  const apikey = require('./appSecret').apikey;
+  class MyRequest extends WxmpRequest {
+    async request(url, data) {
+      const res = await super.request(url, data)
+      return res
+    }
+
+    getHeaders(token) {
+      var headers = super.getHeaders(token);
+      headers.apikey = apikey;
+      console.log(headers);
+      return headers;
+    }
+  }
 
   cloud = require('laf-client-sdk').init({
     baseUrl: (sysInfo.platform == 'devtools' ? laf_dev_url : laf_url),
@@ -36,7 +53,8 @@ if (!use_wx_cloud) {
       }
       return accessToken.token;
     },
-    environment: 'wxmp'
+    environment: 'wxmp',
+    requestClass: MyRequest
   });
   
   // 检查 accessToken 是否未取得/已过期，若是则去获取
@@ -185,14 +203,14 @@ async function uploadFile(options) {
 // };
 
 /**
- * TODO: 使用 cloudAccess.cloud 替换其他文件中原来使用的 wx.cloud，示例：
- * ```
- * const cloud = require('./cloudAccess.js').cloud;
- * // 获取数据库对象
- * const db = cloud.database();
- * // 调用云函数
- * cloud.invokeFunction('foo', {});
- * ```
+ TODO: 使用 cloudAccess.cloud 替换其他文件中原来使用的 wx.cloud，示例：
+ ```
+ const cloud = require('./cloudAccess.js').cloud;
+ // 获取数据库对象
+ const db = cloud.database();
+ // 调用云函数
+ cloud.invokeFunction('foo', {});
+ ```
  */
 
 module.exports = {
