@@ -31,7 +31,7 @@
     </view>
   </block>
   <view class='bottom-bar'>
-    <button class='primary' bindtap="refreshStatus">刷新状态</button>
+    <button class='primary' bindtap="refreshStatus">刷新+订阅</button>
     <button bindtap="switchHistory">{{checkHistory? '查看待处理': '查看已处理'}}</button>
   </view>
 </block>

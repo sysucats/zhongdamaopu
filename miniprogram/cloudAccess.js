@@ -1,4 +1,4 @@
-import { use_wx_cloud, laf_url } from "./config"
+import { use_wx_cloud, laf_url, laf_dev_url } from "./config"
 
 var cloud = wx.cloud;
 
@@ -23,8 +23,11 @@ async function ensureToken() {
 }
 
 if (!use_wx_cloud) {
+  const sysInfo = wx.getSystemInfoSync();
+  console.log(sysInfo.platform)
+
   cloud = require('laf-client-sdk').init({
-    baseUrl: laf_url,
+    baseUrl: (sysInfo.platform == 'devtools' ? laf_dev_url : laf_url),
     dbProxyUrl: '/proxy/miniprogram',
     getAccessToken: () => {
       const accessToken = wx.getStorageSync('accessToken');

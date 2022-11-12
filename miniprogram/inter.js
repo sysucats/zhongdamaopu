@@ -1,6 +1,7 @@
-import { getUser } from "./user";
+import { getUser, setUserRole } from "./user";
 import { getCacheItem, setCacheItem, cacheTime } from "./cache";
 import { cloud } from "./cloudAccess";
+import api from "./cloudApi";
 
 // 常用的一些对象
 const db = cloud.database();
@@ -63,6 +64,24 @@ async function likeCheck(item_ids, options) {
 }
 
 
+// 点赞成为特邀
+async function likeToInvite() {
+  if (user.role) {
+    // 已经是了
+    console.log("already role");
+    return;
+  }
+
+  const count = (await db.collection('inter').where({uid: user.openid, type: TYPE_LIKE}).count()).total;
+  
+  if (count >= 3) {
+    console.log("invite user with like_count >= 3");
+    await setUserRole(user.openid, 1);
+    await getUser({nocache: true});
+  }
+}
+
+
 // 点赞操作
 async function likeAdd(item_id, item_type) {
   var res = (await likeCheck([item_id]))[0];
@@ -74,36 +93,33 @@ async function likeAdd(item_id, item_type) {
 
   // 没有记录
   await ensureUser();
-  await cloud.callFunction({
-    name: "curdOp",
+  await api.curdOp({
+    operation: "add",
+    collection: "inter",
     data: {
-      operation: "add",
-      collection: "inter",
-      data: {
-        type: TYPE_LIKE,
-        uid: user.openid,
-        item_id: item_id,
-        count: 1
-      }
+      type: TYPE_LIKE,
+      uid: user.openid,
+      item_id: item_id,
+      count: 1
     }
   });
 
   // 加上去
   console.log("like", item_type, item_id);
-  await cloud.callFunction({
-    name: "curdOp",
-    data: {
-      operation: "inc",
-      type: "like",
-      collection: item_type,
-      item_id, item_id,
-    }
+  await api.curdOp({
+    operation: "inc",
+    collection: item_type,
+    type: "like",
+    item_id, item_id,
   });
 
   // 刷新缓存
   await likeCheck([item_id], {
     nocache: true
   });
+
+  // 特邀用户
+  likeToInvite();
   return true;
 }
 

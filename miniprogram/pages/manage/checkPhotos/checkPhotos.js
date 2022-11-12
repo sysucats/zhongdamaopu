@@ -5,6 +5,7 @@ import config from "../../../config";
 import cache from "../../../cache";
 import { getCatItem } from "../../../cat";
 import { cloud } from "../../../cloudAccess";
+import api from "../../../cloudApi";
 
 const notifyVerifyPhotoTplId = config.msg.notifyVerify.id;
 
@@ -284,10 +285,7 @@ Page({
         best: photo.mark == "best",
       }
 
-      all_queries.push(cloud.callFunction({
-        name: "managePhoto",
-        data: data
-      }))
+      all_queries.push(api.managePhoto(data))
       this.addNotice(photo, (photo.mark != "delete"));
     }
     // 阻塞一下

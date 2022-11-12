@@ -1,8 +1,9 @@
 // miniprogram/pages/imProcess/imProcess.js
-import { generateUUID, compressImage } from "../../../utils";
+import { generateUUID } from "../../../utils";
 import { text as text_cfg } from "../../../config";
 import { checkAuth } from "../../../user";
 import { cloud } from "../../../cloudAccess";
+import api from "../../../cloudApi";
 
 import drawUtils from "./draw";
 import lockUtils from "./lock";
@@ -320,14 +321,11 @@ Page({
 
   // 更新数据库
   updataDatabase: async function (oriPhoto, compressFileID, watermarkCloudID) {
-    await cloud.callFunction({
-      name: 'managePhoto',
-      data: {
-        photo: oriPhoto,
-        type: 'setProcess',
-        compressed: compressFileID,
-        watermark: watermarkCloudID,
-      }
+    await api.managePhoto({
+      photo: oriPhoto,
+      type: 'setProcess',
+      compressed: compressFileID,
+      watermark: watermarkCloudID,
     })
   },
 

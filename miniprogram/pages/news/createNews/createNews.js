@@ -9,6 +9,7 @@ import {
 import {
   cloud
 } from "../../../cloudAccess";
+import api from "../../../cloudApi";
 
 Page({
   /**
@@ -319,7 +320,7 @@ Page({
     var data = {
       userInfo: that.data.user.userInfo,
       userNickname: submitData.name,
-      date: new Date(),
+      date: api.getDate(),
       title: submitData.title,
       mainContent: submitData.mainContent,
       coverPath: that.data.cover_path,
@@ -328,14 +329,10 @@ Page({
       setNewsModal: setNewsModal
     };
 
-    const res = (await cloud.callFunction({
-      name: "curdOp",
-      data: {
-        permissionLevel: 3,
-        operation: "add",
-        collection: "news",
-        data: data
-      }
+    const res = (await api.curdOp({
+      operation: "add",
+      collection: "news",
+      data: data
     })).result;
     console.log("newOp(create) Result:", res);
     if (res.ok) {

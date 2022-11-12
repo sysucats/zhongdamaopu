@@ -1,5 +1,6 @@
 // pages/tools/updateUserRole/updateUserRole.js
 import { cloud } from "../../../cloudAccess";
+import api from "../../../cloudApi";
 
 Page({
 
@@ -95,15 +96,12 @@ Page({
       var reqs = [];
       for (const u of users) {
         console.log(u._id);
-        reqs.push(cloud.callFunction({
-          name: "userOp",
-          data: {
-            "op": "updateRole",
-            "user": {
-              openid: u._id,
-              role: 1
-            },
-          }
+        reqs.push(api.userOp({
+          "op": "updateRole",
+          "user": {
+            openid: u._id,
+            role: 1
+          },
         }));
       }
       await Promise.all(reqs);

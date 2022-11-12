@@ -1,9 +1,9 @@
-const utils = require('../../../utils.js');
-const cloud = require('../../../cloudAccess.js').cloud;
+import utils from "../../../utils";
+import userUtils from "../../../user";
+import api from "../../../cloudApi";
 
 const generateUUID = utils.generateUUID;
 
-const userUtils = require("../../../user.js");
 
 async function geneKey(type) {
   if (type == "uuid") {
@@ -27,15 +27,12 @@ async function lock(scene, key, limit, expire_minutes) {
   var expire_date = new Date();
   expire_date.setMinutes(expire_date.getMinutes() + expire_minutes);
 
-  let res = (await cloud.callFunction({
-    name: 'globalLock',
-    data: {
-      op: "lock",
-      scene: scene,
-      key: key,
-      limit: limit,
-      expire_date: expire_date,
-    }
+  let res = (await api.globalLock({
+    op: "lock",
+    scene: scene,
+    key: key,
+    limit: limit,
+    expire_date: expire_date,
   })).result;
   console.log("lock:", res);
 
@@ -43,23 +40,17 @@ async function lock(scene, key, limit, expire_minutes) {
 }
 
 async function unlock(scene, key) {
-  return (await cloud.callFunction({
-    name: 'globalLock',
-    data: {
-      op: "unlock",
-      scene: scene,
-      key: key,
-    }
+  return (await api.globalLock({
+    op: "unlock",
+    scene: scene,
+    key: key,
   })).result;
 }
 
 async function getLockList(scene) {
-  var res = (await cloud.callFunction({
-    name: 'globalLock',
-    data: {
-      op: "getLockList",
-      scene: scene,
-    }
+  var res = (await api.globalLock({
+    op: "getLockList",
+    scene: scene,
   })).result;
 
   for (var item of res) {

@@ -17,6 +17,7 @@ import config from "../../../config";
 import {
   cloud
 } from "../../../cloudAccess";
+import api from "../../../cloudApi";
 
 Page({
   /**
@@ -198,7 +199,6 @@ Page({
 
   async uploadImg(photo) {
     // multiple 表示当前是否在批量上传，如果是就不显示上传成功的弹框
-    const that = this;
     this.setData({
       uploading: true,
     });
@@ -219,20 +219,17 @@ Page({
     const params = {
       cat_id: cat._id,
       photo_id: upRes.fileID,
-      userInfo: that.data.user.userInfo,
+      user_id: this.data.user._id,
+      userInfo: this.data.user.userInfo,
       verified: false,
-      mdate: new Date(),
       shooting_date: photo.shooting_date,
       photographer: photo.pher
     };
 
-    let dbAddRes = (await cloud.callFunction({
-      name: "curdOp",
-      data: {
-        operation: "add",
-        collection: "photo",
-        data: params
-      }
+    let dbAddRes = (await api.curdOp({
+      operation: "add",
+      collection: "photo",
+      data: params
     })).result;
     console.log("curdOp(add-photo) result:", dbAddRes);
   },

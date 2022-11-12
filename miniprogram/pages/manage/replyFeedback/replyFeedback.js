@@ -3,6 +3,7 @@ import { formatDate } from "../../../utils";
 import { sendReplyNotice } from "../../../msg";
 import { checkAuth } from "../../../user";
 import { cloud } from "../../../cloudAccess";
+import api from "../../../cloudApi";
 
 Page({
 
@@ -77,18 +78,13 @@ Page({
       const that = this;
       if (res.errCode == 0) {
         // 记录一下回复的内容和时间
-        await cloud.callFunction({
-          name: "curdOp",
+        await api.curdOp({
+          operation: 'update',
+          collection: "feedback",
+          item_id: that.data.feedback._id, 
           data: {
-            permissionLevel: 1,
-            operation: 'update',
-            collection: "feedback",
-            item_id: that.data.feedback._id, 
-            data: {
-              // replyDate: new Date(),
-              replyDate: new Date(),
-              replyInfo: submitData.replyInfo,
-            } 
+            replyDate: api.getDate(),
+            replyInfo: submitData.replyInfo,
           }
         });
         wx.hideLoading();

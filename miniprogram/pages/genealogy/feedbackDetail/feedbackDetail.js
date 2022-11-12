@@ -3,6 +3,7 @@ import { getPageUserInfo, checkCanUpload, toSetUserInfo } from "../../../user";
 import { requestNotice, sendNotifyChkFeeedback } from "../../../msg";
 import { text as text_cfg } from "../../../config";
 import { cloud } from "../../../cloudAccess";
+import api from "../../../cloudApi";
 
 Page({
   /**
@@ -83,29 +84,24 @@ Page({
     })
     var data = {
       userInfo: this.data.user.userInfo,
-      openDate: new Date(),
+      openDate: api.getDate(),
       feedbackInfo: submitData.feedbackInfo,
       contactInfo: submitData.contactInfo,
       dealed: false,
-      // repliable: repliable,
     };
     if (this.data.cat != undefined) {
       data.cat_id = this.data.cat._id;
       data.cat_name = this.data.cat_name;
     }
-    const that = this;
-    const res = (await cloud.callFunction({
-      name: "curdOp", 
-      data: {
-        operation: "add",
-        collection: "feedback",
-        data: data
-      }
+    const res = (await api.curdOp({
+      operation: "add",
+      collection: "feedback",
+      data: data
     })).result;
 
     console.log("curdOp(add-feedback) result:", res);
     if(res.ok){
-      that.setData({
+      this.setData({
         feedbackId : res.id
       })
       wx.hideLoading();
@@ -125,14 +121,11 @@ Page({
     let repliable = await requestNotice('feedback'); // 请求订阅消息推送
 
     const that = this;
-    const res = (await cloud.callFunction({
-      name: "curdOp", 
-      data: {
-        operation: "update",
-        collection: "feedback",
-        item_id: that.data.feedbackId,
-        data: { repliable: repliable },
-      }
+    const res = (await api.curdOp({
+      operation: "update",
+      collection: "feedback",
+      item_id: that.data.feedbackId,
+      data: { repliable: repliable },
     })).result;
 
     console.log("curdOp(feedback-update) result:", res);

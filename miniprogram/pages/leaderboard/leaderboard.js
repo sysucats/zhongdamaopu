@@ -111,24 +111,23 @@ Page({
   },
   //渲染到瀑布流
   renderPage: function () {
-    var that = this,
-      data = that.data,
+    var data = this.data,
       columns = data.columns,
       tempPics = data.tempPics,
       length = tempPics.length,
-      columnsHeight = that.jsData.columnsHeight,
+      columnsHeight = this.jsData.columnsHeight,
       index = 0
     for (var i = 0; i < length; i++) {
       index = columnsHeight[1] < columnsHeight[0] ? 1 : 0
       columns[index].push(tempPics[i])
       columnsHeight[index] += tempPics[i].height
     }
-    that.setData({
+    this.setData({
       columns: columns,
       tempPics: [],
       loadnomore: true
     })
-    that.jsData.columnsHeight = columnsHeight
+    this.jsData.columnsHeight = columnsHeight
   },
   // 获取激活的时间范围
   getTimeRange: function () {
@@ -150,16 +149,15 @@ Page({
     this.setData({
       loadnomore: false
     });
-    
 
     const db = cloud.database();
     const _ = db.command;
     const curCount = this.data.columns[0].length + this.data.columns[1].length;
     const timeRange = this.getTimeRange();
     const oneMonth = getDateWithDiffHours(-timeRange);
-    console.log(oneMonth);
+    console.log(oneMonth, oneMonth.toISOString());
     var photos = (await db.collection('photo').where({
-      mdate: _.gte(oneMonth),
+      mdate: _.or([_.gte(oneMonth), _.gte(oneMonth.toISOString())]),
       like_count: _.gte(1),
     }).orderBy('like_count', 'desc').skip(curCount).limit(5).get()).data;
 

@@ -3,6 +3,7 @@ import { checkAuth } from "../../../user";
 import { loadFilter } from "../../../page";
 import { getCatItemMulti } from "../../../cat";
 import { cloud } from "../../../cloudAccess";
+import api from "../../../cloudApi";
 
 var cat_id = undefined;
 
@@ -295,12 +296,9 @@ Page({
     wx.showLoading({
       title: '更新中...',
     });
-    var res = (await cloud.callFunction({
-      name: 'updateCat',
-      data: {
-        cat: this.data.cat,
-        cat_id: cat_id
-      }
+    var res = (await api.updateCat({
+      cat: this.data.cat,
+      cat_id: cat_id
     })).result;
     console.log("updateCat res:", res);
     if (res.id) {
@@ -325,12 +323,9 @@ Page({
     }
 
     console.log('开始删除');
-    await cloud.callFunction({
-      name: "managePhoto",
-      data: {
-        type: "delete",
-        photo: photo
-      }
+    await api.managePhoto({
+      type: "delete",
+      photo: photo
     });
 
     console.log("删除照片记录：" + photo._id);
@@ -346,13 +341,10 @@ Page({
     const photo = e.currentTarget.dataset.photo;
     const index = e.currentTarget.dataset.index;
     const set_best = !photo.best;
-    await cloud.callFunction({
-      name: "managePhoto",
-      data: {
-        type: "setBest",
-        photo: photo,
-        best: set_best
-      }
+    await api.managePhoto({
+      type: "setBest",
+      photo: photo,
+      best: set_best
     });
 
     await wx.showModal({
@@ -375,13 +367,10 @@ Page({
     const index = e.currentTarget.dataset.index;
     const pid = photo._id;
     const photographer = phers[pid];
-    await cloud.callFunction({
-      name: "managePhoto",
-      data: {
-        type: "setPher",
-        photo: photo,
-        photographer: photographer
-      }
+    await api.managePhoto({
+      type: "setPher",
+      photo: photo,
+      photographer: photographer
     });
     await wx.showModal({
       title: '完成',

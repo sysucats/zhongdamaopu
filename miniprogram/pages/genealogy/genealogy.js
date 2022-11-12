@@ -813,7 +813,7 @@ Page({
     await this.setData({
       show_filter_tip: true
     });
-    await sleep(3000);
+    await sleep(6000);
     await this.setData({
       show_filter_tip: false
     });

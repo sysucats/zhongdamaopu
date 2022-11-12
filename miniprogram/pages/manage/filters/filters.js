@@ -1,6 +1,7 @@
 import { checkAuth } from "../../../user";
 import { loadFilter } from "../../../page";
 import { cloud } from "../../../cloudAccess";
+import api from "../../../cloudApi";
 
 Page({
 
@@ -255,17 +256,13 @@ Page({
       }
     }
     
-    await cloud.callFunction({
-      name: 'curdOp',
+    await api.curdOp({
+      operation: "update",
+      collection: "setting",
+      item_id: "filter",
       data: {
-        permissionLevel: 2,
-        operation: "update",
-        collection: "setting",
-        item_id: "filter",
-        data: {
-          area: area,
-          colour: colour
-        }
+        area: area,
+        colour: colour
       }
     });
     await this.reloadFilter();

@@ -1,6 +1,7 @@
 import { shareTo, getCurrentPath, formatDate, sleep } from "../../../utils";
 import { checkAuth, isManagerAsync } from "../../../user";
 import { cloud } from "../../../cloudAccess";
+import api from "../../../cloudApi";
 
 
 Page({
@@ -91,14 +92,10 @@ Page({
     },
 
     async _doRemove(item_id) {
-      var res = (await cloud.callFunction({
-        name: "curdOp",
-        data: {
-          permissionLevel: 3,
-          operation: "remove", 
-          collection: "news",
-          item_id: item_id
-        }
+      var res = (await api.curdOp({
+        operation: "remove", 
+        collection: "news",
+        item_id: item_id
       })).result;
       
       console.log("curdOp(remove) res:", res);

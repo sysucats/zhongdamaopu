@@ -1,6 +1,7 @@
 // miniprogram/pages/manage/managers.js
 import { checkAuth } from "../../../user";
 import { cloud } from "../../../cloudAccess";
+import api from "../../../cloudApi";
 
 // 是否正在加载
 var loading = false;
@@ -163,7 +164,7 @@ Page({
   },
 
   // 更新一下，后台会检查权限，不能修改自己的权限，最大为99
-  updateUserLevel(e) {
+  async updateUserLevel(e) {
     const index = e.detail.value.index;
     const _id = e.detail.value._id;
     var level = parseInt(e.detail.value.level);
@@ -176,31 +177,26 @@ Page({
     }
     console.log("#"+index, _id, level);
 
-    cloud.callFunction({
-      name: "curdOp",
+    const res = (await api.curdOp({
+      operation: "update",
+      collection: "user",
+      item_id: _id,
       data: {
-        permissionLevel: 99,
-        operation: "update",
-        collection: "user",
-        item_id: _id,
-        data: {
-          manager: level
-        }
-      },
-      success: (res) => {
-        console.log("updateManager Result:", res);
-        if (res.ok && res.updated == 1) {
-          wx.showToast({
-            title: '更新成功',
-          });
-        } else {
-          wx.showToast({
-            title: '更新失败\r\n' + res.msg,
-            icon: 'none',
-          })
-        }
+        manager: level
       }
-    })
+    })).result;
+    
+    console.log("updateManager Result:", res);
+    if (res.ok && res.updated == 1) {
+      wx.showToast({
+        title: '更新成功',
+      });
+    } else {
+      wx.showToast({
+        title: '更新失败\r\n' + res.msg,
+        icon: 'none',
+      })
+    }
   },
 
   // 改动了其中一个picker

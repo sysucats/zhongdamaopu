@@ -7,6 +7,7 @@ import { getCatCommentCount } from "../../../comment";
 import { setVisitedDate, getAvatar, getCatItem } from "../../../cat";
 import { getGlobalSettings } from "../../../page";
 import { cloud } from "../../../cloudAccess";
+import api from "../../../cloudApi";
 
 const no_heic = /^((?!\.heic$).)*$/i; // 正则表达式：不以 HEIC 为文件后缀的字符串
 
@@ -86,14 +87,11 @@ Page({
         data: new Date(),
       });
       // 增加click数
-      await cloud.callFunction({
-        name: 'curdOp',
-        data: {
-          operation: "inc",
-          type: "pop",
-          collection: "cat",
-          item_id: cat_id
-        }
+      await api.curdOp({
+        operation: "inc",
+        type: "pop",
+        collection: "cat",
+        item_id: cat_id
       });
     }
 
@@ -488,7 +486,7 @@ Page({
   },
 
   // 展示mpcode
-  bingMpTap(e) {
+  async bingMpTap(e) {
     // 直接显示
     if (this.data.cat.mpcode) {
       wx.previewImage({
@@ -501,26 +499,21 @@ Page({
     wx.showLoading({
       title: '生成ing...',
     })
-    const that = this;
     const cat = this.data.cat;
-    cloud.callFunction({
-      name: 'getMpCode',
-      data: {
-        _id: cat._id,
-        scene: 'toC=' + cat._no,
-        page: 'pages/genealogy/genealogy',
-        width: 500,
-      },
-      success: (res) => {
-        wx.hideLoading();
-        wx.previewImage({
-          urls: [res.result],
-        });
-        that.setData({
-          'cat.mpcode': res.result
-        });
-      }
-    })
+    var res = (await api.getMpCode({
+      _id: cat._id,
+      scene: 'toC=' + cat._no,
+      page: 'pages/genealogy/genealogy',
+      width: 500,
+    })).result;
+    
+    wx.hideLoading();
+    wx.previewImage({
+      urls: [res],
+    });
+    this.setData({
+      'cat.mpcode': res
+    });
   },
 
   showPopularityTip() {

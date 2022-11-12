@@ -2,6 +2,7 @@
 import { checkAuth } from "../../../user";
 import { getGlobalSettings } from "../../../page";
 import { cloud } from "../../../cloudAccess";
+import api from "../../../cloudApi";
 import desc from "./desc";
 
 const db = cloud.database();
@@ -137,15 +138,11 @@ Page({
 
     const { settings } = this.data;
 
-    await cloud.callFunction({
-      name: "curdOp",
-      data: {
-        permissionLevel: 99,
-        operation: "update",
-        collection: "setting",
-        item_id: "pages",
-        data: settings
-      }
+    await api.curdOp({
+      operation: "update",
+      collection: "setting",
+      item_id: "pages",
+      data: settings
     })
 
     wx.showToast({

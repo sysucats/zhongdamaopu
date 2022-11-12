@@ -1,6 +1,7 @@
 import { formatDate, arrayResort } from "./utils";
 import { msg as msgConfig } from "./config";
 import { cloud } from "./cloudAccess";
+import api from "./cloudApi";
 
 // 订阅请求
 async function requestNotice(template) {
@@ -73,14 +74,11 @@ function sendVerifyNotice(notice_list) {
       },
     }
 
-    cloud.callFunction({
-      name: 'sendMsgV2',
-      data: {
-        touser: openid,
-        data: data,
-        templateId: cfg.id,
-        page: 'pages/genealogy/genealogy',
-      }
+    api.sendMsgV2({
+      touser: openid,
+      data: data,
+      templateId: cfg.id,
+      page: 'pages/genealogy/genealogy',
     });
   }
 }
@@ -105,14 +103,11 @@ async function sendReplyNotice(openid, fb_id) {
     },
   }
 
-  let res = await cloud.callFunction({
-    name: 'sendMsgV2',
-    data: {
-      touser: openid,
-      data: data,
-      templateId: cfg.id,
-      page: 'pages/info/feedback/myFeedback/myFeedback',
-    }
+  let res = await api.sendMsgV2({
+    touser: openid,
+    data: data,
+    templateId: cfg.id,
+    page: 'pages/info/feedback/myFeedback/myFeedback',
   });
 
   return res.result;
@@ -154,14 +149,11 @@ async function sendNotifyVertifyNotice(numUnchkPhotos) {
       },
     }
 
-    var res = await cloud.callFunction({
-      name: 'sendMsgV2',
-      data: {
-        touser: manager['openid'],
-        data: data,
-        templateId: cfg.id,
-        page: 'pages/manage/checkPhotos/checkPhotos',
-      }
+    var res = await api.sendMsgV2({
+      touser: manager['openid'],
+      data: data,
+      templateId: cfg.id,
+      page: 'pages/manage/checkPhotos/checkPhotos',
     });
 
     if (res.result.errCode === 0) {
@@ -214,14 +206,11 @@ async function sendNotifyChkFeeedback() {
       },
     }
 
-    var res = await cloud.callFunction({
-      name: 'sendMsgV2',
-      data: {
-        touser: manager['openid'],
-        data: data,
-        templateId: cfg.id,
-        page: 'pages/manage/checkFeedbacks/checkFeedbacks',
-      }
+    var res = await api.sendMsgV2({
+      touser: manager['openid'],
+      data: data,
+      templateId: cfg.id,
+      page: 'pages/manage/checkFeedbacks/checkFeedbacks',
     });
 
     if (res.result.errCode === 0) {

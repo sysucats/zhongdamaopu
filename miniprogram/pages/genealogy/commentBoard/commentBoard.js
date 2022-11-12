@@ -1,9 +1,10 @@
-import { formatDate, contentSafeCheck } from "../../../utils";
+import { formatDate } from "../../../utils";
 import config from "../../../config";
 import { getPageUserInfo, getUserInfo, checkCanComment, isManagerAsync, toSetUserInfo } from "../../../user";
 import { getAvatar } from "../../../cat";
 import { getCatCommentCount } from "../../../comment";
 import { cloud } from "../../../cloudAccess";
+import api from "../../../cloudApi";
 
 var cat_id;
 
@@ -216,11 +217,10 @@ Page({
     var item = {
       content: content,
       user_openid: user.openid,
-      create_date: new Date(),
       cat_id: cat_id,
     };
 
-    const checkRes = await contentSafeCheck(content, user.userInfo.nickName);
+    const checkRes = await api.contentSafeCheck(content, user.userInfo.nickName);
     if (!checkRes) {
       // 没有检测出问题
       await this.addComment(item, user);
@@ -238,20 +238,17 @@ Page({
 
   async addComment(item, user) {
     try {
-      var res = (await cloud.callFunction({
-        name: "curdOp", 
-        data: {
-          operation: "add",
-          collection: "comment",
-          data: item
-        }
+      var res = (await api.curdOp({
+        operation: "add",
+        collection: "comment",
+        data: item
       })).result;
       
       console.log("curdOp(add-Comment) result): ", res, user);
       // 插入最新留言 + 清空输入框
       console.log(item);
       item.userInfo = user.userInfo;
-      item.datetime = formatDate(new Date(item.create_date), "yyyy-MM-dd hh:mm:ss")
+      item.datetime = formatDate(new Date(), "yyyy-MM-dd hh:mm:ss")
       var comments = this.data.comments;
       comments.unshift(item);
       this.setData({
@@ -285,6 +282,7 @@ Page({
     };
     var res = await coll_comment.where(qf).orderBy("create_date", "desc")
                   .skip(comments.length).limit(10).get();
+    console.log(res);
 
     for (var item of res.data) {
       const openid = item.user_openid;
@@ -302,40 +300,34 @@ Page({
 
   },
 
-  // TODO 改成async写法
-  deleteComment(e) {
-    const that = this;
+  async deleteComment(e) {
     const index = e.currentTarget.dataset.index;
     const item = e.currentTarget.dataset.item;
     const comment_id = item._id;
     const username = item.userInfo.nickName;
     // 弹窗提示一下
-    wx.showModal({
+    var res = await wx.showModal({
       title: '提示',
-      content: `确定删除\"${username}\"的留言？`,
-      success (res) {
-        if (res.confirm) {
-          cloud.callFunction({
-            name: "curdOp",
-            data: {
-              permissionLevel: 1,
-              operation: "remove",
-              collection: "comment",
-              item_id: comment_id
-            },
-            success: () => {
-              wx.showToast({
-                title: '删除成功',
-              });
-              var comments = that.data.comments;
-              comments.splice(index, 1);
-              that.setData({
-                comments: comments,
-              })
-            }
-          });
-        }
-      }
+      content: `确定删除\"${username}\"的留言？`
+    });
+    
+    if (!res.confirm) {
+      return false;
+    }
+
+    await api.curdOp({
+      operation: "remove",
+      collection: "comment",
+      item_id: comment_id
+    });
+    
+    wx.showToast({
+      title: '删除成功',
+    });
+    var comments = this.data.comments;
+    comments.splice(index, 1);
+    this.setData({
+      comments: comments,
     })
   }
 })

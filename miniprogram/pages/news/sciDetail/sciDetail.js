@@ -1,5 +1,6 @@
 import { text as text_cfg, science_imgs } from "../../../config";
 import { cloud } from "../../../cloudAccess";
+import api from "../../../cloudApi";
 const cates = ['猫咪救助', '撸猫指南', '猫咪领养', '猫咪喂养', '猫咪健康'];
 const share_text = text_cfg.app_name + ' - ' + text_cfg.science.share_tip;
 
@@ -46,9 +47,7 @@ Page({
   async getSci() {
     wx.showLoading({title:'加载中...'})
 
-    const res = (await cloud.callFunction({
-      name: 'getAllSci',
-    })).result;
+    const res = (await api.getAllSci({})).result;
 
     console.log("getAllSci:", res);
     const data = res.data;

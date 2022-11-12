@@ -3,6 +3,7 @@ import { randomInt } from './utils';
 import { getGlobalSettings } from "./page";
 import { getCacheItem, setCacheItem } from "./cache";
 import { cloud } from "./cloudAccess";
+import api from "./cloudApi";
 
 // 获取当前用户
 // 如果数据库中没有会后台自动新建并返回
@@ -16,12 +17,9 @@ async function getUser(options) {
 
   const wx_code = (await wx.login()).code;
   console.log(wx_code);
-  const userRes = (await cloud.callFunction({
-    name: 'userOp',
-    data: {
-      op: 'get',
-      wx_code: wx_code
-    }
+  const userRes = (await api.userOp({
+    op: 'get',
+    wx_code: wx_code
   })).result;
 
   app.globalData.currentUser = userRes.result;
@@ -156,15 +154,12 @@ function toSetUserInfo() {
 
 // 设置用户等级
 async function setUserRole(openid, role) {
-  return (await cloud.callFunction({
-    name: "userOp",
-    data: {
-      "op": "updateRole",
-      "user": {
-        openid: openid,
-        role: role
-      },
-    }
+  return (await api.userOp({
+    "op": "updateRole",
+    "user": {
+      openid: openid,
+      role: role
+    },
   })).result;
 }
 

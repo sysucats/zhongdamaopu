@@ -4,6 +4,7 @@ import { requestNotice } from "../../../msg";
 import config from "../../../config";
 import { checkAuth } from "../../../user";
 import { cloud } from "../../../cloudAccess";
+import api from "../../../cloudApi";
 
 const notifyChkFeedbackTplId = config.msg.notifyChkFeedback.id;
 
@@ -139,17 +140,13 @@ Page({
     }
 
     console.log('[bindCheck] - 确认反馈处理');
-    await cloud.callFunction({
-      name: "curdOp",
+    await api.curdOp({
+      operation: 'update',
+      collection: "feedback",
+      item_id: feedback._id,
       data: {
-        permissionLevel: 1,
-        operation: 'update',
-        collection: "feedback",
-        item_id: feedback._id,
-        data: {
-          dealed: true,
-          dealDate: new Date()
-        }
+        dealed: true,
+        dealDate: api.getDate()
       }
     });
 

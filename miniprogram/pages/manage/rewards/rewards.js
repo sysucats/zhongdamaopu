@@ -1,6 +1,7 @@
 import { formatDate } from "../../../utils";
 import { checkAuth } from "../../../user";
 import { cloud } from "../../../cloudAccess";
+import api from "../../../cloudApi";
 
 Page({
 
@@ -70,30 +71,21 @@ Page({
     const that = this;
 
     if (reward_to_change._id) { // Update
-      await cloud.callFunction({
-        name: 'curdOp',
+      await api.curdOp({
+        operation: "update",
+        collection: "reward",
+        item_id: reward_to_change._id,
         data: {
-          permissionLevel: 3,
-          operation: "update",
-          collection: "reward",
-          item_id: reward_to_change._id,
-          data: {
-            records: reward_to_change.records
-          }
+          records: reward_to_change.records
         }
       });
       that.loadRewards();
     } else { // Add 新月份
-      await cloud.callFunction({
-        name: 'curdOp',
+      await api.curdOp({
+        operation: "add",
+        collection: "reward",
         data: {
-          permissionLevel: 3,
-          operation: "add",
-          collection: "reward",
-          data: {
-            mdate: new Date(reward_to_change.mdate),
-            records: reward_to_change.records
-          }
+          records: reward_to_change.records
         }
       });
       that.loadRewards();

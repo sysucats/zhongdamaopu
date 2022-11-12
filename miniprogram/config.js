@@ -8,6 +8,8 @@ module.exports = {
   use_wx_cloud: false,
   // 若使用 laf 后台，请填写下面的后台 url
   laf_url: 'https://cohbpk.mplaf.sysucats.com:9443',
+  // laf开发环境，一般和上面一致就好
+  laf_dev_url: 'https://cohbpk.mplaf.sysucats.com:9443',
 
   // 科普页图片 For wx Cloud
   // science_imgs: [

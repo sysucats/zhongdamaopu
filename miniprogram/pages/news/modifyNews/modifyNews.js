@@ -6,6 +6,7 @@ import {
 import {
   cloud
 } from "../../../cloudAccess";
+import api from "../../../cloudApi";
 
 Page({
 
@@ -209,7 +210,7 @@ Page({
     var data = {
       userInfoLastModify: this.data.user.userInfo,
       userNicknameLastModify: submitData.name,
-      dateLastModify: new Date(),
+      dateLastModify: api.getDate(),
       title: submitData.title,
       mainContent: submitData.mainContent,
       class: classBelongto,
@@ -227,16 +228,12 @@ Page({
 
   async doModify(item_id, item_data) {
     console.log(item_id, item_data);
-    const res = await cloud.callFunction({
-      name: "curdOp",
-      data: {
-        permissionLevel: 3,
-        operation: "update",
-        collection: "news",
-        item_id: item_id,
-        data: item_data
-      },
-    });
+    const res = (await api.curdOp({
+      operation: "update",
+      collection: "news",
+      item_id: item_id,
+      data: item_data
+    })).result;
     
     console.log("[doModify] - 修改成功", res);
     wx.showToast({

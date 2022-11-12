@@ -3,6 +3,7 @@ import { regReplace, sleep } from "../../../utils";
 import { getAvatar, getCatItem } from "../../../cat";
 import { checkAuth } from "../../../user";
 import { cloud } from "../../../cloudAccess";
+import api from "../../../cloudApi";
 
 const db = cloud.database();
 const _ = db.command;
@@ -96,16 +97,12 @@ Page({
 
     if (data.length == 0) {
       // 当数据库setting中不存在时，进行初始化
-      await cloud.callFunction({
-        name: "curdOp",
+      await api.curdOp({
+        operation: "set",
+        collection: "setting",
+        item_id: "relation",
         data: {
-          permissionLevel: 1,
-          operation: "set",
-          collection: "setting",
-          item_id: "relation",
-          data: {
-            types: ["爸爸", "妈妈"]
-          }
+          types: ["爸爸", "妈妈"]
         }
       });
       data = (await db.collection('setting').where({_id: 'relation'}).get()).data;
@@ -128,16 +125,12 @@ Page({
       // 不存在
       types.push(t);
       // console.log(types);
-      await cloud.callFunction({
-        name: "curdOp",
+      await api.curdOp({
+        operation: "update",
+        collection: "setting",
+        item_id: "relation",
         data: {
-          permissionLevel: 1,
-          operation: "update",
-          collection: "setting",
-          item_id: "relation",
-          data: {
-              types: types
-          }
+          types: types
         }
       });
       idx = types.length - 1;
@@ -180,16 +173,12 @@ Page({
   async doDeleteRelationType(idx) {
     var types = this.data.relation_types;
     types.splice(idx, 1);
-    await cloud.callFunction({
-      name: "curdOp",
+    await api.curdOp({
+      operation: "update",
+      document: "setting",
+      item_id: "relation",
       data: {
-        permissionLevel: 1,
-        operation: "update",
-        document: "setting",
-        item_id: "relation",
-        data: {
-            types: types
-        }
+        types: types
       }
     });
     this.setData({
@@ -367,16 +356,12 @@ Page({
         cat_id: r.cat_id,
       });
     }
-    await cloud.callFunction({
-      name: "curdOp",
+    await api.curdOp({
+      operation: "update",
+      collection: "cat",
+      item_id: cat._id,
       data: {
-        permissionLevel: 1,
-        operation: "update",
-        collection: "cat",
-        item_id: cat._id,
-        data: {
-          relations: relations  
-        }
+        relations: relations  
       }
     });
 

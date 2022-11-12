@@ -1,6 +1,7 @@
 import { getUser } from "../../../../user";
-import { contentSafeCheck, deepcopy } from "../../../../utils";
+import { deepcopy } from "../../../../utils";
 import { cloud } from "../../../../cloudAccess";
+import api from "../../../../cloudApi";
 
 const defaultAvatarUrl = "/pages/public/images/info/default_avatar.png"
 
@@ -74,12 +75,9 @@ Page({
     this.setData({user});
     
     // 更新数据库的userInfo
-    await cloud.callFunction({
-      name: 'userOp',
-      data: {
-        op: 'update',
-        user: user
-      }
+    await api.userOp({
+      op: 'update',
+      user: user
     });
 
     wx.hideLoading();
@@ -111,7 +109,7 @@ Page({
       });
       return false;
     }
-    const checkRes = await contentSafeCheck("empty", name);
+    const checkRes = await api.contentSafeCheck("empty", name);
     if (!checkRes) {
       return true;
     }

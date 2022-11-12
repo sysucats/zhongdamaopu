@@ -94,7 +94,7 @@ Page({
     const ranks = this.data.ranks;
   
     const openid = this.data.user.openid;
-    console.log(ranks);
+    console.log(openid, ranks);
     for (const i in ranks) {
       if (ranks[i]._openid === openid) {
         this.setData({
