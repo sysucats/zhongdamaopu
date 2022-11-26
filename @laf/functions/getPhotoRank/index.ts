@@ -49,14 +49,13 @@ function getStat(all_photos) {
   var stat = {};
   for (const ph of all_photos) {
     const key = ph._openid;
-    if (!key || !ph.userInfo) {
+    if (!key) {
       // 系统直接写入的
       continue;
     }
 
     // 否则就计数
     if (stat[key] === undefined) {
-      console.log(ph.userInfo);
       stat[key] = {
         userInfo: ph.userInfo,
         count: 1
