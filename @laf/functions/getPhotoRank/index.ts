@@ -57,14 +57,10 @@ function getStat(all_photos) {
     // 否则就计数
     if (stat[key] === undefined) {
       stat[key] = {
-        userInfo: ph.userInfo,
         count: 1
       }
     } else {
       stat[key].count ++;
-      if (ph.userInfo) {
-        stat[key].userInfo = ph.userInfo;
-      }
     }
   }
   return stat;
