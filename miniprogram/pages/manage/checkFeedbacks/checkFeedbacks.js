@@ -2,7 +2,7 @@
 import { formatDate } from "../../../utils";
 import { requestNotice } from "../../../msg";
 import config from "../../../config";
-import { checkAuth } from "../../../user";
+import { checkAuth, fillUserInfo } from "../../../user";
 import { cloud } from "../../../cloudAccess";
 import api from "../../../cloudApi";
 
@@ -44,6 +44,8 @@ Page({
       dealed: this.data.checkHistory
     }).orderBy('openDate', 'desc').skip(nowLoaded).limit(step).get()).data;
     console.log("[loadFeedbacks] -", feedbacks);
+    // 填充userInfo
+    await fillUserInfo(feedbacks, "openid", "userInfo");
     // 获取对应猫猫信息；将Date对象转化为字符串；判断是否已回复
     for (let i = 0; i < feedbacks.length; ++i) {
       if (feedbacks[i].cat_id != undefined) {

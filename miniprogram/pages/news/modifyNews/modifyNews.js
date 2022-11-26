@@ -1,7 +1,6 @@
 import {
   getPageUserInfo,
-  checkAuth,
-  toSetUserInfo
+  checkAuth
 } from "../../../user";
 import {
   cloud
@@ -208,7 +207,7 @@ Page({
     }
 
     var data = {
-      userInfoLastModify: this.data.user.userInfo,
+      openidLastModify: this.data.user.openid,
       userNicknameLastModify: submitData.name,
       dateLastModify: api.getDate(),
       title: submitData.title,

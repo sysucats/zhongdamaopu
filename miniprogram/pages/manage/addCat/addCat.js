@@ -1,5 +1,5 @@
 import { text as text_cfg, cat_status_adopt } from "../../../config";
-import { checkAuth } from "../../../user";
+import { checkAuth, fillUserInfo } from "../../../user";
 import { loadFilter } from "../../../page";
 import { getCatItemMulti } from "../../../cat";
 import { cloud } from "../../../cloudAccess";
@@ -185,6 +185,7 @@ Page({
 
     const db = cloud.database();
     var newPhotos = await db.collection('photo').where(qf).orderBy('mdate', 'desc').skip(now).limit(photoStep).get();
+    await fillUserInfo(newPhotos.data, "_openid", "userInfo");
     
     console.log("[loadMorePhotos] -", newPhotos);
     photo = photo.concat(newPhotos.data);

@@ -117,6 +117,13 @@ Page({
 
   // 点击单个上传
   async uploadSingleClick(e) {
+    if (this.data.uploading) {
+      console.log("uploading lock.");
+      return;
+    }
+    this.setData({
+      uploading: true
+    })
     await requestNotice('verify');
     wx.showLoading({
       title: config.text.add_photo.success_tip_title,
@@ -143,6 +150,10 @@ Page({
 
   // 点击多个上传
   async uploadAllClick(e) {
+    if (this.data.uploading) {
+      console.log("uploading lock.");
+      return;
+    }
     const photos = []; // 这里只会保存可以上传的照片
     for (const item of this.data.photos) {
       if (item.shooting_date && item.file.path) {
@@ -220,7 +231,6 @@ Page({
       cat_id: cat._id,
       photo_id: upRes.fileID,
       user_id: this.data.user._id,
-      userInfo: this.data.user.userInfo,
       verified: false,
       shooting_date: photo.shooting_date,
       photographer: photo.pher

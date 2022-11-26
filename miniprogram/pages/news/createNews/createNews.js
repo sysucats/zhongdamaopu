@@ -318,7 +318,6 @@ Page({
     }
 
     var data = {
-      userInfo: that.data.user.userInfo,
       userNickname: submitData.name,
       date: api.getDate(),
       title: submitData.title,

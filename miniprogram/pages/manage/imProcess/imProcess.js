@@ -1,7 +1,7 @@
 // miniprogram/pages/imProcess/imProcess.js
 import { generateUUID } from "../../../utils";
 import { text as text_cfg } from "../../../config";
-import { checkAuth } from "../../../user";
+import { checkAuth, fillUserInfo } from "../../../user";
 import { cloud } from "../../../cloudAccess";
 import api from "../../../cloudApi";
 
@@ -169,10 +169,12 @@ Page({
     const db = cloud.database();
     const _ = db.command;
     while (this.data.processing && (await this.getLock())) {
-      const photos = (await db.collection('photo').where({
+      var photos = (await db.collection('photo').where({
         photo_compressed: _.in([undefined, '']),
         verified: true
       }).limit(1).get()).data;
+      
+      await fillUserInfo(photos, "_openid", "userInfo");
       console.log("imProcess beginProcess", photos);
 
       if (!photos.length) {

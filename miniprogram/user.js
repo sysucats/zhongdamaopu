@@ -5,6 +5,10 @@ import { getCacheItem, setCacheItem } from "./cache";
 import { cloud } from "./cloudAccess";
 import api from "./cloudApi";
 
+const db = cloud.database();
+const _ = db.command;
+const coll_user = db.collection('user');
+
 // 获取当前用户
 // 如果数据库中没有会后台自动新建并返回
 async function getUser(options) {
@@ -27,16 +31,14 @@ async function getUser(options) {
 }
 
 // 使用openid来读取用户信息
-async function getUserInfo(openid) {
+async function getUserInfo(openid, options) {
   const key = `uinfo-${openid}`;
-  var value = getCacheItem(key);
+  var value = getCacheItem(key, options);
   if (value != undefined) {
     return value;
   }
 
   // 重新获取
-  const db = cloud.database();
-  const coll_user = db.collection('user');
   value = (await coll_user.where({openid: openid}).get()).data[0];
 
   if (value.length === 0) {
@@ -48,6 +50,44 @@ async function getUserInfo(openid) {
   setCacheItem(key, value, 0, randomInt(25, 35));
 
   return value;
+}
+
+
+// 使用openid来读取用户信息
+async function getUserInfoMulti(openids, cacheOptions, retMap) {
+  if (!openids) {
+    return undefined;
+  }
+  var res = {};
+  var not_found = [];
+  for (var openid of openids) {
+    if (res[openid]) {
+      continue;
+    }
+    const cacheKey = `uinfo-${openid}`;
+    var cacheItem = getCacheItem(cacheKey, cacheOptions);
+    if (cacheItem) {
+      res[openid] = cacheItem;
+      continue;
+    }
+    not_found.push(openid);
+  }
+
+  // 请求没有的
+  if (not_found.length) {
+    var db_res = (await coll_user.where({openid: _.in(not_found)}).get()).data;
+    for (var user of db_res) {
+      const cacheKey = `uinfo-${user.openid}`;
+      setCacheItem(cacheKey, user, randomInt(25, 35));
+      res[user.openid] = user;
+    }
+  }
+
+  if (retMap) {
+    return res;
+  }
+  
+  return openids.map(x => res[x]);
 }
 
 async function _checkFuncEnable(pageName, func) {
@@ -163,9 +203,34 @@ async function setUserRole(openid, role) {
   })).result;
 }
 
+// 填充userInfo
+// items: array类型，期待加上userInfo的内容
+// openidKey：openid的字段名
+// userInfoKey：userInfo的字段名
+async function fillUserInfo(items, openidKey, userInfoKey, cacheOptions) {
+  var openids = [];
+  for (var item of items) {
+    if (item[userInfoKey] != undefined) {
+      continue;
+    }
+    const openid = item[openidKey];
+    openids.push(openid);
+  }
+  var res = await getUserInfoMulti(openids, cacheOptions, true);
+  for (var item of items) {
+    if (item[userInfoKey] != undefined) {
+      continue;
+    }
+    const openid = item[openidKey];
+    item[userInfoKey] = res[openid].userInfo;
+  }
+  return;
+}
+
 module.exports = {
   getUser,
   getUserInfo,
+  getUserInfoMulti,
   checkCanUpload,
   getPageUserInfo,
   checkCanComment,
@@ -174,4 +239,5 @@ module.exports = {
   toSetUserInfo,
   checkCanFullTabBar,
   setUserRole,
+  fillUserInfo,
 } 

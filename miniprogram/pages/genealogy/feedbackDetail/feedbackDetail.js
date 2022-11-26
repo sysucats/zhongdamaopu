@@ -98,7 +98,6 @@ Page({
       mask: true,
     })
     var data = {
-      userInfo: this.data.user.userInfo,
       openid: this.data.user.openid,
       openDate: api.getDate(),
       feedbackInfo: submitData.feedbackInfo,

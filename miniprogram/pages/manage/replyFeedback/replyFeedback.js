@@ -1,7 +1,7 @@
 // 处理反馈
 import { formatDate } from "../../../utils";
 import { sendReplyNotice } from "../../../msg";
-import { checkAuth } from "../../../user";
+import { checkAuth, getUserInfo } from "../../../user";
 import { cloud } from "../../../cloudAccess";
 import api from "../../../cloudApi";
 
@@ -39,6 +39,10 @@ Page({
     const db = cloud.database();
     var res = await db.collection('feedback').doc(options.fb_id).get();
     console.log(res);
+    if (!res.data.userInfo) {
+      res.data.userInfo = (await getUserInfo(res.data.openid)).userInfo;
+    }
+    
     res.data.openDateStr = formatDate(res.data.openDate, "yyyy-MM-dd hh:mm:ss");
     this.setData({
       feedback: res.data

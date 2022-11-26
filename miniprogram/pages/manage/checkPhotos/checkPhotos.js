@@ -1,5 +1,5 @@
 // 审核照片
-import { checkAuth } from "../../../user";
+import { checkAuth, fillUserInfo } from "../../../user";
 import { requestNotice, sendVerifyNotice } from "../../../msg";
 import config from "../../../config";
 import cache from "../../../cache";
@@ -90,6 +90,13 @@ Page({
     wx.navigateBack();
   },
 
+  async loadPhotosAndFillUserInfo(skip_i) {
+    const db = cloud.database();
+    var res = await db.collection("photo").where({verified: false}).skip(skip_i).limit(20).get();
+    await fillUserInfo(res.data, "_openid", "userInfo");
+    return res;
+  },
+
   async loadAllPhotos() {
     wx.showLoading({
       title: '加载中...',
@@ -102,7 +109,7 @@ Page({
 
     var pools = [];
     for (var i=0; i<total_count; i+=20) {
-      pools.push(db.collection("photo").where({verified: false}).skip(i).limit(20).get());
+      pools.push(this.loadPhotosAndFillUserInfo(i));
     }
 
     var photos = await Promise.all(pools);

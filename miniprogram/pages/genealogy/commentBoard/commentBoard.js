@@ -1,6 +1,6 @@
 import { formatDate } from "../../../utils";
 import config from "../../../config";
-import { getPageUserInfo, getUserInfo, checkCanComment, isManagerAsync, toSetUserInfo } from "../../../user";
+import { getPageUserInfo, fillUserInfo, checkCanComment, isManagerAsync, toSetUserInfo } from "../../../user";
 import { getAvatar } from "../../../cat";
 import { getCatCommentCount } from "../../../comment";
 import { cloud } from "../../../cloudAccess";
@@ -286,12 +286,9 @@ Page({
                   .skip(comments.length).limit(10).get();
     console.log(res);
 
+    // 填充userInfo
+    await fillUserInfo(res.data, "user_openid", "userInfo");
     for (var item of res.data) {
-      const openid = item.user_openid;
-      var res = await getUserInfo(openid);
-      if (res) {
-        item.userInfo = res.userInfo;
-      }
       item.datetime = formatDate(new Date(item.create_date), "yyyy-MM-dd hh:mm:ss")
       comments.push(item);
     }

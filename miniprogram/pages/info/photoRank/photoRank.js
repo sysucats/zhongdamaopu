@@ -1,4 +1,4 @@
-import { getPageUserInfo, toSetUserInfo } from "../../../user";
+import { getPageUserInfo, toSetUserInfo, fillUserInfo } from "../../../user";
 import { text as text_cfg } from "../../../config";
 const share_text = text_cfg.app_name + ' - ' + text_cfg.photo_rank.share_tip;
 
@@ -64,9 +64,11 @@ Page({
       ranks.push({
         _openid: key,
         count: rank_stat[key].count,
-        userInfo: rank_stat[key].userInfo,
+        // userInfo: rank_stat[key].userInfo,
       })
     }
+    // 填充userInfo
+    await fillUserInfo(ranks, "_openid", "userInfo");
     ranks.sort((a, b) => {
       return parseInt(b.count) - parseInt(a.count)
     });

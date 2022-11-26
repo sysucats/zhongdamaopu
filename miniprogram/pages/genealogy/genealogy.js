@@ -12,6 +12,7 @@ import {
 import {
   getCatCommentCount
 } from "../../comment";
+import { getUserInfo } from "../../user";
 import cache from "../../cache";
 import config from "../../config";
 import { loadFilter, getGlobalSettings, showTab } from "../../page";
@@ -377,6 +378,9 @@ Page({
     for (var cat of cats) {
       if (cat.photo === default_png) {
         cat2photos[cat._id] = await getAvatar(cat._id, cat.photo_count_best);
+        if (!cat2photos[cat._id].userInfo) {
+          cat2photos[cat._id].userInfo = (await getUserInfo(cat2photos[cat._id]._openid)).userInfo;
+        }
         cat2commentCount[cat._id] = await getCatCommentCount(cat._id);
       }
     }

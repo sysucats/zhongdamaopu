@@ -1,6 +1,7 @@
 import {
   getCatItemMulti
 } from "../../cat.js";
+import { fillUserInfo } from "../../user";
 import {
   likeCheck,
   likeAdd
@@ -160,6 +161,9 @@ Page({
       mdate: _.or([_.gte(oneMonth), _.gte(oneMonth.toISOString())]),
       like_count: _.gte(1),
     }).orderBy('like_count', 'desc').skip(curCount).limit(7).get()).data;
+    
+    await fillUserInfo(photos, "_openid", "userInfo");
+
 
     // 浏览过程中点赞，会导致序变化，但目前只会加点赞，因此只需要去重
     photos = this.removeDupPhoto(photos);
