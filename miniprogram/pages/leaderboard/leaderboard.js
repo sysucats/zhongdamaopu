@@ -159,7 +159,7 @@ Page({
     var photos = (await db.collection('photo').where({
       mdate: _.or([_.gte(oneMonth), _.gte(oneMonth.toISOString())]),
       like_count: _.gte(1),
-    }).orderBy('like_count', 'desc').skip(curCount).limit(5).get()).data;
+    }).orderBy('like_count', 'desc').skip(curCount).limit(7).get()).data;
 
     // 浏览过程中点赞，会导致序变化，但目前只会加点赞，因此只需要去重
     photos = this.removeDupPhoto(photos);
@@ -184,6 +184,7 @@ Page({
       p.cat = cat_res[i];
       p.liked = like_res[i];
       p.mdate_str = formatDate(p.mdate, "yyyy/MM/dd")
+      p.simplify_date = formatDate(p.mdate, "MM/dd")
     }
     console.log(photos);
     this.setData({

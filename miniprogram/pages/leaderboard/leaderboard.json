@@ -1,5 +1,7 @@
 {
   "usingComponents": {
     "heart": "/packages/heart-button/heart"
-  }
+  },
+  "navigationBarTitleText": "猫谱精选"
+
 }

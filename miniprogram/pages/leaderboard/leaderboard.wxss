@@ -17,7 +17,7 @@ page {
 .column_item {
   width: 350rpx;
   background: #fff;
-  margin: 0rpx auto 30rpx auto;
+  margin: 0rpx auto 20rpx auto;
   border-radius: 10rpx;
   overflow: hidden;
 }
@@ -31,36 +31,24 @@ page {
   width: 100%;
   margin: 0;
   padding: 0;
+  vertical-align: bottom;
 }
 .location{
   position: absolute;
-  bottom: 30rpx;
+  top: 18rpx;
   right: 15rpx;
-  color: var(--color-white-dark);
+  color: var(--color-gray);
   text-align:end;
   font-size: 18rpx;
   background-color:var(--color-black-transparent);
   padding:5rpx 10rpx;
   border-radius: 10rpx;
 }
-.dark_mask{
-  position: absolute;
-  bottom: 0rpx;
-  height: 120rpx;
-  width: 100%;
-
-  opacity: 0.7;
-  background-image: linear-gradient(180deg, rgba(0,0,0,0.00) 0%, #000000 100%);
-
-  color: var(--color-white-dark);
-  text-align:end;
-  font-size: 18rpx
-}
 
 .info {
   width: 350rpx;
   display: flex;
-  padding: 10rpx 0rpx 20rpx 30rpx;
+  padding: 18rpx 0rpx 18rpx 24rpx;
   align-items: center;
   box-sizing: border-box;
   justify-content: space-between;
@@ -88,7 +76,7 @@ page {
 .photo-info{
   display: flex;
   flex-direction: row;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
 }
 .pher-name{
   font-size: 22rpx;
@@ -98,6 +86,7 @@ page {
 .photo-date {
   font-size: 22rpx;
   color: var(--color-gray-max);
+  flex-shrink: 0;
 }
 
 

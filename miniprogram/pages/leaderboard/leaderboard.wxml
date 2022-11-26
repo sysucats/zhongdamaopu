@@ -18,11 +18,10 @@
       </view>
       <view class="info">
         <view class="names ellipsis-text" bindtap="clickCatName" data-cat_id="{{pics.cat_id}}">
-          <!-- <view class="cat-name ellipsis-text">{{pics.cat.name}}<text class="campus"> [{{pics.cat.campus}}]</text></view> -->
           <view class="cat-name ellipsis-text">{{pics.cat.name}}</view>
           <view class="photo-info">
             <view class="pher-name ellipsis-text">{{pics.photographer || pics.userInfo.nickName || "猫友"}}</view>
-            <view class="photo-date ellipsis-text">{{pics.mdate_str}}</view>
+            <view class="photo-date ellipsis-text">{{filters[2].active || filters[3].active ? pics.mdate_str : pics.simplify_date}}</view>
           </view>
 
 
