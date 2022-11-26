@@ -62,6 +62,10 @@ Page({
     })
   },
 
+  async safeCheck(submitData) {
+    
+  },
+
   async bindSubmit(e) {
     var submitData = e.detail.value;
     if (!submitData.feedbackInfo) {
@@ -78,12 +82,24 @@ Page({
       return;
     } */
     // let repliable = await requestNotice('feedback'); // 请求订阅消息推送
+    
+    // 安全检查
+    console.log(submitData);
+    const checkRes = await api.contentSafeCheck(submitData.feedbackInfo + submitData.contactInfo, "");
+    console.log(checkRes);
+    if (checkRes) {
+      // 检测出问题
+      wx.showModal(checkRes);
+      return false;
+    }
+
     wx.showLoading({
       title: '正在提交...',
       mask: true,
     })
     var data = {
       userInfo: this.data.user.userInfo,
+      openid: this.data.user.openid,
       openDate: api.getDate(),
       feedbackInfo: submitData.feedbackInfo,
       contactInfo: submitData.contactInfo,
@@ -100,39 +116,37 @@ Page({
     })).result;
 
     console.log("curdOp(add-feedback) result:", res);
-    if(res.ok){
-      this.setData({
-        feedbackId : res.id
-      })
-      wx.hideLoading();
-      await sendNotifyChkFeeedback();
-      wx.showToast({
-        title: '收到你的反馈啦',
-        icon: 'success',
-        duration: 1000
-      })
-    }
-    else{
+    if (!res.ok) {
       console.log('repliable record fail:\n');
+      return;
     }
+    this.setData({
+      feedbackId : res.id
+    });
+    await this.askNotice();
+    wx.hideLoading();
+    await sendNotifyChkFeeedback();
+    wx.showToast({
+      title: '收到你的反馈啦',
+      icon: 'success',
+      duration: 1000
+    })
   },
   
-  async toSubmit() {
+  async askNotice() {
     let repliable = await requestNotice('feedback'); // 请求订阅消息推送
 
-    const that = this;
     const res = (await api.curdOp({
       operation: "update",
       collection: "feedback",
-      item_id: that.data.feedbackId,
+      item_id: this.data.feedbackId,
       data: { repliable: repliable },
     })).result;
 
     console.log("curdOp(feedback-update) result:", res);
-    if(res.ok){
+    if (res.ok) {
       wx.navigateBack();
-    }
-    else{
+    } else {
       console.log('repliable record fail:\n',res);
     }
      

@@ -66,7 +66,7 @@ async function updateCat(options) {
 }
 
 // 内容安全检查
-async function contentSafeCheck(content, nickName) {
+async function contentSafeCheck(content, nickname) {
   const label_type = {
     100: "正常",
     10001: "广告",
@@ -84,14 +84,22 @@ async function contentSafeCheck(content, nickName) {
     name: 'commentCheck',
     data: {
       content: content,
-      nickname: nickName,
+      nickname: nickname,
     },
   })).result;
   // 检测接口的返回
   console.log("contentSafeCheck", res);
   if (res.errCode != 0 && res.errcode != 0) {
-    const label_code = res.result.label;
-    const label = label_type[label_code];
+    return {
+      title: "内容检测未通过",
+      content: `接口访问错误，错误码${res.errcode}`,
+      showCancel: false,
+    };
+  }
+
+  const label_code = res.result.label;
+  const label = label_type[label_code];
+  if (label_code != 100) {
     return {
       title: "内容检测未通过",
       content: `涉及[${label_code}]${label}内容，请修改嗷~~`,

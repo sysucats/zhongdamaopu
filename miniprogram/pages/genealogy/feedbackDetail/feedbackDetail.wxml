@@ -29,7 +29,7 @@
       </view>
     </view>
     <view class='submitButton'>
-      <button form-type='submit' bindtap="toSubmit">{{text_cfg.feedback_detail.submit_button}}</button>
+      <button form-type='submit'>{{text_cfg.feedback_detail.submit_button}}</button>
     </view>
   </block>
 </form>

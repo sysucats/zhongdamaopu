@@ -6,8 +6,11 @@ import { cloud } from "../../cloudAccess";
 
 const share_text = text_cfg.app_name + ' - ' + text_cfg.info.share_tip;
 
+const logo_img = "/pages/public/images/app_logo.png";
+
 Page({
   data: {
+    logo_img,
     friendApps: [],
     showManager: false,
     numChkPhotos: 0,
@@ -100,6 +103,15 @@ Page({
   showMpCode(e) {
     wx.previewImage({
       urls: [mpcode_img],
+      fail: function(e) {
+        console.error(e)
+      }
+    })
+  },
+
+  showLogo(e) {
+    wx.previewImage({
+      urls: [logo_img],
       fail: function(e) {
         console.error(e)
       }

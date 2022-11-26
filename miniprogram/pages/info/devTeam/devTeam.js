@@ -11,6 +11,12 @@ Page({
     text_cfg: text_cfg,
     github_link: "https://github.com/sysucats/zhongdamaopu",
     update_log: [{
+      version: "v1.9.5",
+      content: [
+        "搞一下安全接口",
+      ],
+      time: "2022/11/16"
+    }, {
       version: "v1.9.4",
       content: [
         "缓存数量修复",

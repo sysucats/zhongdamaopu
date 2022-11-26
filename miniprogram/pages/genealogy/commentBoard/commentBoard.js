@@ -267,7 +267,6 @@ Page({
     } catch {
       wx.showModal({
         title: "留言失败",
-        content: "请开发者检查“comment”云数据库是否创建，权限是否设置为“双true”",
         showCancel: false,
       })
       console.error(res);
