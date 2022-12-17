@@ -1,6 +1,5 @@
 import { formatDate, arrayResort } from "./utils";
 import { getGlobalSettings } from "./page";
-// import { msg as msgConfig } from "./config";
 import { cloud } from "./cloudAccess";
 import api from "./cloudApi";
 
@@ -18,8 +17,13 @@ async function _getMsgConfig() {
   return res;
 }
 
-let msgConfig = undefined;
+let msgConfig = null;
 _getMsgConfig().then(x => {msgConfig = x});
+
+function getMsgTplId(template) {
+  console.log(template, msgConfig)
+  return msgConfig[template].ID;
+}
 
 // 订阅请求
 async function requestNotice(template) {
@@ -247,4 +251,5 @@ module.exports = {
   sendReplyNotice,
   sendNotifyVertifyNotice,
   sendNotifyChkFeeedback,
+  getMsgTplId,
 }

@@ -1,12 +1,9 @@
 // 处理反馈
 import { formatDate } from "../../../utils";
-import { requestNotice } from "../../../msg";
-import config from "../../../config";
+import { requestNotice, getMsgTplId } from "../../../msg";
 import { checkAuth, fillUserInfo } from "../../../user";
 import { cloud } from "../../../cloudAccess";
 import api from "../../../cloudApi";
-
-const notifyChkFeedbackTplId = config.msg.notifyChkFeedback.id;
 
 const step = 6;
 
@@ -90,6 +87,7 @@ Page({
   },
 
   async requestSubscribeMessage() {
+    const notifyChkFeedbackTplId = getMsgTplId("notifyChkFeedback");
     wx.getSetting({
       withSubscriptions: true,
       success: res => {

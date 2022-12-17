@@ -1,13 +1,10 @@
 // 审核照片
 import { checkAuth, fillUserInfo } from "../../../user";
-import { requestNotice, sendVerifyNotice } from "../../../msg";
-import config from "../../../config";
+import { requestNotice, sendVerifyNotice, getMsgTplId } from "../../../msg";
 import cache from "../../../cache";
 import { getCatItem } from "../../../cat";
 import { cloud } from "../../../cloudAccess";
 import api from "../../../cloudApi";
-
-const notifyVerifyPhotoTplId = config.msg.notifyVerify.id;
 
 // 准备发送通知的列表，姓名：审核详情
 var notice_list = {};
@@ -159,6 +156,7 @@ Page({
   },
 
   async requestSubscribeMessage() {
+    const notifyVerifyPhotoTplId = getMsgTplId("notifyVerify");
     wx.getSetting({
       withSubscriptions: true,
       success: res => {

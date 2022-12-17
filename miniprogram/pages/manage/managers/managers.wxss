@@ -123,6 +123,7 @@ picker.manager-level {
   padding: 10rpx;
   color: var(--color-black-light);
   display: inline-block;
+  overflow: hidden;
 }
 
 button.manager-update {
