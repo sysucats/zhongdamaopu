@@ -1,18 +1,97 @@
+import {
+  UserTypes,
+  FuncTypes
+} from "../../../user";
+import tabsDef from "../../../custom-tab-bar/tab";
+
+const userTypes = [{
+  val: UserTypes.guest,
+  name: "游客"
+}, {
+  val: UserTypes.invited,
+  name: "特邀用户"
+}, {
+  val: UserTypes.manager,
+  name: "管理员"
+}];
+
+const funcTypes = [{
+  val: FuncTypes.uploadPhoto,
+  name: "上传照片"
+}, {
+  val: FuncTypes.comment,
+  name: "留言板"
+}, {
+  val: FuncTypes.reward,
+  name: "打赏投喂"
+}, {
+  val: FuncTypes.feedback,
+  name: "反馈"
+}, {
+  val: FuncTypes.fullTab,
+  name: "完整TabBar"
+}];
+
+function getTabBarTypes() {
+  let res = [];
+  for (const key in tabsDef) {
+    res.push({
+      val: key,
+      name: tabsDef[key].text
+    })
+  }
+  return res;
+}
+const tabBarTypes = getTabBarTypes();
+
 module.exports = {
+  accessCtrl: {
+    tip: "对不同人群进行访问控制",
+    ctrlVersion: {
+      type: "text",
+      tip: "受限版本（“*”表示全部版本，或输入具体版本号）",
+      default: "*"
+    },
+    ctrlUser: {
+      type: "multi-select",
+      tip: "受限人群",
+      default: "guest",
+      choices: userTypes
+    },
+    limitedFunc: {
+      type: "multi-select",
+      tip: "受限功能（受限人群+版本时，无法使用）",
+      default: "uploadPhoto,comment,reward,feedback,fullTab",
+      choices: funcTypes
+    },
+    disabledFunc: {
+      type: "multi-select",
+      tip: "完全禁用功能（任何版本、任何人都无法使用）",
+      default: "",
+      choices: funcTypes
+    },
+  },
+  tabBarCtrl: {
+    tip: "底部TabBar控制",
+    ctrlTab: {
+      type: "multi-select",
+      tip: "受限TabBar（对受限人群展示哪些tab）",
+      default: "news",
+      choices: tabBarTypes
+    },
+    fullTab: {
+      type: "multi-select",
+      tip: "完整的底部TabBar，勾选顺序将影响展示顺序。",
+      default: "genealogy,recognize,news,leaderboard,info",
+      choices: tabBarTypes,
+      order: true,
+    },
+  },
   detailCat: {
     tip: "猫猫详情页设置",
     albumStep: {
       type: "number",
       tip: "每次相册加载的照片数"
-    },
-    cantUpload: {
-      type: "text",
-      tip: "无法上传照片的版本号（ALL表示所有版本所有用户都无法上传；*表示所有版本，除特邀用户外无法上传；具体版本号表示仅该版本，除特邀用户外无法上传；管理员无视此项设置，都可以上传）"
-    },
-    cantComment: {
-      type: "text",
-      tip: "无法留言的版本号（参考cantUpload配置）",
-      default: "#copy-detailCat-cantUpload"
     },
     galleryCompressed: {
       type: "number",
@@ -46,6 +125,89 @@ module.exports = {
       tip: "每张猫猫照片增加的人气值"
     },
   },
+  subscribe: {
+    tip: "订阅消息模板",
+    "verify#ID": {
+      type: "text",
+      tip: "审核结果通知-模板ID",
+      default: "your_template_id"
+    },
+    "verify#title": {
+      type: "text",
+      tip: "审核结果通知-标题字段",
+      default: "thing2"
+    },
+    "verify#content": {
+      type: "text",
+      tip: "审核结果通知-内容字段",
+      default: "thing7"
+    },
+    "verify#note": {
+      type: "text",
+      tip: "审核结果通知-备注字段",
+      default: "thing5"
+    },
+    "notifyVerify#ID": {
+      type: "text",
+      tip: "提醒审核-模版ID",
+      default: "your_template_id"
+    },
+    "notifyVerify#title": {
+      type: "text",
+      tip: "提醒审核-标题字段",
+      default: "thing2"
+    },
+    "notifyVerify#number": {
+      type: "text",
+      tip: "提醒审核-数量字段",
+      default: "number5"
+    },
+    "notifyVerify#time": {
+      type: "text",
+      tip: "提醒审核-时间字段",
+      default: "time6"
+    },
+    "notifyChkFeedback#ID": {
+      type: "text",
+      tip: "提醒查看反馈-模板ID",
+      default: "your_template_id"
+    },
+    "notifyChkFeedback#title": {
+      type: "text",
+      tip: "提醒查看反馈-标题字段",
+      default: "thing2"
+    },
+    "notifyChkFeedback#number": {
+      type: "text",
+      tip: "提醒查看反馈-数量字段",
+      default: "number5"
+    },
+    "notifyChkFeedback#time": {
+      type: "text",
+      tip: "提醒查看反馈-时间字段",
+      default: "time3"
+    },
+    "feedback#ID": {
+      type: "text",
+      tip: "提醒查看反馈-模板ID",
+      default: "your_template_id"
+    },
+    "feedback#title": {
+      type: "text",
+      tip: "提醒查看反馈-标题字段",
+      default: "thing3"
+    },
+    "feedback#content": {
+      type: "text",
+      tip: "提醒查看反馈-内容字段",
+      default: "thing5"
+    },
+    "feedback#time": {
+      type: "text",
+      tip: "提醒查看反馈-时间字段",
+      default: "date4"
+    }
+  },
   recognize: {
     tip: "识猫页设置",
     interfaceURL: {
@@ -71,23 +233,5 @@ module.exports = {
       tip: "识猫开发接口秘钥",
       default: "key"
     },
-  },
-  tabBar: {
-    tip: "底部TabBar设置",
-    fullTab: {
-      type: "text",
-      tip: "完整的底部TabBar。形如“xxx,yyy,zzz”，用英文逗号将页面的key进行连接，可以隐藏部分tab。具体的key值需要与`custom-tab-bar/tab.js`中对应。",
-      default: "genealogy,recognize,news,leaderboard,info"
-    },
-    minTab: {
-      type: "text",
-      tip: "普通用户看到的底部TabBar。配置方式参考fullTab。",
-      default: "genealogy,leaderboard,info"
-    },
-    minVersion: {
-      type: "text",
-      tip: "展示minTab配置的版本。配置方式参考cantUpload。",
-      default: "#copy-detailCat-cantUpload"
-    }
   }
 }

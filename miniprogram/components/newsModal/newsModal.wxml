@@ -16,8 +16,8 @@
 
     <scroll-view class='wx-modal-scroll' enable-flex='true' scroll-y='true' enable-back-to-top='true' lower-threshold='50'>
       <view class='wx-modal-content' wx:if="{{content.length != 0}}">{{ content }}</view>
-      <view class='wx-modal-image' wx:if="{{ imagePath != '' }}">
-        <image mode='widthFix' src='{{ imagePath }}'></image>
+      <view wx:if="{{ imagePath != '' }}">
+        <image class="wx-modal-image" mode='widthFix' src='{{ imagePath }}'></image>
       </view>
     </scroll-view>
 

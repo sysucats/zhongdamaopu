@@ -4,6 +4,8 @@
 // 修改时频繁保存、频繁编译，发现改错了立马撤销
 
 module.exports = {
+  // 版本号
+  app_version: "v1.9.6",
   // 是否使用微信云开发后台，为 false 时使用 laf 后台
   use_wx_cloud: false,
   // 若使用 laf 后台，请填写下面的后台 url
@@ -11,16 +13,7 @@ module.exports = {
   // laf开发环境，一般和上面一致就好
   laf_dev_url: 'https://cohbpk.mplaf.sysucats.com:9443',
 
-  // 科普页图片 For wx Cloud
-  // science_imgs: [
-  //   "cloud://rel-eeeccf.7265-rel-eeeccf/系统/1.png",
-  //   "cloud://rel-eeeccf.7265-rel-eeeccf/系统/2.png",
-  //   "cloud://rel-eeeccf.7265-rel-eeeccf/系统/3.png",
-  //   "cloud://rel-eeeccf.7265-rel-eeeccf/系统/4.png",
-  //   "cloud://rel-eeeccf.7265-rel-eeeccf/系统/5.png"
-  // ],
-
-  // 科普页图片 For Laf Cloud
+  // 科普页图片
   science_imgs: [
     "https://oss.mplaf.sysucats.com:9443/cohbpk-cat/%E7%B3%BB%E7%BB%9F/1.png",
     "https://oss.mplaf.sysucats.com:9443/cohbpk-cat/%E7%B3%BB%E7%BB%9F/2.png",
@@ -47,46 +40,6 @@ module.exports = {
   cat_status_adopt: ["未领养", "已领养", "寻找领养中"],
   // 首页漂浮的领养Logo对应的状态
   cat_status_adopt_target: "寻找领养中",
-
-  // 订阅消息的统一配置（只修改引号内的）
-  msg: {
-    //审核结果通知模板
-    verify: {
-      id: 'AtntuAUGnzoBumjfmGB8Yyc-67FUxRH5Cw7bnEYFCXo',
-      map: {
-        title: "thing2", // 标题
-        content: "thing7", // 内容
-        note: "thing5", // 备注
-      }
-    },
-    // 提醒审核模版
-    notifyVerify: {
-      id: 'jxcvND-iLSQZLZhlHD2A91gY0tLSfzyYc3bl39bxVuk',
-      map: {
-        title: "thing2",
-        number: "number5",
-        time: "time6",
-      }
-    },
-    // 提醒查看反馈模板
-    notifyChkFeedback: {
-      id: 'jxcvND-iLSQZLZhlHD2A97jP3fm_FWV4wL_GFUcLxcQ',
-      map: {
-        title: "thing2",
-        number: "number5",
-        time: "time3",
-      }
-    },
-    // 反馈回复结果模板
-    feedback: {
-      id: 'IeKS7nPSsBy62REOKiDC2zuz_M7RbKwR97ZiIy_ocmw',
-      map: {
-        title: "thing3", // 标题
-        content: "thing5", // 内容
-        time: "date4", // 时间
-      }
-    },
-  },
 
   // 各种文字内容
   text: {

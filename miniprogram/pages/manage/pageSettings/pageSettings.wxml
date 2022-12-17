@@ -3,7 +3,15 @@
 1. 保持settings表不变进行设置保存
 2. 只需要设置_id = pages的文档
 3. 分多项展开来设置，不要叠加超过2层
-4. 设置项说明，放到js端吧 -->
+-->
+
+<wxs module="wxfn">
+var indexOf = function(values, target) {
+  var array = values.split(",");
+  return array.indexOf(target);
+}
+module.exports.indexOf = indexOf;
+</wxs>
 
 <block wx:if="{{auth}}">
   <view wx:for="{{settings}}" wx:key="unique" wx:for-index="i">
@@ -11,8 +19,17 @@
     <view class="setting-title-tip">{{desc[i].tip}}</view>
     <view wx:for="{{settings[i]}}"  wx:key="unique" wx:for-index="j" class="form-input-block">
       <view class="form-input-name">{{j}}</view>
-      <view class="form-input-tip">Tip: {{desc[i][j].tip}}</view>
-      <input class="form-input" type="{{desc[i][j].type}}" disabled="{{desc[i][j].disabled}}" value="{{settings[i][j]}}" bindinput="inputChange" data-i="{{i}}" data-j="{{j}}"/>
+      <view class="form-input-tip">{{desc[i][j].tip}}</view>
+      <checkbox-group wx:if="{{desc[i][j].type=='multi-select'}}" bindchange="checkBoxChange" data-i="{{i}}" data-j="{{j}}">
+        <view wx:for="{{desc[i][j].choices}}" wx:key="val">
+          <checkbox value="{{item.val}}" disabled="{{desc[i][j].disabled}}" checked="{{wxfn.indexOf(settings[i][j], item.val) != -1}}">
+          <text wx:if="{{desc[i][j].order}}">[{{wxfn.indexOf(settings[i][j], item.val)+1}}]</text>
+          {{item.name}} ({{item.val}})
+          </checkbox>
+        </view>
+        <view class="form-input-tip">储存值: "{{settings[i][j]}}"</view>
+      </checkbox-group>
+      <input wx:else class="form-input" type="{{desc[i][j].type}}" disabled="{{desc[i][j].disabled}}" value="{{settings[i][j]}}" bindinput="inputChange" data-i="{{i}}" data-j="{{j}}"/>
     </view>
   </view>
   <view class="confirm">

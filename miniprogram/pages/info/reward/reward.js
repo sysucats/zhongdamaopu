@@ -1,6 +1,6 @@
 // miniprogram/pages/info/reward/reward.js
 import { text as text_cfg, reward_img, ad_reward_video } from "../../../config";
-import { checkCanUpload } from "../../../user";
+import { checkCanReward } from "../../../user";
 import { cloud } from "../../../cloudAccess";
 
 // 在页面中定义激励视频广告
@@ -23,7 +23,7 @@ Page({
     
     // 是否开启
     this.setData({
-      canUpload: await checkCanUpload()
+      canReward: await checkCanReward()
     });
     
     // 在页面onLoad回调事件中创建激励视频广告实例

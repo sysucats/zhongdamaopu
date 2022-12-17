@@ -16,7 +16,7 @@ import { getUserInfo } from "../../user";
 import cache from "../../cache";
 import config from "../../config";
 import { loadFilter, getGlobalSettings, showTab } from "../../page";
-import { isManagerAsync } from "../../user";
+import { isManagerAsync, checkCanShowNews } from "../../user";
 import { cloud } from "../../cloudAccess";
 
 const default_png = undefined;
@@ -137,10 +137,7 @@ Page({
   loadFilters: async function (fcampus) {
     // 下面开始加载filters
     var res = await loadFilter();
-
-
     var filters = [];
-
     var area_item = {
       key: 'area',
       cateKey: 'campus',
@@ -854,6 +851,9 @@ Page({
   },
 
   async loadNews() {
+    if (!await checkCanShowNews()) {
+      return;
+    }
     // 载入需要弹窗的公告
     const db = cloud.database();
     var newsList = (await db.collection('news').orderBy('date', 'desc').where({
@@ -901,7 +901,7 @@ Page({
   checkNewsVisited() {
     const news_id = this.data.newsList[0]._id;
     var key = `visit-news-${news_id}`;
-    var visited = cache.getCacheDate(key);
+    var visited = cache.getCacheItem(key);
     // console.log(visited);
     return visited;
   },
@@ -909,7 +909,7 @@ Page({
   setNewsVisited() {
     const news_id = this.data.newsList[0]._id;
     var key = `visit-news-${news_id}`;
-    cache.setCacheDate(key);
+    cache.setCacheItem(key, true, cache.cacheTime.genealogyNews);
   },
 
   // 上锁

@@ -180,6 +180,9 @@ Page({
     console.log("[onShareAppMessage] -", shareTo(share_text, path))
     return shareTo(share_text, path);
   },
+  onShareTimeline: function () {
+    return this.onShareAppMessage();
+  },
 
   swiperLast(e) {
     const current = e.detail.current;

@@ -1,15 +1,34 @@
 import { formatDate, arrayResort } from "./utils";
-import { msg as msgConfig } from "./config";
+import { getGlobalSettings } from "./page";
+// import { msg as msgConfig } from "./config";
 import { cloud } from "./cloudAccess";
 import api from "./cloudApi";
 
+async function _getMsgConfig() {
+  let subscribe = await getGlobalSettings("subscribe");
+  let res = {};
+  for (const key in subscribe) {
+    const value = subscribe[key];
+    let [name, field] = key.split("#");
+    if (res[name] === undefined) {
+      res[name] = {};
+    }
+    res[name][field] = value;
+  }
+  return res;
+}
+
+let msgConfig = undefined;
+_getMsgConfig().then(x => {msgConfig = x});
+
 // 订阅请求
 async function requestNotice(template) {
+  console.log(template, msgConfig);
   const cfg = msgConfig[template];
 
   try {
     let res = await wx.requestSubscribeMessage({
-      tmplIds: [cfg.id],
+      tmplIds: [cfg.ID],
     });
     console.log("requestSubMsgRes:", res);
 
@@ -23,7 +42,7 @@ async function requestNotice(template) {
       return false;
     }
 
-    if (res[cfg.id] == 'accept') {
+    if (res[cfg.ID] == 'accept') {
       await wx.showToast({
         title: '结果能通知你啦',
         icon: 'success',
@@ -63,13 +82,13 @@ function sendVerifyNotice(notice_list) {
     const note = notice_list[openid].deleted ? '未被收录可能因为重复、模糊或与猫猫无关。' : '感谢你的支持！';
 
     const data = {
-      [cfg.map.title]: {
+      [cfg.title]: {
         value: '你上传的猫片审核完成！'
       },
-      [cfg.map.content]: {
+      [cfg.content]: {
         value: content
       },
-      [cfg.map.note]: {
+      [cfg.note]: {
         value: note
       },
     }
@@ -77,7 +96,7 @@ function sendVerifyNotice(notice_list) {
     api.sendMsgV2({
       touser: openid,
       data: data,
-      templateId: cfg.id,
+      templateId: cfg.ID,
       page: 'pages/genealogy/genealogy',
     });
   }
@@ -92,13 +111,13 @@ async function sendReplyNotice(openid, fb_id) {
   const content = feedback.feedbackInfo.length > 20 ? (feedback.feedbackInfo.substr(0, 18) + '..') : feedback.feedbackInfo;
 
   const data = {
-    [cfg.map.title]: {
+    [cfg.title]: {
       value: '你的反馈已被回复，点击进入小程序查看'
     },
-    [cfg.map.content]: {
+    [cfg.content]: {
       value: content
     },
-    [cfg.map.time]: {
+    [cfg.time]: {
       value: formatDate(feedback.openDate, "yyyy年MM月dd日 hh:mm:ss")
     },
   }
@@ -106,7 +125,7 @@ async function sendReplyNotice(openid, fb_id) {
   let res = await api.sendMsgV2({
     touser: openid,
     data: data,
-    templateId: cfg.id,
+    templateId: cfg.ID,
     page: 'pages/info/feedback/myFeedback/myFeedback',
   });
 
@@ -138,13 +157,13 @@ async function sendNotifyVertifyNotice(numUnchkPhotos) {
   const cfg = msgConfig.notifyVerify;
   for (var manager of resortedML) {
     var data = {
-      [cfg.map.title]: {
+      [cfg.title]: {
         value: '又有几张新的照片啦，有空看看猫猫吧'
       },
-      [cfg.map.number]: {
+      [cfg.number]: {
         value: numUnchkPhotos
       },
-      [cfg.map.time]: {
+      [cfg.time]: {
         value: earliestTime
       },
     }
@@ -152,7 +171,7 @@ async function sendNotifyVertifyNotice(numUnchkPhotos) {
     var res = await api.sendMsgV2({
       touser: manager['openid'],
       data: data,
-      templateId: cfg.id,
+      templateId: cfg.ID,
       page: 'pages/manage/checkPhotos/checkPhotos',
     });
 
@@ -195,13 +214,13 @@ async function sendNotifyChkFeeedback() {
 
   for (var manager of resortedML) {
     var data = {
-      [cfg.map.title]: {
+      [cfg.title]: {
         value: '还有同学的反馈没被处理哦'
       },
-      [cfg.map.number]: {
+      [cfg.number]: {
         value: uploadTimeList.data.length
       },
-      [cfg.map.time]: {
+      [cfg.time]: {
         value: earliestTime
       },
     }
@@ -209,7 +228,7 @@ async function sendNotifyChkFeeedback() {
     var res = await api.sendMsgV2({
       touser: manager['openid'],
       data: data,
-      templateId: cfg.id,
+      templateId: cfg.ID,
       page: 'pages/manage/checkFeedbacks/checkFeedbacks',
     });
 

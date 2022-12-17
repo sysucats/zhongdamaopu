@@ -17,14 +17,16 @@ Component({
     activePath: null
   },
   async created() {
-    const settings = await getGlobalSettings("tabBar");
+    const settings = await getGlobalSettings("tabBarCtrl");
     if (settings == undefined) {
       console.log("no settings");
       toSettings("缺失tabBar设置，已填入默认值，请检查后保存。");
       return;
     }
-    const { minTab, fullTab } = settings;
-    console.log("tabBar", minTab, fullTab);
+    const fullTab = settings.fullTab.split(',');
+    const ctrlTab = new Map(settings.ctrlTab.split(',').map(i => [i, true]));
+    var minTab = fullTab.filter(x => ctrlTab.get(x) === undefined);
+    console.log("tabBar", ctrlTab, minTab, fullTab);
     // 根据用户类型来确定底Tab
     var order = minTab;
     if (await checkCanFullTabBar()) {
@@ -35,10 +37,13 @@ Component({
       toSettings("缺失tabBar设置，已填入默认值，请检查后保存。");
       return;
     }
+
+    // 存起来其他地方可以查看
+    wx.setStorageSync('tabBarOrder', order)
     
     // 重新排序list
     var newList = [];
-    for (const key of order.trim().split(",")) {
+    for (const key of order) {
       const item = tab[key.trim()];
       if (!item) {
         continue;

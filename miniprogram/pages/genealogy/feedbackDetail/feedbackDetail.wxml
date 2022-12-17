@@ -1,4 +1,4 @@
-<form bindsubmit="bindSubmit" wx:if="{{canUpload}}">
+<form bindsubmit="bindSubmit" wx:if="{{canFeedback}}">
   <view wx:if="{{!isAuth}}" class='unAuth'>
     <!-- <text>请授权后进行操作</text> -->
     <view class='userInfo'>

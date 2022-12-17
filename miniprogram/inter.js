@@ -74,8 +74,8 @@ async function likeToInvite() {
 
   const count = (await db.collection('inter').where({uid: user.openid, type: TYPE_LIKE}).count()).total;
   
-  if (count >= 3) {
-    console.log("invite user with like_count >= 3");
+  if (count >= 2) {
+    console.log("invite user with like_count >= 2");
     await setUserRole(user.openid, 1);
     await getUser({nocache: true});
   }

@@ -4,29 +4,46 @@ import { getGlobalSettings } from "./page";
 import { getCacheItem, setCacheItem } from "./cache";
 import { cloud } from "./cloudAccess";
 import api from "./cloudApi";
+import config from "./config";
 
 const db = cloud.database();
 const _ = db.command;
 const coll_user = db.collection('user');
 
+const UserTypes = {
+  manager: "manager",
+  invited: "invited",
+  guest: "guest"
+}
+
+const FuncTypes = {
+  uploadPhoto: "uploadPhoto",
+  comment: "comment",
+  reward: "reward",
+  feedback: "feedback",
+  fullTab: "fullTab",
+}
+
 // 获取当前用户
 // 如果数据库中没有会后台自动新建并返回
 async function getUser(options) {
   options = options || {};
-  const app = getApp();
-
-  if (!options.nocache && app.globalData.currentUser) {
-    return app.globalData.currentUser;
+  const key = "current-user";
+  let userRes = await getCacheItem(key, options);
+  if (userRes) {
+    return userRes;
   }
 
   const wx_code = (await wx.login()).code;
-  console.log(wx_code);
-  const userRes = (await api.userOp({
+  console.log("wx_code", wx_code);
+  userRes = (await api.userOp({
     op: 'get',
     wx_code: wx_code
   })).result;
 
-  app.globalData.currentUser = userRes.result;
+  console.log(userRes);
+
+  setCacheItem(key, userRes, 0, randomInt(25, 35))
   return userRes;
 }
 
@@ -90,56 +107,68 @@ async function getUserInfoMulti(openids, cacheOptions, retMap) {
   return openids.map(x => res[x]);
 }
 
-async function _checkFuncEnable(pageName, func) {
-  var funcToSettingName = {
-    "uploadImage": "cantUpload",
-    "comment": "cantComment",
-    "fullTab": "minVersion",
+async function _checkFuncEnable(funcName) {
+  // 对特定人群、特地版本进行控制
+  let accessCtrl = await getGlobalSettings("accessCtrl");
+  let { ctrlUser, ctrlVersion, disabledFunc, limitedFunc } = accessCtrl;
+
+  // 完全禁用，不需要判断人群/版本
+  if (disabledFunc.split(",").includes(funcName)) {
+    return false;
   }
-  // 加载设置、关闭上传功能
-  const app = getApp();
-  var funcSetting = funcToSettingName[func];
-  var settings = await getGlobalSettings(pageName);
-  let banSetting = settings[funcSetting];
-  if (func == "comment" && !banSetting) {
-    banSetting = settings["cantUpload"];
-  }
-  
-  if ((banSetting !== '*') && (banSetting !== app.globalData.version)) {
+
+  const { app_version } = config;
+  if (ctrlVersion != "*" && ctrlVersion != app_version) {
+    // 版本不匹配，限制不生效
     return true;
   }
   
-  if (banSetting == 'ALL') {
-    // 完全关闭上传
-    return await isManagerAsync();
-  }
-
-  // 特邀用户
   const user = await getUser();
-  if (user.role == 1) {
-    return true;
+  const isManager = await isManagerAsync();
+  const isInvited = user.role == 1;
+  ctrlUser = ctrlUser.split(",");
+  if ((isManager && ctrlUser.includes(UserTypes.manager))      // 管理员
+    || (isInvited && ctrlUser.includes(UserTypes.invited))     // 特邀用户
+    || (!isInvited && ctrlUser.includes(UserTypes.guest))) {   // 游客
+    // 满足人群限制，返回功能是否受限
+    !limitedFunc.split(',').includes(funcName);
   }
-
-  return await isManagerAsync();
+  return true;
 }
 
-/*
-* 检查是否开启上传通道（返回true为开启上传）
-*/
+// 能否上传照片
 async function checkCanUpload() {
-  return await _checkFuncEnable("detailCat", "uploadImage");
+  return await _checkFuncEnable(FuncTypes.uploadPhoto);
 }
 
-// 看看能否评论
+// 能否评论
 async function checkCanComment() {
-  return await _checkFuncEnable("detailCat", "comment");
+  return await _checkFuncEnable(FuncTypes.comment);
+}
+
+// 能否打赏投喂
+async function checkCanReward() {
+  return await _checkFuncEnable(FuncTypes.reward);
+}
+
+// 能否反馈
+async function checkCanFeedback() {
+  return await _checkFuncEnable(FuncTypes.feedback);
 }
 
 // 是否展示完整底Tab
 async function checkCanFullTabBar() {
-  return await _checkFuncEnable("tabBar", "fullTab");
+  return await _checkFuncEnable(FuncTypes.fullTab);
 }
 
+// 是否展示弹出公告
+async function checkCanShowNews() {
+  const tabBarOrder = wx.getStorageSync("tabBarOrder");
+  if (!tabBarOrder) {
+    return false;
+  }
+  return tabBarOrder.includes("news");
+}
 
 // 设置页面上的userInfo
 async function getPageUserInfo(page) {
@@ -228,16 +257,21 @@ async function fillUserInfo(items, openidKey, userInfoKey, cacheOptions) {
 }
 
 module.exports = {
+  UserTypes,
+  FuncTypes,
   getUser,
   getUserInfo,
   getUserInfoMulti,
-  checkCanUpload,
   getPageUserInfo,
+  checkCanUpload,
   checkCanComment,
+  checkCanReward,
+  checkCanFeedback,
+  checkCanFullTabBar,
+  checkCanShowNews,
   isManagerAsync,
   checkAuth,
   toSetUserInfo,
-  checkCanFullTabBar,
   setUserRole,
   fillUserInfo,
 } 

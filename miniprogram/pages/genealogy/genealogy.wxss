@@ -558,3 +558,7 @@ scroll-view {
   margin: 0rpx 10rpx;
   display: block;
 }
+
+.news-container {
+  z-index: 99;
+}

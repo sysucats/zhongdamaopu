@@ -1,5 +1,5 @@
 import { getCurrentPath, shareTo } from "../../../utils";
-import { getPageUserInfo, checkCanUpload, toSetUserInfo } from "../../../user";
+import { getPageUserInfo, checkCanFeedback, toSetUserInfo } from "../../../user";
 import { requestNotice, sendNotifyChkFeeedback } from "../../../msg";
 import { text as text_cfg } from "../../../config";
 import { cloud } from "../../../cloudAccess";
@@ -32,7 +32,7 @@ Page({
 
     // 检查是否可以上传
     this.setData({
-      canUpload: await checkCanUpload()
+      canFeedback: await checkCanFeedback()
     });
   },
 

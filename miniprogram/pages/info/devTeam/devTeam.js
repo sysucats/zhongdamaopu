@@ -11,6 +11,13 @@ Page({
     text_cfg: text_cfg,
     github_link: "https://github.com/sysucats/zhongdamaopu",
     update_log: [{
+      version: "v1.9.6",
+      content: [
+        "后台设置页面重构",
+        "UI问题修复"
+      ],
+      time: "2022/12/17"
+    }, {
       version: "v1.9.5",
       content: [
         "搞一下安全接口",

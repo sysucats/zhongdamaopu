@@ -9,7 +9,6 @@ const db = cloud.database();
 const _ = db.command;
 
 Page({
-
   /**
    * 页面的初始数据
    */
@@ -42,6 +41,7 @@ Page({
   },
 
   setDefaultValues(settings) {
+    let shouldUpload = false;
     for (const i in desc) {
       for (const j in desc[i]) {
         var defaultValue = desc[i][j].default;
@@ -53,6 +53,7 @@ Page({
           defaultValue = settings[ci][cj];
         }
         if (settings[i] == undefined) {
+          shouldUpload = true;
           settings[i] = {}
         }
         if (settings[i][j] == undefined) {
@@ -60,15 +61,43 @@ Page({
         }
       }
     }
+
+    if (shouldUpload) {
+      this.uploadSetting();
+    }
+  },
+
+  // 排序一下Map，target为需要排序的东西，example是参考的标准
+  sortMap(target, example) {
+    if (typeof target !== "object") {
+      return target;
+    }
+    var res = {};
+    for (const key in example) {
+      if (target[key] === undefined) {
+        continue;
+      }
+      res[key] = this.sortMap(target[key], example[key]);
+    }
+
+    for (const key in target) {
+      if (res[key] === undefined) {
+        res[key] = target[key];
+      }
+    }
+
+    return res;
   },
 
   // 加载数据库设置
   async reloadSettings() {
-    const settings = await getGlobalSettings(null, {nocache: true});
+    let settings = await getGlobalSettings(null, {nocache: true});
     console.log(JSON.stringify(settings));
     delete settings._id;
     delete settings.openid;
+    delete settings.mdate;
     this.setDefaultValues(settings);
+    settings = this.sortMap(settings, desc);
     for (const i in settings) {
       if (desc[i] == undefined) {
         desc[i] = {
@@ -98,6 +127,15 @@ Page({
     var {value} = e.detail;
     this.setData({
       [`settings.${i}.${j}`]: value
+    });
+  },
+
+  // 获取checkBox输入
+  checkBoxChange(e) {
+    var {i, j} = e.currentTarget.dataset;
+    var {value} = e.detail;
+    this.setData({
+      [`settings.${i}.${j}`]: value.join(",")
     });
   },
 
@@ -151,4 +189,5 @@ Page({
     });
     await this.reloadSettings();
   },
+
 })

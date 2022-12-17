@@ -114,14 +114,11 @@ Page({
   renderPage: function () {
     var data = this.data,
       columns = data.columns,
-      tempPics = data.tempPics,
-      length = tempPics.length,
-      columnsHeight = this.jsData.columnsHeight,
-      index = 0
-    for (var i = 0; i < length; i++) {
-      index = columnsHeight[1] < columnsHeight[0] ? 1 : 0
-      columns[index].push(tempPics[i])
-      columnsHeight[index] += tempPics[i].height
+      columnsHeight = this.jsData.columnsHeight;
+    for (const pic of data.tempPics) {
+      var index = columnsHeight[0] < columnsHeight[1] ? 0 : 1;
+      columns[index].push(pic)
+      columnsHeight[index] += pic.height
     }
     this.setData({
       columns: columns,
@@ -156,7 +153,6 @@ Page({
     const curCount = this.data.columns[0].length + this.data.columns[1].length;
     const timeRange = this.getTimeRange();
     const oneMonth = getDateWithDiffHours(-timeRange);
-    console.log(oneMonth, oneMonth.toISOString());
     var photos = (await db.collection('photo').where({
       mdate: _.or([_.gte(oneMonth), _.gte(oneMonth.toISOString())]),
       like_count: _.gte(1),
@@ -223,7 +219,6 @@ Page({
       i
     } = e.currentTarget.dataset;
     var photo = this.data.columns[col][i];
-    console.log(photo);
     var liked = !photo.liked;
     // 不能取消赞
     if (!liked && !this.jsData.canReverse) {
@@ -290,6 +285,7 @@ Page({
       columns: [[], []],
       loadnomore: false
     })
+    this.jsData.columnsHeight = [0, 0];
     await this.loadData();
   },
 })

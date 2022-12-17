@@ -55,8 +55,9 @@ const cacheTime = {
   commentCount: 2,  // 留言数量
   likeItem: 72,  // 点赞行为
   pageSetting: 1,  // 页面设置
-  genealogyFCampus: 1,  // 首页校区过滤选项
+  genealogyFCampus: 24*7*31,  // 首页校区过滤选项
   checkPhotoCampus: 24*7*31,  // 最后一次审核照片的校区
+  genealogyNews: 24, // 首页的news弹窗
 }
 
 module.exports = {

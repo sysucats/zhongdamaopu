@@ -2,7 +2,7 @@
     <view class='userInfo'>
       <image src='/pages/public/images/system/user.png'></image>
       <view>
-        <text>[普通用户暂无法上传] 请联系管理员 TAT...\n</text>
+        <text>暂时无法上传，请联系管理员 TAT...\n</text>
       </view>
     </view>
   <button class='long primary' bindtap="goBackIndex">返回首页</button>

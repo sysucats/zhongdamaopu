@@ -496,6 +496,9 @@ Page({
       imageUrl: '/pages/public/images/recognize/share_cover.jpg'
     };
   },
+  onShareTimeline: function () {
+    return this.onShareAppMessage();
+  },
 
   adLoad() {
     console.log('Banner 广告加载成功')

@@ -1,4 +1,5 @@
 import { checkUpdateVersion } from './utils';
+import { app_version } from "./config";
 
 App({
   onLaunch() {
@@ -18,7 +19,7 @@ App({
     checkUpdateVersion();
 
     this.globalData = {
-      version: 'v1.9.5',
+      version: app_version,
     };
   },
 });
