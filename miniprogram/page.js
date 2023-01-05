@@ -28,6 +28,10 @@ async function loadFilter(options) {
 // 获取全局的设置
 async function getGlobalSettings(key, options) {
   var res = await _getSetting('pages', options);
+  if (!res) {
+    return undefined;
+  }
+
   if (key == null) {
     return res;
   }
@@ -37,9 +41,8 @@ async function getGlobalSettings(key, options) {
 // 获取当前页面路径
 function getCurrentPath() {
   const pages = getCurrentPages();
- 
   const currentPage = pages[pages.length - 1];
-  return currentPage.route;
+  return currentPage?.route;
 }
 
 // 切换自定义tab

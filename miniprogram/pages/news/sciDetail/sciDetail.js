@@ -1,5 +1,7 @@
-import { text as text_cfg, science_imgs } from "../../../config";
-import { cloud } from "../../../cloudAccess";
+import {
+  text as text_cfg,
+  science_imgs
+} from "../../../config";
 import api from "../../../cloudApi";
 const cates = ['猫咪救助', '撸猫指南', '猫咪领养', '猫咪喂养', '猫咪健康'];
 const share_text = text_cfg.app_name + ' - ' + text_cfg.science.share_tip;
@@ -27,11 +29,15 @@ Page({
     //封面图缓存
     if (options.coverImgList) {
       const imgList = options.coverImgList.split(',')
-      this.setData({images:imgList})
+      this.setData({
+        images: imgList
+      })
     } else {
-      this.setData({images:science_imgs})
+      this.setData({
+        images: science_imgs.map(val => cloud.signCosUrl(val))
+      })
     }
-    
+
     await this.getSci();
   },
 
@@ -45,7 +51,9 @@ Page({
   },
 
   async getSci() {
-    wx.showLoading({title:'加载中...'})
+    wx.showLoading({
+      title: '加载中...'
+    })
 
     const res = (await api.getAllSci({})).result;
 
@@ -74,4 +82,3 @@ Page({
     })
   }
 })
-

@@ -1,12 +1,29 @@
 import config from "../../../config";
-import { shareTo, getCurrentPath,
+import {
+  shareTo,
+  getCurrentPath,
   checkMultiClick,
-  formatDate } from "../../../utils";
-import { checkCanUpload, checkCanComment, isManagerAsync } from "../../../user";
-import { getCatCommentCount } from "../../../comment";
-import { setVisitedDate, getAvatar, getCatItem } from "../../../cat";
-import { getGlobalSettings } from "../../../page";
-import { cloud } from "../../../cloudAccess";
+  formatDate
+} from "../../../utils";
+import {
+  checkCanUpload,
+  checkCanComment,
+  isManagerAsync
+} from "../../../user";
+import {
+  getCatCommentCount
+} from "../../../comment";
+import {
+  setVisitedDate,
+  getAvatar,
+  getCatItem
+} from "../../../cat";
+import {
+  getGlobalSettings
+} from "../../../page";
+import {
+  cloud
+} from "../../../cloudAccess";
 import api from "../../../cloudApi";
 
 const no_heic = /^((?!\.heic$).)*$/i; // 正则表达式：不以 HEIC 为文件后缀的字符串
@@ -29,11 +46,26 @@ var heights = {}; // 系统的各种heights
 var context = {}; // 切换页面时记录一下context
 
 // 获取照片的排序功能
-const photoOrder = [
-  {key: 'shooting_date', order: 'desc', name: '最近拍摄'},
-  {key: 'shooting_date', order: 'asc', name: '最早拍摄'},
-  {key: 'mdate', order: 'desc', name: '最近收录'},
-  {key: 'mdate', order: 'asc', name: '最早收录'},
+const photoOrder = [{
+    key: 'shooting_date',
+    order: 'desc',
+    name: '最近拍摄'
+  },
+  {
+    key: 'shooting_date',
+    order: 'asc',
+    name: '最早拍摄'
+  },
+  {
+    key: 'mdate',
+    order: 'desc',
+    name: '最近收录'
+  },
+  {
+    key: 'mdate',
+    order: 'asc',
+    name: '最早收录'
+  },
 ]
 
 Page({
@@ -51,8 +83,6 @@ Page({
     canUpload: false, // 是否可以上传照片
     showGallery: false,
     galleryPhotos: [],
-    // imgCompressedUrls: [], // 预览组件使用的URLs
-    // imgUrls: [], // 预览组件使用的URLs
     currentImg: 0, // 预览组件当前预览的图片
     photoOrderSelectorRange: photoOrder,
     photoOrderSelectorKey: "name",
@@ -78,7 +108,7 @@ Page({
     this.setData({
       is_manager: (await isManagerAsync(3))
     });
-    
+
     // 先判断一下这个用户在12小时之内有没有点击过这只猫
     if (!checkMultiClick(cat_id)) {
       console.log("[onLoad] - Add click for cat", cat_id);
@@ -116,7 +146,7 @@ Page({
         }
       }
     });
-    
+
     // 开始加载页面
     page_settings = await getGlobalSettings('detailCat');
     this.setData({
@@ -167,8 +197,7 @@ Page({
   /**
    * 页面上拉触底事件的处理函数
    */
-  onReachBottom: function () {
-  },
+  onReachBottom: function () {},
 
   /**
    * 用户点击右上角分享
@@ -215,7 +244,7 @@ Page({
       infoHeight = res[0].height;
     })
   },
-  
+
   // 更新关系列表
   async loadRelations() {
     var cat = this.data.cat;
@@ -240,7 +269,12 @@ Page({
   async reloadPhotos() {
     // 这些是精选照片
     const db = cloud.database();
-    const qf = { cat_id: cat_id, verified: true, best: true, photo_id: no_heic };
+    const qf = {
+      cat_id: cat_id,
+      verified: true,
+      best: true,
+      photo_id: no_heic
+    };
     photoMax = (await db.collection('photo').where(qf).count()).total;
     await Promise.all([
       this.loadMorePhotos(),
@@ -259,7 +293,11 @@ Page({
   async reloadAlbum() {
     // 下面是相册的
     const db = cloud.database();
-    const qf_album = { cat_id: cat_id, verified: true, photo_id: no_heic };
+    const qf_album = {
+      cat_id: cat_id,
+      verified: true,
+      photo_id: no_heic
+    };
     albumMax = (await db.collection('photo').where(qf_album).count()).total;
     album_raw = [];
     await this.loadMoreAlbum();
@@ -274,7 +312,12 @@ Page({
     if (this.data.cat.photo.length >= photoMax) {
       return false;
     }
-    const qf = { cat_id: cat_id, verified: true, best: true, photo_id: no_heic };
+    const qf = {
+      cat_id: cat_id,
+      verified: true,
+      best: true,
+      photo_id: no_heic
+    };
     const step = page_settings.photoStep;
     const now = cat.photo.length;
 
@@ -342,7 +385,7 @@ Page({
     if (whichGallery == 'best' && photo_count - index <= preload && photo_count < photoMax) {
       console.log("[bindGalleryChange] - 加载更多精选图");
       await this.loadMorePhotos(); //preload
-      
+
       var photos = this.data.cat.photo;
     } else if (whichGallery == 'album' && photo_count - index <= preload && photo_count < albumMax) { //album
       await this.loadMoreAlbum(); // preload
@@ -350,7 +393,7 @@ Page({
     } else {
       return;
     }
-    
+
     this.setData({
       galleryPhotos: photos,
     });
@@ -374,7 +417,11 @@ Page({
       })
       return false;
     }
-    const qf = { cat_id: cat_id, verified: true, photo_id: no_heic };
+    const qf = {
+      cat_id: cat_id,
+      verified: true,
+      photo_id: no_heic
+    };
     const step = page_settings.albumStep;
     const now = album_raw.length;
 
@@ -384,13 +431,12 @@ Page({
     const orderItem = photoOrder[this.data.photoOrderSelected];
 
     let res;
-    if(orderItem.name == "最早收录"){
+    if (orderItem.name == "最早收录") {
       res = await db.collection('photo').where(qf).orderBy(orderItem.key, orderItem.order).skip(now).limit(step).get();
-    }
-    else{
+    } else {
       res = await db.collection('photo').where(qf).orderBy(orderItem.key, orderItem.order).orderBy('mdate', 'desc').skip(now).limit(step).get();
     }
-    
+
     const offset = album_raw.length;
     for (let i = 0; i < res.data.length; ++i) {
       res.data[i].index = offset + i; // 把index加上，gallery预览要用到
@@ -399,7 +445,7 @@ Page({
     this.updateAlbum();
   },
 
-  updateAlbum () {
+  updateAlbum() {
     // 为了页面显示，要把这个结构处理一下
     // 先按日期分类，分为拍摄日期、上传日期
     var orderIdx = this.data.photoOrderSelected;
@@ -415,7 +461,7 @@ Page({
       if (!date) {
         continue;
       }
-      if(!(date in group)) {
+      if (!(date in group)) {
         group[date] = [];
       }
       group[date].push(pic);
@@ -423,7 +469,7 @@ Page({
     // 下面整理一下，变成页面能展示的
     var result = [];
     var keys = Object.keys(group);
-    var order = photoOrder[orderIdx].order == 'asc'? 1: -1;
+    var order = photoOrder[orderIdx].order == 'asc' ? 1 : -1;
     keys.sort((a, b) => order * (a - b));
     for (const key of keys) {
       const shooting_date = key.split('-');
@@ -456,11 +502,11 @@ Page({
     var selected = e.detail.value;
     this.setData({
       photoOrderSelected: selected
-    }, function() {
+    }, function () {
       this.reloadAlbum();
     })
   },
-  
+
   // 处理主容器滑动时的行为
   bindContainerScroll(e) {
     const rpx2px = heights.rpx2px;
@@ -509,7 +555,11 @@ Page({
       page: 'pages/genealogy/genealogy',
       width: 500,
     })).result;
-    
+
+    console.log("mpcode:", res);
+
+    res = cloud.signCosUrl(res);
+
     wx.hideLoading();
     wx.previewImage({
       urls: [res],
@@ -548,13 +598,13 @@ Page({
       console.log("[likeCountChanged] - update best photo", e.detail);
       this.setData({
         [`cat.photo[${current}].like_count`]: like_count,
-      }); 
+      });
     } else if (whichGallery == "album") {
       album_raw[current].like_count = like_count;
       this.updateAlbum();
     }
   },
-  
+
   toRelationCat(e) {
     var cat_id = e.currentTarget.dataset.cat_id;
     const url = `/pages/genealogy/detailCat/detailCat?cat_id=${cat_id}`;

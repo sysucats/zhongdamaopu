@@ -314,6 +314,24 @@ Page({
   async deletePhoto(e) {
     console.log("[deletePhoto] -", e);
     const photo = e.currentTarget.dataset.photo;
+    const ActionRes = await wx.showActionSheet({
+      itemList: ['删除照片', '移动到其他猫猫']
+    })
+
+    // 删除
+    if (ActionRes.tapIndex === 0) {
+      await this.doDelectPhoto(photo);
+      return;
+    }
+
+    // 移动照片
+    if (ActionRes.tapIndex === 1) {
+      await this.showMovePhoto(photo);
+      return;
+    }
+  },
+
+  async doDelectPhoto(photo) {
     const modalRes = await wx.showModal({
       title: '提示',
       content: '确定删除？',
@@ -330,13 +348,13 @@ Page({
     });
 
     console.log("删除照片记录：" + photo._id);
-    await wx.showModal({
-      title: '完成',
-      content: '删除成功',
-      showCancel: false,
-    });
+    wx.showToast({
+      title: '删除成功',
+    })
     await this.reloadPhotos();
   },
+
+
   // 设置 / 取消 照片精选
   async reverseBest(e) {
     const photo = e.currentTarget.dataset.photo;
@@ -389,5 +407,39 @@ Page({
       only_best_photo: !only_best_photo
     })
     await this.reloadPhotos();
-  }
+  },
+
+  // 移动照片时的猫猫搜索（TODO：考虑做成模块）
+  async showMovePhoto(photo) {
+    this.setData({
+      showSelectCat: true,
+      movePhoto: photo,
+    });
+  },
+
+  // 选择移动到的猫
+  async selectMoveCat(e) {
+    const cat = e.detail,
+      photo = this.data.movePhoto;
+    if (!cat || !photo) {
+      return;
+    }
+
+    await api.curdOp({
+      operation: "update",
+      collection: "photo",
+      item_id: photo._id,
+      data: { cat_id: cat._id },
+    })
+
+    wx.showToast({
+      title: '移动完成',
+    });
+
+    this.setData({
+      showSelectCat: false
+    });
+    await this.reloadPhotos();
+  },
+
 })

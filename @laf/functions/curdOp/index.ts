@@ -82,6 +82,11 @@ exports.main = async function (ctx: FunctionContext) {
   // console.log("ctx:", ctx);
   const { auth, body, query } = ctx;
 
+  if (body && body.deploy_test === true) {
+    // 进行部署检查
+    return "v1.0";
+  }
+
   var openid = auth.openid;  // 用户的 OpenID
 
   const collection = body.collection;

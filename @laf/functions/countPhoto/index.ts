@@ -9,6 +9,11 @@ exports.main = async function (ctx: FunctionContext) {
   // body, query 为请求参数, auth 是授权对象
   const { auth, body, query } = ctx;
 
+  if (body && body.deploy_test === true) {
+    // 进行部署检查
+    return "v1.0";
+  }
+
   // 先取出 mphoto 更新时间为一小时前的猫猫（因为每小时自动执行一次）
   var frontOneHour = new Date(new Date().getTime() - 1 * 60 * 60 * 1000);
   var condition = _.or([{

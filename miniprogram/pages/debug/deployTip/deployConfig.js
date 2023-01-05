@@ -4,7 +4,7 @@ import config from "../../../config";
 const default_init_data_id = "deploy_test";
 const default_init_data = [];
 
-// 科普页的默认数据（不要修改！部署完成后，在云开发数据库science中修改）
+// 科普页的默认数据（不要修改！部署完成后，在数据库science中修改）
 const init_science = [{
     "_id": "5c83b523099e82833622b7df",
     "cate": "猫咪救助",
@@ -73,38 +73,56 @@ const init_science = [{
   },
 ]
 
-// 系统设置的默认数据（不要修改！部署完成后，在云开发数据库settings中修改）
+// 系统设置的默认数据（不要修改！部署完成后，在关于页-页面设置中修改）
 const init_setting = [{
     "_id": "pages",
     "detailCat": {
       "albumStep": 5,
       "photoStep": 3,
-      "cantUpload": "*",
-      "cantComment": "*",
       "galleryPreload": 1,
-      "galleryCompressed": false
+      "galleryCompressed": 0
     },
     "genealogy": {
       "catsStep": 3,
-      "main_lower_threshold": 50,
+      "main_lower_threshold": 55,
       "adStep": 6,
       "photoPopWeight": 10
     },
-    "checkFeedback": {
-      "step": 6
-    },
     "recognize": {
-        "interfaceURL": "https://your.domain.com/recognizeCatPhoto",
-        "secretKey": "changeToYourKey"
+      "interfaceURL": "https://your.domain.com/recognizeCatPhoto",
+      "secretKey": "changeToYourKey"
     },
     "recognize_test": {
-        "interfaceURL": "https://your.domain.com/recognizeCatPhoto_test",
-        "secretKey": "changeToYourKey"
+      "interfaceURL": "https://your.domain.com/recognizeCatPhoto_test",
+      "secretKey": "changeToYourKey"
     },
-    "tabBar": {
-        "minTab": "genealogy,leaderboard,info",
-        "fullTab": "genealogy,recognize,news,leaderboard,info",
-        "minVersion": "*"
+    "accessCtrl": {
+      "ctrlUser": "guest",
+      "ctrlVersion": "*",
+      "disabledFunc": "",
+      "limitedFunc": "reward,feedback,fullTab,uploadPhoto,comment"
+    },
+    "tabBarCtrl": {
+      "ctrlTab": "news",
+      "fullTab": "genealogy,recognize,news,leaderboard,info"
+    },
+    "subscribe": {
+      "feedback#ID": "IeKS7nPSsBy62REOKiDC2zuz_M7RbKwR97ZiIy_ocmw",
+      "feedback#content": "thing5",
+      "feedback#time": "date4",
+      "feedback#title": "thing3",
+      "notifyChkFeedback#ID": "jxcvND-iLSQZLZhlHD2A97jP3fm_FWV4wL_GFUcLxcQ",
+      "notifyChkFeedback#number": "number5",
+      "notifyChkFeedback#time": "time3",
+      "notifyChkFeedback#title": "thing2",
+      "notifyVerify#ID": "jxcvND-iLSQZLZhlHD2A91gY0tLSfzyYc3bl39bxVuk",
+      "notifyVerify#number": "number5",
+      "notifyVerify#time": "time6",
+      "notifyVerify#title": "thing2",
+      "verify#ID": "AtntuAUGnzoBumjfmGB8Yyc-67FUxRH5Cw7bnEYFCXo",
+      "verify#content": "thing7",
+      "verify#note": "thing5",
+      "verify#title": "thing2"
     }
   },
   {
@@ -135,37 +153,45 @@ const init_setting = [{
     "_id": "relation",
     "types": ["好友", "情侣", "兄弟", "姐妹", "爸爸", "妈妈", "儿子", "女儿"]
   },
-]
+];
+
+const init_app_secret = [{
+  "_id": "app_secret",
+  "MP_APPID": "your_mp_appid",
+  "MP_SECRET": "your_mp_secret",
+  "LAF_PORT": 443,
+  "LAF_OSS_URL": "your_oss_url",
+  "LAF_BUCKET": "your_oss_bucket",
+  "OSS_SECRET_ID": "",
+  "OSS_SECRET_KEY": "",
+}];
 
 // 部署流程（不要修改！）
 module.exports = {
   // 云函数的名称
   functions: {
-    addPop: "v1.0",
     commentCheck: "v1.0",
-    commentOp: "v1.0",
     countPhoto: "v1.0",
+    curdOp: "v1.0",
+    deleteFiles: "v1.0",
+    deployTest: "v1.0",
+    getAccessToken: "v1.0",
     getAllSci: "v1.0",
+    getAppSecret: "v1.0",
     getMpCode: "v1.0",
-    getPhotoRank: "v1.1",
-    imProcess: "v1.0",
-    initDeploy: "v1.0",
-    interOp: "v1.0",
+    getPhotoRank: "v1.0",
+    getURL: "v1.0",
+    globalLock: "v1.0",
     isManager: "v1.0",
-    manageFeedback: "v1.0",
+    login: "v1.0",
     managePhoto: "v1.0",
     sendMsgV2: "v1.0",
     updateCat: "v1.0",
-    updateFilter: "v1.0",
-    updateManager: "v1.0",
-    updateReward: "v1.0",
-    updateSetting: "v1.0",
     userOp: "v1.0",
-    newsOp: "v1.0",
-    relationOp: "v1.0",
   },
   default_init_data_id: default_init_data_id,
   collections: {
+    "app_secret": init_app_secret,
     "cat": default_init_data,
     "comment": default_init_data,
     "feedback": default_init_data,
@@ -176,9 +202,7 @@ module.exports = {
     "reward": default_init_data,
     "science": init_science,
     "setting": init_setting,
-    "user": [{
-      _id: "init"
-    }],
+    "user": default_init_data,
   },
   images: config.science_imgs.concat([config.reward_img, config.feedback_wj_img, config.mpcode_img]),
   func_configs: {

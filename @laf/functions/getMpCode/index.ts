@@ -9,22 +9,30 @@ const db = cloud.database();
 
 async function uploadImg(imgObj, imgName) {
   // minIO 配置
-  const { LAF_OSS_URL, LAF_PORT, LAF_BUCKET } = await cloud.invoke("getAppSecret", {});
-  const ossPath = `https://${LAF_OSS_URL}:${LAF_PORT}/${LAF_BUCKET}/`
+  // minIO 配置
+  const { LAF_OSS_URL, LAF_PORT, LAF_BUCKET, OSS_SECRET_ID, OSS_SECRET_KEY } = await cloud.invoke("getAppSecret", {});
   
+  // 报错"Invalid endPoint"请参考: https://blog.csdn.net/xinleicol/article/details/115698599
   const client = new Minio.Client({
     bucketName: LAF_BUCKET,
     endPoint: LAF_OSS_URL,
     port: LAF_PORT,
     useSSL: true,
-    accessKey: cloud.env.OSS_ACCESS_KEY,
-    secretKey: cloud.env.OSS_ACCESS_SECRET,
+    accessKey: OSS_SECRET_ID || cloud.env.OSS_ACCESS_KEY,
+    secretKey: OSS_SECRET_KEY || cloud.env.OSS_ACCESS_SECRET,
   });
+
+  let ossPath = `https://${LAF_OSS_URL}:${LAF_PORT}/${LAF_BUCKET}/`
+  if (OSS_SECRET_ID) {
+    ossPath = `https://${LAF_BUCKET}.${LAF_OSS_URL}:${LAF_PORT}/`
+  }
+
   const metadata = {
     'Content-type': 'image/jpeg',
   };
 
-  client.putObject(LAF_BUCKET, imgName, imgObj, metadata);
+  const res = await client.putObject(LAF_BUCKET, imgName, imgObj, metadata);
+  console.log(res);
 
   return ossPath;
 }
@@ -32,6 +40,11 @@ async function uploadImg(imgObj, imgName) {
 exports.main = async function (ctx: FunctionContext) {
   // body, query 为请求参数, auth 是授权对象
   const { auth, body, query } = ctx
+
+  if (body && body.deploy_test === true) {
+    // 进行部署检查
+    return "v1.0";
+  }
 
   // 数据库操作
   if (body.deploy_test === true) {

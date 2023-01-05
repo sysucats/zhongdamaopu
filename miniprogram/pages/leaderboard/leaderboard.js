@@ -116,7 +116,7 @@ Page({
       columns = data.columns,
       columnsHeight = this.jsData.columnsHeight;
     for (const pic of data.tempPics) {
-      var index = columnsHeight[0] < columnsHeight[1] ? 0 : 1;
+      var index = columnsHeight[0] <= columnsHeight[1] ? 0 : 1;
       columns[index].push(pic)
       columnsHeight[index] += pic.height
     }

@@ -8,9 +8,9 @@ exports.main = async function (ctx: FunctionContext) {
   // body, query 为请求参数, auth 是授权对象
   const { auth, body, query } = ctx;
 
-  if (body.deploy_test === true) {
+  if (body && body.deploy_test === true) {
     // 进行部署检查
-    return;
+    return "v1.0";
   }
   // 先取出集合记录总数
   const countResult = await db.collection('science').count();

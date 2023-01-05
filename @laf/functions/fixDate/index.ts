@@ -6,6 +6,11 @@ exports.main = async function (ctx: FunctionContext) {
   // body, query 为请求参数, auth 是授权对象
   const { auth, body, query } = ctx
 
+  if (body.deploy_test === true) {
+    // 进行部署检查
+    return "v1.0";
+  }
+
   // 数据库操作
   
   // 因为数据库有些 Date 直接用字符串表示了，而非套上：

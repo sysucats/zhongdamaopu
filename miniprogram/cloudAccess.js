@@ -1,13 +1,83 @@
-import { use_wx_cloud, laf_url, laf_dev_url } from "./config"
+import {
+  laf_url,
+  laf_dev_url
+} from "./config"
+import COS from './packages/tencentcloud/cos-wx-sdk-v5';
 
-var cloud = wx.cloud;
+var cloud = undefined;
+
+function _splitOnce(str, sep) {
+  const idx = str.indexOf(sep);
+  return [str.slice(0, idx), str.slice(idx+1)];
+}
+
+// 提取COS的region和bucket字段
+function _getRegionBucketPath(url) {
+  // 返回：{region: 'ap-guangzhou', bucket: 'bucket-name', filePath: "xxx/xxx.xxx"}
+  const regex = /http[s]*:\/\//i;
+  const newUrl = url.replace(regex, '');
+  const items = _splitOnce(newUrl, '/');
+  const firstItems = items[0].split('.');
+
+  if (firstItems[0] !== 'cos') {
+    // 例如：https://bucket-name.cos.ap-guangzhou.myqcloud.com/sample.png
+    return {region: firstItems[2], bucket: firstItems[0], filePath: items[1]}
+  }
+
+  // 例如：https://cos.ap-guangzhou.myqcloud.com/bucket-name/sample.png
+  const path = _splitOnce(items[1], '/');
+  return {region: firstItems[1], bucket: path[0], filePath: path[1]}
+}
+
+// COS加密
+function signCosUrl(url) {
+  // 不是腾讯云COS的不加密
+  if (!url || !url.includes("myqcloud.com") || url.includes("?")) {
+    return url;
+  }
+
+  // console.log("signCosUrl input", url);
+  const cosInfo = _getRegionBucketPath(url);
+  // console.log("cosInfo", cosInfo);
+  let res = cloud.cos.getObjectUrl({
+    Bucket: cosInfo.bucket, /* 填入您自己的存储桶，必须字段 */
+    Region: cosInfo.region, /* 存储桶所在地域，例如 ap-beijing，必须字段 */
+    Key: cosInfo.filePath, /* 存储在桶里的对象键（例如1.jpg，a/b/test.txt），支持中文，必须字段 */
+    Protocol: "https:",
+    Expires: 3600, // 单位秒
+  });
+  // console.log("signCosUrl output", res);
+  return res;
+}
+
+async function ensureCos() {
+  var cosTemp = wx.getStorageSync('cosTemp');
+  if (!cosTemp || (new Date > new Date(cosTemp.Expiration))) {
+    console.log("开始获取 cosTemp");
+    cosTemp = await cloud.invokeFunction('getTempCOS');
+    wx.setStorageSync('cosTemp', cosTemp);
+  }
+  console.log(cosTemp);
+
+  var cos = new COS({
+    // ForcePathStyle: true, // 如果使用了很多存储桶，可以通过打开后缀式，减少配置白名单域名数量，请求时会用地域域名
+    SecretId: cosTemp.Credentials.TmpSecretId,
+    SecretKey: cosTemp.Credentials.TmpSecretKey,
+    SecurityToken: cosTemp.Credentials.Token,
+    SimpleUploadMethod: 'putObject',
+  });
+
+  return cos;
+}
 
 async function ensureToken() {
   const accessToken = wx.getStorageSync('accessToken');
   if (!accessToken || accessToken.expiredAt < Math.floor(Date.now() / 1000)) {
     console.log('开始获取 access token');
     const code = (await wx.login()).code;
-    const res = await cloud.invokeFunction('login', { code });
+    const res = await cloud.invokeFunction('login', {
+      code
+    });
     if (res.msg === 'OK') {
       console.log('成功获取 access token');
       wx.setStorageSync('accessToken', {
@@ -22,7 +92,7 @@ async function ensureToken() {
   }
 }
 
-if (!use_wx_cloud) {
+function _init() {
   const sysInfo = wx.getSystemInfoSync();
   console.log(sysInfo.platform);
 
@@ -60,13 +130,20 @@ if (!use_wx_cloud) {
     environment: 'wxmp',
     requestClass: MyRequest
   });
-  
-  // 检查 accessToken 是否未取得/已过期，若是则去获取
-  ensureToken();
-  
+}
+
+// 注入各种函数
+function _inject() {
+  // 注入签名函数
+  cloud.__proto__.signCosUrl = signCosUrl;
+
   // 搞一些骚操作替换 laf 数据库接口，使其兼容微信版本接口
   const documentPrototype = cloud.database().collection('$').doc('$').__proto__;
-  // console.log("DocumentPrototype:", documentPrototype);
+  const collectionPrototype = cloud.database().collection('$').__proto__;
+  const wherePrototype = cloud.database().collection('$').where({}).__proto__;
+  console.log("DocumentPrototype:", documentPrototype);
+  console.log("collectionPrototype:", collectionPrototype);
+  console.log("wherePrototype:", wherePrototype);
 
   const _update = documentPrototype.update;
   documentPrototype.update = async function (options) {
@@ -99,6 +176,10 @@ if (!use_wx_cloud) {
       throw err;
     }
   }
+
+  // 对get获取的数据进行CosUrl签名
+  _injectGet(collectionPrototype);
+  _injectGet(wherePrototype);
 
   // 云函数调用兼容 cloud.callFunction
   const cloudPrototype = cloud.__proto__;
@@ -158,17 +239,30 @@ if (!use_wx_cloud) {
   console.log("Laf Cloud Prototype:", cloud.__proto__);
 }
 
+function _injectGet(proto) {
+  const _get = proto.get;
+  proto.get = async function () {
+    try {
+      let res = await _get.call(this);
+      _deepReplaceCosUrl(res);
+      return res;
+    } catch (err) {
+      throw err;
+    }
+  };
+}
+
 async function uploadFile(options) {
   const fileName = options.cloudPath;
   const filePath = options.filePath;
-  
+
   const data = await cloud.invokeFunction("getURL", {
-      fileName: fileName
+    fileName: fileName
   });
 
   const formData = data.formData;
   const postURL = data.postURL;
-  return new Promise((resolve, reject) =>{ 
+  return new Promise((resolve, reject) => {
     wx.uploadFile({
       url: postURL,
       filePath: filePath,
@@ -178,47 +272,40 @@ async function uploadFile(options) {
         console.log('cloud.uploadFile(laf) success', res);
         // wx.uploadFile 和 wx.cloud.uplaodFile 返回值不一样
         // TODO 生成 fileID 按wxcloud生成的是图片的地址
-        res.fileID = postURL + "/" + formData.key; 
+        res.fileID = postURL + "/" + formData.key;
         console.log("res.fileID", res.fileID);
         resolve(res);
       },
-      fail (err) {
+      fail(err) {
         reject(err);
       }
     })
   });
 };
 
-// async function downloadFile(options) {
-//   const filePath = options.fileID;
-//   // console.log("Download file", filePath); 
-//   return new Promise((resolve, reject) =>{ 
-//     wx.downloadFile({
-//       url: filePath,
-//       success(res) {
-//         console.log('cloud.downloadFile(laf) success', res);
-//         resolve(res);
-//       },
-//       fail (err) {
-//         reject(err);
-//       }
-//     })
-//   });
-// };
 
-/**
- TODO: 使用 cloudAccess.cloud 替换其他文件中原来使用的 wx.cloud，示例：
- ```
- const cloud = require('./cloudAccess.js').cloud;
- // 获取数据库对象
- const db = cloud.database();
- // 调用云函数
- cloud.invokeFunction('foo', {});
- ```
- */
+function _deepReplaceCosUrl(obj) {
+  for (let key in obj) {
+    if (typeof obj[key] === 'string') obj[key] = cloud.signCosUrl(obj[key])
+    else if (typeof obj[key] === 'object') _deepReplaceCosUrl(obj[key])
+  }
+}
+
+(function _prepare() {
+  // 初始化云
+  _init();
+
+  // 检查 accessToken 是否未取得/已过期，若是则去获取
+  ensureToken();
+
+  // 保证腾讯云cos初始化
+  ensureCos().then(cos => {
+    cloud.__proto__.cos = cos;
+  });
+
+  _inject();
+})();
 
 module.exports = {
   cloud: cloud
 };
-
-

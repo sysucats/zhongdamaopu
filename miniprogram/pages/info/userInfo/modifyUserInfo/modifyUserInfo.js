@@ -99,7 +99,7 @@ Page({
       cloudPath: `user/avatar/${openid}.${ext}`, // 上传至云端的路径
       filePath: tempFilePath, // 小程序临时文件路径
     });
-    return upRes.fileID;
+    return cloud.signCosUrl(upRes.fileID);
   },
 
   async checkNickName(name) {

@@ -1,4 +1,7 @@
 import { text as text_cfg, feedback_wj_img } from "../../../config";
+import {
+  cloud
+} from "../../../cloudAccess";
 const share_text = text_cfg.app_name + ' - ' + text_cfg.feedback.share_tip;
 
 Page({
@@ -23,7 +26,7 @@ Page({
   },
 
   toNewCat() {
-    const src = feedback_wj_img;
+    const src = could.signCosUrl(feedback_wj_img);
     wx.previewImage({
       urls: [src],
       success: (res) => {

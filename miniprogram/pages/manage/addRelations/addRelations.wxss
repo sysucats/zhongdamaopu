@@ -106,7 +106,7 @@ page {
   top: 0;
 }
 #search {
-  position: absolute;
+  position: fixed;
   bottom: 0;
   padding: 20rpx 20rpx;
   padding-bottom: max(20rpx, constant(safe-area-inset-bottom));
@@ -120,6 +120,8 @@ page {
   overflow: hidden;
   box-sizing: border-box;
   transition: height 200ms ease, bottom 200ms ease;
+
+  z-index: 2;
 }
 
 #search.hidden {

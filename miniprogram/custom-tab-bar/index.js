@@ -11,29 +11,42 @@ function getTabBarList() {
   return list;
 }
 
+function isTabPath(path) {
+  for (var key in tab) {
+    if (tab[key]["pagePath"] == path) {
+      return true;
+    }
+  }
+  return false;
+}
+
 Component({
   data: {
     list: getTabBarList(),
     activePath: null
   },
   async created() {
+    const currentPath = getCurrentPath();
     const settings = await getGlobalSettings("tabBarCtrl");
     if (settings == undefined) {
       console.log("no settings");
-      toSettings("缺失tabBar设置，已填入默认值，请检查后保存。");
+      if (isTabPath(currentPath)) {
+        toSettings("缺失tabBar设置，已填入默认值，请检查后保存。");
+      }
       return;
     }
     const fullTab = settings.fullTab.split(',');
     const ctrlTab = new Map(settings.ctrlTab.split(',').map(i => [i, true]));
     var minTab = fullTab.filter(x => ctrlTab.get(x) === undefined);
-    console.log("tabBar", ctrlTab, minTab, fullTab);
+    // console.log("tabBar", ctrlTab, minTab, fullTab);
     // 根据用户类型来确定底Tab
     var order = minTab;
     if (await checkCanFullTabBar()) {
       order = fullTab;
     }
 
-    if (!order) {
+    if (!order && isTabPath(currentPath)) {
+      console.log("no order");
       toSettings("缺失tabBar设置，已填入默认值，请检查后保存。");
       return;
     }
@@ -70,7 +83,6 @@ Component({
       }
 
       const url = `/${path}`;
-      console.log(url);
       wx.switchTab({url});
     },
   }

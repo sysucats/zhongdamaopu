@@ -1,21 +1,15 @@
+@import "../addRelations/addRelations.wxss";
+
 page {
   width: 750rpx;
-  padding: 30rpx 30rpx;
   box-sizing: border-box;
 }
 
-.label {
-  font-size: 30rpx;
-  font-weight: 600;
-  margin: 25rpx 0 5rpx 0;
+.basic-info {
+  padding: 30rpx;
 }
 
-.label.light {
-  font-weight: 400;
-  margin: 5rpx 0;
-}
-
-input, picker, textarea {
+.basic-info input, .basic-info picker, .basic-info textarea {
   width: 670rpx;
   border-bottom: 2rpx var(--color-primary) solid;
   background-color: var(--color-white-dark);
@@ -23,14 +17,21 @@ input, picker, textarea {
   color: var(--color-black-light);
 }
 
+
 .card {
   width: 690rpx;
   box-shadow: 5rpx 5rpx 20rpx rgb(180, 180, 180);
   border-radius: 10rpx;
   padding: 10rpx;
-  margin: 30rpx 0;
+  margin: 30rpx 30rpx;
   box-sizing: border-box;
 }
+
+.label-line {
+  font-size: 30rpx;
+  line-height: 33rpx;
+}
+
 .card input {
   width: 290rpx;
   display: inline-block;
@@ -62,7 +63,6 @@ checkbox {
 image {
   width: 100%;
   height: 100%;
-  position: absolute;
 }
 
 .photo .best {
@@ -80,4 +80,12 @@ image {
 
 .switch-box {
   font-size: 30rpx;
+}
+
+.buttons {
+  display: flex;
+}
+
+.buttons button {
+  display: inline;
 }

@@ -3,6 +3,7 @@ import { isManagerAsync } from "../../user";
 import { text as text_cfg, mpcode_img } from "../../config";
 import { showTab } from "../../page";
 import { cloud } from "../../cloudAccess";
+import { signCosUrl } from "../../cloudApi";
 
 const share_text = text_cfg.app_name + ' - ' + text_cfg.info.share_tip;
 
@@ -102,7 +103,7 @@ Page({
 
   showMpCode(e) {
     wx.previewImage({
-      urls: [mpcode_img],
+      urls: [signCosUrl(mpcode_img)],
       fail: function(e) {
         console.error(e)
       }

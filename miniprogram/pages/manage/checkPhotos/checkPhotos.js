@@ -17,7 +17,6 @@ Page({
   data: {
     tipText: '正在鉴权...',
     tipBtn: false,
-    total: '-',
     campus_list: [],
   },
 

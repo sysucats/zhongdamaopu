@@ -1,133 +1,157 @@
 import dp_cfg from "./deployConfig";
+import {
+  cloud
+} from "../../../cloudAccess";
 
 const STATUS_DOING = 0;
 const STATUS_OK = 1;
 const STATUS_FAIL = 2;
 
 
-// 检查云开发是否开通
-async function checkCloud() {
-  try {
-    wx.cloud.init({traceUser: true});
-    return {status: STATUS_OK};
-  } catch (error) {
-    console.log(error);
-    return {status: STATUS_FAIL};
-  }
-};
-
 // 检查云函数是否都部署了
 async function checkFunctions() {
-  wx.cloud.init({traceUser: true});
-  // 都部署好了，设置一下
-  var config_res = await setFuncConfigs();
-
-  var fail_list = [];
-  var wrong_version = [];
-  for (const func in dp_cfg.functions) {
-    const version = dp_cfg.functions[func];
-    try {
-      var res = await wx.cloud.callFunction({
-        name: func,
-        data: {
-          deploy_test: true,
-        }
-      });
-      if (res.result != version) {
-        wrong_version.push(func);
-        console.error(Error(`function ${func} got wrong version ${res.result}, should be ${version}`));
-        continue;
-      }
-      console.log(`function ${func} ok.`);
-    } catch (error) {
-      fail_list.push(func);
-      console.error(func, error);
+  const res = (await cloud.callFunction({
+    name: "deployTest",
+    data: {
+      opType: "function",
+      funcs: dp_cfg.functions,
     }
-  }
-  
+  })).result;
+  console.log(res);
 
-  if (fail_list.length == 0 && wrong_version.length == 0 && config_res.addition.length == 0) {
-    return {status: STATUS_OK};
+  if (res["ver_err"].length === 0 && res["not_exist"].length === 0) {
+    return {
+      status: STATUS_OK
+    };
   }
-  var addition = fail_list.length ? `未部署函数：${fail_list.join(", ")}。` : "";
-  addition += wrong_version.length ? `版本错误：${wrong_version.join(", ")}。` : "";
-  return {status: STATUS_FAIL, addition: config_res.addition + addition};
+
+  var addition = res["not_exist"].length ? `未部署函数：${res["not_exist"].join(", ")}。` : "";
+  addition += res["ver_err"].length ? `版本错误：${res["ver_err"].join(", ")}。` : "";
+  return {
+    status: STATUS_FAIL,
+    addition: addition
+  };
 };
 
-// 设置云函数配置
-async function setFuncConfigs() {
-  const func_configs = dp_cfg.func_configs;
-  var fail_list = [];
-  for (const func_name in func_configs) {
-    const config = func_configs[func_name];
-    console.log("setFuncConfigs", func_name, config);
-    try {
-      await wx.cloud.callFunction({
-        name: "initDeploy",
-        data: {
-          type: "init_func",
-          func_name: func_name,
-          config: config,
-        }
-      });
-    } catch (error) {
-      fail_list.push(func_name);
-      console.error(func_name, error);
+// 检查AppSecret表是否正确填入
+async function checkAppSecret() {
+  var addition = [];
+  const MP_ERR_MSG = "MP_APPID、MP_SECRET";
+  const OSS_ERR_MSG = "LAF_PORT、LAF_OSS_URL、LAF_BUCKET、OSS_SECRET_ID、OSS_SECRET_KEY";
+  // 重置一下后台缓存
+  await cloud.callFunction({
+    name: "deployTest",
+    data: {
+      opType: "resetSecret",
     }
+  });
+  // 获取openid
+  try {
+    const code = (await wx.login()).code;
+    const res = await cloud.invokeFunction('login', { code });
+    console.log("checkAppSecret", res);
+    if (!res.openid) {
+      addition.push(MP_ERR_MSG);
+    }
+  } catch {
+    addition.push(MP_ERR_MSG);
   }
-  if (fail_list.length == 0) {
-    return {status: STATUS_OK, addition: ""};
+
+  // 上传文件
+  const data = (await cloud.callFunction({
+    name: "getURL",
+    data: {
+      fileName: "deployTest"
+    }
+  })).result;
+  console.log("checkAppSecret data", data);
+  if (data.error) {
+    addition.push(OSS_ERR_MSG)
   }
-  var addition = "设置失败函数：" + fail_list.join(", ") + "。";
-  return {status: STATUS_FAIL, addition: addition};
+
+  if (!addition.length) {
+    return {
+      status: STATUS_OK
+    };
+  }
+
+  return {
+    status: STATUS_FAIL,
+    addition: "配置错误：" + addition.join("、")
+  }
 }
 
 // 检查云数据库是否创建完成
 async function checkDatabase() {
   const collections = dp_cfg.collections;
   var fail_list = [];
-  for (const coll_name in collections) {
-    const init_data = collections[coll_name];
-    console.log(coll_name, init_data);
+  for (const collName in collections) {
+    const initData = collections[collName];
+    console.log(collName, initData);
     try {
-      await wx.cloud.callFunction({
-        name: "initDeploy",
+      const res = (await cloud.callFunction({
+        name: "deployTest",
         data: {
-          type: "init_db",
-          collection: coll_name,
-          init_data: init_data,
+          opType: "database",
+          dbName: collName,
+          dbInit: initData,
         }
-      });
+      })).result;
+      console.log("checkDatabase", collName, res)
+      if (!res.ok) {
+        fail_list.push(collName);
+      }
     } catch (error) {
-      fail_list.push(coll_name);
-      console.error(coll_name, error);
+      fail_list.push(collName);
+      console.error(collName, error);
     }
   }
 
   if (fail_list.length == 0) {
-    return {status: STATUS_OK, addition: "创建完成。"};
+    return {
+      status: STATUS_OK,
+      addition: "创建完成。"
+    };
   }
   var addition = "未创建集合：" + fail_list.join(", ") + "。";
-  return {status: STATUS_FAIL, addition: addition};
+  return {
+    status: STATUS_FAIL,
+    addition: addition
+  };
 }
 
 // 检查云存储图片是否放好
 async function checkImage() {
   var fail_list = [];
-  for (var url of dp_cfg.images) {
+  for (var oriUrl of dp_cfg.images) {
+    let url = cloud.signCosUrl(oriUrl);
     try {
-      await wx.cloud.downloadFile({fileID: url});
+      const res = await cloud.downloadFile({
+        fileID: url
+      });
+      console.log("checkImage", res);
+      if (res.statusCode !== 200) {
+        fail_list.push(oriUrl);
+        console.log(`download fail: ${url}`);
+        continue;
+      }
       console.log(`download success: ${url}`);
     } catch (error) {
-      fail_list.push(url);
+      fail_list.push(oriUrl);
       console.log(`download fail: ${url}`);
     }
   }
   if (fail_list.length == 0) {
-    return {status: STATUS_OK, addition: ""};
+    return {
+      status: STATUS_OK,
+      addition: ""
+    };
   }
   var addition = "未上传图片：" + fail_list.join(", ") + "。";
-  return {status: STATUS_FAIL, addition: addition};
+  return {
+    status: STATUS_FAIL,
+    addition: addition
+  };
 }
 
 Page({
@@ -148,33 +172,35 @@ Page({
     },
     check_list: {
       1: {
-        title: "开通云开发",
-        status: STATUS_DOING,
-        func: checkCloud,
-        tip: "点击上方的【云开发】按钮，开通云开发。开通完成后，点击【云开发】-【设置】，修改配额为“按量付费”。",
-        break: true,
-      },
-      2: {
         title: "部署云函数",
         status: STATUS_DOING,
         func: checkFunctions,
-        tip: "右键cloudfunctions目录下的每个文件夹，选择【创建并部署，云端安装依赖（不上传...）】，等待所有文件夹都呈绿色图标。\n" + 
-              "\n* 对于imProcess函数，请下载“imProcess_node_module_v2.zip”，解压到imProcess文件夹下，得到node_modules文件夹，最后点击【创建并部署，所有文件】。",
-        addition: ""
+        tip: "参考README中更新云函数\n",
+        addition: "",
+        break: true,
+      },
+      2: {
+        title: "Laf后台配置",
+        status: STATUS_DOING,
+        func: checkAppSecret,
+        tip: "在Laf开发，数据库，app_secret中，填入必要信息。\n" +
+          "如果使用Laf的存储，则无需填OSS_SECRET_ID、OSS_SECRET_KEY。\n",
+        addition: "",
       },
       3: {
         title: "创建数据库",
         status: STATUS_DOING,
         func: checkDatabase,
-        tip: "数据库如果未创建，将会自动创建并初始化，稍等...",
-        addition: ""
+        tip: "数据库如果未创建，将会自动创建并初始化，稍等...\n",
+        addition: "",
       },
       4: {
         title: "系统云存储图片",
         status: STATUS_DOING,
         func: checkImage,
         tip: "请将系统图片上传至【云开发】-【存储】，并修改config.js中的图片链接。",
-        addition: ""
+        addition: "",
+        break: true,
       },
     },
   },

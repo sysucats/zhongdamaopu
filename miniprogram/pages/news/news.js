@@ -179,7 +179,7 @@ Page({
   // 科普轮播图相关代码
 
   setSciImgs() {
-    const sciImgList = science_imgs;
+    const sciImgList = science_imgs.map(val => cloud.signCosUrl(val));
     const cacheKey = 'sciImgStorage';
     const dataKey = 'images';
 

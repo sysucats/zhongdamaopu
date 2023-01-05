@@ -375,6 +375,9 @@ Page({
     for (var cat of cats) {
       if (cat.photo === default_png) {
         cat2photos[cat._id] = await getAvatar(cat._id, cat.photo_count_best);
+        if (!cat2photos[cat._id]) {
+          continue;
+        }
         if (!cat2photos[cat._id].userInfo) {
           cat2photos[cat._id].userInfo = (await getUserInfo(cat2photos[cat._id]._openid)).userInfo;
         }

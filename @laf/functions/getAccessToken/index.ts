@@ -7,6 +7,13 @@ import axios from 'axios';
 const db = cloud.database();
 
 exports.main = async function (ctx: FunctionContext) {
+  // body, query 为请求参数, auth 是授权对象
+  const { auth, body, query } = ctx
+
+  if (body && body.deploy_test === true) {
+    // 进行部署检查
+    return "v1.0";
+  }
   const { MP_APPID, MP_SECRET } = await cloud.invoke("getAppSecret", {});
 
   // 读取数据库

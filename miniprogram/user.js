@@ -42,6 +42,9 @@ async function getUser(options) {
   })).result;
 
   console.log(userRes);
+  if (userRes && userRes.userInfo) {
+    userRes.userInfo.avatarUrl = cloud.signCosUrl(userRes.userInfo.avatarUrl);
+  }
 
   setCacheItem(key, userRes, 0, randomInt(25, 35))
   return userRes;

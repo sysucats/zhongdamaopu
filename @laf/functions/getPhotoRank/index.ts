@@ -9,6 +9,11 @@ exports.main = async function (ctx: FunctionContext) {
   // body, query 为请求参数, auth 是授权对象
   const { auth, body, query } = ctx
 
+  if (body && body.deploy_test === true) {
+    // 进行部署检查
+    return "v1.0";
+  }
+
   // 只取这个月的
   const today = new Date(), y = today.getFullYear(), m = today.getMonth();
   const firstDay = new Date(y, m, 1);

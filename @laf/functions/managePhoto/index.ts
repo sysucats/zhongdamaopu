@@ -7,6 +7,11 @@ exports.main = async function (ctx: FunctionContext) {
   // body, query 为请求参数, auth 是授权对象
   const { auth, body, query } = ctx
 
+  if (body && body.deploy_test === true) {
+    // 进行部署检查
+    return "v1.0";
+  }
+
   const openid = auth.openid;
   const is_manager = await check_manager(1, openid);
   if (!is_manager) {
