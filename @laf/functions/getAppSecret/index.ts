@@ -22,6 +22,7 @@ exports.main = async function (ctx: FunctionContext) {
 
   if (body && body.reset === true) {
     cloud.shared["app_secret"] = null;
+    cloud.shared['TempCOS'] = null;
     return;
   }
   await ensureShared();

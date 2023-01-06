@@ -25,6 +25,11 @@ exports.main = async function (ctx: FunctionContext) {
   // COS 配置
   const { LAF_OSS_URL, LAF_BUCKET, OSS_SECRET_ID, OSS_SECRET_KEY } = await cloud.invoke("getAppSecret", {});
 
+  // 没有配置
+  if (!OSS_SECRET_ID || !OSS_SECRET_KEY) {
+    return null;
+  }
+
   const region = LAF_OSS_URL.split('.')[1];
 
   const res = await getTempUrl(OSS_SECRET_ID, OSS_SECRET_KEY, region, LAF_BUCKET);

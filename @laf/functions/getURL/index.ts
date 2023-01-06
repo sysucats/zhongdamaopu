@@ -19,6 +19,7 @@ exports.main = async function (ctx: FunctionContext) {
 async function signUrl(fileName: string) {
   // minIO 配置
   const { LAF_OSS_URL, LAF_PORT, LAF_BUCKET, OSS_SECRET_ID, OSS_SECRET_KEY } = await cloud.invoke("getAppSecret", {});
+  console.log(OSS_SECRET_ID, OSS_SECRET_KEY)
   console.log(LAF_OSS_URL, LAF_PORT, LAF_BUCKET)
   console.log(cloud.env)
   
