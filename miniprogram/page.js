@@ -9,7 +9,7 @@ async function _getSetting(_id, options) {
   const cacheKey = _getSettingCacheKey(_id);
 
   var cacheItem = getCacheItem(cacheKey, options);
-  console.log(cacheKey, cacheItem);
+  // console.log(cacheKey, cacheItem);
   if (cacheItem) {
     return cacheItem;
   }

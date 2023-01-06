@@ -31,6 +31,7 @@ async function getUser(options) {
   const key = "current-user";
   let userRes = await getCacheItem(key, options);
   if (userRes) {
+    console.log(`cached ${key}`);
     return userRes;
   }
 
@@ -43,7 +44,7 @@ async function getUser(options) {
 
   console.log(userRes);
   if (userRes && userRes.userInfo) {
-    userRes.userInfo.avatarUrl = cloud.signCosUrl(userRes.userInfo.avatarUrl);
+    userRes.userInfo.avatarUrl = await cloud.signCosUrl(userRes.userInfo.avatarUrl);
   }
 
   setCacheItem(key, userRes, 0, randomInt(25, 35))

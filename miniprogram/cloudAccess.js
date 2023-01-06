@@ -1,8 +1,9 @@
 import {
   laf_url,
-  laf_dev_url
+  laf_dev_url,
+  use_private_tencent_cos
 } from "./config"
-import COS from './packages/tencentcloud/cos-wx-sdk-v5';
+import COS from './packages/tencentcloud/cos';
 
 var cloud = undefined;
 
@@ -30,41 +31,66 @@ function _getRegionBucketPath(url) {
 }
 
 // COS加密
-function signCosUrl(url) {
+async function signCosUrl(url) {
   // 不是腾讯云COS的不加密
-  if (!url || !url.includes("myqcloud.com") || url.includes("?")) {
+  if (!url || !url.includes("myqcloud.com") || url.includes("?") || !cloud.cos || !use_private_tencent_cos) {
     return url;
   }
 
   // console.log("signCosUrl input", url);
   const cosInfo = _getRegionBucketPath(url);
   // console.log("cosInfo", cosInfo);
-  let res = cloud.cos.getObjectUrl({
-    Bucket: cosInfo.bucket, /* 填入您自己的存储桶，必须字段 */
-    Region: cosInfo.region, /* 存储桶所在地域，例如 ap-beijing，必须字段 */
-    Key: cosInfo.filePath, /* 存储在桶里的对象键（例如1.jpg，a/b/test.txt），支持中文，必须字段 */
-    Protocol: "https:",
-    Expires: 3600, // 单位秒
+  return new Promise((resolve) => {
+    cloud.cos.getObjectUrl({
+      Bucket: cosInfo.bucket, /* 填入您自己的存储桶，必须字段 */
+      Region: cosInfo.region, /* 存储桶所在地域，例如 ap-beijing，必须字段 */
+      Key: cosInfo.filePath, /* 存储在桶里的对象键（例如1.jpg，a/b/test.txt），支持中文，必须字段 */
+      Protocol: "https:",
+      Expires: 3600 * 24 * 7, // 单位秒
+    }, function (err, data) {
+      if (err) {
+        console.error(err);
+        resolve(url)
+        return;
+      }
+      console.log("[signCosUrl]", data.Url);
+      resolve(data.Url);
+    });
   });
-  // console.log("signCosUrl output", res);
-  return res;
 }
 
 async function ensureCos() {
-  var cosTemp = wx.getStorageSync('cosTemp');
-  if (!cosTemp || (new Date > new Date(cosTemp.Expiration))) {
-    console.log("开始获取 cosTemp");
-    cosTemp = await cloud.invokeFunction('getTempCOS');
-    wx.setStorageSync('cosTemp', cosTemp);
+  if (!use_private_tencent_cos) {
+    return undefined;
   }
-  console.log(cosTemp);
 
   var cos = new COS({
-    // ForcePathStyle: true, // 如果使用了很多存储桶，可以通过打开后缀式，减少配置白名单域名数量，请求时会用地域域名
-    SecretId: cosTemp.Credentials.TmpSecretId,
-    SecretKey: cosTemp.Credentials.TmpSecretKey,
-    SecurityToken: cosTemp.Credentials.Token,
     SimpleUploadMethod: 'putObject',
+    getAuthorization: async function (options, callback) {
+        // 初始化时不会调用，只有调用 cos 方法（例如 cos.putObject）时才会进入
+        
+        var cosTemp = wx.getStorageSync('cosTemp');
+        if (!cosTemp || (new Date > new Date(cosTemp.Expiration))) {
+          console.log("开始获取 cosTemp");
+          cosTemp = await cloud.invokeFunction('getTempCOS');
+          wx.setStorageSync('cosTemp', cosTemp);
+        }
+        console.log("cosTemp", cosTemp);
+        if (!cosTemp || !cosTemp.Credentials) {
+          return undefined;
+        }
+        
+        callback({
+          TmpSecretId: cosTemp.Credentials.TmpSecretId,        // 临时密钥的 tmpSecretId
+          TmpSecretKey: cosTemp.Credentials.TmpSecretKey,      // 临时密钥的 tmpSecretKey
+          SecurityToken: cosTemp.Credentials.Token,            // 临时密钥的 sessionToken
+          ExpiredTime: cosTemp.ExpiredTime,                    // 临时密钥失效时间戳，是申请临时密钥时，时间戳加 durationSeconds
+        });
+    }
+    // ForcePathStyle: true, // 如果使用了很多存储桶，可以通过打开后缀式，减少配置白名单域名数量，请求时会用地域域名
+    // SecretId: cosTemp.Credentials.TmpSecretId,
+    // SecretKey: cosTemp.Credentials.TmpSecretKey,
+    // SecurityToken: cosTemp.Credentials.Token,
   });
 
   return cos;
@@ -141,9 +167,6 @@ function _inject() {
   const documentPrototype = cloud.database().collection('$').doc('$').__proto__;
   const collectionPrototype = cloud.database().collection('$').__proto__;
   const wherePrototype = cloud.database().collection('$').where({}).__proto__;
-  console.log("DocumentPrototype:", documentPrototype);
-  console.log("collectionPrototype:", collectionPrototype);
-  console.log("wherePrototype:", wherePrototype);
 
   const _update = documentPrototype.update;
   documentPrototype.update = async function (options) {
@@ -236,7 +259,6 @@ function _inject() {
     });
   }
 
-  console.log("Laf Cloud Prototype:", cloud.__proto__);
 }
 
 function _injectGet(proto) {
@@ -244,7 +266,8 @@ function _injectGet(proto) {
   proto.get = async function () {
     try {
       let res = await _get.call(this);
-      _deepReplaceCosUrl(res);
+      console.log("get result:", res);
+      await _deepReplaceCosUrl(res);
       return res;
     } catch (err) {
       throw err;
@@ -284,10 +307,10 @@ async function uploadFile(options) {
 };
 
 
-function _deepReplaceCosUrl(obj) {
+async function _deepReplaceCosUrl(obj) {
   for (let key in obj) {
-    if (typeof obj[key] === 'string') obj[key] = cloud.signCosUrl(obj[key])
-    else if (typeof obj[key] === 'object') _deepReplaceCosUrl(obj[key])
+    if (typeof obj[key] === 'string') obj[key] = await cloud.signCosUrl(obj[key])
+    else if (typeof obj[key] === 'object') await _deepReplaceCosUrl(obj[key])
   }
 }
 

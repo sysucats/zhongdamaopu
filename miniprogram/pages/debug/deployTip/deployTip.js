@@ -2,6 +2,7 @@ import dp_cfg from "./deployConfig";
 import {
   cloud
 } from "../../../cloudAccess";
+import { use_private_tencent_cos } from "../../../config";
 
 const STATUS_DOING = 0;
 const STATUS_OK = 1;
@@ -10,6 +11,9 @@ const STATUS_FAIL = 2;
 
 // 检查云函数是否都部署了
 async function checkFunctions() {
+  // 清理缓存
+  wx.clearStorageSync()
+
   const res = (await cloud.callFunction({
     name: "deployTest",
     data: {
@@ -37,7 +41,8 @@ async function checkFunctions() {
 async function checkAppSecret() {
   var addition = [];
   const MP_ERR_MSG = "MP_APPID、MP_SECRET";
-  const OSS_ERR_MSG = "LAF_PORT、LAF_OSS_URL、LAF_BUCKET、OSS_SECRET_ID、OSS_SECRET_KEY";
+  const OSS_ERR_MSG = "LAF_PORT、LAF_OSS_URL、LAF_BUCKET";
+  const COS_ERR_MSG = "OSS_SECRET_ID、OSS_SECRET_KEY";
   // 重置一下后台缓存
   await cloud.callFunction({
     name: "deployTest",
@@ -45,6 +50,24 @@ async function checkAppSecret() {
       opType: "resetSecret",
     }
   });
+
+  // 检查cos配置
+  console.log(cloud.cos);
+  if (use_private_tencent_cos && !cloud.cos) {
+    addition.push(COS_ERR_MSG);
+  }
+  // 签名一个cos链接
+  try {
+    const res = await cloud.signCosUrl("https://test-123456789.cos.ap-guangzhou.myqcloud.com/user/avatar/test.png");
+    console.log("checksignCosUrl", res);
+    if (!res) {
+      addition.push(COS_ERR_MSG);
+    }
+  } catch (err) {
+    addition.push(COS_ERR_MSG);
+    console.error(err);
+  }
+
   // 获取openid
   try {
     const code = (await wx.login()).code;
@@ -53,8 +76,9 @@ async function checkAppSecret() {
     if (!res.openid) {
       addition.push(MP_ERR_MSG);
     }
-  } catch {
+  } catch (err) {
     addition.push(MP_ERR_MSG);
+    console.error(err);
   }
 
   // 上传文件
@@ -65,7 +89,7 @@ async function checkAppSecret() {
     }
   })).result;
   console.log("checkAppSecret data", data);
-  if (data.error) {
+  if (!data || data.error || !data.postURL) {
     addition.push(OSS_ERR_MSG)
   }
 
@@ -124,7 +148,7 @@ async function checkDatabase() {
 async function checkImage() {
   var fail_list = [];
   for (var oriUrl of dp_cfg.images) {
-    let url = cloud.signCosUrl(oriUrl);
+    let url = await cloud.signCosUrl(oriUrl);
     try {
       const res = await cloud.downloadFile({
         fileID: url

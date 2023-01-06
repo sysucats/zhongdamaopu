@@ -101,9 +101,9 @@ Page({
     })
   },
 
-  showMpCode(e) {
+  async showMpCode(e) {
     wx.previewImage({
-      urls: [signCosUrl(mpcode_img)],
+      urls: [await signCosUrl(mpcode_img)],
       fail: function(e) {
         console.error(e)
       }

@@ -86,8 +86,8 @@ Page({
   },
 
   // 打开大图
-  openImg(e) {
-    const src = cloud.signCosUrl(reward_img);
+  async openImg(e) {
+    const src = await cloud.signCosUrl(reward_img);
     wx.previewImage({
       urls: [src],
       success: (res) => {

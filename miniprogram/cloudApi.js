@@ -1,6 +1,5 @@
 // 存放所有需要调用云函数的接口
 import { cloud } from "./cloudAccess";
-import COS from './packages/tencentcloud/cos-wx-sdk-v5';
 
 function getDate(date) {
   date = date ? new Date(date): new Date();

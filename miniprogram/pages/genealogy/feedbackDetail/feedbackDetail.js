@@ -12,7 +12,7 @@ Page({
   data: {
     isAuth: false,
     user: {},
-    length: 0,
+    feedbackLength: 0,
     maxlength: 300,
     cat: undefined,
     text_cfg: text_cfg
@@ -57,9 +57,20 @@ Page({
 
   bindInput(e) {
     var inputData = e.detail.value;
-    this.setData({
-      length: inputData.length
-    })
+    var name = e.currentTarget.dataset.name;
+    if (name == 'feedbackInfo') {
+      this.setData({
+        feedbackLength: inputData.length
+      })
+      return;
+    }
+
+    if (name == 'contactInfo') {
+      this.setData({
+        contactLength: inputData.length
+      })
+      return;
+    }
   },
 
   async safeCheck(submitData) {
@@ -74,14 +85,7 @@ Page({
         icon: 'none'
       })
       return;
-    } /* else if (!submitData.contactInfo) {
-      wx.showToast({
-        title: '留个联系方式叭',
-        icon: 'none'
-      })
-      return;
-    } */
-    // let repliable = await requestNotice('feedback'); // 请求订阅消息推送
+    }
     
     // 安全检查
     console.log(submitData);
@@ -149,6 +153,14 @@ Page({
       console.log('repliable record fail:\n',res);
     }
      
+  },
+
+  async changeAgreement(e) {
+    console.log(e);
+    const checked = e.detail.value.length > 0;
+    this.setData({
+      agreementChecked: checked,
+    })
   }
 })
 

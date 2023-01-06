@@ -20,16 +20,19 @@
     <view class='inputColumns'>
       <view>
         <text class='inputTitle'>{{text_cfg.feedback_detail.feedback_title}}：</text>
-        <textarea class='feedbackColumn' placeholder="{{text_cfg.feedback_detail.feedback_tip}}" name='feedbackInfo' maxlength='{{maxlength}}' bindinput='bindInput' />
-        <text class='lengthTips'>{{text_cfg.feedback_detail.input_length_tip}}：{{length}}/{{maxlength}}</text>
+        <textarea class='feedbackColumn' placeholder="{{text_cfg.feedback_detail.feedback_tip}}" name='feedbackInfo' maxlength='{{maxlength}}' bindinput='bindInput' data-name="feedbackInfo"></textarea>
+        <text class='lengthTips'>{{text_cfg.feedback_detail.input_length_tip}}：{{feedbackLength}}/{{maxlength}}</text>
       </view>
       <view style='margin-top:40rpx;'>
         <text class="inputTitle">{{text_cfg.feedback_detail.contract_title}}：</text>
-        <input placeholder="{{text_cfg.feedback_detail.contract_tip}}" name='contactInfo' maxlength='30' />
+        <input placeholder="{{text_cfg.feedback_detail.contract_tip}}" name='contactInfo' maxlength='30' bindinput='bindInput' data-name="contactInfo"/>
       </view>
     </view>
+    <checkbox-group class="agreement" bindchange="changeAgreement">
+      <checkbox color="var(--color-primary)" checked="{{agreementChecked}}">对于联系方式，您已阅读并同意<navigator url="/pages/info/agreement/agreement">《服务协议和隐私政策》</navigator></checkbox>
+    </checkbox-group>
     <view class='submitButton'>
-      <button form-type='submit'>{{text_cfg.feedback_detail.submit_button}}</button>
+      <button form-type='submit' disabled="{{contactLength > 0 && !agreementChecked}}">{{text_cfg.feedback_detail.submit_button}}</button>
     </view>
   </block>
 </form>

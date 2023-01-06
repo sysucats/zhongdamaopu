@@ -25,8 +25,8 @@ Page({
     })
   },
 
-  toNewCat() {
-    const src = could.signCosUrl(feedback_wj_img);
+  async toNewCat() {
+    const src = await cloud.signCosUrl(feedback_wj_img);
     wx.previewImage({
       urls: [src],
       success: (res) => {

@@ -27,8 +27,8 @@ function getMsgTplId(template) {
 
 // 订阅请求
 async function requestNotice(template) {
-  console.log(template, msgConfig);
   const cfg = msgConfig[template];
+  console.log(template, cfg);
 
   try {
     let res = await wx.requestSubscribeMessage({
@@ -36,7 +36,7 @@ async function requestNotice(template) {
     });
     console.log("requestSubMsgRes:", res);
 
-    if (res.errMsg != 'requestSubscribeMessage:ok') { //这个条件会触发吗？
+    if (!res || res.errMsg != 'requestSubscribeMessage:ok') {
       console.log('调用消息订阅请求接口失败' + res.errCode);
       await wx.showToast({
         title: '消息订阅好像出了点问题',

@@ -72,7 +72,6 @@ Page({
     user.userInfo.avatarUrl = await this.uploadAvatar(user.userInfo.avatarUrl);
 
     console.log(user);
-    this.setData({user});
     
     // 更新数据库的userInfo
     await api.userOp({
@@ -99,7 +98,7 @@ Page({
       cloudPath: `user/avatar/${openid}.${ext}`, // 上传至云端的路径
       filePath: tempFilePath, // 小程序临时文件路径
     });
-    return cloud.signCosUrl(upRes.fileID);
+    return upRes.fileID;
   },
 
   async checkNickName(name) {

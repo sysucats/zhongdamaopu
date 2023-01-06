@@ -85,3 +85,13 @@ button {
   font-size: 26rpx;
   color: var(--color-gray-max);
 }
+
+.agreement {
+  margin-top: 20rpx;
+  font-size: 24rpx;
+}
+
+.agreement navigator {
+  display: inline;
+  color: var(--color-primary);
+}

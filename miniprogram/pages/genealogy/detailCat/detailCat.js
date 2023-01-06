@@ -558,7 +558,7 @@ Page({
 
     console.log("mpcode:", res);
 
-    res = cloud.signCosUrl(res);
+    res = await cloud.signCosUrl(res);
 
     wx.hideLoading();
     wx.previewImage({

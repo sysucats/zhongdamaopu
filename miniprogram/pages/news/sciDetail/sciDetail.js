@@ -34,7 +34,7 @@ Page({
       })
     } else {
       this.setData({
-        images: science_imgs.map(val => cloud.signCosUrl(val))
+        images: science_imgs.map(val => await cloud.signCosUrl(val))
       })
     }
 
