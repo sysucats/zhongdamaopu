@@ -46,61 +46,8 @@
 
 :smirk_cat:*无需从零开始，只要一些耐心。*
 
-请参考wiki内容：[wiki](https://github.com/sysucats/zhongdamaopu/wiki)
+请参考：[猫谱Lab版文档](https://docs.qq.com/doc/DSGFvWGF4UnVrQ3VN)
 
-
-
-# :game_die:设置项说明
-
-在数据库的`setting`表中，控制着一部分页面表现，可以随时修改并在小程序端展现。
-
-## pages
-
-主要设置各个页面的元素展示。
-
-|设置项|子设置项|描述|
-|:----|:----|:----|
-|checkFeedback|step|反馈处理页每次加载数量|
-|detailCat|albumStep|猫猫相册每次加载数量|
-|    |cantUpload|关闭上传功能的版本号|
-|    |galleryCompressed|相册大图是否使用压缩图|
-|    |galleryPreload|相册大图预加载的数量|
-|    |manageUpload|上传功能强制给管理员开启|
-|    |photoStep|猫猫精选图每次加载的数量|
-|genealogy|adStep|广告出现的间隔|
-|    |catsStep|首页每次加载猫猫的数量|
-|    |main_lower_threshold|首页触底加载的像素值|
-|    |photoPopWeight|每张猫猫照片增加的人气值|
-
-## filter
-
-主要用于猫猫信息修改，及首页过滤器。
-
-|设置项|描述|
-|:----|:----|
-|area|区域（请使用小程序端修改）|
-|campuses|校区（谨慎修改）|
-|colour|花色（请使用小程序端修改）|
-
-## friendLink
-
-用于设置友情链接，请参考样例进行添加。
-
-|设置项|描述|
-|:----|:----|
-|appid|小程序的APPID|
-|logo|小程序的图标，可以使用云存储FileID|
-|name|小程序的名称|
-
-## subscribeMsg
-
-用于管理员订阅的数量设置。
-
-|设置项|子设置项|描述|
-|:----|:----|:----|
-|chkFeedback|receiverNum|最多推送给几位管理员（暂未生效）|
-|verifyPhoto|receiverNum|最多推送给几位管理员|
-|    |triggerNum|触发推送的待审核数量|
 
 # :notebook_with_decorative_cover:管理员手册
 
