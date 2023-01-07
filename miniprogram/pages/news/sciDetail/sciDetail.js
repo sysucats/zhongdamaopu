@@ -33,8 +33,9 @@ Page({
         images: imgList
       })
     } else {
+      let images = await Promise.all(science_imgs.map(val => cloud.signCosUrl(val)));
       this.setData({
-        images: science_imgs.map(val => await cloud.signCosUrl(val))
+        images: images
       })
     }
 
