@@ -208,6 +208,24 @@ module.exports = {
       default: "date4"
     }
   },
+  ads: {
+    tip: "广告设置",
+    "genealogy_banner": {
+      type: "text",
+      tip: "首页banner广告ID",
+      default: "your_ad_id"
+    },
+    "recognize_banner": {
+      type: "text",
+      tip: "识猫页banner广告ID",
+      default: "your_ad_id"
+    },
+    "reward_video": {
+      type: "text",
+      tip: "打赏投喂页视频video广告ID",
+      default: "your_ad_id"
+    },
+  },
   recognize: {
     tip: "识猫页设置",
     interfaceURL: {

@@ -1,7 +1,8 @@
 // miniprogram/pages/info/reward/reward.js
-import { text as text_cfg, reward_img, ad_reward_video } from "../../../config";
+import { text as text_cfg, reward_img } from "../../../config";
 import { checkCanReward } from "../../../user";
 import { cloud } from "../../../cloudAccess";
+import { getGlobalSettings } from "../../../page";
 
 // 在页面中定义激励视频广告
 let videoAd = null
@@ -25,12 +26,15 @@ Page({
     this.setData({
       canReward: await checkCanReward()
     });
+
+    // 设置广告ID
+    const ads = await getGlobalSettings('ads');
     
     // 在页面onLoad回调事件中创建激励视频广告实例
     var that = this;
     if (wx.createRewardedVideoAd) {
       videoAd = wx.createRewardedVideoAd({
-        adUnitId: ad_reward_video
+        adUnitId: ads.reward_video
       })
       videoAd.onLoad(() => {
         that.setData({

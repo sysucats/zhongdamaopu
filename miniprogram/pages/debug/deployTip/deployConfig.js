@@ -123,6 +123,11 @@ const init_setting = [{
       "verify#content": "thing7",
       "verify#note": "thing5",
       "verify#title": "thing2"
+    },
+    "ads": {
+      "genealogy_banner": "your_ad_id",
+      "recognize_banner": "your_ad_id",
+      "reward_video": "your_ad_id"
     }
   },
   {
@@ -135,7 +140,7 @@ const init_setting = [{
     "_id": "friendLink",
     "apps": [{
       "appid": "wx5bd705b2bc91c73b",
-      "logo": "/pages/public/images/system/zdmp_logo.png",
+      "logo": "https://maopu-1251740905.cos.ap-guangzhou.myqcloud.com/public/zdmp_logo.png",
       "name": "中大猫谱"
     }]
   },
@@ -160,7 +165,7 @@ const init_app_secret = [{
   "MP_APPID": "your_mp_appid",
   "MP_SECRET": "your_mp_secret",
   "LAF_PORT": 443,
-  "LAF_OSS_URL": "your_oss_url",
+  "LAF_OSS_URL": "oss.lafyun.com",
   "LAF_BUCKET": "your_oss_bucket",
   "OSS_SECRET_ID": "",
   "OSS_SECRET_KEY": "",

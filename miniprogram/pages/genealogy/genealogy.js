@@ -66,9 +66,7 @@ Page({
     // 广告是否展示
     ad_show: {},
     // 广告id
-    ad: {
-      banner: config.ad_genealogy_banner
-    },
+    ad: {},
 
     // 需要弹出的公告
     newsList: [],
@@ -128,6 +126,14 @@ Page({
     // 载入公告信息
     this.newsModal = this.selectComponent("#newsModal");
     await this.loadNews();
+
+    // 设置广告ID
+    const ads = await getGlobalSettings('ads');
+    this.setData({
+      ad: {
+        banner: ads.genealogy_banner
+      },
+    })
   },
 
   onShow: function () {

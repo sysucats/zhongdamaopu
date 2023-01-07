@@ -204,18 +204,18 @@ Page({
         break: true,
       },
       2: {
+        title: "数据库初始化",
+        status: STATUS_DOING,
+        func: checkDatabase,
+        tip: "数据库如果未创建，将会自动创建并初始化，稍等...\n",
+        addition: "",
+      },
+      3: {
         title: "Laf后台配置",
         status: STATUS_DOING,
         func: checkAppSecret,
         tip: "在Laf开发，数据库，app_secret中，填入必要信息。\n" +
           "如果使用Laf的存储，则无需填OSS_SECRET_ID、OSS_SECRET_KEY。\n",
-        addition: "",
-      },
-      3: {
-        title: "创建数据库",
-        status: STATUS_DOING,
-        func: checkDatabase,
-        tip: "数据库如果未创建，将会自动创建并初始化，稍等...\n",
         addition: "",
       },
       4: {

@@ -1,4 +1,4 @@
-import { text as text_cfg, ad_recognize_banner, cat_status_adopt } from "../../config";
+import { text as text_cfg, cat_status_adopt } from "../../config";
 import { hex_sha256, randomInt } from "../../utils";
 import { loadFilter, getGlobalSettings, showTab } from "../../page";
 import { cloud } from "../../cloudAccess";
@@ -40,9 +40,7 @@ Page({
     catIdx: null, // 在有多只猫猫的图片中，识别的猫猫的编号
     showResultBox: false, // 用来配合动画延时展示resultBox
     showAdBox: true, // 展示banner广告
-    ad: {
-      banner: ad_recognize_banner
-    },
+    ad: {},
     text_cfg: text_cfg,
 
     // 领养状态
@@ -70,6 +68,14 @@ Page({
     })
 
     this.checkAuth();
+
+    // 设置广告ID
+    const ads = await getGlobalSettings('ads');
+    this.setData({
+      ad: {
+        banner: ads.recognize_banner
+      },
+    })
   },
 
   async onShow() {
