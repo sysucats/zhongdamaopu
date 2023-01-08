@@ -22,25 +22,20 @@
 
 如果，你所在校园（/社团/小区...）的猫猫:smile_cat:也盼望拥有一份属于自己的猫猫档案，请你跟随下一章节的指引，为它们部署、发布一份独特的猫谱小程序。
 
-部署完成后，可以邀请你的朋友帮忙管理猫猫信息。我们为此准备了【猫谱-管理员手册】，信息管理无需接触代码。链接：https://docs.qq.com/doc/DSEl0aENOSEx5cmtE
+部署完成后，可以邀请你的朋友帮忙管理猫猫信息。我们为此准备了【猫谱-管理员手册】，信息管理无需接触代码。
 
 部署过程中遇到任何问题，可以：
 * 加入猫谱技术交流微信群，点击查看群二维码：https://docs.qq.com/doc/DSFNQd1VVSG1CeG5T
 * 加入猫谱技术交流QQ群：956808218
 * 查看【猫谱-部署常见问题】文档（必看！），链接：https://docs.qq.com/doc/DSGFSU25jalpEZ2FO
 * 发邮件至：dxzyfwd@163.com
-* 在部署演示视频下留言，链接：https://www.bilibili.com/video/BV1Sb4y1W7gS/
 * 在GitHub页面提issue
 
 ## 资料整理
 |资料名|类型|链接|
 |:----:|:----:|:----:|
-|部署视频|视频|https://www.bilibili.com/video/BV1Sb4y1W7gS|
-|猫谱-部署常见问题|文档|https://docs.qq.com/doc/DSGFSU25jalpEZ2FO|
+|猫谱-部署文档|文档|https://docs.qq.com/doc/DSGFvWGF4UnVrQ3VN|
 |猫谱-管理员手册|文档|https://docs.qq.com/doc/DSEl0aENOSEx5cmtE|
-|猫谱-升级代码|文档|https://docs.qq.com/doc/DSExBY2RsUHlOYlpj|
-|imProcess云函数环境|压缩包|https://wwz.lanzout.com/iefHj01u0ddi|
-|imProcess云函数部署（不需要了）|视频|https://www.bilibili.com/video/BV1zA411W7Rn|
 
 # :scroll:部署
 

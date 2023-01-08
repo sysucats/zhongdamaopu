@@ -27,10 +27,7 @@ Page({
     this.setData({
       news_id: options.news_id
     })
-    await Promise.all([
-      this.loadNews(),
-      checkAuth(this, 2)
-    ]);
+    await this.loadNews();
 
     const res = await isManagerAsync(3);
     this.setData({
