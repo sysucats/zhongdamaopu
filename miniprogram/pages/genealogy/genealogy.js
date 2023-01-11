@@ -128,7 +128,7 @@ Page({
     await this.loadNews();
 
     // 设置广告ID
-    const ads = await getGlobalSettings('ads');
+    const ads = await getGlobalSettings('ads') || {};
     this.setData({
       ad: {
         banner: ads.genealogy_banner
@@ -501,17 +501,17 @@ Page({
     });
   },
   // 点击category filter，全选/反选该类下所有sub
-  fClickCategory: async function (e) {
+  fClickCategory: async function (e, singleChoose) {
+    console.log(e);
     var filters = this.data.filters;
     var {index, filters_sub} = e.target.dataset;
     if (filters_sub == undefined) {
       filters_sub = this.data.filters_sub;
     }
 
-    console.log(e);
     const all_active = !filters[filters_sub].category[index].all_active;
     var category = filters[filters_sub].category[index];
-    if (index == 0) { // 默认第0个是'全部'
+    if (index == 0 || singleChoose) { // 默认第0个是'全部'
       for (let i = 0, len = filters[filters_sub].category.length; i < len; ++i) { // 把所有项反激活
         var ctg = filters[filters_sub].category[i];
         ctg.all_active = false;
@@ -696,7 +696,7 @@ Page({
       console.log("Page is locking");
       return false;
     }
-    await this.fClickCategory(e);
+    await this.fClickCategory(e, true);
     await this.fComfirm();
   },
   // 发起文字搜索

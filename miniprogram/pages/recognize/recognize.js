@@ -70,7 +70,7 @@ Page({
     this.checkAuth();
 
     // 设置广告ID
-    const ads = await getGlobalSettings('ads');
+    const ads = await getGlobalSettings('ads') || {};
     this.setData({
       ad: {
         banner: ads.recognize_banner

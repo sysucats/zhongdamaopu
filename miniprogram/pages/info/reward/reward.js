@@ -28,7 +28,7 @@ Page({
     });
 
     // 设置广告ID
-    const ads = await getGlobalSettings('ads');
+    const ads = await getGlobalSettings('ads') || {};
     
     // 在页面onLoad回调事件中创建激励视频广告实例
     var that = this;
