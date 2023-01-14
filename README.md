@@ -3,22 +3,23 @@
 *——拍照记录校园内猫猫的成长轨迹* :cat::smiley_cat::heart_eyes_cat:
 
 ## 主要功能
-
 **猫猫档案**：创建校园猫猫资料档案，猫猫相册，精选瀑布流。
-<img src="https://maopu-1251740905.cos.ap-guangzhou.myqcloud.com/readme/%E7%9C%8B%E5%9B%BE.jpg" height = "200"/>
+
+<img src="https://user-images.githubusercontent.com/8966971/212461452-8a99397b-4e0e-4f0c-bdeb-64b0f7170c53.jpg" height = "200"/>
 
 **用户交互**：用户可以上传照片，发表留言，点赞照片或反馈信息。
-<img src="https://maopu-1251740905.cos.ap-guangzhou.myqcloud.com/readme/%E4%BA%A4%E4%BA%92.jpg" height = "200"/>
+
+<img src="https://user-images.githubusercontent.com/8966971/212461438-f93a6740-c574-44ae-a2bf-b490ffa6dcfe.jpg" height = "200"/>
 
 **丰富功能**：包括拍照识猫，查看科普信息、公告文章等丰富功能。
-<img src="https://maopu-1251740905.cos.ap-guangzhou.myqcloud.com/readme/%E4%B8%B0%E5%AF%8C%E5%8A%9F%E8%83%BD.jpg" height = "200"/>
+
+<img src="https://user-images.githubusercontent.com/8966971/212461458-ffda9eb6-5862-4846-bd57-09102ec0c84a.jpg" height = "200"/>
 
 **管理后台**：部署完成后，资料管理、照片审核等操作均在小程序端完成。
-<img src="https://maopu-1251740905.cos.ap-guangzhou.myqcloud.com/readme/%E7%AE%A1%E7%90%86%E5%90%8E%E5%8F%B0.jpg" height = "200"/>
 
+<img src="https://user-images.githubusercontent.com/8966971/212461459-d9600a11-f01c-4837-81af-47794c39dd62.jpg" height = "200"/>
 
 ## 体验一下
-
 打开微信，扫码或搜索“中大猫谱”。
 
 <img src="./readme/qrcode1.png" height = "150" alt="中大猫谱菊花码" />
