@@ -48,7 +48,7 @@
 
 :smirk_cat:*无需从零开始，只要一些耐心。*
 
-Laf版暂时没有录制部署视频，部署流程请参考：[猫谱Lab版文档](https://docs.qq.com/doc/DSGFvWGF4UnVrQ3VN)
+Laf版暂时没有录制部署视频，部署流程请参考：[猫谱Laf版文档](https://docs.qq.com/doc/DSGFvWGF4UnVrQ3VN)
 
 考虑到wx云开发的[新收费标准](https://developers.weixin.qq.com/community/minihome/doc/0000a680588d3891fa2ec250c51401)（约50元/月），我们将代码迁移到[Laf云开发](https://www.lafyun.com/)平台。
 
