@@ -4,20 +4,16 @@
 
 ## 主要功能
 
-### 猫猫档案
-创建校园猫猫资料档案，猫猫相册，精选瀑布流。
+**猫猫档案**：创建校园猫猫资料档案，猫猫相册，精选瀑布流。
 <img src="https://maopu-1251740905.cos.ap-guangzhou.myqcloud.com/readme/%E7%9C%8B%E5%9B%BE.jpg" height = "200"/>
 
-### 用户交互
-用户可以上传照片，发表留言，点赞照片或反馈信息。
+**用户交互**：用户可以上传照片，发表留言，点赞照片或反馈信息。
 <img src="https://maopu-1251740905.cos.ap-guangzhou.myqcloud.com/readme/%E4%BA%A4%E4%BA%92.jpg" height = "200"/>
 
-### 丰富功能
-包括拍照识猫，查看科普信息、公告文章等丰富功能。
+**丰富功能**：包括拍照识猫，查看科普信息、公告文章等丰富功能。
 <img src="https://maopu-1251740905.cos.ap-guangzhou.myqcloud.com/readme/%E4%B8%B0%E5%AF%8C%E5%8A%9F%E8%83%BD.jpg" height = "200"/>
 
-### 管理后台
-部署完成后，资料管理、照片审核等操作均在小程序端完成。
+**管理后台**：部署完成后，资料管理、照片审核等操作均在小程序端完成。
 <img src="https://maopu-1251740905.cos.ap-guangzhou.myqcloud.com/readme/%E7%AE%A1%E7%90%86%E5%90%8E%E5%8F%B0.jpg" height = "200"/>
 
 
@@ -25,15 +21,13 @@
 
 打开微信，扫码或搜索“中大猫谱”。
 
-<img src="./readme/qrcode1.png" height = "200" alt="中大猫谱菊花码" />
+<img src="./readme/qrcode1.png" height = "150" alt="中大猫谱菊花码" />
 
-## 朋友们的小程序
+### 朋友们的小程序
 
-|<img src="./readme/qrcode2.png" height = "200" alt="华农喵星人菊花码" />|<img src="./readme/qrcodeHNU.jpg" height = "200" alt="HNU喵汪图鉴菊花码" />|
-|:----:|:----:|
-|华农喵星人|HNU喵汪图鉴|
-|<img src="./readme/qrcodeCMZJ.png" height = "200" alt="财猫之家菊花码" />|<img src="./readme/qrcodeESMY.jpg" width = "200" height = "200" alt="二师猫语菊花码" />|
-|财猫之家|二师猫语|
+|<img src="./readme/qrcode2.png" height = "100" alt="华农喵星人菊花码" />|<img src="./readme/qrcodeHNU.jpg" height = "100" alt="HNU喵汪图鉴菊花码" />|<img src="./readme/qrcodeCMZJ.png" height = "100" alt="财猫之家菊花码" />|<img src="./readme/qrcodeESMY.jpg" height = "100" alt="二师猫语菊花码" />|
+|:----:|:----:|:----:|:----:|
+|华农喵星人|HNU喵汪图鉴|财猫之家|二师猫语|
 
 如果，你所在校园（/社团/小区...）的猫猫:smile_cat:也盼望拥有一份属于自己的猫猫档案，请你跟随下一章节的指引，为它们部署、发布一份独特的猫谱小程序。
 
@@ -69,9 +63,8 @@ Laf版暂时没有录制部署视频，部署流程请参考：[猫谱Lab版文�
 
 :notebook:资料整理：笃行志愿服务队及各校区小伙伴
 
-如果你有新的想法或建议，非常欢迎你在issue板块发起讨论或者提交代码PR。
+如果你有新的想法或建议，非常欢迎你在QQ群/issue板块发起讨论，或者提交代码PR。
 
 # :ferris_wheel:开源协议
 
 本项目遵循MPL-2.0开源协议。在此基础上，如果你发布了一份新的猫谱，我们希望你能保留中大猫谱的友情链接。待你的线上版本稳定使用一段时间后，请留言告诉我们将你的友链加到中大猫谱小程序中。
-
