@@ -208,6 +208,9 @@ Page({
     photoInfo.mdate = new Date(photoInfo.mdate).toJSON();
     // 获取原图
     this.setPhase(1);
+    if (photoInfo.userInfo === undefined) {
+      photoInfo.userInfo = { nickName: '猫友' }
+    }
     var photoObj = await wx.getImageInfo({
       src: photoInfo.photo_id,
     });

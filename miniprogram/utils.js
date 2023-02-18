@@ -216,16 +216,7 @@ function deepcopy(obj) {
 }
 
 // 强制压缩
-async function compressImage(src, size, isIOS) {
-  console.log("compressImage", src, size);
-  let quality = 100
-  // ios因为自己有压缩机制，压缩到极致就不会再压，因此往小了写
-  if (isIOS) {
-    quality = 10
-  } else {
-    let temp = 30 - parseInt(size / 1024 / 1024)
-    quality = temp < 10 ? 10 : temp
-  }
+async function compressImage(src, quality) {
   var res = await wx.compressImage({
     src, // 图片路径
     quality, // 压缩质量

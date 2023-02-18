@@ -5,7 +5,7 @@
 
 module.exports = {
   // 版本号
-  app_version: "v1.9.8",
+  app_version: "v1.9.9",
   // laf后台服务地址
   laf_url: 'https://cohbpk.mplaf.sysucats.com:9443',
   // laf后台服务地址（开发环境），一般和上面一致就好

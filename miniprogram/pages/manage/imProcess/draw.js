@@ -64,7 +64,7 @@ async function getTempPath(options) {
   options.canvas = gCanvas;
   var tempFilePath = (await wx.canvasToTempFilePath(options)).tempFilePath;
   console.log(tempFilePath);
-  return await compressImage(tempFilePath, 0, null);
+  return await compressImage(tempFilePath, 80);
 }
 
 

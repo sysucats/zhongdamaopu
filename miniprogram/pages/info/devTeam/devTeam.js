@@ -11,6 +11,12 @@ Page({
     text_cfg: text_cfg,
     github_link: "https://github.com/sysucats/zhongdamaopu",
     update_log: [{
+      version: "v1.9.9",
+      content: [
+        "调整图像压缩比例"
+      ],
+      time: "2023/2/18"
+    }, {
       version: "v1.9.8",
       content: [
         "修复了一些问题",

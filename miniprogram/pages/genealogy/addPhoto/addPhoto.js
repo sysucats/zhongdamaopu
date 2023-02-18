@@ -99,7 +99,7 @@ Page({
     for (var file of res.tempFiles) {
       // 需要压缩
       if (file.size > 512 * 1024) {
-        file.path = await compressImage(file.tempFilePath, file.size, this.data.isIOS);
+        file.path = await compressImage(file.tempFilePath, 30);
         console.log("compressed path:", file.path);
       } else {
         file.path = file.tempFilePath;
