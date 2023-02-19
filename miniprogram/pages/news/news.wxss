@@ -181,3 +181,9 @@ swiper image {
   height: 261rpx;
   border-radius: 15rpx;
 }
+
+.emptyImg {
+  width: 750rpx;
+  height: 100rpx;
+  margin: 30rpx 0;
+}

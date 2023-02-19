@@ -17,6 +17,9 @@
   </block>
 </view>
 
+<view wx:if="{{newsList_show.length === 0}}">
+  <image class="emptyImg" src='/pages/public/images/system/nomore.png'></image>
+</view>
 <view wx:for='{{newsList_show}}' wx:key="_id" class='news-box' bindtap='clickNews' data-news_id='{{item._id}}'>
   <view class='news infoBox'>
     <view class='news title'>{{item.title}}</view>
