@@ -1,0 +1,5 @@
+name: curdOp
+methods:
+  - GET
+  - POST
+tags: []

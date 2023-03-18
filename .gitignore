@@ -17,3 +17,5 @@ cloudfunctions/package-lock.json
 project.private.config.json
 laf.json
 miniprogram/appSecret.js
+.secret.yaml
+laf.yaml

@@ -1,0 +1,5 @@
+name: deleteFiles
+methods:
+  - GET
+  - POST
+tags: []

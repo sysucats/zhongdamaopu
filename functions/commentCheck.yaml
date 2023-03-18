@@ -1,0 +1,5 @@
+name: commentCheck
+methods:
+  - GET
+  - POST
+tags: []

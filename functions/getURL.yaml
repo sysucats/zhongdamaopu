@@ -1,0 +1,5 @@
+name: getURL
+methods:
+  - GET
+  - POST
+tags: []

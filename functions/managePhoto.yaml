@@ -1,0 +1,5 @@
+name: managePhoto
+methods:
+  - GET
+  - POST
+tags: []
