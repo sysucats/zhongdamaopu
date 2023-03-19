@@ -3,6 +3,11 @@
 import cloud from '@lafjs/cloud'
 const Minio = require('minio')
 
+function getFilePath(fullPath: string) {
+  // 形如：`https://${OSS_ENDPOINT}:${OSS_PORT}/${OSS_BUCKET}/`
+  return fullPath.split('/').slice(4).join("/");
+}
+
 exports.main = async function (ctx: FunctionContext) {
   // body, query 为请求参数, user 是授权对象
   const { body, query } = ctx
@@ -12,7 +17,6 @@ exports.main = async function (ctx: FunctionContext) {
   }
   
   const { OSS_ENDPOINT, OSS_PORT, OSS_BUCKET, OSS_SECRET_ID, OSS_SECRET_KEY } = await cloud.invoke("getAppSecret", {});
-  const ossPath = `https://${OSS_ENDPOINT}:${OSS_PORT}/${OSS_BUCKET}/`
 
   const fileIDs = ctx.body.fileIDs;
   
@@ -25,12 +29,12 @@ exports.main = async function (ctx: FunctionContext) {
     secretKey: OSS_SECRET_KEY,
   });
   for (var idx in fileIDs) {
-    const fileName = fileIDs[idx].substring(ossPath.length);
+    const fileName = getFilePath(fileIDs[idx]);
     await client.removeObject(OSS_BUCKET, fileName, function (err) {
       if (err) {
         console.log('Unable to remove object', err);
       }
     });
-    console.log('Removed the object', fileName, 'from bucket', OSS_BUCKET);
+    console.log(`Removed the object ${fileName} from bucket ${OSS_BUCKET}`);
   }
 }

@@ -11,7 +11,7 @@ module.exports = {
   // laf后台服务地址（开发环境），一般和上面一致就好
   laf_dev_url: 'https://pe7xm7.laf.dev',
   // 使用私有的腾讯云cos存储，需要url签名
-  use_private_tencent_cos: false,
+  use_private_tencent_cos: true,
 
   // 科普页图片
   science_imgs: [
