@@ -95,10 +95,41 @@ async function getCatItemMulti(cat_ids, options) {
   return cat_ids.map(x => res[x]);
 }
 
+// 获取所有猫猫信息（用于构造关系图）
+async function getAllCats(options) {
+  var cacheKey = `cat-item-ALLCATS`;
+  var cacheItem = getCacheItem(cacheKey, options);
+  if (cacheItem) {
+    return cacheItem;
+  }
+
+  // 请求没有的
+  var res = [];
+  while (true) {
+    const cats = (await db.collection('cat').skip(res.length).get()).data;
+    if (!cats || cats.length === 0) {
+      break;
+    }
+    for (const item of cats) {
+      res.push({
+        _id: item._id,
+        name: item.name,
+        campus: item.campus,
+        gender: item.gender,
+        relations: item.relations
+      })
+    }
+  }
+  setCacheItem(cacheKey, res, cacheTime.catItem);
+  
+  return res;
+}
+
 export {
   getAvatar,
   getVisitedDate,
   setVisitedDate,
   getCatItem,
-  getCatItemMulti
+  getCatItemMulti,
+  getAllCats
 }
