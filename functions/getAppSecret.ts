@@ -38,7 +38,7 @@ exports.main = async function (ctx: FunctionContext) {
 
   if (body && body.deploy_test === true) {
     // 进行部署检查
-    return "v1.0";
+    return "v1.1";
   }
 
   if (body && body.reset === true) {
