@@ -1,5 +1,4 @@
 name: globalLock
 methods:
-  - GET
   - POST
 tags: []

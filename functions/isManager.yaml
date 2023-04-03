@@ -1,5 +1,4 @@
 name: isManager
 methods:
-  - GET
   - POST
 tags: []

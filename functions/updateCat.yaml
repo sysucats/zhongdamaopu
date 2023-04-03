@@ -1,5 +1,4 @@
 name: updateCat
 methods:
-  - GET
   - POST
 tags: []

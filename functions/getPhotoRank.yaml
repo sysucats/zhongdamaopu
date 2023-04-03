@@ -1,5 +1,4 @@
 name: getPhotoRank
 methods:
-  - GET
   - POST
 tags: []

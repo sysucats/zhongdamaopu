@@ -1,5 +1,4 @@
 name: getMpCode
 methods:
-  - GET
   - POST
 tags: []

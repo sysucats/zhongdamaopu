@@ -1,5 +1,4 @@
 name: countPhoto
 methods:
-  - GET
   - POST
 tags: []

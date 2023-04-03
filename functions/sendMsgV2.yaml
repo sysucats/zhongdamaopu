@@ -1,5 +1,4 @@
 name: sendMsgV2
 methods:
-  - GET
   - POST
 tags: []
