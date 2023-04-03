@@ -27,6 +27,10 @@ async function checkFuncs(funcs) {
 async function checkDb(name: string, initData: Array<any>) {
   const db = cloud.database();
   const count = await db.collection(name).count();
+  // 触发数据表创建
+  await db.collection(name).doc("init").set({name: "init"});
+  await db.collection(name).doc("init").remove();
+
   if (count.total >= initData.length) {
     return {"ok": true};
   }

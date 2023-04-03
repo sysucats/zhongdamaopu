@@ -160,17 +160,6 @@ const init_setting = [{
   },
 ];
 
-const init_app_secret = [{
-  "_id": "app_secret",
-  "MP_APPID": "your_mp_appid",
-  "MP_SECRET": "your_mp_secret",
-  "LAF_PORT": 443,
-  "LAF_OSS_URL": "oss.lafyun.com",
-  "LAF_BUCKET": "your_oss_bucket",
-  "OSS_SECRET_ID": "",
-  "OSS_SECRET_KEY": "",
-}];
-
 // 部署流程（不要修改！）
 module.exports = {
   // 云函数的名称
@@ -196,7 +185,6 @@ module.exports = {
   },
   default_init_data_id: default_init_data_id,
   collections: {
-    "app_secret": init_app_secret,
     "cat": default_init_data,
     "comment": default_init_data,
     "feedback": default_init_data,

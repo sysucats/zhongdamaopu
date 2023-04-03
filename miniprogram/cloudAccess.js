@@ -1,4 +1,5 @@
 import {
+  dev_mode,
   laf_url,
   laf_dev_url,
   use_private_tencent_cos
@@ -77,7 +78,14 @@ async function ensureCos() {
         }
         console.log("cosTemp", cosTemp);
         if (!cosTemp || !cosTemp.Credentials) {
-          return undefined;
+          console.log("无效cosTemp信息")
+          callback({
+            TmpSecretId: "empty",
+            TmpSecretKey: "empty",
+            SecurityToken: "empty",
+            ExpiredTime: "3392838427",
+          });
+          return;
         }
         
         callback({

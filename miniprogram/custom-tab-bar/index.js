@@ -32,7 +32,14 @@ Component({
       console.log("no settings");
       if (isTabPath(currentPath)) {
         toSettings("缺失tabBar设置，已填入默认值，请检查后保存。");
+        return;
       }
+
+      
+      this.setData({
+        list: tab,
+        showTabBar: true,
+      });
       return;
     }
     const fullTab = settings.fullTab.split(',');

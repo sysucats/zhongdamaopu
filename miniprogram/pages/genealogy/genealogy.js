@@ -112,6 +112,10 @@ Page({
     }
     // 开始加载页面
     const settings = await getGlobalSettings('genealogy');
+    if (!settings) {
+      console.log("no setting");
+      return
+    }
     // 先把设置拿到
     catsStep = settings['catsStep'];
     // 启动加载

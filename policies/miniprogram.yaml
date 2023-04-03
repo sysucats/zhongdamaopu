@@ -1,0 +1,77 @@
+- collectionName: setting
+  rules:
+    read: true
+    count: true
+    update: false
+    remove: false
+    add: false
+- collectionName: science
+  rules:
+    read: true
+    count: true
+    update: false
+    remove: false
+    add: false
+- collectionName: comment
+  rules:
+    read: true
+    count: true
+    update: false
+    remove: false
+    add: true
+- collectionName: news
+  rules:
+    read: true
+    count: true
+    update: false
+    remove: false
+    add: false
+- collectionName: reward
+  rules:
+    read: true
+    count: true
+    update: false
+    remove: false
+    add: false
+- collectionName: user
+  rules:
+    read: true
+    count: true
+    update: false
+    remove: false
+    add: false
+- collectionName: photo_rank
+  rules:
+    read: true
+    count: true
+    update: false
+    remove: false
+    add: false
+- collectionName: inter
+  rules:
+    read: true
+    count: true
+    update: false
+    remove: false
+    add: true
+- collectionName: cat
+  rules:
+    read: true
+    count: true
+    update: false
+    remove: false
+    add: false
+- collectionName: photo
+  rules:
+    read: true
+    count: true
+    update: false
+    remove: false
+    add: true
+- collectionName: feedback
+  rules:
+    read: true
+    count: true
+    update: false
+    remove: false
+    add: true

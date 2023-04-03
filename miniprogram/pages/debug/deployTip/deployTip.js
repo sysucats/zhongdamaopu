@@ -41,7 +41,7 @@ async function checkFunctions() {
 async function checkAppSecret() {
   var addition = [];
   const MP_ERR_MSG = "MP_APPID、MP_SECRET";
-  const OSS_ERR_MSG = "LAF_PORT、LAF_OSS_URL、LAF_BUCKET";
+  const OSS_ERR_MSG = "OSS_PORT、OSS_ENDPOINT、OSS_BUCKET";
   const COS_ERR_MSG = "OSS_SECRET_ID、OSS_SECRET_KEY";
   // 重置一下后台缓存
   await cloud.callFunction({
@@ -58,6 +58,7 @@ async function checkAppSecret() {
   }
   // 签名一个cos链接
   try {
+    console.log("check signCosUrl");
     const res = await cloud.signCosUrl("https://test-123456789.cos.ap-guangzhou.myqcloud.com/user/avatar/test.png");
     console.log("checksignCosUrl", res);
     if (!res) {
@@ -214,8 +215,8 @@ Page({
         title: "Laf后台配置",
         status: STATUS_DOING,
         func: checkAppSecret,
-        tip: "在Laf开发，数据库，app_secret中，填入必要信息。\n" +
-          "如果使用Laf的存储，则无需填OSS_SECRET_ID、OSS_SECRET_KEY。\n",
+        tip: "在Laf后台，左下角设置，填写环境变量，保存重启laf应用。\n" +
+          "如果使用Laf的存储，则无需填OSS_PORT、OSS_ENDPOINT、OSS_SECRET_ID、OSS_SECRET_KEY。\n",
         addition: "",
       },
       4: {

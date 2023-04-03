@@ -1,6 +1,4 @@
 import cloud from '@lafjs/cloud'
-
-
 import { sts } from 'tencentcloud-sdk-nodejs'
 
 const StsClient = sts.v20180813.Client;
@@ -26,7 +24,7 @@ exports.main = async function (ctx: FunctionContext) {
   const { OSS_ENDPOINT, OSS_BUCKET, OSS_SECRET_ID, OSS_SECRET_KEY } = await cloud.invoke("getAppSecret", {});
 
   // 没有配置
-  if (!OSS_SECRET_ID || !OSS_SECRET_KEY) {
+  if (!(OSS_ENDPOINT && OSS_BUCKET && OSS_SECRET_ID && OSS_SECRET_KEY)) {
     return null;
   }
 

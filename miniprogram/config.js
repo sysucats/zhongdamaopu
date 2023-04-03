@@ -8,11 +8,11 @@ module.exports = {
   app_version: "v1.9.9",
   // laf后台服务地址
   laf_url: 'https://cohbpk.mplaf.sysucats.com:9443',
-  // laf后台服务地址（开发环境），一般和上面一致就好
-  laf_dev_url: 'https://cohbpk.mplaf.sysucats.com:9443',
-  // laf_dev_url: 'https://pe7xm7.laf.dev',
+  // laf后台服务地址（开发环境），一般和上面laf_url一致就好
+  // laf_dev_url: 'https://cohbpk.mplaf.sysucats.com:9443',
+  laf_dev_url: 'https://fxkv6h.laf.run',
   // 使用私有的腾讯云cos存储，需要url签名
-  use_private_tencent_cos: true,
+  use_private_tencent_cos: false,
 
   // 科普页图片
   science_imgs: [

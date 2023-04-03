@@ -3,7 +3,6 @@ import { isManagerAsync } from "../../user";
 import { text as text_cfg, mpcode_img } from "../../config";
 import { showTab } from "../../page";
 import { cloud } from "../../cloudAccess";
-import { signCosUrl } from "../../cloudApi";
 
 const share_text = text_cfg.app_name + ' - ' + text_cfg.info.share_tip;
 
@@ -25,6 +24,12 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: async function (options) {
+    // 开发模式
+    const sysInfo = wx.getSystemInfoSync();
+    this.setData({
+      devMode: sysInfo.platform === "devtools"
+    });
+
     const db = cloud.database();
     var friendLinkRes = await db.collection('setting').doc('friendLink').get();
     this.setData({
