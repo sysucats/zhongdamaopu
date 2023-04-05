@@ -10,7 +10,7 @@ module.exports = {
   laf_url: 'https://cohbpk.mplaf.sysucats.com:9443',
   // laf后台服务地址（开发环境），一般和上面laf_url一致就好
   // laf_dev_url: 'https://cohbpk.mplaf.sysucats.com:9443',
-  laf_dev_url: 'https://fxkv6h.laf.run',
+  laf_dev_url: 'https://b3yfaf.laf.run',
   // 使用私有的腾讯云cos存储，需要url签名
   use_private_tencent_cos: false,
 
