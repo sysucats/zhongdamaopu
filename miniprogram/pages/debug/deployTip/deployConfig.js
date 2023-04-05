@@ -140,7 +140,7 @@ const init_setting = [{
     "_id": "friendLink",
     "apps": [{
       "appid": "wx5bd705b2bc91c73b",
-      "logo": "https://maopu-1251740905.cos.ap-guangzhou.myqcloud.com/public/zdmp_logo.png",
+      "logo": "/pages/public/images/system/zdmp.png",
       "name": "中大猫谱"
     }]
   },
