@@ -15,19 +15,19 @@ module.exports = {
 
   // 科普页图片
   science_imgs: [
-    "https://oss.mplaf.sysucats.com:9443/系统/科普1.png",
-    "https://oss.mplaf.sysucats.com:9443/系统/科普2.png",
-    "https://oss.mplaf.sysucats.com:9443/系统/科普3.png",
-    "https://oss.mplaf.sysucats.com:9443/系统/科普4.png",
-    "https://oss.mplaf.sysucats.com:9443/系统/科普5.png"
+    "https://oss.mplaf.sysucats.com:9443/cohbpk-cat/系统/科普1.png",
+    "https://oss.mplaf.sysucats.com:9443/cohbpk-cat/系统/科普2.png",
+    "https://oss.mplaf.sysucats.com:9443/cohbpk-cat/系统/科普3.png",
+    "https://oss.mplaf.sysucats.com:9443/cohbpk-cat/系统/科普4.png",
+    "https://oss.mplaf.sysucats.com:9443/cohbpk-cat/系统/科普5.png"
   ],
 
   // 赞赏码图片
-  reward_img: "https://oss.mplaf.sysucats.com:9443/系统/赞赏码.jpg",
+  reward_img: "https://oss.mplaf.sysucats.com:9443/cohbpk-cat/系统/赞赏码.jpg",
   // 新猫问卷图片
-  feedback_wj_img: "https://oss.mplaf.sysucats.com:9443/系统/新猫问卷.png",
+  feedback_wj_img: "https://oss.mplaf.sysucats.com:9443/cohbpk-cat/系统/新猫问卷.png",
   // 小程序菊花码图片
-  mpcode_img: "https://oss.mplaf.sysucats.com:9443/系统/菊花码.jpg",
+  mpcode_img: "https://oss.mplaf.sysucats.com:9443/cohbpk-cat/系统/菊花码.jpg",
 
   // 首页banner广告
   ad_genealogy_banner: "adunit-9a7dcb84fe2c4db1",
