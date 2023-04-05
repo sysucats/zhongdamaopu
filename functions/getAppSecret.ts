@@ -15,7 +15,7 @@ async function ensureShared() {
   if (OSS_ENDPOINT.startsWith("https://")) {
     OSS_ENDPOINT = OSS_ENDPOINT.substr(8);
   }
-  const OSS_PORT = cloud.env.OSS_PORT || 443;
+  const OSS_PORT = parseInt(cloud.env.OSS_PORT) || 443;
   const OSS_BUCKET = cloud.env.OSS_BUCKET;
 
   const OSS_SECRET_ID = cloud.env.OSS_SECRET_ID || cloud.env.OSS_ACCESS_KEY;
