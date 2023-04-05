@@ -29,10 +29,6 @@
     <view class="option-text">部署指引</view>
     <view class="right-arrow"><image mode='aspectFill' src="/pages/public/images/filter/right.png"></image></view> 
   </view>
-  <view class="option" bindtap='clickbtn' data-to='/pages/news/createNews/createNews'>
-    <view class="option-text">Laf 0.8 数据迁移</view>
-    <view class="right-arrow"><image mode='aspectFill' src="/pages/public/images/filter/right.png"></image></view> 
-  </view>
 </view></block>
 
 

@@ -13,7 +13,7 @@ function getTabBarList() {
 
 function isTabPath(path) {
   for (var key in tab) {
-    if (tab[key]["pagePath"] == path) {
+    if (tab[key]["pagePath"] === path) {
       return true;
     }
   }
@@ -29,7 +29,7 @@ Component({
     const currentPath = getCurrentPath();
     const settings = await getGlobalSettings("tabBarCtrl");
     if (settings == undefined) {
-      console.log("no settings");
+      console.log("no settings, currentPath:", currentPath);
       if (isTabPath(currentPath)) {
         toSettings("缺失tabBar设置，已填入默认值，请检查后保存。");
         return;

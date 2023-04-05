@@ -54,7 +54,7 @@ async function signCosUrl(url) {
         resolve(url)
         return;
       }
-      console.log("[signCosUrl]", data.Url);
+      // console.log("[signCosUrl]", data.Url);
       resolve(data.Url);
     });
   });
