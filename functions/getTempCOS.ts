@@ -54,7 +54,8 @@ async function getTempUrl(secretId: string, secretKey: string, region: string, b
   const client = new StsClient(clientConfig);
   const params = {
     "Name": "GetFederationToken",
-    "Policy": `{"version":"2.0","statement":[{"effect":"allow","action":["name/cos:GetObject"],"resource":["qcs::cos:${region}:uid/${uid}:${bucket}/*"]}]}`
+    "Policy": `{"version":"2.0","statement":[{"effect":"allow","action":["name/cos:GetObject"],"resource":["qcs::cos:${region}:uid/${uid}:${bucket}/*"]}]}`,
+    "DurationSeconds": 7200,
   };
   return await client.GetFederationToken(params);
 }

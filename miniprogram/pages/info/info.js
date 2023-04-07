@@ -123,4 +123,11 @@ Page({
       }
     })
   },
+
+  clearCache() {
+    wx.clearStorageSync();
+    wx.showToast({
+      title: '清理完成',
+    })
+  },
 })
