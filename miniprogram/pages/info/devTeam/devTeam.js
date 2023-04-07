@@ -11,6 +11,13 @@ Page({
     text_cfg: text_cfg,
     github_link: "https://github.com/sysucats/zhongdamaopu",
     update_log: [{
+      version: "v1.10.1",
+      content: [
+        "减少缓存",
+        "增加个人信息修改入口",
+      ],
+      time: "2023/4/5"
+    }, {
       version: "v1.10.0",
       content: [
         "支持Laf 1.0版本"

@@ -35,7 +35,7 @@
   </view>
 </view></block>
 
-<block wx:if='{{devMode}}'><view class='block-name'>开发者工具后台</view>
+<block wx:if='{{devMode}}'><view class='block-name'>开发者工具（手机端不显示）</view>
 <view class='option-box'>
   <view class="option" bindtap='clickbtn' data-to='/pages/debug/deployTip/deployTip'>
     <view class="option-text">部署指引</view>
