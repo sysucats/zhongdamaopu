@@ -75,7 +75,7 @@ module.exports = {
     tip: "底部TabBar控制",
     ctrlTab: {
       type: "multi-select",
-      tip: "受限TabBar（对受限人群展示哪些tab）",
+      tip: "受限TabBar（对受限人群隐藏哪些tab）",
       default: "news",
       choices: tabBarTypes
     },
@@ -149,62 +149,62 @@ module.exports = {
     },
     "notifyVerify#ID": {
       type: "text",
-      tip: "提醒审核-模版ID",
+      tip: "提醒管理审核-模版ID",
       default: "your_template_id"
     },
     "notifyVerify#title": {
       type: "text",
-      tip: "提醒审核-标题字段",
+      tip: "提醒管理审核-标题字段",
       default: "thing2"
     },
     "notifyVerify#number": {
       type: "text",
-      tip: "提醒审核-数量字段",
+      tip: "提醒管理审核-数量字段",
       default: "number5"
     },
     "notifyVerify#time": {
       type: "text",
-      tip: "提醒审核-时间字段",
+      tip: "提醒管理审核-时间字段",
       default: "time6"
     },
     "notifyChkFeedback#ID": {
       type: "text",
-      tip: "提醒查看反馈-模板ID",
+      tip: "提醒管理查看反馈-模板ID",
       default: "your_template_id"
     },
     "notifyChkFeedback#title": {
       type: "text",
-      tip: "提醒查看反馈-标题字段",
+      tip: "提醒管理查看反馈-标题字段",
       default: "thing2"
     },
     "notifyChkFeedback#number": {
       type: "text",
-      tip: "提醒查看反馈-数量字段",
+      tip: "提醒管理查看反馈-数量字段",
       default: "number5"
     },
     "notifyChkFeedback#time": {
       type: "text",
-      tip: "提醒查看反馈-时间字段",
+      tip: "提醒管理查看反馈-时间字段",
       default: "time3"
     },
     "feedback#ID": {
       type: "text",
-      tip: "提醒查看反馈-模板ID",
+      tip: "反馈结果通知-模板ID",
       default: "your_template_id"
     },
     "feedback#title": {
       type: "text",
-      tip: "提醒查看反馈-标题字段",
+      tip: "反馈结果通知-标题字段",
       default: "thing3"
     },
     "feedback#content": {
       type: "text",
-      tip: "提醒查看反馈-内容字段",
+      tip: "反馈结果通知-内容字段",
       default: "thing5"
     },
     "feedback#time": {
       type: "text",
-      tip: "提醒查看反馈-时间字段",
+      tip: "反馈结果通知-时间字段",
       default: "date4"
     }
   },
