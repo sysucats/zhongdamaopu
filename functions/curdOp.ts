@@ -94,7 +94,7 @@ exports.main = async function (ctx: FunctionContext) {
 
   if (body && body.deploy_test === true) {
     // 进行部署检查
-    return "v1.0";
+    return "v1.1";
   }
 
   var openid = ctx.user.openid;  // 用户的 OpenID
@@ -103,7 +103,7 @@ exports.main = async function (ctx: FunctionContext) {
   const operation = body.operation;  // DB 操作 ["add", "update", "remove", "set", "inc"]
   const permissionLevel = permissionNeed[operation][collection];  // 操作要求的最低权限
   console.log("permissionLevel:", permissionLevel)
-  
+
   console.log("curdOp param:", body);
   // TODO, 不要login了
   if (!openid) {
@@ -134,7 +134,7 @@ exports.main = async function (ctx: FunctionContext) {
       data._openid = openid;
     }
     data.create_date = new Date();
-    data.mdate = new Date();
+    data.mdate = data.mdate || new Date();
     return await db.collection(collection).add(data);
   }
   else if (operation == "update") {  // 更新记录
@@ -154,10 +154,10 @@ exports.main = async function (ctx: FunctionContext) {
     const type = body.type;  // 下策
     const _ = db.command;
     if (type == "pop") {
-      return await db.collection(collection).doc(item_id).update( { popularity: _.inc(1) } );
+      return await db.collection(collection).doc(item_id).update({ popularity: _.inc(1) });
     }
     else if (type == "like") {
-      return await db.collection(collection).doc(item_id).update( { like_count: _.inc(1) } );
+      return await db.collection(collection).doc(item_id).update({ like_count: _.inc(1) });
     }
     else {
       return { errMsg: `unk type ${type}`, ok: false };
@@ -218,5 +218,5 @@ async function delete_photo_for_news(item_id) {
         console.log("删除公告封面", item.coverPath);
       });
     }
-  }); 
+  });
 }

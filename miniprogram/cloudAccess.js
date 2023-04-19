@@ -1,10 +1,10 @@
 import {
-  dev_mode,
   laf_url,
   laf_dev_url,
   use_private_tencent_cos
 } from "./config"
 import COS from './packages/tencentcloud/cos';
+import CryptoJS from 'crypto-js';
 
 var cloud = undefined;
 
@@ -132,11 +132,19 @@ function _init() {
 
   // 自定义请求函数
   const WxmpRequest = require('laf-client-sdk').WxmpRequest;
+  // Laf 0.8 私有部署的apiKey
   var apikey = "";
   try {
     apikey = require('./appSecret').apikey;
   } catch {
     console.log("no apikey");
+  }
+  // Laf 1.0 的签名私钥
+  var signKey = "";
+  try {
+    signKey = require('./signKey').signKey;
+  } catch {
+    console.log("no signKey");
   }
   class MyRequest extends WxmpRequest {
     async request(url, data) {
@@ -144,9 +152,25 @@ function _init() {
       return res
     }
 
+    getSign() {
+      if (!signKey) {
+        return {signdata: "", signstr: ""};
+      }
+      const data = (new Date()).toISOString();
+      // 使用SHA256算法进行签名
+      const signature = CryptoJS.HmacSHA256(data, signKey).toString();
+      // console.log('Signature:', signature);
+      return {signdata: data, signstr: signature};
+    }
+
     getHeaders(token) {
       var headers = super.getHeaders(token);
       headers.apikey = apikey;
+
+      const {signdata, signstr} = this.getSign();
+      // console.log({signdata, signstr});
+      headers.signdata = signdata;
+      headers.signstr = signstr;
       return headers;
     }
   }
@@ -274,7 +298,7 @@ function _injectGet(proto) {
   proto.get = async function () {
     try {
       let res = await _get.call(this);
-      console.log("get result:", res);
+      // console.log("get result:", res);
       await _deepReplaceCosUrl(res);
       return res;
     } catch (err) {
