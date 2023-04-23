@@ -129,7 +129,7 @@ Page({
   },
 
   async loadProcess() {
-    const db = cloud.database();
+    const db = await cloud.databaseAsync();
     const _ = db.command;
     const total = (await db.collection('photo').where({
       photo_compressed: _.in([undefined, '']),
@@ -166,7 +166,7 @@ Page({
   },
 
   beginProcess: async function () {
-    const db = cloud.database();
+    const db = await cloud.databaseAsync();
     const _ = db.command;
     while (this.data.processing && (await this.getLock())) {
       var photos = (await db.collection('photo').where({

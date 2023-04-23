@@ -96,7 +96,7 @@ Page({
       console.log("scene:", scene);
       if (scene.startsWith('toC=')) {
         const cat_No = scene.substr(4);
-        const db = cloud.database();
+        const db = await cloud.databaseAsync();
         var cat_res = await db.collection('cat').where({
           _no: cat_No
         }).field({
@@ -291,9 +291,9 @@ Page({
     // 增加lock
     loadingLock++;
     const nowLoadingLock = loadingLock;
-    const db = cloud.database();
+    const db = await cloud.databaseAsync();
     const cat = db.collection('cat');
-    const query = this.fGet();
+    const query = await this.fGet();
     const cat_count = (await cat.where(query).count()).total;
 
     if (loadingLock != nowLoadingLock) {
@@ -331,10 +331,10 @@ Page({
 
     var cats = this.data.cats;
     var step = catsStep;
-    const db = cloud.database();
+    const db = await cloud.databaseAsync();
     const cat = db.collection('cat');
     const _ = db.command;
-    const query = this.fGet();
+    const query = await this.fGet();
     var new_cats = (await cat.where(query).orderBy('mphoto', 'desc').orderBy('popularity', 'desc').skip(cats.length).limit(step).get()).data
     new_cats = shuffle(new_cats);
 
@@ -443,7 +443,7 @@ Page({
   getHeights() {
     wx.getSystemInfo({
       success: res => {
-        console.log(res);
+        // console.log(res);
         this.setData({
           "heights.filters": res.screenHeight * 0.065,
           "heights.screenHeight": res.screenHeight,
@@ -582,8 +582,8 @@ Page({
     }
     return true;
   },
-  fGet: function () {
-    const db = cloud.database();
+  fGet: async function () {
+    const db = await cloud.databaseAsync();
     const _ = db.command;
     const filters = this.data.filters;
     var res = []; // 先把查询条件全部放进数组，最后用_.and包装，这样方便跨字段使用or逻辑
@@ -767,7 +767,7 @@ Page({
       return x === target
     });
 
-    const db = cloud.database();
+    const db = await cloud.databaseAsync();
     const cat = db.collection('cat');
     const query = {
       adopt: value
@@ -868,7 +868,7 @@ Page({
       return;
     }
     // 载入需要弹窗的公告
-    const db = cloud.database();
+    const db = await cloud.databaseAsync();
     var newsList = (await db.collection('news').orderBy('date', 'desc').where({
       setNewsModal: true
     }).get()).data

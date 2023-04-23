@@ -29,7 +29,7 @@ Page({
     wx.showLoading({
       title: '加载投喂记录中',
     })
-    const db = cloud.database();
+    const db = await cloud.databaseAsync();
     var res = await db.collection('reward').orderBy('recordDate', 'desc').orderBy('mdate', 'desc').get();
     for (var r of res.data) {
       r.mdate = r.recordDate ? new Date(r.recordDate) : new Date(r.mdate);

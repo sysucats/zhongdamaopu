@@ -36,7 +36,7 @@ Page({
     wx.showLoading({
       title: '加载中...',
     });
-    const db = cloud.database();
+    const db = await cloud.databaseAsync();
     var res = await db.collection('feedback').doc(options.fb_id).get();
     console.log(res);
     if (!res.data.userInfo) {

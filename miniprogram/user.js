@@ -6,9 +6,6 @@ import { cloud } from "./cloudAccess";
 import api from "./cloudApi";
 import config from "./config";
 
-const db = cloud.database();
-const _ = db.command;
-const coll_user = db.collection('user');
 
 const UserTypes = {
   manager: "manager",
@@ -60,6 +57,9 @@ async function getUserInfo(openid, options) {
   }
 
   // 重新获取
+  const db = await cloud.databaseAsync();
+  const _ = db.command;
+  const coll_user = db.collection('user');
   value = (await coll_user.where({openid: openid}).get()).data[0];
 
   if (value.length === 0) {
@@ -95,6 +95,9 @@ async function getUserInfoMulti(openids, cacheOptions, retMap) {
   }
 
   // 请求没有的
+  const db = await cloud.databaseAsync();
+  const _ = db.command;
+  const coll_user = db.collection('user');
   if (not_found.length) {
     var db_res = (await coll_user.where({openid: _.in(not_found)}).get()).data;
     for (var user of db_res) {
@@ -255,7 +258,7 @@ async function fillUserInfo(items, openidKey, userInfoKey, cacheOptions) {
       continue;
     }
     const openid = item[openidKey];
-    item[userInfoKey] = res[openid].userInfo;
+    item[userInfoKey] = res[openid]?.userInfo;
   }
   return;
 }

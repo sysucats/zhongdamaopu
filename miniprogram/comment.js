@@ -24,7 +24,7 @@ async function _doGetCatCommentCount(cat_id) {
   if (cat_id === undefined) {
     return 0;
   }
-  const db = cloud.database();
+  const db = await cloud.databaseAsync();
   const _ = db.command;
   const coll_comment = db.collection('comment');
   return (await coll_comment.where({

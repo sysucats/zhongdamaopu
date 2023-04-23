@@ -46,7 +46,7 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: async function (options) {
-    const db = cloud.database();
+    const db = await cloud.databaseAsync();
     var res = await db.collection('news').orderBy('date', 'desc').get();
 
     this.setData({
@@ -96,7 +96,7 @@ Page({
 
   // 重新载入数据库
   async getData() {
-    const db = cloud.database();
+    const db = await cloud.databaseAsync();
     const res = await db.collection('news').orderBy('date', 'desc').get();
 
     this.setData({

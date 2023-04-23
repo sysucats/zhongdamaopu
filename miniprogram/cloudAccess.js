@@ -7,6 +7,9 @@ import COS from './packages/tencentcloud/cos';
 import CryptoJS from 'crypto-js';
 
 var cloud = undefined;
+  
+// 等待时间（ms），不能import utils，会循环引用
+const sleep = m => new Promise(r => setTimeout(r, m))
 
 function _splitOnce(str, sep) {
   const idx = str.indexOf(sep);
@@ -178,7 +181,7 @@ function _init() {
   cloud = require('laf-client-sdk').init({
     baseUrl: (sysInfo.platform == 'devtools' ? laf_dev_url : laf_url),
     dbProxyUrl: '/proxy/miniprogram',
-    getAccessToken: () => {
+    getAccessToken: function() {
       const accessToken = wx.getStorageSync('accessToken');
       if (!accessToken) {
         return;
@@ -290,7 +293,25 @@ function _inject() {
       });
     });
   }
-
+  // 让database接口等待openid获取，满足laf的访问策略要求
+  const _database = cloud.__proto__.database;
+  cloud.__proto__.databaseAsync = async function () {
+    var max_try = 300;
+    while (true) {
+      const { token } = wx.getStorageSync('accessToken');
+      if (token) {
+        break;
+      }
+      console.log("waiting jwt...");
+      max_try --;
+      if (!max_try) {
+        console.log("max try...");
+        break;
+      }
+      await sleep(10);
+    }
+    return _database.call(this);
+  }
 }
 
 function _injectGet(proto) {
@@ -362,5 +383,6 @@ async function _deepReplaceCosUrl(obj) {
 })();
 
 module.exports = {
-  cloud: cloud
+  cloud: cloud,
+  ensureToken: ensureToken,
 };

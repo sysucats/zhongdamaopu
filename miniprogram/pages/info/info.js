@@ -30,7 +30,7 @@ Page({
       devMode: sysInfo.platform === "devtools"
     });
 
-    const db = cloud.database();
+    const db = await cloud.databaseAsync();
     var friendLinkRes = await db.collection('setting').doc('friendLink').get();
     this.setData({
       friendApps: friendLinkRes.data.apps,
@@ -57,7 +57,7 @@ Page({
     if (!await isManagerAsync()) {
       return;
     }
-    const db = cloud.database();
+    const db = await cloud.databaseAsync();
     const _ = db.command;
 
     const imProcessQf = { photo_compressed: _.in([undefined, '']), verified: true, photo_id: /^((?!\.heic$).)*$/i };

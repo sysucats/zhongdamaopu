@@ -148,7 +148,7 @@ Page({
       loadnomore: false
     });
 
-    const db = cloud.database();
+    const db = await cloud.databaseAsync();
     const _ = db.command;
     const curCount = this.data.columns[0].length + this.data.columns[1].length;
     const timeRange = this.getTimeRange();

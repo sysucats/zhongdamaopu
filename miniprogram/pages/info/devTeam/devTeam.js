@@ -11,6 +11,16 @@ Page({
     text_cfg: text_cfg,
     github_link: "https://github.com/sysucats/zhongdamaopu",
     update_log: [{
+      version: "v1.10.2",
+      content: [
+        "修复常用工具不显示等问题",
+        "修复留言无法被发表者删除问题",
+        "加速审核列表加载",
+        "修改部分UI问题",
+        "支持laf接口签名认证",
+      ],
+      time: "2023/4/5"
+    }, {
       version: "v1.10.1",
       content: [
         "减少缓存",

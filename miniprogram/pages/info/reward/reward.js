@@ -75,12 +75,12 @@ Page({
   },
 
   async loadReward() {
-    const db = cloud.database();
+    const db = await cloud.databaseAsync();
     var rewardRes = await db.collection('reward').orderBy('mdate', 'desc').get();
     
     console.log(rewardRes.data);
     for (var r of rewardRes.data) {
-      const tmp = r.mdate;
+      const tmp = r.recordDate ? new Date(r.recordDate) : new Date(r.mdate);
       r.mdate = tmp.getFullYear() + '年' + (tmp.getMonth()+1) + '月';
       r.records = r.records.replace(/^\#+|\#+$/g, '').split('#');
     }

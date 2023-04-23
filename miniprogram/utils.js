@@ -185,7 +185,7 @@ async function arrayResort(oriArray) {
 // 检查部署情况，有错误就跳转到部署帮助页
 async function checkDeploy() {
   try {
-    const db = cloud.database();
+    const db = await cloud.databaseAsync();
     await db.collection('setting').doc('pages').get();
   } catch (error) {
     return false

@@ -3,10 +3,6 @@ import { getCacheItem, setCacheItem, cacheTime } from "./cache";
 import { cloud } from "./cloudAccess";
 import api from "./cloudApi";
 
-// 常用的一些对象
-const db = cloud.database();
-const _ = db.command;
-const coll_inter = db.collection('inter');
 var user = undefined;
 
 async function ensureUser() {
@@ -31,6 +27,9 @@ async function _likeGet(item_ids) {
     return [];
   }
   await ensureUser();
+  const db = await cloud.databaseAsync();
+  const _ = db.command;
+  const coll_inter = db.collection('inter');
   return (await coll_inter.where({type: TYPE_LIKE, uid: user.openid, item_id: _.in(item_ids)}).get()).data;
 }
 

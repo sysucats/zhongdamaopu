@@ -1,6 +1,7 @@
 import dp_cfg from "./deployConfig";
 import {
-  cloud
+  cloud,
+  ensureToken,
 } from "../../../cloudAccess";
 import { use_private_tencent_cos } from "../../../config";
 
@@ -12,7 +13,9 @@ const STATUS_FAIL = 2;
 // 检查云函数是否都部署了
 async function checkFunctions() {
   // 清理缓存
-  wx.clearStorageSync()
+  wx.clearStorageSync();
+  // 重新获取token
+  await ensureToken();
 
   const res = (await cloud.callFunction({
     name: "deployTest",
@@ -200,7 +203,7 @@ Page({
         title: "部署云函数",
         status: STATUS_DOING,
         func: checkFunctions,
-        tip: "参考README中更新云函数\n",
+        tip: "请更新云函数，“laf func push”\n",
         addition: "",
         break: true,
       },

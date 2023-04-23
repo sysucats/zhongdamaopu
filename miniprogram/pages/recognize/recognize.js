@@ -382,14 +382,14 @@ Page({
   },
 
   async getCatInfo(cat) {
-    const db = cloud.database();
+    const db = await cloud.databaseAsync();
     const catInfo = (await db.collection('cat').doc(cat.catID).get()).data;
     catInfo.score = cat.score;
     return catInfo;
   },
 
   async getCatPhoto(catInfo) {
-    const db = cloud.database();
+    const db = await cloud.databaseAsync();
     const photo = db.collection('photo');
     // 从精选照片里随机挑选一张
     const query = {

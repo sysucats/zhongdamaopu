@@ -50,7 +50,7 @@ Page({
   },
 
   async getRank() {
-    const db = cloud.database();
+    const db = await cloud.databaseAsync();
     var rankRes = await db.collection('photo_rank').orderBy('mdate', 'desc').limit(1).get();
     
     if (rankRes.data.length == 0) {

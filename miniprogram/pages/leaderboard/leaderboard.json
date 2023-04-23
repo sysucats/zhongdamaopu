@@ -2,6 +2,6 @@
   "usingComponents": {
     "heart": "/packages/heart-button/heart"
   },
-  "navigationBarTitleText": "猫谱精选"
+  "navigationBarTitleText": "点赞精选"
 
 }
