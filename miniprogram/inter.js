@@ -65,6 +65,7 @@ async function likeCheck(item_ids, options) {
 
 // 点赞成为特邀
 async function likeToInvite() {
+  const db = await cloud.databaseAsync();
   if (user.role) {
     // 已经是了
     console.log("already role");

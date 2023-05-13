@@ -11,7 +11,7 @@ Page({
     text_cfg: text_cfg,
     github_link: "https://github.com/sysucats/zhongdamaopu",
     update_log: [{
-      version: "v1.10.2",
+      version: "v1.11.0",
       content: [
         "修复常用工具不显示等问题",
         "修复留言无法被发表者删除问题",

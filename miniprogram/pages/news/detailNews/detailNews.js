@@ -5,7 +5,6 @@ import {
   sleep
 } from "../../../utils";
 import {
-  checkAuth,
   isManagerAsync
 } from "../../../user";
 import {
@@ -22,7 +21,6 @@ Page({
   data: {
     news_id: 0,
     news: 0,
-    auth: false,
     updateRequest: false,
     err: false,
     photos_path: [],
@@ -118,7 +116,7 @@ Page({
   },
 
   async removeNews() {
-    if (this.data.auth == false) {
+    if (this.data.showManager == false) {
       return;
     }
 
