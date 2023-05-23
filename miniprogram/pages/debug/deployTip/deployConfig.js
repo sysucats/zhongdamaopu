@@ -133,8 +133,8 @@ const init_setting = [{
   {
     "_id": "filter",
     "colour": ["橘", "白", "黑", "橘白", "三花", "狸花", "奶牛", "玳瑁"],
-    "campuses": ["新校区"],
-    "area": []
+    "campuses": ["玉泉校区"],
+    "area": [],
   },
   {
     "_id": "friendLink",

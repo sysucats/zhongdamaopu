@@ -5,29 +5,29 @@
 
 module.exports = {
   // 版本号
-  app_version: "v1.10.1",
+  app_version: "v1.0.0",
   // laf后台服务地址
-  laf_url: 'https://cohbpk.mplaf.sysucats.com:9443',
+  laf_url: 'https://rk2are.laf.run',
   // laf后台服务地址（开发环境），一般和上面laf_url一致就好
-  laf_dev_url: 'https://cohbpk.mplaf.sysucats.com:9443',
+  laf_dev_url: 'https://rk2are.laf.run',
   // 使用私有的腾讯云cos存储，需要url签名
-  use_private_tencent_cos: false,
+  use_private_tencent_cos: true,
 
   // 科普页图片
   science_imgs: [
-    "https://oss.mplaf.sysucats.com:9443/cohbpk-cat/系统/科普1.png",
-    "https://oss.mplaf.sysucats.com:9443/cohbpk-cat/系统/科普2.png",
-    "https://oss.mplaf.sysucats.com:9443/cohbpk-cat/系统/科普3.png",
-    "https://oss.mplaf.sysucats.com:9443/cohbpk-cat/系统/科普4.png",
-    "https://oss.mplaf.sysucats.com:9443/cohbpk-cat/系统/科普5.png"
+    "https://cos.ap-shanghai.myqcloud.com/catcat-1257269019/系统/科普1.png",
+    "https://cos.ap-shanghai.myqcloud.com/catcat-1257269019/系统/科普2.png",
+    "https://cos.ap-shanghai.myqcloud.com/catcat-1257269019/系统/科普3.png",
+    "https://cos.ap-shanghai.myqcloud.com/catcat-1257269019/系统/科普4.png",
+    "https://cos.ap-shanghai.myqcloud.com/catcat-1257269019/系统/科普5.png"
   ],
 
   // 赞赏码图片
-  reward_img: "https://oss.mplaf.sysucats.com:9443/cohbpk-cat/系统/赞赏码.jpg",
+  reward_img: "https://cos.ap-shanghai.myqcloud.com/catcat-1257269019/系统/赞赏码.jpg",
   // 新猫问卷图片
-  feedback_wj_img: "https://oss.mplaf.sysucats.com:9443/cohbpk-cat/系统/新猫问卷.png",
+  feedback_wj_img: "https://cos.ap-shanghai.myqcloud.com/catcat-1257269019/系统/新猫问卷.png",
   // 小程序菊花码图片
-  mpcode_img: "https://oss.mplaf.sysucats.com:9443/cohbpk-cat/系统/菊花码.jpg",
+  mpcode_img: "https://cos.ap-shanghai.myqcloud.com/catcat-1257269019/系统/菊花码.jpg",
 
   // 首页banner广告
   ad_genealogy_banner: "adunit-9a7dcb84fe2c4db1",
@@ -44,7 +44,7 @@ module.exports = {
   // 各种文字内容
   text: {
     // 小程序名
-    app_name: "中大猫谱",
+    app_name: "老和山猫咪图鉴",
     // 首页，pages/genealogy/genealogy
     genealogy: {
       share_tip: "发现身边校园猫咪",
@@ -133,7 +133,7 @@ module.exports = {
       new_cat_tip_title: "新的猫猫",
       new_cat_tip: "提交猫谱中没有的猫猫信息，给猫猫上户口~",
       contract_tip_title: "更多联系",
-      contract_tip: "有关猫猫信息添加、小程序的建议、照片维权、猫猫领养咨询等事项，请关注笃行志愿服务队公众号后留言，或邮件：dxzyfwd@163.com",
+      contract_tip: "有关猫猫信息添加、小程序的建议、照片维权、猫猫领养咨询等事项，请关注笃行志愿服务队公众号后留言，或邮件：jukiechen@163.com",
     },
     // 开发团队页，pages/info/devTeam/devTeam
     dev_team: {
