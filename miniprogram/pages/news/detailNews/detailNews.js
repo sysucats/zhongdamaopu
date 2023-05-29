@@ -108,7 +108,7 @@ Page({
     },
 
     async removeNews() {
-      if (this.data.auth == false) {
+      if (this.data.showManager == false) {
         return;
       }
       
