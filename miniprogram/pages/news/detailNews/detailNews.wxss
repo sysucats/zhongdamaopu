@@ -133,3 +133,127 @@ button+button {
   /* width: 100%; */
   height: 200rpx;
 }
+
+.comment-board-header {
+  font-size: 32rpx;
+  font-weight: 600;
+  height: 128rpx;
+  margin-bottom: 20rpx;
+}
+
+#comment-list {
+  width: 750rpx;
+  height: 100%;
+}
+
+.comment {
+  display: flex;
+  padding: 15rpx 0;
+  background-color: white;
+  margin-bottom: 10rpx;
+}
+
+.comment .left {
+  width: 120rpx;
+}
+
+.comment .left .avatar {
+  width: 70rpx;
+  height: 70rpx;
+  border-radius: 25rpx;
+  margin: 0 30rpx;
+}
+
+.comment .right {
+  width: 700rpx;
+  padding-right: 30rpx;
+}
+
+.comment .right .info-block {
+  height: 80rpx;
+}
+
+.comment .right .username {
+  font-size: 28rpx;
+  color: var(--color-black-light);
+  font-weight: 500;
+}
+
+.comment .right .delete {
+  font-size: 22rpx;
+  color: var(--color-black-light);
+  font-weight: lighter;
+  float: right;
+}
+
+.comment .right .datetime {
+  font-size: 20rpx;
+  color: var(--color-gray-max);
+}
+
+.comment .right .content {
+  font-size: 28rpx;
+  color: var(--color-black-light);
+}
+
+.comment + .comment {
+  border-top: 1rpx solid var(--color-gray-light);
+}
+
+#input-block-ph {
+  height: 200rpx;
+}
+
+#input-block {
+  width: 700rpx;
+  display: flex;
+  flex-wrap: wrap;
+  padding: 20rpx;
+  padding-top: 20rpx;
+  background-color: white;
+  box-sizing: border-box;
+  border-top: 1rpx solid var(--color-gray-light);
+}
+
+#input-block-bottom {
+  width: 750rpx;
+  height: constant(safe-area-inset-bottom);
+  height: env(safe-area-inset-bottom);
+}
+
+/* #input-block.active {
+  padding-bottom: 10rpx;
+} */
+
+#input-block textarea {
+  width: 100%;
+  min-height: 30rpx;
+
+  background-color: var(--color-white-dark);
+  color: var(--color-black-light);
+  padding: 18rpx 20rpx;
+  border-radius: 10rpx;
+
+	font-size: 30rpx;
+	line-height: 30rpx;
+}
+
+#input-block .send-btn {
+  width: 100rpx;
+  margin: 10rpx 0 0 auto;
+  padding: 6rpx;
+  text-align: center;
+  font-size: 28rpx;
+  font-weight: bold;
+  background-color: var(--color-primary);
+  color: white;
+  border-radius: 50rpx;
+}
+
+button.long {
+  width: 100%;
+}
+
+button.primary {
+  background-color: var(--color-primary);
+}

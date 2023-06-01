@@ -20,7 +20,7 @@
     <textarea placeholder="喵喵 喵喵喵 喵喵喵喵！" name='mainContent' maxlength='{{maxlength}}' bindinput='bindInput'></textarea>
     <view class='lengthTips'>字数：{{length}}/{{maxlength}}</view>
 
-    <view class='label'>封面图：封面图会在公告栏界面显示（长按删除）</view>
+    <view class='label'>封面图：封面图会在论坛界面显示（长按删除）</view>
     <view class='album'>
         <view class='album-block' wx:if="{{cover != 0}}">
             <image mode='aspectFill' class='alb-image' src='{{cover.path}}' bindtap='previewImg' data-url='{{cover.path}}' bindlongpress="deleteCover"></image>

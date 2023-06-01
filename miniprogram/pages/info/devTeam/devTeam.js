@@ -12,6 +12,13 @@ Page({
     github_link: "https://github.com/sysucats/zhongdamaopu",
     update_log: [
       {
+        version: "v1.2.0",
+        content: [
+          "增加论坛功能",
+        ],
+        time: "2023/5/31"
+      },
+      {
         version: "v1.1.0",
         content: [
           "增加紫金港校区",

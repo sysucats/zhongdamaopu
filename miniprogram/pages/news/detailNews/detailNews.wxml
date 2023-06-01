@@ -1,22 +1,18 @@
-<!--pages/news/detailNews/detailNews.wxml-->
-
+<!-- pages/news/detailNews/detailNews.wxml -->
 <view class='loading' wx:if='{{updateRequest}}'>
     <image src='/pages/public/images/system/loading.gif'></image>
 </view>
-
-
 <scroll-view enable-flex='true' class='cards' style='height: {{heights.windowHeight - heights.filters}}px;' scroll-y='true' enable-back-to-top='true' bindscrolltolower='onRefresh' bindscroll='fScroll' lower-threshold='50'>
-
     <view class='news-box' wx:if='{{news != 0}}'>
         <view class='news title'>{{news.title}}</view>
         <view class="news row-container">
             <view class='news tag'>{{news.class}}</view>
-            <view class='news user'>{{news.userNicknameLastModify?news.userNicknameLastModify:news.userNickname}} </view>
-            <view class='news time'>{{news.ddate}} </view>
+            <view class='news user'>
+                {{news.userNicknameLastModify?news.userNicknameLastModify:news.userNickname}}
+            </view>
+            <view class='news time'>{{news.ddate}}</view>
         </view>
-
         <view class='news content'>{{news.mainContent}}</view>
-
         <!-- 文字结束，单图/多图部分 -->
         <view wx:if='{{photos_path.length == 1}}'>
             <image mode='widthFix' class="single-image" src='{{photos_path[0]}}' bindtap='previewImg'></image>
@@ -28,15 +24,45 @@
                 </block>
             </view>
         </view>
-        <view wx:if='{{news.ddateLastModify}}' class='news editTime'>修改于：{{news.ddateLastModify}} </view>
-
+        <view wx:if='{{news.ddateLastModify}}' class='news editTime'>
+            修改于：{{news.ddateLastModify}}
+        </view>
         <view wx:if="{{showManager}}">
-            <button bindtap='removeNews'>删除</button>
-            <button bindtap='modifyNews'>修改</button>
+            <button bindtap='removeNews'>删除帖子</button>
+            <button bindtap='modifyNews'>修改帖子</button>
+        </view>
+        <!-- 留言输入框 -->
+        <view id="input-block" style="margin-bottom: {{keyboard_height}}px;" class="{{keyboard_height>0 ? 'active': ''}}" wx:if="{{canComment}}">
+            <button wx:if="{{!isAuth}}" class='long primary' bindtap='getUInfo'>
+                {{text_cfg.comment_board.auth_tip}}
+            </button>
+            <block wx:else>
+                <textarea id="comment-input" value="{{comment_input}}" auto-height="{{true}}" show-confirm-bar="{{false}}" maxlength="300" placeholder="留个言吧" bindfocus="commentFocus" bindblur="commentBlur" bindinput="commentInput"></textarea>
+                <view class="send-btn" bindtap="sendComment">发 送</view>
+            </block>
+            <!-- 解决iOS UI兼容性 -->
+            <view wx:if="{{keyboard_height == 0}}" id="input-block-bottom"></view>
+        </view>
+        <!-- 展示留言 -->
+        <view class='comment-board-header'>
+            <view class='count'>共{{comments.length}}条留言</view>
+        </view>
+        <view class="comment" wx:for="{{comments}}" wx:key="_id">
+            <view class="right">
+                <view class="info-block">
+                    <view class="username">
+                        <text>{{item.userInfo.nickName || '-'}}</text>
+                        <text wx:if="{{is_manager}}" class="delete" bindtap="deleteComment" data-item="{{item}}" data-index="{{index}}">
+                            删除
+                        </text>
+                    </view>
+                    <view class="datetime">{{item.datetime}}</view>
+                </view>
+                <view class="content">{{item.content}}</view>
+            </view>
         </view>
     </view>
     <view class='verify-box' wx:if='{{err}}'>
         <view class='news err'>喵公告消失了？</view>
     </view>
-
 </scroll-view>
