@@ -175,7 +175,7 @@ Page({
     types.splice(idx, 1);
     await api.curdOp({
       operation: "update",
-      document: "setting",
+      collection: "setting",
       item_id: "relation",
       data: {
         types: types
