@@ -40,3 +40,10 @@
 
 <!-- 底tab占位 -->
 <view style="height: {{tabBarHeight}}px;"></view>
+<!-- 按钮占位 -->
+<view style="height: {{tabBarHeight}}px;"></view>
+
+<!-- Button to leave new message-->
+<view class='add-button-container' bindtap='addNews'>
+    <view class="add-button-text"> 添加猫咪新闻</view>
+</view>

@@ -94,6 +94,10 @@ Page({
     })
   },
 
+  addNews() {
+    console.log("onAddNewMsg heihei");
+  },
+
   // 重新载入数据库
   async getData() {
     const db = cloud.database();
