@@ -25,10 +25,6 @@
 
 <block wx:if='{{devMode}}'><view class='block-name'>常用工具</view>
 <view class='option-box'>
-  <view class="option" bindtap='clickbtn' data-to='/pages/info/userInfo/modifyUserInfo/modifyUserInfo'>
-    <view class="option-text">个人信息修改</view>
-    <view class="right-arrow"><image mode='aspectFill' src="/pages/public/images/filter/right.png"></image></view> 
-  </view>
   <view class="option" bindtap='clearCache'>
     <view class="option-text">清理缓存</view>
     <view class="right-arrow"><image mode='aspectFill' src="/pages/public/images/filter/right.png"></image></view> 
@@ -46,6 +42,10 @@
 
 <block wx:if='{{showManager}}'><view class='block-name'>管理后台</view>
 <view class='option-box'>
+  <view class="option" bindtap='clickbtn' data-to='/pages/info/userInfo/modifyUserInfo/modifyUserInfo'>
+    <view class="option-text">个人信息修改</view>
+    <view class="right-arrow"><image mode='aspectFill' src="/pages/public/images/filter/right.png"></image></view> 
+  </view>
   <view class="option" bindtap='clickbtn' data-to='/pages/manage/checkPhotos/checkPhotos'>
     <view class="option-text">照片审核({{numChkPhotos}})</view>
     <view class="right-arrow"><image mode='aspectFill' src="/pages/public/images/filter/right.png"></image></view> 
