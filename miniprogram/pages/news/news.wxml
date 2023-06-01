@@ -44,6 +44,6 @@
 <view style="height: {{tabBarHeight}}px;"></view>
 
 <!-- Button to leave new message-->
-<view class='add-button-container' bindtap='addNews'>
-    <view class="add-button-text"> 添加猫咪新闻</view>
+<view class='add-button-container' bindtap='addPosts'>
+    <view class="add-button-text"> 论坛发帖</view>
 </view>

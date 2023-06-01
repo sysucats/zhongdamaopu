@@ -94,8 +94,13 @@ Page({
     })
   },
 
-  addNews() {
-    console.log("onAddNewMsg heihei");
+  // 添加论坛新帖子
+  addPosts() {
+    console.log("Clicked onAddNewMsg");
+    const add_post_url = '/pages/news/createNews/createNews'
+    wx.navigateTo({
+      url: add_post_url,
+    });
   },
 
   // 重新载入数据库

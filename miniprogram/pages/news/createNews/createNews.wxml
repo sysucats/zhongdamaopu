@@ -1,6 +1,6 @@
 <!--pages/manage/manageNews/createNews/createNews.wxml-->
 
-<form wx:if="{{auth}}" bindsubmit="bindSubmit">
+<form bindsubmit="bindSubmit">
     <view class='label'>自定义昵称：（选填）</view>
     <input name='name' type='text' placeholder="{{user.userInfo.nickName}}" bindinput='bindInputName' maxlength='{{namemaxlength}}'></input>
     <view class='lengthTips'>字数：{{namelength}}/{{namemaxlength}}</view>
@@ -9,7 +9,7 @@
     <input name='title' type='text' bindinput='bindInputTitle' maxlength='{{titlemaxlength}}'></input>
     <view class='lengthTips'>字数：{{titlelength}}/{{titlemaxlength}}</view>
 
-    <view class='label'>公告分类：（必选）</view>
+    <view class='label'>帖子分类：（必选）</view>
     <view class='button_container'>
         <block wx:for="{{buttons}}" wx:key="buttons">
             <button class='{{item.checked?"checked_button":"normal_button"}}' data-id='{{item.id}}' bindtap='radioButtonTap'>{{item.name}}</button>
@@ -17,7 +17,7 @@
     </view>
 
     <view class='label'>正文：（选填）</view>
-    <textarea placeholder="喵喵 喵喵喵" name='mainContent' maxlength='{{maxlength}}' bindinput='bindInput'></textarea>
+    <textarea placeholder="喵喵 喵喵喵 喵喵喵喵！" name='mainContent' maxlength='{{maxlength}}' bindinput='bindInput'></textarea>
     <view class='lengthTips'>字数：{{length}}/{{maxlength}}</view>
 
     <view class='label'>封面图：封面图会在公告栏界面显示（长按删除）</view>
@@ -46,18 +46,22 @@
         <button bindtap="chooseImg">添加图片</button>
     </view>
 
-    <view class='label'>公告弹窗：设置公告弹窗将会在小程序首页弹出此公告</view>
-    <view class='button_container'>
-        <block wx:for="{{modalButtons}}" wx:key="modalButtons">
-            <button class='{{item.checked?"checked_button":"normal_button"}}' data-id='{{item.id}}' bindtap='radioModalButtonTap'>{{item.name}}</button>
-        </block>
+    <!-- 只有管理员可以设置公告弹窗 -->
+    <view wx:if="{{auth}}">
+        <view class='label'>公告弹窗：设置公告弹窗将会在小程序首页弹出此公告</view>
+        <view class='button_container'>
+            <block wx:for="{{modalButtons}}" wx:key="modalButtons">
+                <button class='{{item.checked?"checked_button":"normal_button"}}' data-id='{{item.id}}' bindtap='radioModalButtonTap'>{{item.name}}</button>
+            </block>
+        </view>
     </view>
 
     <view class="line"></view>
 
     <button class='submitButton' form-type='submit'>发布公告</button>
 </form>
-<view wx:else class='unAuth'>
+
+<!-- <view wx:else class='unAuth'>
     <text>{{tipText}}</text>
     <button bindtap='goBack' wx:if='{{tipBtn}}'>打扰了</button>
-</view>
+</view> -->
