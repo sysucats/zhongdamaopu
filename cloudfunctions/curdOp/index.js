@@ -17,7 +17,8 @@ exports.main = async (event, context) => {
   console.log("curdOp param:", event);
 
   // 检查权限
-  if(operation != "add" || collection == "news") {
+  // Not (A and B) = (Not A) or (Not B)
+  if(operation != "add" || collection != "news") {
     // 添加论坛新帖子跳过权限检查
     if (permissionLevel) {
       const permission = await check_permission(openid, permissionLevel);

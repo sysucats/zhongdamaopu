@@ -58,7 +58,7 @@
 
     <view class="line"></view>
 
-    <button class='submitButton' form-type='submit'>发布公告</button>
+    <button class='submitButton' form-type='submit'>发布帖子</button>
 </form>
 
 <!-- <view wx:else class='unAuth'>
