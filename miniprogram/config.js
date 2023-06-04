@@ -5,7 +5,7 @@
 
 module.exports = {
   // 版本号
-  app_version: "v1.0.0",
+  app_version: "v1.2.1",
   // laf后台服务地址
   laf_url: 'https://rk2are.laf.run',
   // laf后台服务地址（开发环境），一般和上面laf_url一致就好
@@ -138,7 +138,7 @@ module.exports = {
     // 开发团队页，pages/info/devTeam/devTeam
     dev_team: {
       share_tip: "开发团队",
-      team: "程序开发：渔政（中大）、蓝卷（中大）、XD（中大）、zJ（中大）、ArcherJo（中大）、yw（中大）\n程序维护：大力出奇迹\n资料整理：余华小狗、我有一只小毛驴\n以及各校区猫群的小伙伴~\n非常欢迎新朋友加入设计开发哇~！",
+      team: "程序开发：渔政（中大）、蓝卷（中大）、XD（中大）、zJ（中大）、ArcherJo（中大）、yw（中大）、大力出奇迹、W.H\n资料整理：余华小狗、我有一只小毛驴、小青\n以及各校区猫群的小伙伴~\n非常欢迎新朋友加入设计开发哇~！",
     },
     // 识猫页，pages/recognize/recognize
     recognize: {
