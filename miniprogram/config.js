@@ -5,7 +5,7 @@
 
 module.exports = {
   // 版本号
-  app_version: "v1.2.1",
+  app_version: "v1.2.2",
   // laf后台服务地址
   laf_url: 'https://rk2are.laf.run',
   // laf后台服务地址（开发环境），一般和上面laf_url一致就好
