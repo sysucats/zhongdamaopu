@@ -13,14 +13,13 @@
     <image class='button' bindtap='clickbtn' data-to='/pages/info/feedback/feedback' src='/pages/public/images/info/btn/fankui.png'></image>
 </view>
 
-<view class='block-name'>友情链接</view>
 
-<!-- <scroll-view class="scroll-friend-link-box" scroll-x="true" enable-flex='true' enhanced="true" show-scrollbar='false'></scroll-view> -->
-<view class="friend-link-box">
-  <view wx:for="{{friendApps}}" class="friend-link" bindtap="clickFriendLink" data-appid="{{item.appid}}" wx:key="name">
-    <image mode='aspectFit' src="{{item.logo}}"></image>
-    <view class="friend-link-text">{{item.name}}</view>
-  </view>
+<view class='block-name'>常用工具</view>
+<view class='option-box'>
+  <view class="option" bindtap='clickbtn' data-to='/pages/info/userInfo/modifyUserInfo/modifyUserInfo'>
+    <view class="option-text">个人信息修改</view>
+    <view class="right-arrow"><image mode='aspectFill' src="/pages/public/images/filter/right.png"></image></view> 
+</view>
 </view>
 
 <block wx:if='{{devMode}}'><view class='block-name'>常用工具</view>
@@ -42,10 +41,6 @@
 
 <block wx:if='{{showManager}}'><view class='block-name'>管理后台</view>
 <view class='option-box'>
-  <view class="option" bindtap='clickbtn' data-to='/pages/info/userInfo/modifyUserInfo/modifyUserInfo'>
-    <view class="option-text">个人信息修改</view>
-    <view class="right-arrow"><image mode='aspectFill' src="/pages/public/images/filter/right.png"></image></view> 
-  </view>
   <view class="option" bindtap='clickbtn' data-to='/pages/manage/checkPhotos/checkPhotos'>
     <view class="option-text">照片审核({{numChkPhotos}})</view>
     <view class="right-arrow"><image mode='aspectFill' src="/pages/public/images/filter/right.png"></image></view> 
