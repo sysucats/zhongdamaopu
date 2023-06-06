@@ -40,10 +40,11 @@
 
 <!-- 底tab占位 -->
 <view style="height: {{tabBarHeight}}px;"></view>
+
 <!-- 按钮占位 -->
-<view style="height: {{tabBarHeight}}px;"></view>
+<!-- <view style="height: {{tabBarHeight}}px;"></view> -->
 
 <!-- Button to leave new message-->
-<view class='add-button-container' bindtap='addPosts'>
+<!-- <view class='add-button-container' bindtap='addPosts'>
     <view class="add-button-text"> 论坛发帖</view>
-</view>
+</view> -->
