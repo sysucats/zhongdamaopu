@@ -63,7 +63,6 @@ function drawImage(imgSrc, dx, dy, weight, height) {
 async function getTempPath(options) {
   options.canvas = gCanvas;
   var tempFilePath = (await wx.canvasToTempFilePath(options)).tempFilePath;
-  console.log(tempFilePath);
   return await compressImage(tempFilePath, 80);
 }
 
