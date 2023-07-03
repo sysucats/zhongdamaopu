@@ -82,7 +82,9 @@ const permissionAuthor = {
   "update": {
     "feedback": true
   },
-  "remove": {},
+  "remove": {
+    "comment": true
+  },
   "set": {},
   "inc": {},
 }
@@ -104,6 +106,11 @@ exports.main = async function (ctx: FunctionContext) {
   const permissionLevel = permissionNeed[operation][collection];  // 操作要求的最低权限
   console.log("permissionLevel:", permissionLevel)
 
+  if (permissionLevel === undefined) {
+    console.log("unk req.")
+    return;
+  }
+
   console.log("curdOp param:", body);
   // TODO, 不要login了
   if (!openid) {
@@ -117,6 +124,7 @@ exports.main = async function (ctx: FunctionContext) {
   const item_id = body.item_id;
   var data = body.data;
 
+
   // 检查权限
   if (permissionLevel) {
     const allowAuthor = permissionAuthor[operation][collection];
@@ -125,7 +133,6 @@ exports.main = async function (ctx: FunctionContext) {
       return { errMsg: 'not a manager', ok: false };
     }
   }
-
 
   if (operation == "add") {  // 添加记录
     // Laf云不会主动存储 _openid ，但是微信云（在前端直接往数据库增加记录时）会

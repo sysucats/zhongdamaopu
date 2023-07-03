@@ -1,5 +1,5 @@
 name: __interceptor__
 methods:
-  - GET
   - POST
+  - GET
 tags: []

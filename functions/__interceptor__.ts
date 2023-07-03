@@ -4,6 +4,9 @@ import CryptoJS from 'crypto-js';
 
 // 检查签名是否有效
 function verifySign(signKey: string, data: string, signature: string) {
+  if (!signKey || !data || !signature) {
+    return false;
+  }
 
   // 使用HMAC-SHA256算法进行验证
   const isValid = CryptoJS.HmacSHA256(data, signKey).toString() === signature;
@@ -20,27 +23,46 @@ function compareDateStrings(dateString1: string, dateString2: string, n: number)
 
 
 export async function main(ctx: FunctionContext) {
-  let signKey = cloud.env.SIGN_KEY;
-  if (!signKey) {
-    // 没有开启
+  // 请求的实际IP
+  const ip = ctx.headers['x-real-ip']
+  const { host } = ctx.headers;
+  const { APPID, DEV_IPS } = cloud.env;
+
+  if (ip === undefined && host === `${APPID}.${APPID}:8000`) {
+    // 触发器触发
     return true;
   }
-  const { signdata, signstr } = ctx.headers;
-  const isValid = verifySign(signKey, signdata, signstr);
 
-  if (!isValid) {
-    console.log("invalid sign");
-    return false;
+  // 白名单ip，用于开发
+  if (DEV_IPS && DEV_IPS.split(",").includes(ip)) {
+    return true;
   }
 
-  // 检查时间
-  const now = new Date().toDateString();
-  const threshold = 30;  // 秒
-  const timeCheck = compareDateStrings(now, signdata, threshold);
 
-  if (!timeCheck) {
-    console.log("time check failed");
-    return false;
+  let signKey = cloud.env.SIGN_KEY;
+  if (signKey) {
+    // 开启了签名检查
+    const { signdata, signstr } = ctx.headers;
+    const isValid = verifySign(signKey, signdata, signstr);
+
+    if (!isValid) {
+      console.log("invalid sign");
+      console.log(ctx.headers);
+      console.log(cloud.env);
+      return false;
+    }
+
+    // 检查时间
+    const now = new Date().toISOString();
+    const threshold = 60;  // 秒
+    const timeCheck = compareDateStrings(now, signdata, threshold);
+
+    if (!timeCheck) {
+      console.log("time check failed", now, signdata);
+      console.log(ctx.headers);
+      console.log(cloud.env);
+      return false;
+    }
   }
 
   return true;

@@ -1,0 +1,7 @@
+- collectionName: photo
+  rules:
+    read: true
+    count: true
+    update: false
+    remove: false
+    add: false
