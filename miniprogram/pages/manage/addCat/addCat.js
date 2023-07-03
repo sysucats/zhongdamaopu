@@ -136,7 +136,7 @@ Page({
   async reloadPhotos() {
     const only_best_photo = this.data.only_best_photo;
     const qf = { cat_id: cat_id, verified: true, best: only_best_photo };
-    const db = cloud.database();
+    const db = await cloud.databaseAsync();
     var photoRes = await db.collection('photo').where(qf).count();
     this.setData({
       photoMax: photoRes.total,
@@ -183,7 +183,7 @@ Page({
     const qf = { cat_id: cat_id, verified: true, best: only_best_photo };
     const now = photo.length;
 
-    const db = cloud.database();
+    const db = await cloud.databaseAsync();
     var newPhotos = await db.collection('photo').where(qf).orderBy('mdate', 'desc').skip(now).limit(photoStep).get();
     await fillUserInfo(newPhotos.data, "_openid", "userInfo");
     

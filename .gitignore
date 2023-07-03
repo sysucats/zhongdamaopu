@@ -19,3 +19,5 @@ laf.json
 miniprogram/appSecret.js
 .secret.yaml
 laf.yaml
+miniprogram/signKey.js
+.app.yaml

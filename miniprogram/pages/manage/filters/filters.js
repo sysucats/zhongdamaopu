@@ -206,7 +206,7 @@ Page({
     const delete_value = category.items[index];
     
     // 检查一下数据库里这个地址有没有猫，如果有就不能删
-    const db = cloud.database();
+    const db = await cloud.databaseAsync();
     var qf = { [mainF.key]: category.items[index].name };
     if (mainF.cateKey) {
       qf[mainF.cateKey] = category.name;

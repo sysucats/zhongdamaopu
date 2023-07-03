@@ -376,7 +376,7 @@ swiper-item image {
   height: 160rpx;
   position: absolute;
   right: 0;
-  top: 60%;
+  top: 55%;
 
   background-color: var(--color-primary);
 

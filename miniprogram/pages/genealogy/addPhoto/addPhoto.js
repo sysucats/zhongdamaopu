@@ -38,7 +38,7 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: async function (options) {
-    const db = cloud.database();
+    const db = await cloud.databaseAsync();
     const cat_id = options.cat_id;
     var catRes = await db.collection('cat').doc(cat_id).field({
       birthday: true,
@@ -193,7 +193,7 @@ Page({
   },
 
   async ifSendNotifyVeriftMsg() {
-    const db = cloud.database();
+    const db = await cloud.databaseAsync();
     const subMsgSetting = await db.collection('setting').doc('subscribeMsg').get();
     const triggerNum = subMsgSetting.data.verifyPhoto.triggerNum; //几条未审核才触发
     // console.log("triggerN",triggerNum);

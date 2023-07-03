@@ -5,29 +5,29 @@
 
 module.exports = {
   // 版本号
-  app_version: "v1.10.1",
+  app_version: "v1.11.0",
   // laf后台服务地址
-  laf_url: 'https://cohbpk.mplaf.sysucats.com:9443',
-  // laf后台服务地址（开发环境），一般和上面laf_url一致就好
-  laf_dev_url: 'https://cohbpk.mplaf.sysucats.com:9443',
+  laf_url: 'https://fxkv6h.laf.run',
+  // laf后台服务地址（微信开发工具中），一般和上面laf_url一致就好
+  laf_dev_url: 'https://fxkv6h.laf.run',
   // 使用私有的腾讯云cos存储，需要url签名
-  use_private_tencent_cos: false,
+  use_private_tencent_cos: true,
 
   // 科普页图片
   science_imgs: [
-    "https://oss.mplaf.sysucats.com:9443/cohbpk-cat/系统/科普1.png",
-    "https://oss.mplaf.sysucats.com:9443/cohbpk-cat/系统/科普2.png",
-    "https://oss.mplaf.sysucats.com:9443/cohbpk-cat/系统/科普3.png",
-    "https://oss.mplaf.sysucats.com:9443/cohbpk-cat/系统/科普4.png",
-    "https://oss.mplaf.sysucats.com:9443/cohbpk-cat/系统/科普5.png"
+    "https://cos.ap-guangzhou.myqcloud.com/maopu-1251740905/系统/科普1.png",
+    "https://cos.ap-guangzhou.myqcloud.com/maopu-1251740905/系统/科普2.png",
+    "https://cos.ap-guangzhou.myqcloud.com/maopu-1251740905/系统/科普3.png",
+    "https://cos.ap-guangzhou.myqcloud.com/maopu-1251740905/系统/科普4.png",
+    "https://cos.ap-guangzhou.myqcloud.com/maopu-1251740905/系统/科普5.png"
   ],
 
   // 赞赏码图片
-  reward_img: "https://oss.mplaf.sysucats.com:9443/cohbpk-cat/系统/赞赏码.jpg",
+  reward_img: "https://cos.ap-guangzhou.myqcloud.com/maopu-1251740905/系统/赞赏码.jpg",
   // 新猫问卷图片
-  feedback_wj_img: "https://oss.mplaf.sysucats.com:9443/cohbpk-cat/系统/新猫问卷.png",
+  feedback_wj_img: "https://cos.ap-guangzhou.myqcloud.com/maopu-1251740905/系统/新猫问卷.png",
   // 小程序菊花码图片
-  mpcode_img: "https://oss.mplaf.sysucats.com:9443/cohbpk-cat/系统/菊花码.jpg",
+  mpcode_img: "https://cos.ap-guangzhou.myqcloud.com/maopu-1251740905/系统/菊花码.jpg",
 
   // 首页banner广告
   ad_genealogy_banner: "adunit-9a7dcb84fe2c4db1",

@@ -4,13 +4,14 @@
   <image src='{{logo_img}}' bindtap="showMpCode" show-menu-by-longpress="1"></image>
   <view class='title'>{{text_cfg.app_name}}</view>
   <view class='dev'><text>{{version ? version + "\n" : ""}} {{text_cfg.info.slogan}}</text></view>
+  <view class='dev small'><text>-- {{numAllCats || '-'}}只猫猫，{{numAllPhotos || '-'}}张照片，{{numAllComments || '-'}}条留言 --</text></view>
 </view>
 
 <view class='buttons'>
-    <image class='button' bindtap='clickbtn' data-to='/pages/info/reward/reward' src='/pages/public/images/info/btn/dashang.png'></image>
-    <image class='button' bindtap='clickbtn' data-to='/pages/info/photoRank/photoRank' src='/pages/public/images/info/btn/paizhao.png'></image>
-    <image class='button' bindtap='clickbtn' data-to='/pages/info/devTeam/devTeam' src='/pages/public/images/info/btn/tuandui.png'></image>
-    <image class='button' bindtap='clickbtn' data-to='/pages/info/feedback/feedback' src='/pages/public/images/info/btn/fankui.png'></image>
+  <image class='button' bindtap='clickbtn' data-to='/pages/info/reward/reward' src='/pages/public/images/info/btn/dashang.png'></image>
+  <image class='button' bindtap='clickbtn' data-to='/pages/info/photoRank/photoRank' src='/pages/public/images/info/btn/paizhao.png'></image>
+  <image class='button' bindtap='clickbtn' data-to='/pages/info/devTeam/devTeam' src='/pages/public/images/info/btn/tuandui.png'></image>
+  <image class='button' bindtap='clickbtn' data-to='/pages/info/feedback/feedback' src='/pages/public/images/info/btn/fankui.png'></image>
 </view>
 
 <view class='block-name'>友情链接</view>
@@ -23,7 +24,7 @@
   </view>
 </view>
 
-<block wx:if='{{devMode}}'><view class='block-name'>常用工具</view>
+<block><view class='block-name'>常用工具</view>
 <view class='option-box'>
   <view class="option" bindtap='clickbtn' data-to='/pages/info/userInfo/modifyUserInfo/modifyUserInfo'>
     <view class="option-text">个人信息修改</view>
@@ -41,8 +42,11 @@
     <view class="option-text">部署指引</view>
     <view class="right-arrow"><image mode='aspectFill' src="/pages/public/images/filter/right.png"></image></view> 
   </view>
+  <view class="option" bindtap='clickbtn' data-to='/pages/debug/genKeys/genKeys'>
+    <view class="option-text">生成秘钥</view>
+    <view class="right-arrow"><image mode='aspectFill' src="/pages/public/images/filter/right.png"></image></view> 
+  </view>
 </view></block>
-
 
 <block wx:if='{{showManager}}'><view class='block-name'>管理后台</view>
 <view class='option-box'>
@@ -62,16 +66,16 @@
     <view class="option-text">创建公告（猫抓板）</view>
     <view class="right-arrow"><image mode='aspectFill' src="/pages/public/images/filter/right.png"></image></view> 
   </view>
+  <view class="option" bindtap='clickbtn' data-to='/pages/manage/filters/filters'>
+    <view class="option-text">区域/花色</view>
+    <view class="right-arrow"><image mode='aspectFill' src="/pages/public/images/filter/right.png"></image></view> 
+  </view>
   <view class="option" bindtap='clickbtn' data-to='/pages/manage/addCat/addCat'>
     <view class="option-text">添加新猫</view>
     <view class="right-arrow"><image mode='aspectFill' src="/pages/public/images/filter/right.png"></image></view> 
   </view>
   <view class="option" bindtap='clickbtn' data-to='/pages/manage/managers/managers'>
     <view class="option-text">人员管理</view>
-    <view class="right-arrow"><image mode='aspectFill' src="/pages/public/images/filter/right.png"></image></view> 
-  </view>
-  <view class="option" bindtap='clickbtn' data-to='/pages/manage/filters/filters'>
-    <view class="option-text">区域/花色</view>
     <view class="right-arrow"><image mode='aspectFill' src="/pages/public/images/filter/right.png"></image></view> 
   </view>
   <view class="option" bindtap='clickbtn' data-to='/pages/manage/pageSettings/pageSettings'>
@@ -91,7 +95,6 @@
     <view class="right-arrow"><image mode='aspectFill' src="/pages/public/images/filter/right.png"></image></view> 
   </view>
 </view></block>
-
 
 <!-- 底tab占位 -->
 <view style="height: {{tabBarHeight}}px;"></view>

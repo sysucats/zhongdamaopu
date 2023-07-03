@@ -1,13 +1,7 @@
 // 放置与cat对象有关的函数
 import { randomInt } from "./utils";
 import { getCacheItem, setCacheItem, getCacheDate, setCacheDate, cacheTime } from "./cache";
-import { cloud } from "./cloudAccess" 
-
-// 常用的一些对象
-const db = cloud.database();
-const _ = db.command;
-const coll_photo = db.collection('photo');
-const coll_cat = db.collection('cat');
+import { cloud } from "./cloudAccess";
 
 // 获取猫猫的封面图
 async function getAvatar(cat_id, total) {
@@ -31,6 +25,9 @@ async function getAvatar(cat_id, total) {
   };
 
   var index = randomInt(0, total);
+  
+  const db = await cloud.databaseAsync();
+  const coll_photo = db.collection('photo');
   var pho_src = (await coll_photo.where(qf).skip(index).limit(1).get()).data;
   cacheItem = pho_src[0];
   
@@ -60,6 +57,8 @@ async function getCatItem(cat_id, options) {
     return cacheItem;
   }
 
+  const db = await cloud.databaseAsync();
+  const coll_cat = db.collection('cat');
   cacheItem = (await coll_cat.doc(cat_id).get()).data;
   setCacheItem(cacheKey, cacheItem, cacheTime.catItem);
   return cacheItem;
@@ -83,6 +82,9 @@ async function getCatItemMulti(cat_ids, options) {
   }
 
   // 请求没有的
+  const db = await cloud.databaseAsync();
+  const _ = db.command;
+  const coll_cat = db.collection('cat');
   if (not_found.length) {
     var db_res = (await coll_cat.where({_id: _.in(not_found)}).get()).data;
     for (var c of db_res) {

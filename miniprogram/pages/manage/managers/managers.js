@@ -88,7 +88,7 @@ Page({
     if (loading) {
       return false;
     }
-    const db = cloud.database();
+    const db = await cloud.databaseAsync();
     var users = this.data.users;
     loading = true;
     wx.showLoading({

@@ -30,7 +30,7 @@ Page({
       devMode: sysInfo.platform === "devtools"
     });
 
-    const db = cloud.database();
+    const db = await cloud.databaseAsync();
     var friendLinkRes = await db.collection('setting').doc('friendLink').get();
     this.setData({
       friendApps: friendLinkRes.data.apps,
@@ -57,20 +57,33 @@ Page({
     if (!await isManagerAsync()) {
       return;
     }
-    const db = cloud.database();
+    const db = await cloud.databaseAsync();
     const _ = db.command;
 
+    // 待处理照片
     const imProcessQf = { photo_compressed: _.in([undefined, '']), verified: true, photo_id: /^((?!\.heic$).)*$/i };
-    var [numChkPhotos, numFeedbacks, numImProcess] = await Promise.all([
+    // 所有猫猫数量
+    const allCatQf = {};
+    // 所有照片数量
+    const allPhotoQf = { verified: true, photo_id: /^((?!\.heic$).)*$/i };
+    // 所有留言数量
+    const allCommentQf = { deleted: _.not(_.eq(true)) };
+    var [numChkPhotos, numFeedbacks, numImProcess, numAllCats, numAllPhotos, numAllComments] = await Promise.all([
       db.collection('photo').where({ verified: false}).count(),
       db.collection('feedback').where({ dealed: false}).count(),
       db.collection('photo').where(imProcessQf).count(),
+      db.collection('cat').where(allCatQf).count(),
+      db.collection('photo').where(allPhotoQf).count(),
+      db.collection('comment').where(allCommentQf).count(),
     ]);
     this.setData({
       numChkPhotos: numChkPhotos.total,
       numFeedbacks: numFeedbacks.total,
       numImProcess: numImProcess.total,
       showManager: true,
+      numAllCats: numAllCats.total,
+      numAllPhotos: numAllPhotos.total,
+      numAllComments: numAllComments.total,
     });
   },
 

@@ -1,5 +1,7 @@
 {
   "dependencies": {
+    "crypto": "^1.0.1",
+    "crypto-js": "^4.1.1",
     "laf-client-sdk": "^0.8.13"
   },
   "resolutions": {

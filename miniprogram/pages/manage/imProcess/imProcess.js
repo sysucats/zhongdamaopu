@@ -129,7 +129,7 @@ Page({
   },
 
   async loadProcess() {
-    const db = cloud.database();
+    const db = await cloud.databaseAsync();
     const _ = db.command;
     const total = (await db.collection('photo').where({
       photo_compressed: _.in([undefined, '']),
@@ -166,7 +166,7 @@ Page({
   },
 
   beginProcess: async function () {
-    const db = cloud.database();
+    const db = await cloud.databaseAsync();
     const _ = db.command;
     while (this.data.processing && (await this.getLock())) {
       var photos = (await db.collection('photo').where({
@@ -214,6 +214,10 @@ Page({
     var photoObj = await wx.getImageInfo({
       src: photoInfo.photo_id,
     });
+    // 处理旋转问题
+    if (photoObj.orientation == 'right' || photoObj.orientation == 'left') {
+      [photoObj.width, photoObj.height] = [photoObj.height, photoObj.width];
+    }
     console.log("imProcess processOne:", photoObj);
     this.setData({
       origin: photoObj
@@ -248,6 +252,7 @@ Page({
     const origin = oriPhotoObj;
 
     const draw_rate = Math.max(origin.width, origin.height) / canvasMax;
+    console.log(origin, draw_rate);
     const draw_width = origin.width / draw_rate;
     const draw_height = origin.height / draw_rate;
     console.log("draw size", draw_width, draw_height);

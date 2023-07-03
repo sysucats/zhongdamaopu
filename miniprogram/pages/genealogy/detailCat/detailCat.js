@@ -221,7 +221,7 @@ Page({
   },
 
   async loadCat() {
-    const db = cloud.database();
+    const db = await cloud.databaseAsync();
     const cat = (await db.collection('cat').doc(cat_id).get()).data;
     cat.photo = [];
     cat.characteristics_string = (cat.colour || '') + '猫';
@@ -268,7 +268,7 @@ Page({
 
   async reloadPhotos() {
     // 这些是精选照片
-    const db = cloud.database();
+    const db = await cloud.databaseAsync();
     const qf = {
       cat_id: cat_id,
       verified: true,
@@ -292,7 +292,7 @@ Page({
 
   async reloadAlbum() {
     // 下面是相册的
-    const db = cloud.database();
+    const db = await cloud.databaseAsync();
     const qf_album = {
       cat_id: cat_id,
       verified: true,
@@ -326,7 +326,7 @@ Page({
     //   mask: true
     // })
 
-    const db = cloud.database();
+    const db = await cloud.databaseAsync();
     let res = await db.collection('photo').where(qf).orderBy('mdate', 'desc').skip(now).limit(step).get();
     console.log("[loadMorePhotos] -", res);
     const offset = cat.photo.length;
@@ -425,7 +425,7 @@ Page({
     const step = page_settings.albumStep;
     const now = album_raw.length;
 
-    const db = cloud.database();
+    const db = await cloud.databaseAsync();
 
     loadingAlbum = true;
     const orderItem = photoOrder[this.data.photoOrderSelected];

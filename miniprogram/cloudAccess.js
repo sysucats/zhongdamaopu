@@ -1,12 +1,15 @@
 import {
-  dev_mode,
   laf_url,
   laf_dev_url,
   use_private_tencent_cos
 } from "./config"
 import COS from './packages/tencentcloud/cos';
+import CryptoJS from 'crypto-js';
 
 var cloud = undefined;
+  
+// 等待时间（ms），不能import utils，会循环引用
+const sleep = m => new Promise(r => setTimeout(r, m))
 
 function _splitOnce(str, sep) {
   const idx = str.indexOf(sep);
@@ -132,11 +135,19 @@ function _init() {
 
   // 自定义请求函数
   const WxmpRequest = require('laf-client-sdk').WxmpRequest;
+  // Laf 0.8 私有部署的apiKey
   var apikey = "";
   try {
     apikey = require('./appSecret').apikey;
   } catch {
     console.log("no apikey");
+  }
+  // Laf 1.0 的签名私钥
+  var signKey = "";
+  try {
+    signKey = require('./signKey').signKey;
+  } catch {
+    console.log("no signKey");
   }
   class MyRequest extends WxmpRequest {
     async request(url, data) {
@@ -144,9 +155,25 @@ function _init() {
       return res
     }
 
+    getSign() {
+      if (!signKey) {
+        return {signdata: "", signstr: ""};
+      }
+      const data = (new Date()).toISOString();
+      // 使用SHA256算法进行签名
+      const signature = CryptoJS.HmacSHA256(data, signKey).toString();
+      // console.log('Signature:', signature);
+      return {signdata: data, signstr: signature};
+    }
+
     getHeaders(token) {
       var headers = super.getHeaders(token);
       headers.apikey = apikey;
+
+      const {signdata, signstr} = this.getSign();
+      // console.log({signdata, signstr});
+      headers.signdata = signdata;
+      headers.signstr = signstr;
       return headers;
     }
   }
@@ -154,7 +181,7 @@ function _init() {
   cloud = require('laf-client-sdk').init({
     baseUrl: (sysInfo.platform == 'devtools' ? laf_dev_url : laf_url),
     dbProxyUrl: '/proxy/miniprogram',
-    getAccessToken: () => {
+    getAccessToken: function() {
       const accessToken = wx.getStorageSync('accessToken');
       if (!accessToken) {
         return;
@@ -266,7 +293,25 @@ function _inject() {
       });
     });
   }
-
+  // 让database接口等待openid获取，满足laf的访问策略要求
+  const _database = cloud.__proto__.database;
+  cloud.__proto__.databaseAsync = async function () {
+    var max_try = 300;
+    while (true) {
+      const { token } = wx.getStorageSync('accessToken');
+      if (token) {
+        break;
+      }
+      console.log("waiting jwt...");
+      max_try --;
+      if (!max_try) {
+        console.log("max try...");
+        break;
+      }
+      await sleep(10);
+    }
+    return _database.call(this);
+  }
 }
 
 function _injectGet(proto) {
@@ -274,7 +319,7 @@ function _injectGet(proto) {
   proto.get = async function () {
     try {
       let res = await _get.call(this);
-      console.log("get result:", res);
+      // console.log("get result:", res);
       await _deepReplaceCosUrl(res);
       return res;
     } catch (err) {
@@ -338,5 +383,6 @@ async function _deepReplaceCosUrl(obj) {
 })();
 
 module.exports = {
-  cloud: cloud
+  cloud: cloud,
+  ensureToken: ensureToken,
 };

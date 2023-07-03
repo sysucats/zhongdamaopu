@@ -35,7 +35,7 @@ Page({
   },
 
   async loadFeedbacks() {
-    const db = cloud.database();
+    const db = await cloud.databaseAsync();
     const nowLoaded = this.data.feedbacks.length;
     var feedbacks = (await db.collection('feedback').where({
       dealed: this.data.checkHistory
@@ -72,7 +72,7 @@ Page({
     wx.showLoading({
       title: '加载中...',
     });
-    const db = cloud.database();
+    const db = await cloud.databaseAsync();
     var fbRes = await db.collection('feedback').where({
       dealed: this.data.checkHistory
     }).count();

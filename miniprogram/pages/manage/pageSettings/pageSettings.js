@@ -1,12 +1,9 @@
 // pages/manage/pageSettings/pageSettings.js
 import { checkAuth } from "../../../user";
 import { getGlobalSettings } from "../../../page";
-import { cloud } from "../../../cloudAccess";
 import api from "../../../cloudApi";
 import desc from "./desc";
 
-const db = cloud.database();
-const _ = db.command;
 
 Page({
   /**

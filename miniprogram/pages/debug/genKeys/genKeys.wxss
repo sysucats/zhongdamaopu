@@ -1,0 +1,28 @@
+/* pages/debug/genKeys/genKeys.wxss */
+page {
+  width: 750rpx;
+  padding: 30rpx;
+}
+.title {
+  margin: 10rpx, 0;
+  font-size: 36rpx;
+  font-weight: bold;
+}
+
+.key {
+  width: 690rpx;
+  word-break: break-all;
+  display: inline-block;
+  border: 1rpx solid gray;
+  border-radius: 10rpx;
+  box-sizing: border-box;
+  background-color: lightgrey;
+  font-size: 22rpx;
+  margin: 10rpx 0;
+  padding: 10rpx;
+}
+
+button {
+  width: 300rpx;
+  margin: 0 0 30rpx 0;
+}

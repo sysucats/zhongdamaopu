@@ -109,7 +109,7 @@ function sendVerifyNotice(notice_list) {
 // 发送回复消息
 async function sendReplyNotice(openid, fb_id) {
   const cfg = msgConfig.feedback;
-  const db = cloud.database();
+  const db = await cloud.databaseAsync();
   const doc = await db.collection('feedback').doc(fb_id).get();
   const feedback = doc.data;
   const content = feedback.feedbackInfo.length > 20 ? (feedback.feedbackInfo.substr(0, 18) + '..') : feedback.feedbackInfo;
@@ -138,7 +138,7 @@ async function sendReplyNotice(openid, fb_id) {
 
 // 发送提醒审核消息
 async function sendNotifyVertifyNotice(numUnchkPhotos) {
-  const db = cloud.database();
+  const db = await cloud.databaseAsync();
   const _ = db.command;
 
   const subMsgSettings = await db.collection('setting').doc('subscribeMsg').get();
@@ -192,7 +192,7 @@ async function sendNotifyVertifyNotice(numUnchkPhotos) {
 async function sendNotifyChkFeeedback() {
   const dealFeedbackLevel = 1;
   
-  const db = cloud.database();
+  const db = await cloud.databaseAsync();
   const _ = db.command;
 
   const subMsgSettings = await db.collection('setting').doc('subscribeMsg').get();

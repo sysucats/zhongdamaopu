@@ -1,16 +1,26 @@
-import { formatDate } from "../../../utils";
+import {
+  formatDate
+} from "../../../utils";
 import config from "../../../config";
-import { getPageUserInfo, fillUserInfo, checkCanComment, isManagerAsync, toSetUserInfo } from "../../../user";
-import { getAvatar } from "../../../cat";
-import { getCatCommentCount } from "../../../comment";
-import { cloud } from "../../../cloudAccess";
+import {
+  getPageUserInfo,
+  fillUserInfo,
+  checkCanComment,
+  isManagerAsync,
+  toSetUserInfo
+} from "../../../user";
+import {
+  getAvatar
+} from "../../../cat";
+import {
+  getCatCommentCount
+} from "../../../comment";
+import {
+  cloud
+} from "../../../cloudAccess";
 import api from "../../../cloudApi";
 
 var cat_id;
-
-// 常用的对象
-const db = cloud.database();
-const coll_comment = db.collection('comment');
 
 // 发送锁
 var sendLock = false;
@@ -28,6 +38,7 @@ Page({
     keyboard_height: 0,
     text_cfg: config.text,
     is_manager: false,
+    is_owner: false,
   },
 
   /**
@@ -50,7 +61,7 @@ Page({
       this.loadCat(),
       this.loadMoreComment(),
     ]);
-    
+
     // 是否为管理员lv.1
     var manager = await isManagerAsync(1);
     if (manager) {
@@ -125,19 +136,19 @@ Page({
     const to_top = e.detail.scrollTop;
     const show_fix_header = this.data.show_fix_header;
 
-    const should_show = to_top > 5? true: false;
+    const should_show = to_top > 5 ? true : false;
     if (should_show != show_fix_header) {
       this.setData({
         show_fix_header: should_show
       });
     }
   },
-  
+
   async loadCat() {
-    const db = cloud.database();
+    const db = await cloud.databaseAsync();
     var cat = (await db.collection('cat').doc(cat_id).get()).data;
     console.log(cat);
-    
+
     // 获取头像
     cat.avatar = await getAvatar(cat._id, cat.photo_count_best);
     console.log(cat.avatar);
@@ -182,14 +193,14 @@ Page({
       console.log("locking...");
       return false;
     }
-    
+
     const content = this.data.comment_input;
 
     // 空的就不用留言了
     if (!content || content.length == 1) {
       return false;
     }
-    
+
     sendLock = true;
     wx.showLoading({
       title: '发送中...',
@@ -212,7 +223,7 @@ Page({
       })
       return false;
     }
-    
+
     // 插入留言
     var item = {
       content: content,
@@ -226,7 +237,7 @@ Page({
       await this.addComment(item, user);
       return
     }
-    
+
     wx.showModal(checkRes);
     return false;
   },
@@ -243,7 +254,7 @@ Page({
         collection: "comment",
         data: item
       })).result;
-      
+
       console.log("curdOp(add-Comment) result): ", res, user);
       // 插入最新留言 + 清空输入框
       console.log(item);
@@ -251,9 +262,11 @@ Page({
       item.datetime = formatDate(new Date(), "yyyy-MM-dd hh:mm:ss")
       var comments = this.data.comments;
       comments.unshift(item);
-      
+
       // 获取总数
-      var comment_count = await getCatCommentCount(item.cat_id, {nocache: true});
+      var comment_count = await getCatCommentCount(item.cat_id, {
+        nocache: true
+      });
       this.setData({
         comment_input: "",
         comments: comments,
@@ -276,14 +289,17 @@ Page({
   // 加载更多留言
   // TODO(zing): 支持排序方式修改
   async loadMoreComment() {
+    // 常用的对象
+    const db = await cloud.databaseAsync();
     const _ = db.command;
+    const coll_comment = db.collection('comment');
     var comments = this.data.comments;
     var qf = {
       deleted: _.neq(true),
       cat_id: cat_id
     };
     var res = await coll_comment.where(qf).orderBy("create_date", "desc")
-                  .skip(comments.length).limit(10).get();
+      .skip(comments.length).limit(10).get();
     console.log(res);
 
     // 填充userInfo
@@ -303,13 +319,13 @@ Page({
     const index = e.currentTarget.dataset.index;
     const item = e.currentTarget.dataset.item;
     const comment_id = item._id;
-    const username = item.userInfo.nickName;
+    const username = item.userInfo?.nickName;
     // 弹窗提示一下
     var res = await wx.showModal({
       title: '提示',
       content: `确定删除\"${username}\"的留言？`
     });
-    
+
     if (!res.confirm) {
       return false;
     }
@@ -319,7 +335,7 @@ Page({
       collection: "comment",
       item_id: comment_id
     });
-    
+
     wx.showToast({
       title: '删除成功',
     });

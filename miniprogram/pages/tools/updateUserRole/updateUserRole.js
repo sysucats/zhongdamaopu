@@ -61,7 +61,7 @@ Page({
   },
 
   async updateUserRole() {
-    const db = cloud.database();
+    const db = await cloud.databaseAsync();
     const _ = db.command;
     const $ = db.command.aggregate
     var totalCount = await db.collection('photo').aggregate()

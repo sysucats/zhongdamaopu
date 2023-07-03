@@ -34,7 +34,7 @@ Page({
       title: '加载中...',
     });
     const that = this;
-    const db = cloud.database();
+    const db = await cloud.databaseAsync();
     const countRes = await db.collection('feedback').where({
       _openid: currentUser.openid
     }).count();
@@ -48,7 +48,7 @@ Page({
   },
 
   async loadFeedbacks() {
-    const db = cloud.database();
+    const db = await cloud.databaseAsync();
     const nowLoaded = this.data.feedbacks.length;
     var feedbacks = (await db.collection('feedback').where({
       _openid: currentUser.openid

@@ -87,7 +87,7 @@ Page({
   },
 
   async loadPhotosAndFillUserInfo(skip_i) {
-    const db = cloud.database();
+    const db = await cloud.databaseAsync();
     var res = await db.collection("photo").where({verified: false}).skip(skip_i).limit(20).get();
     await fillUserInfo(res.data, "_openid", "userInfo");
     return res;
@@ -97,7 +97,7 @@ Page({
     wx.showLoading({
       title: '加载中...',
     });
-    const db = cloud.database();
+    const db = await cloud.databaseAsync();
     // 获取所有照片
     var total_count = (await db.collection('photo').where({
       verified: false
@@ -114,15 +114,21 @@ Page({
     photos = Array.prototype.concat.apply([], photos);
 
     var campus_list = {};
+    var memory_cache = {};
     for (var photo of photos) {
-      photo.cat = await getCatItem(photo.cat_id);
+      if (memory_cache[photo.cat_id]) {
+        photo.cat = memory_cache[photo.cat_id];
+      } else {
+        photo.cat = await getCatItem(photo.cat_id);
+        memory_cache[photo.cat_id] = photo.cat;
+      }
 
       // 分类记录到campus里
       var campus = photo.cat.campus;
       if (!campus_list[campus]) {
         campus_list[campus] = [];
       }
-      console.log("[loadAllPhotos] - ", campus, photo);
+      // console.log("[loadAllPhotos] - ", campus, photo);
       campus_list[campus].push(photo);
     }
     

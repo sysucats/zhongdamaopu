@@ -22,7 +22,7 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: async function (options) {
-    const db = cloud.database();
+    const db = await cloud.databaseAsync();
     if (options.cat_id != undefined) {
       const catRes = await db.collection('cat').doc(options.cat_id).field({ name: true, _id: true }).get();
       this.setData({
