@@ -36,7 +36,8 @@ exports.main = async function (ctx: FunctionContext) {
 }
 
 async function getTempUrl(secretId: string, secretKey: string, region: string, bucket: string) {
-  const uid = bucket.split('-')[1]
+  const bucketSegments = bucket.split('-');
+  const uid = bucketSegments[bucketSegments.length - 1];
   const clientConfig = {
     credential: {
       secretId: secretId,
