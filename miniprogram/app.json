@@ -34,7 +34,9 @@
     "pages/tools/inviteUser/inviteUser",
     "pages/info/userInfo/modifyUserInfo/modifyUserInfo",
     "pages/info/agreement/agreement",
-    "pages/debug/genKeys/genKeys"
+    "pages/debug/genKeys/genKeys",
+    "pages/manage/badgeDef/badgeDef",
+    "pages/manage/badgeDef/addBadgeDef/addBadgeDef"
   ],
   "tabBar": {
     "custom": true,

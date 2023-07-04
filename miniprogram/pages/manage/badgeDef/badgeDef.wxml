@@ -1,0 +1,14 @@
+<!--pages/manage/badgeDef/badgeDef.wxml-->
+<block wx:if="{{auth}}">
+  <view wx:for="{{badgeDefs}}" wx:key="_id">
+    <image src="{{item.img}}" mode="aspectFill"/>
+    <view>{{item.name}}</view>
+    <view>{{item.desc}}</view>
+    <button>修改</button>
+  </view>
+  <button class="primary long">新增徽章</button>
+</block>
+<view wx:else class="unAuth">
+  <text>{{tipText}}</text>
+  <button bindtap='goBack' wx:if="{{tipBtn}}">打扰了</button>
+</view>
