@@ -222,7 +222,17 @@ module.exports = {
     },
     "reward_video": {
       type: "text",
-      tip: "打赏投喂页视频video广告ID",
+      tip: "打赏投喂页激励广告ID",
+      default: "your_ad_id"
+    },
+    "game_token_video": {
+      type: "text",
+      tip: "获取代币页激励广告ID",
+      default: "your_ad_id"
+    },
+    "game_token_interstitial": {
+      type: "text",
+      tip: "获取代币页插屏广告ID",
       default: "your_ad_id"
     },
   },

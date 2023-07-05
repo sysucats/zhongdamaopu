@@ -1,6 +1,5 @@
-import { checkAuth, fillUserInfo } from "../../../user";
+import { checkAuth } from "../../../user";
 import { cloud } from "../../../cloudAccess";
-import api from "../../../cloudApi";
 
 Page({
 
@@ -29,11 +28,20 @@ Page({
   // 加载所有徽章
   async loadBadgeDefs() {
     const db = await cloud.databaseAsync();
-    const badgeCount = (await db.collection("badge_def").count()).total;
+    const badgeDefCount = (await db.collection("badge_def").count()).total;
     let badgeDefs = [];
-    while (badgeDefs.length < badgeCount) {
+    while (badgeDefs.length < badgeDefCount) {
       const tmp = (await db.collection('badge_def').skip(badgeDefs.length).get()).data;
       badgeDefs = badgeDefs.concat(tmp);
+    }
+    // 获取现存数量
+    let getCountTask = [];
+    for (const b of badgeDefs) {
+      getCountTask.push(db.collection("badge").where({badgeDef: b._id}).count());
+    }
+    let badgeCount = await Promise.all(getCountTask);
+    for (let i = 0; i < badgeDefs.length; i++) {
+      badgeDefs[i].count = badgeCount[i].total;
     }
     this.setData({
       badgeDefs: badgeDefs,

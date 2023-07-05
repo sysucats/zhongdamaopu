@@ -36,7 +36,8 @@
     "pages/info/agreement/agreement",
     "pages/debug/genKeys/genKeys",
     "pages/manage/badgeDef/badgeDef",
-    "pages/manage/badgeDef/addBadgeDef/addBadgeDef"
+    "pages/manage/badgeDef/addBadgeDef/addBadgeDef",
+    "pages/info/gameToken/gameToken"
   ],
   "tabBar": {
     "custom": true,

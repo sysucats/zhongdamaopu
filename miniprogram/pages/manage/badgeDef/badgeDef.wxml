@@ -5,6 +5,7 @@
     <view class="info">
       <view class="name">{{item.name}}</view>
       <view class="desc">{{item.desc}}</view>
+      <view class="count">现有数量：{{item.count}}</view>
     </view>
     <button bindtap="onEdit" data-id="{{item._id}}">修改</button>
   </view>

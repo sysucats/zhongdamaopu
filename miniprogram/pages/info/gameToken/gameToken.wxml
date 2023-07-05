@@ -1,0 +1,35 @@
+<!--pages/info/gameToken/gameToken.wxml-->
+<view>现有token：{{userTokenCount}}枚</view>
+
+<view>抽取徽章</view>
+<view>抽取概率为A级10%，B级30%，C级60%</view>
+
+<button>点击抽取1个</button>
+<button>点击抽取10个</button>
+
+<view>徽章列表</view>
+<view class="badge-list">
+  <view class="badge" wx:for="{{userBadges}}" wx:key="_id">
+    <image src="{{item.img}}" mode="aspectFill"/>
+    <view class="info">
+      <view class="name">{{item.name}}</view>
+      <view class="desc">{{item.desc}}</view>
+      <view class="count">拥有数量：{{item.count}}</view>
+    </view>
+  </view>
+</view>
+
+<view>获取token</view>
+
+<view>
+  <view>每日领取</view>
+  <view>上次领取日期：{{lastestToken.date || '-'}}</view>
+  <button>点击领取</button>
+</view>
+
+<view>
+  <view>广告领取</view>
+  <!-- 注意处理没有广告可看的UI，要有相应提示 -->
+  <button>观看贴片广告领取2个代币</button>
+  <button>观看视频广告领取5个代币</button>
+</view>
