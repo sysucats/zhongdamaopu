@@ -1,12 +1,14 @@
 <!--pages/manage/badgeDef/badgeDef.wxml-->
 <block wx:if="{{auth}}">
-  <view wx:for="{{badgeDefs}}" wx:key="_id">
+  <view class="badge" wx:for="{{badgeDefs}}" wx:key="_id">
     <image src="{{item.img}}" mode="aspectFill"/>
-    <view>{{item.name}}</view>
-    <view>{{item.desc}}</view>
-    <button>修改</button>
+    <view class="info">
+      <view class="name">{{item.name}}</view>
+      <view class="desc">{{item.desc}}</view>
+    </view>
+    <button bindtap="onEdit" data-id="{{item._id}}">修改</button>
   </view>
-  <button class="primary long">新增徽章</button>
+  <button class="primary long" bindtap="onEdit">新增徽章</button>
 </block>
 <view wx:else class="unAuth">
   <text>{{tipText}}</text>

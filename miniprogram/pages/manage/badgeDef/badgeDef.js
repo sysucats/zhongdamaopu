@@ -39,4 +39,12 @@ Page({
       badgeDefs: badgeDefs,
     });
   },
+
+  // 修改
+  onEdit(e) {
+    const {id} = e.currentTarget.dataset;
+    wx.navigateTo({
+      url: `/pages/manage/badgeDef/addBadgeDef/addBadgeDef?id=${id}`,
+    });
+  }
 })

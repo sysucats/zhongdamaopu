@@ -1,1 +1,13 @@
 /* pages/manage/badgeDef/badgeDef.wxss */
+.badge {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  border: 1rpx solid red;
+  margin: 10rpx 0;
+}
+
+.badge image {
+  width: 150rpx;
+  height: 150rpx;
+}
