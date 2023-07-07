@@ -141,7 +141,7 @@ swiper-item image {
   width: 40rpx;
 }
 
-.fb-button {
+.fb-button, .badge-all {
   font-size: 20rpx;
   font-weight: 500;
   height: 40rpx;
@@ -440,11 +440,11 @@ swiper-item image {
 }
 
 /* 猫猫关系 */
-.relations {
+.relations, .badge-list {
   width: 100%;
   white-space: nowrap;
 }
-.relation-block {
+.relation-block, .badge-item {
   width: 150rpx;
   display: inline-flex;
   flex-direction: column;
@@ -452,16 +452,16 @@ swiper-item image {
   padding: 10rpx 0;
   border-radius: 20rpx;
 }
-.relation-block.tap {
+.relation-block.tap, .badge-item.tap {
   background-color: var(--color-gray-light);
 }
-.relation-cat-avatar {
+.relation-cat-avatar, .badge-item-avatar {
   width: 100rpx;
   height: 100rpx;
   border-radius: 100%;
   background-color: var(--color-white-dark);
 }
-.relation-name {
+.relation-name, .badge-item-count {
   max-width: 100rpx;
   margin-top: -20rpx;
   font-size: 20rpx;
@@ -472,7 +472,7 @@ swiper-item image {
   text-overflow:ellipsis;
   overflow:hidden;
 }
-.relation-cat-name {
+.relation-cat-name, .badge-item-name {
   max-width: 150rpx;
   font-size: 28rpx;
   color: var(--color-primary);
@@ -488,5 +488,59 @@ swiper-item image {
   width: 0;
   height: 0;
   color: transparent;
+}
 
+/* 徽章 */
+.badge-all {
+  float: right;
+}
+
+/* 赠与徽章 */
+.mask {
+  width: 750rpx;
+  height: 100vh;
+  background-color: var(--color-gray-dark);
+  opacity: 0.8;
+  position: fixed;
+  top: 0;
+  z-index: 2;
+}
+
+.search {
+  width: 750rpx;
+  background-color: var(--color-white-dark);
+  position: fixed;
+  bottom: 0;
+  padding: 20rpx 20rpx;
+  padding-bottom: max(20rpx, constant(safe-area-inset-bottom));
+  padding-bottom: max(20rpx, env(safe-area-inset-bottom));
+  display: block;
+
+  /* border-top: 5rpx solid var(--color-primary); */
+  border-top-left-radius: 50rpx;
+  border-top-right-radius: 50rpx;
+
+  overflow: hidden;
+  box-sizing: border-box;
+  transition: height 200ms ease, bottom 200ms ease;
+
+  z-index: 99;
+
+  background-color: var(--color-gray-light);
+
+  box-shadow: 0rpx -3rpx 10rpx 10rpx var(--color-gray-dark);
+}
+
+.search.hidden {
+  bottom: -1000rpx;
+}
+
+.user-badge-item {
+  display: flex;
+}
+
+.user-badge-item-avatar {
+  width: 100rpx;
+  height: 100rpx;
+  background-color: lightslategray;
 }
