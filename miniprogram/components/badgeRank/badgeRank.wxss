@@ -1,0 +1,55 @@
+/* components/badgeRank/badgeRank.wxss */
+.badge-block {
+  width: 750rpx;
+  padding: 30rpx;
+  box-sizing: border-box;
+}
+
+.badge-header {
+  display: flex;
+  flex-direction: row;
+  padding: 0 30rpx;
+  align-items: flex-end;
+}
+
+.badge-img {
+  width: 100rpx;
+  height: 100rpx;
+  background-color: burlywood;
+  border: 2rpx solid brown;
+  border-radius: 20rpx;
+}
+
+.badge-info {
+  margin-left: 20rpx;
+  background-color: seashell;
+}
+
+.badge-list {
+  border: 6rpx solid seagreen;
+  border-radius: 50rpx;
+  margin-top: -50rpx;
+  padding: 50rpx;
+}
+
+.badge-cat {
+  display: flex;
+  flex-direction: row;
+  margin-top: 20rpx;
+  align-items: center;
+}
+
+.badge-cat-img {
+  width: 100rpx;
+  height: 100rpx;
+  background-color: rgb(135, 222, 174);
+  border: 2rpx solid rgb(204, 202, 75);
+  border-radius: 20rpx;
+}
+
+.badge-cat-info {
+  margin-left: 20rpx;
+}
+.badge-to-detail, .badge-cat-count {
+  margin-left: auto;
+}

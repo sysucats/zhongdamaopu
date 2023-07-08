@@ -1,0 +1,22 @@
+<!--components/badgeRank/badgeRank.wxml-->
+
+<view class="badge-block" wx:for="123">
+  <view class="badge-header">
+    <image class="badge-img" src="" mode="aspectFill"></image>
+    <view class="badge-info">
+      <view class="badge-name">徽章名</view>
+      <view class="badge-desc">徽章描述，徽章描述</view>
+    </view>
+    <view class="badge-to-detail">查看详情 > </view>
+  </view>
+  <view class="badge-list">
+    <view class="badge-cat" wx:for="123">
+      <image class="badge-cat-img" src="" mode="aspectFill"></image>
+      <view class="badge-cat-info">
+        <view class="badge-cat-name">猫猫名</view>
+        <view class="badge-cat-campus">东校区</view>
+      </view>
+      <view class="badge-cat-count">x88</view>
+    </view>
+  </view>
+</view>

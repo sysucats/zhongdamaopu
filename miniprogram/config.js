@@ -7,9 +7,10 @@ module.exports = {
   // 版本号
   app_version: "v1.11.0",
   // laf后台服务地址
-  laf_url: 'https://mu485q.laf.run',
+  laf_url: 'https://fxkv6h.laf.run',
   // laf后台服务地址（微信开发工具中），一般和上面laf_url一致就好
-  laf_dev_url: 'https://mu485q.laf.run',
+  laf_dev_url: 'https://fxkv6h.laf.run',
+  // laf_url: 'https://mu485q.laf.run',
   // 使用私有的腾讯云cos存储，需要url签名
   use_private_tencent_cos: true,
 
@@ -160,9 +161,9 @@ module.exports = {
     },
     // 精选，pages/leaderboard/leaderboard
     leaderboard: {
-      share_tip: "精选照片",
+      share_tip: "榜单",
     },
-    // 精选，pages/inviteUser/inviteUser
+    // 特邀用户，pages/inviteUser/inviteUser
     inviteUser: {
       share_tip: "该分享无法激活特邀哦",
       share_title: "[6小时内] 点击成为特邀用户~",

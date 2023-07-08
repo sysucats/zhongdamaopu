@@ -29,6 +29,8 @@ Page({
     ],
     tempPics: [],
     loadnomore: false,
+    threads: ["徽章收集", "照片点赞", "拍照月榜"],
+    threadsActive: 1,
     filters: [{
       name: "周精选",
       hours: 24*7,
@@ -201,7 +203,8 @@ Page({
     return photos.filter(p => !m[p._id]);
   },
   onLoad: function () {
-    this.loadData()
+    this.loadData();
+    this.getHeights();
   },
   onReachBottom: function () {
     this.loadData()
@@ -287,5 +290,37 @@ Page({
     })
     this.jsData.columnsHeight = [0, 0];
     await this.loadData();
+  },
+  async fClickThread(e) {
+    const {index} = e.currentTarget.dataset;
+    this.activateThread(index);
+  },
+  async onSwiperChange(e) {
+    const {current} = e.detail;
+    this.activateThread(current);
+  },
+  async activateThread(index) {
+    if (index == 2) {
+      this.selectComponent('#photo-rank').reloadData();
+    }
+    this.setData({
+      threadsActive: index,
+    })
+  },
+  
+  // 开始计算各个东西高度
+  getHeights() {
+    wx.getSystemInfo({
+      success: res => {
+        // console.log(res);
+        this.setData({
+          "heights.threads": 30,
+          "heights.screenHeight": res.screenHeight,
+          "heights.windowHeight": res.windowHeight,
+          "heights.statusBarHeight": res.statusBarHeight,
+          "heights.rpx2px": res.windowWidth / 750,
+        });
+      }
+    });
   },
 })
