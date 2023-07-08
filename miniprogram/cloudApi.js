@@ -108,6 +108,13 @@ async function contentSafeCheck(content, nickname) {
   return;
 }
 
+async function getBadge(options) {
+  return await cloud.callFunction({
+    name: "getBadge",
+    data: options
+  });
+}
+
 module.exports = {
   curdOp,
   userOp,
@@ -118,5 +125,6 @@ module.exports = {
   getAllSci,
   contentSafeCheck,
   updateCat,
-  getDate
+  getDate,
+  getBadge
 };
