@@ -1,11 +1,5 @@
 <!--pages/info/badge/badge.wxml-->
-<view>剩余抽取次数：{{userTokenCount}}</view>
-
-<view>抽取徽章</view>
-<view>抽取概率为A级10%，B级30%，C级60%</view>
-
-<button bindtap="tagForGetBadge" data-count="1">点击抽取 1 枚徽章</button>
-<button bindtap="tagForGetBadge" data-count="10">点击抽取 10 枚徽章</button>
+<view>抽取概率: A 级 - 10%，B 级 - 30%，C 级 - 60%</view>
 
 <view>徽章列表</view>
 <view class="badge-list">
@@ -19,17 +13,15 @@
   </view>
 </view>
 
-<view>获取token</view>
-
 <view>
-  <view>每日登录领次数</view>
-  <view>上次领取日期：{{lastestToken.date || '无领取记录'}}</view>
-  <button bindtap='tapForEarnToken' data-type='dailyLogin' data-count="1">点击领取</button>
+  <view>每日签到抽徽章 - 上次领取日期：{{lastestBadgeGottenByCheckIn.date || '无领取记录'}}</view>
+  <!-- TODO: 不能抽取时置灰 -->
+  <button bindtap='tapForGetBadge' data-reason='checkIn' data-count="1">点击抽 1 枚</button>
 </view>
 
 <view>
-  <view>观看广告领次数</view>
-  <!-- 注意处理没有广告可看的UI，要有相应提示 -->
-  <button bindtap='watchADForEarnToken' data-type='picture'>观看贴片广告领取 1 次抽取次数</button>
-  <button bindtap='watchADForEarnToken' data-type='video'>观看视频广告领取 2 次抽取次数</button>
+  <view>观看广告抽徽章</view>
+  <!-- TODO: 注意处理没有广告可看的UI，要有相应提示 -->
+  <button bindtap='watchADForGetBadge' data-type='picture'>观看贴片广告抽 1 枚</button>
+  <button bindtap='watchADForGetBadge' data-type='video'>观看视频广告抽 2 枚</button>
 </view>

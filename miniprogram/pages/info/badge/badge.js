@@ -24,7 +24,6 @@ Page({
   async onLoad() {
     await this.loadUser()
     await this.loadAD()
-    await this.reloadUserTokenCount()
     await this.reloadUserBadge()
     await this.reloadLastestToken()
   },
@@ -49,7 +48,7 @@ Page({
       pictureAd.onLoad(() => {})
       pictureAd.onError((err) => {})
       pictureAd.onClose((res) => {
-        this.generateToken(1, 'watchPictureAD')
+        this.getBadge(1, 'watchPictureAD')
       })
     }
 
@@ -59,7 +58,7 @@ Page({
       videoAd.onLoad(() => {})
       videoAd.onError((err) => {})
       videoAd.onClose((res) => {
-        this.generateToken(2, 'watchVideoAD')
+        this.getBadge(2, 'watchVideoAD')
       })
     }
 
@@ -67,14 +66,6 @@ Page({
       pictureAd,
       videoAd,
     });
-  },
-
-  async reloadUserTokenCount() {
-    const db = await cloud.databaseAsync();
-    let count = (await db.collection("game_token").where({_openid: this.data.user.openid}).count()).total;
-    this.setData({
-      userTokenCount: count
-    })
   },
 
   async reloadUserBadge() {
@@ -108,30 +99,29 @@ Page({
     })
   },
 
-  async reloadLastestToken() {
+  async reloadLastCheckInTime() {
     const db = await cloud.databaseAsync();
-    let lastestToken = (await db.collection("game_token").where({_openid: this.data.user.openid}).orderBy('acquireTime', 'desc').get()).data[0];
-    if (lastestToken) {
-      lastestToken.date =  formatDate(lastestToken.acquireTime, 'yyyy-MM-dd');
+    let lastestBadgeGottenByCheckIn = (await db.collection("badge").where({_openid: this.data.user.openid, reason: 'checkIn'}).orderBy('acquireTime', 'desc').get()).data[0];
+    if (lastestBadgeGottenByCheckIn) {
+      lastestBadgeGottenByCheckIn.date =  formatDate(lastestToken.acquireTime, 'yyyy-MM-dd');
       this.setData({
-        lastestToken: lastestToken,
+        lastestBadgeGottenByCheckIn: lastestBadgeGottenByCheckIn,
       })
     }
   },
 
-  async tagForGetBadge(e) {
-    const {count} = e.currentTarget.dataset;
-    await api.getBadge({ count: Number(count) });
-    this.reloadUserTokenCount()
+  async tapForGetBadge(e) {
+    const {count, reason} = e.currentTarget.dataset;
+    this.getBadge(count, reason)
+  },
+
+  // 处理获取徽章的请求与 UI
+  async getBadge(count, reason) {
+    await api.getBadge({ count: Number(count), reason });
     this.reloadUserBadge()
   },
 
-  async tapForEarnToken(e) {
-    const {count, type} = e.currentTarget.dataset;
-    this.generateToken(count, type);
-  },
-
-  async watchADForEarnToken(e) {
+  async watchADForGetBadge(e) {
     const {type} = e.currentTarget.dataset;
     switch (type) {
       case 'picture': 
@@ -145,35 +135,5 @@ Page({
         }
         break
     }
-  },
-
-  async generateToken(count, acquireType) {
-    console.log(`user <${this.data.user.openid}> earned <${count}> token by <${acquireType}>`)
-    if (this.jsData.generatingToken) {
-      return false;
-    }
-    this.jsData.generatingToken = true;
-
-    wx.showLoading({
-      title: '发放代币ing',
-    });
-    for (let i = 0; i < count; i++) {
-      const token = {
-        _openid: this.data.user.openid,
-        acquireTime: new Date(),
-        acquireType: acquireType,
-        used: false,
-      }
-      await api.curdOp({
-        operation: "add",
-        collection: "game_token",
-        data: token
-      });
-    }
-    await this.reloadUserTokenCount();
-    await this.reloadLastestToken();
-
-    this.jsData.generatingToken = false;
-    wx.hideLoading();
   }
 })
