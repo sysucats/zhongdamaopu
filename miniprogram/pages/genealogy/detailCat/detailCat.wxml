@@ -203,5 +203,5 @@
     </view>
     <button class="short" bindtap="toGiveBadge" data-id="{{item._id}}">赠予</button>
   </view>
-  <button class="long">获取徽章</button>
+  <button class="long" bindtap="toGetBadge">获取徽章</button>
 </view>

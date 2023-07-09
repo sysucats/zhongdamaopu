@@ -670,6 +670,13 @@ Page({
     await this.doGiveBadge(id);
   },
 
+  // 点击获取徽章
+  async toGetBadge(e) {
+    wx.navigateTo({
+      url: '/pages/info/badge/badge',
+    });
+  },
+
   // 更新猫的徽章
   async reloadCatBadge() {
     const catId = this.data.cat._id;
