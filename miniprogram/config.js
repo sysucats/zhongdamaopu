@@ -10,7 +10,7 @@ module.exports = {
   laf_url: 'https://mu485q.laf.run',
   // laf后台服务地址（微信开发工具中），一般和上面laf_url一致就好
   laf_dev_url: 'https://mu485q.laf.run',
-  // laf_url: 'https://mu485q.laf.run',
+  // laf_url: 'https://fxkv6h.laf.run',
   // 使用私有的腾讯云cos存储，需要url签名
   use_private_tencent_cos: true,
 

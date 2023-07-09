@@ -115,6 +115,13 @@ async function getBadge(options) {
   });
 }
 
+async function giveBadge(options) {
+  return await cloud.callFunction({
+    name: "giveBadge",
+    data: options
+  });
+}
+
 module.exports = {
   curdOp,
   userOp,
@@ -126,5 +133,6 @@ module.exports = {
   contentSafeCheck,
   updateCat,
   getDate,
-  getBadge
+  getBadge,
+  giveBadge
 };

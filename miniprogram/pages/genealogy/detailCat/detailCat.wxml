@@ -97,16 +97,16 @@
           <view class="badge-all">查看详情</view>
         </view>
         <scroll-view class="badge-list" scroll-x="1">
-          <view class="badge-item" wx:for="{{catBadges}}" wx:for="_id" hover-class="tap">
+          <view class="badge-item" wx:for="{{catBadges}}" wx:key="_id" hover-class="tap">
             <image class="badge-item-avatar" src="{{item.img}}" mode="aspectFill"/>
-            <view class="badge-item-count">x{{item.count || "32"}}</view>
-            <view class="badge-item-name">{{item.name || "徽章名"}}</view>
+            <view class="badge-item-count">x{{item.count}}</view>
+            <view class="badge-item-name">{{item.name}}</view>
           </view>
           
           <view class="relation-block add" hover-class="tap" bindtap="toAddBadge">
             <image class="relation-cat-avatar" mode="aspectFill"></image>
             <view class="relation-name">+</view>
-            <view class="relation-cat-name">赠与徽章</view>
+            <view class="relation-cat-name">赠予徽章</view>
           </view>
         </scroll-view>
         <view class=""></view>
@@ -192,16 +192,16 @@
 
 <mp-gallery show="{{showGallery}}" gallery-photos="{{galleryPhotos}}" img-compressed-urls="{{imgCompressedUrls}}" img-urls="{{imgUrls}}" current="{{currentImg}}" hide-on-click="{{true}}" bindchange="bindGalleryChange" bindlikecountchanged="likeCountChanged"></mp-gallery>
 
-<!-- 赠与徽章弹出框 -->
+<!-- 赠予徽章弹出框 -->
 <view class="mask" bindtap="hide" hidden="{{!show}}"></view>
 <view class='search {{!show? "": "hidden"}}'>
-  <view class="user-badge-item" wx:for="123">
+  <view class="user-badge-item" wx:for="{{userBadges}}" wx:key="name">
     <image class="user-badge-item-avatar" src="{{item.img}}" mode="aspectFill"/>
     <view class="user-badge-item-info">
-      <view class="user-badge-item-name">名称</view>
-      <view class="user-badge-item-desc">徽章描述</view>
+      <view class="user-badge-item-name">{{item.name}} x{{item.count}}</view>
+      <view class="user-badge-item-desc">{{item.desc}}</view>
     </view>
-    <button class="short">赠与</button>
+    <button class="short" bindtap="toGiveBadge" data-id="{{item._id}}">赠予</button>
   </view>
   <button class="long">获取徽章</button>
 </view>

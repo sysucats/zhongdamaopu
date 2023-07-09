@@ -4,7 +4,7 @@
 
 <view class='cen-block unAuth' wx:if='{{!user}}'>
   <view class='title'>{{text_cfg.photo_rank.auth_tip_title}}</view>
-  <button bindtap='getUInfo'>{{text_cfg.photo_rank.auth_tip}}</button>
+  <button class="btn" bindtap='getUInfo'>{{text_cfg.photo_rank.auth_tip}}</button>
 </view>
 <view class='cen-block my' wx:else>
   <view class='text left'>

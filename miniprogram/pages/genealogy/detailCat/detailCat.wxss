@@ -495,7 +495,7 @@ swiper-item image {
   float: right;
 }
 
-/* 赠与徽章 */
+/* 赠予徽章 */
 .mask {
   width: 750rpx;
   height: 100vh;
