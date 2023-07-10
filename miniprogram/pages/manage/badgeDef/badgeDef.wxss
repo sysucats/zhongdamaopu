@@ -1,13 +1,49 @@
 /* pages/manage/badgeDef/badgeDef.wxss */
+page {
+  background-color: var(--color-gray-light);
+}
+
 .badge {
   display: flex;
   flex-direction: row;
   flex-wrap: nowrap;
-  border: 1rpx solid red;
   margin: 10rpx 0;
+  align-items: center;
+  padding: 10rpx 30rpx;
+  background-color: white;
 }
 
 .badge image {
   width: 150rpx;
   height: 150rpx;
+}
+
+.badge-info {
+  width: 430rpx;
+}
+
+.badge-desc, .badge-count {
+  font-size: 22rpx;
+}
+
+
+.modify-btn {
+  height: 30rpx;
+  width: 50rpx;
+  border: 1rpx solid var(--color-primary-dark);
+  background-color: var(--color-primary);
+  color: var(--color-black-min);
+  border-radius: 10rpx;
+  padding: 10rpx 30rpx;
+  margin-left: auto;
+  line-break: strict;
+  text-align: center;
+  font-size: 24rpx;
+  line-height: 30rpx;
+}
+
+button.primary {
+  margin: 20rpx auto 30rpx auto;
+  background-color: var(--color-primary);
+  width: 300rpx;
 }

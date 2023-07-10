@@ -101,11 +101,14 @@ Page({
         data: uploadItem,
       });
     } else {
-      await api.curdOp({
+      const res = await api.curdOp({
         operation: "add",
         collection: "badge_def",
         data: uploadItem
       });
+      this.setData({
+        "badgeDef._id": res.result.id,
+      })
     }
 
     wx.showToast({

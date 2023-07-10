@@ -14,11 +14,12 @@ Page({
    * 生命周期函数--监听页面加载
    */
   async onLoad() {
-    if (await checkAuth(this, 2)) {
-      await this.loadBadgeDefs();
-    }
+    await checkAuth(this, 2)
   },
 
+  async onShow() {
+    await this.loadBadgeDefs();
+  },
 
   // 没有权限，返回上一页
   goBack() {
@@ -40,8 +41,16 @@ Page({
       getCountTask.push(db.collection("badge").where({badgeDef: b._id}).count());
     }
     let badgeCount = await Promise.all(getCountTask);
+    const levelDespMap = {
+      0: 'A',
+      1: 'B',
+      2: 'C'
+    }
     for (let i = 0; i < badgeDefs.length; i++) {
+      // 记录数量
       badgeDefs[i].count = badgeCount[i].total;
+      // 展示等级
+      badgeDefs[i].levelDesp = levelDespMap[badgeDefs[i].level];
     }
     this.setData({
       badgeDefs: badgeDefs,
