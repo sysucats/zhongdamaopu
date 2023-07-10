@@ -5,7 +5,7 @@
     <view class="badge-info">
       <view class="badge-name">[{{item.levelDesp}}级] {{item.name}}</view>
       <view class="badge-desc">{{item.desc}}</view>
-      <view class="badge-count">现有数量：{{item.count}}</view>
+      <view class="badge-count">现存数量：{{item.count}}</view>
     </view>
     <view class="modify-btn" bindtap="onEdit" data-id="{{item._id}}">修改</view>
   </view>
