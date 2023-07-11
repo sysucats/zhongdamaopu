@@ -1,5 +1,5 @@
-import { checkAuth } from "../../../user";
-import { cloud } from "../../../cloudAccess";
+import { checkAuth } from "../../../utils/user";
+import { cloud } from "../../../utils/cloudAccess";
 
 Page({
 

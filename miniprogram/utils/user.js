@@ -4,7 +4,7 @@ import { getGlobalSettings } from "./page";
 import { getCacheItem, setCacheItem } from "./cache";
 import { cloud } from "./cloudAccess";
 import api from "./cloudApi";
-import config from "./config";
+import config from "../config";
 
 
 const UserTypes = {

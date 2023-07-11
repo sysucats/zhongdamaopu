@@ -1,9 +1,9 @@
-import { getCurrentPath, shareTo } from "../../../utils";
-import { getPageUserInfo, checkCanFeedback, toSetUserInfo } from "../../../user";
-import { requestNotice, sendNotifyChkFeeedback } from "../../../msg";
+import { getCurrentPath, shareTo } from "../../../utils/utils";
+import { getPageUserInfo, checkCanFeedback, toSetUserInfo } from "../../../utils/user";
+import { requestNotice, sendNotifyChkFeeedback } from "../../../utils/msg";
 import { text as text_cfg } from "../../../config";
-import { cloud } from "../../../cloudAccess";
-import api from "../../../cloudApi";
+import { cloud } from "../../../utils/cloudAccess";
+import api from "../../../utils/cloudApi";
 
 Page({
   /**

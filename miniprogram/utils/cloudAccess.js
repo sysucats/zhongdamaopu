@@ -2,8 +2,8 @@ import {
   laf_url,
   laf_dev_url,
   use_private_tencent_cos
-} from "./config"
-import COS from './packages/tencentcloud/cos';
+} from "../config"
+import COS from '../packages/tencentcloud/cos';
 import CryptoJS from 'crypto-js';
 
 var cloud = undefined;

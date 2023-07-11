@@ -1,6 +1,6 @@
-import { getPageUserInfo, toSetUserInfo, fillUserInfo } from "../../user";
+import { getPageUserInfo, toSetUserInfo, fillUserInfo } from "../../utils/user";
 import { text as text_cfg } from "../../config";
-import { cloud } from "../../cloudAccess";
+import { cloud } from "../../utils/cloudAccess";
 
 // components/photoRank/photoRank.ts
 Component({

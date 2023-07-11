@@ -1,7 +1,7 @@
 // components/badgeRank/badgeRank.ts
-import { cloud } from "../../cloudAccess";
+import { cloud } from "../../utils/cloudAccess";
 import { loadBadgeDefMap, sortBadgeDef } from  "../../utils/badge";
-import { getCatItemMulti, getAvatar } from "../../cat";
+import { getCatItemMulti, getAvatar } from "../../utils/cat";
 import * as config from "../../config";
 
 Component({

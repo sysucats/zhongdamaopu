@@ -1,15 +1,15 @@
 import {
   getCatItemMulti
-} from "../../cat.js";
-import { fillUserInfo } from "../../user";
+} from "../../utils/cat";
+import { fillUserInfo } from "../../utils/user";
 import {
   likeCheck,
   likeAdd
-} from "../../inter.js";
-import {getDateWithDiffHours, formatDate} from "../../utils.js";
+} from "../../utils/inter";
+import {getDateWithDiffHours, formatDate} from "../../utils/utils";
 import config from "../../config";
-import { showTab } from "../../page";
-import { cloud } from "../../cloudAccess";
+import { showTab } from "../../utils/page";
+import { cloud } from "../../utils/cloudAccess";
 
 const share_text = config.text.app_name + ' - ' + config.text.genealogy.share_tip;
 

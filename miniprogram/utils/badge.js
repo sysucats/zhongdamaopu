@@ -1,6 +1,6 @@
 import {
   cloud
-} from "../cloudAccess";
+} from "../utils/cloudAccess";
 
 async function loadBadgeDefMap() {
   const db = await cloud.databaseAsync();

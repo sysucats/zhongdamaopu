@@ -4,20 +4,20 @@ import {
   getDeltaHours,
   sleep,
   getCurrentPath
-} from "../../utils";
+} from "../../utils/utils";
 import {
   getAvatar,
   getVisitedDate
-} from "../../cat";
+} from "../../utils/cat";
 import {
   getCatCommentCount
-} from "../../comment";
-import { getUserInfo } from "../../user";
-import cache from "../../cache";
+} from "../../utils/comment";
+import { getUserInfo } from "../../utils/user";
+import cache from "../../utils/cache";
 import config from "../../config";
-import { loadFilter, getGlobalSettings, showTab } from "../../page";
-import { isManagerAsync, checkCanShowNews } from "../../user";
-import { cloud } from "../../cloudAccess";
+import { loadFilter, getGlobalSettings, showTab } from "../../utils/page";
+import { isManagerAsync, checkCanShowNews } from "../../utils/user";
+import { cloud } from "../../utils/cloudAccess";
 
 const default_png = undefined;
 

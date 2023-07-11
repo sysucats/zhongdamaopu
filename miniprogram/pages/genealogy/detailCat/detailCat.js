@@ -5,28 +5,28 @@ import {
   checkMultiClick,
   formatDate,
   deepcopy
-} from "../../../utils";
+} from "../../../utils/utils";
 import {
   checkCanUpload,
   checkCanComment,
   isManagerAsync,
   getUser
-} from "../../../user";
+} from "../../../utils/user";
 import {
   getCatCommentCount
-} from "../../../comment";
+} from "../../../utils/comment";
 import {
   setVisitedDate,
   getAvatar,
   getCatItem
-} from "../../../cat";
+} from "../../../utils/cat";
 import {
   getGlobalSettings
-} from "../../../page";
+} from "../../../utils/page";
 import {
   cloud
-} from "../../../cloudAccess";
-import api from "../../../cloudApi";
+} from "../../../utils/cloudAccess";
+import api from "../../../utils/cloudApi";
 
 
 import { loadUserBadge, loadBadgeDefMap, loadCatBadge, sortBadges, } from "../../../utils/badge";

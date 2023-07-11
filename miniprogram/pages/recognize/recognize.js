@@ -1,7 +1,7 @@
 import { text as text_cfg, cat_status_adopt } from "../../config";
-import { hex_sha256, randomInt } from "../../utils";
-import { loadFilter, getGlobalSettings, showTab } from "../../page";
-import { cloud } from "../../cloudAccess";
+import { hex_sha256, randomInt } from "../../utils/utils";
+import { loadFilter, getGlobalSettings, showTab } from "../../utils/page";
+import { cloud } from "../../utils/cloudAccess";
 
 // 接口设置，onLoad中从数据库拉取。
 var interfaceURL;

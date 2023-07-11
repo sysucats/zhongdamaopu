@@ -1,10 +1,10 @@
 // 审核照片
-import { checkAuth, fillUserInfo } from "../../../user";
-import { requestNotice, sendVerifyNotice, getMsgTplId } from "../../../msg";
-import cache from "../../../cache";
-import { getCatItem } from "../../../cat";
-import { cloud } from "../../../cloudAccess";
-import api from "../../../cloudApi";
+import { checkAuth, fillUserInfo } from "../../../utils/user";
+import { requestNotice, sendVerifyNotice, getMsgTplId } from "../../../utils/msg";
+import cache from "../../../utils/cache";
+import { getCatItem } from "../../../utils/cat";
+import { cloud } from "../../../utils/cloudAccess";
+import api from "../../../utils/cloudApi";
 
 // 准备发送通知的列表，姓名：审核详情
 var notice_list = {};

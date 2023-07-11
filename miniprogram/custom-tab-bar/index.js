@@ -1,6 +1,6 @@
-import { getGlobalSettings, getCurrentPath } from "../page";
-import { sleep } from "../utils";
-import { checkCanFullTabBar } from "../user";
+import { getGlobalSettings, getCurrentPath } from "../utils/page";
+import { sleep } from "../utils/utils";
+import { checkCanFullTabBar } from "../utils/user";
 import tab from "./tab";
 
 function getTabBarList() {

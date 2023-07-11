@@ -1,7 +1,7 @@
 import {
   UserTypes,
   FuncTypes
-} from "../../../user";
+} from "../../../utils/user";
 import tabsDef from "../../../custom-tab-bar/tab";
 
 const userTypes = [{

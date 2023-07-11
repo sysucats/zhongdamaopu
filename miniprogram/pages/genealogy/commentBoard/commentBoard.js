@@ -1,6 +1,6 @@
 import {
   formatDate
-} from "../../../utils";
+} from "../../../utils/utils";
 import config from "../../../config";
 import {
   getPageUserInfo,
@@ -8,17 +8,17 @@ import {
   checkCanComment,
   isManagerAsync,
   toSetUserInfo
-} from "../../../user";
+} from "../../../utils/user";
 import {
   getAvatar
-} from "../../../cat";
+} from "../../../utils/cat";
 import {
   getCatCommentCount
-} from "../../../comment";
+} from "../../../utils/comment";
 import {
   cloud
-} from "../../../cloudAccess";
-import api from "../../../cloudApi";
+} from "../../../utils/cloudAccess";
+import api from "../../../utils/cloudApi";
 
 var cat_id;
 

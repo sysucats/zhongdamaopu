@@ -1,7 +1,7 @@
-import { checkAuth } from "../../../user";
-import { loadFilter } from "../../../page";
-import { cloud } from "../../../cloudAccess";
-import api from "../../../cloudApi";
+import { checkAuth } from "../../../utils/user";
+import { loadFilter } from "../../../utils/page";
+import { cloud } from "../../../utils/cloudAccess";
+import api from "../../../utils/cloudApi";
 
 Page({
 

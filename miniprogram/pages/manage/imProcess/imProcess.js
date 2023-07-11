@@ -1,9 +1,9 @@
 // miniprogram/pages/imProcess/imProcess.js
-import { generateUUID } from "../../../utils";
+import { generateUUID } from "../../../utils/utils";
 import { text as text_cfg } from "../../../config";
-import { checkAuth, fillUserInfo } from "../../../user";
-import { cloud } from "../../../cloudAccess";
-import api from "../../../cloudApi";
+import { checkAuth, fillUserInfo } from "../../../utils/user";
+import { cloud } from "../../../utils/cloudAccess";
+import api from "../../../utils/cloudApi";
 
 import drawUtils from "./draw";
 import lockUtils from "./lock";

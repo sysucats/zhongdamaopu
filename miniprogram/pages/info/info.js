@@ -1,8 +1,8 @@
 // miniprogram/pages/info/info.js
-import { isManagerAsync } from "../../user";
+import { isManagerAsync } from "../../utils/user";
 import { text as text_cfg, mpcode_img } from "../../config";
-import { showTab } from "../../page";
-import { cloud } from "../../cloudAccess";
+import { showTab } from "../../utils/page";
+import { cloud } from "../../utils/cloudAccess";
 
 const share_text = text_cfg.app_name + ' - ' + text_cfg.info.share_tip;
 

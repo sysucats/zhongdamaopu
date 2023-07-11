@@ -1,9 +1,9 @@
 import { text as text_cfg, cat_status_adopt } from "../../../config";
-import { checkAuth, fillUserInfo } from "../../../user";
-import { loadFilter } from "../../../page";
-import { getCatItemMulti } from "../../../cat";
-import { cloud } from "../../../cloudAccess";
-import api from "../../../cloudApi";
+import { checkAuth, fillUserInfo } from "../../../utils/user";
+import { loadFilter } from "../../../utils/page";
+import { getCatItemMulti } from "../../../utils/cat";
+import { cloud } from "../../../utils/cloudAccess";
+import api from "../../../utils/cloudApi";
 
 var cat_id = undefined;
 

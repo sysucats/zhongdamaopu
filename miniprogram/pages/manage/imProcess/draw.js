@@ -1,5 +1,5 @@
 // 画图全局canvas，依赖版本库：2.24.7
-import {compressImage} from "../../../utils";
+import {compressImage} from "../../../utils/utils";
 var gCanvas = null;
 var gCtx = null;
 

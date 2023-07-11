@@ -2,7 +2,7 @@ import {
   text as text_cfg,
   science_imgs
 } from "../../../config";
-import api from "../../../cloudApi";
+import api from "../../../utils/cloudApi";
 const cates = ['猫咪救助', '撸猫指南', '猫咪领养', '猫咪喂养', '猫咪健康'];
 const share_text = text_cfg.app_name + ' - ' + text_cfg.science.share_tip;
 

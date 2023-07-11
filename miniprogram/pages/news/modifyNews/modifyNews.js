@@ -1,11 +1,11 @@
 import {
   getPageUserInfo,
   checkAuth
-} from "../../../user";
+} from "../../../utils/user";
 import {
   cloud
-} from "../../../cloudAccess";
-import api from "../../../cloudApi";
+} from "../../../utils/cloudAccess";
+import api from "../../../utils/cloudApi";
 
 Page({
 

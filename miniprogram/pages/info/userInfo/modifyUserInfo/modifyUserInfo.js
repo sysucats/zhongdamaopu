@@ -1,7 +1,7 @@
-import { getUser } from "../../../../user";
-import { deepcopy } from "../../../../utils";
-import { cloud } from "../../../../cloudAccess";
-import api from "../../../../cloudApi";
+import { getUser } from "../../../../utils/user";
+import { deepcopy } from "../../../../utils/utils";
+import { cloud } from "../../../../utils/cloudAccess";
+import api from "../../../../utils/cloudApi";
 
 const defaultAvatarUrl = "/pages/public/images/info/default_avatar.png"
 

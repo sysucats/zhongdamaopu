@@ -1,4 +1,4 @@
-import { hex_sha256 } from "./packages/sha256/sha256";
+import { hex_sha256 } from "../packages/sha256/sha256";
 import { cloud } from "./cloudAccess";
 
 function randomInt(min, max) {

@@ -1,7 +1,7 @@
 import { text as text_cfg, feedback_wj_img } from "../../../config";
 import {
   cloud
-} from "../../../cloudAccess";
+} from "../../../utils/cloudAccess";
 const share_text = text_cfg.app_name + ' - ' + text_cfg.feedback.share_tip;
 
 Page({

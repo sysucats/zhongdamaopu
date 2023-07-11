@@ -1,19 +1,19 @@
 import {
   cloud
-} from "../../../cloudAccess";
+} from "../../../utils/cloudAccess";
 import {
   getUser
-} from "../../../user";
+} from "../../../utils/user";
 import {
   deepcopy,
   formatDate
-} from "../../../utils";
+} from "../../../utils/utils";
 import {
   loadUserBadge,
   loadBadgeDefMap
 } from "../../../utils/badge";
 
-import api from "../../../cloudApi";
+import api from "../../../utils/cloudApi";
 
 Page({
 

@@ -1,7 +1,7 @@
 // miniprogram/pages/manage/managers.js
-import { checkAuth } from "../../../user";
-import { cloud } from "../../../cloudAccess";
-import api from "../../../cloudApi";
+import { checkAuth } from "../../../utils/user";
+import { cloud } from "../../../utils/cloudAccess";
+import api from "../../../utils/cloudApi";
 
 // 是否正在加载
 var loading = false;

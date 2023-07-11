@@ -2,7 +2,7 @@ import dp_cfg from "./deployConfig";
 import {
   cloud,
   ensureToken,
-} from "../../../cloudAccess";
+} from "../../../utils/cloudAccess";
 import { use_private_tencent_cos } from "../../../config";
 
 const STATUS_DOING = 0;

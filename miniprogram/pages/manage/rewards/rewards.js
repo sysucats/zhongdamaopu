@@ -1,7 +1,7 @@
-import { formatDate } from "../../../utils";
-import { checkAuth } from "../../../user";
-import { cloud } from "../../../cloudAccess";
-import api from "../../../cloudApi";
+import { formatDate } from "../../../utils/utils";
+import { checkAuth } from "../../../utils/user";
+import { cloud } from "../../../utils/cloudAccess";
+import api from "../../../utils/cloudApi";
 
 Page({
 
