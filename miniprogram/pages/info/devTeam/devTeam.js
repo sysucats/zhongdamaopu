@@ -11,6 +11,14 @@ Page({
     text_cfg: text_cfg,
     github_link: "https://github.com/sysucats/zhongdamaopu",
     update_log: [{
+      version: "v1.12.0",
+      content: [
+        "徽章系统上线啦~",
+        "精选Tab重置为榜单",
+        "修复科普页图片等问题",
+      ],
+      time: "2023/7/12"
+    }, {
       version: "v1.11.0",
       content: [
         "修复常用工具不显示等问题",
