@@ -57,7 +57,7 @@ Page({
   },
   onLevelChange: function(e) {
     this.setData({
-      "badgeDef.level": e.detail.value
+      "badgeDef.level": this.data.levelDefs[e.detail.value],
     })
   },
   // 提交试试

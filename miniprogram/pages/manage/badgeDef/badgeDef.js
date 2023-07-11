@@ -41,16 +41,9 @@ Page({
       getCountTask.push(db.collection("badge").where({badgeDef: b._id}).count());
     }
     let badgeCount = await Promise.all(getCountTask);
-    const levelDespMap = {
-      0: 'A',
-      1: 'B',
-      2: 'C'
-    }
     for (let i = 0; i < badgeDefs.length; i++) {
       // 记录数量
       badgeDefs[i].count = badgeCount[i].total;
-      // 展示等级
-      badgeDefs[i].levelDesp = levelDespMap[badgeDefs[i].level];
     }
     this.setData({
       badgeDefs: badgeDefs,

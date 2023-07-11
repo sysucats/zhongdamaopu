@@ -78,6 +78,10 @@
     <view class="option-text">人员管理</view>
     <view class="right-arrow"><image mode='aspectFill' src="/pages/public/images/filter/right.png"></image></view> 
   </view>
+  <view class="option" bindtap='clickbtn' data-to='/pages/manage/badgeDef/badgeDef'>
+    <view class="option-text">徽章管理</view>
+    <view class="right-arrow"><image mode='aspectFill' src="/pages/public/images/filter/right.png"></image></view> 
+  </view>
   <view class="option" bindtap='clickbtn' data-to='/pages/manage/pageSettings/pageSettings'>
     <view class="option-text">页面配置</view>
     <view class="right-arrow"><image mode='aspectFill' src="/pages/public/images/filter/right.png"></image></view> 

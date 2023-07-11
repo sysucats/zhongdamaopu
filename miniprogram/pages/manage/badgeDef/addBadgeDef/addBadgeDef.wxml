@@ -22,7 +22,7 @@
   <view class="label-tip">tip: 抽取概率为A级10%，B级30%，C级60%</view>
   <picker bindchange="onLevelChange" value="{{badgeDef.level}}" range="{{levelDefs}}">
     <view class="picker">
-      {{levelDefs[badgeDef.level] || '未选择'}}
+      {{badgeDef.level || '未选择'}}
     </view>
   </picker>
 

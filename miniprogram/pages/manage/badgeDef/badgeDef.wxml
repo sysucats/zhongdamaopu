@@ -3,7 +3,7 @@
   <view class="badge" wx:for="{{badgeDefs}}" wx:key="_id">
     <image src="{{item.img}}" mode="aspectFill"/>
     <view class="badge-info">
-      <view class="badge-name">[{{item.levelDesp}}级] {{item.name}}</view>
+      <view class="badge-name">[{{item.level}}级] {{item.name}}</view>
       <view class="badge-desc">{{item.desc}}</view>
       <view class="badge-count">现存数量：{{item.count}}</view>
     </view>
