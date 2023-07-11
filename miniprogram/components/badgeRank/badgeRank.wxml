@@ -7,14 +7,14 @@
       <view class="badge-name">{{dispContent[rankKey].info.name}}</view>
       <view class="badge-desc">{{dispContent[rankKey].info.desc}}</view>
     </view>
-    <view wx:if="{{ dispContent[rankKey].showAll }}" class="badge-to-detail">收起全部</view>
-    <view wx:else class="badge-to-detail">展开全部</view>
+    <view wx:if="{{ dispContent[rankKey].showAll }}" class="badge-to-detail" bindtap="changeShowAll" data-key="{{rankKey}}" data-on="{{false}}">收起更多</view>
+    <view wx:else class="badge-to-detail" bindtap="changeShowAll" data-key="{{rankKey}}" data-on="{{true}}">展开更多</view>
   </view>
   <view class="badge-list">
-    <view class="badge-cat" wx:for="{{dispContent[rankKey].items}}" wx:key="_id" wx:if="{{ dispContent[rankKey].showAll || index < 5 }}">
+    <view class="badge-cat" wx:for="{{dispContent[rankKey].items}}" wx:key="_id" wx:if="{{ (dispContent[rankKey].showAll && index < 20) || index < 5 }}">
       <image class="badge-cat-img" src="{{item.avatar}}" mode="aspectFill"></image>
       <view class="badge-cat-info">
-        <view class="badge-cat-name">{{item.name}}</view>
+        <view class="badge-cat-name">#{{index}} {{item.name}}</view>
         <view class="badge-cat-campus">{{item.campus}}</view>
       </view>
       <view class="badge-cat-count">x{{item.count}}</view>

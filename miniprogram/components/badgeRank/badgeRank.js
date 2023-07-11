@@ -101,6 +101,13 @@ Component({
         name: `${badgeDefMap[key].name}榜`,
         desc: badgeDefMap[key].desc,
       };
+    },
+
+    changeShowAll(e) {
+      const { key, on } = e.currentTarget.dataset;
+      this.setData({
+        [`dispContent.${key}.showAll`]: on,
+      })
     }
   }
 })
