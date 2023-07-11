@@ -15,7 +15,7 @@
 .badge-img {
   width: 100rpx;
   height: 100rpx;
-  background-color: burlywood;
+  /* background-color: burlywood; */
   border: 2rpx solid brown;
   border-radius: 20rpx;
 }
@@ -42,7 +42,7 @@
 .badge-cat-img {
   width: 100rpx;
   height: 100rpx;
-  background-color: rgb(135, 222, 174);
+  /* background-color: rgb(135, 222, 174); */
   border: 2rpx solid rgb(204, 202, 75);
   border-radius: 20rpx;
 }

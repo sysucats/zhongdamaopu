@@ -60,7 +60,7 @@ Page({
       "badgeDef.level": this.data.levelDefs[e.detail.value],
     })
   },
-  // 提交试试
+  // 提交
   async clickUpload() {
     let {badgeDef} = this.data;
     // 检查
@@ -85,7 +85,7 @@ Page({
 
     // 准备上传的结构
     const uploadItem = {
-      img: cloudUrl,
+      img: this.removeURLParams(cloudUrl),
       name: badgeDef.name,
       desc: badgeDef.desc,
       level: badgeDef.level,
@@ -108,6 +108,7 @@ Page({
       });
       this.setData({
         "badgeDef._id": res.result.id,
+        "badgeDef.img": cloudUrl,
       })
     }
 
@@ -130,5 +131,18 @@ Page({
       filePath: tempFilePath, // 小程序临时文件路径
     });
     return upRes.fileID;
+  },
+
+  removeURLParams(url) {
+    // 检查 URL 是否包含参数
+    if (url.indexOf('?') === -1) {
+      return url; // 如果没有参数，直接返回原始 URL
+    }
+  
+    // 获取 URL 中的基础部分
+    const baseUrl = url.split('?')[0];
+  
+    // 返回基础 URL
+    return baseUrl;
   },
 })

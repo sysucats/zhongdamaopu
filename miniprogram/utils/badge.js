@@ -79,9 +79,23 @@ async function sortBadges(badges, badgeDefMap) {
   return mergedBadges;
 }
 
+// 按等级排序徽章定义
+async function sortBadgeDef(badgeDefs) {
+  // 等级序（越大越前）
+  const levelOrderMap = {
+    'A': 3,
+    'B': 2,
+    'C': 1,
+  }
+
+  badgeDefs.sort((a, b) => levelOrderMap[a.level] > levelOrderMap[b.level]);
+  return badgeDefs;
+}
+
 export {
   loadBadgeDefMap,
   loadUserBadge,
   loadCatBadge,
   sortBadges,
+  sortBadgeDef,
 }

@@ -300,6 +300,9 @@ Page({
     this.activateThread(current);
   },
   async activateThread(index) {
+    if (index == 0) {
+      this.selectComponent('#badge-rank').reloadData();
+    }
     if (index == 2) {
       this.selectComponent('#photo-rank').reloadData();
     }

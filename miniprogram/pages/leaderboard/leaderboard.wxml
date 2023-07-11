@@ -10,7 +10,7 @@
   <!-- 徽章收集榜 -->
   <swiper-item>
     <scroll-view scroll-y="1" style="height: 100%;">
-      <badgeRank></badgeRank>
+      <badgeRank id="badge-rank"></badgeRank>
     </scroll-view>
   </swiper-item><!-- 徽章收集榜 end -->
 
