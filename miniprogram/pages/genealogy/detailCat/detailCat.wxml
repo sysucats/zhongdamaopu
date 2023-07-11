@@ -20,7 +20,6 @@
     </swiper-item>
   </swiper>
 
-
   <view class='info' id='info-box'>
     <view class="identity">
       <view class='name'>{{cat.name}}</view>
@@ -97,16 +96,16 @@
           <view class="badge-all">查看详情</view>
         </view>
         <scroll-view class="badge-list" scroll-x="1">
-          <view class="badge-item" wx:for="{{catBadges}}" wx:key="_id" hover-class="tap">
-            <image class="badge-item-avatar" src="{{item.img}}" mode="aspectFill"/>
+          <view class="badge-item badge-level-{{item.level}}" wx:for="{{catBadges}}" wx:key="_id" hover-class="tap">
+            <image class="badge-item-avatar" src="{{item.img}}" mode="aspectFill" />
             <view class="badge-item-count">x{{item.count}}</view>
             <view class="badge-item-name">{{item.name}}</view>
           </view>
-          
-          <view class="relation-block add" hover-class="tap" bindtap="toAddBadge">
-            <image class="relation-cat-avatar" mode="aspectFill"></image>
-            <view class="relation-name">+</view>
-            <view class="relation-cat-name">赠予徽章</view>
+
+          <view class="relation-block add" hover-class="tap" bindtap="showGiveBadge">
+            <image class="badge-item-avatar" src="/pages/public/images/button/addBadge.png" mode="aspectFit"></image>
+            <view class="badge-item-count hidden">+</view>
+            <view class="badge-item-name">赠予徽章</view>
           </view>
         </scroll-view>
         <view class=""></view>
@@ -193,15 +192,17 @@
 <mp-gallery show="{{showGallery}}" gallery-photos="{{galleryPhotos}}" img-compressed-urls="{{imgCompressedUrls}}" img-urls="{{imgUrls}}" current="{{currentImg}}" hide-on-click="{{true}}" bindchange="bindGalleryChange" bindlikecountchanged="likeCountChanged"></mp-gallery>
 
 <!-- 赠予徽章弹出框 -->
-<view class="mask" bindtap="hide" hidden="{{!show}}"></view>
-<view class='search {{!show? "": "hidden"}}'>
-  <view class="user-badge-item" wx:for="{{userBadges}}" wx:key="name">
-    <image class="user-badge-item-avatar" src="{{item.img}}" mode="aspectFill"/>
-    <view class="user-badge-item-info">
-      <view class="user-badge-item-name">{{item.name}} x{{item.count}}</view>
-      <view class="user-badge-item-desc">{{item.desc}}</view>
+<view class="mask" bindtap="hideGiveBadge" hidden="{{!showGiveBadge}}"></view>
+<view class='search {{showGiveBadge? "": "hidden"}}'>
+  <scroll-view class="user-badge-list" scroll-y="1" enable-flex="1">
+    <view class="user-badge-item badge-level-{{item.level}} {{item.count === 0? 'zero-count': ''}} {{activeUserBadge === index? 'active': ''}}" wx:for="{{userBadges}}" wx:key="name" bindtap="bindTapUserBadge" data-index="{{index}}">
+      <image class="user-badge-item-avatar" src="{{item.img}}" mode="aspectFill" />
+      <view class="user-badge-item-count">x{{item.count}}</view>
+      <view class="user-badge-item-name">[{{item.level}}]{{item.name}}</view>
     </view>
-    <button class="short" bindtap="toGiveBadge" data-id="{{item._id}}">赠予</button>
+  </scroll-view>
+  <view class="search-buttons">
+    <view class="search-btn" bindtap="toGetBadge">获取徽章</view>
+    <view class="search-btn {{activeUserBadge != -1 ? 'active': 'disabled'}}" hover-class="hover" bindtap="toGiveBadge">赠予</view>
   </view>
-  <button class="long" bindtap="toGetBadge">获取徽章</button>
 </view>

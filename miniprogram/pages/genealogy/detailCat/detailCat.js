@@ -79,6 +79,8 @@ Page({
     // 领养状态
     adopt_desc: config.cat_status_adopt,
     text_cfg: config.text,
+
+    activeUserBadge: -1,
   },
 
   jsData: {
@@ -636,12 +638,14 @@ Page({
       await this.loadUser();
     }
     this.setData({
-      userBadges: await loadUserBadge(this.data.user.openid, this.jsData.badgeDefMap),
-    })
+      userBadges: await loadUserBadge(this.data.user.openid, this.jsData.badgeDefMap, {keepZero: true}),
+    });
   },
 
   // 赠予徽章
-  async doGiveBadge(badgeDef) {
+  async doGiveBadge() {
+    const index = this.data.activeUserBadge;
+    const badgeDef = this.data.userBadges[index]._id;
     const res = await api.giveBadge({
       catId: this.data.cat._id,
       badgeDef: badgeDef
@@ -658,6 +662,10 @@ Page({
       });
     }
 
+    this.setData({
+      activeUserBadge: -1,
+    });
+
     await Promise.all([
       this.reloadUserBadge(),
       this.reloadCatBadge()
@@ -666,8 +674,10 @@ Page({
 
   // 点击赠予徽章
   async toGiveBadge(e) {
-    const { id } = e.currentTarget.dataset;
-    await this.doGiveBadge(id);
+    if (this.data.activeUserBadge === -1) {
+      return;
+    }
+    await this.doGiveBadge();
   },
 
   // 点击获取徽章
@@ -684,9 +694,38 @@ Page({
       this.jsData.badgeDefMap = await loadBadgeDefMap();
     }
     let badges = await loadCatBadge(catId);
-    badges = await sortBadges(badges, this.jsData.badgeDefMap)
+    badges = await sortBadges(badges, this.jsData.badgeDefMap);
     this.setData({
       catBadges: badges,
     })
-  }
+  },
+
+  async bindTapUserBadge(e) {
+    let {index} = e.currentTarget.dataset;
+    if (this.data.userBadges[index].count === 0) {
+      wx.showToast({
+        title: '请先获取该徽章~',
+        icon: "none"
+      });
+      return;
+    }
+    if (this.data.activeUserBadge === index) {
+      index = -1;
+    }
+    this.setData({
+      activeUserBadge: index,
+    });
+  },
+
+  async showGiveBadge() {
+    this.setData({
+      showGiveBadge: true,
+    })
+  },
+
+  async hideGiveBadge() {
+    this.setData({
+      showGiveBadge: false,
+    })
+  },
 })

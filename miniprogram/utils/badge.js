@@ -15,7 +15,7 @@ async function loadBadgeDefMap() {
   }, {});
 }
 
-async function loadUserBadge(openid, badgeDefMap) {
+async function loadUserBadge(openid, badgeDefMap, options) {
   const db = await cloud.databaseAsync();
 
   const userBadges = (await db.collection("badge").where({
@@ -23,7 +23,8 @@ async function loadUserBadge(openid, badgeDefMap) {
     catId: null,
   }).get()).data;
 
-  return await sortBadges(userBadges, badgeDefMap);
+  const res = await sortBadges(userBadges, badgeDefMap, options);
+  return res;
 }
 
 async function loadCatBadge(catId) {
@@ -42,41 +43,45 @@ async function loadCatBadge(catId) {
 }
 
 // 按照等级排序，并统计Badge的个数
-async function sortBadges(badges, badgeDefMap) {
+async function sortBadges(badges, badgeDefMap, options) {
   if (!badges || !badgeDefMap) {
     return;
   }
-  // 等级序（越大越前）
+  // 等级序
   const levelOrderMap = {
-    'A': 3,
-    'B': 2,
-    'C': 1,
+    'A': 0,
+    'B': 1,
+    'C': 2,
   }
-  // 先合并
-  let mergedBadges = badges.reduce((userBadgesMap, badge) => {
-    const badgeDef = badgeDefMap[badge.badgeDef];
-
-    if (!userBadgesMap[badge.badgeDef]) {
-      userBadgesMap[badge.badgeDef] = {
-        _id: badgeDef._id,
-        img: badgeDef.img,
-        name: badgeDef.name,
-        desc: badgeDef.desc,
-        level: badgeDef.level,
-        levelOrder: levelOrderMap[badgeDef.level],
-        count: 0,
-      }
+  
+  // 顺便统计0个的情况
+  let userBadgesMap = {};
+  for (const id in badgeDefMap) {
+    const badgeDef = badgeDefMap[id];
+    userBadgesMap[id] = {
+      _id: badgeDef._id,
+      img: badgeDef.img,
+      name: badgeDef.name,
+      desc: badgeDef.desc,
+      level: badgeDef.level,
+      count: 0,
     }
+  }
+
+  // 合并已有
+  for (const badge of badges) {
     userBadgesMap[badge.badgeDef].count++;
+  }
 
-    return userBadgesMap;
-  }, {});
+  let mergedBadges = Object.values(userBadgesMap);
+  mergedBadges = mergedBadges.toSorted((a, b) => levelOrderMap[a.level] - levelOrderMap[b.level]);
 
-  mergedBadges = Object.values(mergedBadges);
+  if (options && options.keepZero) {
+    return mergedBadges;
+  }
 
-  mergedBadges.sort((a, b) => a.levelOrder > b.levelOrder);
-
-  return mergedBadges;
+  const res = mergedBadges.filter((value) => value.count);
+  return res;
 }
 
 // 按等级排序徽章定义

@@ -315,7 +315,7 @@ swiper-item image {
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 999;
+  z-index: 1;
 }
 
 .addPhoto .icon{
@@ -338,7 +338,7 @@ swiper-item image {
   position: sticky;
   top: 0;
   position: -webkit-sticky;
-  z-index: 99;
+  z-index: 1;
 }
 
 .big-header .avatar {
@@ -455,13 +455,13 @@ swiper-item image {
 .relation-block.tap, .badge-item.tap {
   background-color: var(--color-gray-light);
 }
-.relation-cat-avatar, .badge-item-avatar {
+.relation-cat-avatar {
   width: 100rpx;
   height: 100rpx;
   border-radius: 100%;
   background-color: var(--color-white-dark);
 }
-.relation-name, .badge-item-count {
+.relation-name, .badge-item-count, .user-badge-item-count {
   max-width: 100rpx;
   margin-top: -20rpx;
   font-size: 20rpx;
@@ -479,7 +479,6 @@ swiper-item image {
   white-space: nowrap;
   text-overflow:ellipsis;
   overflow:hidden;
-
 }
 
 /* 关掉关系板块滚动条，安卓滚动条略丑 */
@@ -535,12 +534,134 @@ swiper-item image {
   bottom: -1000rpx;
 }
 
-.user-badge-item {
+.user-badge-list {
   display: flex;
+  height: 300rpx;
+  flex-wrap: wrap;
+}
+
+.user-badge-item {
+  width: 20%;
+  padding: 10rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border: 4rpx solid transparent;
+  border-radius: 20rpx;
+  margin: 6rpx 2.5%;
+  box-sizing: border-box;
+}
+
+.user-badge-item.active {
+  border: 4rpx solid var(--color-primary);
+}
+
+.user-badge-item.zero-count {
+  filter: grayscale(0.9);
 }
 
 .user-badge-item-avatar {
-  width: 100rpx;
-  height: 100rpx;
-  background-color: lightslategray;
+  width: 120rpx;
+  height: 120rpx;
+}
+
+.user-badge-item-name {
+  font-size: 20rpx;
+}
+
+.badge-level-A.active .user-badge-item-avatar {
+  filter: drop-shadow(0rpx 0rpx 7rpx var(--color-badge-A));
+}
+
+.badge-level-B.active .user-badge-item-avatar {
+  filter: drop-shadow(0rpx 0rpx 7rpx var(--color-badge-B));
+}
+
+.badge-level-C.active .user-badge-item-avatar {
+  filter: drop-shadow(0rpx 0rpx 7rpx var(--color-badge-C));
+}
+
+.badge-level-A .user-badge-item-name {
+  color: var(--color-badge-A);
+}
+
+.badge-level-B .user-badge-item-name {
+  color: var(--color-badge-B);
+}
+
+.badge-level-C .user-badge-item-name {
+  color: var(--color-badge-C);
+}
+
+/* search按钮 */
+.search-buttons {
+  display: flex;
+  justify-content: space-evenly;
+  margin-top: 20rpx;
+}
+
+.search-btn {
+  width: 300rpx;
+  height: 42rpx;
+  line-height: 42rpx;
+  font-size: 22rpx;
+  text-align: center;
+  background-color: white;
+  border-radius: 10rpx;
+  border: 1rpx solid var(--color-gray-normal);
+}
+.search-btn.active {
+  background-color: var(--color-primary);
+}
+.search-btn.active.hover {
+  background-color: var(--color-primary-dark);
+}
+.search-btn.disabled {
+  background-color: var(--color-gray-dark);
+}
+
+/* 徽章 */
+.badge-item-name {
+  font-size: 20rpx;
+}
+
+.badge-item-avatar {
+  width: 120rpx;
+  height: 120rpx;
+  border-radius: 100%;
+}
+
+.badge-level-A .badge-item-avatar {
+  filter: drop-shadow(0rpx 0rpx 7rpx var(--color-badge-A));
+}
+
+.badge-level-B .badge-item-avatar {
+  filter: drop-shadow(0rpx 0rpx 7rpx var(--color-badge-B));
+}
+
+.badge-level-C .badge-item-avatar {
+  filter: drop-shadow(0rpx 0rpx 7rpx var(--color-badge-C));
+}
+
+.badge-level-A .badge-item-name {
+  color: var(--color-badge-A);
+}
+
+.badge-level-B .badge-item-name {
+  color: var(--color-badge-B);
+}
+
+.badge-level-C .badge-item-name {
+  color: var(--color-badge-C);
+}
+
+.badge-item-count, .user-badge-item-count {
+  font-size: 18rpx;
+  background-color: var(--color-gray-light);
+  opacity: 0.7;
+  padding: 3rpx 6rpx;
+}
+
+.badge-item-count.hidden {
+  opacity: 0.0;
 }

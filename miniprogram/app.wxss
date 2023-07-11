@@ -23,6 +23,10 @@ page {
 
   --color-green: #22ad6d;
   --color-green-dark: #015e32;
+
+  --color-badge-A: #ffa601;
+  --color-badge-B: #004ad3;
+  --color-badge-C: #258100;
 }
 .container {
   display: flex;
