@@ -138,14 +138,14 @@ function _init() {
   // Laf 0.8 私有部署的apiKey
   var apikey = "";
   try {
-    apikey = require('./appSecret').apikey;
+    apikey = require('../appSecret').apikey;
   } catch {
     console.log("no apikey");
   }
   // Laf 1.0 的签名私钥
   var signKey = "";
   try {
-    signKey = require('./signKey').signKey;
+    signKey = require('../signKey').signKey;
   } catch {
     console.log("no signKey");
   }
