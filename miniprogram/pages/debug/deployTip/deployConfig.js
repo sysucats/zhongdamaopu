@@ -198,7 +198,13 @@ module.exports = {
     "setting": init_setting,
     "user": default_init_data,
   },
-  images: config.science_imgs.concat([config.reward_img, config.feedback_wj_img, config.mpcode_img]),
+  images: config.science_imgs.concat([
+    config.reward_img,
+    config.feedback_wj_img,
+    config.mpcode_img,
+    config.badge_rank_count_img,
+    config.badge_rank_score_img,
+  ]),
   func_configs: {
     initDeploy: {
       timeout: 59, // s

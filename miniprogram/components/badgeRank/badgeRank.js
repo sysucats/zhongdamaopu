@@ -2,6 +2,7 @@
 import { cloud } from "../../cloudAccess";
 import { loadBadgeDefMap, sortBadgeDef } from  "../../utils/badge";
 import { getCatItemMulti, getAvatar } from "../../cat";
+import * as config from "../../config";
 
 Component({
   /**
@@ -59,7 +60,7 @@ Component({
       let dispContent = {};
       for (const rankKey in rankRes) {
         dispContent[rankKey] = {
-          info: this._getRankInfo(rankKey, badgeDefMap),
+          info: await this._getRankInfo(rankKey, badgeDefMap),
           items: [],
         };
         for (const catId in rankRes[rankKey]) {
@@ -80,17 +81,17 @@ Component({
       });
     },
 
-    _getRankInfo(key, badgeDefMap) {
+    async _getRankInfo(key, badgeDefMap) {
       if (key === 'count') {
         return {
-          img: "",  // TODO: 加个通用徽章图
+          img: await cloud.signCosUrl(config.badge_rank_count_img),
           name: "徽章总数榜",
           desc: "拥有徽章个数最多的猫猫",
         };
       }
       if (key === 'score') {
         return {
-          img: "",  // TODO: 加个通用徽章图
+          img: await cloud.signCosUrl(config.badge_rank_score_img),
           name: "徽章价值榜",
           desc: "徽章总价值最大的猫猫",
         };
