@@ -1,6 +1,116 @@
 /* pages/info/badge/badge.wxss */
 @import "../../manage/badgeDef/badgeDef.wxss";
 
+page {
+  background-color: #EAC843;
+}
+
+.container {
+  width: 100%;
+}
+
+.up-part {
+  width: 100%;
+  background-color: #D6ECE6;
+  border: 30rpx solid #BCDEE5;
+  box-sizing: border-box;
+  display: flex;
+}
+
+.up-part .balls {
+  background-color: #F2FFFF;
+  width: 300rpx;
+  height: 300rpx;
+  padding: 4rpx;
+  margin: 20rpx;
+}
+
+.buttons {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  align-items: center;
+  padding: 0 50rpx;
+}
+
+.btn {
+  width: 220rpx;
+  height: 70rpx;
+  background-color: #BCDEE5;
+  box-shadow: 0px 7px 0px 0px #ADC4C9;
+  border-radius: 20rpx;
+  font-size: 22rpx;
+  color: #507E7E;
+  display: flex;
+  align-items: center;
+  padding: 0 20rpx;
+}
+
+.btn .logo {
+  width: 40rpx;
+  height: 40rpx;
+  margin-right: 20rpx;
+}
+
+.btn.active {
+  background-color: #addce6;
+  box-shadow: 0px 2px 0px 0px #ADC4C9;
+}
+
+.btn.disabled {
+  background-color: #e9fbff;
+  box-shadow: 0px 2px 0px 0px #ADC4C9;
+}
+
+.down-part {
+  width: 750rpx;
+  height: 428rpx;
+  position: relative;
+}
+.down-part .background {
+  width: 750rpx;
+  position: absolute;
+  top: 0rpx;
+}
+.down-part .round-btn {
+  width: 240rpx;
+  height: 240rpx;
+  position: absolute;
+  top: 40rpx;
+  left: 50rpx;
+  border-radius: 100%;
+  box-shadow: 0px 8px 0px 2px #A78F2A;
+}
+
+.tip {
+  text-align: center;
+  font-size: 20rpx;
+  color: #A78F2A;
+}
+
+.badge-list {
+  width: 730rpx;
+  margin: 20rpx 10rpx;
+  border-radius: 50rpx;
+  padding: 20rpx;
+  background-color: #E3F9F9;
+  box-sizing: border-box;
+}
+
+.badge-list-inner {
+  width: 690rpx;
+  height: 480rpx;
+  background-color: white;
+  border-radius: 20rpx;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.badge image {
+  width: 100rpx;
+  height: 100rpx;
+}
+
 .badge-count {
   font-size: 34rpx;
   font-weight: bold;
@@ -13,7 +123,15 @@
 
 .badge-list-title {
   width: 100%;
-  text-align: center;
-  color: var(--color-primary-dark);
-  font-size: 40rpx;
+  color: #5F6D70;
+  font-size: 32rpx;
+  font-weight: bold;
+  padding: 0 0 20rpx 20rpx;
+}
+
+.sub-title {
+  margin-left: 20rpx;
+  font-size: 24rpx;
+  font-weight: normal;
+  color: #9BA8A5;
 }

@@ -1,28 +1,40 @@
-<view class="badge-list-title">- 已有徽章 -</view>
-<view class="badge-list">
-  <view class="badge badge-level-{{item.level}}" wx:for="{{userBadges}}" wx:key="_id">
-    <image src="{{item.img}}" mode="aspectFill"/>
-    <view class="badge-info">
-      <view class="badge-name"><text class="badge-level">[{{item.level}}]</text>{{item.name}}</view>
-      <view class="badge-desc">{{item.desc}}</view>
+<view class="container">
+  <view class="up-part">
+    <image class="balls" src="/pages/public/images/badge/balls.png" mode="aspectFit" />
+    <view class="buttons">
+      <view class="btn" hover-class="active" bindtap='tapForGetBadge' data-reason='checkIn' data-count="1">
+        <image class="logo" src="/pages/public/images/badge/article_btn.png" mode="aspectFit" />
+        每日免费抽取
+      </view>
+      <view class="btn" hover-class="active" bindtap='watchADForGetBadge' data-type='picture'>
+        <image class="logo" src="/pages/public/images/badge/article_btn.png" mode="aspectFit" />
+        贴片广告抽取1次
+      </view>
+      <view class="btn disabled" hover-class="active" bindtap='watchADForGetBadge' data-type='video'>
+        <image class="logo" src="/pages/public/images/badge/play_btn.png" mode="aspectFit" />
+        视频广告抽取2次
+      </view>
     </view>
-    <view class="badge-count">x{{item.count}}</view>
   </view>
-  <view style="height: 1rpx;"></view>
+  <view class="down-part">
+    <image class="background" src="/pages/public/images/badge/background.png" mode="aspectFit" />
+    <image class="round-btn" src="/pages/public/images/badge/round_btn.png" mode="aspectFit" />
+  </view>
 </view>
 
-<view>抽取概率: A 级 - 10%，B 级 - 30%，C 级 - 60%</view>
+<view class="tip">抽取概率：A 级 - 10%，B 级 - 30%，C 级 - 60%</view>
 
-<view>
-  <view>每日签到抽徽章 - 上次领取日期：{{lastestBadgeGottenByCheckIn.date || '无领取记录'}}</view>
-  <!-- TODO: 不能抽取时置灰 -->
-  <button bindtap='tapForGetBadge' data-reason='checkIn' data-count="1">点击抽 1 枚</button>
+<view class="badge-list">
+  <view class="badge-list-title">徽章口袋 <text class="sub-title">快去送给心动猫猫吧</text></view>
+  <scroll-view class="badge-list-inner" scroll-y="1">
+    <view class="badge badge-level-{{item.level}}" wx:for="{{userBadges}}" wx:key="_id">
+      <image src="{{item.img}}" mode="aspectFill" />
+      <view class="badge-info">
+        <view class="badge-name"><text class="badge-level">[{{item.level}}]</text>{{item.name}}</view>
+        <view class="badge-desc">{{item.desc}}</view>
+      </view>
+      <view class="badge-count">x{{item.count}}</view>
+    </view>
+  </scroll-view>
 </view>
-
-<view>
-  <view>观看广告抽徽章</view>
-  <!-- TODO: 注意处理没有广告可看的UI，要有相应提示 -->
-  <button bindtap='watchADForGetBadge' data-type='picture'>观看贴片广告抽 1 枚</button>
-  <button bindtap='watchADForGetBadge' data-type='video'>观看视频广告抽 2 枚</button>
-</view>
-
+<view style="height: 1rpx;"></view>
