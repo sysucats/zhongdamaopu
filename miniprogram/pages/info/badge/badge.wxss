@@ -1,1 +1,19 @@
 /* pages/info/badge/badge.wxss */
+@import "../../manage/badgeDef/badgeDef.wxss";
+
+.badge-count {
+  font-size: 34rpx;
+  font-weight: bold;
+  color: var(--color-primary);
+}
+
+.badge-level {
+  font-size: 28rpx;
+}
+
+.badge-list-title {
+  width: 100%;
+  text-align: center;
+  color: var(--color-primary-dark);
+  font-size: 40rpx;
+}

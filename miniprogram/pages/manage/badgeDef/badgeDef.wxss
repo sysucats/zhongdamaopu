@@ -47,3 +47,15 @@ button.primary {
   background-color: var(--color-primary);
   width: 300rpx;
 }
+
+.badge-level-A .badge-name {
+  color: var(--color-badge-A);
+}
+
+.badge-level-B .badge-name {
+  color: var(--color-badge-B);
+}
+
+.badge-level-C .badge-name {
+  color: var(--color-badge-C);
+}

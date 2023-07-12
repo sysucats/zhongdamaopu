@@ -1,17 +1,17 @@
-<!--pages/info/badge/badge.wxml-->
-<view>抽取概率: A 级 - 10%，B 级 - 30%，C 级 - 60%</view>
-
-<view>徽章列表</view>
+<view class="badge-list-title">- 已有徽章 -</view>
 <view class="badge-list">
-  <view class="badge" wx:for="{{userBadges}}" wx:key="_id">
+  <view class="badge badge-level-{{item.level}}" wx:for="{{userBadges}}" wx:key="_id">
     <image src="{{item.img}}" mode="aspectFill"/>
-    <view class="info">
-      <view class="name">{{item.name}}</view>
-      <view class="desc">{{item.desc}}</view>
-      <view class="count">拥有数量：{{item.count}}</view>
+    <view class="badge-info">
+      <view class="badge-name"><text class="badge-level">[{{item.level}}]</text>{{item.name}}</view>
+      <view class="badge-desc">{{item.desc}}</view>
     </view>
+    <view class="badge-count">x{{item.count}}</view>
   </view>
+  <view style="height: 1rpx;"></view>
 </view>
+
+<view>抽取概率: A 级 - 10%，B 级 - 30%，C 级 - 60%</view>
 
 <view>
   <view>每日签到抽徽章 - 上次领取日期：{{lastestBadgeGottenByCheckIn.date || '无领取记录'}}</view>
@@ -25,3 +25,4 @@
   <button bindtap='watchADForGetBadge' data-type='picture'>观看贴片广告抽 1 枚</button>
   <button bindtap='watchADForGetBadge' data-type='video'>观看视频广告抽 2 枚</button>
 </view>
+
