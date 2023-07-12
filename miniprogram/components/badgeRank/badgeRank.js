@@ -73,7 +73,7 @@ Component({
           };
           dispContent[rankKey].items.push(item);
         }
-        dispContent[rankKey].items.sort((a, b) => a.count > b.count);
+        dispContent[rankKey].items.sort((a, b) => b.count - a.count);
       }
       console.log(dispContent);
       this.setData({

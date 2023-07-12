@@ -9,6 +9,15 @@ async function loadBadgeDefMap() {
     return;
   }
 
+  // 超过100种徽章定义，需要分批获取
+  if (badgeDefMap.length === 100) {
+    let count = (await db.collection("badge_def").get()).total;
+    while (badgeDefMap.length < count) {
+      let tmp = (await db.collection("badge_def").get()).data;
+      badgeDefMap = badgeDefMap.concat(tmp);
+    }
+  }
+
   return badgeDefMap.reduce((badgeDefMap, badgeDef) => {
     badgeDefMap[badgeDef._id] = badgeDef;
     return badgeDefMap
@@ -23,7 +32,7 @@ async function loadUserBadge(openid, badgeDefMap, options) {
     catId: null,
   }).get()).data;
 
-  const res = await sortBadges(userBadges, badgeDefMap, options);
+  const res = await mergeAndSortBadges(userBadges, badgeDefMap, options);
   return res;
 }
 
@@ -43,7 +52,7 @@ async function loadCatBadge(catId) {
 }
 
 // 按照等级排序，并统计Badge的个数
-async function sortBadges(badges, badgeDefMap, options) {
+async function mergeAndSortBadges(badges, badgeDefMap, options) {
   if (!badges || !badgeDefMap) {
     return;
   }
@@ -74,7 +83,7 @@ async function sortBadges(badges, badgeDefMap, options) {
   }
 
   let mergedBadges = Object.values(userBadgesMap);
-  mergedBadges = mergedBadges.toSorted((a, b) => levelOrderMap[a.level] - levelOrderMap[b.level]);
+  mergedBadges.sort((a, b) => levelOrderMap[a.level] - levelOrderMap[b.level]);
 
   if (options && options.keepZero) {
     return mergedBadges;
@@ -86,14 +95,14 @@ async function sortBadges(badges, badgeDefMap, options) {
 
 // 按等级排序徽章定义
 async function sortBadgeDef(badgeDefs) {
-  // 等级序（越大越前）
+  // 等级序
   const levelOrderMap = {
-    'A': 3,
-    'B': 2,
-    'C': 1,
+    'A': 0,
+    'B': 1,
+    'C': 2,
   }
 
-  badgeDefs.sort((a, b) => levelOrderMap[a.level] > levelOrderMap[b.level]);
+  badgeDefs.sort((a, b) => levelOrderMap[a.level] - levelOrderMap[b.level]);
   return badgeDefs;
 }
 
@@ -101,6 +110,6 @@ export {
   loadBadgeDefMap,
   loadUserBadge,
   loadCatBadge,
-  sortBadges,
+  mergeAndSortBadges,
   sortBadgeDef,
 }

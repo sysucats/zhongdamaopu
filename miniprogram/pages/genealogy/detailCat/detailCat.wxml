@@ -93,7 +93,7 @@
         <view class='label'>
           <view class='label-block'></view>
           徽章口袋
-          <!-- <view class="badge-all">查看详情</view> -->
+          <view class="badge-all" bindtap="toBadgeDetail">查看详情</view>
         </view>
         <scroll-view class="badge-list" scroll-x="1">
           <view class="badge-item badge-level-{{item.level}}" wx:for="{{catBadges}}" wx:key="_id" hover-class="tap">

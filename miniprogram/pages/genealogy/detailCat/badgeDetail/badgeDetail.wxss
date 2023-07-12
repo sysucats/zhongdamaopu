@@ -1,0 +1,63 @@
+/* pages/genealogy/detailCat/badgeDetail/badgeDetail.wxss */
+.item {
+  display: flex;
+  flex-direction: row;
+  background-color: white;
+  margin: 10rpx 0;
+  align-items: center;
+}
+
+.user-info {
+  width: 450rpx;
+  padding: 20rpx;
+  box-sizing: border-box;
+}
+
+.user-info-name{
+  font-size: 32rpx;
+  color: var(--color-black-min);
+}
+.user-info-time {
+  font-size: 22rpx;
+  color: var(--color-gray-dark);
+}
+
+.user-info-small-text {
+  font-size: 24rpx;
+  color: var(--color-black-light);
+}
+
+.user-avatar {
+  width: 100rpx;
+  height: 100rpx;
+  border-radius: 20rpx;
+  margin: 20rpx;
+}
+
+.badge-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.badge-img {
+  width: 80rpx;
+  height: 80rpx;
+  margin: 10rpx;
+}
+
+.badge-name {
+  font-size: 20rpx;
+}
+
+.badge-level-A .badge-name {
+  color: var(--color-badge-A);
+}
+
+.badge-level-B .badge-name {
+  color: var(--color-badge-B);
+}
+
+.badge-level-C .badge-name {
+  color: var(--color-badge-C);
+}

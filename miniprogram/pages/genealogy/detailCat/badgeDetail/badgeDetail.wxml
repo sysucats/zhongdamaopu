@@ -1,0 +1,12 @@
+<!--pages/genealogy/detailCat/badgeDetail/badgeDetail.wxml-->
+<view class="item" wx:for="{{detailBadges}}" wx:key="_id">
+  <image class="user-avatar" src="{{item.userInfo.avatarUrl}}" mode="aspectFill"/>
+  <view class="user-info">
+    <view class="user-info-name">{{item.userInfo.nickName || '匿名'}} <text class="user-info-small-text">赠出</text></view>
+    <view class="user-info-time">{{item.dispTime}}</view>
+  </view>
+  <view class="badge-info badge-level-{{item.badgeInfo.level}}">
+    <image class="badge-img" src="{{item.badgeInfo.img}}" mode="aspectFill"/>
+    <view class="badge-name">[{{item.badgeInfo.level}}]{{item.badgeInfo.name}}</view>
+  </view>
+</view>

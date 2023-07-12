@@ -102,7 +102,7 @@ async function getUserInfoMulti(openids, cacheOptions, retMap) {
     var db_res = (await coll_user.where({openid: _.in(not_found)}).get()).data;
     for (var user of db_res) {
       const cacheKey = `uinfo-${user.openid}`;
-      setCacheItem(cacheKey, user, randomInt(25, 35));
+      setCacheItem(cacheKey, user, 0, randomInt(25, 35));
       res[user.openid] = user;
     }
   }

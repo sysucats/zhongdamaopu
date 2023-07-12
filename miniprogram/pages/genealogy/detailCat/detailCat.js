@@ -29,7 +29,7 @@ import {
 import api from "../../../utils/cloudApi";
 
 
-import { loadUserBadge, loadBadgeDefMap, loadCatBadge, sortBadges, } from "../../../utils/badge";
+import { loadUserBadge, loadBadgeDefMap, loadCatBadge, mergeAndSortBadges, } from "../../../utils/badge";
 
 const no_heic = /^((?!\.heic$).)*$/i; // 正则表达式：不以 HEIC 为文件后缀的字符串
 
@@ -687,17 +687,19 @@ Page({
     });
   },
 
-  // 更新猫的徽章
+  // 更新猫的徽章，TODO(zing): 减少调用次数，考虑做个中间表
   async reloadCatBadge() {
     const catId = this.data.cat._id;
     if (!this.jsData.badgeDefMap) {
       this.jsData.badgeDefMap = await loadBadgeDefMap();
     }
     let badges = await loadCatBadge(catId);
-    badges = await sortBadges(badges, this.jsData.badgeDefMap);
+    badges.sort((a, b) => b.givenTime - a.givenTime);
+    let mergedBadges = await mergeAndSortBadges(badges, this.jsData.badgeDefMap);
     this.setData({
-      catBadges: badges,
-    })
+      catBadges: mergedBadges,
+      detailBadges: badges,
+    });
   },
 
   async bindTapUserBadge(e) {
@@ -728,4 +730,13 @@ Page({
       showGiveBadge: false,
     })
   },
+
+  async toBadgeDetail() {
+    // 新开一个页面，用缓存来传值
+    wx.setStorageSync('cat-badge-detail', this.data.detailBadges);
+    // 跳转
+    wx.navigateTo({
+      url: '/pages/genealogy/detailCat/badgeDetail/badgeDetail',
+    });
+  }
 })

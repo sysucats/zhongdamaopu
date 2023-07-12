@@ -36,7 +36,8 @@
     "pages/debug/genKeys/genKeys",
     "pages/manage/badgeDef/badgeDef",
     "pages/manage/badgeDef/addBadgeDef/addBadgeDef",
-    "pages/info/badge/badge"
+    "pages/info/badge/badge",
+    "pages/genealogy/detailCat/badgeDetail/badgeDetail"
   ],
   "tabBar": {
     "custom": true,
