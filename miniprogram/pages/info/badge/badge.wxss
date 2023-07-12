@@ -69,8 +69,7 @@ page {
 }
 .down-part .background {
   width: 750rpx;
-  position: absolute;
-  top: 0rpx;
+  height: 428rpx;
 }
 .down-part .round-btn {
   width: 240rpx;
