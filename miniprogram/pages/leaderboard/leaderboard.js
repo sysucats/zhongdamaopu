@@ -207,7 +207,13 @@ Page({
     this.getHeights();
   },
   onReachBottom: function () {
+    if (this.data.activateThread != 1) {
+      return;
+    }
     this.loadData()
+  },
+  onReady() {
+    this.activateThread(0);
   },
   
   clickLike: async function clickLike(e) {

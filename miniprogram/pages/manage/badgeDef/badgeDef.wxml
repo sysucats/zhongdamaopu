@@ -4,7 +4,8 @@
     <image src="{{item.img}}" mode="aspectFill"/>
     <view class="badge-info">
       <view class="badge-name">[{{item.level}}级] {{item.name}}</view>
-      <view class="badge-desc">{{item.desc}}</view>
+      <view class="badge-desc">徽章描述：{{item.desc}}</view>
+      <view class="badge-desc">榜单标语：{{item.rankDesc}}</view>
       <view class="badge-count">现存数量：{{item.count}}</view>
     </view>
     <view class="modify-btn" bindtap="onEdit" data-id="{{item._id}}">修改</view>

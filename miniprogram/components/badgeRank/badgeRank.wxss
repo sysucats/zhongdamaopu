@@ -9,27 +9,42 @@
   display: flex;
   flex-direction: row;
   padding: 0 30rpx;
-  align-items: flex-end;
+  /* align-items: flex-end; */
+  align-items: center;
 }
 
 .badge-img {
-  width: 100rpx;
-  height: 100rpx;
-  /* background-color: burlywood; */
-  border: 2rpx solid brown;
+  width: 110rpx;
+  height: 110rpx;
   border-radius: 20rpx;
+  /* background-color: white; */
 }
 
 .badge-info {
+  width: 400rpx;
   margin-left: 20rpx;
-  background-color: seashell;
+}
+
+.badge-name {
+  font-size: 32rpx;
+}
+
+.badge-desc {
+  font-size: 24rpx;
+  color: var(--color-black-transparent);
+}
+
+.badge-to-detail {
+  font-size: 24rpx;
+  align-self: flex-end;
+  text-decoration: underline;
 }
 
 .badge-list {
-  border: 6rpx solid seagreen;
   border-radius: 50rpx;
   margin-top: -50rpx;
   padding: 50rpx;
+  background-color: white;
 }
 
 .badge-cat {
@@ -42,8 +57,6 @@
 .badge-cat-img {
   width: 100rpx;
   height: 100rpx;
-  /* background-color: rgb(135, 222, 174); */
-  border: 2rpx solid rgb(204, 202, 75);
   border-radius: 20rpx;
 }
 
@@ -52,4 +65,50 @@
 }
 .badge-to-detail, .badge-cat-count {
   margin-left: auto;
+}
+
+.badge-cat-name {
+  font-size: 32rpx;
+}
+
+.badge-cat-order {
+  font-size: 22rpx;
+  color: var(--color-gray-dark);
+}
+
+.badge-cat-campus {
+  font-size: 26rpx;
+  color: var(--color-black-light);
+}
+
+.badge-cat-count {
+  font-size: 34rpx;
+  color: var(--color-primary);
+  font-weight: bold;
+}
+
+/* 分等级颜色 */
+
+.badge-level-A .badge-img {
+  filter: drop-shadow(0rpx 0rpx 7rpx var(--color-badge-A));
+}
+
+.badge-level-B .badge-img {
+  filter: drop-shadow(0rpx 0rpx 7rpx var(--color-badge-B));
+}
+
+.badge-level-C .badge-img {
+  filter: drop-shadow(0rpx 0rpx 7rpx var(--color-badge-C));
+}
+
+.badge-level-A .badge-name {
+  color: var(--color-badge-A);
+}
+
+.badge-level-B .badge-name {
+  color: var(--color-badge-B);
+}
+
+.badge-level-C .badge-name {
+  color: var(--color-badge-C);
 }

@@ -17,6 +17,7 @@
   font-size: 32rpx;
   color: var(--color-black-min);
 }
+
 .user-info-time {
   font-size: 22rpx;
   color: var(--color-gray-dark);

@@ -15,8 +15,12 @@
   <input type="text" class="nickname-input" placeholder="请输入名称" value="{{badgeDef.name}}" bindinput="onChangeText" data-field="name"/>
 
   <view class="label-small">描述</view>
-  <view class="label-tip">tip: 最好是一句话</view>
+  <view class="label-tip">tip: 描述这个徽章应该送给哪类猫猫</view>
   <input type="text" class="nickname-input" placeholder="请输入描述" value="{{badgeDef.desc}}" bindinput="onChangeText" data-field="desc"/>
+
+  <view class="label-small">榜单标语</view>
+  <view class="label-tip">tip: 简短的一句话，展示在榜单Tab</view>
+  <input type="text" class="nickname-input" placeholder="请输入标语" value="{{badgeDef.rankDesc}}" bindinput="onChangeText" data-field="rankDesc"/>
 
   <view class="label-small">徽章等级</view>
   <view class="label-tip">tip: 抽取概率为A级10%，B级30%，C级60%</view>

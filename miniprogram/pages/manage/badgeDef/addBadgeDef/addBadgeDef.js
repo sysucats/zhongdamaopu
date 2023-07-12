@@ -89,6 +89,7 @@ Page({
       name: badgeDef.name,
       desc: badgeDef.desc,
       level: badgeDef.level,
+      rankDesc: badgeDef.rankDesc,
     }
     
     // 写入数据库

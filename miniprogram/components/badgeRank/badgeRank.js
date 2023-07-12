@@ -68,6 +68,7 @@ Component({
             _id: catInfoMap[catId]._id,
             name: catInfoMap[catId].name,
             campus: catInfoMap[catId].campus,
+            area: catInfoMap[catId].area,
             avatar: catInfoMap[catId].avatar.photo_compressed || catInfoMap[catId].avatar.avatarItem.photo_id,
             count: rankRes[rankKey][catId],
           };
@@ -86,14 +87,16 @@ Component({
         return {
           img: await cloud.signCosUrl(config.badge_rank_count_img),
           name: "徽章总数榜",
-          desc: "拥有徽章个数最多的猫猫",
+          rankDesc: "拥有徽章个数最多的猫猫",
+          level: "A",
         };
       }
       if (key === 'score') {
         return {
           img: await cloud.signCosUrl(config.badge_rank_score_img),
           name: "徽章价值榜",
-          desc: "徽章总价值最大的猫猫",
+          rankDesc: "徽章总价值最大的猫猫",
+          level: "A",
         };
       }
 
@@ -101,6 +104,8 @@ Component({
         img: badgeDefMap[key].img,
         name: `${badgeDefMap[key].name}榜`,
         desc: badgeDefMap[key].desc,
+        level: badgeDefMap[key].level,
+        rankDesc: badgeDefMap[key].rankDesc,
       };
     },
 
