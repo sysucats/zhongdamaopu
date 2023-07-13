@@ -1,0 +1,21 @@
+/* components/badgeModal/badgeModal.wxss */
+.mask {
+  width: 750rpx;
+  height: 100vh;
+  background-color: var(--color-gray-dark);
+  opacity: 0.8;
+  position: fixed;
+  top: 0;
+  z-index: 2;
+}
+
+.modal {
+  background-color: white;
+  width: 400rpx;
+  height: 500rpx;
+  border-radius: 50rpx;
+  position: fixed;
+  top: 200rpx;
+  left: 175rpx;
+  z-index: 2;
+}

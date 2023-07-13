@@ -1,0 +1,3 @@
+<!--components/badgeModal/badgeModal.wxml-->
+<view class="mask" bindtap="hide" hidden="{{!show}}"></view>
+<view class="modal"></view>

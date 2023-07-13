@@ -1,5 +1,7 @@
 {
-  "usingComponents": {},
+  "usingComponents": {
+    "badgeModal": "/components/badgeModal/badgeModal"
+  },
   "navigationBarTitleText": "小猫徽章",
   "backgroundColor": "#F7F7FA"
 }

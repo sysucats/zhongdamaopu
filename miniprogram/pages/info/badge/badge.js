@@ -21,11 +21,25 @@ Page({
    * 页面的初始数据
    */
   data: {
-
+    rotateAnimation: null,
+    shakeAnimation: null,
   },
 
   jsData: {
-    badgeDefMap: null
+    badgeDefMap: null,
+    rotateAnimationObj: wx.createAnimation({
+      duration: 800,
+      timingFunction: 'ease-in', // "linear","ease","ease-in","ease-in-out","ease-out","step-start","step-end"
+      delay: 0,
+      transformOrigin: '50% 50% 0'
+    }),
+    rotateCounter: 0,
+    shakeAnimationObj: wx.createAnimation({
+      duration: 12,
+      timingFunction: 'ease-in', // "linear","ease","ease-in","ease-in-out","ease-out","step-start","step-end"
+      delay: 0,
+      transformOrigin: '50% 50% 0'
+    }),
   },
 
   /**
@@ -109,7 +123,10 @@ Page({
       count,
       reason
     } = e.currentTarget.dataset;
-    this.getBadge(count, reason)
+
+    // this.getBadge(count, reason)
+    wx.vibrateLong();
+    this.runAni();
   },
 
   // 处理获取徽章的请求与 UI
@@ -137,5 +154,23 @@ Page({
         }
         break
     }
-  }
+  },
+  
+  runAni: function () {
+    // 旋转动画
+    this.jsData.rotateCounter ++;
+    this.jsData.rotateAnimationObj.rotate(360 * this.jsData.rotateCounter).step();
+    // 震动动画
+    for (let i = 0; i < 10; i++) {
+      this.jsData.shakeAnimationObj.scale(0.96, 0.96).rotate(-3).step();
+      // this.jsData.shakeAnimationObj.step();
+      this.jsData.shakeAnimationObj.scale(1.0, 1.0).rotate(+3).step();
+      // this.jsData.shakeAnimationObj.step();
+      this.jsData.shakeAnimationObj.rotate(0).step();
+    }
+    this.setData({
+      rotateAnimation: this.jsData.rotateAnimationObj.export(),
+      shakeAnimation: this.jsData.shakeAnimationObj.export()
+    });
+  },
 })

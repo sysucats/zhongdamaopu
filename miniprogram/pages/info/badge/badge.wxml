@@ -1,6 +1,8 @@
 <view class="container">
   <view class="up-part">
-    <image class="balls" src="/pages/public/images/badge/balls.png" mode="aspectFit" />
+    <view class="glass">
+      <image class="balls" src="/pages/public/images/badge/balls.png" mode="aspectFit" animation="{{shakeAnimation}}" />
+    </view>
     <view class="buttons">
       <view class="btn" hover-class="active" bindtap='tapForGetBadge' data-reason='checkIn' data-count="1">
         <image class="logo" src="/pages/public/images/badge/article_btn.png" mode="aspectFit" />
@@ -18,7 +20,8 @@
   </view>
   <view class="down-part">
     <image class="background" src="/pages/public/images/badge/background.png" mode="aspectFit" />
-    <image class="round-btn" src="/pages/public/images/badge/round_btn.png" mode="aspectFit" />
+    <image class="round-btn" src="/pages/public/images/badge/round_btn.png" mode="aspectFit" animation="{{rotateAnimation}}" />
+    <view class="round-btn-shadow"></view>
   </view>
 </view>
 
@@ -38,3 +41,5 @@
   </scroll-view>
 </view>
 <view style="height: 1rpx;"></view>
+
+<badgeModal></badgeModal>
