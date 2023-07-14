@@ -6,7 +6,6 @@ import {
 } from "../../../utils/user";
 import {
   deepcopy,
-  formatDate,
   sleep,
 } from "../../../utils/utils";
 import {
@@ -166,12 +165,15 @@ Page({
 
   // 处理获取徽章的请求与 UI
   async getBadge(reason) {
+    if (this.jsData.badgeGetting) {
+      return;
+    }
+    this.jsData.badgeGetting = true;
+
     const badges = (await api.getBadge({
       count: 1,
       reason
     })).result.badges;
-
-    console.log(badges);
     
     if (!this.jsData.badgeDefMap) {
       this.jsData.badgeDefMap = await loadBadgeDefMap();
@@ -185,6 +187,8 @@ Page({
     }
 
     await this.reloadUserBadge();
+    
+    this.jsData.badgeGetting = false;
   },
 
   async watchADForGetBadge(e) {

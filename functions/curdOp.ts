@@ -6,6 +6,7 @@ const db = cloud.database();
 const permissionNeed = {
   "add": {
     "app_secret": 99,
+    "badge_def": 2,
     "cat": 2,
     "comment": 0,
     "feedback": 0,
@@ -20,6 +21,7 @@ const permissionNeed = {
   },
   "update": {
     "app_secret": 99,
+    "badge_def": 2,
     "cat": 2,
     "comment": 1,
     "feedback": 1,
@@ -34,6 +36,7 @@ const permissionNeed = {
   },
   "remove": {
     "app_secret": 99,
+    "badge_def": 2,
     "cat": 99,
     "comment": 1,
     "feedback": 1,
@@ -48,6 +51,7 @@ const permissionNeed = {
   },
   "set": {
     "app_secret": 99,
+    "badge_def": 2,
     "cat": 2,
     "comment": 1,
     "feedback": 1,
@@ -62,6 +66,7 @@ const permissionNeed = {
   },
   "inc": {
     "app_secret": 99,
+    "badge_def": 2,
     "cat": 0,
     "comment": 1,
     "feedback": 1,
@@ -92,11 +97,11 @@ const permissionAuthor = {
 exports.main = async function (ctx: FunctionContext) {
   // body, query 为请求参数, user 是授权对象
   // console.log("ctx:", ctx);
-  const { body, query } = ctx;
+  const { body } = ctx;
 
   if (body && body.deploy_test === true) {
     // 进行部署检查
-    return "v1.1";
+    return "v1.2";
   }
 
   var openid = ctx.user.openid;  // 用户的 OpenID

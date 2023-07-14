@@ -1,0 +1,4 @@
+name: getBadgeRank
+methods:
+  - POST
+tags: []

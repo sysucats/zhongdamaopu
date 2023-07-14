@@ -1,3 +1,24 @@
+- collectionName: badge
+  rules:
+    read: openid
+    count: openid
+    update: false
+    remove: false
+    add: false
+- collectionName: badge_def
+  rules:
+    read: openid
+    count: openid
+    update: false
+    remove: false
+    add: false
+- collectionName: badge_rank
+  rules:
+    read: openid
+    count: openid
+    update: false
+    remove: false
+    add: false
 - collectionName: cat
   rules:
     read: openid

@@ -90,7 +90,6 @@ async function mergeAndSortBadges(badges, badgeDefMap, options) {
     return mergedBadges;
   }
 
-  console.log(mergedBadges);
   const res = mergedBadges.filter((value) => value.count);
   return res;
 }

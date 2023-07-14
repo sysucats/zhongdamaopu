@@ -1,0 +1,4 @@
+name: getBadge
+methods:
+  - POST
+tags: []

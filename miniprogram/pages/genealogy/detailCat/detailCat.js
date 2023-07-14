@@ -644,6 +644,11 @@ Page({
 
   // 赠予徽章
   async doGiveBadge() {
+    if (this.jsData.badgeGiving) {
+      return;
+    }
+    this.jsData.badgeGiving = true;
+
     const index = this.data.activeUserBadge;
     const badgeDef = this.data.userBadges[index]._id;
     const res = await api.giveBadge({
@@ -670,6 +675,8 @@ Page({
       this.reloadUserBadge(),
       this.reloadCatBadge()
     ]);
+
+    this.jsData.badgeGiving = false;
   },
 
   // 点击赠予徽章
