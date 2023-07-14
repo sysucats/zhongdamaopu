@@ -93,10 +93,11 @@
         <view class='label'>
           <view class='label-block'></view>
           徽章口袋
+          <view class="badge-all" bindtap="showGiveBadge">赠予徽章</view>
           <view class="badge-all" bindtap="toBadgeDetail">查看详情</view>
         </view>
         <scroll-view class="badge-list" scroll-x="1">
-          <view class="badge-item badge-level-{{item.level}}" wx:for="{{catBadges}}" wx:key="_id" hover-class="tap">
+          <view class="badge-item badge-level-{{item.level}}" wx:for="{{catBadges}}" wx:key="_id" hover-class="tap" bindtap="showBadgeModal" data-index="{{index}}">
             <image class="badge-item-avatar" src="{{item.img}}" mode="aspectFill" />
             <view class="badge-item-count">x{{item.count}}</view>
             <view class="badge-item-name">{{item.name}}</view>
@@ -206,3 +207,5 @@
     <view class="search-btn {{activeUserBadge != -1 ? 'active': 'disabled'}}" hover-class="hover" bindtap="toGiveBadge">赠予</view>
   </view>
 </view>
+
+<badgeModal zindex="2" show="{{modal.show}}" title="{{modal.title}}" name="{{modal.name}}" img="{{modal.img}}" desc="{{modal.desc}}" tip="{{modal.tip}}" level="{{modal.level}}" bind:close="onModalClose"></badgeModal>

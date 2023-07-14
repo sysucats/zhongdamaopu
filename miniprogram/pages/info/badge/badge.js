@@ -6,7 +6,8 @@ import {
 } from "../../../utils/user";
 import {
   deepcopy,
-  formatDate
+  formatDate,
+  sleep,
 } from "../../../utils/utils";
 import {
   loadUserBadge,
@@ -23,9 +24,12 @@ Page({
   data: {
     rotateAnimation: null,
     shakeAnimation: null,
+    nextFreeBadgesHours: 0,
+    nextFreeBadgesMins: 0,
   },
 
   jsData: {
+    waitingBadge: [],  // 等待抽取的徽章（弹窗关闭后抽取）
     badgeDefMap: null,
     rotateAnimationObj: wx.createAnimation({
       duration: 800,
@@ -49,10 +53,6 @@ Page({
     await this.loadUser()
     await this.loadAD()
     await this.reloadUserBadge()
-
-
-    const badge = this.data.userBadges[0];
-    this.showBadgeModal("徽章详情", "获得的徽章请送给心动猫咪哦~", badge);
   },
 
   async loadUser() {
@@ -85,8 +85,7 @@ Page({
         });
       })
       pictureAd.onClose((res) => {
-        this.getBadge(1, 'watchPictureAD');
-        this.loadAD();
+        this.getBadge('watchPictureAD').then();
       })
     }
 
@@ -102,12 +101,14 @@ Page({
       })
       videoAd.onError((err) => {
         this.setData({
-          videoAdLoaded: true,
+          videoAdLoaded: false,
         });
       })
       videoAd.onClose((res) => {
-        this.getBadge(2, 'watchVideoAD');
-        this.loadAD();
+        this.jsData.waitingBadge.push({
+          reason: 'watchVideoAD'
+        });
+        this.getBadge('watchVideoAD').then();
       })
     }
 
@@ -121,70 +122,101 @@ Page({
     if (!this.jsData.badgeDefMap) {
       this.jsData.badgeDefMap = await loadBadgeDefMap();
     }
+    
+    const db = await cloud.databaseAsync();
+    const lastesBadges = (await db.collection("badge").where({
+      _openid: this.data.user.openid,
+      reason: "checkIn",
+    }).orderBy("acquireTime", "desc").get()).data[0];
+
+    const todayZero = new Date(new Date().setHours(0, 0, 0, 0));
+    const tomorrowZero = new Date(new Date(new Date().setDate(new Date().getDate() + 1)).setHours(0,0,0,0))
+    // const freeBadgeLoaded = getDeltaHours(lastesBadges.acquireTime) > 24;
+    const freeBadgeLoaded = todayZero > new Date(lastesBadges.acquireTime);
+    let nextFreeBadgesMins = parseInt((tomorrowZero.getTime() - (new Date(lastesBadges.acquireTime)).getTime()) / 60000);
+    let nextFreeBadgesHours = parseInt(nextFreeBadgesMins / 60);
+    nextFreeBadgesMins = nextFreeBadgesMins % 60;
+
     this.setData({
       userBadges: await loadUserBadge(this.data.user.openid, this.jsData.badgeDefMap),
+      freeBadgeLoaded: freeBadgeLoaded,
+      nextFreeBadgesHours: nextFreeBadgesHours,
+      nextFreeBadgesMins: nextFreeBadgesMins,
     })
   },
 
-  async reloadLastCheckInTime() {
-    const db = await cloud.databaseAsync();
-    let lastestBadgeGottenByCheckIn = (await db.collection("badge").where({
-      _openid: this.data.user.openid,
-      reason: 'checkIn'
-    }).orderBy('acquireTime', 'desc').get()).data[0];
-    if (lastestBadgeGottenByCheckIn) {
-      lastestBadgeGottenByCheckIn.date = formatDate(lastestToken.acquireTime, 'yyyy-MM-dd');
-      this.setData({
-        lastestBadgeGottenByCheckIn: lastestBadgeGottenByCheckIn,
-      })
-    }
-  },
-
   async tapForGetBadge(e) {
+    if (!this.data.freeBadgeLoaded) {
+      return;
+    }
+
     const {
-      count,
       reason
     } = e.currentTarget.dataset;
 
-    // this.getBadge(count, reason)
-    wx.vibrateLong();
-    this.runAni();
+    await this.getBadge(reason);
   },
 
   // 处理获取徽章的请求与 UI
-  async getBadge(count, reason) {
-    await api.getBadge({
-      count: Number(count),
+  async getBadge(reason) {
+    const badges = (await api.getBadge({
+      count: 1,
       reason
-    });
-    this.reloadUserBadge()
+    })).result.badges;
+
+    console.log(badges);
+    
+    if (!this.jsData.badgeDefMap) {
+      this.jsData.badgeDefMap = await loadBadgeDefMap();
+    }
+
+    if (badges) {
+      wx.vibrateLong();
+      this.runAni();
+      await sleep(1000);
+      this.showBadgeModal('恭喜获得新徽章！', '获得的徽章请送给心动猫咪哦~', this.jsData.badgeDefMap[badges[0].badgeDef])
+    }
+
+    await this.reloadUserBadge();
   },
 
   async watchADForGetBadge(e) {
     const {
       type
     } = e.currentTarget.dataset;
-    switch (type) {
-      case 'picture':
-        if (this.data.pictureAd && this.data.pictureAdLoaded) {
-          this.data.pictureAd.show()
-        } else {
-          wx.showToast({
-            title: '无可用广告',
-            icon: 'none'
-          });
-        }
-        break;
-      case 'video':
-        if (this.data.videoAd) {
-          this.data.videoAd.show()
-        } else {
-          wx.showToast({
-            title: '无可用广告',
-            icon: 'none'
-          });
-        }
-        break
+    if (type == 'picture') {
+      if (!this.data.pictureAd || !this.data.pictureAdLoaded) {
+        wx.showToast({
+          title: '无可用广告',
+          icon: 'none'
+        });
+        return;
+      }
+      try {
+        await this.data.pictureAd.show();
+      } catch {
+        wx.showToast({
+          title: '请稍后重试',
+          icon: 'none'
+        });
+      }
+    }
+    if (type == 'video') {
+      if (!this.data.videoAd || !this.data.videoAdLoaded) {
+        wx.showToast({
+          title: '无可用广告',
+          icon: 'none'
+        });
+        return;
+      }
+      try {
+        await this.data.videoAd.show()
+      } catch {
+        wx.showToast({
+          title: '请稍后重试',
+          icon: 'none'
+        });
+      }
     }
   },
   
@@ -225,5 +257,13 @@ Page({
     const {index} = e.currentTarget.dataset;
     const badge = this.data.userBadges[index];
     this.showBadgeModal("徽章详情", "获得的徽章请送给心动猫咪哦~", badge);
+  },
+
+  onModalClose(e) {
+    if (this.jsData.waitingBadge.length) {
+      const {reason} = this.jsData.waitingBadge.shift();
+      console.log("waiting badge");
+      this.getBadge(reason).then();
+    }
   }
 })

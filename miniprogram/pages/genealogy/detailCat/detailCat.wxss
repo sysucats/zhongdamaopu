@@ -155,6 +155,10 @@ swiper-item image {
   border-radius: 5rpx;
 }
 
+.badge-all + .badge-all {
+  margin-right: 20rpx;
+}
+
 .details {
   width: 630rpx;
   margin-top: 35rpx;

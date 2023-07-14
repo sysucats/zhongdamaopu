@@ -738,5 +738,21 @@ Page({
     wx.navigateTo({
       url: '/pages/genealogy/detailCat/badgeDetail/badgeDetail',
     });
-  }
+  },
+
+  // 展示弹窗
+  showBadgeModal(e) {
+    const {index} = e.currentTarget.dataset;
+    const badge = this.data.catBadges[index];
+    const modal = {
+      show: true,
+      title: "徽章详情",
+      name: badge.name,
+      img: badge.img,
+      desc: badge.desc,
+      level: badge.level,
+      tip: `共拥有${badge.count}枚`,
+    };
+    this.setData({modal});
+  },
 })

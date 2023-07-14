@@ -2,7 +2,7 @@
 @import "../../manage/badgeDef/badgeDef.wxss";
 
 page {
-  background-color: #EAC843;
+  background-color: #EAC843 !important;
 }
 
 .container {
@@ -31,11 +31,11 @@ page {
 }
 
 .buttons {
+  width: 350rpx;
   display: flex;
   flex-direction: column;
   justify-content: space-evenly;
   align-items: center;
-  padding: 0 50rpx;
 }
 
 .btn {
@@ -65,6 +65,11 @@ page {
 .btn.disabled {
   background-color: #e9fbff;
   box-shadow: 0px 2px 0px 0px #ADC4C9;
+}
+
+.btn-tip {
+  font-size: 18rpx;
+  color: var(--color-gray-max);
 }
 
 .down-part {

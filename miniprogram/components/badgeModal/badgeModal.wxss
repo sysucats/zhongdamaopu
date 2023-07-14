@@ -78,12 +78,12 @@
 }
 
 .round {
-  width: 12rpx;
-  height: 12rpx;
+  width: 14rpx;
+  height: 14rpx;
   border-radius: 100%;
   background-color: white;
   position: absolute;
-  top: 0;
+  top: -1rpx;
 }
 
 .arrow-right {
@@ -114,19 +114,6 @@
 .badge-level-C .arrow-right {
   border-right-color: var(--color-badge-C);
 }
-
-/* .badge-level-A .round {
-  background-color: var(--color-badge-A);
-}
-
-.badge-level-B .round {
-  background-color: var(--color-badge-B);
-}
-
-.badge-level-C .round {
-  background-color: var(--color-badge-C);
-} */
-
 
 .badge-name {
   width: 200rpx;

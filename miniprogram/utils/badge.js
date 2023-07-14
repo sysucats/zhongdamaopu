@@ -83,7 +83,7 @@ async function mergeAndSortBadges(badges, badgeDefMap, options) {
   }
 
   let mergedBadges = Object.values(userBadgesMap);
-  mergedBadges.sort((a, b) => levelOrderMap[a.level] - levelOrderMap[b.level]);
+  mergedBadges.sort((a, b) => {levelOrderMap[a.level] - levelOrderMap[b.level]});
 
   if (options && options.keepZero) {
     return mergedBadges;
