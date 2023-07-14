@@ -49,6 +49,10 @@ Page({
     await this.loadUser()
     await this.loadAD()
     await this.reloadUserBadge()
+
+
+    const badge = this.data.userBadges[0];
+    this.showBadgeModal("徽章详情", "获得的徽章请送给心动猫咪哦~", badge);
   },
 
   async loadUser() {
@@ -70,10 +74,19 @@ Page({
       pictureAd = wx.createInterstitialAd({
         adUnitId: 'adunit-287bf3706975a01b'
       })
-      pictureAd.onLoad(() => {})
-      pictureAd.onError((err) => {})
+      pictureAd.onLoad(() => {
+        this.setData({
+          pictureAdLoaded: true,
+        });
+      })
+      pictureAd.onError((err) => {
+        this.setData({
+          pictureAdLoaded: false,
+        });
+      })
       pictureAd.onClose((res) => {
-        this.getBadge(1, 'watchPictureAD')
+        this.getBadge(1, 'watchPictureAD');
+        this.loadAD();
       })
     }
 
@@ -82,10 +95,19 @@ Page({
       videoAd = wx.createRewardedVideoAd({
         adUnitId: 'adunit-0bdd3872e84a0a60'
       })
-      videoAd.onLoad(() => {})
-      videoAd.onError((err) => {})
+      videoAd.onLoad(() => {
+        this.setData({
+          videoAdLoaded: true,
+        });
+      })
+      videoAd.onError((err) => {
+        this.setData({
+          videoAdLoaded: true,
+        });
+      })
       videoAd.onClose((res) => {
-        this.getBadge(2, 'watchVideoAD')
+        this.getBadge(2, 'watchVideoAD');
+        this.loadAD();
       })
     }
 
@@ -144,13 +166,23 @@ Page({
     } = e.currentTarget.dataset;
     switch (type) {
       case 'picture':
-        if (this.data.pictureAd) {
+        if (this.data.pictureAd && this.data.pictureAdLoaded) {
           this.data.pictureAd.show()
+        } else {
+          wx.showToast({
+            title: '无可用广告',
+            icon: 'none'
+          });
         }
         break;
       case 'video':
         if (this.data.videoAd) {
           this.data.videoAd.show()
+        } else {
+          wx.showToast({
+            title: '无可用广告',
+            icon: 'none'
+          });
         }
         break
     }
@@ -173,4 +205,25 @@ Page({
       shakeAnimation: this.jsData.shakeAnimationObj.export()
     });
   },
+
+  // 展示弹窗
+  showBadgeModal(title, tip, badge) {
+    const modal = {
+      show: true,
+      title: title,
+      name: badge.name,
+      img: badge.img,
+      desc: badge.desc,
+      level: badge.level,
+      tip: tip,
+    };
+    this.setData({modal});
+  },
+
+  // 用户点击已有徽章
+  tapUserModal(e) {
+    const {index} = e.currentTarget.dataset;
+    const badge = this.data.userBadges[index];
+    this.showBadgeModal("徽章详情", "获得的徽章请送给心动猫咪哦~", badge);
+  }
 })

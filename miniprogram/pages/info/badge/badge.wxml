@@ -4,15 +4,15 @@
       <image class="balls" src="/pages/public/images/badge/balls.png" mode="aspectFit" animation="{{shakeAnimation}}" />
     </view>
     <view class="buttons">
-      <view class="btn" hover-class="active" bindtap='tapForGetBadge' data-reason='checkIn' data-count="1">
+      <view class="btn {{freeBadgeLoaded ? '' : 'disabled'}}" hover-class="active" bindtap='tapForGetBadge' data-reason='checkIn' data-count="1">
         <image class="logo" src="/pages/public/images/badge/article_btn.png" mode="aspectFit" />
         每日免费抽取
       </view>
-      <view class="btn" hover-class="active" bindtap='watchADForGetBadge' data-type='picture'>
+      <view class="btn {{pictureAdLoaded ? '' : 'disabled'}}" hover-class="active" bindtap='watchADForGetBadge' data-type='picture'>
         <image class="logo" src="/pages/public/images/badge/article_btn.png" mode="aspectFit" />
         贴片广告抽取1次
       </view>
-      <view class="btn disabled" hover-class="active" bindtap='watchADForGetBadge' data-type='video'>
+      <view class="btn {{videoAdLoaded ? '' : 'disabled'}}" hover-class="active" bindtap='watchADForGetBadge' data-type='video'>
         <image class="logo" src="/pages/public/images/badge/play_btn.png" mode="aspectFit" />
         视频广告抽取2次
       </view>
@@ -30,7 +30,7 @@
 <view class="badge-list">
   <view class="badge-list-title">徽章口袋 <text class="sub-title">快去送给心动猫猫吧</text></view>
   <scroll-view class="badge-list-inner" scroll-y="1">
-    <view class="badge badge-level-{{item.level}}" wx:for="{{userBadges}}" wx:key="_id">
+    <view class="badge badge-level-{{item.level}}" wx:for="{{userBadges}}" wx:key="_id" bindtap="tapUserModal" data-index="{{index}}">
       <image src="{{item.img}}" mode="aspectFill" />
       <view class="badge-info">
         <view class="badge-name"><text class="badge-level">[{{item.level}}]</text>{{item.name}}</view>
@@ -42,4 +42,4 @@
 </view>
 <view style="height: 1rpx;"></view>
 
-<badgeModal></badgeModal>
+<badgeModal zindex="2" show="{{modal.show}}" title="{{modal.title}}" name="{{modal.name}}" img="{{modal.img}}" desc="{{modal.desc}}" tip="{{modal.tip}}" level="{{modal.level}}"></badgeModal>
