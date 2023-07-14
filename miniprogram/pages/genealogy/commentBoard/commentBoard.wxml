@@ -37,7 +37,7 @@
 </scroll-view>
 
 <!-- 悬浮的猫猫名称栏 -->
-<view class='big-header fix' hidden="{{!show_fix_header}}" wx:if="{{canComment}}">
+<view class='big-header fix' hidden="{{!show_fix_header}}">
   <image class='avatar' mode='aspectFill' src='{{cat.avatar.photo_compressed || cat.avatar.photo_id}}'></image>
   <view class='name-and-count'>
     <view class='name'>{{cat.name}}的留言板</view>
@@ -57,3 +57,4 @@
   <!-- 解决iOS UI兼容性 -->
   <view wx:if="{{keyboard_height == 0}}" id="input-block-bottom"></view>
 </view>
+<view wx:else class="comment-input-closed"><text>留言功能已被关闭... QAQ</text></view>

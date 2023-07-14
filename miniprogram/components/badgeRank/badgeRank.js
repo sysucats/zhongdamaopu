@@ -28,7 +28,7 @@ Component({
       const db = await cloud.databaseAsync();
       // 获取榜单
       let rankRes = (await db.collection('badge_rank').orderBy('mdate', 'desc').limit(1).get()).data;
-      if (!rankRes) {
+      if (!rankRes || !rankRes.length) {
         return;
       }
       rankRes = rankRes[0].rank;

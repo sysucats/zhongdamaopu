@@ -28,7 +28,7 @@
 <view class="tip">抽取概率：A 级 - 10%，B 级 - 30%，C 级 - 60%</view>
 
 <view class="badge-list">
-  <view class="badge-list-title">徽章口袋 <text class="sub-title">快去送给心动猫猫吧</text></view>
+  <view class="badge-list-title">徽章口袋 <text class="sub-title">{{userBadges.length ? '快去送给心动猫猫吧' : '暂无徽章，点击上方按钮获取吧~'}}</text></view>
   <scroll-view class="badge-list-inner" scroll-y="1">
     <view class="badge badge-level-{{item.level}}" wx:for="{{userBadges}}" wx:key="_id" bindtap="tapUserModal" data-index="{{index}}">
       <image src="{{item.img}}" mode="aspectFill" />

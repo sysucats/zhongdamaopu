@@ -127,13 +127,20 @@ Page({
     const lastesBadges = (await db.collection("badge").where({
       _openid: this.data.user.openid,
       reason: "checkIn",
-    }).orderBy("acquireTime", "desc").get()).data[0];
+    }).orderBy("acquireTime", "desc").limit(1).get()).data;
+
+    if (!lastesBadges.length) {
+      this.setData({
+        userBadges: await loadUserBadge(this.data.user.openid, this.jsData.badgeDefMap),
+        freeBadgeLoaded: true,
+      });
+      return;
+    }
 
     const todayZero = new Date(new Date().setHours(0, 0, 0, 0));
-    const tomorrowZero = new Date(new Date(new Date().setDate(new Date().getDate() + 1)).setHours(0,0,0,0))
-    // const freeBadgeLoaded = getDeltaHours(lastesBadges.acquireTime) > 24;
-    const freeBadgeLoaded = todayZero > new Date(lastesBadges.acquireTime);
-    let nextFreeBadgesMins = parseInt((tomorrowZero.getTime() - (new Date(lastesBadges.acquireTime)).getTime()) / 60000);
+    const tomorrowZero = new Date(new Date(new Date().setDate(new Date().getDate() + 1)).setHours(0,0,0,0));
+    const freeBadgeLoaded = todayZero > new Date(lastesBadges[0].acquireTime);
+    let nextFreeBadgesMins = Math.ceil((tomorrowZero.getTime() - (new Date()).getTime()) / 60000);
     let nextFreeBadgesHours = parseInt(nextFreeBadgesMins / 60);
     nextFreeBadgesMins = nextFreeBadgesMins % 60;
 
@@ -227,9 +234,7 @@ Page({
     // 震动动画
     for (let i = 0; i < 10; i++) {
       this.jsData.shakeAnimationObj.scale(0.96, 0.96).rotate(-3).step();
-      // this.jsData.shakeAnimationObj.step();
       this.jsData.shakeAnimationObj.scale(1.0, 1.0).rotate(+3).step();
-      // this.jsData.shakeAnimationObj.step();
       this.jsData.shakeAnimationObj.rotate(0).step();
     }
     this.setData({

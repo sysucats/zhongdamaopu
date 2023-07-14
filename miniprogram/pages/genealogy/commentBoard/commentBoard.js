@@ -46,15 +46,8 @@ Page({
    */
   onLoad: async function (options) {
     cat_id = options.cat_id;
-    if (!await checkCanComment()) {
-      wx.showToast({
-        title: '已暂时关闭..',
-        duration: 10000
-      });
-      return false;
-    }
     this.setData({
-      canComment: true
+      canComment: await checkCanComment()
     })
     // 启动加载
     await Promise.all([

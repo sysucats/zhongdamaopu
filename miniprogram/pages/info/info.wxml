@@ -9,7 +9,7 @@
 
 <view class='buttons'>
   <image class='button' bindtap='clickbtn' data-to='/pages/info/reward/reward' src='/pages/public/images/info/btn/dashang.png'></image>
-  <image class='button' bindtap='clickbtn' data-to='/pages/info/badge/badge' src='/pages/public/images/info/btn/paizhao.png'></image>
+  <image class='button' bindtap='clickbtn' data-to='/pages/info/badge/badge' src='/pages/public/images/info/btn/badge.png'></image>
   <image class='button' bindtap='clickbtn' data-to='/pages/info/devTeam/devTeam' src='/pages/public/images/info/btn/tuandui.png'></image>
   <image class='button' bindtap='clickbtn' data-to='/pages/info/feedback/feedback' src='/pages/public/images/info/btn/fankui.png'></image>
 </view>

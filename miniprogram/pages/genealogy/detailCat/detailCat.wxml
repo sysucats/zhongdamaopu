@@ -31,7 +31,7 @@
         <image src='/pages/public/images/card/card/pop.png'></image>
         <text> {{cat.popularity + (cat.photo_count_total? cat.photo_count_total * photoPopWeight: 0)}}</text>
       </view>
-      <view class='comment' bindtap="showCommentTip" wx:if="{{cat.comment_count != undefined}}">
+      <view class='comment' bindtap="toComment" wx:if="{{cat.comment_count != undefined}}">
         <image src='/pages/public/images/card/card/comment.png'></image>
         <text> {{cat.comment_count || 0}}</text>
       </view>

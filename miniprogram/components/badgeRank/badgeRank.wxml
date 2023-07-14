@@ -5,7 +5,7 @@
     <image class="badge-img" src="{{dispContent[rankKey].info.img}}" mode="aspectFill"></image>
     <view class="badge-info">
       <view class="badge-name">{{dispContent[rankKey].info.name}}</view>
-      <view class="badge-desc">—— {{dispContent[rankKey].info.rankDesc || dispContent[rankKey].info.desc}}</view>
+      <view class="badge-desc">{{dispContent[rankKey].info.rankDesc || dispContent[rankKey].info.desc}}</view>
     </view>
     <view wx:if="{{ dispContent[rankKey].showAll }}" class="badge-to-detail" bindtap="changeShowAll" data-key="{{rankKey}}" data-on="{{false}}">收起更多</view>
     <view wx:else class="badge-to-detail" bindtap="changeShowAll" data-key="{{rankKey}}" data-on="{{true}}">展开更多</view>
@@ -20,4 +20,11 @@
       <view class="badge-cat-count">x{{item.count}}</view>
     </view>
   </view>
+</view>
+
+<view class="tip" wx:if="{{!dispOrder || dispOrder.length === 0}}">
+  暂无徽章榜单~
+</view>
+<view class="tip" wx:else>
+  定期自动更新
 </view>

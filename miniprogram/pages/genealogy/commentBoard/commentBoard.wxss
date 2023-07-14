@@ -68,7 +68,7 @@ page {
   height: 200rpx;
 }
 
-#input-block {
+#input-block, .comment-input-closed {
   width: 750rpx;
   position: absolute;
   bottom: 0;
@@ -79,6 +79,12 @@ page {
   background-color: white;
   box-sizing: border-box;
   border-top: 1rpx solid var(--color-gray-light);
+}
+
+.comment-input-closed text {
+  width: 750rpx;
+  text-align: center;
+  color: var(--color-gray-dark);
 }
 
 #input-block-bottom {

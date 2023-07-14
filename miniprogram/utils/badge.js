@@ -2,6 +2,13 @@ import {
   cloud
 } from "../utils/cloudAccess";
 
+// 等级序
+const levelOrderMap = {
+  'A': 0,
+  'B': 1,
+  'C': 2,
+}
+
 async function loadBadgeDefMap() {
   const db = await cloud.databaseAsync();
   let badgeDefMap = (await db.collection("badge_def").get()).data;
@@ -56,12 +63,6 @@ async function mergeAndSortBadges(badges, badgeDefMap, options) {
   if (!badges || !badgeDefMap) {
     return;
   }
-  // 等级序
-  const levelOrderMap = {
-    'A': 0,
-    'B': 1,
-    'C': 2,
-  }
   
   // 顺便统计0个的情况
   let userBadgesMap = {};
@@ -83,25 +84,19 @@ async function mergeAndSortBadges(badges, badgeDefMap, options) {
   }
 
   let mergedBadges = Object.values(userBadgesMap);
-  mergedBadges.sort((a, b) => {levelOrderMap[a.level] - levelOrderMap[b.level]});
+  mergedBadges.sort((a, b) => levelOrderMap[a.level] - levelOrderMap[b.level]);
 
   if (options && options.keepZero) {
     return mergedBadges;
   }
 
+  console.log(mergedBadges);
   const res = mergedBadges.filter((value) => value.count);
   return res;
 }
 
 // 按等级排序徽章定义
 async function sortBadgeDef(badgeDefs) {
-  // 等级序
-  const levelOrderMap = {
-    'A': 0,
-    'B': 1,
-    'C': 2,
-  }
-
   badgeDefs.sort((a, b) => levelOrderMap[a.level] - levelOrderMap[b.level]);
   return badgeDefs;
 }

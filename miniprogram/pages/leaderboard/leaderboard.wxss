@@ -11,6 +11,7 @@ page {
   padding: 10rpx 100rpx;
   overflow: hidden;
   background-color: white;
+  box-sizing: border-box;
 }
 
 .thread-item {

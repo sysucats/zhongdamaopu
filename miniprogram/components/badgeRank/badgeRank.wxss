@@ -1,4 +1,11 @@
 /* components/badgeRank/badgeRank.wxss */
+.tip {
+  width: 100%;
+  text-align: center;
+  color: var(--color-gray-dark);
+  font-size: 22rpx;
+}
+
 .badge-block {
   width: 750rpx;
   padding: 30rpx;
