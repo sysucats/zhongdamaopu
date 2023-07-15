@@ -34,6 +34,6 @@
   </view>
 </view>
 
-<view class='tip'>{{text_cfg.photo_rank.count_tip}}</view>
+<view class='tip'>{{text_cfg.photo_rank.count_tip}}，上次更新时间：{{rankTime}}</view>
 
 <view style='margin-top: 20rpx;'></view>

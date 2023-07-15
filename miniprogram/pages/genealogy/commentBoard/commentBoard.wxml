@@ -1,6 +1,6 @@
 <!--pages/genealogy/commentBoard.wxml-->
 
-<scroll-view id="comment-list" scroll-y="true" bindscrolltolower='loadMoreComment' enable-back-to-top="true" bindscroll="bindCommentScroll" wx:if="{{canComment}}">
+<scroll-view id="comment-list" scroll-y="true" bindscrolltolower='loadMoreComment' enable-back-to-top="true" bindscroll="bindCommentScroll">
   <!-- 猫猫名称 -->
   <view class='big-header'>
     <image class='avatar' mode='aspectFill' src='{{cat.avatar.photo_compressed || cat.avatar.photo_id}}'></image>

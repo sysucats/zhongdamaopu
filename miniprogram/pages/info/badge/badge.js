@@ -183,7 +183,7 @@ Page({
       wx.vibrateLong();
       this.runAni();
       await sleep(1000);
-      this.showBadgeModal('恭喜获得新徽章！', '获得的徽章请送给心动猫咪哦~', this.jsData.badgeDefMap[badges[0].badgeDef])
+      this.showBadgeModal('恭喜获得新徽章！', '快去请送给心动猫咪吧~', this.jsData.badgeDefMap[badges[0].badgeDef])
     }
 
     await this.reloadUserBadge();

@@ -11,6 +11,7 @@ page {
   align-items: center;
   padding: 10rpx 30rpx;
   background-color: white;
+  justify-content: space-between;
 }
 
 .badge image {
@@ -24,6 +25,7 @@ page {
 
 .badge-desc, .badge-count {
   font-size: 22rpx;
+  color: var(--color-gray-dark);
 }
 
 

@@ -1,7 +1,18 @@
 // components/badgeRank/badgeRank.ts
-import { cloud } from "../../utils/cloudAccess";
-import { loadBadgeDefMap, sortBadgeDef } from  "../../utils/badge";
-import { getCatItemMulti, getAvatar } from "../../utils/cat";
+import {
+  cloud
+} from "../../utils/cloudAccess";
+import {
+  loadBadgeDefMap,
+  sortBadgeDef
+} from "../../utils/badge";
+import {
+  getCatItemMulti,
+  getAvatar
+} from "../../utils/cat";
+import {
+  formatDate
+} from "../../utils/utils";
 import * as config from "../../config";
 
 Component({
@@ -18,6 +29,7 @@ Component({
   data: {
     dispOrder: [],
     dispContent: {},
+    updateTime: null,
   },
 
   /**
@@ -31,6 +43,7 @@ Component({
       if (!rankRes || !rankRes.length) {
         return;
       }
+      let updateTime = formatDate(new Date(rankRes[0].mdate), "yyyy-MM-dd hh:mm");
       rankRes = rankRes[0].rank;
       console.log(rankRes);
 
@@ -39,7 +52,8 @@ Component({
       const sortedBadgeDef = await sortBadgeDef(Object.values(badgeDefMap));
       let dispOrder = ['count', 'score'].concat(sortedBadgeDef.map(x => x._id));
       this.setData({
-        dispOrder: dispOrder
+        dispOrder: dispOrder,
+        updateTime: updateTime,
       });
       console.log(dispOrder);
 
@@ -75,6 +89,15 @@ Component({
           dispContent[rankKey].items.push(item);
         }
         dispContent[rankKey].items.sort((a, b) => b.count - a.count);
+        // 计算排序
+        for (let i = 0; i < dispContent[rankKey].items.length; i++) {
+          let element = dispContent[rankKey].items[i];
+          if (i == 0 || element.count != dispContent[rankKey].items[i - 1].count) {
+            element.order = i + 1;
+          } else {
+            element.order = dispContent[rankKey].items[i - 1].order;
+          }
+        }
       }
       console.log(dispContent);
       this.setData({
@@ -110,10 +133,20 @@ Component({
     },
 
     changeShowAll(e) {
-      const { key, on } = e.currentTarget.dataset;
+      const {
+        key,
+        on
+      } = e.currentTarget.dataset;
       this.setData({
         [`dispContent.${key}.showAll`]: on,
       })
-    }
+    },
+
+    tapCatCard(e) {
+      const catId = e.currentTarget.dataset.catId;
+      wx.navigateTo({
+        url: '/pages/genealogy/detailCat/detailCat?cat_id=' + catId,
+      });
+    },
   }
 })

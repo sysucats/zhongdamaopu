@@ -306,15 +306,21 @@ Page({
     this.activateThread(current);
   },
   async activateThread(index) {
+    // 防止重复call
+    if (this.data.threadsActive === index) {
+      return;
+    }
+
+    this.setData({
+      threadsActive: index,
+    });
+
     if (index == 0) {
       this.selectComponent('#badge-rank').reloadData();
     }
     if (index == 2) {
       this.selectComponent('#photo-rank').reloadData();
     }
-    this.setData({
-      threadsActive: index,
-    })
   },
   
   // 开始计算各个东西高度

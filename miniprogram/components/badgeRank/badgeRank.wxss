@@ -42,9 +42,10 @@
 }
 
 .badge-to-detail {
-  font-size: 24rpx;
+  font-size: 22rpx;
   align-self: flex-end;
   text-decoration: underline;
+  color: var(--color-gray-dark);
 }
 
 .badge-list {
@@ -59,6 +60,10 @@
   flex-direction: row;
   margin-top: 20rpx;
   align-items: center;
+}
+
+.badge-cat.hover {
+  background-color: var(--color-gray-light);
 }
 
 .badge-cat-img {
@@ -78,14 +83,18 @@
   font-size: 32rpx;
 }
 
+.badge-cat-order.highlight {
+  color: var(--color-primary);
+}
+
 .badge-cat-order {
   font-size: 22rpx;
   color: var(--color-gray-dark);
 }
 
 .badge-cat-campus {
-  font-size: 26rpx;
-  color: var(--color-black-light);
+  font-size: 24rpx;
+  color: var(--color-gray-dark);
 }
 
 .badge-cat-count {
@@ -96,7 +105,7 @@
 
 /* 分等级颜色 */
 
-.badge-level-A .badge-img {
+/* .badge-level-A .badge-img {
   filter: drop-shadow(0rpx 0rpx 7rpx var(--color-badge-A));
 }
 
@@ -106,7 +115,7 @@
 
 .badge-level-C .badge-img {
   filter: drop-shadow(0rpx 0rpx 7rpx var(--color-badge-C));
-}
+} */
 
 .badge-level-A .badge-name {
   color: var(--color-badge-A);

@@ -1,4 +1,5 @@
 import { getPageUserInfo, toSetUserInfo, fillUserInfo } from "../../utils/user";
+import { formatDate } from "../../utils/utils";
 import { text as text_cfg } from "../../config";
 import { cloud } from "../../utils/cloudAccess";
 
@@ -40,8 +41,9 @@ Component({
         // 还没有月榜
         return false;
       }
+      const rankTime = formatDate(new Date(rankRes.data[0].mdate), "yyyy-MM-dd hh:mm");
       const rank_stat = rankRes.data[0].stat;
-      console.log(rank_stat);
+
       var ranks = [];
       for (const key in rank_stat) {
         ranks.push({
@@ -55,7 +57,6 @@ Component({
       ranks.sort((a, b) => {
         return parseInt(b.count) - parseInt(a.count)
       });
-      console.log(ranks);
       for (var i = 0; i < ranks.length; i++) {
         ranks[i].rank = i+1;
       }
@@ -65,8 +66,9 @@ Component({
         }
       }
   
-      await this.setData({
-        ranks: ranks
+      this.setData({
+        ranks,
+        rankTime
       });
   
       await this.getMyRank();

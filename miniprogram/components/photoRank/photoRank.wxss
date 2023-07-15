@@ -117,7 +117,7 @@
 
 /* 最后的小tip */
 .tip {
-  font-size: 28rpx;
+  font-size: 24rpx;
   margin: 30rpx;
   color: var(--color-gray-max);
 }

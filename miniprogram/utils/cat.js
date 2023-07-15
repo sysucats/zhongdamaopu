@@ -11,7 +11,6 @@ async function getAvatar(cat_id, total) {
 
   var cacheKey = `cat-avatar-${cat_id}`;
   var cacheItem = getCacheItem(cacheKey);
-  console.log(cacheKey, cacheItem);
   if (cacheItem) {
     return cacheItem;
   }
