@@ -8,13 +8,13 @@
         <image class="logo" src="/pages/public/images/badge/article_btn.png" mode="aspectFit" />
         <view>每日免费<view class="btn-tip">{{freeBadgeLoaded? '立即可取': nextFreeBadgesHours + 'h' + nextFreeBadgesMins + 'm 后'}}</view></view>
       </view>
-      <view class="btn {{pictureAdLoaded ? '' : 'disabled'}}" hover-class="active" bindtap='watchADForGetBadge' data-type='picture'>
+      <view class="btn {{(pictureAdLoaded && todayPicCount < todayPicLimit) ? '' : 'disabled'}}" hover-class="active" bindtap='watchADForGetBadge' data-type='picture'>
         <image class="logo" src="/pages/public/images/badge/article_btn.png" mode="aspectFit" />
-        <view>抽取1次<view class="btn-tip">{{pictureAdLoaded ? '观看贴片广告': '暂无广告~'}}</view></view>
+        <view>抽取1次<view class="btn-tip">{{(pictureAdLoaded && todayPicCount < todayPicLimit) ? '贴片广告': '暂无广告~'}}</view></view>
       </view>
-      <view class="btn {{videoAdLoaded ? '' : 'disabled'}}" hover-class="active" bindtap='watchADForGetBadge' data-type='video'>
+      <view class="btn {{(videoAdLoaded && todayVideoCount < todayVideoLimit) ? '' : 'disabled'}}" hover-class="active" bindtap='watchADForGetBadge' data-type='video'>
         <image class="logo" src="/pages/public/images/badge/play_btn.png" mode="aspectFit" />
-        <view>抽取2次<view class="btn-tip">{{pictureAdLoaded ? '观看视频广告': '暂无广告~'}}</view></view>
+        <view>抽取2次<view class="btn-tip">{{(videoAdLoaded && todayVideoCount < todayVideoLimit) ? '视频广告': '暂无广告~'}}</view></view>
       </view>
     </view>
   </view>

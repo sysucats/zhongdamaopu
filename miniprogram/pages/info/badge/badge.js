@@ -25,6 +25,8 @@ Page({
     shakeAnimation: null,
     nextFreeBadgesHours: 0,
     nextFreeBadgesMins: 0,
+    todayPicLimit: 6,
+    todayVideoLimit: 6,
   },
 
   jsData: {
@@ -83,7 +85,7 @@ Page({
           pictureAdLoaded: false,
         });
       })
-      pictureAd.onClose((res) => {
+      pictureAd.onClose(() => {
         this.getBadge('watchPictureAD').then();
       })
     }
@@ -104,6 +106,9 @@ Page({
         });
       })
       videoAd.onClose((res) => {
+        if (!res.isEnded) {
+          return;
+        }
         this.jsData.waitingBadge.push({
           reason: 'watchVideoAD'
         });
@@ -148,7 +153,36 @@ Page({
       freeBadgeLoaded: freeBadgeLoaded,
       nextFreeBadgesHours: nextFreeBadgesHours,
       nextFreeBadgesMins: nextFreeBadgesMins,
-    })
+    });
+
+    await this.checkDailyLimit();
+  },
+
+  async checkDailyLimit() {
+    // 检查广告次数上限
+    const db = await cloud.databaseAsync();
+    const picAdBadges = (await db.collection("badge").where({
+      _openid: this.data.user.openid,
+      reason: "watchPictureAD",
+    }).orderBy("acquireTime", "desc").limit(10).get()).data;
+    const videoAdBadges = (await db.collection("badge").where({
+      _openid: this.data.user.openid,
+      reason: "watchVideoAD",
+    }).orderBy("acquireTime", "desc").limit(10).get()).data;
+    const todayZero = new Date(new Date().setHours(0, 0, 0, 0));
+    let todayPicCount = 0, todayVideoCount = 0;
+
+    for (const b of picAdBadges) {
+      if (todayZero < new Date(b.acquireTime)) {
+        todayPicCount ++;
+      }
+    }
+    for (const b of videoAdBadges) {
+      if (todayZero < new Date(b.acquireTime)) {
+        todayVideoCount ++;
+      }
+    }
+    this.setData({todayPicCount, todayVideoCount});
   },
 
   async tapForGetBadge(e) {
@@ -183,7 +217,7 @@ Page({
       wx.vibrateLong();
       this.runAni();
       await sleep(1000);
-      this.showBadgeModal('恭喜获得新徽章！', '快去请送给心动猫咪吧~', this.jsData.badgeDefMap[badges[0].badgeDef])
+      this.showBadgeModal('恭喜获得新徽章！', '快去送给心动猫咪吧~', this.jsData.badgeDefMap[badges[0].badgeDef])
     }
 
     await this.reloadUserBadge();
@@ -196,7 +230,7 @@ Page({
       type
     } = e.currentTarget.dataset;
     if (type == 'picture') {
-      if (!this.data.pictureAd || !this.data.pictureAdLoaded) {
+      if (!this.data.pictureAd || !this.data.pictureAdLoaded || this.data.todayPicCount >= this.data.todayPicLimit) {
         wx.showToast({
           title: '无可用广告',
           icon: 'none'
@@ -213,7 +247,7 @@ Page({
       }
     }
     if (type == 'video') {
-      if (!this.data.videoAd || !this.data.videoAdLoaded) {
+      if (!this.data.videoAd || !this.data.videoAdLoaded || this.data.todayVideoCount >= this.data.todayVideoLimit) {
         wx.showToast({
           title: '无可用广告',
           icon: 'none'
@@ -274,5 +308,13 @@ Page({
       console.log("waiting badge");
       this.getBadge(reason).then();
     }
-  }
+  },
+
+  
+  /**
+   * 用户点击右上角分享
+   */
+  onShareAppMessage: function () {},
+
+  onShareTimeline: function () {},
 })
