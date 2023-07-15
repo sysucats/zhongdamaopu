@@ -421,6 +421,7 @@ scroll-view {
   flex-direction: column;
 
   filter: drop-shadow(0 0 5rpx var(--color-gray-dark));
+  transform: translateZ(0);
 }
 
 /* 返回首页 */
@@ -430,6 +431,7 @@ scroll-view {
   right: 30rpx;
 
   filter: drop-shadow(0 0 5rpx var(--color-gray-dark));
+  transform: translateZ(0);
 }
 
 #find-adopt .logo {
