@@ -1,6 +1,13 @@
 import cloud from '@lafjs/cloud'
 
 export default async function (ctx: FunctionContext) {
+  const { body } = ctx
+
+  if (body && body.deploy_test === true) {
+    // 进行部署检查
+    return "v1.0";
+  }
+
   const db = cloud.database();
   const { openid } = ctx.user;
   const { catId, badgeDef } = ctx.body;

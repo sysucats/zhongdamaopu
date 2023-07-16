@@ -28,6 +28,13 @@ function randomPick(arr: any[]): any {
 
 // 抽取badge
 export default async function (ctx: FunctionContext) {
+  // body, query 为请求参数, user 是授权对象
+  const { body } = ctx
+
+  if (body && body.deploy_test === true) {
+    // 进行部署检查
+    return "v1.0";
+  }
   // 抽取的个数
   const count: number = ctx.body.count;
   // 抽取的原因

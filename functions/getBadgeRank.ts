@@ -43,7 +43,14 @@ function writeRank(rank: Object, badgeDef: string, catId: string, point: number)
   rank[badgeDef][catId] += point;
 }
 
-export default async function (ctx: FunctionContext) {
+export default async function (ctx: FunctionContext) {  // body, query 为请求参数, user 是授权对象
+  const { body } = ctx
+
+  if (body && body.deploy_test === true) {
+    // 进行部署检查
+    return "v1.0";
+  }
+
   // 返回多个排行榜，固定的有：数量榜、总分榜，动态的有：xx徽章的数量榜
   const db = cloud.database();
   const _ = db.command;
