@@ -294,6 +294,22 @@ Page({
     });
   },
   async upload() {
+    // 检查必要字段
+    if (!this.data.cat.name) {
+      wx.showToast({
+        title: '缺少名字',
+        icon: 'error'
+      });
+      return false;
+    }
+    if (!this.data.cat.campus || !this.data.cat.area) {
+      wx.showToast({
+        title: '缺少校区及区域',
+        icon: 'error'
+      });
+      return false;
+    }
+
     wx.showLoading({
       title: '更新中...',
     });

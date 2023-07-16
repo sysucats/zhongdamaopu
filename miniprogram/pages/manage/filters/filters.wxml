@@ -1,4 +1,27 @@
 <block wx:if="{{auth}}">
+  <!-- 校区管理 -->
+  <view class='mainF-block'>
+    <view class="campus-block">
+      <view class="title">校区选项</view>
+      <view class="container">
+        <view class='category-box' wx:for="{{filters[0].category}}" wx:for-item="ctg" wx:for-index='cateindex' wx:key='name'>
+          <!-- <view class="category">{{ctg.name}}</view> -->
+          <view class='sub-option'>
+            <view class='content'>{{ctg.name}}</view>
+            <button class='short' bindtap='deleteCampus' data-cateindex='{{cateindex}}'>删</button>
+          </view>
+        </view>
+
+        <form wx:if="{{addingCampus}}" bindsubmit="addCampusConfirm">
+          <input class='content' name='name'></input>
+          <button class='submit' form-type='submit'>确定</button>
+        </form>
+        <button wx:if='{{!addingCampus}}' class='long' bindtap='addCampus'>加校区</button>
+      </view>
+    </view>
+  </view>
+
+  <!-- 区域管理 -->
   <view class='mainF-block' wx:for='{{filters}}' wx:for-item='mainF' wx:for-index="filters_sub" wx:key='name'>
     <view class="title">{{mainF.name}}选项</view>
     <view class='container'>
@@ -14,7 +37,7 @@
           <input class='content' name='name'></input>
           <button class='submit' form-type='submit'>确定</button>
         </form>
-        <button wx:if='{{!ctg.adding}}'class='long' bindtap='addOptionInput' data-filterssub='{{filters_sub}}' data-cateindex='{{cateindex}}'>加{{ctg.name}}选项</button>
+        <button wx:if='{{!ctg.adding}}' class='long' bindtap='addOptionInput' data-filterssub='{{filters_sub}}' data-cateindex='{{cateindex}}'>加{{ctg.name}}选项</button>
       </view>
     </view>
   </view>

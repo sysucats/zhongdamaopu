@@ -168,9 +168,9 @@ module.exports = {
   functions: {
     commentCheck: "v1.0",
     countPhoto: "v1.0",
-    curdOp: "v1.1",
+    curdOp: "v1.2",
     deleteFiles: "v1.0",
-    deployTest: "v1.1",
+    deployTest: "v1.2",
     getAccessToken: "v1.0",
     getAllSci: "v1.0",
     getAppSecret: "v1.1",

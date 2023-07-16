@@ -23,6 +23,7 @@ async function _getSetting(_id, options) {
   return cacheItem;
 }
 
+// 加载校区区域过滤器
 async function loadFilter(options) {
   return await _getSetting('filter', options);
 }

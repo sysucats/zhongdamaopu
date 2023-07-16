@@ -112,3 +112,7 @@ button.bottom {
 .bottom-bar button.primary, .bottom-bar button.long {
   margin-top: 0;
 }
+
+form {
+  width: 100%;
+}
