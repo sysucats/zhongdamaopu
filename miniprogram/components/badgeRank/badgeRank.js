@@ -64,7 +64,7 @@ Component({
           catInfoMap[catId] = null;
         }
       }
-      const catInfo = await getCatItemMulti(Object.keys(catInfoMap));
+      const catInfo = await getCatItemMulti(Object.keys(catInfoMap), {}, true);
       for (const ci of catInfo) {
         catInfoMap[ci._id] = ci;
         catInfoMap[ci._id].avatar = await getAvatar(ci._id, ci.photo_count_best);
@@ -78,6 +78,10 @@ Component({
           items: [],
         };
         for (const catId in rankRes[rankKey]) {
+          if (!catInfoMap[catId].avatar || (!catInfoMap[catId].avatar.photo_compressed && !catInfoMap[catId].avatar.avatarItem)) {
+            console.log(`没有精选图的猫猫上榜了喵: catID - ${catId}`)
+            continue;
+          }
           let item = {
             _id: catInfoMap[catId]._id,
             name: catInfoMap[catId].name,

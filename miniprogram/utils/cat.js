@@ -64,7 +64,7 @@ async function getCatItem(cat_id, options) {
 }
 
 // 获取多个猫猫信息
-async function getCatItemMulti(cat_ids, options) {
+async function getCatItemMulti(cat_ids, options, forceAll) {
   if (!cat_ids) {
     return undefined;
   }
@@ -85,7 +85,19 @@ async function getCatItemMulti(cat_ids, options) {
   const _ = db.command;
   const coll_cat = db.collection('cat');
   if (not_found.length) {
-    var db_res = (await coll_cat.where({_id: _.in(not_found)}).get()).data;
+    var db_res = [];
+
+    if (forceAll) {
+      var tmp = []
+      while(true) {
+        tmp = (await coll_cat.where({_id: _.in(not_found)}).skip(db_res.length).get()).data
+        if (!tmp || tmp.length == 0) break;
+        db_res = db_res.concat(tmp)
+      }
+    } else {
+      db_res = (await coll_cat.where({_id: _.in(not_found)}).get()).data
+    }
+
     for (var c of db_res) {
       var cacheKey = `cat-item-${c._id}`;
       setCacheItem(cacheKey, c, cacheTime.catItem);
