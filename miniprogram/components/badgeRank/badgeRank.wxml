@@ -1,5 +1,9 @@
 <!--components/badgeRank/badgeRank.wxml-->
 
+<view class='loading' wx:if='{{loading}}'>
+  <image src='/pages/public/images/system/loading.gif'></image>
+</view>
+
 <view class="badge-block" wx:for="{{dispOrder}}" wx:key="this" wx:for-item="rankKey" wx:if="{{ dispContent[rankKey].items }}">
   <view class="badge-header badge-level-{{dispContent[rankKey].info.level}}">
     <image class="badge-img" src="{{dispContent[rankKey].info.img}}" mode="aspectFill"></image>
@@ -25,6 +29,6 @@
 <view class="tip" wx:if="{{!dispOrder || dispOrder.length === 0}}">
   暂无徽章榜单~
 </view>
-<view class="tip" wx:else>
+<view class="tip" wx:elif="{{hasContent}}">
   定期更新，上次更新时间：{{updateTime}}
 </view>

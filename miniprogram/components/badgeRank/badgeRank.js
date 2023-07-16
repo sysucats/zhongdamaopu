@@ -30,6 +30,7 @@ Component({
     dispOrder: [],
     dispContent: {},
     updateTime: null,
+    loading: false,
   },
 
   /**
@@ -37,6 +38,9 @@ Component({
    */
   methods: {
     async reloadData() {
+      this.setData({
+        loading: true
+      })
       const db = await cloud.databaseAsync();
       // 获取榜单
       let rankRes = (await db.collection('badge_rank').orderBy('mdate', 'desc').limit(1).get()).data;
@@ -105,7 +109,9 @@ Component({
       }
       console.log(dispContent);
       this.setData({
-        dispContent: dispContent
+        hasContent: true,
+        dispContent: dispContent,
+        loading: false
       });
     },
 
