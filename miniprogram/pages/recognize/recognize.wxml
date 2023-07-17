@@ -28,7 +28,7 @@
         <view wx:for="{{catBoxList}}" wx:key="item" class="catBox {{(!catIdx || catIdx > catBoxList.length) && index === 0 || index === catIdx ? 'chosen' : ''}}" style="top: {{item.y}}rpx; left: {{item.x}}rpx; width: {{item.width}}rpx; height: {{item.height}}rpx;" catchtap="tapCatBox" data-index="{{index}}">
         </view>
       </view>
-      
+
       <!-- 重新选图按钮 -->
       <view wx:if="{{photoPath}}" id="resetButton" bindtap="reset">
         <image src="/pages/public/images/recognize/back.png"></image>
@@ -43,11 +43,10 @@
     </view>
   </view>
 
-  <view>drawInfo: {{drawWidth}}, {{drawHeight}}, {{drawRate}}</view>
-
+  <!-- debug用 -->
+  <!-- <view>drawInfo: {{drawWidth}}, {{drawHeight}}, {{drawRate}}</view>
   <view>compressPhotoInfo: {{compressPhotoInfo.width}} x {{compressPhotoInfo.height}}</view>
-
-      <view wx:for="{{catBoxList}}">xmin: {{item.xmin}}, xmax: {{item.xmax}}, ymin: {{item.ymin}}, ymax: {{item.ymax}}, ratio: {{item.ratio}}, xOffset: {{item.xOffset}}, yOffset: {{item.yOffset}}, </view>
+  <view wx:for="{{catBoxList}}">xmin: {{item.xmin}}, xmax: {{item.xmax}}, ymin: {{item.ymin}}, ymax: {{item.ymax}}, ratio: {{item.ratio}}, xOffset: {{item.xOffset}}, yOffset: {{item.yOffset}}, </view> -->
 
   <!-- 识别结果 -->
   <view id="resultBox" wx:if="{{catList.length && showResultBox}}">

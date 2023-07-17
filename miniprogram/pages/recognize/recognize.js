@@ -291,8 +291,7 @@ Page({
     const ratio = previewSideLen / compressSideLen; // 缩放比
     const {compressPhotoInfo} = this.data;
     for (let catBox of catBoxes) {
-      let xOffset = 0;
-      let yOffset = 0;
+      let xOffset = 0, yOffset = 0;
       // 短边由于居中会产生offset
       if (widthHeightRatio < 1) {
         xOffset = previewSideLen * ((1 - widthHeightRatio) / 2);
@@ -301,6 +300,7 @@ Page({
       }
       console.log(catBox, ratio, xOffset, yOffset, previewSideLen);
 
+      // PC端上传的照片，尺寸不一定是500
       const realDrawWidthRate = compressSideLen / compressPhotoInfo.width,
       realDrawHeightRate = compressSideLen / compressPhotoInfo.height;
 
@@ -312,10 +312,10 @@ Page({
         ratio: ratio,
         xOffset: xOffset,
         yOffset: yOffset,
-        x: catBox.xmin * realDrawWidthRate * ratio + xOffset,
-        y: catBox.ymin * realDrawHeightRate * ratio + yOffset,
-        width: (catBox.xmax - catBox.xmin) * realDrawWidthRate * ratio,
-        height: (catBox.ymax - catBox.ymin) * realDrawHeightRate * ratio
+        x: catBox.xmin * 1.0 * ratio + xOffset,
+        y: catBox.ymin * 1.0 * ratio + yOffset,
+        width: (catBox.xmax - catBox.xmin) * 1.0 * ratio,
+        height: (catBox.ymax - catBox.ymin) * 1.0 * ratio
       });
     }
     console.log("cat box list:", catBoxList);

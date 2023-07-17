@@ -11,6 +11,14 @@ Page({
     text_cfg: text_cfg,
     github_link: "https://github.com/sysucats/zhongdamaopu",
     update_log: [{
+      version: "v1.12.4",
+      content: [
+        "修复UI问题",
+        "更新徽章排行榜",
+        "限制每日徽章获取数量",
+      ],
+      time: "2023/7/17"
+    }, {
       version: "v1.12.3",
       content: [
         "优化徽章系统的加载速度",
