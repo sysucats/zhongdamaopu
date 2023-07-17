@@ -372,7 +372,7 @@ Page({
     const previewSideLen = 675; // view#previewArea的长宽rpx值
     const compressSideLen = 500; // 上传到后台的图片的长边长度
     const ratio = previewSideLen / compressSideLen; // 缩放比
-    // const {compressPhotoInfo} = this.jsData;
+    const {compressPhotoInfo} = this.data;
     for (let catBox of catBoxes) {
       let xOffset = 0;
       let yOffset = 0;
@@ -383,6 +383,9 @@ Page({
         yOffset = previewSideLen * ((1 - 1 / widthHeightRatio) / 2);
       }
       console.log(catBox, ratio, xOffset, yOffset, previewSideLen);
+
+      const realDrawWidthRate = compressSideLen / compressPhotoInfo.width,
+      realDrawHeightRate = compressSideLen / compressPhotoInfo.height;
 
       catBoxList.push({
         xmin: catBox.xmin,
@@ -396,10 +399,10 @@ Page({
         // y: (catBox.ymin * ratio + yOffset) / compressPhotoInfo.height * 100,
         // width: ((catBox.xmax - catBox.xmin) * ratio) / compressPhotoInfo.width * 100,
         // height: ((catBox.ymax - catBox.ymin) * ratio) / compressPhotoInfo.height * 100
-        x: (catBox.xmin * ratio + xOffset) / previewSideLen * 100,
-        y: (catBox.ymin * ratio + yOffset) / previewSideLen * 100,
-        width: ((catBox.xmax - catBox.xmin) * ratio) / previewSideLen * 100,
-        height: ((catBox.ymax - catBox.ymin) * ratio) / previewSideLen * 100
+        x: (catBox.xmin * realDrawWidthRate * ratio + xOffset) / previewSideLen * 100,
+        y: (catBox.ymin * realDrawHeightRate * ratio + yOffset) / previewSideLen * 100,
+        width: ((catBox.xmax - catBox.xmin) * realDrawWidthRate * ratio) / previewSideLen * 100,
+        height: ((catBox.ymax - catBox.ymin) * realDrawHeightRate * ratio) / previewSideLen * 100
       });
     }
     console.log("cat box list:", catBoxList);
