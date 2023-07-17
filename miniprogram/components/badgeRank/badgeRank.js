@@ -89,6 +89,7 @@ Component({
             _id: catInfoMap[catId]._id,
             name: catInfoMap[catId].name,
             campus: catInfoMap[catId].campus,
+            habit: catInfoMap[catId].habit,
             area: catInfoMap[catId].area,
             count: rankRes[rankKey][catId],
           };
