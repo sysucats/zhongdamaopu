@@ -28,7 +28,7 @@ Page({
     shakeAnimation: null,
     nextFreeBadgesHours: 0,
     nextFreeBadgesMins: 0,
-    todayPicLimit: 6,
+    todayPicLimit: 3,
     todayVideoLimit: 6,
   },
 

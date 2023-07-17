@@ -52,7 +52,7 @@ function setCacheDate(key, date) {
 // 缓存时长设置（单位默认为hours）
 // TODO(zing): 缓存图片链接会导致cos签名过期
 const cacheTime = {
-  catAvatar: 0.0,  // 首页封面图
+  catAvatar: 0.1,  // 首页封面图
   catItem: 0.1,  // 猫猫信息
   commentCount: 2,  // 留言数量
   likeItem: 72,  // 点赞行为
