@@ -5,7 +5,7 @@ import { checkAuth, fillUserInfo } from "../../../utils/user";
 import { cloud } from "../../../utils/cloudAccess";
 import api from "../../../utils/cloudApi";
 
-import drawUtils from "./draw";
+import drawUtils from "../../../utils/draw";
 import lockUtils from "./lock";
 
 const canvasMax = 1200; // 正方形画布的尺寸px
@@ -34,6 +34,8 @@ Page({
     now: 0, // 当前状态
     processing: false,
   },
+
+  jsData: {},
 
   /**
    * 生命周期函数--监听页面加载
@@ -187,7 +189,9 @@ Page({
       }
       // 开始处理一张图
       // 强行重置一下canvas
-      await drawUtils.initCanvas();
+      const initCanvas = await drawUtils.initCanvas('#bigPhoto');
+      this.jsData.gCtx = initCanvas.ctx;
+      this.jsData.gCanvas = initCanvas.canvas;
       await this.processOne(photos[0]);
       this.setData({
         now: this.data.now + 1
@@ -258,7 +262,8 @@ Page({
     console.log("draw size", draw_width, draw_height);
 
     // 画上图片
-    await drawUtils.drawImage(origin.path, 0, 0, draw_width, draw_height);
+    const { gCtx, gCanvas } = this.jsData;
+    await drawUtils.drawImage(gCtx, gCanvas, origin.path, 0, 0, draw_width, draw_height);
 
     // 压缩后的大小
     var comp_width, comp_height;
@@ -271,7 +276,7 @@ Page({
     }
 
     // 变成图片显示
-    var path = await drawUtils.getTempPath({
+    var path = await drawUtils.getTempPath(gCtx, gCanvas, {
       width: draw_width,
       height: draw_height,
       destWidth: comp_width,
@@ -295,8 +300,9 @@ Page({
     const draw_height = origin.height / draw_rate;
 
     // 写上水印
+    const { gCtx, gCanvas } = this.jsData;
     const text = `${text_cfg.app_name}@${photoInfo.photographer || photoInfo.userInfo.nickName}`
-    await drawUtils.writeWatermake({
+    await drawUtils.writeWatermake(gCtx, gCanvas, {
       fontSize: draw_height * 0.03,
       fillStyle: "white",
       text: text,
@@ -305,7 +311,7 @@ Page({
     });
 
     // 变成图片显示
-    var path = await drawUtils.getTempPath({
+    var path = await drawUtils.getTempPath(gCtx, gCanvas, {
       width: draw_width,
       height: draw_height,
       destWidth: origin.width,

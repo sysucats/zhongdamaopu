@@ -1,14 +1,12 @@
 // 画图全局canvas，依赖版本库：2.24.7
-import {compressImage} from "../../../utils/utils";
-var gCanvas = null;
-var gCtx = null;
+import {compressImage} from "./utils";
 
 // 初始化canvas接口
-function initCanvas() {
+function initCanvas(canvasId) {
   return new Promise((resolve) => {
     console.log("initCanvas start");
     wx.createSelectorQuery()
-    .select('#bigPhoto') // 在 WXML 中填入的 id
+    .select(canvasId) // 在 WXML 中填入的 id
     .fields({ node: true, size: true })
     .exec((res) => {
         console.log("initCanvas res", res);
@@ -26,10 +24,6 @@ function initCanvas() {
         canvas.height = renderHeight * dpr
         ctx.scale(dpr, dpr);
 
-        gCtx = ctx;
-        gCanvas = canvas;
-
-        console.log("initCanvas return", gCtx, gCanvas);
         resolve({
           canvas: canvas,
           ctx: ctx
@@ -39,7 +33,7 @@ function initCanvas() {
 }
 
 // 包装一个画图接口
-function drawImage(imgSrc, dx, dy, weight, height) {
+function drawImage(gCtx, gCanvas, imgSrc, dx, dy, weight, height) {
   console.log("drawImage", gCtx, imgSrc);
   return new Promise((resolve) => {
     const image = gCanvas.createImage()
@@ -60,15 +54,15 @@ function drawImage(imgSrc, dx, dy, weight, height) {
 }
 
 // 获得temp文件路径
-async function getTempPath(options) {
-  options.canvas = this.jsData.gCanvas;
+async function getTempPath(gCtx, gCanvas, options) {
+  options.canvas = gCanvas;
   var tempFilePath = (await wx.canvasToTempFilePath(options)).tempFilePath;
   return await compressImage(tempFilePath, 80);
 }
 
 
 // 写上水印
-async function writeWatermake(options) {
+async function writeWatermake(gCtx, gCanvas, options) {
     // 写上水印
     gCtx.font = `normal ${options.fontSize}px sans-serif`;
     gCtx.fillStyle = options.fillStyle;

@@ -15,6 +15,8 @@ import {
   cloud
 } from "../../utils/cloudAccess";
 
+import drawUtils from "../../utils/draw";
+
 // 接口设置，onLoad中从数据库拉取。
 var interfaceURL;
 var secretKey;
@@ -244,77 +246,6 @@ Page({
     });
   },
 
-  // 初始化canvas接口
-  initCanvas() {
-    return new Promise((resolve) => {
-      console.log("initCanvas start");
-      wx.createSelectorQuery()
-        .select('#canvasForCompress') // 在 WXML 中填入的 id
-        .fields({
-          node: true,
-          size: true
-        })
-        .exec((res) => {
-          console.log("initCanvas res", res);
-          // Canvas 对象
-          const canvas = res[0].node
-          // Canvas 画布的实际绘制宽高
-          const renderWidth = res[0].width
-          const renderHeight = res[0].height
-          // Canvas 绘制上下文
-          const ctx = canvas.getContext('2d')
-
-          // 初始化画布大小
-          const dpr = wx.getWindowInfo().pixelRatio
-          canvas.width = renderWidth * dpr
-          canvas.height = renderHeight * dpr
-          ctx.scale(dpr, dpr);
-
-          this.jsData.gCtx = ctx;
-          this.jsData.gCanvas = canvas;
-
-          console.log("initCanvas return", this.jsData.gCtx, this.jsData.Canvas);
-          resolve({
-            canvas: canvas,
-            ctx: ctx
-          });
-        })
-    })
-  },
-
-
-  // 包装一个画图接口
-  drawImage(imgSrc, dx, dy, weight, height) {
-    const { gCtx, gCanvas } = this.jsData;
-    console.log("drawImage", gCtx, imgSrc);
-    return new Promise((resolve) => {
-      const image = gCanvas.createImage()
-      image.onload = () => {
-        // 清空画布
-        gCtx.clearRect(0, 0, gCanvas.width, gCanvas.height)
-        gCtx.drawImage(
-          image,
-          dx,
-          dy,
-          weight,
-          height,
-        )
-        resolve();
-      }
-      image.src = imgSrc
-    })
-  },
-
-
-  // 获得temp文件路径
-  async getTempPath(options) {
-    const { gCanvas } = this.jsData;
-    options.canvas = gCanvas;
-    var tempFilePath = (await wx.canvasToTempFilePath(options)).tempFilePath;
-    return tempFilePath;
-  },
-
-
   async compressPhoto() {
     // 获取图像宽高信息
     const photoInfo = await wx.getImageInfo({
@@ -328,40 +259,26 @@ Page({
     const drawRate = Math.max(photoInfo.width, photoInfo.height) / canvasSideLen; // 计算缩放比
     const drawWidth = photoInfo.width / drawRate;
     const drawHeight = photoInfo.height / drawRate;
-    await this.initCanvas();
-    await this.drawImage(photoInfo.path, 0, 0, drawWidth, drawHeight);
-    // const ctx = wx.createCanvasContext('canvasForCompress');
-    // ctx.drawImage(photoInfo.path, 0, 0, drawWidth, drawHeight);
+    if (!this.jsData.ctx) {
+      const {ctx, canvas} = await drawUtils.initCanvas('#canvasForCompress');
+      this.jsData.ctx = ctx;
+      this.jsData.canvas = canvas;
+    }
+    const {ctx, canvas} = this.jsData;
+    await drawUtils.drawImage(ctx, canvas, photoInfo.path, 0, 0, drawWidth, drawHeight);
+
     this.setData({
       drawWidth,
       drawHeight,
       drawRate
     })
-    const compressPhotoPath = await this.getTempPath({
+    const compressPhotoPath = await drawUtils.getTempPath(ctx, canvas, {
       width: drawWidth,
       height: drawHeight,
       destWidth: drawWidth,
       destHeight: drawHeight,
       fileType: 'jpg',});
-    // const compressPhotoPath = await new Promise((resolve, reject) => {
-    //   ctx.draw(false, () => {
-    //     wx.canvasToTempFilePath({
-    //       canvasId: 'canvasForCompress',
-    //       width: drawWidth,
-    //       height: drawHeight,
-    //       destWidth: drawWidth,
-    //       destHeight: drawHeight,
-    //       fileType: 'jpg',
-    //       success(res) {
-    //         console.log(res);
-    //         resolve(res.tempFilePath);
-    //       },
-    //       fail(err) {
-    //         reject(err);
-    //       }
-    //     });
-    //   });
-    // });
+
     return compressPhotoPath;
   },
 
@@ -395,14 +312,10 @@ Page({
         ratio: ratio,
         xOffset: xOffset,
         yOffset: yOffset,
-        // x: (catBox.xmin * ratio + xOffset) / compressPhotoInfo.width * 100,
-        // y: (catBox.ymin * ratio + yOffset) / compressPhotoInfo.height * 100,
-        // width: ((catBox.xmax - catBox.xmin) * ratio) / compressPhotoInfo.width * 100,
-        // height: ((catBox.ymax - catBox.ymin) * ratio) / compressPhotoInfo.height * 100
-        x: (catBox.xmin * realDrawWidthRate * ratio + xOffset) / previewSideLen * 100,
-        y: (catBox.ymin * realDrawHeightRate * ratio + yOffset) / previewSideLen * 100,
-        width: ((catBox.xmax - catBox.xmin) * realDrawWidthRate * ratio) / previewSideLen * 100,
-        height: ((catBox.ymax - catBox.ymin) * realDrawHeightRate * ratio) / previewSideLen * 100
+        x: catBox.xmin * realDrawWidthRate * ratio + xOffset,
+        y: catBox.ymin * realDrawHeightRate * ratio + yOffset,
+        width: (catBox.xmax - catBox.xmin) * realDrawWidthRate * ratio,
+        height: (catBox.ymax - catBox.ymin) * realDrawHeightRate * ratio
       });
     }
     console.log("cat box list:", catBoxList);
