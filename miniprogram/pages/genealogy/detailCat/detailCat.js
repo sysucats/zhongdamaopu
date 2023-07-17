@@ -221,7 +221,7 @@ Page({
     cat.characteristics_string = (cat.colour || '') + '猫';
     cat.avatar = await getAvatar(cat._id, cat.photo_count_best);
 
-    await this.setData({
+    this.setData({
       cat: cat
     });
 

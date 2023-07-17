@@ -42,8 +42,12 @@ Component({
         loading: true
       })
       const db = await cloud.databaseAsync();
-      // 获取榜单
-      let rankRes = (await db.collection('badge_rank').orderBy('mdate', 'desc').limit(1).get()).data;
+      // 获取榜单和标签定义
+      let [rankRes, badgeDefMap] = await Promise.all([
+        db.collection('badge_rank').orderBy('mdate', 'desc').limit(1).get(),
+        loadBadgeDefMap(),
+      ]);
+      rankRes = rankRes.data;
       if (!rankRes || !rankRes.length) {
         return;
       }
@@ -51,8 +55,7 @@ Component({
       rankRes = rankRes[0].rank;
       console.log(rankRes);
 
-      // 获取标签定义，按等级进行排序，作为展示顺序
-      const badgeDefMap = await loadBadgeDefMap();
+      // 获取标签定义，按等级进行排序，作为展示顺
       const sortedBadgeDef = await sortBadgeDef(Object.values(badgeDefMap));
       let dispOrder = ['count', 'score'].concat(sortedBadgeDef.map(x => x._id));
       this.setData({
@@ -71,7 +74,6 @@ Component({
       const catInfo = await getCatItemMulti(Object.keys(catInfoMap), {}, true);
       for (const ci of catInfo) {
         catInfoMap[ci._id] = ci;
-        catInfoMap[ci._id].avatar = await getAvatar(ci._id, ci.photo_count_best);
       }
 
       // 补充每个榜单的内容，并排序
@@ -82,16 +84,11 @@ Component({
           items: [],
         };
         for (const catId in rankRes[rankKey]) {
-          if (!catInfoMap[catId].avatar || (!catInfoMap[catId].avatar.photo_compressed && !catInfoMap[catId].avatar.avatarItem)) {
-            console.log(`没有精选图的猫猫上榜了喵: catID - ${catId}`)
-            continue;
-          }
           let item = {
             _id: catInfoMap[catId]._id,
             name: catInfoMap[catId].name,
             campus: catInfoMap[catId].campus,
             area: catInfoMap[catId].area,
-            avatar: catInfoMap[catId].avatar.photo_compressed || catInfoMap[catId].avatar.avatarItem.photo_id,
             count: rankRes[rankKey][catId],
           };
           dispContent[rankKey].items.push(item);
@@ -113,6 +110,24 @@ Component({
         dispContent: dispContent,
         loading: false
       });
+
+      // 再加载头像
+      await this.loadAvatarMap(catInfo);
+    },
+
+    async loadAvatarMap(catInfo) {
+      let avatarMap = {};
+      for (const ci of catInfo) {
+        if (avatarMap[ci] != undefined) {
+          continue;
+        }
+        const avatar = await getAvatar(ci._id, ci.photo_count_best);
+        if (!avatar || (!avatar.photo_compressed && !avatar.photo_id)) {
+          continue;
+        }
+        avatarMap[ci._id] = avatar.photo_compressed || avatar.photo_id;
+      }
+      this.setData({avatarMap});
     },
 
     async _getRankInfo(key, badgeDefMap) {

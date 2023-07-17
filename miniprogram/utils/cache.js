@@ -23,7 +23,8 @@ function getCacheItem(key, options) {
 
 function setCacheItem(key, item, expire_hours, expire_minutes) {
   var expire_date = new Date();
-  expire_date.setHours(expire_date.getHours() + expire_hours);
+  expire_minutes = (expire_minutes || 0) + parseInt(expire_hours * 60);
+  // expire_date.setHours(expire_date.getHours() + expire_hours);
   expire_date.setMinutes(expire_date.getMinutes() + (expire_minutes || 0));
   var data = {
     item: item,
@@ -51,8 +52,8 @@ function setCacheDate(key, date) {
 // 缓存时长设置（单位默认为hours）
 // TODO(zing): 缓存图片链接会导致cos签名过期
 const cacheTime = {
-  catAvatar: 0,  // 首页封面图
-  catItem: 0,  // 猫猫信息
+  catAvatar: 0.1,  // 首页封面图
+  catItem: 0.1,  // 猫猫信息
   commentCount: 2,  // 留言数量
   likeItem: 72,  // 点赞行为
   pageSetting: 0,  // 页面设置

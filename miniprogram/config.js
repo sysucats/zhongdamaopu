@@ -5,11 +5,11 @@
 
 module.exports = {
   // 版本号
-  app_version: "v1.12.1",
+  app_version: "v1.12.3",
   // laf后台服务地址
   laf_url: 'https://fxkv6h.laf.run',
   // laf后台服务地址（微信开发工具中），一般和上面laf_url一致就好
-  laf_dev_url: 'https://wlnqqq.laf.run',
+  laf_dev_url: 'https://fxkv6h.laf.run',
   // 使用私有的腾讯云cos存储，需要url签名
   use_private_tencent_cos: true,
 

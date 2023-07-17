@@ -11,6 +11,19 @@ Page({
     text_cfg: text_cfg,
     github_link: "https://github.com/sysucats/zhongdamaopu",
     update_log: [{
+      version: "v1.12.3",
+      content: [
+        "优化徽章系统的加载速度",
+        "修复关于页数字不显示的问题"
+      ],
+      time: "2023/7/17"
+    }, {
+      version: "v1.12.2",
+      content: [
+        "修复徽章系统的小问题",
+      ],
+      time: "2023/7/16"
+    }, {
       version: "v1.12.1",
       content: [
         "修复徽章系统的小问题",

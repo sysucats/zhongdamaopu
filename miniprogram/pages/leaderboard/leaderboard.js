@@ -212,9 +212,7 @@ Page({
     }
     this.loadData()
   },
-  onReady() {
-    // this.activateThread(0);
-  },
+  onReady() {},
   
   clickLike: async function clickLike(e) {
     if (this.jsData.like_mutex) {

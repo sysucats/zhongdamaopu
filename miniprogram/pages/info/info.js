@@ -54,9 +54,6 @@ Page({
       version: getApp().globalData.version
     });
 
-    if (!await isManagerAsync()) {
-      return;
-    }
     const db = await cloud.databaseAsync();
     const _ = db.command;
 

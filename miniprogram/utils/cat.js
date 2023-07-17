@@ -85,17 +85,14 @@ async function getCatItemMulti(cat_ids, options, forceAll) {
   const _ = db.command;
   const coll_cat = db.collection('cat');
   if (not_found.length) {
-    var db_res = [];
+    let db_query = [];
+    for (let i = 0; i < not_found.length; i+=100) {
+      db_query.push(coll_cat.where({_id: _.in(not_found)}).skip(i).get());
+    }
 
-    if (forceAll) {
-      var tmp = []
-      while(true) {
-        tmp = (await coll_cat.where({_id: _.in(not_found)}).skip(db_res.length).get()).data
-        if (!tmp || tmp.length == 0) break;
-        db_res = db_res.concat(tmp)
-      }
-    } else {
-      db_res = (await coll_cat.where({_id: _.in(not_found)}).get()).data
+    let db_res = [];
+    for (const res of (await Promise.all(db_query))) {
+      db_res = db_res.concat(res.data);
     }
 
     for (var c of db_res) {
