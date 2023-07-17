@@ -31,6 +31,7 @@ Component({
     dispContent: {},
     updateTime: null,
     loading: false,
+    avatarMap: {},
   },
 
   /**
@@ -53,7 +54,7 @@ Component({
       }
       let updateTime = formatDate(new Date(rankRes[0].mdate), "yyyy-MM-dd hh:mm");
       rankRes = rankRes[0].rank;
-      console.log(rankRes);
+      // console.log(rankRes);
 
       // 获取标签定义，按等级进行排序，作为展示顺
       const sortedBadgeDef = await sortBadgeDef(Object.values(badgeDefMap));
@@ -104,7 +105,7 @@ Component({
           }
         }
       }
-      console.log(dispContent);
+      // console.log(dispContent);
       this.setData({
         hasContent: true,
         dispContent: dispContent,
@@ -115,19 +116,23 @@ Component({
       await this.loadAvatarMap(catInfo);
     },
 
-    async loadAvatarMap(catInfo) {
-      let avatarMap = {};
-      for (const ci of catInfo) {
-        if (avatarMap[ci] != undefined) {
-          continue;
-        }
-        const avatar = await getAvatar(ci._id, ci.photo_count_best);
-        if (!avatar || (!avatar.photo_compressed && !avatar.photo_id)) {
-          continue;
-        }
-        avatarMap[ci._id] = avatar.photo_compressed || avatar.photo_id;
+    async _getOneAvatar(id, photo_count_best) {
+      const avatar = await getAvatar(id, photo_count_best);
+      if (!avatar || (!avatar.photo_compressed && !avatar.photo_id)) {
+        return;
       }
-      this.setData({avatarMap});
+      this.setData({
+        [`avatarMap.${id}`]: avatar.photo_compressed || avatar.photo_id,
+      });
+    },
+
+    async loadAvatarMap(catInfo) {
+      let all_querys = [];
+      for (const ci of catInfo) {
+        all_querys.push(this._getOneAvatar(ci._id, ci.photo_count_best));
+      }
+      await Promise.all(all_querys);
+      return;
     },
 
     async _getRankInfo(key, badgeDefMap) {

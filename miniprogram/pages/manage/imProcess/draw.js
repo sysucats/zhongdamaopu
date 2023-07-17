@@ -61,7 +61,7 @@ function drawImage(imgSrc, dx, dy, weight, height) {
 
 // 获得temp文件路径
 async function getTempPath(options) {
-  options.canvas = gCanvas;
+  options.canvas = this.jsData.gCanvas;
   var tempFilePath = (await wx.canvasToTempFilePath(options)).tempFilePath;
   return await compressImage(tempFilePath, 80);
 }

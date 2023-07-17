@@ -128,8 +128,8 @@ const init_setting = [{
       "genealogy_banner": "your_ad_id",
       "recognize_banner": "your_ad_id",
       "reward_video": "your_ad_id",
-      "game_token_video": "your_ad_id",
-      "game_token_interstitial": "your_ad_id",
+      "badge_video": "your_ad_id",
+      "badge_interstitial": "your_ad_id",
     }
   },
   {

@@ -1,7 +1,19 @@
-import { text as text_cfg, cat_status_adopt } from "../../config";
-import { hex_sha256, randomInt } from "../../utils/utils";
-import { loadFilter, getGlobalSettings, showTab } from "../../utils/page";
-import { cloud } from "../../utils/cloudAccess";
+import {
+  text as text_cfg,
+  cat_status_adopt
+} from "../../config";
+import {
+  hex_sha256,
+  randomInt
+} from "../../utils/utils";
+import {
+  loadFilter,
+  getGlobalSettings,
+  showTab
+} from "../../utils/page";
+import {
+  cloud
+} from "../../utils/cloudAccess";
 
 // 接口设置，onLoad中从数据库拉取。
 var interfaceURL;
@@ -28,13 +40,13 @@ Page({
     devicePosition: 'back', // 前置/后置摄像头
     photoPath: null, // 用户选择的照片的路径
     photoBase64: null, // 用户选择的照片的base64编码，用于设置background-image
-    campusList:['所有校区'],
-    campusIndex:0,
-    campusIndexOld:0,
-    lastFilterType:'',
-    colourIndexOld:0,
-    colourList:['所有花色'],
-    colourIndex:0,
+    campusList: ['所有校区'],
+    campusIndex: 0,
+    campusIndexOld: 0,
+    lastFilterType: '',
+    colourIndexOld: 0,
+    colourList: ['所有花色'],
+    colourIndex: 0,
     catList: [], // 展示的猫猫列表
     catBoxList: [], // 展示的猫猫框列表
     catIdx: null, // 在有多只猫猫的图片中，识别的猫猫的编号
@@ -46,6 +58,8 @@ Page({
     // 领养状态
     adopt_desc: cat_status_adopt,
   },
+
+  jsData: {},
 
   async onLoad() {
     // 在页面onLoad回调事件中创建插屏广告实例
@@ -63,8 +77,8 @@ Page({
     var res = await loadFilter();
     console.log('filterRes:', res);
     this.setData({
-      campusList:['所有校区'].concat(res.campuses),
-      colourList:['所有花色'].concat(res.colour)
+      campusList: ['所有校区'].concat(res.campuses),
+      colourList: ['所有花色'].concat(res.colour)
     })
 
     this.checkAuth();
@@ -169,6 +183,15 @@ Page({
     });
     // 压缩图片
     const compressPhotoPath = await this.compressPhoto();
+
+    const compressPhotoInfo = await wx.getImageInfo({
+      src: compressPhotoPath,
+    });
+    this.setData({
+      compressPhotoInfo
+    });
+    console.log("compressPhotoInfo", compressPhotoInfo);
+
     // 计算签名
     const photoBase64 = wx.getFileSystemManager().readFileSync(compressPhotoPath, 'base64');
     const timestamp = Math.round(new Date().getTime() / 1000);
@@ -221,6 +244,77 @@ Page({
     });
   },
 
+  // 初始化canvas接口
+  initCanvas() {
+    return new Promise((resolve) => {
+      console.log("initCanvas start");
+      wx.createSelectorQuery()
+        .select('#canvasForCompress') // 在 WXML 中填入的 id
+        .fields({
+          node: true,
+          size: true
+        })
+        .exec((res) => {
+          console.log("initCanvas res", res);
+          // Canvas 对象
+          const canvas = res[0].node
+          // Canvas 画布的实际绘制宽高
+          const renderWidth = res[0].width
+          const renderHeight = res[0].height
+          // Canvas 绘制上下文
+          const ctx = canvas.getContext('2d')
+
+          // 初始化画布大小
+          const dpr = wx.getWindowInfo().pixelRatio
+          canvas.width = renderWidth * dpr
+          canvas.height = renderHeight * dpr
+          ctx.scale(dpr, dpr);
+
+          this.jsData.gCtx = ctx;
+          this.jsData.gCanvas = canvas;
+
+          console.log("initCanvas return", this.jsData.gCtx, this.jsData.Canvas);
+          resolve({
+            canvas: canvas,
+            ctx: ctx
+          });
+        })
+    })
+  },
+
+
+  // 包装一个画图接口
+  drawImage(imgSrc, dx, dy, weight, height) {
+    const { gCtx, gCanvas } = this.jsData;
+    console.log("drawImage", gCtx, imgSrc);
+    return new Promise((resolve) => {
+      const image = gCanvas.createImage()
+      image.onload = () => {
+        // 清空画布
+        gCtx.clearRect(0, 0, gCanvas.width, gCanvas.height)
+        gCtx.drawImage(
+          image,
+          dx,
+          dy,
+          weight,
+          height,
+        )
+        resolve();
+      }
+      image.src = imgSrc
+    })
+  },
+
+
+  // 获得temp文件路径
+  async getTempPath(options) {
+    const { gCanvas } = this.jsData;
+    options.canvas = gCanvas;
+    var tempFilePath = (await wx.canvasToTempFilePath(options)).tempFilePath;
+    return tempFilePath;
+  },
+
+
   async compressPhoto() {
     // 获取图像宽高信息
     const photoInfo = await wx.getImageInfo({
@@ -234,26 +328,40 @@ Page({
     const drawRate = Math.max(photoInfo.width, photoInfo.height) / canvasSideLen; // 计算缩放比
     const drawWidth = photoInfo.width / drawRate;
     const drawHeight = photoInfo.height / drawRate;
-    const ctx = wx.createCanvasContext('canvasForCompress');
-    ctx.drawImage(photoInfo.path, 0, 0, drawWidth, drawHeight);
-    const compressPhotoPath = await new Promise((resolve, reject) => {
-      ctx.draw(false, () => {
-        wx.canvasToTempFilePath({
-          canvasId: 'canvasForCompress',
-          width: drawWidth,
-          height: drawHeight,
-          destWidth: drawWidth,
-          destHeight: drawHeight,
-          fileType: 'jpg',
-          success(res) {
-            resolve(res.tempFilePath);
-          },
-          fail(err) {
-            reject(err);
-          }
-        });
-      });
-    });
+    await this.initCanvas();
+    await this.drawImage(photoInfo.path, 0, 0, drawWidth, drawHeight);
+    // const ctx = wx.createCanvasContext('canvasForCompress');
+    // ctx.drawImage(photoInfo.path, 0, 0, drawWidth, drawHeight);
+    this.setData({
+      drawWidth,
+      drawHeight,
+      drawRate
+    })
+    const compressPhotoPath = await this.getTempPath({
+      width: drawWidth,
+      height: drawHeight,
+      destWidth: drawWidth,
+      destHeight: drawHeight,
+      fileType: 'jpg',});
+    // const compressPhotoPath = await new Promise((resolve, reject) => {
+    //   ctx.draw(false, () => {
+    //     wx.canvasToTempFilePath({
+    //       canvasId: 'canvasForCompress',
+    //       width: drawWidth,
+    //       height: drawHeight,
+    //       destWidth: drawWidth,
+    //       destHeight: drawHeight,
+    //       fileType: 'jpg',
+    //       success(res) {
+    //         console.log(res);
+    //         resolve(res.tempFilePath);
+    //       },
+    //       fail(err) {
+    //         reject(err);
+    //       }
+    //     });
+    //   });
+    // });
     return compressPhotoPath;
   },
 
@@ -264,6 +372,7 @@ Page({
     const previewSideLen = 675; // view#previewArea的长宽rpx值
     const compressSideLen = 500; // 上传到后台的图片的长边长度
     const ratio = previewSideLen / compressSideLen; // 缩放比
+    // const {compressPhotoInfo} = this.jsData;
     for (let catBox of catBoxes) {
       let xOffset = 0;
       let yOffset = 0;
@@ -273,11 +382,24 @@ Page({
       } else {
         yOffset = previewSideLen * ((1 - 1 / widthHeightRatio) / 2);
       }
+      console.log(catBox, ratio, xOffset, yOffset, previewSideLen);
+
       catBoxList.push({
-        x: catBox.xmin * ratio + xOffset,
-        y: catBox.ymin * ratio + yOffset,
-        width: (catBox.xmax - catBox.xmin) * ratio,
-        height: (catBox.ymax - catBox.ymin) * ratio
+        xmin: catBox.xmin,
+        xmax: catBox.xmax,
+        ymin: catBox.ymin,
+        ymax: catBox.ymax,
+        ratio: ratio,
+        xOffset: xOffset,
+        yOffset: yOffset,
+        // x: (catBox.xmin * ratio + xOffset) / compressPhotoInfo.width * 100,
+        // y: (catBox.ymin * ratio + yOffset) / compressPhotoInfo.height * 100,
+        // width: ((catBox.xmax - catBox.xmin) * ratio) / compressPhotoInfo.width * 100,
+        // height: ((catBox.ymax - catBox.ymin) * ratio) / compressPhotoInfo.height * 100
+        x: (catBox.xmin * ratio + xOffset) / previewSideLen * 100,
+        y: (catBox.ymin * ratio + yOffset) / previewSideLen * 100,
+        width: ((catBox.xmax - catBox.xmin) * ratio) / previewSideLen * 100,
+        height: ((catBox.ymax - catBox.ymin) * ratio) / previewSideLen * 100
       });
     }
     console.log("cat box list:", catBoxList);
@@ -301,9 +423,9 @@ Page({
     //点击筛选picker
     var type = res.currentTarget.dataset.type;
     this.setData({
-      [type+'IndexOld']:this.data[type+'Index'],
-      lastFilterType:type,
-      [type+'Index'] :res.detail.value
+      [type + 'IndexOld']: this.data[type + 'Index'],
+      lastFilterType: type,
+      [type + 'Index']: res.detail.value
     })
     this.pickCatList();
   },
@@ -314,21 +436,20 @@ Page({
     })
 
     const that = this;
-    console.log("recognizeResults:",recognizeResults);
+    console.log("recognizeResults:", recognizeResults);
     const choseCampus = that.data.campusList[that.data.campusIndex];
     const choseColour = that.data.colourList[that.data.colourIndex];
     const catList = recognizeResults.filter(cat => {
-      if ((choseCampus === cat.campus || choseCampus === "所有校区") &&( choseColour === cat.colour || choseColour ==="所有花色")) {
-        return true;//筛选结果
+      if ((choseCampus === cat.campus || choseCampus === "所有校区") && (choseColour === cat.colour || choseColour === "所有花色")) {
+        return true; //筛选结果
       }
-    }
-    ); 
+    });
 
     console.log("catList:", catList);
     if (catList.length === 0) {
       wx.hideLoading();
       this.setData({
-        [this.data.lastFilterType+'Index']:this.data[this.data.lastFilterType+"IndexOld"]// 无筛选结果，恢复原选项
+        [this.data.lastFilterType + 'Index']: this.data[this.data.lastFilterType + "IndexOld"] // 无筛选结果，恢复原选项
       })
       wx.showToast({
         title: '找不到这样的猫猫，试试换个选项吧',
@@ -337,7 +458,7 @@ Page({
         mask: true
       })
       return false;
-    }else{
+    } else {
       this.calculateSoftmaxProb(catList);
     }
 
@@ -352,8 +473,8 @@ Page({
         const catInfo = catList[index];
         catInfo.photo = await this.getCatPhoto(catInfo);
         displayList.push(catInfo);
-      }      
-    }else{
+      }
+    } else {
       for (let index = 0; index < maxNum; index++) {
         if (catList[index].prob > minProb || index < minNum) {
           const catInfo = catList[index];
@@ -427,8 +548,8 @@ Page({
       catList: [],
       catIdx: null,
       showResultBox: false,
-      campusIndex:0,
-      colourIndex:0
+      campusIndex: 0,
+      colourIndex: 0
     });
 
     // 在适合的场景显示插屏广告

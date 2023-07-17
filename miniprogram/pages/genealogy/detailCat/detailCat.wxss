@@ -638,7 +638,7 @@ swiper-item image {
   border-radius: 100%;
 }
 
-.badge-level-A .badge-item-avatar {
+/* .badge-level-A .badge-item-avatar {
   filter: drop-shadow(0rpx 0rpx 7rpx var(--color-badge-A));
 }
 
@@ -648,7 +648,7 @@ swiper-item image {
 
 .badge-level-C .badge-item-avatar {
   filter: drop-shadow(0rpx 0rpx 7rpx var(--color-badge-C));
-}
+} */
 
 .badge-level-A .badge-item-name {
   color: var(--color-badge-A);

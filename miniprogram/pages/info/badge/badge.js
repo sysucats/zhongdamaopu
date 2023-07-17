@@ -12,6 +12,9 @@ import {
   loadUserBadge,
   loadBadgeDefMap
 } from "../../../utils/badge";
+import {
+  getGlobalSettings
+} from "../../../utils/page";
 
 import api from "../../../utils/cloudApi";
 
@@ -70,10 +73,11 @@ Page({
   },
 
   async loadAD() {
+    const ads = await getGlobalSettings('ads') || {};
     let pictureAd = null
     if (wx.createInterstitialAd) {
       pictureAd = wx.createInterstitialAd({
-        adUnitId: 'adunit-287bf3706975a01b'
+        adUnitId: ads.badge_interstitial
       })
       pictureAd.onLoad(() => {
         this.setData({
@@ -93,7 +97,7 @@ Page({
     let videoAd = null
     if (wx.createRewardedVideoAd) {
       videoAd = wx.createRewardedVideoAd({
-        adUnitId: 'adunit-0bdd3872e84a0a60'
+        adUnitId: ads.badge_video
       })
       videoAd.onLoad(() => {
         this.setData({
