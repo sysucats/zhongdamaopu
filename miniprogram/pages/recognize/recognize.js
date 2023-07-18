@@ -27,9 +27,6 @@ var widthHeightRatio;
 // 接口返回的识别结果。展示的结果为在此基础上筛选。
 var recognizeResults = [];
 
-// 在页面中定义插屏广告
-let interstitialAd = null
-
 const share_text = text_cfg.app_name + ' - ' + text_cfg.recognize.share_tip;
 
 Page({
@@ -61,21 +58,11 @@ Page({
     adopt_desc: cat_status_adopt,
   },
 
-  jsData: {},
+  jsData: {
+    canvasSideLen: 500,
+  },
 
   async onLoad() {
-    // 在页面onLoad回调事件中创建插屏广告实例
-    if (wx.createInterstitialAd) {
-      interstitialAd = wx.createInterstitialAd({
-        adUnitId: 'adunit-531fedfc9dcd52c3'
-      })
-      interstitialAd.onLoad(() => {
-        console.log("加载插屏广告成功");
-      })
-      interstitialAd.onError((err) => {})
-      interstitialAd.onClose(() => {})
-    }
-
     var res = await loadFilter();
     console.log('filterRes:', res);
     this.setData({
@@ -189,9 +176,7 @@ Page({
     const compressPhotoInfo = await wx.getImageInfo({
       src: compressPhotoPath,
     });
-    this.setData({
-      compressPhotoInfo
-    });
+    this.jsData.compressPhotoInfo = compressPhotoInfo;
     console.log("compressPhotoInfo", compressPhotoInfo);
 
     // 计算签名
@@ -255,7 +240,7 @@ Page({
     // 记录图片长宽比。用于重新映射后端返回的catBox位置信息。
     widthHeightRatio = photoInfo.width / photoInfo.height;
     // 使用canvas方法压缩图片
-    const canvasSideLen = 500;
+    const {canvasSideLen} = this.jsData;
     const drawRate = Math.max(photoInfo.width, photoInfo.height) / canvasSideLen; // 计算缩放比
     const drawWidth = photoInfo.width / drawRate;
     const drawHeight = photoInfo.height / drawRate;
@@ -267,17 +252,13 @@ Page({
     const {ctx, canvas} = this.jsData;
     await drawUtils.drawImage(ctx, canvas, photoInfo.path, 0, 0, drawWidth, drawHeight);
 
-    this.setData({
-      drawWidth,
-      drawHeight,
-      drawRate
-    })
     const compressPhotoPath = await drawUtils.getTempPath(ctx, canvas, {
       width: drawWidth,
       height: drawHeight,
       destWidth: drawWidth,
       destHeight: drawHeight,
-      fileType: 'jpg',});
+      fileType: 'jpg'
+    });
 
     return compressPhotoPath;
   },
@@ -287,9 +268,9 @@ Page({
     let catBoxes = result.catBoxes;
     let catBoxList = [];
     const previewSideLen = 675; // view#previewArea的长宽rpx值
-    const compressSideLen = 500; // 上传到后台的图片的长边长度
+    const compressSideLen = this.jsData.canvasSideLen; // 上传到后台的图片的长边长度
     const ratio = previewSideLen / compressSideLen; // 缩放比
-    const {compressPhotoInfo} = this.data;
+    const {compressPhotoInfo} = this.jsData;
     for (let catBox of catBoxes) {
       let xOffset = 0, yOffset = 0;
       // 短边由于居中会产生offset
@@ -300,22 +281,14 @@ Page({
       }
       console.log(catBox, ratio, xOffset, yOffset, previewSideLen);
 
-      // PC端上传的照片，尺寸不一定是500
-      const realDrawWidthRate = compressSideLen / compressPhotoInfo.width,
-      realDrawHeightRate = compressSideLen / compressPhotoInfo.height;
+      // PC端压缩后的照片，尺寸不一定是500
+      const realDrawRate = compressSideLen / Math.max(compressPhotoInfo.width, compressPhotoInfo.height);
 
       catBoxList.push({
-        xmin: catBox.xmin,
-        xmax: catBox.xmax,
-        ymin: catBox.ymin,
-        ymax: catBox.ymax,
-        ratio: ratio,
-        xOffset: xOffset,
-        yOffset: yOffset,
-        x: catBox.xmin * 1.0 * ratio + xOffset,
-        y: catBox.ymin * 1.0 * ratio + yOffset,
-        width: (catBox.xmax - catBox.xmin) * 1.0 * ratio,
-        height: (catBox.ymax - catBox.ymin) * 1.0 * ratio
+        x: catBox.xmin * realDrawRate * ratio + xOffset,
+        y: catBox.ymin * realDrawRate * ratio + yOffset,
+        width: (catBox.xmax - catBox.xmin) * realDrawRate * ratio,
+        height: (catBox.ymax - catBox.ymin) * realDrawRate * ratio
       });
     }
     console.log("cat box list:", catBoxList);
@@ -440,20 +413,20 @@ Page({
     return photoURL;
   },
 
-  choosePhoto() {
-    const that = this;
-    wx.chooseImage({
+  async choosePhoto() {
+    var res = await wx.chooseMedia({
       count: 1,
-      sizeType: ['compressed'],
+      mediaType: ['image'],
+      sizeType: ["compressed"],
       sourceType: ['album'],
-      success(res) {
-        that.setData({
-          photoPath: res.tempFilePaths[0],
-          photoBase64: wx.getFileSystemManager().readFileSync(res.tempFilePaths[0], 'base64')
-        });
-        that.recognizePhoto();
-      }
+    })
+
+    const filePath = res.tempFiles[0].tempFilePath;
+    this.setData({
+      photoPath: filePath,
+      photoBase64: wx.getFileSystemManager().readFileSync(filePath, 'base64')
     });
+    this.recognizePhoto();
   },
 
   reset() {
@@ -467,14 +440,6 @@ Page({
       campusIndex: 0,
       colourIndex: 0
     });
-
-    // 在适合的场景显示插屏广告
-    // if (interstitialAd) {
-    //   console.log("展示广告")
-    //   interstitialAd.show().catch((err) => {
-    //     console.error(err)
-    //   })
-    // }
   },
 
   reverseCamera() {

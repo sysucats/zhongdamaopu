@@ -213,7 +213,7 @@ Page({
     this.loadData()
   },
   onReady() {
-    this.activateThread(0);
+    // this.activateThread(0);
   },
   
   clickLike: async function clickLike(e) {

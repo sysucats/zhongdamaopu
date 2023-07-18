@@ -8,7 +8,7 @@
 </wxs>
 
 <!-- 压缩图片用 -->
-<canvas style="width: 500px; height: 500px; border: 1px solid red; left: 100000px; position: fixed;" id="canvasForCompress" type="2d"></canvas>
+<canvas style="width: 1000px; height: 1000px; border: 1px solid red; left: 100000px; position: fixed;" id="canvasForCompress" type="2d"></canvas>
 
 <image class="bgImg" src="../public/images/recognize/background.svg"></image>
 
@@ -42,11 +42,6 @@
       <image class='btn' bindtap='reverseCamera' src='/pages/public/images/recognize/reverse.png'></image>
     </view>
   </view>
-
-  <!-- debug用 -->
-  <!-- <view>drawInfo: {{drawWidth}}, {{drawHeight}}, {{drawRate}}</view>
-  <view>compressPhotoInfo: {{compressPhotoInfo.width}} x {{compressPhotoInfo.height}}</view>
-  <view wx:for="{{catBoxList}}">xmin: {{item.xmin}}, xmax: {{item.xmax}}, ymin: {{item.ymin}}, ymax: {{item.ymax}}, ratio: {{item.ratio}}, xOffset: {{item.xOffset}}, yOffset: {{item.yOffset}}, </view> -->
 
   <!-- 识别结果 -->
   <view id="resultBox" wx:if="{{catList.length && showResultBox}}">
@@ -109,6 +104,6 @@
   </view>
 
   <!-- 底tab占位 -->
-  <!-- <view style="height: {{tabBarHeight}}px;"></view> -->
+  <view wx:if="{{showResultBox}}" style="height: {{tabBarHeight}}px;"></view>
 
 </view><!-- positionWrapper -->

@@ -74,7 +74,7 @@ async function ensureCos() {
         // 初始化时不会调用，只有调用 cos 方法（例如 cos.putObject）时才会进入
         
         var cosTemp = wx.getStorageSync('cosTemp');
-        if (!cosTemp || (new Date > new Date(cosTemp.Expiration))) {
+        if (!cosTemp || (new Date() > new Date(cosTemp.Expiration))) {
           console.log("开始获取 cosTemp");
           cosTemp = await cloud.invokeFunction('getTempCOS');
           wx.setStorageSync('cosTemp', cosTemp);

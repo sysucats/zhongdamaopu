@@ -1,5 +1,5 @@
 // 画图全局canvas，依赖版本库：2.24.7
-import {compressImage} from "./utils";
+import {compressImage, sleep} from "./utils";
 
 // 初始化canvas接口
 function initCanvas(canvasId) {
@@ -55,6 +55,7 @@ function drawImage(gCtx, gCanvas, imgSrc, dx, dy, weight, height) {
 
 // 获得temp文件路径
 async function getTempPath(gCtx, gCanvas, options) {
+  await sleep(200);  // 保证画图完成
   options.canvas = gCanvas;
   var tempFilePath = (await wx.canvasToTempFilePath(options)).tempFilePath;
   return await compressImage(tempFilePath, 80);
