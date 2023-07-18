@@ -61,8 +61,8 @@ Page({
     const allCatQf = {};
     // 所有照片数量
     const allPhotoQf = { verified: true, photo_id: /^((?!\.heic$).)*$/i };
-    // 所有留言数量
-    const allCommentQf = { deleted: _.not(_.eq(true)) };
+    // 所有便利贴数量
+    const allCommentQf = { deleted: _.neq(true), needVerify: _.neq(true) };
 
     let [numAllCats, numAllPhotos, numAllComments] = await Promise.all([
       db.collection('cat').where(allCatQf).count(),
@@ -81,13 +81,15 @@ Page({
 
     // 待处理照片
     const imProcessQf = { photo_compressed: _.in([undefined, '']), verified: true, photo_id: /^((?!\.heic$).)*$/i };
-    var [numChkPhotos, numFeedbacks, numImProcess] = await Promise.all([
-      db.collection('photo').where({ verified: false}).count(),
-      db.collection('feedback').where({ dealed: false}).count(),
+    var [numChkPhotos, numChkComments, numFeedbacks, numImProcess] = await Promise.all([
+      db.collection('photo').where({ verified: false }).count(),
+      db.collection('comment').where({ needVerify: true }).count(),
+      db.collection('feedback').where({ dealed: false }).count(),
       db.collection('photo').where(imProcessQf).count(),
     ]);
     this.setData({
       numChkPhotos: numChkPhotos.total,
+      numChkComments: numChkComments.total,
       numFeedbacks: numFeedbacks.total,
       numImProcess: numImProcess.total,
       showManager: true,

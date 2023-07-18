@@ -183,8 +183,8 @@
     <image class="icon" src='/pages/public/images/button/addPhoto.png'></image>
   </view>
 
-  <!-- 进入留言板 -->
-  <view id="comment-btn" bindtap="toComment" wx:if="{{canComment}}">
+  <!-- 进入便利贴墙 -->
+  <view id="comment-btn" bindtap="toComment">
     <text>{{text_cfg.detail_cat.label_comment_board}}</text>
     <image src="/pages/public/images/button/right_double_arrow.png" mode="aspectFit"></image>
   </view>

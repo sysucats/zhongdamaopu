@@ -3,7 +3,6 @@ import { text as text_cfg } from "../../../config";
 const share_text = text_cfg.app_name + ' - ' + text_cfg.info.share_tip;
 
 Page({
-
   /**
    * 页面的初始数据
    */
@@ -11,6 +10,12 @@ Page({
     text_cfg: text_cfg,
     github_link: "https://github.com/sysucats/zhongdamaopu",
     update_log: [{
+      version: "v1.12.5",
+      content: [
+        "修复PC端识猫问题",
+      ],
+      time: "2023/7/18"
+    }, {
       version: "v1.12.4",
       content: [
         "修复UI问题",

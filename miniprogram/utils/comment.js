@@ -5,7 +5,7 @@ function _commentCountKey(cat_id) {
   return `cat-comment-count-${cat_id}`;
 }
 
-// 获取猫的留言数量
+// 获取猫的便利贴数量
 async function getCatCommentCount(cat_id, options) {
   var cacheKey = _commentCountKey(cat_id);
   var cacheItem = getCacheItem(cacheKey, options);

@@ -5,7 +5,7 @@ cloud.init({env: cloud.DYNAMIC_CURRENT_ENV});
 const db = cloud.database();
 const _ = db.command;
 
-// 删除留言
+// 删除便利贴
 async function delete_comment(comment_id) {
   db.collection("comment").doc(comment_id).update({
     data: {

@@ -1,0 +1,23 @@
+/* pages/manage/checkComment/checkComment.wxss */
+@import "../checkPhotos/checkPhotos.wxss";
+
+.info {
+  width: 100%;
+}
+
+.user-info {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+
+.user-avatar {
+  width: 40rpx;
+  height: 40rpx;
+  margin: 0 10rpx 0 0;
+}
+
+.buttons {
+  justify-content: flex-end;
+}

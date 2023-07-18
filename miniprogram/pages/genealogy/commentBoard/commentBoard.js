@@ -1,5 +1,6 @@
 import {
-  formatDate
+  formatDate,
+  randomInt
 } from "../../../utils/utils";
 import config from "../../../config";
 import {
@@ -18,6 +19,9 @@ import {
 import {
   cloud
 } from "../../../utils/cloudAccess";
+import {
+  requestNotice,
+} from "../../../utils/msg";
 import api from "../../../utils/cloudApi";
 
 var cat_id;
@@ -39,6 +43,9 @@ Page({
     text_cfg: config.text,
     is_manager: false,
     is_owner: false,
+
+    paper_colors: ['white', 'yellow', 'green', 'pink'],
+    paper_color_select: 0,
   },
 
   /**
@@ -90,8 +97,8 @@ Page({
   /**
    * 生命周期函数--监听页面卸载
    */
-  onUnload: function () {
-
+  onUnload: async function () {
+    await this.ifSendNotifyVeriftMsg()
   },
 
   /**
@@ -116,7 +123,7 @@ Page({
     const cat_name = cat.name;
     const cat_avatar = cat.avatar.photo_compressed || cat.avatar.photo_id;
     return {
-      title: `${cat_name}的留言板 - ${config.text.app_name}`,
+      title: `${cat_name}的便利贴墙 - ${config.text.app_name}`,
       imageUrl: cat_avatar,
     }
   },
@@ -179,8 +186,8 @@ Page({
     await toSetUserInfo();
   },
 
-  // 发送留言
-  sendComment() {
+  // 发送便利贴
+  async sendComment() {
     // 发送中
     if (sendLock) {
       console.log("locking...");
@@ -189,12 +196,14 @@ Page({
 
     const content = this.data.comment_input;
 
-    // 空的就不用留言了
-    if (!content || content.length == 1) {
+    // 空的就不用发了
+    if (!content || content.length == 0) {
       return false;
     }
 
     sendLock = true;
+    // 订阅审核通知
+    await requestNotice('verify');
     wx.showLoading({
       title: '发送中...',
     });
@@ -206,22 +215,25 @@ Page({
   async doSendComment() {
     const content = this.data.comment_input;
 
-    // 判断是否可以留言
+    // 判断是否可以发
     const user = this.data.user;
     if (user.cantComment) {
       wx.showModal({
-        title: "无法留言",
+        title: "发送失败",
         content: config.text.comment_board.ban_tip,
         showCancel: false,
       })
       return false;
     }
 
-    // 插入留言
+    // 插入便利贴
+    const {paper_colors, paper_color_select} = this.data;
     var item = {
       content: content,
       user_openid: user.openid,
       cat_id: cat_id,
+      paper_color: paper_colors[paper_color_select],
+      needVerify: true,
     };
 
     const checkRes = await api.contentSafeCheck(content, user.userInfo.nickName);
@@ -249,7 +261,7 @@ Page({
       })).result;
 
       console.log("curdOp(add-Comment) result): ", res, user);
-      // 插入最新留言 + 清空输入框
+      // 插入最新便利贴 + 清空输入框
       console.log(item);
       item.userInfo = user.userInfo;
       item.datetime = formatDate(new Date(), "yyyy-MM-dd hh:mm:ss")
@@ -268,18 +280,18 @@ Page({
 
       // 显示success toast
       wx.showToast({
-        title: '留言成功~',
+        title: '张贴成功~',
       });
     } catch {
       wx.showModal({
-        title: "留言失败",
+        title: "张贴失败",
         showCancel: false,
       })
       console.error(res);
     }
   },
 
-  // 加载更多留言
+  // 加载更多便利贴
   // TODO(zing): 支持排序方式修改
   async loadMoreComment() {
     // 常用的对象
@@ -299,12 +311,16 @@ Page({
     await fillUserInfo(res.data, "user_openid", "userInfo");
     for (var item of res.data) {
       item.datetime = formatDate(new Date(item.create_date), "yyyy-MM-dd hh:mm:ss")
+      // 便签旋转
+      item.rotate = randomInt(-5, 5);
+      // 贴纸位置
+      item.tape_pos_left = randomInt(20, 520);
+      item.tape_rotate = randomInt(-50, +50);
       comments.push(item);
     }
 
-    this.setData({
-      comments: comments
-    });
+    console.log(comments);
+    this.setData({comments});
 
   },
 
@@ -316,7 +332,7 @@ Page({
     // 弹窗提示一下
     var res = await wx.showModal({
       title: '提示',
-      content: `确定删除\"${username}\"的留言？`
+      content: `确定删除\"${username}\"的便利贴？`
     });
 
     if (!res.confirm) {
@@ -337,5 +353,27 @@ Page({
     this.setData({
       comments: comments,
     })
+  },
+
+  async ifSendNotifyVeriftMsg() {
+    const db = await cloud.databaseAsync();
+    const subMsgSetting = await db.collection('setting').doc('subscribeMsg').get();
+    const triggerNum = subMsgSetting.data.verifyPhoto.triggerNum;  //几条未审核才触发
+    // console.log("triggerN",triggerNum);
+    var numUnchkPhotos = (await db.collection('comment').where({
+      needVerify: true
+    }).count()).total;
+
+    if (numUnchkPhotos >= triggerNum) {
+      await sendNotifyVertifyNotice(numUnchkPhotos);
+      console.log("toSendNVMsg");
+    }
+  },
+
+  selectPaperColor(e) {
+    const {index} = e.currentTarget.dataset;
+    this.setData({
+      paper_color_select: index
+    });
   }
 })

@@ -5,7 +5,7 @@
 
 module.exports = {
   // 版本号
-  app_version: "v1.12.4",
+  app_version: "v1.12.5",
   // laf后台服务地址
   laf_url: 'https://fxkv6h.laf.run',
   // laf后台服务地址（微信开发工具中），一般和上面laf_url一致就好
@@ -66,7 +66,7 @@ module.exports = {
       bottom_text_loading: "LOADING...",
       bottom_text_end: "- THE END -",
       popularity_tip: "猫猫人气值",
-      comment_tip: "猫猫留言数",
+      comment_tip: "猫猫便利贴数",
       button_feedback: "反馈猫猫信息",
       label_nickname: "昵称",
       label_location: "常驻地",
@@ -77,7 +77,7 @@ module.exports = {
       label_character: "性格及特点",
       label_tutorial: "撸猫指南",
       label_tutorial_empty: "暂时还没有",
-      label_comment_board: "留言板",
+      label_comment_board: "便利贴墙",
       sterilized_true: "已绝育",
       sterilized_false: "待绝育",
     },
@@ -91,11 +91,11 @@ module.exports = {
       submit_button: "提交反馈",
       submit_tip: "*反馈内容仅后台工作人员可见",
     },
-    // 提交留言页，pages/genealogy/commentBoard/commentBoard
+    // 提交便利贴页，pages/genealogy/commentBoard/commentBoard
     comment_board: {
-      ban_tip: "如有误封请在\"关于-信息反馈\"中留言~",
-      auth_tip: "设置头像昵称后留言~",
-      comment_tip: "给猫咪留个言吧~"
+      ban_tip: "如有误封请在\"关于-信息反馈\"中反馈~",
+      auth_tip: "请先设置头像昵称~",
+      comment_tip: "给猫咪留张便利贴吧~"
     },
     // 添加照片，pages/genealogy/addPhoto/addPhoto
     add_photo: {

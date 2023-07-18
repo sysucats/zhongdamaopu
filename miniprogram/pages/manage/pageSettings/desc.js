@@ -20,7 +20,7 @@ const funcTypes = [{
   name: "上传照片"
 }, {
   val: FuncTypes.comment,
-  name: "留言板"
+  name: "便利贴墙"
 }, {
   val: FuncTypes.reward,
   name: "打赏投喂"

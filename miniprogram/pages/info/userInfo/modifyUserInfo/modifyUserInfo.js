@@ -102,6 +102,12 @@ Page({
   },
 
   async checkNickName(name) {
+    if (!name) {
+      wx.showToast({
+        title: '请输入昵称',
+      });
+      return false;
+    }
     if (name.length > 30) {
       wx.showToast({
         title: '昵称太长啦...20字',

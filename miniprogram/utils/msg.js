@@ -136,7 +136,7 @@ async function sendReplyNotice(openid, fb_id) {
   return res.result;
 }
 
-// 发送提醒审核消息
+// 发送提醒审核照片消息
 async function sendNotifyVertifyNotice(numUnchkPhotos) {
   const db = await cloud.databaseAsync();
   const _ = db.command;
@@ -245,6 +245,95 @@ async function sendNotifyChkFeeedback() {
   }
 }
 
+
+// 发送审核便利贴留言消息
+function sendVerifyCommentNotice(notice_list) {
+  const cfg = msgConfig.verify;  // 和照片审核通用
+  const openids = Object.keys(notice_list);
+  if (!openids.length) {
+    return false;
+  }
+  // 获取需要发送的list
+  for (const openid of openids) {
+    const content = '本次共收录' + notice_list[openid].accepted + '张便利贴' + (notice_list[openid].deleted ? ('，有' + notice_list[openid].deleted + '张未被收录。') : '。');
+    const note = notice_list[openid].deleted ? '未被收录可能因为与猫猫无关。' : '感谢你的支持！';
+
+    const data = {
+      [cfg.title]: {
+        value: '你的便利贴审核完成！'
+      },
+      [cfg.content]: {
+        value: content
+      },
+      [cfg.note]: {
+        value: note
+      },
+    }
+
+    api.sendMsgV2({
+      touser: openid,
+      data: data,
+      templateId: cfg.ID,
+      page: 'pages/genealogy/genealogy',
+    });
+  }
+}
+
+
+
+// 发送提醒审核便利贴留言消息
+async function sendNotifyVertifyCommentNotice(numUnchkComment) {
+  const db = await cloud.databaseAsync();
+  const _ = db.command;
+
+  const subMsgSettings = await db.collection('setting').doc('subscribeMsg').get();
+
+  // 借用一下照片的设置
+  const maxReceiverNum = subMsgSettings.data.verifyPhoto.receiverNum; // 最多推送给几位管理员
+  var receiverCounter = 0;
+  const verifyPhotoLevel = 2; // 所需最小管理员等级
+
+  var managerList = await db.collection('user').where({
+    manager: _.gte(verifyPhotoLevel)
+  }).get();
+  var resortedML = await arrayResort(managerList.data);
+  // console.log('resortML:', resortedML);
+
+  var uploadTimeList = await db.collection('comment').where({
+    needVerify: true
+  }).orderBy('create_date', 'asc').get(); //最早一条未审核照片的提交时间
+  // console.log("earliestUnverifyTime:", uploadTimeList);
+  var earliestTime = formatDate(uploadTimeList.data[0].create_date, 'MM月dd日 hh:mm:ss');
+  const cfg = msgConfig.notifyVerify;
+  for (var manager of resortedML) {
+    var data = {
+      [cfg.title]: {
+        value: '又有几张新便利贴啦，有空看看吧'
+      },
+      [cfg.number]: {
+        value: numUnchkComment
+      },
+      [cfg.time]: {
+        value: earliestTime
+      },
+    }
+
+    var res = await api.sendMsgV2({
+      touser: manager['openid'],
+      data: data,
+      templateId: cfg.ID,
+      page: 'pages/manage/checkPhotos/checkPhotos',
+    });
+
+    if (res.result.errCode === 0) {
+      receiverCounter += 1;
+      if (receiverCounter >= maxReceiverNum) {
+        break;
+      }
+    }
+  }
+}
+
 module.exports = {
   requestNotice,
   sendVerifyNotice,
@@ -252,4 +341,6 @@ module.exports = {
   sendNotifyVertifyNotice,
   sendNotifyChkFeeedback,
   getMsgTplId,
+  sendVerifyCommentNotice,
+  sendNotifyVertifyCommentNotice,
 }

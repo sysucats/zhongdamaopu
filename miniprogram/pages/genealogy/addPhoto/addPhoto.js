@@ -74,8 +74,8 @@ Page({
     await getPageUserInfo(this);
   },
 
-  onUnload: function (options) {
-    this.ifSendNotifyVeriftMsg()
+  onUnload: async function (options) {
+    await this.ifSendNotifyVeriftMsg()
   },
 
   /**
@@ -205,7 +205,6 @@ Page({
       await sendNotifyVertifyNotice(numUnchkPhotos);
       console.log("toSendNVMsg");
     }
-
   },
 
   async uploadImg(photo) {

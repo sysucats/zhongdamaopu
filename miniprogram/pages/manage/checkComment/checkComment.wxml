@@ -1,0 +1,38 @@
+<!--pages/manage/checkComment/checkComment.wxml-->
+
+<block wx:if="{{auth}}">
+  <view id='total-count'><text>先逐张标记处理方式，再点击“批量审核”。\n点击名字跳转猫猫详情。\n每次展示前20张，注意流量消耗哈。</text></view>
+  <view class="campus-list">
+    <view class="campus {{index == active_campus ? 'active': ''}}" bindtap="bindClickCampus" data-key="{{index}}" wx:for="{{campus_list}}" wx:key="key">{{index}}（{{item.length}}）</view>
+  </view>
+  <view class="tip" wx:if="{{!campus_list || campus_list.length == 0}}">没有待审核的照片啦~</view>
+  <view class="tip" wx:elif="{{!campus_list[active_campus]}}">请在上方选择一个校区</view>
+  <block wx:for="{{campus_list[active_campus]}}" wx:key="_id" wx:if="{{index < 20}}">
+    <view class='verify-box'>
+      <view class="info">
+        <view class='label cat'><text bindtap="toCatDetail" data-cat_id="{{item.cat._id}}">{{item.cat.name}}（{{item.cat.campus}}）</text></view>
+        <view class='label user user-info'>
+          <text>上传者：</text>
+          <image mode='aspectFill' src='{{item.userInfo.avatarUrl}}' bindtap='openBigPhoto' data-pid='{{item.userInfo.avatarUrl}}' class="user-avatar"></image>
+          <text>{{item.userInfo.nickName || '-'}}</text>
+        </view>
+        <view class='label user content'>内容：{{item.content}}</view>
+        <view class='label user shotTime'>时间：{{item.datetime}}</view>
+        <view class="buttons">
+          <view class="button delete {{item.mark == 'delete' ? 'marked' : ''}}" bindtap='bindMark' data-index='{{index}}' data-type="delete">删除</view>
+          <view class="button pass {{item.mark == 'pass' ? 'marked' : ''}}" bindtap='bindMark' data-index='{{index}}' data-type="pass">通过</view>
+        </view>
+      </view>
+    </view>
+  </block>
+
+  <view class='bottom-bar'>
+    <button class='' bindtap="requestSubscribeMessage">订阅通知</button>
+    <button class='primary' bindtap="bindCheckMulti">批量审核</button>
+  </view>
+
+</block>
+<view wx:else class='unAuth'>
+  <text>{{tipText}}</text>
+  <button bindtap='goBack' wx:if='{{tipBtn}}'>打扰了</button>
+</view>
