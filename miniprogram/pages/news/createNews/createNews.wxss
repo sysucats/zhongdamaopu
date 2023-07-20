@@ -83,7 +83,7 @@ button {
 }
 
 .album-block {
-  width: 750rpx;
+  width: 100%;
   display: flex;
   flex-wrap: wrap;
   background-color: var(--color-gray-light);
