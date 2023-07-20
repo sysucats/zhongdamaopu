@@ -1,5 +1,6 @@
-import { checkAuth, fillUserInfo } from "../../../../utils/user";
+import { checkAuth } from "../../../../utils/user";
 import { cloud } from "../../../../utils/cloudAccess";
+import { levelOrderMap } from "../../../../utils/badge";
 import api from "../../../../utils/cloudApi";
 import { generateUUID } from "../../../../utils/utils";
 
@@ -9,7 +10,7 @@ Page({
    * 页面的初始数据
    */
   data: {
-    levelDefs: ['A', 'B', 'C'],
+    levelDefs: Object.keys(levelOrderMap),
     badgeDef: {},
   },
 

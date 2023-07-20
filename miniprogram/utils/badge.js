@@ -4,9 +4,10 @@ import {
 
 // 等级序
 const levelOrderMap = {
-  'A': 0,
-  'B': 1,
-  'C': 2,
+  'S': 0,
+  'A': 1,
+  'B': 2,
+  'C': 3,
 }
 
 async function loadBadgeDefMap() {
@@ -101,6 +102,7 @@ async function sortBadgeDef(badgeDefs) {
 }
 
 export {
+  levelOrderMap,
   loadBadgeDefMap,
   loadUserBadge,
   loadCatBadge,

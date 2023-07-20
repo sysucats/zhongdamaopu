@@ -222,6 +222,11 @@ Page({
       this.runAni();
       await sleep(1000);
       this.showBadgeModal('恭喜获得新徽章！', '快去送给心动猫咪吧~', this.jsData.badgeDefMap[badges[0].badgeDef])
+    } else {
+      wx.showToast({
+        title: '抽失败了..',
+        icon: 'none'
+      });
     }
 
     await this.reloadUserBadge();

@@ -26,6 +26,18 @@ function randomPick(arr: any[]): any {
 }
 
 
+function _getProbs(probs: Object | undefined, badgeLevelDict: Object) {
+  if (!probs) {
+    probs = { S: 1, A: 9, B: 30, C: 60 };
+  }
+  let res = {};
+  for (const key in badgeLevelDict) {
+    res[key] = probs[key];
+  }
+  return res;
+}
+
+
 // 抽取badge
 export default async function (ctx: FunctionContext) {
   // body, query 为请求参数, user 是授权对象
@@ -33,7 +45,7 @@ export default async function (ctx: FunctionContext) {
 
   if (body && body.deploy_test === true) {
     // 进行部署检查
-    return "v1.0";
+    return "v1.1";
   }
   // 抽取的个数
   const count: number = ctx.body.count;
@@ -62,7 +74,13 @@ export default async function (ctx: FunctionContext) {
   }
 
   // 等级随机选取的概率
-  const levelProbs = { A: 10, B: 30, C: 60 };
+  const levelProbs = _getProbs(body.probs, badgeLevelDict);
+  console.log(levelProbs);
+
+  if (!Object.keys(levelProbs).length) {
+    console.log(body.probs, badgeLevelDict);
+    return { ok: false, msg: "no badge or probs" };
+  }
 
   // 开始随机
   let badges = [];
