@@ -12,6 +12,8 @@ Page({
   data: {
     levelDefs: Object.keys(levelOrderMap),
     badgeDef: {},
+    tipText: '正在鉴权...',
+    tipBtn: false,
   },
 
   /**

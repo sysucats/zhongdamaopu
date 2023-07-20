@@ -1,0 +1,29 @@
+<block wx:if="{{auth}}">
+  <view class="top-margin-100"></view>
+
+  <view class="label-small">可抽取徽章等级</view>
+  <view class="label-tip">tip: 只能是 [{{badgeLevels}}] 的子集，输入其他字符无效</view>
+  <input type="text" class="nickname-input" placeholder="请输入徽章等级" value="{{input.levels}}" bindinput="onChangeText" data-field="levels"/>
+
+  <view class="label-small">兑换个数</view>
+  <view class="label-tip">tip: 单个兑换码可以兑换多少枚徽章</view>
+  <input type="number" class="nickname-input" placeholder="请输入描述" value="{{input.desc}}" bindinput="onChangeText" data-field="badgeCount"/>
+
+  <view class="label-small">生成码个数</view>
+  <view class="label-tip">tip: 生成多少个兑换码</view>
+  <input type="number" class="nickname-input" placeholder="请输入标语" value="{{input.rankDesc}}" bindinput="onChangeText" data-field="codeCount"/>
+
+  <view class="label-small">生成原因</view>
+  <view class="label-tip">tip: 用于后期管理，例如xx义卖活动</view>
+  <input type="text" class="nickname-input" placeholder="请输入生成原因" value="{{input.rankDesc}}" bindinput="onChangeText" data-field="genReason"/>
+
+  <view class="label-small">有效期</view>
+  <view class="label-tip">tip: 多少天后兑换码失效，单位为天，不填则永久有效</view>
+  <input type="number" class="nickname-input" placeholder="请输入有效期" value="{{input.validDays}}" bindinput="onChangeText" data-field="validDays"/>
+
+  <button class="primary" bindtap="clickSubmit">提交</button>
+</block>
+<view wx:else class="unAuth">
+  <text>{{tipText}}</text>
+  <button bindtap='goBack' wx:if="{{tipBtn}}">打扰了</button>
+</view>

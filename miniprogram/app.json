@@ -38,7 +38,9 @@
     "pages/manage/badgeDef/addBadgeDef/addBadgeDef",
     "pages/info/badge/badge",
     "pages/genealogy/detailCat/badgeDetail/badgeDetail",
-    "pages/manage/checkComment/checkComment"
+    "pages/manage/checkComment/checkComment",
+    "pages/manage/badgeCode/badgeCode",
+    "pages/manage/badgeCode/addBadgeCode/addBadgeCode"
   ],
   "tabBar": {
     "custom": true,
