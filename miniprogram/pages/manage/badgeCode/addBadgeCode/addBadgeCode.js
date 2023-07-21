@@ -11,7 +11,7 @@ Page({
    */
   data: {
     input: {},
-    badgeLevels: Object.keys(levelOrderMap),
+    allBadgeLevels: Object.keys(levelOrderMap),
     tipText: '正在鉴权...',
     tipBtn: false,
   },
@@ -21,21 +21,41 @@ Page({
    */
   async onLoad(event) {
     console.log(event);
-    await checkAuth(this, 2);
+    await checkAuth(this, 3);
+  },
+
+  _filterString(str) {
+    const allowedChars = this.data.allBadgeLevels;
+    const filteredChars = [];
+  
+    for (let i = 0; i < str.length; i++) {
+      const char = str[i];
+      if (allowedChars.includes(char)) {
+        if (!filteredChars.includes(char)) {
+          filteredChars.push(char);
+        }
+      }
+    }
+  
+    return filteredChars.join("");
   },
 
   onChangeText(e) {
-    const {field} = e.currentTarget.dataset;
+    const {field, dtype} = e.currentTarget.dataset;
     let value = e.detail.value;
 
     // 对徽章等级字段进行过滤
     if (field === 'levels') {
-      value = value.split("").filter(chr => this.data.badgeLevels.includes(chr)).join("");
+      value = this._filterString(value);
     }
 
     // 数字限制
-    if (['badgeCount', 'codeCount', 'validDays'].includes(field)) {
+    if (['badgeCount', 'genCount', 'validDays'].includes(field)) {
       value = value.replace(/[^\d\-+]/g, '');
+    }
+
+    if (dtype === "number") {
+      value = value.length ? parseInt(value): "";
     }
 
     this.setData({
@@ -44,10 +64,10 @@ Page({
     return value;
   },
 
-  clickSubmit() {
+  async clickSubmit() {
     console.log(this.data.input);
     // 有效性检查放到后端来检查
-    const res = {ok: true};
+    const res = (await api.genBadgeCode(this.data.input)).result;
 
     if (res.ok) {
       wx.showModal({

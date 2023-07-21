@@ -1,1 +1,2 @@
 /* pages/manage/badgeCode/badgeCode.wxss */
+@import "../badgeDef/badgeDef.wxss";

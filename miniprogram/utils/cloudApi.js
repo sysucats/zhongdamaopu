@@ -122,6 +122,27 @@ async function giveBadge(options) {
   });
 }
 
+async function genBadgeCode(options) {
+  return await cloud.callFunction({
+    name: "genBadgeCode",
+    data: options
+  });
+}
+
+async function loadBadgeCode(options) {
+  return await cloud.callFunction({
+    name: "curdOp",
+    data: {
+      operation: "read",
+      collection: "badge_code",
+      where: options.where,
+      skip: options.skip,
+      limit: options.limit,
+      orderBy: options.orderBy,
+    }
+  });
+}
+
 module.exports = {
   curdOp,
   userOp,
@@ -134,5 +155,7 @@ module.exports = {
   updateCat,
   getDate,
   getBadge,
-  giveBadge
+  giveBadge,
+  genBadgeCode,
+  loadBadgeCode,
 };
