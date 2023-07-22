@@ -196,6 +196,7 @@ module.exports = {
     "badge": default_init_data,
     "badge_def": default_init_data,
     "badge_rank": default_init_data,
+    "badge_code": default_init_data,
     "cat": default_init_data,
     "comment": default_init_data,
     "feedback": default_init_data,
