@@ -5,6 +5,13 @@
     update: false
     remove: false
     add: false
+- collectionName: badge_code
+  rules:
+    read: false
+    count: false
+    update: false
+    remove: false
+    add: false
 - collectionName: badge_def
   rules:
     read: openid

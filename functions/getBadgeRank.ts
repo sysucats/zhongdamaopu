@@ -68,7 +68,7 @@ export default async function (ctx: FunctionContext) {  // body, query 为请求
 
   if (body && body.deploy_test === true) {
     // 进行部署检查
-    return "v1.0";
+    return "v1.1";
   }
 
   // 返回多个排行榜，固定的有：数量榜、总分榜，动态的有：xx徽章的数量榜

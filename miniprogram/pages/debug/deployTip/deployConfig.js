@@ -170,7 +170,7 @@ module.exports = {
     countPhoto: "v1.0",
     curdOp: "v1.3",
     deleteFiles: "v1.0",
-    deployTest: "v1.2",
+    deployTest: "v1.1",
     getAccessToken: "v1.0",
     getAllSci: "v1.0",
     getAppSecret: "v1.1",
