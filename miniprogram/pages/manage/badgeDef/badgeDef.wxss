@@ -44,6 +44,12 @@ page {
   line-height: 30rpx;
 }
 
+.buttons {
+  width: 100%;
+  display: flex;
+  justify-content: space-evenly;
+}
+
 button.primary {
   margin: 20rpx auto 30rpx auto;
   background-color: var(--color-primary);

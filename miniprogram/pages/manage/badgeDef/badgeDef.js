@@ -57,5 +57,12 @@ Page({
     wx.navigateTo({
       url: `/pages/manage/badgeDef/addBadgeDef/addBadgeDef?id=${id}`,
     });
-  }
+  },
+
+  // 徽章兑换码
+  onBadgeCode() {
+    wx.navigateTo({
+      url: '/pages/manage/badgeCode/badgeCode',
+    });
+  },
 })

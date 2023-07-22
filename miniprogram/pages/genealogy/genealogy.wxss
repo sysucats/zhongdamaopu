@@ -407,7 +407,6 @@ scroll-view {
 
 .searchPlaceholderStyle{
   display: flex;
-
 }
 
 /* 寻找领养按钮 */

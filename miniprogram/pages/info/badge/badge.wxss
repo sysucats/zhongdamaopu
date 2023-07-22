@@ -147,3 +147,36 @@ page {
   font-weight: normal;
   color: #9BA8A5;
 }
+
+.code-block {
+  width: 750rpx;
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  margin: 10rpx 0;
+}
+
+.input-code, .code-btn {
+  background-color: #ffde54;
+  padding: 10rpx 5rpx;
+  border-radius: 10rpx;
+  font-size: 24rpx;
+  height: 40rpx;
+  line-height: 40rpx;
+  text-align: center;
+}
+
+.input-code {
+  width: 500rpx;
+  color: var(--color-black-light);
+}
+
+.code-btn {
+  font-size: 26rpx;
+  padding: 10rpx 30rpx;
+  color: #726735;
+}
+
+.code-btn.hover {
+  background-color: #c9a824;
+}

@@ -37,7 +37,12 @@
     </view>
   </view>
 
-  <view class="tip">抽取概率：A 级 - 10%，B 级 - 30%，C 级 - 60%</view>
+  <view class="code-block">
+    <input class='input-code' placeholder='输入兑换码' value='{{inputBadgeCode}}' maxlength='100' bindinput="bindInputCode"></input>
+    <view class="code-btn" hover-class="hover" bindtap="useBadgeCode">兑换</view>
+  </view>
+
+  <view class="tip">抽取概率：S级 1%，A级 9%，B级 30%，C级 60%</view>
 
   <view class="badge-list">
     <view class="badge-list-title">徽章口袋 <text class="sub-title">{{userBadges.length ? '快去送给心动猫猫吧' : '暂无徽章，点击上方按钮获取吧~'}}</text></view>

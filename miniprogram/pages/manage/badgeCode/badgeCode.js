@@ -27,6 +27,7 @@ Page({
   },
 
   async onShow() {
+    this.jsData.codes = [];
     await this.loadMoreCode();
   },
 
@@ -46,6 +47,7 @@ Page({
     const newCodes = (await api.loadBadgeCode({
       skip: codes.length,
       orderBy: [['genTime', 'desc']],
+      limit: 30,
     })).result.data;
 
     this.jsData.codes = codes.concat(newCodes);
@@ -87,13 +89,13 @@ Page({
     const { groups } = this.data;
     const { genCount } = groups[taskid][0];
     // 保证这一组都加载到了
-    while (groups[taskid].length < genCount) {
-      this.loadMoreCode();
+    while (this.data.groups[taskid].length < genCount) {
+      await this.loadMoreCode();
     }
 
-    let codes = groups[taskid];
+    let codes = this.data.groups[taskid];
     
-    if (range === "notused") {
+    if (range === "useful") {
       codes = codes.filter(val => val.isValid && val.useTime === null);
     }
 
@@ -128,7 +130,5 @@ Page({
 
     this.jsData.codes[rawIndex].isValid = !isValid;
     this._buildGroups();
-
-    console.log(_id);
   }
 })

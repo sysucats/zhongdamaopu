@@ -90,7 +90,8 @@ Page({
         });
       })
       pictureAd.onClose(() => {
-        this.getBadge('watchPictureAD').then();
+        // 抽取一次
+        this.getBadge({count: 1, reason: 'watchPictureAD'}).then();
       })
     }
 
@@ -113,10 +114,8 @@ Page({
         if (!res.isEnded) {
           return;
         }
-        this.jsData.waitingBadge.push({
-          reason: 'watchVideoAD'
-        });
-        this.getBadge('watchVideoAD').then();
+        // 抽取两次
+        this.getBadge({count: 2, reason: 'watchVideoAD'}).then();
       })
     }
 
@@ -130,7 +129,7 @@ Page({
     if (!this.jsData.badgeDefMap) {
       this.jsData.badgeDefMap = await loadBadgeDefMap();
     }
-    
+
     const db = await cloud.databaseAsync();
     const lastesBadges = (await db.collection("badge").where({
       _openid: this.data.user.openid,
@@ -198,40 +197,53 @@ Page({
       reason
     } = e.currentTarget.dataset;
 
-    await this.getBadge(reason);
+    await this.getBadge({count: 1, reason});
   },
 
   // 处理获取徽章的请求与 UI
-  async getBadge(reason) {
+  async getBadge(options) {
     if (this.jsData.badgeGetting) {
       return;
     }
     this.jsData.badgeGetting = true;
 
-    const badges = (await api.getBadge({
-      count: 1,
-      reason
-    })).result.badges;
-    
+    const res = (await api.getBadge({
+      count: options.count,  // 如果有code，会按code的个数来抽取
+      reason: options.reason,
+      badgeCode: options.badgeCode
+    })).result;
+
+    if (!res.ok) {
+      wx.showModal({
+        title: '抽取失败',
+        content: '错误信息：' + res.msg,
+        showCancel: false,
+      });
+      this.jsData.badgeGetting = false;
+      return;
+    }
+
     if (!this.jsData.badgeDefMap) {
       this.jsData.badgeDefMap = await loadBadgeDefMap();
     }
 
-    if (badges) {
-      wx.vibrateLong();
-      this.runAni();
-      await sleep(1000);
-      this.showBadgeModal('恭喜获得新徽章！', '快去送给心动猫咪吧~', this.jsData.badgeDefMap[badges[0].badgeDef])
-    } else {
+    const badges = res.badges;
+
+    if (!badges) {
       wx.showToast({
         title: '抽失败了..',
         icon: 'none'
       });
     }
 
+    for (const b of badges) {
+      this.jsData.waitingBadge.push(b);
+    }
+    await this.startGetBadgeAni();
     await this.reloadUserBadge();
-    
+
     this.jsData.badgeGetting = false;
+    return badges;
   },
 
   async watchADForGetBadge(e) {
@@ -311,14 +323,53 @@ Page({
     this.showBadgeModal("徽章详情", "获得的徽章请送给心动猫咪哦~", badge);
   },
 
-  onModalClose(e) {
-    if (this.jsData.waitingBadge.length) {
-      const {reason} = this.jsData.waitingBadge.shift();
-      console.log("waiting badge");
-      this.getBadge(reason).then();
-    }
+  async onModalClose(e) {
+    // 关闭弹窗后，可能还有没展示的
+    await this.startGetBadgeAni();
   },
 
+  // 开始展示抽取徽章的动画，实际上已经抽取完毕
+  async startGetBadgeAni() {
+    let waittingCount = this.jsData.waitingBadge.length;
+    if (!waittingCount) {
+      return;
+    }
+    
+    const badge = this.jsData.waitingBadge.shift();
+    waittingCount --;
+
+    wx.vibrateLong();
+    this.runAni();
+    await sleep(1000);
+    let bottomTips = waittingCount ? `剩余抽取次数${waittingCount}次` : "快去送给心动猫咪吧~";
+    this.showBadgeModal('恭喜获得新徽章', bottomTips, this.jsData.badgeDefMap[badge.badgeDef]);
+  },
+
+  bindInputCode(e) {
+    var { value } = e.detail;
+    this.setData({
+      inputBadgeCode: value,
+    });
+    return value;
+  },
+
+  async useBadgeCode() {
+    const { inputBadgeCode } = this.data;
+    if (!inputBadgeCode || this.jsData.usingCode) {
+      return;
+    }
+    this.jsData.usingCode = true;
+    console.log("using code: ", inputBadgeCode);
+    const badges = await this.getBadge({badgeCode: inputBadgeCode});
+
+    // 抽到了再清空
+    if (badges) {
+      this.setData({
+        inputBadgeCode: "",
+      });
+    }
+    this.jsData.usingCode = false;
+  },
   
   /**
    * 用户点击右上角分享

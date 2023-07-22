@@ -26,12 +26,13 @@ function randomPick(arr: any[]): any {
 }
 
 
-function _getProbs(probs: Object | undefined, badgeLevelDict: Object) {
-  if (!probs) {
-    probs = { S: 1, A: 9, B: 30, C: 60 };
-  }
+function _getProbs(levels: Array<string> | undefined, badgeLevelDict: Object) {
+  const probs = { S: 1, A: 9, B: 30, C: 60 };
   let res = {};
-  for (const key in badgeLevelDict) {
+  for (const key of levels) {
+    if (badgeLevelDict[key] === undefined) {
+      continue;
+    }
     res[key] = probs[key];
   }
   return res;
@@ -45,16 +46,35 @@ export default async function (ctx: FunctionContext) {
 
   if (body && body.deploy_test === true) {
     // 进行部署检查
-    return "v1.1";
+    return "v1.2";
   }
   // 抽取的个数
-  const count: number = ctx.body.count;
+  let count: number = ctx.body.count;
   // 抽取的原因
-  const reason: number = ctx.body.reason;
+  let reason: string = ctx.body.reason;
+  // 使用的兑换码
+  const badgeCode: number = ctx.body.badgeCode;
+  // 兑换的范围
+  let badgeLevel: Array<string> = ['S', 'A', 'B', 'C'];
   // 当前用户
-  const openid: string = ctx.user.openid;
+  const openid: string = ctx.user?.openid;
 
   const db = cloud.database();
+
+  // 如果有使用兑换码，那按照它指定的数量来获取
+  if (badgeCode != undefined) {
+    const codeItems: any = (await db.collection('badge_code').where({ code: badgeCode }).limit(1).get()).data;
+    if (codeItems.length === 0) {
+      return { ok: false, msg: "兑换码无效" };
+    }
+    const codeItem = codeItems[0];
+    if (!codeItem.isValid || codeItem.useTime != null || (new Date()).getTime() > (new Date(codeItem.validTime)).getTime()) {
+      return { ok: false, msg: "兑换码无效" };
+    }
+    count = codeItem.badgeCount;
+    badgeLevel = codeItem.badgeLevel.split("");
+    reason = `code-${badgeCode}`;
+  }
 
   // 获取徽章配置
   const badgeDefCount = (await db.collection('badge_def').count()).total;
@@ -74,11 +94,11 @@ export default async function (ctx: FunctionContext) {
   }
 
   // 等级随机选取的概率
-  const levelProbs = _getProbs(body.probs, badgeLevelDict);
+  const levelProbs = _getProbs(badgeLevel, badgeLevelDict);
   console.log(levelProbs);
 
   if (!Object.keys(levelProbs).length) {
-    console.log(body.probs, badgeLevelDict);
+    console.log(badgeLevel, badgeLevelDict);
     return { ok: false, msg: "no badge or probs" };
   }
 
@@ -95,10 +115,22 @@ export default async function (ctx: FunctionContext) {
       reason: reason,
     }
     // 写入数据库
-    await db.collection('badge').add(badge);
+    if (openid) {
+      await db.collection('badge').add(badge);
+    }
 
     badges.push(badge);
   }
+
+  // 修改兑换码
+  if (badgeCode != undefined) {
+    await db.collection('badge_code').where({ code: badgeCode }).update({
+      useTime: new Date(),
+      useOpenid: openid,
+    });
+  }
+
+  console.log(badges);
 
   return { ok: true, badges: badges };
 }
