@@ -43,12 +43,32 @@ function writeRank(rank: Object, badgeDef: string, catId: string, point: number)
   rank[badgeDef][catId] += point;
 }
 
+function castRankToMaxCount(ranks: Object, maxCount: number = 20) {
+  for (const rankKey in ranks) {
+
+    // 排序原 rank
+    const rank : { [key: string]: number } = ranks[rankKey];
+    const rankCat = Object.entries(rank);
+    rankCat.sort((a, b) => b[1] - a[1]);
+
+    // 获取 top count 的猫猫
+    const rankCatCasted = rankCat.slice(0, maxCount);
+    const rankCasted = {}
+    rankCatCasted.forEach(([key, _]) => {
+      rankCasted[key] = rank[key];
+    });
+
+    // 覆盖回 rank
+    ranks[rankKey] = ranks[rankKey];
+  }
+}
+
 export default async function (ctx: FunctionContext) {  // body, query 为请求参数, user 是授权对象
   const { body } = ctx
 
   if (body && body.deploy_test === true) {
     // 进行部署检查
-    return "v1.1";
+    return "v1.0";
   }
 
   // 返回多个排行榜，固定的有：数量榜、总分榜，动态的有：xx徽章的数量榜
@@ -89,6 +109,10 @@ export default async function (ctx: FunctionContext) {  // body, query 为请求
     // 个别徽章榜
     writeRank(rank, b.badgeDef, b.catId, 1);
   }
+
+  // 只展示前 20 个猫猫
+  castRankToMaxCount(rank)
+
   // 写入数据库
   const record = {
     mdate: new Date(),

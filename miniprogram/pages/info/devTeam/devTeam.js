@@ -10,6 +10,12 @@ Page({
     text_cfg: text_cfg,
     github_link: "https://github.com/sysucats/zhongdamaopu",
     update_log: [{
+      version: "v1.12.6",
+      content: [
+        "增加徽章兑换码系统",
+      ],
+      time: "2023/7/22"
+    }, {
       version: "v1.12.5",
       content: [
         "修复PC端识猫问题",
