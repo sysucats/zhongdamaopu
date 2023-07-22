@@ -139,13 +139,21 @@ page {
   font-size: 32rpx;
   font-weight: bold;
   padding: 0 0 20rpx 20rpx;
+  display: flex;
+  align-items: center;
 }
 
-.sub-title {
+.sub-title, .sub-title-btn {
   margin-left: 20rpx;
   font-size: 24rpx;
   font-weight: normal;
   color: #9BA8A5;
+}
+
+.sub-title-btn {
+  margin-left: auto;
+  margin-right: 30rpx;
+  text-decoration: underline;
 }
 
 .code-block {

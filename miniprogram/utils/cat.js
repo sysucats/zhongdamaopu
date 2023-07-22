@@ -64,7 +64,7 @@ async function getCatItem(cat_id, options) {
 }
 
 // 获取多个猫猫信息
-async function getCatItemMulti(cat_ids, options, forceAll) {
+async function getCatItemMulti(cat_ids, options) {
   if (!cat_ids) {
     return undefined;
   }

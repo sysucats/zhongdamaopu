@@ -750,6 +750,10 @@ Page({
       return;
     }
     // 新开一个页面，用缓存来传值
+    wx.setStorageSync('cat-badge-info', {
+      catName: this.data.cat.name,
+      userOpenid: this.data.user.openid
+    });
     wx.setStorageSync('cat-badge-detail', this.data.detailBadges);
     // 跳转
     wx.navigateTo({

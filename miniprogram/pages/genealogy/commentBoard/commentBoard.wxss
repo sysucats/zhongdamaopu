@@ -48,8 +48,14 @@ page {
   display: block;
   background: linear-gradient(-45deg, transparent 33.33%, var(--color-gray-light) 33.33%, var(--color-gray-light) 66.66%,
       transparent 66.66%), linear-gradient(45deg, transparent 33.33%, var(--color-gray-light) 33.33%, var(--color-gray-light) 66.66%, transparent 66.66%);
-  background-size: 30rpx 60rpx;
+  background-size: 20rpx 40rpx;
   transform: rotateX(180deg);
+}
+
+.wavy-line.bottom::before {
+  transform: rotateX(0deg);
+  transform: rotateY(180deg);
+  bottom: 0;
 }
 
 .user-info {

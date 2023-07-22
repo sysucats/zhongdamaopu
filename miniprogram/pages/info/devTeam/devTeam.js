@@ -10,6 +10,12 @@ Page({
     text_cfg: text_cfg,
     github_link: "https://github.com/sysucats/zhongdamaopu",
     update_log: [{
+      version: "v1.12.7",
+      content: [
+        "徽章赠送记录",
+      ],
+      time: "2023/7/23"
+    }, {
       version: "v1.12.6",
       content: [
         "增加徽章兑换码系统",

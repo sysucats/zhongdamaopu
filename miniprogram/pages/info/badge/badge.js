@@ -370,6 +370,12 @@ Page({
     }
     this.jsData.usingCode = false;
   },
+
+  toHistory() {
+    wx.navigateTo({
+      url: '/pages/info/badge/badgeHistory/badgeHistory',
+    })
+  },
   
   /**
    * 用户点击右上角分享

@@ -72,7 +72,7 @@ Component({
           catInfoMap[catId] = null;
         }
       }
-      const catInfo = await getCatItemMulti(Object.keys(catInfoMap), {}, true);
+      const catInfo = await getCatItemMulti(Object.keys(catInfoMap));
       for (const ci of catInfo) {
         catInfoMap[ci._id] = ci;
       }

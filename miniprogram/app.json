@@ -40,7 +40,8 @@
     "pages/genealogy/detailCat/badgeDetail/badgeDetail",
     "pages/manage/checkComment/checkComment",
     "pages/manage/badgeCode/badgeCode",
-    "pages/manage/badgeCode/addBadgeCode/addBadgeCode"
+    "pages/manage/badgeCode/addBadgeCode/addBadgeCode",
+    "pages/info/badge/badgeHistory/badgeHistory"
   ],
   "tabBar": {
     "custom": true,

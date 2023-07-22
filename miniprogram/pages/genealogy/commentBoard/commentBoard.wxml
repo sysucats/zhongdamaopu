@@ -37,6 +37,7 @@
 
     <view class="tape" style="left: {{item.tape_pos_left}}rpx; transform: rotate({{item.tape_rotate}}deg);">
       <view class="wavy-line"></view>
+      <view class="wavy-line bottom"></view>
     </view>
   </view>
 
