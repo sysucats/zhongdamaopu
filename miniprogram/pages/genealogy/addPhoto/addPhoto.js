@@ -3,21 +3,21 @@ import {
   getCurrentPath,
   shareTo,
   compressImage
-} from "../../../utils";
+} from "../../../utils/utils";
 import {
   getPageUserInfo,
   checkCanUpload,
   toSetUserInfo
-} from "../../../user";
+} from "../../../utils/user";
 import {
   requestNotice,
   sendNotifyVertifyNotice
-} from "../../../msg";
+} from "../../../utils/msg";
 import config from "../../../config";
 import {
   cloud
-} from "../../../cloudAccess";
-import api from "../../../cloudApi";
+} from "../../../utils/cloudAccess";
+import api from "../../../utils/cloudApi";
 
 Page({
   /**
@@ -74,8 +74,8 @@ Page({
     await getPageUserInfo(this);
   },
 
-  onUnload: function (options) {
-    this.ifSendNotifyVeriftMsg()
+  onUnload: async function (options) {
+    await this.ifSendNotifyVeriftMsg()
   },
 
   /**
@@ -205,7 +205,6 @@ Page({
       await sendNotifyVertifyNotice(numUnchkPhotos);
       console.log("toSendNVMsg");
     }
-
   },
 
   async uploadImg(photo) {

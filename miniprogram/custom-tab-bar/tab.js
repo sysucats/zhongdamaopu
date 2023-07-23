@@ -21,7 +21,7 @@ module.exports = {
     "pagePath": "pages/leaderboard/leaderboard",
     "iconPath": "/pages/public/images/tabs/default/org.png",
     "selectedIconPath": "/pages/public/images/tabs/active/org.png",
-    "text": "精选"
+    "text": "榜单"
   },
   info: {
     "pagePath": "pages/info/info",

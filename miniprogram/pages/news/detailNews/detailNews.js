@@ -3,14 +3,14 @@ import {
   getCurrentPath,
   formatDate,
   sleep
-} from "../../../utils";
+} from "../../../utils/utils";
 import {
   isManagerAsync
-} from "../../../user";
+} from "../../../utils/user";
 import {
   cloud
-} from "../../../cloudAccess";
-import api from "../../../cloudApi";
+} from "../../../utils/cloudAccess";
+import api from "../../../utils/cloudApi";
 
 
 Page({

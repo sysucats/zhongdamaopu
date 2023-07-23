@@ -1,7 +1,7 @@
-import { getUser } from "../../../../user";
-import { deepcopy } from "../../../../utils";
-import { cloud } from "../../../../cloudAccess";
-import api from "../../../../cloudApi";
+import { getUser } from "../../../../utils/user";
+import { deepcopy } from "../../../../utils/utils";
+import { cloud } from "../../../../utils/cloudAccess";
+import api from "../../../../utils/cloudApi";
 
 const defaultAvatarUrl = "/pages/public/images/info/default_avatar.png"
 
@@ -102,6 +102,12 @@ Page({
   },
 
   async checkNickName(name) {
+    if (!name) {
+      wx.showToast({
+        title: '请输入昵称',
+      });
+      return false;
+    }
     if (name.length > 30) {
       wx.showToast({
         title: '昵称太长啦...20字',

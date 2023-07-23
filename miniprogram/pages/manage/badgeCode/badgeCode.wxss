@@ -1,0 +1,70 @@
+/* pages/manage/badgeCode/badgeCode.wxss */
+@import "../badgeDef/badgeDef.wxss";
+
+.code-group {
+  width: 690rpx;
+  margin: 30rpx;
+  border-radius: 20rpx;
+  background-color: white;
+}
+
+.code-info {
+  padding: 10rpx 30rpx;
+  border-bottom: 1rpx solid var(--color-gray-light);
+}
+
+.code-info-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.code-info-taskid {
+  font-size: 24rpx;
+}
+
+.code-btn {
+  font-size: 22rpx;
+  text-decoration: underline;
+}
+
+.code-info-item {
+  font-size: 18rpx;
+  color: var(--color-gray-dark);
+}
+
+/* 单个码 */
+.code-item {
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  font-size: 20rpx;
+  text-align: center;
+}
+
+.code-item-valid {
+  width: 70rpx;
+}
+
+.code-item-valid.true {
+  color: var(--color-green);
+}
+
+.code-item-valid.false {
+  color: var(--color-red);
+}
+
+.code-item-code {
+  width: 300rpx;
+}
+
+.code-buttons {
+  width: 200rpx;
+  display: flex;
+  justify-content: space-around;
+}
+
+.sub-header {
+  font-size: 22rpx !important;
+  font-weight: bold;
+}

@@ -20,7 +20,6 @@
     </swiper-item>
   </swiper>
 
-
   <view class='info' id='info-box'>
     <view class="identity">
       <view class='name'>{{cat.name}}</view>
@@ -32,7 +31,7 @@
         <image src='/pages/public/images/card/card/pop.png'></image>
         <text> {{cat.popularity + (cat.photo_count_total? cat.photo_count_total * photoPopWeight: 0)}}</text>
       </view>
-      <view class='comment' bindtap="showCommentTip" wx:if="{{cat.comment_count != undefined}}">
+      <view class='comment' bindtap="toComment" wx:if="{{cat.comment_count != undefined}}">
         <image src='/pages/public/images/card/card/comment.png'></image>
         <text> {{cat.comment_count || 0}}</text>
       </view>
@@ -90,6 +89,29 @@
         <view class='value'>{{cat.tutorial || text_cfg.detail_cat.label_tutorial_empty}}</view>
       </view>
 
+      <view class='item long' wx:if="{{showBadge}}">
+        <view class='label'>
+          <view class='label-block'></view>
+          徽章口袋
+          <view class="badge-all" bindtap="showGiveBadge" wx:if="{{detailBadges.length > 4}}">赠予徽章</view>
+          <view class="badge-all" bindtap="toBadgeDetail" wx:if="{{detailBadges.length}}">查看详情</view>
+        </view>
+        <scroll-view class="badge-list" scroll-x="1">
+          <view class="badge-item badge-level-{{item.level}}" wx:for="{{catBadges}}" wx:key="_id" hover-class="tap" bindtap="showBadgeModal" data-index="{{index}}">
+            <image class="badge-item-avatar" src="{{item.img}}" mode="aspectFill" />
+            <view class="badge-item-count">x{{item.count}}</view>
+            <view class="badge-item-name">{{item.name}}</view>
+          </view>
+
+          <view class="relation-block add" hover-class="tap" bindtap="showGiveBadge">
+            <image class="badge-item-avatar" src="/pages/public/images/button/addBadge.png" mode="aspectFit"></image>
+            <view class="badge-item-count hidden">+</view>
+            <view class="badge-item-name">赠予徽章</view>
+          </view>
+        </scroll-view>
+        <view class=""></view>
+      </view>
+
       <!-- 关系 -->
       <view class="item long" wx:if="{{is_manager || (cat.relations && cat.relations.length)}}">
         <view class="label">
@@ -112,60 +134,78 @@
     </view>
   </view>
   <!-- info end -->
-  
+
   <!-- scroll-view包裹下sticky失效，再套个view作父容器 -->
   <view>
-  <view class='big-header'>
-    <image class='avatar' mode='aspectFill' src='{{cat.avatar.photo_compressed || cat.avatar.photo_id}}'></image>
-    <view class='name-and-count'>
-      <view class='name'>{{cat.name}}的相册</view>
-      <view class='count'>共{{albumMax}}张照片</view>
+    <view class='big-header'>
+      <image class='avatar' mode='aspectFill' src='{{cat.avatar.photo_compressed || cat.avatar.photo_id}}'></image>
+      <view class='name-and-count'>
+        <view class='name'>{{cat.name}}的相册</view>
+        <view class='count'>共{{albumMax}}张照片</view>
+      </view>
+
+      <view class='sort-button'>
+        <picker bindchange="bindphotoOrderChange" value="{{photoOrderSelected}}" range="{{photoOrderSelectorRange}}" range-key="{{photoOrderSelectorKey}}">
+          <view class="picker">
+            <text class='type'>{{photoOrderSelectorRange[photoOrderSelected][photoOrderSelectorKey]}}</text>
+            <image class="icon" mode='aspectFill' src='/pages/public/images/button/sort.png'></image>
+          </view>
+        </picker>
+      </view>
     </view>
 
-    <view class='sort-button'>
-      <picker bindchange="bindphotoOrderChange" value="{{photoOrderSelected}}" range="{{photoOrderSelectorRange}}" range-key="{{photoOrderSelectorKey}}">
-        <view class="picker">
-          <text class='type'>{{photoOrderSelectorRange[photoOrderSelected][photoOrderSelectorKey]}}</text>
-          <image class="icon" mode='aspectFill' src='/pages/public/images/button/sort.png'></image>
+
+    <view class='album'>
+      <view wx:for="{{album}}" class='album-block' wx:key='date' wx:for-item="albumBlock">
+        <view class='header'>
+          <image src='/pages/public/images/card/card/time.png'></image>
+          <view class='time'>{{albumBlock.date[0]}}年{{albumBlock.date[1]}}月</view>
+          <view wx:if='{{albumBlock.age[0] >= 0 && albumBlock.age[1] >= 0}}' class='age'>{{albumBlock.age[0]}}岁{{albumBlock.age[1]}}个月</view>
         </view>
-      </picker>
-    </view>
-  </view>
-
-
-  <view class='album'>
-    <view wx:for="{{album}}" class='album-block' wx:key='date' wx:for-item="albumBlock">
-      <view class='header'>
-        <image src='/pages/public/images/card/card/time.png'></image>
-        <view class='time'>{{albumBlock.date[0]}}年{{albumBlock.date[1]}}月</view>
-        <view wx:if='{{albumBlock.age[0] >= 0 && albumBlock.age[1] >= 0}}' class='age'>{{albumBlock.age[0]}}岁{{albumBlock.age[1]}}个月</view>
+        <view class="album-image" wx:for="{{albumBlock.photos}}" wx:key="_id" bindtap='bindTapPhoto' data-index="{{item.index}}" data-kind='album'>
+          <image mode='aspectFill' class="alb-image" lazy-load='true' src='{{item.photo_compressed || item.photo_id}}'></image>
+          <item class="like-count" wx:if="{{item.like_count}}">
+            <image class="like-logo small" mode='aspectFill' src="/pages/public/images/button/heart.png"></image>
+            <text>{{item.like_count}}</text>
+          </item>
+        </view>
       </view>
-      <view class="album-image" wx:for="{{albumBlock.photos}}" wx:key="_id" bindtap='bindTapPhoto' data-index="{{item.index}}" data-kind='album'>
-        <image mode='aspectFill' class="alb-image" lazy-load='true' src='{{item.photo_compressed || item.photo_id}}'></image>
-        <item class="like-count" wx:if="{{item.like_count}}">
-          <image class="like-logo small" mode='aspectFill' src="/pages/public/images/button/heart.png"></image>
-          <text>{{item.like_count}}</text>
-        </item>
+
+      <view class='loading'>
+        {{bottomText}}
       </view>
     </view>
-
-    <view class='loading'>
-      {{bottomText}}
-    </view>
-  </view>
   </view>
   <!-- album end -->
 
   <!-- 点击上传图片 -->、
-  <view class="addPhoto" bindtap='bindAddPhoto'> 
+  <view class="addPhoto" bindtap='bindAddPhoto'>
     <image class="icon" src='/pages/public/images/button/addPhoto.png'></image>
   </view>
 
-  <!-- 进入留言板 -->
-  <view id="comment-btn" bindtap="toComment" wx:if="{{canComment}}">
+  <!-- 进入便利贴墙 -->
+  <view id="comment-btn" bindtap="toComment">
     <text>{{text_cfg.detail_cat.label_comment_board}}</text>
     <image src="/pages/public/images/button/right_double_arrow.png" mode="aspectFit"></image>
   </view>
 </scroll-view>
 
 <mp-gallery show="{{showGallery}}" gallery-photos="{{galleryPhotos}}" img-compressed-urls="{{imgCompressedUrls}}" img-urls="{{imgUrls}}" current="{{currentImg}}" hide-on-click="{{true}}" bindchange="bindGalleryChange" bindlikecountchanged="likeCountChanged"></mp-gallery>
+
+<!-- 赠予徽章弹出框 -->
+<view class="mask" bindtap="hideGiveBadge" hidden="{{!showGiveBadge}}"></view>
+<view class='search {{showGiveBadge? "": "hidden"}}'>
+  <scroll-view class="user-badge-list" scroll-y="1" enable-flex="1">
+    <view class="user-badge-item badge-level-{{item.level}} {{item.count === 0? 'zero-count': ''}} {{activeUserBadge === index? 'active': ''}}" wx:for="{{userBadges}}" wx:key="name" bindtap="bindTapUserBadge" data-index="{{index}}">
+      <image class="user-badge-item-avatar" src="{{item.img}}" mode="aspectFill" />
+      <view class="user-badge-item-count">x{{item.count}}</view>
+      <view class="user-badge-item-name">[{{item.level}}]{{item.name}}</view>
+    </view>
+  </scroll-view>
+  <view class="search-buttons">
+    <view class="search-btn" bindtap="toGetBadge">获取徽章</view>
+    <view class="search-btn {{activeUserBadge != -1 ? 'active': 'disabled'}}" hover-class="hover" bindtap="toGiveBadge">赠予</view>
+  </view>
+</view>
+
+<badgeModal zindex="2" show="{{modal.show}}" title="{{modal.title}}" name="{{modal.name}}" img="{{modal.img}}" desc="{{modal.desc}}" tip="{{modal.tip}}" level="{{modal.level}}" bind:close="onModalClose"></badgeModal>

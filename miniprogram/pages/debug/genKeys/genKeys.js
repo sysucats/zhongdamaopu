@@ -1,5 +1,5 @@
 // pages/debug/genKeys/genKeys.ts
-import { cloud } from "../../../cloudAccess";
+import { cloud } from "../../../utils/cloudAccess";
 
 Page({
 

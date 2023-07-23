@@ -1,0 +1,4 @@
+name: genBadgeCode
+methods:
+  - POST
+tags: []

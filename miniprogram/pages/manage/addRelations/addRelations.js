@@ -1,9 +1,9 @@
 // 审核照片
-import { regReplace, sleep } from "../../../utils";
-import { getAvatar, getCatItem } from "../../../cat";
-import { checkAuth } from "../../../user";
-import { cloud } from "../../../cloudAccess";
-import api from "../../../cloudApi";
+import { regReplace, sleep } from "../../../utils/utils";
+import { getAvatar, getCatItem } from "../../../utils/cat";
+import { checkAuth } from "../../../utils/user";
+import { cloud } from "../../../utils/cloudAccess";
+import api from "../../../utils/cloudApi";
 
 
 // 运行状态

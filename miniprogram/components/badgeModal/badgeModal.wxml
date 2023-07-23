@@ -1,0 +1,20 @@
+<!--components/badgeModal/badgeModal.wxml-->
+<view class="mask" bindtap="hide" hidden="{{!show}}" style="z-index: {{zindex}};"></view>
+<view class="modal badge-level-{{level}}" style="z-index: {{zindex}};" hidden="{{!show}}">
+  <view class="title">{{title}}</view>
+  <view class="close-btn" bindtap="hide">x</view>
+  <image class="badge-img" src="{{img}}" mode="aspectFill"/>
+  <view class="badge-name-line">
+    <view class="arrow">
+      <view class="arrow-left"></view>
+      <view class="round left"></view>
+    </view>
+    <view class="badge-name">{{name}}</view>
+    <view class="arrow">
+      <view class="arrow-right"></view>
+      <view class="round right"></view>
+    </view>
+  </view>
+  <view class="desc">{{desc}}</view>
+  <view class="tip">{{tip}}</view>
+</view>

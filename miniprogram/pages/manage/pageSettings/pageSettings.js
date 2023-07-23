@@ -1,7 +1,7 @@
 // pages/manage/pageSettings/pageSettings.js
-import { checkAuth } from "../../../user";
-import { getGlobalSettings } from "../../../page";
-import api from "../../../cloudApi";
+import { checkAuth } from "../../../utils/user";
+import { getGlobalSettings } from "../../../utils/page";
+import api from "../../../utils/cloudApi";
 import desc from "./desc";
 
 

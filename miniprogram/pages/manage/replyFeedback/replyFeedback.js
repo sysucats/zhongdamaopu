@@ -1,9 +1,9 @@
 // 处理反馈
-import { formatDate } from "../../../utils";
-import { sendReplyNotice } from "../../../msg";
-import { checkAuth, getUserInfo } from "../../../user";
-import { cloud } from "../../../cloudAccess";
-import api from "../../../cloudApi";
+import { formatDate } from "../../../utils/utils";
+import { sendReplyNotice } from "../../../utils/msg";
+import { checkAuth, getUserInfo } from "../../../utils/user";
+import { cloud } from "../../../utils/cloudAccess";
+import api from "../../../utils/cloudApi";
 
 Page({
 

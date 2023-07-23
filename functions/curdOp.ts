@@ -5,7 +5,7 @@ const db = cloud.database();
 // 操作对应collection需要的等级
 const permissionNeed = {
   "add": {
-    "app_secret": 99,
+    "badge_def": 2,
     "cat": 2,
     "comment": 0,
     "feedback": 0,
@@ -13,13 +13,14 @@ const permissionNeed = {
     "news": 3,
     "photo": 0,
     "photo_rank": 3,
+    "badge_code": 99,
     "reward": 3,
     "science": 3,
     "setting": 3,
     "user": 0,
   },
   "update": {
-    "app_secret": 99,
+    "badge_def": 2,
     "cat": 2,
     "comment": 1,
     "feedback": 1,
@@ -27,13 +28,14 @@ const permissionNeed = {
     "news": 1,
     "photo": 1,
     "photo_rank": 1,
+    "badge_code": 3,
     "reward": 1,
     "science": 1,
     "setting": 99,
     "user": 1,
   },
   "remove": {
-    "app_secret": 99,
+    "badge_def": 2,
     "cat": 99,
     "comment": 1,
     "feedback": 1,
@@ -41,13 +43,14 @@ const permissionNeed = {
     "news": 1,
     "photo": 1,
     "photo_rank": 1,
+    "badge_code": 99,
     "reward": 99,
     "science": 99,
     "setting": 99,
     "user": 1,
   },
   "set": {
-    "app_secret": 99,
+    "badge_def": 2,
     "cat": 2,
     "comment": 1,
     "feedback": 1,
@@ -55,13 +58,14 @@ const permissionNeed = {
     "news": 1,
     "photo": 1,
     "photo_rank": 1,
+    "badge_code": 99,
     "reward": 1,
     "science": 1,
     "setting": 1,
     "user": 1,
   },
   "inc": {
-    "app_secret": 99,
+    "badge_def": 2,
     "cat": 0,
     "comment": 1,
     "feedback": 1,
@@ -69,11 +73,15 @@ const permissionNeed = {
     "news": 1,
     "photo": 0,
     "photo_rank": 1,
+    "badge_code": 99,
     "reward": 1,
     "science": 1,
     "setting": 99,
     "user": 1,
   },
+  "read": {
+    "badge_code": 3,
+  }
 }
 
 // 允许创建者操作（user.openid == doc._openid）
@@ -87,22 +95,23 @@ const permissionAuthor = {
   },
   "set": {},
   "inc": {},
+  "read": {},
 }
 
 exports.main = async function (ctx: FunctionContext) {
   // body, query 为请求参数, user 是授权对象
   // console.log("ctx:", ctx);
-  const { body, query } = ctx;
+  const { body } = ctx;
 
   if (body && body.deploy_test === true) {
     // 进行部署检查
-    return "v1.1";
+    return "v1.3";
   }
 
   var openid = ctx.user.openid;  // 用户的 OpenID
 
   const collection = body.collection;
-  const operation = body.operation;  // DB 操作 ["add", "update", "remove", "set", "inc"]
+  const operation = body.operation;  // DB 操作 ["add", "update", "remove", "set", "inc", "read"]
   const permissionLevel = permissionNeed[operation][collection];  // 操作要求的最低权限
   console.log("permissionLevel:", permissionLevel)
 
@@ -169,6 +178,26 @@ exports.main = async function (ctx: FunctionContext) {
     else {
       return { errMsg: `unk type ${type}`, ok: false };
     }
+  }
+  else if (operation == "read") {
+    const {where, skip, limit, orderBy} = body;
+    let query: any = db.collection(collection);
+    if (where) {
+      query = query.where(where);
+    }
+    if (skip) {
+      query = query.skip(skip);
+    }
+    if (limit) {
+      query = query.limit(limit);
+    }
+    if (orderBy) {
+      // 是一个list，可以表示多个order by
+      for (let [key, ord] of orderBy) {
+        query = query.orderBy(key, ord);
+      }
+    }
+    return await query.get();
   }
   else {
     return { errMsg: `unk operation ${operation}`, ok: false };

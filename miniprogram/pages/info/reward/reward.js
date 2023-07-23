@@ -1,8 +1,8 @@
 // miniprogram/pages/info/reward/reward.js
 import { text as text_cfg, reward_img } from "../../../config";
-import { checkCanReward } from "../../../user";
-import { cloud } from "../../../cloudAccess";
-import { getGlobalSettings } from "../../../page";
+import { checkCanReward } from "../../../utils/user";
+import { cloud } from "../../../utils/cloudAccess";
+import { getGlobalSettings } from "../../../utils/page";
 
 // 在页面中定义激励视频广告
 let videoAd = null

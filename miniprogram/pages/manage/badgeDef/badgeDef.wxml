@@ -1,0 +1,22 @@
+<!--pages/manage/badgeDef/badgeDef.wxml-->
+<block wx:if="{{auth}}">
+  <view class="buttons">
+    <button class="primary" bindtap="onEdit">新增徽章</button>
+    <button class="primary" bindtap="onBadgeCode">徽章兑换码</button>
+  </view>
+  <view class="badge" wx:for="{{badgeDefs}}" wx:key="_id">
+    <image src="{{item.img}}" mode="aspectFill" />
+    <view class="badge-info">
+      <view class="badge-name">[{{item.level}}级] {{item.name}}</view>
+      <view class="badge-desc">徽章描述：{{item.desc}}</view>
+      <view class="badge-desc">榜单标语：{{item.rankDesc}}</view>
+      <view class="badge-count">现存数量：{{item.count}}</view>
+    </view>
+    <view class="modify-btn" bindtap="onEdit" data-id="{{item._id}}">修改</view>
+  </view>
+  <view style="height: 1rpx;"></view>
+</block>
+<view wx:else class="unAuth">
+  <text>{{tipText}}</text>
+  <button bindtap='goBack' wx:if="{{tipBtn}}">打扰了</button>
+</view>

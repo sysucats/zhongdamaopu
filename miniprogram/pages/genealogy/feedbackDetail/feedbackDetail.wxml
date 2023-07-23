@@ -29,7 +29,7 @@
       </view>
     </view>
     <checkbox-group class="agreement" bindchange="changeAgreement">
-      <checkbox color="var(--color-primary)" checked="{{agreementChecked}}">对于联系方式，您已阅读并同意<navigator url="/pages/info/agreement/agreement">《服务协议和隐私政策》</navigator></checkbox>
+      <checkbox color="var(--color-primary)" checked="{{agreementChecked}}">对于其他信息，您已阅读并同意<navigator url="/pages/info/agreement/agreement">《服务协议和隐私政策》</navigator></checkbox>
     </checkbox-group>
     <view class='submitButton'>
       <button form-type='submit' disabled="{{contactLength > 0 && !agreementChecked}}">{{text_cfg.feedback_detail.submit_button}}</button>

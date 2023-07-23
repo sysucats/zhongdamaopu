@@ -1,7 +1,7 @@
 import {
   UserTypes,
   FuncTypes
-} from "../../../user";
+} from "../../../utils/user";
 import tabsDef from "../../../custom-tab-bar/tab";
 
 const userTypes = [{
@@ -20,7 +20,7 @@ const funcTypes = [{
   name: "上传照片"
 }, {
   val: FuncTypes.comment,
-  name: "留言板"
+  name: "便利贴墙"
 }, {
   val: FuncTypes.reward,
   name: "打赏投喂"
@@ -222,7 +222,17 @@ module.exports = {
     },
     "reward_video": {
       type: "text",
-      tip: "打赏投喂页视频video广告ID",
+      tip: "打赏投喂页激励广告ID",
+      default: "your_ad_id"
+    },
+    "badge_video": {
+      type: "text",
+      tip: "获取代币页激励广告ID",
+      default: "your_ad_id"
+    },
+    "badge_interstitial": {
+      type: "text",
+      tip: "获取代币页插屏广告ID",
       default: "your_ad_id"
     },
   },

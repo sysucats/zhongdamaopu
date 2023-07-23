@@ -1,6 +1,6 @@
-import { formatDate } from "../../../../utils";
-import { getUser } from "../../../../user";
-import { cloud } from "../../../../cloudAccess";
+import { formatDate } from "../../../../utils/utils";
+import { getUser } from "../../../../utils/user";
+import { cloud } from "../../../../utils/cloudAccess";
 
 var currentUser;
 

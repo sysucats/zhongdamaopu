@@ -4,20 +4,20 @@ import {
   getDeltaHours,
   sleep,
   getCurrentPath
-} from "../../utils";
+} from "../../utils/utils";
 import {
   getAvatar,
   getVisitedDate
-} from "../../cat";
+} from "../../utils/cat";
 import {
   getCatCommentCount
-} from "../../comment";
-import { getUserInfo } from "../../user";
-import cache from "../../cache";
+} from "../../utils/comment";
+import { getUserInfo } from "../../utils/user";
+import cache from "../../utils/cache";
 import config from "../../config";
-import { loadFilter, getGlobalSettings, showTab } from "../../page";
-import { isManagerAsync, checkCanShowNews } from "../../user";
-import { cloud } from "../../cloudAccess";
+import { loadFilter, getGlobalSettings, showTab } from "../../utils/page";
+import { isManagerAsync, checkCanShowNews } from "../../utils/user";
+import { cloud } from "../../utils/cloudAccess";
 
 const default_png = undefined;
 
@@ -147,6 +147,14 @@ Page({
   loadFilters: async function (fcampus) {
     // 下面开始加载filters
     var res = await loadFilter();
+    if (!res) {
+      wx.showModal({
+        title: '出错了...',
+        content: '请到关于页，清理缓存后重启试试~',
+        showCancel: false,
+      });
+      return false;
+    }
     var filters = [];
     var area_item = {
       key: 'area',
@@ -175,7 +183,8 @@ Page({
       area_item.category.push(classifier[res.campuses[i]]);
     }
     // 把初始fcampus写入，例如"011000"
-    if (fcampus) {
+    if (fcampus && fcampus.length === area_item.category.length) {
+      console.log("fcampus exist", fcampus, area_item);
       for (let i = 0; i < fcampus.length; i++) {
         const active = fcampus[i] == "1";
         area_item.category[i].all_active = active;
@@ -224,7 +233,7 @@ Page({
     filters[0].active = true;
     console.log(filters);
     this.newUserTip();
-    await this.setData({
+    this.setData({
       filters: filters,
     });
     await this.reloadCats();

@@ -3,7 +3,6 @@ import { text as text_cfg } from "../../../config";
 const share_text = text_cfg.app_name + ' - ' + text_cfg.info.share_tip;
 
 Page({
-
   /**
    * 页面的初始数据
    */
@@ -11,6 +10,63 @@ Page({
     text_cfg: text_cfg,
     github_link: "https://github.com/sysucats/zhongdamaopu",
     update_log: [{
+      version: "v1.12.7",
+      content: [
+        "徽章赠送记录",
+        "修复首页空白问题",
+        "修复科普页加载问题",
+        "为新版发布做准备",
+      ],
+      time: "2023/7/23"
+    }, {
+      version: "v1.12.6",
+      content: [
+        "增加徽章兑换码系统",
+      ],
+      time: "2023/7/22"
+    }, {
+      version: "v1.12.5",
+      content: [
+        "修复PC端识猫问题",
+        "留言板升级为便利贴墙"
+      ],
+      time: "2023/7/18"
+    }, {
+      version: "v1.12.4",
+      content: [
+        "修复UI问题",
+        "更新徽章排行榜",
+        "限制每日徽章获取数量",
+      ],
+      time: "2023/7/17"
+    }, {
+      version: "v1.12.3",
+      content: [
+        "优化徽章系统的加载速度",
+        "修复关于页数字不显示的问题"
+      ],
+      time: "2023/7/17"
+    }, {
+      version: "v1.12.2",
+      content: [
+        "修复徽章系统的小问题",
+      ],
+      time: "2023/7/16"
+    }, {
+      version: "v1.12.1",
+      content: [
+        "修复徽章系统的小问题",
+      ],
+      time: "2023/7/15"
+    }, {
+      version: "v1.12.0",
+      content: [
+        "徽章系统上线啦~",
+        "精选Tab重置为榜单",
+        "修复科普页图片等问题",
+      ],
+      time: "2023/7/15"
+    }, {
       version: "v1.11.0",
       content: [
         "修复常用工具不显示等问题",

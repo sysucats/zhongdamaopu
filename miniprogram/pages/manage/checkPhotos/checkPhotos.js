@@ -1,10 +1,10 @@
 // 审核照片
-import { checkAuth, fillUserInfo } from "../../../user";
-import { requestNotice, sendVerifyNotice, getMsgTplId } from "../../../msg";
-import cache from "../../../cache";
-import { getCatItem } from "../../../cat";
-import { cloud } from "../../../cloudAccess";
-import api from "../../../cloudApi";
+import { checkAuth, fillUserInfo } from "../../../utils/user";
+import { requestNotice, sendVerifyNotice, getMsgTplId } from "../../../utils/msg";
+import cache from "../../../utils/cache";
+import { getCatItem } from "../../../utils/cat";
+import { cloud } from "../../../utils/cloudAccess";
+import api from "../../../utils/cloudApi";
 
 // 准备发送通知的列表，姓名：审核详情
 var notice_list = {};
@@ -31,27 +31,6 @@ Page({
   },
 
   /**
-   * 生命周期函数--监听页面初次渲染完成
-   */
-  onReady: function () {
-
-  },
-
-  /**
-   * 生命周期函数--监听页面显示
-   */
-  onShow: function () {
-
-  },
-
-  /**
-   * 生命周期函数--监听页面隐藏
-   */
-  onHide: function () {
-
-  },
-
-  /**
    * 生命周期函数--监听页面卸载
    */
   onUnload: function () {
@@ -61,26 +40,6 @@ Page({
     sendVerifyNotice(notice_list);
   },
 
-  /**
-   * 页面相关事件处理函数--监听用户下拉动作
-   */
-  onPullDownRefresh: function () {
-
-  },
-
-  /**
-   * 页面上拉触底事件的处理函数
-   */
-  onReachBottom: function () {
-
-  },
-
-  /**
-   * 用户点击右上角分享
-   */
-  onShareAppMessage: function () {
-
-  },
   // 没有权限，返回上一页
   goBack() {
     wx.navigateBack();

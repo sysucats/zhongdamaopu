@@ -23,10 +23,10 @@
     <!-- <view>--已经授权--</view> -->
     <view class='userInfo'>
       <image src='{{user.userInfo.avatarUrl}}' mode="aspectFill"></image>
-      <view>
+      <view class="userInfo-cat">
         <text>{{user.userInfo.nickName}}\n--- 正在为「<text style="font-weight:600;">{{cat.name}}</text>」添加照片</text>
       </view>
-      <view class="update-userInfo" bindtap="getUInfo">[更新个人信息]</view>
+      <view class="update-userInfo" bindtap="getUInfo">[更新信息]</view>
     </view>
 
     <button bindtap='chooseImg' class='long primary'>选择照片</button>

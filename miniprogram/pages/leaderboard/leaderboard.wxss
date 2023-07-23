@@ -1,7 +1,49 @@
 @import "/pages/public/wxss/hFilter.wxss";
 
 page {
+  height: 100%;
   background: var(--color-gray-light);
+}
+
+.thread-list {
+  display: flex;
+  justify-content: space-around;
+  padding: 10rpx 100rpx;
+  overflow: hidden;
+  background-color: white;
+  box-sizing: border-box;
+  box-shadow: 0rpx 0rpx 10rpx var(--color-gray);
+}
+
+.thread-item {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.thread-item-name {
+  font-size: 28rpx;
+  color: var(--color-gray-max);
+}
+
+.thread-item-bar {
+  width: 100rpx;
+  height: 4rpx;
+  border-radius: 10rpx;
+}
+
+.thread-item.active .thread-item-bar {
+  background-color: var(--color-primary);
+}
+
+.thread-item.active .thread-item-name {
+  color: var(--color-black-light);
+}
+
+/* 左右滑动的频道内容 */
+#main-swiper {
+  /* TODO: 偷懒了，不一定充满屏幕 */
+  min-height: 80%;
 }
 
 .main {

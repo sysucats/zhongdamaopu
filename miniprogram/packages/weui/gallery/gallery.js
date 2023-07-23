@@ -1,5 +1,5 @@
-import { likeAdd, likeCheck } from "../../../inter";
-import { cloud } from "../../../cloudAccess";
+import { likeAdd, likeCheck } from "../../../utils/inter";
+import { cloud } from "../../../utils/cloudAccess";
 
 module.exports =
 /******/ (function(modules) { // webpackBootstrap

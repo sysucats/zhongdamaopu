@@ -61,6 +61,7 @@
   background-position: center;
   background-repeat: no-repeat;
   background-size: contain;
+  position: relative;
 }
 
 #photoPreview .catBox {

@@ -1,15 +1,15 @@
 import {
   getCatItemMulti
-} from "../../cat.js";
-import { fillUserInfo } from "../../user";
+} from "../../utils/cat";
+import { fillUserInfo } from "../../utils/user";
 import {
   likeCheck,
   likeAdd
-} from "../../inter.js";
-import {getDateWithDiffHours, formatDate} from "../../utils.js";
+} from "../../utils/inter";
+import {getDateWithDiffHours, formatDate} from "../../utils/utils";
 import config from "../../config";
-import { showTab } from "../../page";
-import { cloud } from "../../cloudAccess";
+import { showTab } from "../../utils/page";
+import { cloud } from "../../utils/cloudAccess";
 
 const share_text = config.text.app_name + ' - ' + config.text.genealogy.share_tip;
 
@@ -29,6 +29,8 @@ Page({
     ],
     tempPics: [],
     loadnomore: false,
+    threads: ["徽章收集", "照片点赞", "拍照月榜"],
+    threadsActive: 1,
     filters: [{
       name: "周精选",
       hours: 24*7,
@@ -201,10 +203,17 @@ Page({
     return photos.filter(p => !m[p._id]);
   },
   onLoad: function () {
-    this.loadData()
+    this.loadData();
+    this.getHeights();
   },
   onReachBottom: function () {
+    if (this.data.activateThread != 1) {
+      return;
+    }
     this.loadData()
+  },
+  onReady() {
+    // this.activateThread(0);
   },
   
   clickLike: async function clickLike(e) {
@@ -287,5 +296,46 @@ Page({
     })
     this.jsData.columnsHeight = [0, 0];
     await this.loadData();
+  },
+  async fClickThread(e) {
+    const {index} = e.currentTarget.dataset;
+    this.activateThread(index);
+  },
+  async onSwiperChange(e) {
+    const {current} = e.detail;
+    this.activateThread(current);
+  },
+  async activateThread(index) {
+    // 防止重复call
+    if (this.data.threadsActive === index) {
+      return;
+    }
+
+    this.setData({
+      threadsActive: index,
+    });
+
+    if (index == 0) {
+      this.selectComponent('#badge-rank').reloadData();
+    }
+    if (index == 2) {
+      this.selectComponent('#photo-rank').reloadData();
+    }
+  },
+  
+  // 开始计算各个东西高度
+  getHeights() {
+    wx.getSystemInfo({
+      success: res => {
+        // console.log(res);
+        this.setData({
+          "heights.threads": 40,
+          "heights.screenHeight": res.screenHeight,
+          "heights.windowHeight": res.windowHeight,
+          "heights.statusBarHeight": res.statusBarHeight,
+          "heights.rpx2px": res.windowWidth / 750,
+        });
+      }
+    });
   },
 })

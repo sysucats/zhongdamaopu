@@ -1,6 +1,6 @@
 // pages/tools/updateUserRole/updateUserRole.js
-import { cloud } from "../../../cloudAccess";
-import api from "../../../cloudApi";
+import { cloud } from "../../../utils/cloudAccess";
+import api from "../../../utils/cloudApi";
 
 Page({
 

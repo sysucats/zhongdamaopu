@@ -1,9 +1,9 @@
 // 处理反馈
-import { formatDate } from "../../../utils";
-import { requestNotice, getMsgTplId } from "../../../msg";
-import { checkAuth, fillUserInfo } from "../../../user";
-import { cloud } from "../../../cloudAccess";
-import api from "../../../cloudApi";
+import { formatDate } from "../../../utils/utils";
+import { requestNotice, getMsgTplId } from "../../../utils/msg";
+import { checkAuth, fillUserInfo } from "../../../utils/user";
+import { cloud } from "../../../utils/cloudAccess";
+import api from "../../../utils/cloudApi";
 
 const step = 6;
 

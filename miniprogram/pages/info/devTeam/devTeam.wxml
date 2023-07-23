@@ -8,7 +8,7 @@
 <view class='block'>
   <view class='title'>开源代码</view>
   <view class='desc'>
-    <text selectable='true'>小程序代码开源啦！配备部署教程及视频~\n{{github_link}}</text>
+    <text selectable='true'>小程序代码开源啦！配备部署教程~\n高校可申请Laf后端代金券，已有十余所高校加入~\n{{github_link}}</text>
     <button class="primary" bindtap='copyOpenSourceLink'>点击复制到剪切板</button>
   </view>
 </view>

@@ -1,7 +1,7 @@
 // components/searchCat/searchCat.js
-import { getAvatar } from "../../cat";
-import { regReplace } from "../../utils";
-import { cloud } from "../../cloudAccess";
+import { getAvatar } from "../../utils/cat";
+import { regReplace } from "../../utils/utils";
+import { cloud } from "../../utils/cloudAccess";
 
 Component({
   /**
