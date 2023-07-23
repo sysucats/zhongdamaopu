@@ -27,18 +27,10 @@ Page({
       cate_active: cates[cate_current]
     });
 
-    //封面图缓存
-    if (options.coverImgList) {
-      const imgList = options.coverImgList.split(',');
-      this.setData({
-        images: await Promise.all(imgList.map(val => cloud.signCosUrl(val))),
-      })
-    } else {
-      let images = await Promise.all(science_imgs.map(val => cloud.signCosUrl(val)));
-      this.setData({
-        images: images
-      })
-    }
+    let images = await Promise.all(science_imgs.map(val => cloud.signCosUrl(val)));
+    this.setData({
+      images: images
+    })
 
     await this.getSci();
   },

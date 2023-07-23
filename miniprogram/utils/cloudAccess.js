@@ -125,7 +125,7 @@ async function ensureToken() {
       console.log('获取 access token 出错', res);
     }
   } else {
-    console.log('access token 尚未过期，跳过获取');
+    console.log('access token 尚未过期，跳过获取', accessToken);
   }
 }
 

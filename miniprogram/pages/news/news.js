@@ -234,7 +234,7 @@ Page({
   gotoSciDetail(e) {
     const cate = e.currentTarget.dataset.cate;
     wx.navigateTo({
-      url: '/pages/news/sciDetail/sciDetail?cate=' + cate + '&coverImgList=' + this.data.images,
+      url: '/pages/news/sciDetail/sciDetail?cate=' + cate,
     });
   },
 

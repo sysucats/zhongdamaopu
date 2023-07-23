@@ -17,6 +17,13 @@ async function checkFunctions() {
   // 重新获取token
   await ensureToken();
 
+  if (!wx.getStorageSync('accessToken')) {
+    return {
+      status: STATUS_FAIL,
+      addition: "登录失败，尝试重启Laf后台应用，或检查云函数依赖。"
+    };
+  }
+
   const res = (await cloud.callFunction({
     name: "deployTest",
     data: {
@@ -203,7 +210,7 @@ Page({
         title: "部署云函数",
         status: STATUS_DOING,
         func: checkFunctions,
-        tip: "请更新云函数，“laf func push”\n",
+        tip: "请更新云函数，“laf func push”。\n",
         addition: "",
         break: true,
       },

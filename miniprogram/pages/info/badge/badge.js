@@ -125,9 +125,26 @@ Page({
     });
   },
 
+  // 检查是否配置了徽章
+  async checkBadgeDefEmpty() {
+    const m = this.jsData.badgeDefMap;
+    if (Object.keys(m).length) {
+      return;
+    }
+
+    await wx.showModal({
+      title: '很抱歉',
+      content: '管理员未配置徽章，功能暂不可用~',
+      showCancel: false
+    });
+
+    wx.navigateBack();
+  },
+
   async reloadUserBadge() {
     if (!this.jsData.badgeDefMap) {
       this.jsData.badgeDefMap = await loadBadgeDefMap();
+      await this.checkBadgeDefEmpty();
     }
 
     const db = await cloud.databaseAsync();

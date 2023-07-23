@@ -554,6 +554,7 @@ swiper-item image {
   border-radius: 20rpx;
   margin: 6rpx 2.5%;
   box-sizing: border-box;
+  height: 180rpx;
 }
 
 .user-badge-item.active {

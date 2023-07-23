@@ -112,7 +112,7 @@ Page({
       });
       this.setData({
         "badgeDef._id": res.result.id,
-        "badgeDef.img": cloudUrl,
+        "badgeDef.img": await cloud.signCosUrl(cloudUrl),
       })
     }
 

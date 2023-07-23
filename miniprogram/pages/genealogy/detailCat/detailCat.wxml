@@ -89,7 +89,7 @@
         <view class='value'>{{cat.tutorial || text_cfg.detail_cat.label_tutorial_empty}}</view>
       </view>
 
-      <view class='item long'>
+      <view class='item long' wx:if="{{showBadge}}">
         <view class='label'>
           <view class='label-block'></view>
           徽章口袋

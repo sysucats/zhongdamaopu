@@ -5,7 +5,7 @@
 
 module.exports = {
   // 版本号
-  app_version: "v1.12.6",
+  app_version: "v1.12.7",
   // laf后台服务地址
   laf_url: 'https://fxkv6h.laf.run',
   // laf后台服务地址（微信开发工具中），一般和上面laf_url一致就好
@@ -29,15 +29,15 @@ module.exports = {
   // 小程序菊花码图片
   mpcode_img: "https://cos.ap-guangzhou.myqcloud.com/maopu-1251740905/系统/菊花码.jpg",
 
-  // 猫猫领养状态字符串，对应数据库cat.adopt中的数字下标
-  cat_status_adopt: ["未领养", "已领养", "寻找领养中"],
-  // 首页漂浮的领养Logo对应的状态
-  cat_status_adopt_target: "寻找领养中",
-
   // 徽章排行榜的数量榜logo
   badge_rank_count_img: "https://cos.ap-guangzhou.myqcloud.com/maopu-1251740905/系统/badge_rank_count.png",
   // 徽章排行榜的价值榜logo
   badge_rank_score_img: "https://cos.ap-guangzhou.myqcloud.com/maopu-1251740905/系统/badge_rank_score.png",
+
+  // 猫猫领养状态字符串，对应数据库cat.adopt中的数字下标
+  cat_status_adopt: ["未领养", "已领养", "寻找领养中"],
+  // 首页漂浮的领养Logo对应的状态
+  cat_status_adopt_target: "寻找领养中",
 
   // 各种文字内容
   text: {

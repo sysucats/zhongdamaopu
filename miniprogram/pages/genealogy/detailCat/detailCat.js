@@ -632,10 +632,21 @@ Page({
     });
   },
 
+  // 检查是否配置了徽章
+  async checkBadgeDefEmpty() {
+    const m = this.jsData.badgeDefMap;
+    if (!Object.keys(m).length) {
+      return;
+    }
+
+    this.setData({ showBadge: true });
+  },
+
   // 更新用户的徽章库存（不需要onload）
   async reloadUserBadge() {
     if (!this.jsData.badgeDefMap) {
       this.jsData.badgeDefMap = await loadBadgeDefMap();
+      await this.checkBadgeDefEmpty();
     }
     if (!this.data.user) {
       await this.loadUser();
@@ -702,6 +713,7 @@ Page({
     const catId = this.data.cat._id;
     if (!this.jsData.badgeDefMap) {
       this.jsData.badgeDefMap = await loadBadgeDefMap();
+      await this.checkBadgeDefEmpty();
     }
     let badges = await loadCatBadge(catId);
     badges.sort((a, b) => b.givenTime - a.givenTime);
