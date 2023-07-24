@@ -209,13 +209,18 @@ module.exports = {
     "setting": init_setting,
     "user": default_init_data,
   },
-  images: config.science_imgs.concat([
-    config.reward_img,
-    config.feedback_wj_img,
-    config.mpcode_img,
-    config.badge_rank_count_img,
-    config.badge_rank_score_img,
-  ]),
+  images: {
+    "science_imgs[0]": config.science_imgs[0],
+    "science_imgs[1]": config.science_imgs[1],
+    "science_imgs[2]": config.science_imgs[2],
+    "science_imgs[3]": config.science_imgs[3],
+    "science_imgs[4]": config.science_imgs[4],
+    "reward_img": config.reward_img,
+    "feedback_wj_img": config.feedback_wj_img,
+    "mpcode_img": config.mpcode_img,
+    "badge_rank_count_img": config.badge_rank_count_img,
+    "badge_rank_score_img": config.badge_rank_score_img,
+  },
   func_configs: {
     initDeploy: {
       timeout: 59, // s

@@ -94,21 +94,19 @@ Page({
   },
   //判断图片是否加载完成
   finLoadPic: function () {
-    var that = this,
-      data = that.data,
+    var data = this.data,
       tempPics = data.tempPics,
-      length = tempPics.length,
       fin = true
-    for (var i = 0; i < length; i++) {
+    for (var i = 0; i < tempPics.length; i++) {
       if (!tempPics[i].isLoad) {
         fin = false
         break
       }
     }
     if (fin) {
-      if (that.jsData.isLoading) {
-        that.jsData.isLoading = false
-        that.renderPage()
+      if (this.jsData.isLoading) {
+        this.jsData.isLoading = false
+        this.renderPage()
       }
     }
   },
@@ -162,7 +160,6 @@ Page({
     
     await fillUserInfo(photos, "_openid", "userInfo");
 
-
     // 浏览过程中点赞，会导致序变化，但目前只会加点赞，因此只需要去重
     photos = this.removeDupPhoto(photos);
 
@@ -207,15 +204,15 @@ Page({
     this.getHeights();
   },
   onReachBottom: function () {
-    if (this.data.activateThread != 1) {
+    if (this.data.threadsActive != 1) {
       return;
     }
-    this.loadData()
+    this.loadData();
   },
   onReady() {
     // this.activateThread(0);
   },
-  
+
   clickLike: async function clickLike(e) {
     if (this.jsData.like_mutex) {
       console.log("like lock");
@@ -322,7 +319,7 @@ Page({
       this.selectComponent('#photo-rank').reloadData();
     }
   },
-  
+
   // 开始计算各个东西高度
   getHeights() {
     wx.getSystemInfo({
