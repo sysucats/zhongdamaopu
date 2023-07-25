@@ -10,6 +10,13 @@ Page({
     text_cfg: text_cfg,
     github_link: "https://github.com/sysucats/zhongdamaopu",
     update_log: [{
+      version: "v1.12.8",
+      content: [
+        "点赞榜单修复",
+        "部署指引优化",
+      ],
+      time: "2023/7/24"
+    }, {
       version: "v1.12.7",
       content: [
         "徽章赠送记录",

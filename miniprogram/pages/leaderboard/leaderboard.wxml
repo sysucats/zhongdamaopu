@@ -17,7 +17,7 @@
   <!-- 照片点赞榜 -->
   <swiper-item>
     <!-- 照片的滑动框 -->
-    <scroll-view scroll-y="1" style="height: 100%;">
+    <scroll-view scroll-y="1" style="height: 100%;" bindscrolltolower="onReachBottom">
       <!-- 校区外显筛选 -->
       <scroll-view class="h-filter-list" scroll-x="1" wx:if="{{filters.length > 1}}">
         <view class='h-filter-item long {{item.active? "active": ""}}' bindtap='fClickTime' data-index='{{index}}' wx:for="{{filters}}" wx:key="name">

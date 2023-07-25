@@ -1,6 +1,6 @@
 <!--miniprogram/pages/info/photoRank/photoRank.wxml-->
 
-<view id='top-block'></view>
+<view class='top-block'></view>
 
 <view class='cen-block unAuth' wx:if='{{!user}}'>
   <view class='title'>{{text_cfg.photo_rank.auth_tip_title}}</view>

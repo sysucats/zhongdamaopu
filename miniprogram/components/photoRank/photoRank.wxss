@@ -1,10 +1,10 @@
 /* miniprogram/pages/info/photoRank/photoRank.wxss */
-#top-block {
+.top-block {
   position: fixed;
   top: 0;
   width: 750rpx;
   height: 100rpx;
-  background-color: var(--color-primary);
+  /* background-color: var(--color-primary); */
   z-index: -1;
 }
 

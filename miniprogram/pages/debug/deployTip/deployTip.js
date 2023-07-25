@@ -158,7 +158,8 @@ async function checkDatabase() {
 // 检查云存储图片是否放好
 async function checkImage() {
   var fail_list = [];
-  for (var oriUrl of dp_cfg.images) {
+  for (var key in dp_cfg.images) {
+    const oriUrl = dp_cfg.images[key];
     let url = await cloud.signCosUrl(oriUrl);
     try {
       const res = await cloud.downloadFile({
@@ -166,13 +167,13 @@ async function checkImage() {
       });
       console.log("checkImage", res);
       if (res.statusCode !== 200) {
-        fail_list.push(oriUrl);
+        fail_list.push(`("${key}": "${oriUrl}")`);
         console.log(`download fail: ${url}`);
         continue;
       }
       console.log(`download success: ${url}`);
     } catch (error) {
-      fail_list.push(oriUrl);
+      fail_list.push(`("${key}": "${oriUrl}")`);
       console.log(`download fail: ${url}`);
     }
   }
