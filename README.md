@@ -60,7 +60,7 @@ Laf版暂时没有录制部署视频，部署流程请参考：[猫谱Laf版文�
 
 本项目的开发工作100%用爱发电:sparkles:，特别感谢每一位为此付出的小伙伴。
 
-:computer:代码开发：[Zing22](https://github.com/Zing22)、[Jazon](https://github.com/jxzhn)、[Junius](https://github.com/JunDeer)、[yw](https://github.com/WondrousWisdomcard)
+:computer:代码开发：[Zing22](https://github.com/Zing22)、[Jazon](https://github.com/jxzhn)、[Junius](https://github.com/JunDeer)、[yw](https://github.com/WondrousWisdomcard)、[Lauzeyu](https://github.com/parsifal486)
 
 :black_nib:UI设计：蓝卷、[Junius](https://github.com/JunDeer)、[yw](https://github.com/WondrousWisdomcard)
 
