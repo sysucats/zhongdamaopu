@@ -33,6 +33,7 @@ Page({
     images_path: {},
     now: 0, // 当前状态
     processing: false,
+    errMsg: "",
   },
 
   jsData: {},
@@ -53,7 +54,6 @@ Page({
       gLockKey: await lockUtils.geneKey("device"),
     });
     await this.getLock();
-    // this.tipAutoProcess();
   },
 
   async getLock() {
@@ -84,27 +84,6 @@ Page({
     this.setData({
       gLocking: false
     });
-  },
-
-  // 提示不要手动处理，在laf上不调用
-  tipAutoProcess: async function () {
-    wx.showModal({
-      title: '提示',
-      content: '目前后台已实现自动处理图片，在该功能正常的情况下管理员无需再手动处理图片。',
-      showCancel: true,
-      cancelText: '坚持处理',
-      cancelColor: '#cd0000',
-      confirmText: '离开',
-      confirmColor: '#32cd32',
-    });
-    
-    if (res.cancel && (await checkAuth(this, 3))) {
-      await this.loadProcess();
-    } else {
-      wx.navigateBack({
-        delta: 1
-      });
-    }
   },
 
   onShow: function () {
@@ -142,6 +121,7 @@ Page({
     this.setData({
       total: total,
       now: 0,
+      processing: false,
     });
   },
 
@@ -150,14 +130,34 @@ Page({
     wx.navigateBack();
   },
 
-  clickProcessBtn: async function () {
+  clickProcessBtn: async function (e) {
+    const {test} = e.currentTarget.dataset;
     this.data.processing = !this.data.processing;
     this.setData({
       processing: this.data.processing
     });
     // 开始处理
     if (this.data.processing) {
-      await this.beginProcess();
+      try {
+        this.setData({
+          errMsg: "",
+        })
+        await this.beginProcess(test);  
+      } catch (error) {
+        console.error(error);
+        await wx.showModal({
+          title: '出错了',
+          content: error.toString(),
+          showCancel: false
+        });
+        this.setData({
+          errMsg: JSON.stringify(error.message) || "-",
+          errStack: error.stack?.toString() || "-",
+        });
+        await this.loadProcess();
+        wx.hideLoading();
+      }
+
       return;
     }
     // 停止处理，考虑放个mask
@@ -167,7 +167,7 @@ Page({
     });
   },
 
-  beginProcess: async function () {
+  beginProcess: async function (isTesting) {
     const db = await cloud.databaseAsync();
     const _ = db.command;
     while (this.data.processing && (await this.getLock())) {
@@ -192,7 +192,7 @@ Page({
       const initCanvas = await drawUtils.initCanvas('#bigPhoto');
       this.jsData.gCtx = initCanvas.ctx;
       this.jsData.gCanvas = initCanvas.canvas;
-      await this.processOne(photos[0]);
+      await this.processOne(photos[0], isTesting);
       this.setData({
         now: this.data.now + 1
       });
@@ -208,16 +208,23 @@ Page({
   },
 
   // 处理一张图片
-  processOne: async function (photoInfo) {
+  processOne: async function (photoInfo, isTesting) {
     photoInfo.mdate = new Date(photoInfo.mdate).toJSON();
     // 获取原图
     this.setPhase(1);
     if (photoInfo.userInfo === undefined) {
       photoInfo.userInfo = { nickName: '猫友' }
     }
-    var photoObj = await wx.getImageInfo({
-      src: photoInfo.photo_id,
-    });
+    try {
+      var photoObj = await wx.getImageInfo({
+        src: photoInfo.photo_id,
+      });
+    } catch (error) {
+      console.error(error);
+      const err = new Error(`error: ${JSON.stringify(error)}, photoInfo: ${JSON.stringify(photoInfo)}`);
+      err.name = "下载图片失败";
+      throw err;
+    }
     // 处理旋转问题
     if (photoObj.orientation == 'right' || photoObj.orientation == 'left') {
       [photoObj.width, photoObj.height] = [photoObj.height, photoObj.width];
@@ -234,6 +241,16 @@ Page({
     this.setPhase(3);
     const watermarkPath = await this.watermark(photoObj, photoInfo);
     console.log("watermarkPath", watermarkPath);
+    // 是否只是测试运行
+    if (isTesting) {
+      await wx.showModal({
+        title: '试运行完成',
+        content: '请点击缩略图和水印图，查看是否正常',
+        showCancel: false,
+      })
+      await this.loadProcess();
+      return;
+    }
     // 上传压缩图
     this.setPhase(4);
     const compressCloudPath = `compressed/${generateUUID()}.jpg`;
@@ -352,6 +369,13 @@ Page({
     }
     wx.previewImage({
       urls: [src],
+    });
+  },
+
+  copyText: function (e) {
+    const {text} = e.currentTarget.dataset;
+    wx.setClipboardData({
+      data: text,
     });
   }
 })

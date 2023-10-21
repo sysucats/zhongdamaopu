@@ -296,15 +296,15 @@ function _inject() {
   // 让database接口等待openid获取，满足laf的访问策略要求
   const _database = cloud.__proto__.database;
   cloud.__proto__.databaseAsync = async function () {
-    var max_try = 300;
+    var maxTry = 300;
     while (true) {
       const { token } = wx.getStorageSync('accessToken');
       if (token) {
         break;
       }
       console.log("waiting jwt...");
-      max_try --;
-      if (!max_try) {
+      maxTry --;
+      if (!maxTry) {
         console.log("max try...");
         break;
       }
