@@ -99,16 +99,7 @@ Page({
       text = this.stripKey(text);
     }
     wx.setClipboardData({
-      data: text,
-      success: function (res) {
-        wx.getClipboardData({
-          success: function (res) {
-            wx.showToast({
-              title: '复制成功'
-            })
-          }
-        })
-      }
-    })
+      data: text
+    });
   },
 })
