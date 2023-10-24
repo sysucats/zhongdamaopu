@@ -1,8 +1,14 @@
-import {
+import config, {
   laf_url,
   laf_dev_url,
   use_private_tencent_cos
-} from "../config"
+} from "../config";
+import {
+  parseQueryParams,
+  removeQueryParams,
+  getDeltaHours
+} from "./utils";
+import { getCacheItem, setCacheItem, getCacheDate, setCacheDate, cacheTime } from "./cache";
 import COS from '../packages/tencentcloud/cos';
 import CryptoJS from 'crypto-js';
 
@@ -34,23 +40,32 @@ function _getRegionBucketPath(url) {
   return {region: firstItems[1], bucket: path[0], filePath: path[1]}
 }
 
-// COS加密
-async function signCosUrl(url) {
-  // 不是腾讯云COS的不加密
-  if (!url || !url.includes("myqcloud.com") || url.includes("?") || !cloud.cos || !use_private_tencent_cos) {
-    return url;
+// 检查是否需要重新签名
+async function _needResign(url) {
+  if (!url.includes("?")) {
+    return true;
   }
 
-  // console.log("signCosUrl input", url);
+  let params = parseQueryParams(url);
+  let signTime = parseInt(params["q-sign-time"]);
+  // 检查是否有签名，签名是否过期
+  if (!signTime || getDeltaHours(signTime) * 3600 > config.sign_expires_tencent_cos) {
+    return true;
+  }
+
+  return false;
+}
+
+// 实际签名操作
+async function _doCosSign(url) {
   const cosInfo = _getRegionBucketPath(url);
-  // console.log("cosInfo", cosInfo);
   return new Promise((resolve) => {
     cloud.cos.getObjectUrl({
       Bucket: cosInfo.bucket, /* 填入您自己的存储桶，必须字段 */
       Region: cosInfo.region, /* 存储桶所在地域，例如 ap-beijing，必须字段 */
       Key: cosInfo.filePath, /* 存储在桶里的对象键（例如1.jpg，a/b/test.txt），支持中文，必须字段 */
       Protocol: "https:",
-      Expires: 3600 * 24 * 7, // 单位秒
+      Expires: config.sign_expires_tencent_cos, // 单位秒
     }, function (err, data) {
       if (err) {
         console.error(err);
@@ -61,6 +76,37 @@ async function signCosUrl(url) {
       resolve(data.Url);
     });
   });
+}
+
+// COS加密
+async function signCosUrl(inputUrl) {
+  let url = inputUrl;
+  // 不是腾讯云COS的不加密
+  if (!url || !url.includes("myqcloud.com") || url.includes("?") || !cloud.cos || !use_private_tencent_cos) {
+    return url;
+  }
+
+  if (!_needResign(url)) {
+    return url;
+  }
+
+  // 去除参数部分
+  url = removeQueryParams(url);
+
+  // 获取缓存
+  let cacheKey = `cos-sign-${url}`;
+  let cacheItem = getCacheItem(cacheKey);
+  if (cacheItem) {
+    return cacheItem;
+  }
+
+  // 实际签名
+  let signedUrl = await _doCosSign(url);
+
+  // 保存缓存
+  setCacheItem(cacheKey, signedUrl, config.sign_expires_tencent_cos);
+
+  return signedUrl;
 }
 
 async function ensureCos() {
