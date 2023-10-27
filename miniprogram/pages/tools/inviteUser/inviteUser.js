@@ -1,5 +1,5 @@
-import { getUser, isManagerAsync, setUserRole } from "../../../user";
-import { getCurrentPath } from "../../../utils";
+import { getUser, isManagerAsync, setUserRole } from "../../../utils/user";
+import { getCurrentPath } from "../../../utils/utils";
 import { text as text_cfg } from "../../../config";
 
 const share_text = text_cfg.app_name + ' - ' + text_cfg.inviteUser.share_tip;

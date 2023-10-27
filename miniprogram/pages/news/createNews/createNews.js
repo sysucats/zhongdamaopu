@@ -1,15 +1,15 @@
 import {
   generateUUID
-} from "../../../utils";
+} from "../../../utils/utils";
 import {
   getPageUserInfo,
   checkAuth,
   toSetUserInfo
-} from "../../../user";
+} from "../../../utils/user";
 import {
   cloud
-} from "../../../cloudAccess";
-import api from "../../../cloudApi";
+} from "../../../utils/cloudAccess";
+import api from "../../../utils/cloudApi";
 
 Page({
   /**
@@ -94,8 +94,7 @@ Page({
     toSetUserInfo();
   },
 
-  chooseImg(e) {
-    const that = this;
+  async chooseImg(e) {
     if (this.data.photos.length == 9) {
       wx.showToast({
         title: '已满九张',
@@ -104,22 +103,26 @@ Page({
       });
       return;
     }
-    wx.chooseImage({
-      count: 9 - that.data.photos.length,
+    var res = await wx.chooseMedia({
+      count: 9 - this.data.photos.length,
+      mediaType: ['image'],
       sizeType: ["compressed"],
-      success: (res) => {
-        var photos = that.data.photos;
-        for (const file of res.tempFiles) {
-          photos.push({
-            file: file
-          });
-        }
-        this.setData({
-          photos: photos
-        });
-      },
+      sourceType: ['album'],
     })
-    console.log("[chooseImg] -", that.data.photos);
+
+    var photos = this.data.photos;
+    for (const file of res.tempFiles) {
+      photos.push({
+        file: {
+          path: file.tempFilePath,
+          size: file.size
+        }
+      });
+    }
+    this.setData({
+      photos: photos
+    });
+    console.log("[chooseImg] -", this.data.photos);
   },
 
   deleteImg(event) {
@@ -145,8 +148,7 @@ Page({
     })
   },
 
-  chooseCover(e) {
-    const that = this;
+  async chooseCover(e) {
     if (this.data.cover != 0) {
       wx.showToast({
         title: '只能选择一张封面',
@@ -155,18 +157,22 @@ Page({
       });
       return;
     }
-    wx.chooseImage({
+    var res = await wx.chooseMedia({
       count: 1,
+      mediaType: ['image'],
       sizeType: ["compressed"],
-      success: (res) => {
-        for (const file of res.tempFiles) {
-          that.setData({
-            cover: file
-          });
-        }
-      },
+      sourceType: ['album'],
     })
-    console.log("[chooseCover] -", that.data.photos);
+
+    for (const file of res.tempFiles) {
+      this.setData({
+        cover: {
+          path: file.tempFilePath,
+          size: file.size
+        }
+      });
+    }
+    console.log("[chooseCover] -", this.data.photos);
   },
 
   deleteCover(event) {

@@ -1,9 +1,9 @@
 // miniprogram/pages/news/news.js
-import { sleep } from "../../utils.js";
+import { sleep } from "../../utils/utils";
 import { text as text_cfg, science_imgs } from "../../config";
-import { checkAuth } from "../../user";
-import { showTab } from "../../page";
-import { cloud } from "../../cloudAccess";
+import { checkAuth } from "../../utils/user";
+import { showTab } from "../../utils/page";
+import { cloud } from "../../utils/cloudAccess";
 const share_text = text_cfg.app_name + ' - ' + text_cfg.science.share_tip;
 
 
@@ -46,7 +46,7 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: async function (options) {
-    const db = cloud.database();
+    const db = await cloud.databaseAsync();
     var res = await db.collection('news').orderBy('date', 'desc').get();
 
     this.setData({
@@ -104,7 +104,7 @@ Page({
 
   // 重新载入数据库
   async getData() {
-    const db = cloud.database();
+    const db = await cloud.databaseAsync();
     const res = await db.collection('news').orderBy('date', 'desc').get();
 
     this.setData({
@@ -242,7 +242,7 @@ Page({
   gotoSciDetail(e) {
     const cate = e.currentTarget.dataset.cate;
     wx.navigateTo({
-      url: '/pages/news/sciDetail/sciDetail?cate=' + cate + '&coverImgList=' + this.data.images,
+      url: '/pages/news/sciDetail/sciDetail?cate=' + cate,
     });
   },
 

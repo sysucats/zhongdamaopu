@@ -1,49 +1,80 @@
-<!-- 校区外显筛选 -->
-<scroll-view class="h-filter-list" scroll-x="1" wx:if="{{filters.length > 1}}">
-  <view class='h-filter-item long {{item.active? "active": ""}}'  bindtap='fClickTime' data-index='{{index}}'
-        wx:for="{{filters}}" wx:key="name">
-        <image class="time-logo" wx:if="{{!item.active}}" src="/pages/public/images/filter/time_gray.png" mode="aspectFit"></image>
-        <image class="time-logo" wx:else src="/pages/public/images/filter/time_active.png" mode="aspectFit"></image>
-        {{item.name}}
+<!-- 频道切换 -->
+<view class="thread-list" style="height: {{heights.threads}}px;">
+  <view class='thread-item {{threadsActive == index? "active": ""}}' bindtap='fClickThread' data-index='{{index}}' wx:for="{{threads}}" wx:key="*this">
+    <view class="thread-item-name">{{item}}</view>
+    <view class="thread-item-bar"></view>
   </view>
-</scroll-view>
+</view>
 
-<view class="main">
-  <view wx:for="{{columns}}" wx:key="null" class="column" wx:for-index="col">
-    <view wx:for="{{item}}"  wx:key="pic" class="column_item" wx:for-item="pics">
-      <view class="column_pic" bindtap="clickPhoto" data-url="{{pics.pic_prev}}">
-        <image src="{{pics.pic}}" mode="widthFix" />
-        <!-- <view class="dark_mask"></view> -->
-        <view class="location">{{pics.cat.campus}}</view>
-      </view>
-      <view class="info">
-        <view class="names ellipsis-text" bindtap="clickCatName" data-cat_id="{{pics.cat_id}}">
-          <view class="cat-name ellipsis-text">{{pics.cat.name}}</view>
-          <view class="photo-info">
-            <view class="pher-name ellipsis-text">{{pics.photographer || pics.userInfo.nickName || "猫友"}}</view>
-            <view class="photo-date ellipsis-text">{{filters[2].active || filters[3].active ? pics.mdate_str : pics.simplify_date}}</view>
+<swiper current="{{threadsActive}}" indicator-dots="{{false}}" bindchange="onSwiperChange" style="height: {{heights.windowHeight - heights.threads - tabBarHeight}}px;">
+  <!-- 徽章收集榜 -->
+  <swiper-item>
+    <scroll-view scroll-y="1" style="height: 100%;">
+      <badgeRank id="badge-rank"></badgeRank>
+    </scroll-view>
+  </swiper-item><!-- 徽章收集榜 end -->
+
+  <!-- 照片点赞榜 -->
+  <swiper-item>
+    <!-- 照片的滑动框 -->
+    <scroll-view scroll-y="1" style="height: 100%;" bindscrolltolower="onReachBottom">
+      <!-- 校区外显筛选 -->
+      <scroll-view class="h-filter-list" scroll-x="1" wx:if="{{filters.length > 1}}">
+        <view class='h-filter-item long {{item.active? "active": ""}}' bindtap='fClickTime' data-index='{{index}}' wx:for="{{filters}}" wx:key="name">
+          <image class="time-logo" wx:if="{{!item.active}}" src="/pages/public/images/filter/time_gray.png" mode="aspectFit"></image>
+          <image class="time-logo" wx:else src="/pages/public/images/filter/time_active.png" mode="aspectFit"></image>
+          {{item.name}}
+        </view>
+      </scroll-view>
+
+
+      <view class="main">
+        <view wx:for="{{columns}}" wx:key="null" class="column" wx:for-index="col">
+          <view wx:for="{{item}}" wx:key="pic" class="column_item" wx:for-item="pics">
+            <view class="column_pic" bindtap="clickPhoto" data-url="{{pics.pic_prev}}">
+              <image src="{{pics.pic}}" mode="widthFix" />
+              <!-- <view class="dark_mask"></view> -->
+              <view class="location">{{pics.cat.campus}}</view>
+            </view>
+            <view class="info">
+              <view class="names ellipsis-text" bindtap="clickCatName" data-cat_id="{{pics.cat_id}}">
+                <view class="cat-name ellipsis-text">{{pics.cat.name}}</view>
+                <view class="photo-info">
+                  <view class="pher-name ellipsis-text">{{pics.photographer || pics.userInfo.nickName || "猫友"}}</view>
+                  <view class="photo-date ellipsis-text">{{filters[2].active || filters[3].active ? pics.mdate_str : pics.simplify_date}}</view>
+                </view>
+
+
+              </view>
+              <view class="like-button" bindtap="clickLike" data-col="{{col}}" data-i="{{index}}">
+                <heart size="80" liked="{{pics.liked}}"></heart>
+                <text class="like-num">{{pics.like_count || 0}}</text>
+              </view>
+            </view>
           </view>
-
-
-        </view>
-        <view class="like-button" bindtap="clickLike" data-col="{{col}}" data-i="{{index}}">
-          <heart size="80" liked="{{pics.liked}}"></heart>
-          <text class="like-num">{{pics.like_count || 0}}</text>
         </view>
       </view>
-    </view>
-  </view>
-</view>
-  
-<view class='loading' wx:if='{{!loadnomore}}'>
-  <image src='/pages/public/images/system/loading.gif'></image>
-</view>
-<view class='loadnomore' wx:else>
-  <image src='/pages/public/images/system/nomore.png'></image>
-</view>
-<view class="hide">
-  <image wx:for="{{tempPics}}" wx:key="null" src="{{item.pic}}" bindload="loadPic" binderror="loadPicError" data-index="{{index}}" />
-</view>
+
+      <view class='loading' wx:if='{{!loadnomore}}'>
+        <image src='/pages/public/images/system/loading.gif'></image>
+      </view>
+      <view class='loadnomore' wx:else>
+        <image src='/pages/public/images/system/nomore.png'></image>
+      </view>
+      <view class="hide">
+        <image wx:for="{{tempPics}}" wx:key="null" src="{{item.pic}}" bindload="loadPic" binderror="loadPicError" data-index="{{index}}" />
+      </view>
+    </scroll-view>
+  </swiper-item> <!-- 照片点赞榜 end -->
+
+  <!-- 拍照月榜 -->
+  <swiper-item>
+    <scroll-view scroll-y="1" style="height: 100%;">
+      <photoRank id="photo-rank"></photoRank>
+    </scroll-view>
+  </swiper-item><!-- 拍照月榜 end -->
+
+</swiper>
 
 <!-- 底tab占位 -->
 <view style="height: {{tabBarHeight}}px;"></view>

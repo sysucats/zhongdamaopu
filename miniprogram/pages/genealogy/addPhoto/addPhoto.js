@@ -3,21 +3,21 @@ import {
   getCurrentPath,
   shareTo,
   compressImage
-} from "../../../utils";
+} from "../../../utils/utils";
 import {
   getPageUserInfo,
   checkCanUpload,
   toSetUserInfo
-} from "../../../user";
+} from "../../../utils/user";
 import {
   requestNotice,
   sendNotifyVertifyNotice
-} from "../../../msg";
+} from "../../../utils/msg";
 import config from "../../../config";
 import {
   cloud
-} from "../../../cloudAccess";
-import api from "../../../cloudApi";
+} from "../../../utils/cloudAccess";
+import api from "../../../utils/cloudApi";
 
 Page({
   /**
@@ -38,7 +38,7 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: async function (options) {
-    const db = cloud.database();
+    const db = await cloud.databaseAsync();
     const cat_id = options.cat_id;
     var catRes = await db.collection('cat').doc(cat_id).field({
       birthday: true,
@@ -74,8 +74,8 @@ Page({
     await getPageUserInfo(this);
   },
 
-  onUnload: function (options) {
-    this.ifSendNotifyVeriftMsg()
+  onUnload: async function (options) {
+    await this.ifSendNotifyVeriftMsg()
   },
 
   /**
@@ -193,7 +193,7 @@ Page({
   },
 
   async ifSendNotifyVeriftMsg() {
-    const db = cloud.database();
+    const db = await cloud.databaseAsync();
     const subMsgSetting = await db.collection('setting').doc('subscribeMsg').get();
     const triggerNum = subMsgSetting.data.verifyPhoto.triggerNum; //几条未审核才触发
     // console.log("triggerN",triggerNum);
@@ -205,7 +205,6 @@ Page({
       await sendNotifyVertifyNotice(numUnchkPhotos);
       console.log("toSendNVMsg");
     }
-
   },
 
   async uploadImg(photo) {

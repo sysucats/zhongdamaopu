@@ -37,8 +37,8 @@
     "showES6CompileOption": false,
     "useCompilerPlugins": false,
     "ignoreDevUnusedFiles": false,
-    "ignoreUploadUnusedFiles": false,
-    "condition": false
+    "ignoreUploadUnusedFiles": true,
+    "condition": true
   },
   "simulatorType": "wechat",
   "simulatorPluginLibVersion": {},

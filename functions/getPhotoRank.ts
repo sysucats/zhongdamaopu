@@ -17,7 +17,7 @@ exports.main = async function (ctx: FunctionContext) {
   const today = new Date(), y = today.getFullYear(), m = today.getMonth();
   const firstDay = new Date(y, m, 1);
   const qf = { mdate: _.gt(firstDay), verified: true };
-  
+
   // 先取出集合记录总数
   const countResult = await db.collection('photo').where(qf).count();
   const total = countResult.total;
@@ -46,6 +46,10 @@ exports.main = async function (ctx: FunctionContext) {
 
   const stat = getStat(all_photos.data);
   await db.collection('photo_rank').add({ stat, mdate: today })
+
+  // 删除旧的
+  await removeOld();
+  
   return { all_photos: all_photos, stat: stat };
 }
 
@@ -64,8 +68,23 @@ function getStat(all_photos) {
         count: 1
       }
     } else {
-      stat[key].count ++;
+      stat[key].count++;
     }
   }
   return stat;
+}
+
+
+// 删除旧的
+async function removeOld() {
+  const db = cloud.database();
+  const _ = db.command;
+
+  var weekAgo = new Date();
+  weekAgo.setDate(weekAgo.getDate() - 7);
+
+  const res = await db.collection('photo_rank')
+    .where({ mdate: _.lt(weekAgo) })
+    .remove({ multi: true });
+  console.log("remove old", res);
 }

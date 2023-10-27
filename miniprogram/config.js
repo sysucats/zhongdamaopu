@@ -29,12 +29,10 @@ module.exports = {
   // 小程序菊花码图片
   mpcode_img: "https://cos.ap-shanghai.myqcloud.com/catcat-1257269019/系统/菊花码.jpg",
 
-  // 首页banner广告
-  ad_genealogy_banner: "adunit-9a7dcb84fe2c4db1",
-  // 识猫banner广告
-  ad_recognize_banner: "adunit-1b69cda0d1b8c703",
-  // 投喂video广告
-  ad_reward_video: "adunit-eac4513e7b770f93",
+  // 徽章排行榜的数量榜logo
+  badge_rank_count_img: "https://cos.ap-guangzhou.myqcloud.com/maopu-1251740905/系统/badge_rank_count.png",
+  // 徽章排行榜的价值榜logo
+  badge_rank_score_img: "https://cos.ap-guangzhou.myqcloud.com/maopu-1251740905/系统/badge_rank_score.png",
 
   // 猫猫领养状态字符串，对应数据库cat.adopt中的数字下标
   cat_status_adopt: ["未领养", "已领养", "寻找领养中"],
@@ -68,7 +66,7 @@ module.exports = {
       bottom_text_loading: "LOADING...",
       bottom_text_end: "- THE END -",
       popularity_tip: "猫猫人气值",
-      comment_tip: "猫猫留言数",
+      comment_tip: "猫猫便利贴数",
       button_feedback: "反馈猫猫信息",
       label_nickname: "昵称",
       label_location: "常驻地",
@@ -79,7 +77,7 @@ module.exports = {
       label_character: "性格及特点",
       label_tutorial: "撸猫指南",
       label_tutorial_empty: "暂时还没有",
-      label_comment_board: "留言板",
+      label_comment_board: "便利贴墙",
       sterilized_true: "已绝育",
       sterilized_false: "待绝育",
     },
@@ -88,16 +86,16 @@ module.exports = {
       feedback_title: "反馈内容",
       feedback_tip: "猫猫信息纠错、照片归属权、功能改进等~",
       input_length_tip: "字数",
-      contract_title: "你的联系方式",
-      contract_tip: "（选填）微信/QQ/邮箱",
+      contract_title: "其他信息",
+      contract_tip: "（选填）",
       submit_button: "提交反馈",
       submit_tip: "*反馈内容仅后台工作人员可见",
     },
-    // 提交留言页，pages/genealogy/commentBoard/commentBoard
+    // 提交便利贴页，pages/genealogy/commentBoard/commentBoard
     comment_board: {
-      ban_tip: "如有误封请在\"关于-信息反馈\"中留言~",
-      auth_tip: "设置头像昵称后留言~",
-      comment_tip: "给猫咪留个言吧~"
+      ban_tip: "如有误封请在\"关于-信息反馈\"中反馈~",
+      auth_tip: "请先设置头像昵称~",
+      comment_tip: "给猫咪留张便利贴吧~"
     },
     // 添加照片，pages/genealogy/addPhoto/addPhoto
     add_photo: {
@@ -160,9 +158,9 @@ module.exports = {
     },
     // 精选，pages/leaderboard/leaderboard
     leaderboard: {
-      share_tip: "精选照片",
+      share_tip: "榜单",
     },
-    // 精选，pages/inviteUser/inviteUser
+    // 特邀用户，pages/inviteUser/inviteUser
     inviteUser: {
       share_tip: "该分享无法激活特邀哦",
       share_title: "[6小时内] 点击成为特邀用户~",

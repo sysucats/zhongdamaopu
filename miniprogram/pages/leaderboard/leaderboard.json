@@ -1,7 +1,9 @@
 {
   "usingComponents": {
-    "heart": "/packages/heart-button/heart"
+    "heart": "/packages/heart-button/heart",
+    "photoRank": "/components/photoRank/photoRank",
+    "badgeRank": "/components/badgeRank/badgeRank"
   },
-  "navigationBarTitleText": "猫谱精选"
-
+  "disableScroll": true,
+  "navigationBarTitleText": "榜单"
 }

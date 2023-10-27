@@ -1,7 +1,7 @@
-import { checkAuth } from "../../../user";
-import { loadFilter } from "../../../page";
-import { cloud } from "../../../cloudAccess";
-import api from "../../../cloudApi";
+import { checkAuth } from "../../../utils/user";
+import { loadFilter } from "../../../utils/page";
+import { cloud } from "../../../utils/cloudAccess";
+import api from "../../../utils/cloudApi";
 
 Page({
 
@@ -23,55 +23,6 @@ Page({
     }
   },
 
-  /**
-   * 生命周期函数--监听页面初次渲染完成
-   */
-  onReady: function () {
-
-  },
-
-  /**
-   * 生命周期函数--监听页面显示
-   */
-  onShow: function () {
-
-  },
-
-  /**
-   * 生命周期函数--监听页面隐藏
-   */
-  onHide: function () {
-
-  },
-
-  /**
-   * 生命周期函数--监听页面卸载
-   */
-  onUnload: function () {
-
-  },
-
-  /**
-   * 页面相关事件处理函数--监听用户下拉动作
-   */
-  onPullDownRefresh: function () {
-
-  },
-
-  /**
-   * 页面上拉触底事件的处理函数
-   */
-  onReachBottom: function () {
-
-  },
-
-  /**
-   * 用户点击右上角分享
-   */
-  onShareAppMessage: function () {
-
-  },
-
   // 没有权限，返回上一页
   goBack() {
     wx.navigateBack();
@@ -87,7 +38,7 @@ Page({
     var area_item = {
       key: 'area',
       cateKey: 'campus',
-      name: '校区',
+      name: '区域',
       category: [],
     };
     // 用个object当作字典，把area分下类
@@ -126,6 +77,10 @@ Page({
     wx.hideLoading();
   },
 
+  async loadCampus() {
+
+  },
+
   // 增加option
   addOptionInput(e) {
     const filters_sub = e.currentTarget.dataset.filterssub;
@@ -136,7 +91,7 @@ Page({
     this.setData({ filters: filters });
   },
 
-  addOptionConfirm(e) {
+  async addOptionConfirm(e) {
     var filters = this.data.filters;
 
     const name = e.detail.value.name;
@@ -165,10 +120,11 @@ Page({
     })
     category.adding = false;
     this.setData({ filters: filters });
+    await this.uploadFilters();
   },
 
   // 移动、管理option
-  moveOption(e) {
+  async moveOption(e) {
     var filters = this.data.filters;
 
     const filters_sub = e.currentTarget.dataset.filterssub;
@@ -188,6 +144,7 @@ Page({
     category.items[index] = category.items[new_index];
     category.items[new_index] = temp;
     this.setData({ filters: filters });
+    await this.uploadFilters();
   },
 
   async deleteOption(e) {
@@ -206,7 +163,7 @@ Page({
     const delete_value = category.items[index];
     
     // 检查一下数据库里这个地址有没有猫，如果有就不能删
-    const db = cloud.database();
+    const db = await cloud.databaseAsync();
     var qf = { [mainF.key]: category.items[index].name };
     if (mainF.cateKey) {
       qf[mainF.cateKey] = category.name;
@@ -228,6 +185,8 @@ Page({
         title: '删除成功',
       });
     });
+
+    await this.uploadFilters();
   },
 
   // 确定上传
@@ -263,6 +222,85 @@ Page({
       data: {
         area: area,
         colour: colour
+      }
+    });
+    await this.reloadFilter();
+  },
+
+  async addCampus() {
+    this.setData({
+      addingCampus: true,
+    })
+  },
+  
+  async addCampusConfirm(e) {
+    const category = this.data.filters[0].category;
+    const name = e.detail.value.name;
+
+    if (name == '') { // 名字不能为空
+      return false;
+    }
+
+    let uploadCampus = [];
+    for (let k = 0; k < category.length; ++k) {
+      // 检查类内有无重名
+      const tmp = category[k].name;
+      if (name == tmp) {
+        wx.showToast({
+          title: '名字不能重复',
+          icon: 'none'
+        })
+        return false;
+      }
+      uploadCampus.push(tmp);
+    }
+    uploadCampus.push(name);
+    
+    // 直接上传
+    await this.doUploadCampus(uploadCampus);
+    
+    this.setData({
+      addingCampus: false,
+    });
+  },
+
+  async deleteCampus(e) {
+    const category = this.data.filters[0].category;
+    const {cateindex} = e.currentTarget.dataset;
+
+    let uploadCampus = [];
+    for (let k = 0; k < category.length; ++k) {
+      if (k == cateindex) {
+        // 即将删除的，如果有存在区域，就不能删除
+        if (category[k].items.length) {
+          wx.showToast({
+            title: '有区域无法删除',
+            icon: 'error'
+          })
+          return false;
+        }
+        continue;
+      }
+      const tmp = category[k].name;
+      uploadCampus.push(tmp);
+    }
+
+    // 上传
+    console.log("删除", uploadCampus);
+    await this.doUploadCampus(uploadCampus);
+  },
+
+  async doUploadCampus(data) {
+    wx.showLoading({
+      title: '更新中...',
+    });
+
+    await api.curdOp({
+      operation: "update",
+      collection: "setting",
+      item_id: "filter",
+      data: {
+        campuses: data,
       }
     });
     await this.reloadFilter();

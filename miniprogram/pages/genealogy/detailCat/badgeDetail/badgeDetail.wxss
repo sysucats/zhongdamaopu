@@ -1,0 +1,126 @@
+/* pages/genealogy/detailCat/badgeDetail/badgeDetail.wxss */
+page {
+  background-color: var(--color-gray-light);
+}
+
+.bd-block {
+  width: 690rpx;
+  margin: 50rpx 30rpx;
+  background-color: white;
+  border-radius: 30rpx;
+  overflow: hidden;
+}
+
+.bd-title {
+  width: 100%;
+  padding: 20rpx 30rpx;
+  font-size: 28rpx;
+  font-weight: bold;
+}
+
+.bd-item {
+  display: flex;
+  flex-direction: row;
+  margin: 10rpx 0;
+  align-items: center;
+  justify-content: space-evenly;
+}
+
+.badge-order {
+  width: 30rpx;
+  font-size: 20rpx;
+  text-align: center;
+}
+
+.badge-img {
+  width: 100rpx;
+  height: 100rpx;
+}
+
+.badge-info {
+  width: 300rpx;
+  display: flex;
+  flex-direction: column;
+}
+
+.badge-info.order {
+  width: 400rpx;
+}
+
+.badge-name {
+  font-size: 24rpx;
+}
+
+.badge-level {
+  font-size: 22rpx;
+}
+
+.badge-desc {
+  font-size: 16rpx;
+  color: var(--color-gray-max);
+}
+
+.badge-level-A .badge-name {
+  color: var(--color-badge-A);
+}
+
+.badge-level-B .badge-name {
+  color: var(--color-badge-B);
+}
+
+.badge-level-C .badge-name {
+  color: var(--color-badge-C);
+}
+
+.user-info {
+  width: 200rpx;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.user-info.current-user {
+  border-right: 10rpx solid var(--color-primary);
+}
+
+.user-info-name{
+  width: 200rpx;
+  font-size: 18rpx;
+  color: var(--color-black-min);
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+}
+
+.user-info-name-text {
+  max-width: 170rpx;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.user-avatar {
+  width: 30rpx;
+  height: 30rpx;
+  border-radius: 100%;
+  margin-right: 10rpx;
+  display: inline-block;
+}
+
+.badge-count {
+  width: 50rpx;
+  font-size: 22rpx;
+  text-align: center;
+}
+
+.user-info-time {
+  font-size: 16rpx;
+  color: var(--color-gray-dark);
+}
+
+.user-info-small-text {
+  font-size: 24rpx;
+  color: var(--color-black-light);
+}

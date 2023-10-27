@@ -1,77 +1,105 @@
-- collectionName: setting
+- collectionName: badge
   rules:
-    read: true
-    count: true
+    read: openid
+    count: openid
     update: false
     remove: false
     add: false
-- collectionName: science
+- collectionName: badge_code
   rules:
-    read: true
-    count: true
+    read: false
+    count: false
+    update: false
+    remove: false
+    add: false
+- collectionName: badge_def
+  rules:
+    read: openid
+    count: openid
+    update: false
+    remove: false
+    add: false
+- collectionName: badge_rank
+  rules:
+    read: openid
+    count: openid
+    update: false
+    remove: false
+    add: false
+- collectionName: cat
+  rules:
+    read: openid
+    count: openid
     update: false
     remove: false
     add: false
 - collectionName: comment
   rules:
-    read: true
-    count: true
+    read: openid
+    count: openid
     update: false
     remove: false
-    add: true
-- collectionName: news
+    add: openid
+- collectionName: feedback
   rules:
-    read: true
-    count: true
+    read: openid
+    count: openid
     update: false
     remove: false
-    add: false
-- collectionName: reward
-  rules:
-    read: true
-    count: true
-    update: false
-    remove: false
-    add: false
-- collectionName: user
-  rules:
-    read: true
-    count: true
-    update: false
-    remove: false
-    add: false
-- collectionName: photo_rank
-  rules:
-    read: true
-    count: true
-    update: false
-    remove: false
-    add: false
+    add: openid
 - collectionName: inter
   rules:
-    read: true
-    count: true
+    read: openid
+    count: openid
     update: false
     remove: false
-    add: true
-- collectionName: cat
+    add: openid
+- collectionName: news
   rules:
-    read: true
-    count: true
+    read: openid
+    count: openid
     update: false
     remove: false
     add: false
 - collectionName: photo
   rules:
-    read: true
-    count: true
+    read: openid
+    count: openid
     update: false
     remove: false
-    add: true
-- collectionName: feedback
+    add: openid
+- collectionName: photo_rank
   rules:
-    read: true
-    count: true
+    read: openid
+    count: openid
     update: false
     remove: false
-    add: true
+    add: false
+- collectionName: reward
+  rules:
+    read: openid
+    count: openid
+    update: false
+    remove: false
+    add: false
+- collectionName: science
+  rules:
+    read: openid
+    count: openid
+    update: false
+    remove: false
+    add: false
+- collectionName: setting
+  rules:
+    read: openid
+    count: openid
+    update: false
+    remove: false
+    add: false
+- collectionName: user
+  rules:
+    read: openid
+    count: openid
+    update: false
+    remove: false
+    add: false

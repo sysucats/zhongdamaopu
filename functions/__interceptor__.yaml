@@ -1,0 +1,5 @@
+name: __interceptor__
+methods:
+  - POST
+  - GET
+tags: []

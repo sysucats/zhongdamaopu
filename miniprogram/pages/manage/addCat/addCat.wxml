@@ -5,7 +5,7 @@
     <view class='label nickname'>昵称：</view>
     <input type='text' value='{{cat.nickname}}' bindinput="inputText" data-key='nickname'></input>
     <view class='label area'>校区及区域：</view>
-    <picker mode="multiSelector" range='{{pickers.campus_area}}' value='{{pickers.campus_index}}' bindchange='bindAreaChange' bindcolumnchange='pickerAreaColumnChange'>{{(cat.campus + cat.area) || '请选择'}}</picker>
+    <picker mode="multiSelector" range='{{pickers.campus_area}}' value='{{pickers.campus_index}}' bindchange='bindAreaChange' bindcolumnchange='pickerAreaColumnChange'>{{cat.campus && cat.area ? cat.campus + cat.area : '请选择'}}</picker>
     <!-- <view class='label area'>出没区域：</view>
   <input type='text' value='{{cat.area}}' bindinput="inputText" data-key='area'></input> -->
 

@@ -50,15 +50,17 @@
 
 Laf版暂时没有录制部署视频，部署流程请参考：[猫谱Laf版文档](https://docs.qq.com/doc/DSGFvWGF4UnVrQ3VN)
 
-考虑到wx云开发的[新收费标准](https://developers.weixin.qq.com/community/minihome/doc/0000a680588d3891fa2ec250c51401)（约50元/月），我们将代码迁移到[Laf云开发](https://www.laf.run)平台。
+考虑到wx云开发的[新收费标准](https://developers.weixin.qq.com/community/minihome/doc/0000a680588d3891fa2ec250c51401)（约50元/月），我们将代码迁移到[Laf云开发](https://laf.run/signup?code=Ld9h8b4)平台。
 
-    Laf云是一个开源的云开发平台，可以私有部署到自己的服务器上，也可以使用目前Laf官方的免费测试资源。
+    Laf云是一个开源的云开发平台，可以私有部署到自己的服务器上，也可以使用目前Laf官方的付费资源，约7元/月。
+
+国内高校同学可以免费使用，参考文档进行申请：[【腾讯文档】中大猫谱-Laf高校代金券计划](https://docs.qq.com/doc/DSGhxbVhuUnJqaUhF)
 
 # :dancers:开发团队
 
 本项目的开发工作100%用爱发电:sparkles:，特别感谢每一位为此付出的小伙伴。
 
-:computer:代码开发：[Zing22](https://github.com/Zing22)、[Jazon](https://github.com/jxzhn)、[Junius](https://github.com/JunDeer)、[yw](https://github.com/WondrousWisdomcard)
+:computer:代码开发：[Zing22](https://github.com/Zing22)、[Jazon](https://github.com/jxzhn)、[Junius](https://github.com/JunDeer)、[yw](https://github.com/WondrousWisdomcard)、[Lauzeyu](https://github.com/parsifal486)
 
 :black_nib:UI设计：蓝卷、[Junius](https://github.com/JunDeer)、[yw](https://github.com/WondrousWisdomcard)
 

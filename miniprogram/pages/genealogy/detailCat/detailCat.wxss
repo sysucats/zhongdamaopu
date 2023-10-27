@@ -141,7 +141,7 @@ swiper-item image {
   width: 40rpx;
 }
 
-.fb-button {
+.fb-button, .badge-all {
   font-size: 20rpx;
   font-weight: 500;
   height: 40rpx;
@@ -153,6 +153,10 @@ swiper-item image {
   /* background-color: var(--color-primary); */
   border: 3rpx solid var(--color-primary);
   border-radius: 5rpx;
+}
+
+.badge-all + .badge-all {
+  margin-right: 20rpx;
 }
 
 .details {
@@ -315,7 +319,7 @@ swiper-item image {
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 999;
+  z-index: 1;
 }
 
 .addPhoto .icon{
@@ -338,7 +342,7 @@ swiper-item image {
   position: sticky;
   top: 0;
   position: -webkit-sticky;
-  z-index: 99;
+  z-index: 1;
 }
 
 .big-header .avatar {
@@ -373,10 +377,10 @@ swiper-item image {
 
 #comment-btn {
   width: 60rpx;
-  height: 160rpx;
+  height: 200rpx;
   position: absolute;
   right: 0;
-  top: 60%;
+  top: 55%;
 
   background-color: var(--color-primary);
 
@@ -440,11 +444,11 @@ swiper-item image {
 }
 
 /* 猫猫关系 */
-.relations {
+.relations, .badge-list {
   width: 100%;
   white-space: nowrap;
 }
-.relation-block {
+.relation-block, .badge-item {
   width: 150rpx;
   display: inline-flex;
   flex-direction: column;
@@ -452,7 +456,7 @@ swiper-item image {
   padding: 10rpx 0;
   border-radius: 20rpx;
 }
-.relation-block.tap {
+.relation-block.tap, .badge-item.tap {
   background-color: var(--color-gray-light);
 }
 .relation-cat-avatar {
@@ -461,7 +465,7 @@ swiper-item image {
   border-radius: 100%;
   background-color: var(--color-white-dark);
 }
-.relation-name {
+.relation-name, .badge-item-count, .user-badge-item-count {
   max-width: 100rpx;
   margin-top: -20rpx;
   font-size: 20rpx;
@@ -472,14 +476,13 @@ swiper-item image {
   text-overflow:ellipsis;
   overflow:hidden;
 }
-.relation-cat-name {
+.relation-cat-name, .badge-item-name {
   max-width: 150rpx;
   font-size: 28rpx;
   color: var(--color-primary);
   white-space: nowrap;
   text-overflow:ellipsis;
   overflow:hidden;
-
 }
 
 /* 关掉关系板块滚动条，安卓滚动条略丑 */
@@ -488,5 +491,185 @@ swiper-item image {
   width: 0;
   height: 0;
   color: transparent;
+}
 
+/* 徽章 */
+.badge-all {
+  float: right;
+}
+
+/* 赠予徽章 */
+.mask {
+  width: 750rpx;
+  height: 100vh;
+  background-color: var(--color-gray-dark);
+  opacity: 0.8;
+  position: fixed;
+  top: 0;
+  z-index: 2;
+}
+
+.search {
+  width: 750rpx;
+  background-color: var(--color-white-dark);
+  position: fixed;
+  bottom: 0;
+  padding: 20rpx 20rpx;
+  padding-bottom: max(20rpx, constant(safe-area-inset-bottom));
+  padding-bottom: max(20rpx, env(safe-area-inset-bottom));
+  display: block;
+
+  /* border-top: 5rpx solid var(--color-primary); */
+  border-top-left-radius: 50rpx;
+  border-top-right-radius: 50rpx;
+
+  overflow: hidden;
+  box-sizing: border-box;
+  transition: height 200ms ease, bottom 200ms ease;
+
+  z-index: 99;
+
+  background-color: var(--color-gray-light);
+
+  box-shadow: 0rpx -3rpx 10rpx 10rpx var(--color-gray-dark);
+}
+
+.search.hidden {
+  bottom: -1000rpx;
+}
+
+.user-badge-list {
+  display: flex;
+  height: 300rpx;
+  flex-wrap: wrap;
+}
+
+.user-badge-item {
+  width: 20%;
+  padding: 10rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border: 4rpx solid transparent;
+  border-radius: 20rpx;
+  margin: 6rpx 2.5%;
+  box-sizing: border-box;
+  height: 180rpx;
+}
+
+.user-badge-item.active {
+  border: 4rpx solid var(--color-primary);
+}
+
+.user-badge-item.zero-count {
+  filter: grayscale(0.9);
+}
+
+.user-badge-item-avatar {
+  width: 120rpx;
+  height: 120rpx;
+}
+
+.user-badge-item-name {
+  font-size: 20rpx;
+}
+
+.badge-level-A.active .user-badge-item-avatar {
+  filter: drop-shadow(0rpx 0rpx 7rpx var(--color-badge-A));
+  transform: translateZ(0);
+}
+
+.badge-level-B.active .user-badge-item-avatar {
+  filter: drop-shadow(0rpx 0rpx 7rpx var(--color-badge-B));
+  transform: translateZ(0);
+}
+
+.badge-level-C.active .user-badge-item-avatar {
+  filter: drop-shadow(0rpx 0rpx 7rpx var(--color-badge-C));
+  transform: translateZ(0);
+}
+
+.badge-level-A .user-badge-item-name {
+  color: var(--color-badge-A);
+}
+
+.badge-level-B .user-badge-item-name {
+  color: var(--color-badge-B);
+}
+
+.badge-level-C .user-badge-item-name {
+  color: var(--color-badge-C);
+}
+
+/* search按钮 */
+.search-buttons {
+  display: flex;
+  justify-content: space-evenly;
+  margin-top: 20rpx;
+}
+
+.search-btn {
+  width: 300rpx;
+  height: 42rpx;
+  line-height: 42rpx;
+  font-size: 22rpx;
+  text-align: center;
+  background-color: white;
+  border-radius: 10rpx;
+  border: 1rpx solid var(--color-gray-normal);
+}
+.search-btn.active {
+  background-color: var(--color-primary);
+}
+.search-btn.active.hover {
+  background-color: var(--color-primary-dark);
+}
+.search-btn.disabled {
+  background-color: var(--color-gray-dark);
+}
+
+/* 徽章 */
+.badge-item-name {
+  font-size: 20rpx;
+}
+
+.badge-item-avatar {
+  width: 120rpx;
+  height: 120rpx;
+  border-radius: 100%;
+}
+
+/* .badge-level-A .badge-item-avatar {
+  filter: drop-shadow(0rpx 0rpx 7rpx var(--color-badge-A));
+}
+
+.badge-level-B .badge-item-avatar {
+  filter: drop-shadow(0rpx 0rpx 7rpx var(--color-badge-B));
+}
+
+.badge-level-C .badge-item-avatar {
+  filter: drop-shadow(0rpx 0rpx 7rpx var(--color-badge-C));
+} */
+
+.badge-level-A .badge-item-name {
+  color: var(--color-badge-A);
+}
+
+.badge-level-B .badge-item-name {
+  color: var(--color-badge-B);
+}
+
+.badge-level-C .badge-item-name {
+  color: var(--color-badge-C);
+}
+
+.badge-item-count, .user-badge-item-count {
+  font-size: 18rpx;
+  background-color: var(--color-gray-light);
+  opacity: 0.7;
+  padding: 3rpx 6rpx;
+}
+
+.badge-item-count.hidden {
+  opacity: 0.0;
 }

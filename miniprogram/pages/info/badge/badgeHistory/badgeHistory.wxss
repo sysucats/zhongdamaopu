@@ -1,0 +1,2 @@
+/* pages/info/badge/badgeHistory/badgeHistory.wxss */
+@import "../../../genealogy/detailCat/badgeDetail/badgeDetail.wxss";

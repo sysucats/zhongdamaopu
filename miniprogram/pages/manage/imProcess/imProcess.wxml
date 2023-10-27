@@ -1,6 +1,5 @@
+<canvas style="width: 1200px; height: 1200px; left: 1000px; position: fixed;" id="bigPhoto" type="2d"></canvas>
 <block wx:if="{{auth}}">
-  <canvas style="width: 1200px; height: 1200px; left: 1000px; position: fixed;" id="bigPhoto" type="2d"></canvas>
-
   <view class="image-blocks">
     <view class="image-block">
       <view class='title'>原图</view>

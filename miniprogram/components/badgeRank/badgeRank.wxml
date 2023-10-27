@@ -1,0 +1,36 @@
+<!--components/badgeRank/badgeRank.wxml-->
+
+<view class='loading' wx:if='{{loading}}'>
+  <image src='/pages/public/images/system/loading.gif'></image>
+</view>
+
+<view class="badge-block" wx:for="{{dispOrder}}" wx:key="this" wx:for-item="rankKey" wx:if="{{ dispContent[rankKey].items }}">
+  <view class="badge-header badge-level-{{dispContent[rankKey].info.level}}">
+    <image class="badge-img" src="{{dispContent[rankKey].info.img}}" mode="aspectFill"></image>
+    <view class="badge-info">
+      <view class="badge-name">{{dispContent[rankKey].info.name}}</view>
+      <view class="badge-desc">{{dispContent[rankKey].info.rankDesc || dispContent[rankKey].info.desc}}</view>
+    </view>
+    <view wx:if="{{ dispContent[rankKey].showAll }}" class="badge-to-detail" bindtap="changeShowAll" data-key="{{rankKey}}" data-on="{{false}}">收起更多</view>
+    <view wx:else class="badge-to-detail" bindtap="changeShowAll" data-key="{{rankKey}}" data-on="{{true}}">展开更多</view>
+  </view>
+  <view class="badge-header-bg"></view>
+  <view class="badge-list">
+    <view class="badge-cat" wx:for="{{dispContent[rankKey].items}}" wx:key="_id" wx:if="{{ (dispContent[rankKey].showAll && index < 20) || index < 5 }}" hover-class="hover"  data-cat-id="{{item._id}}" bindtap="tapCatCard">
+      <view class="badge-cat-order {{item.order <= 5 ? 'highlight': ''}}">{{item.order}}</view>
+      <image class="badge-cat-img" src="{{avatarMap[item._id]}}" mode="aspectFill"></image>
+      <view class="badge-cat-info">
+        <view class="badge-cat-name">{{item.name}}<text class="badge-cat-campus"> [{{item.campus}}-{{item.area}}]</text></view>
+        <view class="badge-cat-habit">{{item.habit}}</view>
+      </view>
+      <view class="badge-cat-count {{item.order <= 5 ? 'highlight': ''}}">{{item.count}}</view>
+    </view>
+  </view>
+</view>
+
+<view class="tip" wx:if="{{!dispOrder || dispOrder.length === 0}}">
+  暂无徽章榜单~
+</view>
+<view class="tip" wx:elif="{{hasContent}}">
+  定期更新，上次更新时间：{{updateTime}}
+</view>

@@ -1,7 +1,7 @@
 // miniprogram/pages/manage/managers.js
-import { checkAuth } from "../../../user";
-import { cloud } from "../../../cloudAccess";
-import api from "../../../cloudApi";
+import { checkAuth } from "../../../utils/user";
+import { cloud } from "../../../utils/cloudAccess";
+import api from "../../../utils/cloudApi";
 
 // 是否正在加载
 var loading = false;
@@ -18,7 +18,7 @@ Page({
     managerOnly: false,
     users: [],
     windowHeight: "300",
-    manager_types: ['0-非管理员', '1-审核照片、删除留言', '2-修改猫猫、校区、关系', '3-发布公告', '99-管理成员、页面设置、处理图片']
+    manager_types: ['0-非管理员', '1-审核照片、删除便利贴', '2-修改猫猫、校区、关系、徽章', '3-发布公告', '99-管理成员、页面设置、处理图片']
   },
   /**
    * 生命周期函数--监听页面加载
@@ -88,7 +88,7 @@ Page({
     if (loading) {
       return false;
     }
-    const db = cloud.database();
+    const db = await cloud.databaseAsync();
     var users = this.data.users;
     loading = true;
     wx.showLoading({

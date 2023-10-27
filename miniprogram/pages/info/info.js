@@ -1,8 +1,8 @@
 // miniprogram/pages/info/info.js
-import { isManagerAsync } from "../../user";
+import { isManagerAsync } from "../../utils/user";
 import { text as text_cfg, mpcode_img } from "../../config";
-import { showTab } from "../../page";
-import { cloud } from "../../cloudAccess";
+import { showTab } from "../../utils/page";
+import { cloud } from "../../utils/cloudAccess";
 
 const share_text = text_cfg.app_name + ' - ' + text_cfg.info.share_tip;
 
@@ -30,7 +30,7 @@ Page({
       devMode: sysInfo.platform === "devtools"
     });
 
-    const db = cloud.database();
+    const db = await cloud.databaseAsync();
     var friendLinkRes = await db.collection('setting').doc('friendLink').get();
     this.setData({
       friendApps: friendLinkRes.data.apps,
@@ -54,20 +54,42 @@ Page({
       version: getApp().globalData.version
     });
 
+    const db = await cloud.databaseAsync();
+    const _ = db.command;
+    // 获取普通用户也能看的数据
+    // 所有猫猫数量
+    const allCatQf = {};
+    // 所有照片数量
+    const allPhotoQf = { verified: true, photo_id: /^((?!\.heic$).)*$/i };
+    // 所有便利贴数量
+    const allCommentQf = { deleted: _.neq(true), needVerify: _.neq(true) };
+
+    let [numAllCats, numAllPhotos, numAllComments] = await Promise.all([
+      db.collection('cat').where(allCatQf).count(),
+      db.collection('photo').where(allPhotoQf).count(),
+      db.collection('comment').where(allCommentQf).count(),
+    ]);
+    this.setData({
+      numAllCats: numAllCats.total,
+      numAllPhotos: numAllPhotos.total,
+      numAllComments: numAllComments.total,
+    });
+
     if (!await isManagerAsync()) {
       return;
     }
-    const db = cloud.database();
-    const _ = db.command;
 
+    // 待处理照片
     const imProcessQf = { photo_compressed: _.in([undefined, '']), verified: true, photo_id: /^((?!\.heic$).)*$/i };
-    var [numChkPhotos, numFeedbacks, numImProcess] = await Promise.all([
-      db.collection('photo').where({ verified: false}).count(),
-      db.collection('feedback').where({ dealed: false}).count(),
+    var [numChkPhotos, numChkComments, numFeedbacks, numImProcess] = await Promise.all([
+      db.collection('photo').where({ verified: false }).count(),
+      db.collection('comment').where({ needVerify: true }).count(),
+      db.collection('feedback').where({ dealed: false }).count(),
       db.collection('photo').where(imProcessQf).count(),
     ]);
     this.setData({
       numChkPhotos: numChkPhotos.total,
+      numChkComments: numChkComments.total,
       numFeedbacks: numFeedbacks.total,
       numImProcess: numImProcess.total,
       showManager: true,

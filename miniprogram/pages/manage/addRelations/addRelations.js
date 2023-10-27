@@ -1,12 +1,10 @@
 // 审核照片
-import { regReplace, sleep } from "../../../utils";
-import { getAvatar, getCatItem } from "../../../cat";
-import { checkAuth } from "../../../user";
-import { cloud } from "../../../cloudAccess";
-import api from "../../../cloudApi";
+import { regReplace, sleep } from "../../../utils/utils";
+import { getAvatar, getCatItem } from "../../../utils/cat";
+import { checkAuth } from "../../../utils/user";
+import { cloud } from "../../../utils/cloudAccess";
+import api from "../../../utils/cloudApi";
 
-const db = cloud.database();
-const _ = db.command;
 
 // 运行状态
 var selectRelationTypeIdx = undefined;
@@ -31,6 +29,7 @@ Page({
    * 生命周期函数--监听页面加载
    */
   async onLoad(options) {
+    const db = await cloud.databaseAsync();
     if (await checkAuth(this, 2)) {
       this.loadRelationTypes();
     }
@@ -92,6 +91,7 @@ Page({
 
   // 加载setting里的relation types
   async loadRelationTypes() {
+    const db = await cloud.databaseAsync();
     var types = [];
     var data = (await db.collection('setting').where({_id: 'relation'}).get()).data;
 
@@ -226,6 +226,8 @@ Page({
   },
 
   async doSearchCat() {
+    const db = await cloud.databaseAsync();
+    const _ = db.command;
     if (!this.data.filters_input) {
       return false;
     }

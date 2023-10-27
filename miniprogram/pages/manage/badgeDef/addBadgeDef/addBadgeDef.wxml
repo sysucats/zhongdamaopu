@@ -1,0 +1,39 @@
+<!--pages/manage/badgeDef/badgeDef.wxml-->
+<block wx:if="{{auth}}">
+  <view class="top-margin-100"></view>
+
+  <view class="label-tip">id: {{badgeDef._id || 'new'}}</view>
+  <view class="label-small">徽章图像</view>
+  <view class="label-tip">tip: 点击进行更换</view>
+  <!-- 复用了个人信息页修改的css，所以还是叫avatar -->
+  <button class="avatar-wrapper" bindtap="chooseImage">
+    <image class="avatar" src="{{badgeDef.img}}" mode="aspectFill"></image>
+  </button>
+
+  <view class="label-small">名称</view>
+  <view class="label-tip">tip: 最好5个字以内，否则展示效果可能不佳</view>
+  <input type="text" class="nickname-input" placeholder="请输入名称" value="{{badgeDef.name}}" bindinput="onChangeText" data-field="name"/>
+
+  <view class="label-small">描述</view>
+  <view class="label-tip">tip: 描述这个徽章应该送给哪类猫猫</view>
+  <input type="text" class="nickname-input" placeholder="请输入描述" value="{{badgeDef.desc}}" bindinput="onChangeText" data-field="desc"/>
+
+  <view class="label-small">榜单标语</view>
+  <view class="label-tip">tip: 简短的一句话，展示在榜单Tab</view>
+  <input type="text" class="nickname-input" placeholder="请输入标语" value="{{badgeDef.rankDesc}}" bindinput="onChangeText" data-field="rankDesc"/>
+
+  <view class="label-small">徽章等级</view>
+  <view class="label-tip">tip: 抽取概率为A级10%，B级30%，C级60%</view>
+  <picker bindchange="onLevelChange" value="{{badgeDef.level}}" range="{{levelDefs}}">
+    <view class="picker">
+      {{badgeDef.level || '未选择'}}
+    </view>
+  </picker>
+
+
+  <button class="primary" bindtap="clickUpload">提交</button>
+</block>
+<view wx:else class="unAuth">
+  <text>{{tipText}}</text>
+  <button bindtap='goBack' wx:if="{{tipBtn}}">打扰了</button>
+</view>

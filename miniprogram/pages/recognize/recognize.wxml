@@ -8,7 +8,7 @@
 </wxs>
 
 <!-- 压缩图片用 -->
-<canvas style="width: 500px; height: 500px; border: 1px solid red; left: 100000px; position: fixed;" canvas-id="canvasForCompress"></canvas>
+<canvas style="width: 1000px; height: 1000px; border: 1px solid red; left: 100000px; position: fixed;" id="canvasForCompress" type="2d"></canvas>
 
 <image class="bgImg" src="../public/images/recognize/background.svg"></image>
 
@@ -25,8 +25,10 @@
       <camera wx:if="{{cameraAuth && !photoPath}}" device-position="{{devicePosition}}" resolution="high" frame-size="large" flash="off" id="cameraPreview"></camera>
       <!-- 拍照/选图结果预览 -->
       <view wx:if="{{photoPath}}" id="photoPreview" style="background-image: url('data:image/png;base64,{{photoBase64}}');" bindtap="tapPreview">
-        <view wx:for="{{catBoxList}}" wx:key="item" class="catBox {{(!catIdx || catIdx > catBoxList.length) && index === 0 || index === catIdx ? 'chosen' : ''}}" style="top: {{item.y}}rpx; left: {{item.x}}rpx; width: {{item.width}}rpx; height: {{item.height}}rpx;" catchtap="tapCatBox" data-index="{{index}}"></view>
+        <view wx:for="{{catBoxList}}" wx:key="item" class="catBox {{(!catIdx || catIdx > catBoxList.length) && index === 0 || index === catIdx ? 'chosen' : ''}}" style="top: {{item.y}}rpx; left: {{item.x}}rpx; width: {{item.width}}rpx; height: {{item.height}}rpx;" catchtap="tapCatBox" data-index="{{index}}">
+        </view>
       </view>
+
       <!-- 重新选图按钮 -->
       <view wx:if="{{photoPath}}" id="resetButton" bindtap="reset">
         <image src="/pages/public/images/recognize/back.png"></image>
@@ -102,6 +104,6 @@
   </view>
 
   <!-- 底tab占位 -->
-  <!-- <view style="height: {{tabBarHeight}}px;"></view> -->
+  <view wx:if="{{showResultBox}}" style="height: {{tabBarHeight}}px;"></view>
 
 </view><!-- positionWrapper -->

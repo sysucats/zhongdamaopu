@@ -1,0 +1,19 @@
+<!--pages/debug/genKeys/genKeys.wxml-->
+<view>
+  <view class="title">对称秘钥</view>
+  <view class="tip">* 放在前后端</view>
+  <text class="key" selectable="{{true}}">{{randomKey}}</text>
+  <button bindtap='copyText' data-text="{{randomKey}}">点击复制</button>
+</view>
+<view>
+  <view class="title">非对称-公钥</view>
+  <view class="tip">* 暂时用不上</view>
+  <text class="key" selectable="{{true}}">{{publicKey}}</text>
+  <button bindtap='copyText' data-text="{{publicKey}}" data-onlykey="{{false}}">点击复制</button>
+</view>
+<view>
+  <view class="title">非对称-私钥</view>
+  <view class="tip">* 暂时用不上</view>
+  <text class="key" selectable="{{true}}">{{privateKey}}</text>
+  <button bindtap='copyText' data-text="{{privateKey}}">点击复制</button>
+</view>

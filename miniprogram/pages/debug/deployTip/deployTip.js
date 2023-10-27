@@ -1,7 +1,8 @@
 import dp_cfg from "./deployConfig";
 import {
-  cloud
-} from "../../../cloudAccess";
+  cloud,
+  ensureToken,
+} from "../../../utils/cloudAccess";
 import { use_private_tencent_cos } from "../../../config";
 
 const STATUS_DOING = 0;
@@ -12,7 +13,16 @@ const STATUS_FAIL = 2;
 // 检查云函数是否都部署了
 async function checkFunctions() {
   // 清理缓存
-  wx.clearStorageSync()
+  wx.clearStorageSync();
+  // 重新获取token
+  await ensureToken();
+
+  if (!wx.getStorageSync('accessToken')) {
+    return {
+      status: STATUS_FAIL,
+      addition: "登录失败，尝试重启Laf后台应用，或检查云函数依赖。"
+    };
+  }
 
   const res = (await cloud.callFunction({
     name: "deployTest",
@@ -148,7 +158,8 @@ async function checkDatabase() {
 // 检查云存储图片是否放好
 async function checkImage() {
   var fail_list = [];
-  for (var oriUrl of dp_cfg.images) {
+  for (var key in dp_cfg.images) {
+    const oriUrl = dp_cfg.images[key];
     let url = await cloud.signCosUrl(oriUrl);
     try {
       const res = await cloud.downloadFile({
@@ -156,13 +167,13 @@ async function checkImage() {
       });
       console.log("checkImage", res);
       if (res.statusCode !== 200) {
-        fail_list.push(oriUrl);
+        fail_list.push(`("${key}": "${oriUrl}")`);
         console.log(`download fail: ${url}`);
         continue;
       }
       console.log(`download success: ${url}`);
     } catch (error) {
-      fail_list.push(oriUrl);
+      fail_list.push(`("${key}": "${oriUrl}")`);
       console.log(`download fail: ${url}`);
     }
   }
@@ -200,7 +211,7 @@ Page({
         title: "部署云函数",
         status: STATUS_DOING,
         func: checkFunctions,
-        tip: "参考README中更新云函数\n",
+        tip: "请更新云函数，“laf func push”。\n",
         addition: "",
         break: true,
       },

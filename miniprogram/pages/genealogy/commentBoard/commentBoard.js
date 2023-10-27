@@ -1,16 +1,30 @@
-import { formatDate } from "../../../utils";
+import {
+  formatDate,
+  randomInt
+} from "../../../utils/utils";
 import config from "../../../config";
-import { getPageUserInfo, fillUserInfo, checkCanComment, isManagerAsync, toSetUserInfo } from "../../../user";
-import { getAvatar } from "../../../cat";
-import { getCatCommentCount } from "../../../comment";
-import { cloud } from "../../../cloudAccess";
-import api from "../../../cloudApi";
+import {
+  getPageUserInfo,
+  fillUserInfo,
+  checkCanComment,
+  isManagerAsync,
+  toSetUserInfo
+} from "../../../utils/user";
+import {
+  getAvatar
+} from "../../../utils/cat";
+import {
+  getCatCommentCount
+} from "../../../utils/comment";
+import {
+  cloud
+} from "../../../utils/cloudAccess";
+import {
+  requestNotice,
+} from "../../../utils/msg";
+import api from "../../../utils/cloudApi";
 
 var cat_id;
-
-// 常用的对象
-const db = cloud.database();
-const coll_comment = db.collection('comment');
 
 // 发送锁
 var sendLock = false;
@@ -28,6 +42,10 @@ Page({
     keyboard_height: 0,
     text_cfg: config.text,
     is_manager: false,
+    is_owner: false,
+
+    paper_colors: ['white', 'yellow', 'green', 'pink'],
+    paper_color_select: 0,
   },
 
   /**
@@ -35,22 +53,15 @@ Page({
    */
   onLoad: async function (options) {
     cat_id = options.cat_id;
-    if (!await checkCanComment()) {
-      wx.showToast({
-        title: '已暂时关闭..',
-        duration: 10000
-      });
-      return false;
-    }
     this.setData({
-      canComment: true
+      canComment: await checkCanComment()
     })
     // 启动加载
     await Promise.all([
       this.loadCat(),
       this.loadMoreComment(),
     ]);
-    
+
     // 是否为管理员lv.1
     var manager = await isManagerAsync(1);
     if (manager) {
@@ -86,8 +97,8 @@ Page({
   /**
    * 生命周期函数--监听页面卸载
    */
-  onUnload: function () {
-
+  onUnload: async function () {
+    await this.ifSendNotifyVeriftMsg()
   },
 
   /**
@@ -112,7 +123,7 @@ Page({
     const cat_name = cat.name;
     const cat_avatar = cat.avatar.photo_compressed || cat.avatar.photo_id;
     return {
-      title: `${cat_name}的留言板 - ${config.text.app_name}`,
+      title: `${cat_name}的便利贴墙 - ${config.text.app_name}`,
       imageUrl: cat_avatar,
     }
   },
@@ -125,19 +136,19 @@ Page({
     const to_top = e.detail.scrollTop;
     const show_fix_header = this.data.show_fix_header;
 
-    const should_show = to_top > 5? true: false;
+    const should_show = to_top > 5 ? true : false;
     if (should_show != show_fix_header) {
       this.setData({
         show_fix_header: should_show
       });
     }
   },
-  
+
   async loadCat() {
-    const db = cloud.database();
+    const db = await cloud.databaseAsync();
     var cat = (await db.collection('cat').doc(cat_id).get()).data;
     console.log(cat);
-    
+
     // 获取头像
     cat.avatar = await getAvatar(cat._id, cat.photo_count_best);
     console.log(cat.avatar);
@@ -175,22 +186,24 @@ Page({
     await toSetUserInfo();
   },
 
-  // 发送留言
-  sendComment() {
+  // 发送便利贴
+  async sendComment() {
     // 发送中
     if (sendLock) {
       console.log("locking...");
       return false;
     }
-    
+
     const content = this.data.comment_input;
 
-    // 空的就不用留言了
-    if (!content || content.length == 1) {
+    // 空的就不用发了
+    if (!content || content.length == 0) {
       return false;
     }
-    
+
     sendLock = true;
+    // 订阅审核通知
+    await requestNotice('verify');
     wx.showLoading({
       title: '发送中...',
     });
@@ -202,22 +215,25 @@ Page({
   async doSendComment() {
     const content = this.data.comment_input;
 
-    // 判断是否可以留言
+    // 判断是否可以发
     const user = this.data.user;
     if (user.cantComment) {
       wx.showModal({
-        title: "无法留言",
+        title: "发送失败",
         content: config.text.comment_board.ban_tip,
         showCancel: false,
       })
       return false;
     }
-    
-    // 插入留言
+
+    // 插入便利贴
+    const {paper_colors, paper_color_select} = this.data;
     var item = {
       content: content,
       user_openid: user.openid,
       cat_id: cat_id,
+      paper_color: paper_colors[paper_color_select],
+      needVerify: true,
     };
 
     const checkRes = await api.contentSafeCheck(content, user.userInfo.nickName);
@@ -226,7 +242,7 @@ Page({
       await this.addComment(item, user);
       return
     }
-    
+
     wx.showModal(checkRes);
     return false;
   },
@@ -243,17 +259,19 @@ Page({
         collection: "comment",
         data: item
       })).result;
-      
+
       console.log("curdOp(add-Comment) result): ", res, user);
-      // 插入最新留言 + 清空输入框
+      // 插入最新便利贴 + 清空输入框
       console.log(item);
       item.userInfo = user.userInfo;
       item.datetime = formatDate(new Date(), "yyyy-MM-dd hh:mm:ss")
       var comments = this.data.comments;
       comments.unshift(item);
-      
+
       // 获取总数
-      var comment_count = await getCatCommentCount(item.cat_id, {nocache: true});
+      var comment_count = await getCatCommentCount(item.cat_id, {
+        nocache: true
+      });
       this.setData({
         comment_input: "",
         comments: comments,
@@ -262,40 +280,47 @@ Page({
 
       // 显示success toast
       wx.showToast({
-        title: '留言成功~',
+        title: '张贴成功~',
       });
     } catch {
       wx.showModal({
-        title: "留言失败",
+        title: "张贴失败",
         showCancel: false,
       })
       console.error(res);
     }
   },
 
-  // 加载更多留言
+  // 加载更多便利贴
   // TODO(zing): 支持排序方式修改
   async loadMoreComment() {
+    // 常用的对象
+    const db = await cloud.databaseAsync();
     const _ = db.command;
+    const coll_comment = db.collection('comment');
     var comments = this.data.comments;
     var qf = {
       deleted: _.neq(true),
       cat_id: cat_id
     };
     var res = await coll_comment.where(qf).orderBy("create_date", "desc")
-                  .skip(comments.length).limit(10).get();
+      .skip(comments.length).limit(10).get();
     console.log(res);
 
     // 填充userInfo
     await fillUserInfo(res.data, "user_openid", "userInfo");
     for (var item of res.data) {
       item.datetime = formatDate(new Date(item.create_date), "yyyy-MM-dd hh:mm:ss")
+      // 便签旋转
+      item.rotate = randomInt(-5, 5);
+      // 贴纸位置
+      item.tape_pos_left = randomInt(20, 520);
+      item.tape_rotate = randomInt(-50, +50);
       comments.push(item);
     }
 
-    this.setData({
-      comments: comments
-    });
+    console.log(comments);
+    this.setData({comments});
 
   },
 
@@ -303,13 +328,13 @@ Page({
     const index = e.currentTarget.dataset.index;
     const item = e.currentTarget.dataset.item;
     const comment_id = item._id;
-    const username = item.userInfo.nickName;
+    const username = item.userInfo?.nickName;
     // 弹窗提示一下
     var res = await wx.showModal({
       title: '提示',
-      content: `确定删除\"${username}\"的留言？`
+      content: `确定删除\"${username}\"的便利贴？`
     });
-    
+
     if (!res.confirm) {
       return false;
     }
@@ -319,7 +344,7 @@ Page({
       collection: "comment",
       item_id: comment_id
     });
-    
+
     wx.showToast({
       title: '删除成功',
     });
@@ -328,5 +353,27 @@ Page({
     this.setData({
       comments: comments,
     })
+  },
+
+  async ifSendNotifyVeriftMsg() {
+    const db = await cloud.databaseAsync();
+    const subMsgSetting = await db.collection('setting').doc('subscribeMsg').get();
+    const triggerNum = subMsgSetting.data.verifyPhoto.triggerNum;  //几条未审核才触发
+    // console.log("triggerN",triggerNum);
+    var numUnchkPhotos = (await db.collection('comment').where({
+      needVerify: true
+    }).count()).total;
+
+    if (numUnchkPhotos >= triggerNum) {
+      await sendNotifyVertifyNotice(numUnchkPhotos);
+      console.log("toSendNVMsg");
+    }
+  },
+
+  selectPaperColor(e) {
+    const {index} = e.currentTarget.dataset;
+    this.setData({
+      paper_color_select: index
+    });
   }
 })

@@ -117,6 +117,8 @@
   <view class='loadnomore' wx:else>
     <image src='/pages/public/images/system/nomore.png'></image>
   </view>
+  <!-- 底tab占位 -->
+  <view style="height: {{tabBarHeight}}px;"></view>
 </scroll-view>
 
 <!-- 漂浮的领养logo -->
@@ -147,6 +149,3 @@
       bind:confirmEvent="_confirmEvent">
     </newsModal>
 </view>
-
-<!-- 底tab占位 -->
-<view style="height: {{tabBarHeight}}px;"></view>

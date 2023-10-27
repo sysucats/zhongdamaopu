@@ -16,10 +16,14 @@ page {
   border-radius: 5rpx;
 }
 
+.userInfo-cat {
+  width: 520rpx;
+}
+
 .userInfo text {
   height: 50rpx;
   line-height: 50rpx;
-  font-size: 35rpx;
+  font-size: 32rpx;
 }
 
 .update-userInfo {

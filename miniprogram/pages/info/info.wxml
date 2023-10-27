@@ -4,17 +4,26 @@
   <image src='{{logo_img}}' bindtap="showMpCode" show-menu-by-longpress="1"></image>
   <view class='title'>{{text_cfg.app_name}}</view>
   <view class='dev'><text>{{version ? version + "\n" : ""}} {{text_cfg.info.slogan}}</text></view>
+  <view class='dev small'><text>-- {{numAllCats || '0'}}只猫猫，{{numAllPhotos || '0'}}张照片，{{numAllComments || '0'}}张便利贴 --</text></view>
 </view>
 
 <view class='buttons'>
-    <image class='button' bindtap='clickbtn' data-to='/pages/info/reward/reward' src='/pages/public/images/info/btn/dashang.png'></image>
-    <image class='button' bindtap='clickbtn' data-to='/pages/info/photoRank/photoRank' src='/pages/public/images/info/btn/paizhao.png'></image>
-    <image class='button' bindtap='clickbtn' data-to='/pages/info/devTeam/devTeam' src='/pages/public/images/info/btn/tuandui.png'></image>
-    <image class='button' bindtap='clickbtn' data-to='/pages/info/feedback/feedback' src='/pages/public/images/info/btn/fankui.png'></image>
+  <image class='button' bindtap='clickbtn' data-to='/pages/info/reward/reward' src='/pages/public/images/info/btn/dashang.png'></image>
+  <image class='button' bindtap='clickbtn' data-to='/pages/info/badge/badge' src='/pages/public/images/info/btn/badge.png'></image>
+  <image class='button' bindtap='clickbtn' data-to='/pages/info/devTeam/devTeam' src='/pages/public/images/info/btn/tuandui.png'></image>
+  <image class='button' bindtap='clickbtn' data-to='/pages/info/feedback/feedback' src='/pages/public/images/info/btn/fankui.png'></image>
 </view>
 
 
-<view class='block-name'>常用工具</view>
+<!-- <scroll-view class="scroll-friend-link-box" scroll-x="true" enable-flex='true' enhanced="true" show-scrollbar='false'></scroll-view> -->
+<view class="friend-link-box">
+  <view wx:for="{{friendApps}}" class="friend-link" bindtap="clickFriendLink" data-appid="{{item.appid}}" wx:key="name">
+    <image mode='aspectFit' src="{{item.logo}}"></image>
+    <view class="friend-link-text">{{item.name}}</view>
+  </view>
+</view>
+
+<block><view class='block-name'>常用工具</view>
 <view class='option-box'>
   <view class="option" bindtap='clickbtn' data-to='/pages/info/userInfo/modifyUserInfo/modifyUserInfo'>
     <view class="option-text">个人信息修改</view>
@@ -25,6 +34,7 @@
     <view class="right-arrow"><image mode='aspectFill' src="/pages/public/images/filter/right.png"></image></view> 
   </view>
 </view>
+</block>
 
 
 <block wx:if='{{devMode}}'><view class='block-name'>开发者工具（手机端不显示）</view>
@@ -33,8 +43,11 @@
     <view class="option-text">部署指引</view>
     <view class="right-arrow"><image mode='aspectFill' src="/pages/public/images/filter/right.png"></image></view> 
   </view>
+  <view class="option" bindtap='clickbtn' data-to='/pages/debug/genKeys/genKeys'>
+    <view class="option-text">生成秘钥</view>
+    <view class="right-arrow"><image mode='aspectFill' src="/pages/public/images/filter/right.png"></image></view> 
+  </view>
 </view></block>
-
 
 <block wx:if='{{showManager}}'><view class='block-name'>管理后台</view>
 <view class='option-box'>
@@ -42,28 +55,36 @@
     <view class="option-text">照片审核({{numChkPhotos}})</view>
     <view class="right-arrow"><image mode='aspectFill' src="/pages/public/images/filter/right.png"></image></view> 
   </view>
-  <view class="option" bindtap='clickbtn' data-to='/pages/manage/checkFeedbacks/checkFeedbacks'>
-    <view class="option-text">反馈处理({{numFeedbacks}})</view>
+  <view class="option" bindtap='clickbtn' data-to='/pages/manage/checkComment/checkComment'>
+    <view class="option-text">便利贴审核({{numChkComments}})</view>
     <view class="right-arrow"><image mode='aspectFill' src="/pages/public/images/filter/right.png"></image></view> 
   </view>
-  <view class="option" bindtap='clickbtn' data-to='/pages/manage/addRelations/addRelations'>
-    <view class="option-text">猫猫关系</view>
+  <view class="option" bindtap='clickbtn' data-to='/pages/manage/checkFeedbacks/checkFeedbacks'>
+    <view class="option-text">反馈处理({{numFeedbacks}})</view>
     <view class="right-arrow"><image mode='aspectFill' src="/pages/public/images/filter/right.png"></image></view> 
   </view>
   <view class="option" bindtap='clickbtn' data-to='/pages/news/createNews/createNews'>
     <view class="option-text">创建公告（猫抓板）</view>
     <view class="right-arrow"><image mode='aspectFill' src="/pages/public/images/filter/right.png"></image></view> 
   </view>
+  <view class="option" bindtap='clickbtn' data-to='/pages/manage/filters/filters'>
+    <view class="option-text">校区/区域/花色</view>
+    <view class="right-arrow"><image mode='aspectFill' src="/pages/public/images/filter/right.png"></image></view> 
+  </view>
   <view class="option" bindtap='clickbtn' data-to='/pages/manage/addCat/addCat'>
     <view class="option-text">添加新猫</view>
+    <view class="right-arrow"><image mode='aspectFill' src="/pages/public/images/filter/right.png"></image></view> 
+  </view>
+  <view class="option" bindtap='clickbtn' data-to='/pages/manage/addRelations/addRelations'>
+    <view class="option-text">猫猫关系</view>
     <view class="right-arrow"><image mode='aspectFill' src="/pages/public/images/filter/right.png"></image></view> 
   </view>
   <view class="option" bindtap='clickbtn' data-to='/pages/manage/managers/managers'>
     <view class="option-text">人员管理</view>
     <view class="right-arrow"><image mode='aspectFill' src="/pages/public/images/filter/right.png"></image></view> 
   </view>
-  <view class="option" bindtap='clickbtn' data-to='/pages/manage/filters/filters'>
-    <view class="option-text">区域/花色</view>
+  <view class="option" bindtap='clickbtn' data-to='/pages/manage/badgeDef/badgeDef'>
+    <view class="option-text">徽章管理</view>
     <view class="right-arrow"><image mode='aspectFill' src="/pages/public/images/filter/right.png"></image></view> 
   </view>
   <view class="option" bindtap='clickbtn' data-to='/pages/manage/pageSettings/pageSettings'>
@@ -83,7 +104,6 @@
     <view class="right-arrow"><image mode='aspectFill' src="/pages/public/images/filter/right.png"></image></view> 
   </view>
 </view></block>
-
 
 <!-- 底tab占位 -->
 <view style="height: {{tabBarHeight}}px;"></view>

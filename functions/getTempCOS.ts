@@ -4,8 +4,8 @@ import { sts } from 'tencentcloud-sdk-nodejs'
 const StsClient = sts.v20180813.Client;
 
 exports.main = async function (ctx: FunctionContext) {
-  // body, query 为请求参数, user 是授权对象
-  const { body, query } = ctx
+  // body 为请求参数, user 是授权对象
+  const { body } = ctx
 
   if (body && body.deploy_test === true) {
     // 进行部署检查

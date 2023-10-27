@@ -1,4 +1,4 @@
-import { checkUpdateVersion } from './utils';
+import { checkUpdateVersion } from './utils/utils';
 import { app_version } from "./config";
 
 App({

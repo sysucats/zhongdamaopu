@@ -1,0 +1,69 @@
+/* pages/manage/badgeDef/badgeDef.wxss */
+page {
+  background-color: var(--color-gray-light);
+}
+
+.badge {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  margin: 10rpx 0;
+  align-items: center;
+  padding: 10rpx 30rpx;
+  background-color: white;
+  justify-content: space-between;
+}
+
+.badge image {
+  width: 150rpx;
+  height: 150rpx;
+}
+
+.badge-info {
+  width: 430rpx;
+}
+
+.badge-desc, .badge-count {
+  font-size: 22rpx;
+  color: var(--color-gray-dark);
+}
+
+
+.modify-btn {
+  height: 30rpx;
+  width: 50rpx;
+  border: 1rpx solid var(--color-primary-dark);
+  background-color: var(--color-primary);
+  color: var(--color-black-min);
+  border-radius: 10rpx;
+  padding: 10rpx 30rpx;
+  margin-left: auto;
+  line-break: strict;
+  text-align: center;
+  font-size: 24rpx;
+  line-height: 30rpx;
+}
+
+.buttons {
+  width: 100%;
+  display: flex;
+  justify-content: space-evenly;
+}
+
+button.primary {
+  margin: 20rpx auto 30rpx auto;
+  background-color: var(--color-primary);
+  width: 300rpx;
+}
+
+.badge-level-A .badge-name {
+  color: var(--color-badge-A);
+}
+
+.badge-level-B .badge-name {
+  color: var(--color-badge-B);
+}
+
+.badge-level-C .badge-name {
+  color: var(--color-badge-C);
+}

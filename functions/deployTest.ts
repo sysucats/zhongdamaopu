@@ -1,4 +1,5 @@
 import cloud from '@lafjs/cloud'
+import crypto from 'crypto';
 
 async function checkFuncs(funcs) {
   let res = {
@@ -47,13 +48,36 @@ async function checkDb(name: string, initData: Array<any>) {
   return {"ok": true};
 }
 
+function genRSAKeys() {
+  // 生成密钥对
+  const { privateKey, publicKey } = crypto.generateKeyPairSync('ec', {
+    namedCurve: 'secp256k1', // 使用secp256k1曲线
+    publicKeyEncoding: {
+      type: 'spki',
+      format: 'pem'
+    },
+    privateKeyEncoding: {
+      type: 'pkcs8',
+      format: 'pem'
+    }
+  });
+  return { privateKey, publicKey };
+}
+
+
+function genRandomKey() {
+  const len = 32;
+  return crypto.randomBytes(Math.ceil(len / 2)).toString('hex').slice(0, len);
+}
+
+
 exports.main = async function (ctx: FunctionContext) {
   // body, query 为请求参数, user 是授权对象
   const { body, query } = ctx
 
   if (body && body.deploy_test === true) {
     // 进行部署检查
-    return "v1.0";
+    return "v1.1";
   }
 
   const { opType } = body;
@@ -64,6 +88,10 @@ exports.main = async function (ctx: FunctionContext) {
     return await checkDb(body.dbName, body.dbInit);
   } else if (opType == 'resetSecret') {
     return await cloud.invoke("getAppSecret", { body: { reset: true } });
+  } else if (opType == 'genRSAKeys') {
+    return genRSAKeys();
+  } else if (opType == 'genRandomKey') {
+    return genRandomKey();
   }
   return "Unk opType";
 

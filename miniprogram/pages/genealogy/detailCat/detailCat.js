@@ -3,47 +3,35 @@ import {
   shareTo,
   getCurrentPath,
   checkMultiClick,
-  formatDate
-} from "../../../utils";
+  formatDate,
+  deepcopy
+} from "../../../utils/utils";
 import {
   checkCanUpload,
   checkCanComment,
-  isManagerAsync
-} from "../../../user";
+  isManagerAsync,
+  getUser
+} from "../../../utils/user";
 import {
   getCatCommentCount
-} from "../../../comment";
+} from "../../../utils/comment";
 import {
   setVisitedDate,
   getAvatar,
   getCatItem
-} from "../../../cat";
+} from "../../../utils/cat";
 import {
   getGlobalSettings
-} from "../../../page";
+} from "../../../utils/page";
 import {
   cloud
-} from "../../../cloudAccess";
-import api from "../../../cloudApi";
+} from "../../../utils/cloudAccess";
+import api from "../../../utils/cloudApi";
+
+
+import { loadUserBadge, loadBadgeDefMap, loadCatBadge, mergeAndSortBadges, } from "../../../utils/badge";
 
 const no_heic = /^((?!\.heic$).)*$/i; // 正则表达式：不以 HEIC 为文件后缀的字符串
-
-// 页面设置，从global读取
-var page_settings = {};
-var photoMax = 0;
-var albumMax = 0;
-var cat_id;
-
-var album_raw = []; // 这里放的是raw数据
-var loadingAlbum = false;
-
-var whichGallery; // 预览时记录展示的gallery是精选还是相册
-
-var infoHeight = 0; // 单位是px
-
-var heights = {}; // 系统的各种heights
-
-var context = {}; // 切换页面时记录一下context
 
 // 获取照片的排序功能
 const photoOrder = [{
@@ -91,18 +79,29 @@ Page({
     // 领养状态
     adopt_desc: config.cat_status_adopt,
     text_cfg: config.text,
+
+    activeUserBadge: -1,
+  },
+
+  jsData: {
+    // 页面设置，从global读取
+    page_settings: {},
+    photoMax: 0,
+    albumMax: 0,
+    loadingAlbum: false,
+    whichGallery: "", // 预览时记录展示的gallery是精选还是相册
+    infoHeight: 0, // 单位是px
+    heights: {}, // 系统的各种heights
+    cat_id: "",
+    album_raw: [],
+    badgeDefMap: null
   },
 
   /**
    * 生命周期函数--监听页面加载
    */
   onLoad: async function (options) {
-    if (cat_id != undefined) {
-      // 说明是从其他猫猫跳转过来的，记录下上下文
-      context.cat_id = cat_id;
-      context.album_raw = album_raw;
-    }
-    cat_id = options.cat_id;
+    this.jsData.cat_id = options.cat_id;
 
     // 判断是否为管理员
     this.setData({
@@ -110,10 +109,10 @@ Page({
     });
 
     // 先判断一下这个用户在12小时之内有没有点击过这只猫
-    if (!checkMultiClick(cat_id)) {
-      console.log("[onLoad] - Add click for cat", cat_id);
+    if (!checkMultiClick(this.jsData.cat_id)) {
+      console.log("[onLoad] - Add click for cat", this.jsData.cat_id);
       wx.setStorage({
-        key: cat_id,
+        key: this.jsData.cat_id,
         data: new Date(),
       });
       // 增加click数
@@ -121,13 +120,13 @@ Page({
         operation: "inc",
         type: "pop",
         collection: "cat",
-        item_id: cat_id
+        item_id: this.jsData.cat_id
       });
     }
 
     // 记录访问时间，消除“有新相片”
     // TODO：用cache
-    setVisitedDate(cat_id);
+    setVisitedDate(this.jsData.cat_id);
   },
 
   /**
@@ -138,7 +137,7 @@ Page({
     wx.getSystemInfo({
       success: res => {
         console.log("[onReady] -", res);
-        heights = {
+        this.jsData.heights = {
           "screenHeight": res.screenHeight,
           "windowHeight": res.windowHeight,
           "rpx2px": res.windowWidth / 750,
@@ -148,15 +147,16 @@ Page({
     });
 
     // 开始加载页面
-    page_settings = await getGlobalSettings('detailCat');
+    this.jsData.page_settings = await getGlobalSettings('detailCat');
     this.setData({
-      photoPopWeight: page_settings['photoPopWeight'] || 10
+      photoPopWeight: this.jsData.page_settings['photoPopWeight'] || 10
     });
-    // 加载猫猫，是否开启上传、留言功能
-    var [_, canUpload, canComment] = await Promise.all([
+    // 加载猫猫，是否开启上传、便利贴留言功能
+    var [_, canUpload, canComment, _] = await Promise.all([
       this.loadCat(),
       checkCanUpload(),
-      checkCanComment()
+      checkCanComment(),
+      this.reloadUserBadge(),
     ]);
     this.setData({
       canUpload: canUpload,
@@ -179,13 +179,7 @@ Page({
   /**
    * 生命周期函数--监听页面卸载
    */
-  onUnload: function () {
-    console.log("[onUnload] - page unload, context:", context);
-    if (context.cat_id) {
-      cat_id = context.cat_id;
-      album_raw = context.album_raw;
-    }
-  },
+  onUnload: function () {},
 
   /**
    * 页面相关事件处理函数--监听用户下拉动作
@@ -221,13 +215,13 @@ Page({
   },
 
   async loadCat() {
-    const db = cloud.database();
-    const cat = (await db.collection('cat').doc(cat_id).get()).data;
+    const db = await cloud.databaseAsync();
+    const cat = (await db.collection('cat').doc(this.jsData.cat_id).get()).data;
     cat.photo = [];
     cat.characteristics_string = (cat.colour || '') + '猫';
     cat.avatar = await getAvatar(cat._id, cat.photo_count_best);
 
-    await this.setData({
+    this.setData({
       cat: cat
     });
 
@@ -235,13 +229,17 @@ Page({
       this.reloadPhotos(),
       this.loadCommentCount(),
       this.loadRelations(),
+      this.reloadCatBadge(),
     ]);
 
     var query = wx.createSelectorQuery();
     query.select('#info-box').boundingClientRect();
     query.exec((res) => {
       console.log("[loadCat] - ", res[0]);
-      infoHeight = res[0].height;
+      if (!res[0]) {
+        return;
+      }
+      this.jsData.infoHeight = res[0].height;
     })
   },
 
@@ -268,14 +266,14 @@ Page({
 
   async reloadPhotos() {
     // 这些是精选照片
-    const db = cloud.database();
+    const db = await cloud.databaseAsync();
     const qf = {
-      cat_id: cat_id,
+      cat_id: this.jsData.cat_id,
       verified: true,
       best: true,
       photo_id: no_heic
     };
-    photoMax = (await db.collection('photo').where(qf).count()).total;
+    this.jsData.photoMax = (await db.collection('photo').where(qf).count()).total;
     await Promise.all([
       this.loadMorePhotos(),
       this.reloadAlbum(),
@@ -286,39 +284,39 @@ Page({
     const that = this;
 
     that.setData({
-      "cat.comment_count": await getCatCommentCount(cat_id)
+      "cat.comment_count": await getCatCommentCount(this.jsData.cat_id)
     });
   },
 
   async reloadAlbum() {
     // 下面是相册的
-    const db = cloud.database();
+    const db = await cloud.databaseAsync();
     const qf_album = {
-      cat_id: cat_id,
+      cat_id: this.jsData.cat_id,
       verified: true,
       photo_id: no_heic
     };
-    albumMax = (await db.collection('photo').where(qf_album).count()).total;
-    album_raw = [];
+    this.jsData.albumMax = (await db.collection('photo').where(qf_album).count()).total;
+    this.jsData.album_raw = [];
     await this.loadMoreAlbum();
     this.setData({
-      albumMax: albumMax
+      albumMax: this.jsData.albumMax
     });
   },
 
   async loadMorePhotos() {
     var cat = this.data.cat;
     // 给这个参数是防止异步
-    if (this.data.cat.photo.length >= photoMax) {
+    if (this.data.cat.photo.length >= this.jsData.photoMax) {
       return false;
     }
     const qf = {
-      cat_id: cat_id,
+      cat_id: this.jsData.cat_id,
       verified: true,
       best: true,
       photo_id: no_heic
     };
-    const step = page_settings.photoStep;
+    const step = this.jsData.page_settings.photoStep;
     const now = cat.photo.length;
 
     // wx.showLoading({
@@ -326,7 +324,7 @@ Page({
     //   mask: true
     // })
 
-    const db = cloud.database();
+    const db = await cloud.databaseAsync();
     let res = await db.collection('photo').where(qf).orderBy('mdate', 'desc').skip(now).limit(step).get();
     console.log("[loadMorePhotos] -", res);
     const offset = cat.photo.length;
@@ -358,14 +356,14 @@ Page({
     })
     this.currentImg = e.currentTarget.dataset.index;
     // 预览到最后preload张照片时预加载
-    const preload = page_settings.galleryPreload;
-    whichGallery = e.currentTarget.dataset.kind;
-    if (whichGallery == 'best') {
+    const preload = this.jsData.page_settings.galleryPreload;
+    this.jsData.whichGallery = e.currentTarget.dataset.kind;
+    if (this.jsData.whichGallery == 'best') {
       if (this.data.cat.photo.length - this.currentImg <= preload) await this.loadMorePhotos(); //preload
       var photos = this.data.cat.photo;
-    } else if (whichGallery == 'album') {
-      if (album_raw.length - this.currentImg <= preload) await this.loadMoreAlbum(); // preload
-      var photos = album_raw;
+    } else if (this.jsData.whichGallery == 'album') {
+      if (this.jsData.album_raw.length - this.currentImg <= preload) await this.loadMoreAlbum(); // preload
+      var photos = this.jsData.album_raw;
     }
 
     this.setData({
@@ -380,16 +378,16 @@ Page({
     const index = e.detail.current;
     this.currentImg = index; // 这里得记一下，保存的时候需要
     // preload逻辑
-    const preload = page_settings.galleryPreload;
+    const preload = this.jsData.page_settings.galleryPreload;
     const photo_count = this.data.galleryPhotos.length;
-    if (whichGallery == 'best' && photo_count - index <= preload && photo_count < photoMax) {
+    if (this.jsData.whichGallery == 'best' && photo_count - index <= preload && photo_count < this.jsData.photoMax) {
       console.log("[bindGalleryChange] - 加载更多精选图");
       await this.loadMorePhotos(); //preload
 
       var photos = this.data.cat.photo;
-    } else if (whichGallery == 'album' && photo_count - index <= preload && photo_count < albumMax) { //album
+    } else if (this.jsData.whichGallery == 'album' && photo_count - index <= preload && photo_count < this.jsData.albumMax) { //album
       await this.loadMoreAlbum(); // preload
-      var photos = album_raw;
+      var photos = this.jsData.album_raw;
     } else {
       return;
     }
@@ -407,27 +405,27 @@ Page({
   // 相册和上面的photo不同的地方在于，有没有best=true这个条件
   // 而且相册的东西还要再处理一下，分开拍摄年月
   async loadMoreAlbum() {
-    if (loadingAlbum) {
+    if (this.jsData.loadingAlbum) {
       return false;
     }
 
-    if (album_raw.length >= albumMax) {
+    if (this.jsData.album_raw.length >= this.jsData.albumMax) {
       this.setData({
         bottomText: config.text.detail_cat.bottom_text_end
       })
       return false;
     }
     const qf = {
-      cat_id: cat_id,
+      cat_id: this.jsData.cat_id,
       verified: true,
       photo_id: no_heic
     };
-    const step = page_settings.albumStep;
-    const now = album_raw.length;
+    const step = this.jsData.page_settings.albumStep;
+    const now = this.jsData.album_raw.length;
 
-    const db = cloud.database();
+    const db = await cloud.databaseAsync();
 
-    loadingAlbum = true;
+    this.jsData.loadingAlbum = true;
     const orderItem = photoOrder[this.data.photoOrderSelected];
 
     let res;
@@ -437,11 +435,11 @@ Page({
       res = await db.collection('photo').where(qf).orderBy(orderItem.key, orderItem.order).orderBy('mdate', 'desc').skip(now).limit(step).get();
     }
 
-    const offset = album_raw.length;
+    const offset = this.jsData.album_raw.length;
     for (let i = 0; i < res.data.length; ++i) {
       res.data[i].index = offset + i; // 把index加上，gallery预览要用到
     }
-    album_raw = album_raw.concat(res.data);
+    this.jsData.album_raw = this.jsData.album_raw.concat(res.data);
     this.updateAlbum();
   },
 
@@ -451,7 +449,7 @@ Page({
     var orderIdx = this.data.photoOrderSelected;
     var orderKey = photoOrder[orderIdx].key;
     var group = {};
-    for (const pic of album_raw) {
+    for (const pic of this.jsData.album_raw) {
       var date;
       if (orderKey == 'shooting_date') {
         date = pic.shooting_date;
@@ -492,7 +490,7 @@ Page({
         age: age
       });
     }
-    loadingAlbum = false;
+    this.jsData.loadingAlbum = false;
     this.setData({
       album: result
     });
@@ -509,14 +507,14 @@ Page({
 
   // 处理主容器滑动时的行为
   bindContainerScroll(e) {
-    const rpx2px = heights.rpx2px;
+    const rpx2px = this.jsData.heights.rpx2px;
     // 先保证这两个数字拿到了，再开始逻辑
-    if (rpx2px && infoHeight) {
+    if (rpx2px && this.jsData.infoHeight) {
       const showHoverHeader = this.data.showHoverHeader;
       // 这个是rpx为单位的
       const to_top = e.detail.scrollTop / rpx2px;
       // 判断是否要显示/隐藏悬浮标题（精选图的高度+信息栏的高度）
-      const hover_thred = 470 + (infoHeight / rpx2px);
+      const hover_thred = 470 + (this.jsData.infoHeight / rpx2px);
       if ((to_top > hover_thred && showHoverHeader == false) || (to_top < hover_thred && showHoverHeader == true)) {
         this.setData({
           showHoverHeader: !showHoverHeader
@@ -584,7 +582,7 @@ Page({
   },
 
   toComment() {
-    const url = `/pages/genealogy/commentBoard/commentBoard?cat_id=${cat_id}`
+    const url = `/pages/genealogy/commentBoard/commentBoard?cat_id=${this.jsData.cat_id}`
     wx.navigateTo({
       url: url,
     })
@@ -594,13 +592,13 @@ Page({
     console.log("[likeCountChanged] -", e);
     const current = e.detail.current;
     const like_count = e.detail.like_count;
-    if (whichGallery == "best") {
+    if (this.jsData.whichGallery == "best") {
       console.log("[likeCountChanged] - update best photo", e.detail);
       this.setData({
         [`cat.photo[${current}].like_count`]: like_count,
       });
-    } else if (whichGallery == "album") {
-      album_raw[current].like_count = like_count;
+    } else if (this.jsData.whichGallery == "album") {
+      this.jsData.album_raw[current].like_count = like_count;
       this.updateAlbum();
     }
   },
@@ -619,5 +617,175 @@ Page({
     wx.navigateTo({
       url: url,
     });
+  },
+
+  async loadUser() {
+    var user = await getUser({
+      nocache: true,
+    });
+    user = deepcopy(user);
+    if (!user.userInfo) {
+      user.userInfo = {};
+    }
+    this.setData({
+      user: user
+    });
+  },
+
+  // 检查是否配置了徽章
+  async checkBadgeDefEmpty() {
+    const m = this.jsData.badgeDefMap;
+    if (!Object.keys(m).length) {
+      return;
+    }
+
+    this.setData({ showBadge: true });
+  },
+
+  // 更新用户的徽章库存（不需要onload）
+  async reloadUserBadge() {
+    if (!this.jsData.badgeDefMap) {
+      this.jsData.badgeDefMap = await loadBadgeDefMap();
+      await this.checkBadgeDefEmpty();
+    }
+    if (!this.data.user) {
+      await this.loadUser();
+    }
+    this.setData({
+      userBadges: await loadUserBadge(this.data.user.openid, this.jsData.badgeDefMap, {keepZero: true}),
+    });
+  },
+
+  // 赠予徽章
+  async doGiveBadge() {
+    if (this.jsData.badgeGiving) {
+      return;
+    }
+    this.jsData.badgeGiving = true;
+
+    const index = this.data.activeUserBadge;
+    const badgeDef = this.data.userBadges[index]._id;
+    const res = await api.giveBadge({
+      catId: this.data.cat._id,
+      badgeDef: badgeDef
+    });
+    if (res.result.ok) {
+      wx.showToast({
+        title: '赠予成功',
+        icon: "success"
+      });
+    } else {
+      wx.showToast({
+        title: '赠予失败',
+        icon: "error"
+      });
+    }
+
+    this.setData({
+      activeUserBadge: -1,
+    });
+
+    await Promise.all([
+      this.reloadUserBadge(),
+      this.reloadCatBadge()
+    ]);
+
+    this.jsData.badgeGiving = false;
+  },
+
+  // 点击赠予徽章
+  async toGiveBadge(e) {
+    if (this.data.activeUserBadge === -1) {
+      return;
+    }
+    await this.doGiveBadge();
+  },
+
+  // 点击获取徽章
+  async toGetBadge(e) {
+    wx.navigateTo({
+      url: '/pages/info/badge/badge',
+    });
+  },
+
+  // 更新猫的徽章，TODO(zing): 减少调用次数，考虑做个中间表
+  async reloadCatBadge() {
+    const catId = this.data.cat._id;
+    if (!this.jsData.badgeDefMap) {
+      this.jsData.badgeDefMap = await loadBadgeDefMap();
+      await this.checkBadgeDefEmpty();
+    }
+    let badges = await loadCatBadge(catId);
+    badges.sort((a, b) => b.givenTime - a.givenTime);
+    let mergedBadges = await mergeAndSortBadges(badges, this.jsData.badgeDefMap);
+    this.setData({
+      catBadges: mergedBadges,
+      detailBadges: badges,
+    });
+  },
+
+  async bindTapUserBadge(e) {
+    let {index} = e.currentTarget.dataset;
+    if (this.data.userBadges[index].count === 0) {
+      wx.showToast({
+        title: '请先获取该徽章~',
+        icon: "none"
+      });
+      return;
+    }
+    if (this.data.activeUserBadge === index) {
+      index = -1;
+    }
+    this.setData({
+      activeUserBadge: index,
+    });
+  },
+
+  async showGiveBadge() {
+    this.setData({
+      showGiveBadge: true,
+    })
+  },
+
+  async hideGiveBadge() {
+    this.setData({
+      showGiveBadge: false,
+    })
+  },
+
+  async toBadgeDetail() {
+    if (this.data.detailBadges.length === 0) {
+      wx.showToast({
+        title: '暂无徽章~',
+        icon: 'none'
+      });
+      return;
+    }
+    // 新开一个页面，用缓存来传值
+    wx.setStorageSync('cat-badge-info', {
+      catName: this.data.cat.name,
+      userOpenid: this.data.user.openid
+    });
+    wx.setStorageSync('cat-badge-detail', this.data.detailBadges);
+    // 跳转
+    wx.navigateTo({
+      url: '/pages/genealogy/detailCat/badgeDetail/badgeDetail',
+    });
+  },
+
+  // 展示弹窗
+  showBadgeModal(e) {
+    const {index} = e.currentTarget.dataset;
+    const badge = this.data.catBadges[index];
+    const modal = {
+      show: true,
+      title: "徽章详情",
+      name: badge.name,
+      img: badge.img,
+      desc: badge.desc,
+      level: badge.level,
+      tip: `共拥有${badge.count}枚`,
+    };
+    this.setData({modal});
   },
 })

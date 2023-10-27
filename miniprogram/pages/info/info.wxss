@@ -50,6 +50,10 @@ page {
   text-align: center;
 }
 
+.mina-info .dev.small {
+  font-size: 20rpx;
+}
+
 .block-name {
   font-size:30rpx;
   font-weight: 400;

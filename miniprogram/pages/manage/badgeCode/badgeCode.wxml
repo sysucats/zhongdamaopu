@@ -1,0 +1,60 @@
+<!--pages/manage/badgeCode/badgeCode.wxml-->
+<block wx:if="{{auth}}">
+  <button class="primary" bindtap="onNew">生成兑换码</button>
+
+  <view class="code-group" wx:for="{{groups}}" wx:key="key" wx:for-index="key" wx:for-item="codes">
+    <view class="code-info">
+      <view class="code-info-header">
+        <view class="code-info-taskid">{{codes[0].genTaskId}}</view>
+        <view class="code-buttons">
+          <view class="code-btn" bindtap="copyCodes" data-taskid="{{codes[0].genTaskId}}" data-range="all">复制所有</view>
+          <view class="code-btn" bindtap="copyCodes" data-taskid="{{codes[0].genTaskId}}" data-range="useful">复制可用</view>
+        </view>
+      </view>
+      <view class="code-info-others">
+        <view class="code-info-item">抽取个数：{{codes[0].badgeCount}}</view>
+        <view class="code-info-item">抽取等级：{{codes[0].badgeLevel}}</view>
+        <view class="code-info-item">生成个数：{{codes[0].genCount}}</view>
+        <view class="code-info-item">生成理由：{{codes[0].genReason}}</view>
+        <view class="code-info-item">生成时间：{{codes[0].genTimeStr}}</view>
+        <view class="code-info-item">有效日期：{{codes[0].validTimeStr}}</view>
+      </view>
+    </view>
+    <view class="code-items">
+    <!-- 表单标题 -->
+      <view class="code-item header">
+        <view class="code-item-valid sub-header">有效</view>
+        <view class="code-item-valid sub-header">未使用</view>
+        <view class="code-item-code sub-header">兑换码</view>
+        <view class="code-buttons sub-header">操作</view>
+      </view>
+      <view class="code-item" wx:for="{{codes}}" wx:key="code">
+        <view class="code-item-valid true" wx:if="{{item.isValid}}">是</view>
+        <view class="code-item-valid false" wx:else>否</view>
+        <view class="code-item-valid true" wx:if="{{item.useTime === null}}">是</view>
+        <view class="code-item-valid false" wx:else>否</view>
+        <view class="code-item-code">{{item.code}}</view>
+        <view class="code-buttons">
+          <view class="code-btn" bindtap="changeValid" data-taskid="{{item.genTaskId}}" data-index="{{index}}">{{item.isValid ? '置为失效': '置为有效'}}</view>
+          <view class="code-btn" bindtap="copyOneCode" data-code="{{item.code}}">复制</view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <view class="badge" wx:for="{{badgeDefs}}" wx:key="_id">
+    <image src="{{item.img}}" mode="aspectFill"/>
+    <view class="badge-info">
+      <view class="badge-name">[{{item.level}}级] {{item.name}}</view>
+      <view class="badge-desc">徽章描述：{{item.desc}}</view>
+      <view class="badge-desc">榜单标语：{{item.rankDesc}}</view>
+      <view class="badge-count">现存数量：{{item.count}}</view>
+    </view>
+    <view class="modify-btn" bindtap="onEdit" data-id="{{item._id}}">修改</view>
+  </view>
+  <view style="height: 1rpx;"></view>
+</block>
+<view wx:else class="unAuth">
+  <text>{{tipText}}</text>
+  <button bindtap='goBack' wx:if="{{tipBtn}}">打扰了</button>
+</view>

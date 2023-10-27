@@ -1,6 +1,6 @@
-import utils from "../../../utils";
-import userUtils from "../../../user";
-import api from "../../../cloudApi";
+import utils from "../../../utils/utils";
+import userUtils from "../../../utils/user";
+import api from "../../../utils/cloudApi";
 
 const generateUUID = utils.generateUUID;
 

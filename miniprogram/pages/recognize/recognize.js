@@ -1,7 +1,21 @@
-import { text as text_cfg, cat_status_adopt } from "../../config";
-import { hex_sha256, randomInt } from "../../utils";
-import { loadFilter, getGlobalSettings, showTab } from "../../page";
-import { cloud } from "../../cloudAccess";
+import {
+  text as text_cfg,
+  cat_status_adopt
+} from "../../config";
+import {
+  hex_sha256,
+  randomInt
+} from "../../utils/utils";
+import {
+  loadFilter,
+  getGlobalSettings,
+  showTab
+} from "../../utils/page";
+import {
+  cloud
+} from "../../utils/cloudAccess";
+
+import drawUtils from "../../utils/draw";
 
 // 接口设置，onLoad中从数据库拉取。
 var interfaceURL;
@@ -12,9 +26,6 @@ var widthHeightRatio;
 
 // 接口返回的识别结果。展示的结果为在此基础上筛选。
 var recognizeResults = [];
-
-// 在页面中定义插屏广告
-let interstitialAd = null
 
 const share_text = text_cfg.app_name + ' - ' + text_cfg.recognize.share_tip;
 
@@ -28,13 +39,13 @@ Page({
     devicePosition: 'back', // 前置/后置摄像头
     photoPath: null, // 用户选择的照片的路径
     photoBase64: null, // 用户选择的照片的base64编码，用于设置background-image
-    campusList:['所有校区'],
-    campusIndex:0,
-    campusIndexOld:0,
-    lastFilterType:'',
-    colourIndexOld:0,
-    colourList:['所有花色'],
-    colourIndex:0,
+    campusList: ['所有校区'],
+    campusIndex: 0,
+    campusIndexOld: 0,
+    lastFilterType: '',
+    colourIndexOld: 0,
+    colourList: ['所有花色'],
+    colourIndex: 0,
     catList: [], // 展示的猫猫列表
     catBoxList: [], // 展示的猫猫框列表
     catIdx: null, // 在有多只猫猫的图片中，识别的猫猫的编号
@@ -47,24 +58,16 @@ Page({
     adopt_desc: cat_status_adopt,
   },
 
-  async onLoad() {
-    // 在页面onLoad回调事件中创建插屏广告实例
-    if (wx.createInterstitialAd) {
-      interstitialAd = wx.createInterstitialAd({
-        adUnitId: 'adunit-531fedfc9dcd52c3'
-      })
-      interstitialAd.onLoad(() => {
-        console.log("加载插屏广告成功");
-      })
-      interstitialAd.onError((err) => {})
-      interstitialAd.onClose(() => {})
-    }
+  jsData: {
+    canvasSideLen: 500,
+  },
 
+  async onLoad() {
     var res = await loadFilter();
     console.log('filterRes:', res);
     this.setData({
-      campusList:['所有校区'].concat(res.campuses),
-      colourList:['所有花色'].concat(res.colour)
+      campusList: ['所有校区'].concat(res.campuses),
+      colourList: ['所有花色'].concat(res.colour)
     })
 
     this.checkAuth();
@@ -169,6 +172,13 @@ Page({
     });
     // 压缩图片
     const compressPhotoPath = await this.compressPhoto();
+
+    const compressPhotoInfo = await wx.getImageInfo({
+      src: compressPhotoPath,
+    });
+    this.jsData.compressPhotoInfo = compressPhotoInfo;
+    console.log("compressPhotoInfo", compressPhotoInfo);
+
     // 计算签名
     const photoBase64 = wx.getFileSystemManager().readFileSync(compressPhotoPath, 'base64');
     const timestamp = Math.round(new Date().getTime() / 1000);
@@ -230,30 +240,26 @@ Page({
     // 记录图片长宽比。用于重新映射后端返回的catBox位置信息。
     widthHeightRatio = photoInfo.width / photoInfo.height;
     // 使用canvas方法压缩图片
-    const canvasSideLen = 500;
+    const {canvasSideLen} = this.jsData;
     const drawRate = Math.max(photoInfo.width, photoInfo.height) / canvasSideLen; // 计算缩放比
     const drawWidth = photoInfo.width / drawRate;
     const drawHeight = photoInfo.height / drawRate;
-    const ctx = wx.createCanvasContext('canvasForCompress');
-    ctx.drawImage(photoInfo.path, 0, 0, drawWidth, drawHeight);
-    const compressPhotoPath = await new Promise((resolve, reject) => {
-      ctx.draw(false, () => {
-        wx.canvasToTempFilePath({
-          canvasId: 'canvasForCompress',
-          width: drawWidth,
-          height: drawHeight,
-          destWidth: drawWidth,
-          destHeight: drawHeight,
-          fileType: 'jpg',
-          success(res) {
-            resolve(res.tempFilePath);
-          },
-          fail(err) {
-            reject(err);
-          }
-        });
-      });
+    if (!this.jsData.ctx) {
+      const {ctx, canvas} = await drawUtils.initCanvas('#canvasForCompress');
+      this.jsData.ctx = ctx;
+      this.jsData.canvas = canvas;
+    }
+    const {ctx, canvas} = this.jsData;
+    await drawUtils.drawImage(ctx, canvas, photoInfo.path, 0, 0, drawWidth, drawHeight);
+
+    const compressPhotoPath = await drawUtils.getTempPath(ctx, canvas, {
+      width: drawWidth,
+      height: drawHeight,
+      destWidth: drawWidth,
+      destHeight: drawHeight,
+      fileType: 'jpg'
     });
+
     return compressPhotoPath;
   },
 
@@ -262,22 +268,27 @@ Page({
     let catBoxes = result.catBoxes;
     let catBoxList = [];
     const previewSideLen = 675; // view#previewArea的长宽rpx值
-    const compressSideLen = 500; // 上传到后台的图片的长边长度
+    const compressSideLen = this.jsData.canvasSideLen; // 上传到后台的图片的长边长度
     const ratio = previewSideLen / compressSideLen; // 缩放比
+    const {compressPhotoInfo} = this.jsData;
     for (let catBox of catBoxes) {
-      let xOffset = 0;
-      let yOffset = 0;
+      let xOffset = 0, yOffset = 0;
       // 短边由于居中会产生offset
       if (widthHeightRatio < 1) {
         xOffset = previewSideLen * ((1 - widthHeightRatio) / 2);
       } else {
         yOffset = previewSideLen * ((1 - 1 / widthHeightRatio) / 2);
       }
+      console.log(catBox, ratio, xOffset, yOffset, previewSideLen);
+
+      // PC端压缩后的照片，尺寸不一定是500
+      const realDrawRate = compressSideLen / Math.max(compressPhotoInfo.width, compressPhotoInfo.height);
+
       catBoxList.push({
-        x: catBox.xmin * ratio + xOffset,
-        y: catBox.ymin * ratio + yOffset,
-        width: (catBox.xmax - catBox.xmin) * ratio,
-        height: (catBox.ymax - catBox.ymin) * ratio
+        x: catBox.xmin * realDrawRate * ratio + xOffset,
+        y: catBox.ymin * realDrawRate * ratio + yOffset,
+        width: (catBox.xmax - catBox.xmin) * realDrawRate * ratio,
+        height: (catBox.ymax - catBox.ymin) * realDrawRate * ratio
       });
     }
     console.log("cat box list:", catBoxList);
@@ -301,9 +312,9 @@ Page({
     //点击筛选picker
     var type = res.currentTarget.dataset.type;
     this.setData({
-      [type+'IndexOld']:this.data[type+'Index'],
-      lastFilterType:type,
-      [type+'Index'] :res.detail.value
+      [type + 'IndexOld']: this.data[type + 'Index'],
+      lastFilterType: type,
+      [type + 'Index']: res.detail.value
     })
     this.pickCatList();
   },
@@ -314,21 +325,20 @@ Page({
     })
 
     const that = this;
-    console.log("recognizeResults:",recognizeResults);
+    console.log("recognizeResults:", recognizeResults);
     const choseCampus = that.data.campusList[that.data.campusIndex];
     const choseColour = that.data.colourList[that.data.colourIndex];
     const catList = recognizeResults.filter(cat => {
-      if ((choseCampus === cat.campus || choseCampus === "所有校区") &&( choseColour === cat.colour || choseColour ==="所有花色")) {
-        return true;//筛选结果
+      if ((choseCampus === cat.campus || choseCampus === "所有校区") && (choseColour === cat.colour || choseColour === "所有花色")) {
+        return true; //筛选结果
       }
-    }
-    ); 
+    });
 
     console.log("catList:", catList);
     if (catList.length === 0) {
       wx.hideLoading();
       this.setData({
-        [this.data.lastFilterType+'Index']:this.data[this.data.lastFilterType+"IndexOld"]// 无筛选结果，恢复原选项
+        [this.data.lastFilterType + 'Index']: this.data[this.data.lastFilterType + "IndexOld"] // 无筛选结果，恢复原选项
       })
       wx.showToast({
         title: '找不到这样的猫猫，试试换个选项吧',
@@ -337,7 +347,7 @@ Page({
         mask: true
       })
       return false;
-    }else{
+    } else {
       this.calculateSoftmaxProb(catList);
     }
 
@@ -352,8 +362,8 @@ Page({
         const catInfo = catList[index];
         catInfo.photo = await this.getCatPhoto(catInfo);
         displayList.push(catInfo);
-      }      
-    }else{
+      }
+    } else {
       for (let index = 0; index < maxNum; index++) {
         if (catList[index].prob > minProb || index < minNum) {
           const catInfo = catList[index];
@@ -382,14 +392,14 @@ Page({
   },
 
   async getCatInfo(cat) {
-    const db = cloud.database();
+    const db = await cloud.databaseAsync();
     const catInfo = (await db.collection('cat').doc(cat.catID).get()).data;
     catInfo.score = cat.score;
     return catInfo;
   },
 
   async getCatPhoto(catInfo) {
-    const db = cloud.database();
+    const db = await cloud.databaseAsync();
     const photo = db.collection('photo');
     // 从精选照片里随机挑选一张
     const query = {
@@ -403,20 +413,20 @@ Page({
     return photoURL;
   },
 
-  choosePhoto() {
-    const that = this;
-    wx.chooseImage({
+  async choosePhoto() {
+    var res = await wx.chooseMedia({
       count: 1,
-      sizeType: ['compressed'],
+      mediaType: ['image'],
+      sizeType: ["compressed"],
       sourceType: ['album'],
-      success(res) {
-        that.setData({
-          photoPath: res.tempFilePaths[0],
-          photoBase64: wx.getFileSystemManager().readFileSync(res.tempFilePaths[0], 'base64')
-        });
-        that.recognizePhoto();
-      }
+    })
+
+    const filePath = res.tempFiles[0].tempFilePath;
+    this.setData({
+      photoPath: filePath,
+      photoBase64: wx.getFileSystemManager().readFileSync(filePath, 'base64')
     });
+    this.recognizePhoto();
   },
 
   reset() {
@@ -427,17 +437,9 @@ Page({
       catList: [],
       catIdx: null,
       showResultBox: false,
-      campusIndex:0,
-      colourIndex:0
+      campusIndex: 0,
+      colourIndex: 0
     });
-
-    // 在适合的场景显示插屏广告
-    // if (interstitialAd) {
-    //   console.log("展示广告")
-    //   interstitialAd.show().catch((err) => {
-    //     console.error(err)
-    //   })
-    // }
   },
 
   reverseCamera() {

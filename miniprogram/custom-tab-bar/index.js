@@ -1,5 +1,6 @@
-import { getGlobalSettings, getCurrentPath, toSettings } from "../page";
-import { checkCanFullTabBar } from "../user";
+import { getGlobalSettings, getCurrentPath } from "../utils/page";
+import { sleep } from "../utils/utils";
+import { checkCanFullTabBar } from "../utils/user";
 import tab from "./tab";
 
 function getTabBarList() {
@@ -27,11 +28,18 @@ Component({
   },
   async created() {
     const currentPath = getCurrentPath();
+    if (!currentPath) {
+      await sleep(100);
+    }
     const settings = await getGlobalSettings("tabBarCtrl");
     if (settings == undefined) {
       console.log("no settings, currentPath:", currentPath);
       if (isTabPath(currentPath)) {
-        toSettings("缺失tabBar设置，已填入默认值，请检查后保存。");
+        wx.showModal({
+          content: "缺失tabBar设置，请管理员在“页面配置”中修改",
+          showCancel: false
+        });
+        // toSettings("缺失tabBar设置，已填入默认值，请检查后保存。");
         return;
       }
 
@@ -54,7 +62,10 @@ Component({
 
     if (!order && isTabPath(currentPath)) {
       console.log("no order");
-      toSettings("缺失tabBar设置，已填入默认值，请检查后保存。");
+      wx.showModal({
+        content: "缺失tabBar设置，请管理员在“页面配置”中修改",
+        showCancel: false
+      });
       return;
     }
 

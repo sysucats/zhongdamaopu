@@ -8,67 +8,98 @@ page {
 #comment-list {
   width: 750rpx;
   height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .comment {
-  display: flex;
-  padding: 15rpx 0;
-  background-color: white;
-  margin-bottom: 10rpx;
+  width: 600rpx;
+  margin: 30rpx 10rpx;
+  box-sizing: border-box;
+  background:
+    -webkit-linear-gradient(top, white 38rpx, var(--color-gray) 40rpx);
+  background-size: 100% 40rpx;
+  position: relative;
 }
 
-.comment .left {
-  width: 120rpx;
-}
-
-.comment .left .avatar {
+.comment .tape {
   width: 70rpx;
-  height: 70rpx;
-  border-radius: 25rpx;
-  margin: 0 30rpx;
+  height: 200rpx;
+  background-color: var(--color-comment-tape);
+  opacity: 0.3;
+
+  position: absolute;
+  top: -70rpx;
+  left: 20rpx;
+  transform: rotate(45deg);
 }
 
-.comment .right {
-  width: 700rpx;
-  padding-right: 30rpx;
+.comment .paper {
+  background-color: transparent;
+  padding: 34rpx 30rpx;
 }
 
-.comment .right .info-block {
-  height: 80rpx;
+.wavy-line::before {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 20rpx;
+  display: block;
+  background: linear-gradient(-45deg, transparent 33.33%, var(--color-gray-light) 33.33%, var(--color-gray-light) 66.66%,
+      transparent 66.66%), linear-gradient(45deg, transparent 33.33%, var(--color-gray-light) 33.33%, var(--color-gray-light) 66.66%, transparent 66.66%);
+  background-size: 20rpx 40rpx;
+  transform: rotateX(180deg);
 }
 
-.comment .right .username {
+.wavy-line.bottom::before {
+  transform: rotateX(0deg);
+  transform: rotateY(180deg);
+  bottom: 0;
+}
+
+.user-info {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  box-sizing: border-box;
+}
+
+.username {
+  margin: 0 10rpx;
   font-size: 28rpx;
   color: var(--color-black-light);
   font-weight: 500;
 }
 
-.comment .right .delete {
+.delete {
   font-size: 22rpx;
   color: var(--color-black-light);
   font-weight: lighter;
-  float: right;
+  margin-left: auto;
 }
 
-.comment .right .datetime {
+.datetime {
+  width: 100%;
+  text-align: right;
   font-size: 20rpx;
   color: var(--color-gray-max);
 }
 
-.comment .right .content {
+.content {
   font-size: 28rpx;
   color: var(--color-black-light);
+  text-indent: 25rpx;
 }
 
-.comment + .comment {
-  border-top: 1rpx solid var(--color-gray-light);
+.input-block-ph {
+  width: 100%;
+  min-height: 200rpx;
 }
 
-#input-block-ph {
-  height: 200rpx;
-}
-
-#input-block {
+#input-block,
+.comment-input-closed {
   width: 750rpx;
   position: absolute;
   bottom: 0;
@@ -79,6 +110,12 @@ page {
   background-color: white;
   box-sizing: border-box;
   border-top: 1rpx solid var(--color-gray-light);
+}
+
+.comment-input-closed text {
+  width: 750rpx;
+  text-align: center;
+  color: var(--color-gray-dark);
 }
 
 #input-block-bottom {
@@ -100,8 +137,46 @@ page {
   padding: 18rpx 20rpx;
   border-radius: 10rpx;
 
-	font-size: 30rpx;
-	line-height: 30rpx;
+  font-size: 30rpx;
+  line-height: 30rpx;
+}
+
+#input-block .bottom-line {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 24rpx;
+  color: var(--color-black-min);
+}
+
+.input-colors {
+  display: flex;
+  flex-direction: row;
+}
+
+.input-color {
+  width: 60rpx;
+  height: 60rpx;
+  background-color: white;
+  border: 1rpx solid var(--color-gray-dark);
+  box-sizing: border-box;
+  margin: 10rpx;
+}
+
+.input-color.yellow {
+  background-color: var(--color-comment-paper-yellow);
+}
+.input-color.green {
+  background-color: var(--color-comment-paper-green);
+}
+.input-color.pink {
+  background-color: var(--color-comment-paper-pink);
+}
+
+.input-color.selected {
+  border: 10rpx solid var(--color-primary);
 }
 
 #input-block .send-btn {
@@ -122,4 +197,29 @@ button.long {
 
 button.primary {
   background-color: var(--color-primary);
+}
+
+/* 多种颜色的纸 */
+.comment.white {
+  background:
+    -webkit-linear-gradient(top, var(--color-comment-paper-white) 38rpx, var(--color-gray) 40rpx);
+  background-size: 100% 40rpx;
+}
+
+.comment.yellow {
+  background:
+    -webkit-linear-gradient(top, var(--color-comment-paper-yellow) 38rpx, var(--color-gray) 40rpx);
+  background-size: 100% 40rpx;
+}
+
+.comment.green {
+  background:
+    -webkit-linear-gradient(top, var(--color-comment-paper-green) 38rpx, var(--color-gray) 40rpx);
+  background-size: 100% 40rpx;
+}
+
+.comment.pink {
+  background:
+    -webkit-linear-gradient(top, var(--color-comment-paper-pink) 38rpx, var(--color-gray) 40rpx);
+  background-size: 100% 40rpx;
 }

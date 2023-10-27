@@ -4,7 +4,6 @@
     "pages/genealogy/addPhoto/addPhoto",
     "pages/genealogy/detailCat/detailCat",
     "pages/info/info",
-    "pages/info/photoRank/photoRank",
     "pages/info/reward/reward",
     "pages/info/feedback/feedback",
     "pages/info/feedback/myFeedback/myFeedback",
@@ -33,7 +32,16 @@
     "pages/manage/pageSettings/pageSettings",
     "pages/tools/inviteUser/inviteUser",
     "pages/info/userInfo/modifyUserInfo/modifyUserInfo",
-    "pages/info/agreement/agreement"
+    "pages/info/agreement/agreement",
+    "pages/debug/genKeys/genKeys",
+    "pages/manage/badgeDef/badgeDef",
+    "pages/manage/badgeDef/addBadgeDef/addBadgeDef",
+    "pages/info/badge/badge",
+    "pages/genealogy/detailCat/badgeDetail/badgeDetail",
+    "pages/manage/checkComment/checkComment",
+    "pages/manage/badgeCode/badgeCode",
+    "pages/manage/badgeCode/addBadgeCode/addBadgeCode",
+    "pages/info/badge/badgeHistory/badgeHistory"
   ],
   "tabBar": {
     "custom": true,
@@ -73,6 +81,5 @@
       "path": "pages/recognize/recognize"
     }
   ],
-  "sitemapLocation": "sitemap.json",
-  "lazyCodeLoading": "requiredComponents"
+  "sitemapLocation": "sitemap.json"
 }
