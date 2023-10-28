@@ -104,7 +104,7 @@ async function signCosUrl(inputUrl) {
   let signedUrl = await _doCosSign(url);
 
   // 保存缓存
-  setCacheItem(cacheKey, signedUrl, config.sign_expires_tencent_cos);
+  setCacheItem(cacheKey, signedUrl, config.sign_expires_tencent_cos / 3600);
 
   return signedUrl;
 }
