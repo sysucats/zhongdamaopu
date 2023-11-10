@@ -31,18 +31,17 @@ Component({
     if (!currentPath) {
       await sleep(100);
     }
-    const settings = await getGlobalSettings("tabBarCtrl");
+    const settings = await this.getSettings();
     if (settings == undefined) {
       console.log("no settings, currentPath:", currentPath);
       if (isTabPath(currentPath)) {
         wx.showModal({
-          content: "缺失tabBar设置，请管理员在“页面配置”中修改",
+          title: 'TabBar错误001',
+          content: `请重进小程序。当前页面：${currentPath}`,
           showCancel: false
         });
-        // toSettings("缺失tabBar设置，已填入默认值，请检查后保存。");
         return;
       }
-
       
       this.setData({
         list: tab,
@@ -56,14 +55,15 @@ Component({
     // console.log("tabBar", ctrlTab, minTab, fullTab);
     // 根据用户类型来确定底Tab
     var order = minTab;
-    if (await checkCanFullTabBar()) {
+    if (await checkCanFullTabBar() || !order) {
       order = fullTab;
     }
 
     if (!order && isTabPath(currentPath)) {
       console.log("no order");
       wx.showModal({
-        content: "缺失tabBar设置，请管理员在“页面配置”中修改",
+        title: 'TabBar错误002',
+        content: `请重进小程序。当前页面：${currentPath}`,
         showCancel: false
       });
       return;
@@ -102,6 +102,22 @@ Component({
 
       const url = `/${path}`;
       wx.switchTab({url});
+    },
+    
+    // 带有重试机制的读取设置
+    async getSettings() {
+      let maxTry = 3;
+      let res = undefined;
+      while (res === undefined && maxTry > 0) {
+        res = await getGlobalSettings("tabBarCtrl");
+        maxTry --;
+        await sleep(300);
+        wx.showLoading({
+          title: '加载中...',
+        });
+      }
+      wx.hideLoading();
+      return res;
     },
   }
 })

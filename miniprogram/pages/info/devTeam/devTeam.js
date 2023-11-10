@@ -10,6 +10,14 @@ Page({
     text_cfg: text_cfg,
     github_link: "https://github.com/sysucats/zhongdamaopu",
     update_log: [{
+      version: "v1.12.9",
+      content: [
+        "尝试修复TabBar设置问题",
+        "优化图像处理功能",
+        "优化URL签名缓存"
+      ],
+      time: "2023/10/21"
+    }, {
       version: "v1.12.8",
       content: [
         "点赞榜单修复",

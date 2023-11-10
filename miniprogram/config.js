@@ -5,13 +5,15 @@
 
 module.exports = {
   // 版本号
-  app_version: "v1.12.8",
+  app_version: "v1.12.9",
   // laf后台服务地址
   laf_url: 'https://fxkv6h.laf.run',
   // laf后台服务地址（微信开发工具中），一般和上面laf_url一致就好
   laf_dev_url: 'https://fxkv6h.laf.run',
   // 使用私有的腾讯云cos存储，需要url签名
   use_private_tencent_cos: true,
+  // 私有的腾讯云cos签名过期时间（秒）
+  sign_expires_tencent_cos: 3600 * 2,
 
   // 科普页图片
   science_imgs: [
@@ -83,13 +85,13 @@ module.exports = {
     },
     // 提交反馈页，pages/genealogy/feedbackDetail/feedbackDetail
     feedback_detail: {
-      feedback_title: "反馈内容",
+      feedback_title: "反馈",
       feedback_tip: "猫猫信息纠错、照片归属权、功能改进等~",
       input_length_tip: "字数",
       contract_title: "其他信息",
       contract_tip: "（选填）",
       submit_button: "提交反馈",
-      submit_tip: "*反馈内容仅后台工作人员可见",
+      submit_tip: "*反馈仅后台工作人员可见",
     },
     // 提交便利贴页，pages/genealogy/commentBoard/commentBoard
     comment_board: {

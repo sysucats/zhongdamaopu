@@ -1,5 +1,4 @@
 import { hex_sha256 } from "../packages/sha256/sha256";
-import { cloud } from "./cloudAccess";
 
 function randomInt(min, max) {
   return Math.floor(Math.random() * (max - min)) + min;
@@ -181,19 +180,6 @@ async function arrayResort(oriArray) {
   return resortedArray;
 }
 
-
-// 检查部署情况，有错误就跳转到部署帮助页
-async function checkDeploy() {
-  try {
-    const db = await cloud.databaseAsync();
-    await db.collection('setting').doc('pages').get();
-  } catch (error) {
-    return false
-  }
-  
-  return true;
-}
-
 // 等待时间（ms）
 const sleep = m => new Promise(r => setTimeout(r, m))
 
@@ -224,6 +210,35 @@ async function compressImage(src, quality) {
   return res.tempFilePath;
 }
 
+// 解析URL参数
+function parseQueryParams(url) {
+  const searchParams = new URLSearchParams(url);
+  const params = {};
+
+  for (let [key, value] of searchParams) {
+    // 如果参数名已经存在，则将值转换为数组
+    if (params.hasOwnProperty(key)) {
+      if (Array.isArray(params[key])) {
+        params[key].push(value);
+      } else {
+        params[key] = [params[key], value];
+      }
+    } else {
+      params[key] = value;
+    }
+  }
+
+  return params;
+}
+
+// 获取URL中除参数以外的部分
+function removeQueryParams(url) {
+  const indexOfQuestionMark = url.indexOf('?');
+  if (indexOfQuestionMark !== -1) {
+    return url.substring(0, indexOfQuestionMark);
+  }
+  return url;
+}
 
 module.exports = {
   hex_sha256,
@@ -241,9 +256,10 @@ module.exports = {
   checkMultiClick,
   getDeltaHours,
   arrayResort,
-  checkDeploy,
   getDateWithDiffHours,
   sleep,
   deepcopy,
   compressImage,
+  parseQueryParams,
+  removeQueryParams
 };

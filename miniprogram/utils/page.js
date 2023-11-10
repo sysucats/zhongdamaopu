@@ -10,12 +10,10 @@ async function _getSetting(_id, options) {
 
   var cacheItem = getCacheItem(cacheKey, options);
   // console.log(cacheKey, cacheItem);
-  if (cacheItem) {
+  if (cacheItem !== undefined) {
     return cacheItem;
   }
 
-
-  // console.log(wx.getStorageSync('accessToken'));
   const db = await cloud.databaseAsync();
   cacheItem = (await db.collection('setting').doc(_id).get()).data;
   

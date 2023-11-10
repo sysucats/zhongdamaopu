@@ -55,10 +55,16 @@ function drawImage(gCtx, gCanvas, imgSrc, dx, dy, weight, height) {
 
 // 获得temp文件路径
 async function getTempPath(gCtx, gCanvas, options) {
-  await sleep(200);  // 保证画图完成
-  options.canvas = gCanvas;
-  var tempFilePath = (await wx.canvasToTempFilePath(options)).tempFilePath;
-  return await compressImage(tempFilePath, 80);
+  let maxTry = 5;  // 重试5次
+  let res = undefined;
+  while (maxTry > 0 && res === undefined) {
+    await sleep(200);  // 保证画图完成
+    options.canvas = gCanvas;
+    var tempFilePath = (await wx.canvasToTempFilePath(options)).tempFilePath;
+    res = await compressImage(tempFilePath, 80);
+    maxTry --;
+  }
+  return res;
 }
 
 

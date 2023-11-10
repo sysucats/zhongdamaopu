@@ -18,23 +18,34 @@
     </view>
   </view>
   <view>[{{now}}/{{total}}] 目前阶段：{{phase}} | {{phase2str[phase]}}</view>
-  <button wx:if="{{gLocking}}" class='primary long' bindtap='clickProcessBtn'>{{processing ? "停止" : "开始处理"}}</button>
+  <view class="buttons" wx:if="{{gLocking}}">
+    <button class='short' bindtap='clickProcessBtn' data-test="{{true}}">{{processing ? "停止" : "试运行"}}</button>
+    <button class='primary' bindtap='clickProcessBtn'>{{processing ? "停止" : "开始处理"}}</button>
+  </view>
   <button wx:else class="long" bindtap='getLock'>其他人正在操作...点击重试</button>
   <!-- 说明一下 -->
   <view class="info-block">
     <view>【功能说明】</view>
-    <view>1. 为防止处理冲突，同时只能有1个用户操作</view>
-    <view>2. 水印会使用系统字体，昵称包含Emoji时，建议使用iOS设备</view>
+    <view>1. 首次使用，请点击试运行，再点击缩略图和水印图，查看是否正常</view>
+    <view>2. 为防止处理冲突，同时只能有1个用户操作</view>
+    <view>3. 水印会使用系统字体，昵称包含Emoji时，建议使用iOS设备</view>
   </view>
   <!-- 展示一下锁 -->
   <view class="info-block">
-    <view class="">【此设备ID】</view>
+    <view>【此设备ID】</view>
     <view>{{gLockKey}}</view>
-    <view class="">【页面操作者】</view>
+    <view>【页面操作者】</view>
     <view wx:for="{{allLocks}}" wx:key="key">
       <view>{{item.key}}</view>
       <view>过期时间: {{item.expire_date_str}}</view>
     </view>
+  </view>
+  <!-- 展示错误信息 -->
+  <view class="info-block" wx:if="{{errMsg}}">
+    <view>【错误信息】</view>
+    <view bind:tap="copyText" data-text="{{errMsg}}">{{errMsg}}</view>
+    <view>【错误堆栈】</view>
+    <view bind:tap="copyText" data-text="{{errStack}}">{{errStack}}</view>
   </view>
 </block>
 <view wx:else class='unAuth'>
