@@ -63,7 +63,7 @@ function castRankToMaxCount(ranks: Object, maxCount: number = 20) {
   }
 }
 
-export default async function (ctx: FunctionContext) {  // body, query 为请求参数, user 是授权对象
+export default async function (ctx: FunctionContext) {
   const { body } = ctx
 
   if (body && body.deploy_test === true) {

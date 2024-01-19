@@ -1,5 +1,6 @@
 import cloud from '@lafjs/cloud'
 import crypto from 'crypto';
+import { getAppSecret } from '@/getAppSecret'
 
 async function checkFuncs(funcs) {
   let res = {
@@ -71,13 +72,12 @@ function genRandomKey() {
 }
 
 
-exports.main = async function (ctx: FunctionContext) {
-  // body, query 为请求参数, user 是授权对象
-  const { body, query } = ctx
+export default async function (ctx: FunctionContext) {
+  const { body } = ctx
 
   if (body && body.deploy_test === true) {
     // 进行部署检查
-    return "v1.1";
+    return "v1.2";
   }
 
   const { opType } = body;
@@ -87,7 +87,7 @@ exports.main = async function (ctx: FunctionContext) {
   } else if (opType == 'database') {
     return await checkDb(body.dbName, body.dbInit);
   } else if (opType == 'resetSecret') {
-    return await cloud.invoke("getAppSecret", { body: { reset: true } });
+    return await getAppSecret(true);
   } else if (opType == 'genRSAKeys') {
     return genRSAKeys();
   } else if (opType == 'genRandomKey') {

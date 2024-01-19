@@ -1,5 +1,9 @@
 // curdOp 数据库操作云函数
 import cloud from '@lafjs/cloud'
+import { login } from '@/login'
+import { isManager } from '@/isManager'
+import { deleteFiles } from '@/deleteFiles'
+
 const db = cloud.database();
 
 // 操作对应collection需要的等级
@@ -98,14 +102,12 @@ const permissionAuthor = {
   "read": {},
 }
 
-exports.main = async function (ctx: FunctionContext) {
-  // body, query 为请求参数, user 是授权对象
-  // console.log("ctx:", ctx);
+export default async function (ctx: FunctionContext) {
   const { body } = ctx;
 
   if (body && body.deploy_test === true) {
     // 进行部署检查
-    return "v1.3";
+    return "v1.4";
   }
 
   var openid = ctx.user.openid;  // 用户的 OpenID
@@ -123,7 +125,7 @@ exports.main = async function (ctx: FunctionContext) {
   console.log("curdOp param:", body);
   // TODO, 不要login了
   if (!openid) {
-    openid = (await cloud.invoke("login", { body: { wx_code: body.wx_code } })).openid;
+    openid = (await login(body.wx_code)).openid;
     if (!openid) {
       return;
     }
@@ -208,15 +210,7 @@ exports.main = async function (ctx: FunctionContext) {
 async function check_permission(collection, item_id, openid, level, allowAuthor) {
   console.log(`Check premission for ${openid} with level ${level}, allowAuthor: ${allowAuthor}.`);
   // 是否满足管理员等级
-  const isManager = await cloud.invoke('isManager', {
-    user: {
-      openid: openid,
-    },
-    body: {
-      req: level
-    }
-  });
-  if (isManager) {
+  if (await isManager(openid, level)) {
     return true
   }
 
@@ -231,28 +225,17 @@ async function check_permission(collection, item_id, openid, level, allowAuthor)
 
 // 删除图片
 async function delete_photo_for_news(item_id) {
-  db.collection('news').doc(item_id).get().then(res => {
-    var item = res.data;
-    // 删除云储存的图片
-    console.log("Photo path:", item.photosPath);
-    console.log("Cover path:", item.coverPath);
-    if (item.photosPath && item.photosPath.length > 0) {
-      cloud.invoke("deleteFiles", {
-        body: {
-          fileIDs: item.photosPath
-        }
-      }).then(res => {
-        console.log("删除公告图片", item.photosPath);
-      });
-    }
-    if (item.coverPath) {
-      cloud.invoke("deleteFiles", {
-        body: {
-          fileIDs: [item.coverPath],
-        }
-      }).then(res => {
-        console.log("删除公告封面", item.coverPath);
-      });
-    }
-  });
+  let item = (await db.collection('news').doc(item_id).get()).data;
+
+  // 删除云储存的图片
+  console.log("Photo path:", item.photosPath);
+  console.log("Cover path:", item.coverPath);
+  if (item.photosPath && item.photosPath.length > 0) {
+    await deleteFiles(item.photosPath);
+    console.log("删除公告图片", item.photosPath);
+  }
+  if (item.coverPath) {
+    await deleteFiles([item.coverPath]);
+    console.log("删除公告封面", item.coverPath);
+  }
 }

@@ -1,18 +1,20 @@
 import cloud from '@lafjs/cloud'
+import { deleteFiles } from '@/deleteFiles'
+import { isManager } from '@/isManager'
+import { countPhoto } from '@/countPhoto'
 
 const db = cloud.database();
 
-exports.main = async function (ctx: FunctionContext) {
-  // body, query 为请求参数, user 是授权对象
-  const { body, query } = ctx
+export default async function (ctx: FunctionContext) {
+  const { body } = ctx
 
   if (body && body.deploy_test === true) {
     // 进行部署检查
-    return "v1.0";
+    return "v1.1";
   }
 
   const openid = ctx.user?.openid;
-  const is_manager = await check_manager(1, openid);
+  const is_manager = await isManager(openid, 1);
   if (!is_manager) {
     return { msg: 'not a manager', result: false };
   }
@@ -38,13 +40,7 @@ exports.main = async function (ctx: FunctionContext) {
     }
     console.log(photoIDs);
 
-    cloud.invoke("deleteFiles", {
-      body: {
-        fileIDs: photoIDs
-      }
-    }).then(res => {
-      console.log("删除照片：" + photoIDs);
-    });
+    await deleteFiles(photoIDs);
 
     // updateMphoto(photo.cat_id);
     const res = await db.collection('photo').doc(photo._id).remove();
@@ -65,13 +61,7 @@ exports.main = async function (ctx: FunctionContext) {
     }
     if (photo.photo_compressed && photo.photo_id != 'deleted') {
       // 如果原图没有删掉，那么就删除压缩图和水印图
-      cloud.invoke("deleteFiles", {
-        body: {
-          fileIDs: [photo.photo_compressed, photo.photo_watermark]
-        }
-      }).then(res => {
-        console.log("删除压缩和水印");
-      });
+      await deleteFiles([photo.photo_compressed, photo.photo_watermark]);
     }
     // 把水印和压缩图的链接去掉
     const res = await db.collection('photo').doc(photo._id).update({
@@ -97,7 +87,7 @@ exports.main = async function (ctx: FunctionContext) {
   }
 
   // 所有照片改动之后，重新数一下猫图
-  return await cloud.invoke('countPhoto', {});
+  return await countPhoto();
 }
 
 function updateMphoto(cat_id) {
@@ -105,17 +95,4 @@ function updateMphoto(cat_id) {
   return db.collection('cat').doc(cat_id).update({
       mphoto: today
   });
-}
-
-// 权限检查
-async function check_manager(level, openid) {
-  const isManager = await cloud.invoke('isManager', {
-    user: {
-      openid: openid
-    },
-    body: {
-      req: level
-    }
-  });
-  return isManager;
 }

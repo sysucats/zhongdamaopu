@@ -10,6 +10,14 @@ Page({
     text_cfg: text_cfg,
     github_link: "https://github.com/sysucats/zhongdamaopu",
     update_log: [{
+      version: "v1.12.10",
+      content: [
+        "前后端代码小重构",
+        "修复Loading框问题",
+        "修复用户头像缓存问题"
+      ],
+      time: "2024/01/19"
+    }, {
       version: "v1.12.9",
       content: [
         "尝试修复TabBar设置问题",

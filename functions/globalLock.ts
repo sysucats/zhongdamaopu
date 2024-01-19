@@ -68,9 +68,8 @@ function getLockList(scene) {
   return scene_keys;
 }
 
-exports.main = async function (ctx: FunctionContext) {
-  // body, query 为请求参数, user 是授权对象
-  const { body, query } = ctx
+export default async function (ctx: FunctionContext) {
+  const { body } = ctx
 
   if (body && body.deploy_test === true) {
     // 进行部署检查

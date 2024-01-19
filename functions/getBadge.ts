@@ -41,7 +41,6 @@ function _getProbs(levels: Array<string> | undefined, badgeLevelDict: Object) {
 
 // 抽取badge
 export default async function (ctx: FunctionContext) {
-  // body, query 为请求参数, user 是授权对象
   const { body } = ctx
 
   if (body && body.deploy_test === true) {

@@ -3,19 +3,18 @@
 import cloud from '@lafjs/cloud'
 import axios from 'axios';
 
-exports.main = async function (ctx: FunctionContext) {
-  // body, query 为请求参数, user 是授权对象
-  const { body, query } = ctx
+import { getAccessToken } from '@/getAccessToken'
+
+export default async function (ctx: FunctionContext) {
+  const { body } = ctx
 
   if (body && body.deploy_test === true) {
     // 进行部署检查
-    return "v1.0";
+    return "v1.1";
   }
 
   const openid = ctx.user?.openid;
-  const access_token = await cloud.invoke('getAccessToken', {});
-  // console.log("OpenID:", openid);
-  // console.log("AccessToken:", access_token);
+  const access_token = await getAccessToken();
 
   try {
     const url = 'https://api.weixin.qq.com/wxa/msg_sec_check';

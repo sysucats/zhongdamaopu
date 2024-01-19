@@ -32,19 +32,22 @@ async function ensureShared() {
   }
 }
 
-exports.main = async function (ctx: FunctionContext) {
-  // body, query 为请求参数, user 是授权对象
-  const { body, query } = ctx
-
-  if (body && body.deploy_test === true) {
-    // 进行部署检查
-    return "v1.1";
-  }
-
-  if (body && body.reset === true) {
+export async function getAppSecret(reset: boolean) {
+  if (reset) {
     cloud.shared["app_secret"] = null;
     cloud.shared['TempCOS'] = null;
   }
   await ensureShared();
   return cloud.shared["app_secret"];
+}
+
+export default async function (ctx: FunctionContext) {
+  const { body } = ctx
+
+  if (body && body.deploy_test === true) {
+    // 进行部署检查
+    return "v1.2";
+  }
+
+  return await getAppSecret(body && body.reset);
 }
