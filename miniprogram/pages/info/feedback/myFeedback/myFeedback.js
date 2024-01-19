@@ -2,8 +2,6 @@ import { formatDate } from "../../../../utils/utils";
 import { getUser } from "../../../../utils/user";
 import { cloud } from "../../../../utils/cloudAccess";
 
-var currentUser;
-
 const step = 6;
 
 Page({
@@ -17,10 +15,14 @@ Page({
     total: 0,
   },
 
+  jsData: {
+    currentUser: null,
+  },
+
   onLoad: async function() {
-    currentUser = await getUser();
-    console.log(currentUser);
-    if (!currentUser) {
+    this.jsData.currentUser = await getUser();
+    console.log(this.jsData.currentUser);
+    if (!this.jsData.currentUser) {
       return;
     }
     this.setData({
@@ -36,7 +38,7 @@ Page({
     const that = this;
     const db = await cloud.databaseAsync();
     const countRes = await db.collection('feedback').where({
-      _openid: currentUser.openid
+      _openid: this.jsData.currentUser.openid
     }).count();
     that.setData({
       total: countRes.total,
@@ -51,7 +53,7 @@ Page({
     const db = await cloud.databaseAsync();
     const nowLoaded = this.data.feedbacks.length;
     var feedbacks = (await db.collection('feedback').where({
-      _openid: currentUser.openid
+      _openid: this.jsData.currentUser.openid
     }).orderBy('openDate', 'desc').skip(nowLoaded).limit(step).get()).data;
     console.log(feedbacks);
     // 获取对应猫猫信息；将Date对象转化为字符串；判断是否已回复

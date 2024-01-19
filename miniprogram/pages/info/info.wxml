@@ -24,85 +24,15 @@
   </view>
 </view>
 
-<block><view class='block-name'>常用工具</view>
-<view class='option-box'>
-  <view class="option" bindtap='clickbtn' data-to='/pages/info/userInfo/modifyUserInfo/modifyUserInfo'>
-    <view class="option-text">个人信息修改</view>
-    <view class="right-arrow"><image mode='aspectFill' src="/pages/public/images/filter/right.png"></image></view> 
+<block wx:for="{{menuList}}" wx:key="title" wx:for-item="menu" wx:if="{{showCond[menu.show]}}">
+  <view class='block-name'>{{menu.title}}</view>
+  <view class='option-box'>
+    <view wx:for="{{menu.items}}" wx:key="name" class="option" bindtap='clickbtn' data-to='{{item.path}}'>
+      <view class="option-text">{{item.name}}<text wx:if="{{item.num}}">（{{nums[item.num]}}）</text></view>
+      <view class="right-arrow"><image mode='aspectFill' src="/pages/public/images/filter/right.png"></image></view> 
+    </view>
   </view>
-  <view class="option" bindtap='clearCache'>
-    <view class="option-text">清理缓存</view>
-    <view class="right-arrow"><image mode='aspectFill' src="/pages/public/images/filter/right.png"></image></view> 
-  </view>
-</view></block>
-
-<block wx:if='{{devMode}}'><view class='block-name'>开发者工具（手机端不显示）</view>
-<view class='option-box'>
-  <view class="option" bindtap='clickbtn' data-to='/pages/debug/deployTip/deployTip'>
-    <view class="option-text">部署指引</view>
-    <view class="right-arrow"><image mode='aspectFill' src="/pages/public/images/filter/right.png"></image></view> 
-  </view>
-  <view class="option" bindtap='clickbtn' data-to='/pages/debug/genKeys/genKeys'>
-    <view class="option-text">生成秘钥</view>
-    <view class="right-arrow"><image mode='aspectFill' src="/pages/public/images/filter/right.png"></image></view> 
-  </view>
-</view></block>
-
-<block wx:if='{{showManager}}'><view class='block-name'>管理后台</view>
-<view class='option-box'>
-  <view class="option" bindtap='clickbtn' data-to='/pages/manage/checkPhotos/checkPhotos'>
-    <view class="option-text">照片审核({{numChkPhotos}})</view>
-    <view class="right-arrow"><image mode='aspectFill' src="/pages/public/images/filter/right.png"></image></view> 
-  </view>
-  <view class="option" bindtap='clickbtn' data-to='/pages/manage/checkComment/checkComment'>
-    <view class="option-text">便利贴审核({{numChkComments}})</view>
-    <view class="right-arrow"><image mode='aspectFill' src="/pages/public/images/filter/right.png"></image></view> 
-  </view>
-  <view class="option" bindtap='clickbtn' data-to='/pages/manage/checkFeedbacks/checkFeedbacks'>
-    <view class="option-text">反馈处理({{numFeedbacks}})</view>
-    <view class="right-arrow"><image mode='aspectFill' src="/pages/public/images/filter/right.png"></image></view> 
-  </view>
-  <view class="option" bindtap='clickbtn' data-to='/pages/news/createNews/createNews'>
-    <view class="option-text">创建公告（猫抓板）</view>
-    <view class="right-arrow"><image mode='aspectFill' src="/pages/public/images/filter/right.png"></image></view> 
-  </view>
-  <view class="option" bindtap='clickbtn' data-to='/pages/manage/filters/filters'>
-    <view class="option-text">校区/区域/花色</view>
-    <view class="right-arrow"><image mode='aspectFill' src="/pages/public/images/filter/right.png"></image></view> 
-  </view>
-  <view class="option" bindtap='clickbtn' data-to='/pages/manage/addCat/addCat'>
-    <view class="option-text">添加新猫</view>
-    <view class="right-arrow"><image mode='aspectFill' src="/pages/public/images/filter/right.png"></image></view> 
-  </view>
-  <view class="option" bindtap='clickbtn' data-to='/pages/manage/addRelations/addRelations'>
-    <view class="option-text">猫猫关系</view>
-    <view class="right-arrow"><image mode='aspectFill' src="/pages/public/images/filter/right.png"></image></view> 
-  </view>
-  <view class="option" bindtap='clickbtn' data-to='/pages/manage/managers/managers'>
-    <view class="option-text">人员管理</view>
-    <view class="right-arrow"><image mode='aspectFill' src="/pages/public/images/filter/right.png"></image></view> 
-  </view>
-  <view class="option" bindtap='clickbtn' data-to='/pages/manage/badgeDef/badgeDef'>
-    <view class="option-text">徽章管理</view>
-    <view class="right-arrow"><image mode='aspectFill' src="/pages/public/images/filter/right.png"></image></view> 
-  </view>
-  <view class="option" bindtap='clickbtn' data-to='/pages/manage/pageSettings/pageSettings'>
-    <view class="option-text">页面配置</view>
-    <view class="right-arrow"><image mode='aspectFill' src="/pages/public/images/filter/right.png"></image></view> 
-  </view>
-  <view class="option" bindtap='clickbtn' data-to='/pages/manage/rewards/rewards'>
-    <view class="option-text">投喂记录</view>
-    <view class="right-arrow"><image mode='aspectFill' src="/pages/public/images/filter/right.png"></image></view> 
-  </view>
-  <view class="option" bindtap='clickbtn' data-to='/pages/tools/inviteUser/inviteUser'>
-    <view class="option-text">特邀用户</view>
-    <view class="right-arrow"><image mode='aspectFill' src="/pages/public/images/filter/right.png"></image></view> 
-  </view>
-  <view class="option" style="color: var(--color-gray-dark);" bindtap='clickbtn' data-to='/pages/manage/imProcess/imProcess'>
-    <view class="option-text">照片处理({{numImProcess}})</view>
-    <view class="right-arrow"><image mode='aspectFill' src="/pages/public/images/filter/right.png"></image></view> 
-  </view>
-</view></block>
+</block>
 
 <!-- 底tab占位 -->
 <view style="height: {{tabBarHeight}}px;"></view>
