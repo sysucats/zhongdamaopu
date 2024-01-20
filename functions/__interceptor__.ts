@@ -26,7 +26,7 @@ export async function main(ctx: FunctionContext) {
   // 请求的实际IP
   const ip = ctx.headers['x-real-ip']
   const { host } = ctx.headers;
-  const { APPID, DEV_IPS } = cloud.env;
+  const { APPID, DEV_IPS } = process.env;
 
   if (ip === undefined && host === `${APPID}.${APPID}:8000`) {
     // 触发器触发
@@ -39,7 +39,7 @@ export async function main(ctx: FunctionContext) {
   }
 
 
-  let signKey = cloud.env.SIGN_KEY;
+  let signKey = process.env.SIGN_KEY;
   if (signKey) {
     // 开启了签名检查
     const { signdata, signstr } = ctx.headers;
@@ -48,7 +48,7 @@ export async function main(ctx: FunctionContext) {
     if (!isValid) {
       console.log("invalid sign");
       console.log(ctx.headers);
-      console.log(cloud.env);
+      console.log(process.env);
       return false;
     }
 
@@ -60,7 +60,7 @@ export async function main(ctx: FunctionContext) {
     if (!timeCheck) {
       console.log("time check failed", now, signdata);
       console.log(ctx.headers);
-      console.log(cloud.env);
+      console.log(process.env);
       return false;
     }
   }

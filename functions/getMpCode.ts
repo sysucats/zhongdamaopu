@@ -4,10 +4,11 @@
 
 import cloud from '@lafjs/cloud'
 import axios from 'axios';
+import * as Minio from 'minio';
+
 import { getAppSecret } from "@/getAppSecret"
 import { getAccessToken } from '@/getAccessToken'
 
-const Minio = require('minio')
 const db = cloud.database();
 
 async function uploadImg(imgObj, imgName) {

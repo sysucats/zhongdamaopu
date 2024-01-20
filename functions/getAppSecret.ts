@@ -1,25 +1,23 @@
 import cloud from '@lafjs/cloud'
 
-const db = cloud.database();
-
 async function ensureShared() {
   if (cloud.shared["app_secret"]) {
     return;
   }
 
   // MP
-  const MP_APPID = cloud.env.MP_APPID;
-  const MP_SECRET = cloud.env.MP_SECRET;
+  const MP_APPID = process.env.MP_APPID;
+  const MP_SECRET = process.env.MP_SECRET;
   
-  var OSS_ENDPOINT = cloud.env.OSS_ENDPOINT || cloud.env.OSS_EXTERNAL_ENDPOINT;
+  var OSS_ENDPOINT = process.env.OSS_ENDPOINT || process.env.OSS_EXTERNAL_ENDPOINT;
   if (OSS_ENDPOINT.startsWith("https://")) {
     OSS_ENDPOINT = OSS_ENDPOINT.substr(8);
   }
-  const OSS_PORT = parseInt(cloud.env.OSS_PORT) || 443;
-  const OSS_BUCKET = cloud.env.OSS_BUCKET;
+  const OSS_PORT = parseInt(process.env.OSS_PORT) || 443;
+  const OSS_BUCKET = process.env.OSS_BUCKET;
 
-  const OSS_SECRET_ID = cloud.env.OSS_SECRET_ID || cloud.env.OSS_ACCESS_KEY;
-  const OSS_SECRET_KEY = cloud.env.OSS_SECRET_KEY || cloud.env.OSS_ACCESS_SECRET;
+  const OSS_SECRET_ID = process.env.OSS_SECRET_ID || process.env.OSS_ACCESS_KEY;
+  const OSS_SECRET_KEY = process.env.OSS_SECRET_KEY || process.env.OSS_ACCESS_SECRET;
 
   cloud.shared["app_secret"] = {
     OSS_ENDPOINT,

@@ -1,7 +1,7 @@
 import cloud from '@lafjs/cloud'
 import { getAppSecret } from "@/getAppSecret"
 
-const Minio = require('minio')
+import * as Minio from 'minio';
 
 export default async function (ctx: FunctionContext) {
   const { body } = ctx
@@ -25,8 +25,8 @@ async function signUrl(fileName: string) {
     endPoint: OSS_ENDPOINT,
     port: OSS_PORT,
     useSSL: true,
-    accessKey: OSS_SECRET_ID || cloud.env.OSS_ACCESS_KEY,
-    secretKey: OSS_SECRET_KEY || cloud.env.OSS_ACCESS_SECRET,
+    accessKey: OSS_SECRET_ID,
+    secretKey: OSS_SECRET_KEY,
   });
   return new Promise((resolve, reject) => {
     let policy = client.newPostPolicy()
@@ -37,8 +37,11 @@ async function signUrl(fileName: string) {
     expires.setSeconds(24 * 60 * 60 * 10);
     policy.setExpires(expires)
     client.presignedPostPolicy(policy, function (err, data) {
-      if (err)
-        return console.log(err)
+      if (err) {
+        reject(err);
+        return
+      }
+
       resolve(data)
     })
   })
