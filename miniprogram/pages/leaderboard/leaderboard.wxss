@@ -8,7 +8,7 @@ page {
 .thread-list {
   display: flex;
   justify-content: space-around;
-  padding: 10rpx 100rpx;
+  padding: 10rpx 100rpx 0 100rpx;
   overflow: hidden;
   background-color: white;
   box-sizing: border-box;
@@ -173,6 +173,10 @@ heart {
   text-overflow: ellipsis;
 }
 
+.h-filter-list {
+  display: flex;
+  justify-content: center;
+}
 .h-filter-item.long {
-  margin: 20rpx 20rpx 20rpx 0rpx;
+  margin: 20rpx 20rpx 20rpx 20rpx;
 }

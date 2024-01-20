@@ -1,5 +1,14 @@
 <!--components/badgeRank/badgeRank.wxml-->
 
+<!-- 外显筛选 -->
+<view class="h-filter-list" wx:if="{{filters.length > 1}}">
+  <view class='h-filter-item long {{index === activeFilter? "active": ""}}' bindtap='fClickTime' data-index='{{index}}' wx:for="{{filters}}" wx:key="name">
+    <image class="time-logo" wx:if="{{index !== activeFilter}}" src="/pages/public/images/filter/time_gray.png" mode="aspectFit"></image>
+    <image class="time-logo" wx:else src="/pages/public/images/filter/time_active.png" mode="aspectFit"></image>
+    {{item.name}}
+  </view>
+</view>
+
 <view class='loading' wx:if='{{loading}}'>
   <image src='/pages/public/images/system/loading.gif'></image>
 </view>

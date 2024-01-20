@@ -18,14 +18,14 @@
   <swiper-item>
     <!-- 照片的滑动框 -->
     <scroll-view scroll-y="1" style="height: 100%;" bindscrolltolower="onReachBottom">
-      <!-- 校区外显筛选 -->
-      <scroll-view class="h-filter-list" scroll-x="1" wx:if="{{filters.length > 1}}">
+      <!-- 外显筛选 -->
+      <view class="h-filter-list" wx:if="{{filters.length > 1}}">
         <view class='h-filter-item long {{item.active? "active": ""}}' bindtap='fClickTime' data-index='{{index}}' wx:for="{{filters}}" wx:key="name">
           <image class="time-logo" wx:if="{{!item.active}}" src="/pages/public/images/filter/time_gray.png" mode="aspectFit"></image>
           <image class="time-logo" wx:else src="/pages/public/images/filter/time_active.png" mode="aspectFit"></image>
           {{item.name}}
         </view>
-      </scroll-view>
+      </view>
 
 
       <view class="main">

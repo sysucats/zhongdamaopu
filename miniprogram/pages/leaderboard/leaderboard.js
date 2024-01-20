@@ -326,7 +326,7 @@ Page({
       success: res => {
         // console.log(res);
         this.setData({
-          "heights.threads": 40,
+          "heights.threads": 35,
           "heights.screenHeight": res.screenHeight,
           "heights.windowHeight": res.windowHeight,
           "heights.statusBarHeight": res.statusBarHeight,

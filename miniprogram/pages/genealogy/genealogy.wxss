@@ -20,7 +20,7 @@ scroll-view {
 }
 
 .card {
-  margin: 30rpx 0;
+  margin-bottom: 50rpx;
   font-size: 24rpx;
   line-height: 24rpx;
   width: 635rpx;

@@ -32,6 +32,17 @@ Component({
     updateTime: null,
     loading: false,
     avatarMap: {},
+    filters: [{
+      name: "季度榜",
+      days: 90,
+    }, {
+      name: "半年榜",
+      days: 180,
+    }, {
+      name: "全年榜",
+      days: 365
+    }],
+    activeFilter: 0,  // 激活的下标
   },
 
   /**
@@ -53,7 +64,10 @@ Component({
         return;
       }
       let updateTime = formatDate(new Date(rankRes[0].mdate), "yyyy-MM-dd hh:mm");
-      rankRes = rankRes[0].rank;
+      // 找到激活的filter
+      const {filters, activeFilter} = this.data;
+      let activeRankKey = filters[activeFilter].days;
+      rankRes = rankRes[0].rankV2[activeRankKey];
       // console.log(rankRes);
 
       // 获取标签定义，按等级进行排序，作为展示顺
@@ -179,5 +193,20 @@ Component({
         url: '/pages/genealogy/detailCat/detailCat?cat_id=' + catId,
       });
     },
+    
+    
+  // 点击时间筛选
+  fClickTime(e) {
+    var {index} = e.currentTarget.dataset;
+    if (this.data.loading || index === this.data.activeFilter) {
+      return;
+    }
+
+    this.setData({
+      activeFilter: index,
+    });
+
+    this.reloadData();
+  },
   }
 })

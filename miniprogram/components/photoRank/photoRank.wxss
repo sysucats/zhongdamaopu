@@ -103,12 +103,12 @@
   left: 10rpx;
 }
 .row .name {
-  font-size: 36rpx;
+  font-size: 30rpx;
   padding-left: 20rpx;
   width: 300rpx; /*避免用户名称过长*/
 }
 .row .photo_count {
-  font-size: 50rpx;
+  font-size: 40rpx;
   font-weight: 650;
   margin-left: auto;
 }
