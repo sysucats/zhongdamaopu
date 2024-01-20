@@ -22,7 +22,7 @@ function compareDateStrings(dateString1: string, dateString2: string, n: number)
 }
 
 
-export async function main(ctx: FunctionContext) {
+export async function main(ctx: FunctionContext, next: Function) {
   // 请求的实际IP
   const ip = ctx.headers['x-real-ip']
   const { host } = ctx.headers;
@@ -30,12 +30,12 @@ export async function main(ctx: FunctionContext) {
 
   if (ip === undefined && host === `${APPID}.${APPID}:8000`) {
     // 触发器触发
-    return true;
+    return await next(ctx);
   }
 
   // 白名单ip，用于开发
   if (DEV_IPS && DEV_IPS.split(",").includes(ip)) {
-    return true;
+    return await next(ctx);
   }
 
 
@@ -49,7 +49,7 @@ export async function main(ctx: FunctionContext) {
       console.log("invalid sign");
       console.log(ctx.headers);
       console.log(process.env);
-      return false;
+      return "invalid sign";
     }
 
     // 检查时间
@@ -61,9 +61,9 @@ export async function main(ctx: FunctionContext) {
       console.log("time check failed", now, signdata);
       console.log(ctx.headers);
       console.log(process.env);
-      return false;
+      return "time check failed";
     }
   }
 
-  return true;
+  return await next(ctx);
 }

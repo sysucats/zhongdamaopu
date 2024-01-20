@@ -20,13 +20,13 @@ async function ensureShared() {
   const OSS_SECRET_KEY = process.env.OSS_SECRET_KEY || process.env.OSS_ACCESS_SECRET;
 
   cloud.shared["app_secret"] = {
-    OSS_ENDPOINT,
+    OSS_ENDPOINT: OSS_ENDPOINT.trim(),
     OSS_PORT,
-    OSS_BUCKET,
-    MP_APPID,
-    MP_SECRET,
-    OSS_SECRET_ID,
-    OSS_SECRET_KEY,
+    OSS_BUCKET: OSS_BUCKET.trim(),
+    MP_APPID: MP_APPID.trim(),
+    MP_SECRET: MP_SECRET.trim(),
+    OSS_SECRET_ID: OSS_SECRET_ID.trim(),
+    OSS_SECRET_KEY: OSS_SECRET_KEY.trim(),
   }
 }
 
