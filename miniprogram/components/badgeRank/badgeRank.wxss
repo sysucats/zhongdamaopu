@@ -1,4 +1,14 @@
 /* components/badgeRank/badgeRank.wxss */
+@import "/pages/public/wxss/hFilter.wxss";
+
+.h-filter-list {
+  display: flex;
+  justify-content: center;
+}
+.h-filter-item.long {
+  margin: 20rpx 10rpx;
+}
+
 .tip {
   width: 100%;
   text-align: center;
@@ -8,7 +18,7 @@
 
 .badge-block {
   width: 750rpx;
-  padding: 30rpx;
+  padding: 0 30rpx 30rpx 30rpx;
   box-sizing: border-box;
 }
 

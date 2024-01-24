@@ -4,9 +4,6 @@ import { checkCanReward } from "../../../utils/user";
 import { cloud } from "../../../utils/cloudAccess";
 import { getGlobalSettings } from "../../../utils/page";
 
-// 在页面中定义激励视频广告
-let videoAd = null
-
 const share_text = text_cfg.app_name + ' - ' + text_cfg.reward.share_tip;
 
 Page({
@@ -17,6 +14,11 @@ Page({
   data: {
     showAdBlock: false,
     text_cfg: text_cfg,
+  },
+
+  jsData: {
+    // 在页面中定义激励视频广告
+    videoAd: null,
   },
 
   onLoad: async function (option) {
@@ -33,20 +35,20 @@ Page({
     // 在页面onLoad回调事件中创建激励视频广告实例
     var that = this;
     if (wx.createRewardedVideoAd) {
-      videoAd = wx.createRewardedVideoAd({
+      this.jsData.videoAd = wx.createRewardedVideoAd({
         adUnitId: ads.reward_video
       })
-      videoAd.onLoad(() => {
+      this.jsData.videoAd.onLoad(() => {
         that.setData({
           showAdBlock: true
         });
       })
-      videoAd.onError((err) => {
+      this.jsData.videoAd.onError((err) => {
         that.setData({
           showAdBlock: false
         });
       })
-      videoAd.onClose((res) => {
+      this.jsData.videoAd.onClose((res) => {
         // 用户点击了【关闭广告】按钮
         var toast = text_cfg.reward.ad_success_tip;
         var icon = 'success';
@@ -119,11 +121,11 @@ Page({
   // 激励广告
   openAd() {
     // 用户触发广告后，显示激励视频广告
-    if (videoAd) {
-      videoAd.show().catch(() => {
+    if (this.jsData.videoAd) {
+      this.jsData.videoAd.show().catch(() => {
         // 失败重试
-        videoAd.load()
-          .then(() => videoAd.show())
+        this.jsData.videoAd.load()
+          .then(() => this.jsData.videoAd.show())
           .catch(err => {
             console.log('激励视频 广告显示失败')
           })

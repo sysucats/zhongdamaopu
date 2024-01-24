@@ -4,13 +4,17 @@
 
 import cloud from '@lafjs/cloud'
 import axios from 'axios';
-const Minio = require('minio')
+import * as Minio from 'minio';
+
+import { getAppSecret } from "@/getAppSecret"
+import { getAccessToken } from '@/getAccessToken'
+
 const db = cloud.database();
 
 async function uploadImg(imgObj, imgName) {
   // minIO 配置
   // minIO 配置
-  const { OSS_ENDPOINT, OSS_PORT, OSS_BUCKET, OSS_SECRET_ID, OSS_SECRET_KEY } = await cloud.invoke("getAppSecret", {});
+  const { OSS_ENDPOINT, OSS_PORT, OSS_BUCKET, OSS_SECRET_ID, OSS_SECRET_KEY } = await getAppSecret(false);
   
   // 报错"Invalid endPoint"请参考: https://blog.csdn.net/xinleicol/article/details/115698599
   const client = new Minio.Client({
@@ -37,13 +41,12 @@ async function uploadImg(imgObj, imgName) {
   return ossPath;
 }
 
-exports.main = async function (ctx: FunctionContext) {
-  // body, query 为请求参数, user 是授权对象
-  const { body, query } = ctx
+export default async function (ctx: FunctionContext) {
+  const { body } = ctx
 
   if (body && body.deploy_test === true) {
     // 进行部署检查
-    return "v1.0";
+    return "v1.1";
   }
 
   // 数据库操作
@@ -52,7 +55,7 @@ exports.main = async function (ctx: FunctionContext) {
     return;
   }
   const cat_id = body._id;
-  const access_token = await cloud.invoke('getAccessToken', {});
+  const access_token = await getAccessToken();
 
   // scene是页面参数，长度限制32。page是页面路径，不需要'/'开头。
   var params = {

@@ -1,7 +1,7 @@
 
 .h-filter-list {
   width: 750rpx;
-  display: flex;
+  height: 90rpx;
   flex-direction: row;
   padding: 0 20rpx;
   white-space: nowrap;

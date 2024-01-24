@@ -17,16 +17,6 @@ import {
 
 import drawUtils from "../../utils/draw";
 
-// 接口设置，onLoad中从数据库拉取。
-var interfaceURL;
-var secretKey;
-
-// 图片长宽比，在compresPhoto函数中记录。用于重新映射后端返回的catBox位置信息。
-var widthHeightRatio;
-
-// 接口返回的识别结果。展示的结果为在此基础上筛选。
-var recognizeResults = [];
-
 const share_text = text_cfg.app_name + ' - ' + text_cfg.recognize.share_tip;
 
 Page({
@@ -59,7 +49,14 @@ Page({
   },
 
   jsData: {
+    // 接口设置，onLoad中从数据库拉取。
+    interfaceURL: null,
+    secretKey: null,
     canvasSideLen: 500,
+    // 图片长宽比，在compresPhoto函数中记录。用于重新映射后端返回的catBox位置信息。
+    widthHeightRatio: null,
+    // 接口返回的识别结果。展示的结果为在此基础上筛选。
+    recognizeResults: [],
   },
 
   async onLoad() {
@@ -84,11 +81,11 @@ Page({
   async onShow() {
     // 切换自定义tab
     showTab(this);
-    if (!interfaceURL || !secretKey) {
+    if (!this.jsData.interfaceURL || !this.jsData.secretKey) {
       console.log('__wxConfig.envVersion: ', __wxConfig.envVersion);
       var settings = await getGlobalSettings(__wxConfig.envVersion === 'release' ? 'recognize' : 'recognize_test');
-      interfaceURL = settings.interfaceURL;
-      secretKey = settings.secretKey;
+      this.jsData.interfaceURL = settings.interfaceURL;
+      this.jsData.secretKey = settings.secretKey;
       await this.recognizeChatImage();
     } else { // 没杀后台回到聊天重新识别的情况
       this.recognizeChatImage()
@@ -158,7 +155,7 @@ Page({
 
   async recognizePhoto() {
     // 检查接口设置
-    if (!interfaceURL || !secretKey) {
+    if (!this.jsData.interfaceURL || !this.jsData.secretKey) {
       wx.showToast({
         icon: 'error',
         title: '出错了'
@@ -182,7 +179,7 @@ Page({
     // 计算签名
     const photoBase64 = wx.getFileSystemManager().readFileSync(compressPhotoPath, 'base64');
     const timestamp = Math.round(new Date().getTime() / 1000);
-    const signature = hex_sha256(photoBase64 + timestamp + secretKey);
+    const signature = hex_sha256(photoBase64 + timestamp + this.jsData.secretKey);
     // 调用服务端接口进行识别
     const that = this;
     const formData = {
@@ -195,7 +192,7 @@ Page({
     wx.uploadFile({
       filePath: compressPhotoPath,
       name: 'photo',
-      url: interfaceURL,
+      url: this.jsData.interfaceURL,
       formData: formData,
       timeout: 10 * 1000, // 10s超时
       async success(resp) {
@@ -238,7 +235,7 @@ Page({
     });
     console.log('photo info:', photoInfo);
     // 记录图片长宽比。用于重新映射后端返回的catBox位置信息。
-    widthHeightRatio = photoInfo.width / photoInfo.height;
+    this.jsData.widthHeightRatio = photoInfo.width / photoInfo.height;
     // 使用canvas方法压缩图片
     const {canvasSideLen} = this.jsData;
     const drawRate = Math.max(photoInfo.width, photoInfo.height) / canvasSideLen; // 计算缩放比
@@ -274,10 +271,10 @@ Page({
     for (let catBox of catBoxes) {
       let xOffset = 0, yOffset = 0;
       // 短边由于居中会产生offset
-      if (widthHeightRatio < 1) {
-        xOffset = previewSideLen * ((1 - widthHeightRatio) / 2);
+      if (this.jsData.widthHeightRatio < 1) {
+        xOffset = previewSideLen * ((1 - this.jsData.widthHeightRatio) / 2);
       } else {
-        yOffset = previewSideLen * ((1 - 1 / widthHeightRatio) / 2);
+        yOffset = previewSideLen * ((1 - 1 / this.jsData.widthHeightRatio) / 2);
       }
       console.log(catBox, ratio, xOffset, yOffset, previewSideLen);
 
@@ -296,7 +293,7 @@ Page({
       catBoxList: catBoxList
     });
     // 识别结果
-    recognizeResults = await Promise.all(result.recognizeResults.map(this.getCatInfo));
+    this.jsData.recognizeResults = await Promise.all(result.recognizeResults.map(this.getCatInfo));
     await this.pickCatList();
     wx.hideLoading();
     // 在布局完成上移后展示resultBox
@@ -325,10 +322,10 @@ Page({
     })
 
     const that = this;
-    console.log("recognizeResults:", recognizeResults);
+    console.log("recognizeResults:", this.jsData.recognizeResults);
     const choseCampus = that.data.campusList[that.data.campusIndex];
     const choseColour = that.data.colourList[that.data.colourIndex];
-    const catList = recognizeResults.filter(cat => {
+    const catList = this.jsData.recognizeResults.filter(cat => {
       if ((choseCampus === cat.campus || choseCampus === "所有校区") && (choseColour === cat.colour || choseColour === "所有花色")) {
         return true; //筛选结果
       }

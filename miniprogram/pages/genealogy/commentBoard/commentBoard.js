@@ -24,11 +24,6 @@ import {
 } from "../../../utils/msg";
 import api from "../../../utils/cloudApi";
 
-var cat_id;
-
-// 发送锁
-var sendLock = false;
-
 Page({
 
   /**
@@ -48,11 +43,16 @@ Page({
     paper_color_select: 0,
   },
 
+  jsData: {
+    cat_id: null,
+    sendLock: false,
+  },
+
   /**
    * 生命周期函数--监听页面加载
    */
   onLoad: async function (options) {
-    cat_id = options.cat_id;
+    this.jsData.cat_id = options.cat_id;
     this.setData({
       canComment: await checkCanComment()
     })
@@ -146,7 +146,7 @@ Page({
 
   async loadCat() {
     const db = await cloud.databaseAsync();
-    var cat = (await db.collection('cat').doc(cat_id).get()).data;
+    var cat = (await db.collection('cat').doc(this.jsData.cat_id).get()).data;
     console.log(cat);
 
     // 获取头像
@@ -189,7 +189,7 @@ Page({
   // 发送便利贴
   async sendComment() {
     // 发送中
-    if (sendLock) {
+    if (this.jsData.sendLock) {
       console.log("locking...");
       return false;
     }
@@ -201,7 +201,7 @@ Page({
       return false;
     }
 
-    sendLock = true;
+    this.jsData.sendLock = true;
     // 订阅审核通知
     await requestNotice('verify');
     wx.showLoading({
@@ -231,7 +231,7 @@ Page({
     var item = {
       content: content,
       user_openid: user.openid,
-      cat_id: cat_id,
+      cat_id: this.jsData.cat_id,
       paper_color: paper_colors[paper_color_select],
       needVerify: true,
     };
@@ -249,7 +249,7 @@ Page({
 
   doSendCommentEnd() {
     wx.hideLoading();
-    sendLock = false;
+    this.jsData.sendLock = false;
   },
 
   async addComment(item, user) {
@@ -301,7 +301,7 @@ Page({
     var comments = this.data.comments;
     var qf = {
       deleted: _.neq(true),
-      cat_id: cat_id
+      cat_id: this.jsData.cat_id
     };
     var res = await coll_comment.where(qf).orderBy("create_date", "desc")
       .skip(comments.length).limit(10).get();

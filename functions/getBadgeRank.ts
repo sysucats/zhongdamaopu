@@ -1,4 +1,19 @@
 import cloud from '@lafjs/cloud'
+import { getNDaysAgo, getDictTopN } from '@/utils'
+
+const db = cloud.database();
+const dbCmd = db.command
+const $ = db.command.aggregate
+
+// 徽章分数
+const levelScoreMap = {
+  'S': 5,
+  'A': 3,
+  'B': 2,
+  'C': 1,
+}
+// 每个榜单最大数量
+const maxRankCount = 20;
 
 async function getAllRecords(coll: string, cond: Object) {
   const db = cloud.database();
@@ -18,107 +33,161 @@ async function getAllRecords(coll: string, cond: Object) {
 }
 
 
+async function getBadgeScoreMap() {
+  // 获取徽章定义
+  const badgeDefs = await getAllRecords("badge_def", {});
+  if (badgeDefs.length === 0) {
+    // 还没有徽章定义
+    return null;
+  }
+  let badgeScoreMap = [];
+  for (const bd of badgeDefs) {
+    badgeScoreMap.push({
+      case: { $eq: ["$badgeDef", bd._id] }, then: levelScoreMap[bd.level]
+    })
+  }
+  return badgeScoreMap;
+}
+
+async function _buildBase(nDaysAgo: number) {
+  const idScoreMap = await getBadgeScoreMap();
+
+  let base = db.collection('badge').aggregate()
+    .match(dbCmd.expr($.neq(['$catId', null])));
+
+  if (nDaysAgo !== 0) {
+    base = base.match(dbCmd.expr($.gte(['$givenTime', getNDaysAgo(nDaysAgo)])));
+  }
+
+  base = base.project({
+    "catId": 1,
+    "givenTime": 1,
+    "badgeDef": 1,
+  })
+    .addFields({
+      score: {
+        $switch: {
+          branches: idScoreMap,
+          default: 0
+        }
+      }
+    })
+
+  return base;
+}
+
+// 统计总数量、总价值榜
+async function getTotalRank(nDaysAgo: number, sumScore: boolean) {
+  let base = await _buildBase(nDaysAgo);
+  let sumField = sumScore ? '$score' : 1;
+  let { data } = await base
+    .group({
+      _id: "$catId",
+      total: $.sum(sumField)
+    })
+    .sort({
+      total: -1
+    })
+    .limit(maxRankCount)
+    .end();
+
+  // 整理返回格式为_id: number
+  let res = {};
+  for (const d of data) {
+    res[d._id] = d.total
+  }
+
+  return res;
+}
+
+
+// 统计每个徽章的排行榜
+async function getBadgeRank(nDaysAgo: number) {
+  let base = await _buildBase(nDaysAgo);
+  let { data } = await base
+    .group({
+      _id: {
+        badgeDef: "$badgeDef",
+        catId: "$catId",
+      },
+      total: $.sum(1)
+    })
+    .project({
+      _id: 0,
+      badgeDef: "$_id.badgeDef",
+      catId: "$_id.catId",
+      total: 1,
+    })
+    .end();
+
+  console.log(data.length);
+
+  // 整理返回格式为 badgeDef: { catId: number }
+  let res = {};
+  for (const d of data) {
+    if (!res[d.badgeDef]) {
+      res[d.badgeDef] = {}
+    }
+    res[d.badgeDef][d.catId] = d.total
+  }
+
+  for (const badgeDef in res) {
+    res[badgeDef] = getDictTopN(res[badgeDef], maxRankCount)
+  }
+
+  return res;
+}
+
+// 统计所有需要的表
+async function getRank() {
+  // 获取徽章定义
+  const badgeDefs = await getAllRecords("badge_def", {});
+  if (badgeDefs.length === 0) {
+    // 还没有徽章定义
+    return {};
+  }
+
+  let stat = {};
+  // 季度、半年、整年、总榜
+  for (const nDaysAgo of [90, 180, 365]) {
+    // 先获取各个徽章的统计
+    stat[nDaysAgo] = await getBadgeRank(nDaysAgo);
+    // 再获取总数量、总分数的统计
+    stat[nDaysAgo]['count'] = await getTotalRank(nDaysAgo, false);
+    stat[nDaysAgo]['score'] = await getTotalRank(nDaysAgo, true);
+  }
+  return stat;
+}
+
+
 // 删除旧的
 async function removeOld() {
   const db = cloud.database();
   const _ = db.command;
 
-  var weekAgo = new Date();
-  weekAgo.setDate(weekAgo.getDate() - 7);
-
   const res = await db.collection('badge_rank')
-    .where({ mdate: _.lt(weekAgo) })
+    .where({ mdate: _.lt(getNDaysAgo(1)) })
     .remove({ multi: true });
   console.log("remove old", res);
 }
 
 
-function writeRank(rank: Object, badgeDef: string, catId: string, point: number) {
-  if (rank[badgeDef] === undefined) {
-    rank[badgeDef] = {};
-  }
-  if (rank[badgeDef][catId] === undefined) {
-    rank[badgeDef][catId] = 0;
-  }
-  rank[badgeDef][catId] += point;
-}
-
-function castRankToMaxCount(ranks: Object, maxCount: number = 20) {
-  for (const rankKey in ranks) {
-
-    // 排序原 rank
-    const rank : { [key: string]: number } = ranks[rankKey];
-    const rankCat = Object.entries(rank);
-    rankCat.sort((a, b) => b[1] - a[1]);
-
-    // 获取 top count 的猫猫
-    const rankCatCasted = rankCat.slice(0, maxCount);
-    const rankCasted = {}
-    rankCatCasted.forEach(([key, _]) => {
-      rankCasted[key] = rank[key];
-    });
-
-    // 覆盖回 rank
-    ranks[rankKey] = ranks[rankKey];
-  }
-}
-
-export default async function (ctx: FunctionContext) {  // body, query 为请求参数, user 是授权对象
+export default async function (ctx: FunctionContext) {
   const { body } = ctx
 
   if (body && body.deploy_test === true) {
     // 进行部署检查
-    return "v1.1";
+    return "v1.2";
   }
 
-  // 返回多个排行榜，固定的有：数量榜、总分榜，动态的有：xx徽章的数量榜
-  const db = cloud.database();
-  const _ = db.command;
-  // 获取徽章定义
-  const badgeDefs = await getAllRecords("badge_def", {});
-  if (badgeDefs.length === 0) {
-    // 还没有徽章定义
-    return;
-  }
-  let badgeDefMap = {};
-  for (const bd of badgeDefs) {
-    badgeDefMap[bd._id] = bd;
-  }
-  // 徽章分数
-  const scoreMap = {
-    'S': 5,
-    'A': 3,
-    'B': 2,
-    'C': 1,
-  }
-  // 获取所有已送出的徽章
-  const badges = await getAllRecords("badge", { catId: _.neq(null) });
-  if (badges.length === 0) {
-    console.log("no given badges.");
-    return;
-  }
-  // 遍历一次徽章，分别统计各个榜，结构为：
-  // { 榜单id: { catId: count } }
-  const rank = {};
-  for (const b of badges) {
-    // 数量榜
-    writeRank(rank, "count", b.catId, 1);
-    // 分值榜
-    const level = badgeDefMap[b.badgeDef]?.level;
-    writeRank(rank, "score", b.catId, scoreMap[level]);
-    // 个别徽章榜
-    writeRank(rank, b.badgeDef, b.catId, 1);
-  }
-
-  // 只展示前 20 个猫猫
-  castRankToMaxCount(rank)
-
+  let rank = await getRank();
   // 写入数据库
   const record = {
     mdate: new Date(),
-    rank: rank,
+    rank: rank[365],  // 兼容旧版前端
+    rankV2: rank,
   }
   db.collection("badge_rank").add(record);
-  // 删除旧的
+  // 清理旧数据
   await removeOld();
 }

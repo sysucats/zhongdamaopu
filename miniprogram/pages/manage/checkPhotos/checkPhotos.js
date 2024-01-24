@@ -1,13 +1,12 @@
 // 审核照片
 import { checkAuth, fillUserInfo } from "../../../utils/user";
+import { sleep } from "../../../utils/utils";
 import { requestNotice, sendVerifyNotice, getMsgTplId } from "../../../utils/msg";
 import cache from "../../../utils/cache";
 import { getCatItem } from "../../../utils/cat";
 import { cloud } from "../../../utils/cloudAccess";
 import api from "../../../utils/cloudApi";
 
-// 准备发送通知的列表，姓名：审核详情
-var notice_list = {};
 
 Page({
 
@@ -20,11 +19,17 @@ Page({
     campus_list: [],
   },
 
+  jsData: {
+    // 准备发送通知的列表，姓名：审核详情
+    notice_list: {},
+  },
+
   /**
    * 生命周期函数--监听页面加载
    */
   onLoad: async function (options) {
-    notice_list = {};
+    this.jsData.notice_list = {};
+
     if (await checkAuth(this, 1)) {
       this.loadAllPhotos();
     }
@@ -37,7 +42,7 @@ Page({
     console.log('[onUnload] - 页面退出');
 
     // 发送审核消息
-    sendVerifyNotice(notice_list);
+    sendVerifyNotice(this.jsData.notice_list);
   },
 
   // 没有权限，返回上一页
@@ -68,6 +73,7 @@ Page({
     }
 
     var photos = await Promise.all(pools);
+    
     // 拼接多个array
     photos = photos.map(x => x.data);
     photos = Array.prototype.concat.apply([], photos);
@@ -102,7 +108,7 @@ Page({
       active_campus: cache_active_campus,
     })
     
-    wx.hideLoading();
+    await wx.hideLoading();
   },
 
   bindClickCampus(e) {
@@ -151,16 +157,16 @@ Page({
   // 添加一条通知记录，等页面退出的时候统一发送通知
   addNotice(photo, accepted) {
     const openid = photo._openid;
-    if (!notice_list[openid]) {
-      notice_list[openid] = {
+    if (!this.jsData.notice_list[openid]) {
+      this.jsData.notice_list[openid] = {
         accepted: 0,
         deleted: 0,
       }
     }
     if (accepted) {
-      notice_list[openid].accepted++;
+      this.jsData.notice_list[openid].accepted++;
     } else {
-      notice_list[openid].deleted++;
+      this.jsData.notice_list[openid].deleted++;
     }
   },
 

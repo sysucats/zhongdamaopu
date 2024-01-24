@@ -1,15 +1,16 @@
 import cloud from '@lafjs/cloud'
 import { sts } from 'tencentcloud-sdk-nodejs'
+import { getAppSecret } from "@/getAppSecret"
 
 const StsClient = sts.v20180813.Client;
 
-exports.main = async function (ctx: FunctionContext) {
+export default async function (ctx: FunctionContext) {
   // body 为请求参数, user 是授权对象
   const { body } = ctx
 
   if (body && body.deploy_test === true) {
     // 进行部署检查
-    return "v1.0";
+    return "v1.1";
   }
 
   // 看看是否有缓存
@@ -21,7 +22,7 @@ exports.main = async function (ctx: FunctionContext) {
   }
 
   // COS 配置
-  const { OSS_ENDPOINT, OSS_BUCKET, OSS_SECRET_ID, OSS_SECRET_KEY } = await cloud.invoke("getAppSecret", {});
+  const { OSS_ENDPOINT, OSS_BUCKET, OSS_SECRET_ID, OSS_SECRET_KEY } = await getAppSecret(false);
 
   // 没有配置
   if (!(OSS_ENDPOINT && OSS_BUCKET && OSS_SECRET_ID && OSS_SECRET_KEY)) {

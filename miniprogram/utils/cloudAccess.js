@@ -82,7 +82,7 @@ async function _doCosSign(url) {
 async function signCosUrl(inputUrl) {
   let url = inputUrl;
   // 不是腾讯云COS的不加密
-  if (!url || !url.includes("myqcloud.com") || url.includes("?") || !cloud.cos || !use_private_tencent_cos) {
+  if (!url || !url.includes("myqcloud.com") || !cloud.cos || !use_private_tencent_cos) {
     return url;
   }
 

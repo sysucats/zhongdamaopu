@@ -112,11 +112,7 @@ Component({
         res = await getGlobalSettings("tabBarCtrl");
         maxTry --;
         await sleep(300);
-        wx.showLoading({
-          title: '加载中...',
-        });
       }
-      wx.hideLoading();
       return res;
     },
   }

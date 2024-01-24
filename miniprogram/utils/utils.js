@@ -210,12 +210,26 @@ async function compressImage(src, quality) {
   return res.tempFilePath;
 }
 
+/**
+ * 解析url参数
+ */
+function _analysisUrlParam(url) {
+  var queryParts = url.slice(url.indexOf("?") + 1).split('&');
+  var params = {};
+  queryParts.map(function (item) {
+    var a = item.split('=')
+    params[a[0]] = a[1]
+  })
+  return params
+}
+
 // 解析URL参数
 function parseQueryParams(url) {
-  const searchParams = new URLSearchParams(url);
+  const searchParams = _analysisUrlParam(url);
   const params = {};
 
-  for (let [key, value] of searchParams) {
+  for (let key in searchParams) {
+    let value = searchParams[key];
     // 如果参数名已经存在，则将值转换为数组
     if (params.hasOwnProperty(key)) {
       if (Array.isArray(params[key])) {

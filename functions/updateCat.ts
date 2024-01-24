@@ -1,19 +1,18 @@
 import cloud from '@lafjs/cloud'
+import { isManager } from '@/isManager'
 
 
-
-exports.main = async function (ctx: FunctionContext) {
-  // body, query 为请求参数, user 是授权对象
-  const { body, query } = ctx
+export default async function (ctx: FunctionContext) {
+  const { body } = ctx
 
   if (body && body.deploy_test === true) {
     // 进行部署检查
-    return "v1.0";
+    return "v1.1";
   }
 
   const openid = ctx.user.openid;
 
-  const is_manager = await check_manager(2, openid);
+  const is_manager = await isManager(openid, 2);
   if (!is_manager) {
     return { msg: 'not a manager', result: false };
   }
@@ -62,17 +61,4 @@ function deepcopy(origin) {
 function random_string(len) {
   var s = Math.random().toString(36);
   return s.substr(s.length - len);
-}
-
-// 权限检查
-async function check_manager(level, openid) {  
-  const isManager = await cloud.invoke('isManager', {
-    user: {
-      openid: openid,
-    },
-    body: {
-      req: level
-    }
-  });
-  return isManager;
 }

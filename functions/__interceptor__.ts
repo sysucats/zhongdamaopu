@@ -22,24 +22,24 @@ function compareDateStrings(dateString1: string, dateString2: string, n: number)
 }
 
 
-export async function main(ctx: FunctionContext) {
+export async function main(ctx: FunctionContext, next: Function) {
   // 请求的实际IP
   const ip = ctx.headers['x-real-ip']
   const { host } = ctx.headers;
-  const { APPID, DEV_IPS } = cloud.env;
+  const { APPID, DEV_IPS } = process.env;
 
   if (ip === undefined && host === `${APPID}.${APPID}:8000`) {
     // 触发器触发
-    return true;
+    return await next(ctx);
   }
 
   // 白名单ip，用于开发
   if (DEV_IPS && DEV_IPS.split(",").includes(ip)) {
-    return true;
+    return await next(ctx);
   }
 
 
-  let signKey = cloud.env.SIGN_KEY;
+  let signKey = process.env.SIGN_KEY;
   if (signKey) {
     // 开启了签名检查
     const { signdata, signstr } = ctx.headers;
@@ -48,8 +48,8 @@ export async function main(ctx: FunctionContext) {
     if (!isValid) {
       console.log("invalid sign");
       console.log(ctx.headers);
-      console.log(cloud.env);
-      return false;
+      console.log(process.env);
+      return "invalid sign";
     }
 
     // 检查时间
@@ -60,10 +60,10 @@ export async function main(ctx: FunctionContext) {
     if (!timeCheck) {
       console.log("time check failed", now, signdata);
       console.log(ctx.headers);
-      console.log(cloud.env);
-      return false;
+      console.log(process.env);
+      return "time check failed";
     }
   }
 
-  return true;
+  return await next(ctx);
 }

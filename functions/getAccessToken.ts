@@ -1,17 +1,12 @@
 import cloud from '@lafjs/cloud'
 import axios from 'axios';
 
+import { getAppSecret } from "@/getAppSecret"
+
 const db = cloud.database();
 
-exports.main = async function (ctx: FunctionContext) {
-  // body, query 为请求参数, user 是授权对象
-  const { body, query } = ctx
-
-  if (body && body.deploy_test === true) {
-    // 进行部署检查
-    return "v1.0";
-  }
-  const { MP_APPID, MP_SECRET } = await cloud.invoke("getAppSecret", {});
+export async function getAccessToken() {
+  const { MP_APPID, MP_SECRET } = await getAppSecret(false);
 
   // 读取数据库
   const record = (await db.collection('setting').doc("accessToken").get()).data;
@@ -48,6 +43,17 @@ exports.main = async function (ctx: FunctionContext) {
     console.log("创建数据库记录", data);
     await db.collection('setting').doc("accessToken").set(data);
   }
-  
+
   return data.accessToken;
+}
+
+export default async function (ctx: FunctionContext) {
+  const { body } = ctx
+
+  if (body && body.deploy_test === true) {
+    // 进行部署检查
+    return "v1.1";
+  }
+
+  return await getAccessToken();
 }

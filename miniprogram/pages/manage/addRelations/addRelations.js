@@ -6,10 +6,6 @@ import { cloud } from "../../../utils/cloudAccess";
 import api from "../../../utils/cloudApi";
 
 
-// 运行状态
-var selectRelationTypeIdx = undefined;
-var selectRelationCatIdx = undefined;
-
 Page({
 
   /**
@@ -23,6 +19,12 @@ Page({
     // 控制底部栏是否弹出
     showSearchCat: false,
     showSearchType: false,
+  },
+
+  jsData: {
+    // 运行状态
+    selectRelationTypeIdx: null,
+    selectRelationCatIdx: null,
   },
 
   /**
@@ -151,7 +153,7 @@ Page({
     var type =  this.data.relation_types[idx];
     // console.log(type);
     this.setData({
-      [`cat.relations[${selectRelationTypeIdx}].type`]: type,
+      [`cat.relations[${this.jsData.selectRelationTypeIdx}].type`]: type,
       showSearchCat: false,
       showSearchType: false,
     });
@@ -195,11 +197,11 @@ Page({
     var that = this;
     var fCat, fType;
     if (type == "cat") {
-      selectRelationCatIdx = e ? e.currentTarget.dataset.index: undefined;
+      this.jsData.selectRelationCatIdx = e ? e.currentTarget.dataset.index: undefined;
       fCat = true;
       fType = false;
     } else if (type == "relation") {
-      selectRelationTypeIdx = e ? e.currentTarget.dataset.index: undefined;
+      this.jsData.selectRelationTypeIdx = e ? e.currentTarget.dataset.index: undefined;
       fCat = false;
       fType = true;
     } else if (type == "hide") {
@@ -268,7 +270,7 @@ Page({
   async searchSelectCat(e) {
     var idx = e.currentTarget.dataset.index;
     var cat = this.data.searchCats[idx];
-    if (selectRelationCatIdx === undefined) {
+    if (this.jsData.selectRelationCatIdx === undefined) {
       this.data.cat = cat;
       this.setData({
         cat: cat,
@@ -279,8 +281,8 @@ Page({
     }
 
     this.setData({
-      [`cat.relations[${selectRelationCatIdx}].cat_id`]: cat._id,
-      [`cat.relations[${selectRelationCatIdx}].cat`]: cat,
+      [`cat.relations[${this.jsData.selectRelationCatIdx}].cat_id`]: cat._id,
+      [`cat.relations[${this.jsData.selectRelationCatIdx}].cat`]: cat,
       showSearchCat: false,
       showSearchType: false,
     });
