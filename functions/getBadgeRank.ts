@@ -184,7 +184,7 @@ export default async function (ctx: FunctionContext) {
   // 写入数据库
   const record = {
     mdate: new Date(),
-    rank: rank[0],  // 兼容旧版前端
+    rank: rank[365],  // 兼容旧版前端
     rankV2: rank,
   }
   db.collection("badge_rank").add(record);
