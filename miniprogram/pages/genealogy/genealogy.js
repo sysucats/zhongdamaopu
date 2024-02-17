@@ -124,7 +124,7 @@ Page({
       console.log("no setting");
       wx.showModal({
         title: '出错了',
-        content: '喵星通讯故障，请点击右上角三个点重新进入小程序',
+        content: '网络故障，请点击右上角三个点重新进入小程序',
         showCancel: false
       })
       return
