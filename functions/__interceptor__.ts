@@ -28,7 +28,7 @@ export async function main(ctx: FunctionContext, next: Function) {
   const { host } = ctx.headers;
   const { APPID, DEV_IPS } = process.env;
 
-  if (ip === undefined && host === `${APPID}.${APPID}:8000`) {
+  if (!ip && host === `${APPID}.laf-runtime:8000`) {
     // 触发器触发
     return await next(ctx);
   }

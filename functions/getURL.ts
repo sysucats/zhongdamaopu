@@ -21,12 +21,12 @@ async function signUrl(fileName: string) {
   
   // 报错"Invalid endPoint"请参考: https://blog.csdn.net/xinleicol/article/details/115698599
   const client = new Minio.Client({
-    bucketName: OSS_BUCKET,
     endPoint: OSS_ENDPOINT,
     port: OSS_PORT,
     useSSL: true,
     accessKey: OSS_SECRET_ID,
     secretKey: OSS_SECRET_KEY,
+    pathStyle: false,
   });
   return new Promise((resolve, reject) => {
     let policy = client.newPostPolicy()
