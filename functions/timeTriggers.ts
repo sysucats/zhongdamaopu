@@ -17,5 +17,6 @@ export async function main(ctx: FunctionContext) {
 
   for (const fn of funcs) {
     await cloud.invoke(fn);
+    console.log(`invoke ${fn} done.`);
   }
 }

@@ -161,6 +161,7 @@ async function ensureToken() {
     const res = await cloud.invokeFunction('login', {
       code
     });
+    // await sleep(3000);
     if (res.msg === 'OK') {
       console.log('成功获取 access token');
       wx.setStorageSync('accessToken', {
@@ -342,7 +343,7 @@ function _inject() {
   // 让database接口等待openid获取，满足laf的访问策略要求
   const _database = cloud.__proto__.database;
   cloud.__proto__.databaseAsync = async function () {
-    var maxTry = 300;
+    var maxTry = 500;
     while (true) {
       const { token } = wx.getStorageSync('accessToken');
       if (token) {

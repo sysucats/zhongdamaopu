@@ -10,6 +10,12 @@ Page({
     text_cfg: text_cfg,
     github_link: "https://github.com/sysucats/zhongdamaopu",
     update_log: [{
+      version: "v1.12.12",
+      content: [
+        "尝试修复首页白屏问题",
+      ],
+      time: "2024/02/17"
+    }, {
       version: "v1.12.11",
       content: [
         "徽章榜单也按时间划分",
