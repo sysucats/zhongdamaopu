@@ -20,14 +20,18 @@ async function signUrl(fileName: string) {
   const { OSS_ENDPOINT, OSS_PORT, OSS_BUCKET, OSS_SECRET_ID, OSS_SECRET_KEY } = await getAppSecret(false);
   
   // 报错"Invalid endPoint"请参考: https://blog.csdn.net/xinleicol/article/details/115698599
-  const client = new Minio.Client({
+  const minioClient = {
     endPoint: OSS_ENDPOINT,
     port: OSS_PORT,
     useSSL: true,
     accessKey: OSS_SECRET_ID,
     secretKey: OSS_SECRET_KEY,
     pathStyle: false,
-  });
+  }
+  if (OSS_ENDPOINT =="oss.laf.run"){
+    minioClient.pathStyle = true
+  }
+  const client = new Minio.Client(minioClient);
   return new Promise((resolve, reject) => {
     let policy = client.newPostPolicy()
     policy.setBucket(OSS_BUCKET)
