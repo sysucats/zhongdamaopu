@@ -25,10 +25,9 @@ function compareDateStrings(dateString1: string, dateString2: string, n: number)
 export async function main(ctx: FunctionContext, next: Function) {
   // 请求的实际IP
   const ip = ctx.headers['x-real-ip']
-  const { host } = ctx.headers;
-  const { APPID, DEV_IPS } = process.env;
+  const { DEV_IPS } = process.env;
 
-  if (!ip && host === `${APPID}.laf-runtime:8000`) {
+  if (!ip) {
     // 触发器触发
     return await next(ctx);
   }
@@ -49,7 +48,7 @@ export async function main(ctx: FunctionContext, next: Function) {
       console.log("invalid sign");
       console.log(ctx.headers);
       console.log(process.env);
-      return "invalid sign";
+      return `invalid sign, ip: ${ip}`;
     }
 
     // 检查时间

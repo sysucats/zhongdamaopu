@@ -110,9 +110,12 @@ export default async function (ctx: FunctionContext) {
     return "v1.4";
   }
 
-  var openid = ctx.user.openid;  // 用户的 OpenID
+  var openid = ctx.user?.openid;  // 用户的 OpenID
 
   const collection = body.collection;
+  if (!collection) {
+    return "no collection name.";
+  }
   const operation = body.operation;  // DB 操作 ["add", "update", "remove", "set", "inc", "read"]
   const permissionLevel = permissionNeed[operation][collection];  // 操作要求的最低权限
   console.log("permissionLevel:", permissionLevel)
