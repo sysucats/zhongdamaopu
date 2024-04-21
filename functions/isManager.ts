@@ -1,6 +1,10 @@
 import cloud from '@lafjs/cloud'
 
 export async function isManager(openid: string, req: number) {
+  if (openid === undefined) {
+    return false;
+  }
+
   const db = cloud.database();
   const filter = { openid: openid };
   const user = (await db.collection('user').where(filter).field({ manager: 1 }).get()).data[0];

@@ -10,7 +10,7 @@ export default async function (ctx: FunctionContext) {
     return "v1.1";
   }
 
-  const openid = ctx.user.openid;
+  const openid = ctx.user?.openid;
 
   const is_manager = await isManager(openid, 2);
   if (!is_manager) {

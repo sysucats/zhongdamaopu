@@ -21,9 +21,13 @@ export default async function (ctx: FunctionContext) {
   
   console.log("managePhoto", body);
   const photo = body.photo;
-  const type = body.type;
+  const opType = body.type;
 
-  if (type == "check") {
+  if (photo === undefined || opType === undefined) {
+    return "empty photo or type";
+  }
+
+  if (opType == "check") {
     const best = body.best;
     await db.collection('photo').doc(photo._id).update({
       verified: true,
@@ -32,7 +36,7 @@ export default async function (ctx: FunctionContext) {
     });
     updateMphoto(photo.cat_id);
   }
-  else if (type == "delete") {
+  else if (opType == "delete") {
     var photoIDs = [photo.photo_id];
     if (photo.photo_compressed) {
       photoIDs.push(photo.photo_compressed);
@@ -46,7 +50,7 @@ export default async function (ctx: FunctionContext) {
     const res = await db.collection('photo').doc(photo._id).remove();
     console.log("delete res:", res);
   }
-  else if (type == "setBest") {
+  else if (opType == "setBest") {
     const best = body.best;
     // updateMphoto(photo.cat_id);
     const res = await db.collection('photo').doc(photo._id).update({
@@ -54,7 +58,7 @@ export default async function (ctx: FunctionContext) {
     });
     console.log("setBest res:", res);
   }
-  else if (type == 'setPher') {
+  else if (opType == 'setPher') {
     const photographer =body.photographer;
     if (photo.photographer == photographer) {
       return "same";
@@ -71,7 +75,7 @@ export default async function (ctx: FunctionContext) {
     });
     console.log("setPher res:", res);
   }
-  else if (type == 'setProcess') {
+  else if (opType == 'setProcess') {
     // 修改数据库中记录的压缩图、水印图的URL
     const compressed = body.compressed;
     const watermark = body.watermark;
