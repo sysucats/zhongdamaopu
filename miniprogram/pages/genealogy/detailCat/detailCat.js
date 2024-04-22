@@ -619,6 +619,14 @@ Page({
     });
   },
 
+   //弹出层
+   showFunction() {
+    this.setData({ showFunc: true });
+  },
+  closeFunction() {
+    this.setData({ showFunc: false });
+  },
+  
   async loadUser() {
     var user = await getUser({
       nocache: true,
@@ -788,4 +796,7 @@ Page({
     };
     this.setData({modal});
   },
+  hideBadgeModal() {
+    this.triggerEvent('close');
+  }
 })

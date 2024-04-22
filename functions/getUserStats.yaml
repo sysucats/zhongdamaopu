@@ -1,0 +1,4 @@
+name: getUserStats
+methods:
+  - POST
+tags: []

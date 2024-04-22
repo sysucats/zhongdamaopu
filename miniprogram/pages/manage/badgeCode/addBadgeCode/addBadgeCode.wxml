@@ -1,4 +1,5 @@
-<block wx:if="{{auth}}">
+<!-- 改成view以便使用modifyUserInfo.wxss改后的样式 -->
+<view class="editInfo" wx:if="{{auth}}">
   <view class="top-margin-100"></view>
 
   <view class="label-small">可抽取徽章等级</view>
@@ -22,7 +23,7 @@
   <input type="number" class="nickname-input" placeholder="请输入" value="{{input.validDays}}" bindinput="onChangeText" data-field="validDays" data-dtype="number"/>
 
   <button class="primary" bindtap="clickSubmit">提交</button>
-</block>
+</view>
 <view wx:else class="unAuth">
   <text>{{tipText}}</text>
   <button bindtap='goBack' wx:if="{{tipBtn}}">打扰了</button>

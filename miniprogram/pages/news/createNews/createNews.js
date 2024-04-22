@@ -3,8 +3,7 @@ import {
 } from "../../../utils/utils";
 import {
   getPageUserInfo,
-  checkAuth,
-  toSetUserInfo
+  checkAuth
 } from "../../../utils/user";
 import {
   cloud
@@ -90,8 +89,15 @@ Page({
     })
   },
 
-  async getUInfo() {
-    toSetUserInfo();
+  getUInfo: function() {
+    this.setData({
+    showEdit: true
+    });
+  },
+  closeEdit: function() {
+    this.setData({
+    showEdit: false
+    });
   },
 
   async chooseImg(e) {

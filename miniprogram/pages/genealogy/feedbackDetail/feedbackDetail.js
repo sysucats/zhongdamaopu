@@ -1,5 +1,5 @@
 import { getCurrentPath, shareTo } from "../../../utils/utils";
-import { getPageUserInfo, checkCanFeedback, toSetUserInfo } from "../../../utils/user";
+import { getPageUserInfo, checkCanFeedback } from "../../../utils/user";
 import { requestNotice, sendNotifyChkFeeedback } from "../../../utils/msg";
 import { text as text_cfg } from "../../../config";
 import { cloud } from "../../../utils/cloudAccess";
@@ -51,8 +51,15 @@ Page({
     return shareTo(share_text, path);
   },
 
-  getUInfo() {
-    toSetUserInfo()
+  getUInfo: function() {
+    this.setData({
+    showEdit: true
+    });
+  },
+  closeEdit: function() {
+    this.setData({
+    showEdit: false
+    });
   },
 
   bindInput(e) {
