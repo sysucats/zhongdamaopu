@@ -11,7 +11,7 @@ export default async function (ctx: FunctionContext) {
   const db = cloud.database();
   const _ = db.command;
   const $ = db.command.aggregate;
-  const { openid } = ctx.user;
+  const openid = ctx.user?.openid;;
 
   // 定义查询条件
   const userPhotoQf = { _openid: openid, verified: true, photo_id: /^((?!\.heic$).)*$/i };

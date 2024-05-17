@@ -1,7 +1,7 @@
 <!--components/badgeModal/badgeModal.wxml-->
 <!-- 换成统一的mask组件 -->
 <mask style="z-index: 1;" show="{{show}}" bind:close="hide">
-<view class="modal {{show ? '' : 'hidden'}} badge-level-{{level}}" style="z-index: {{zindex}};">
+<view class="modal {{show ? 'show' : ''}} badge-level-{{level}}" style="z-index: {{zindex}};">
   <view class="title">{{title}}</view>
   <view class="close-btn" bindtap="hide">x</view>
   <image class="badge-img" src="{{img}}" mode="aspectFill"/>

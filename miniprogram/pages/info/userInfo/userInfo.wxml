@@ -11,15 +11,15 @@
 
   <view class="num-info"> 
       <view class="num"> 
-        <view class="num-title">{{numUserPhotos || '-'}}</view>
+        <view class="num-title">{{numUserPhotos !== null && numUserPhotos !== undefined ? numUserPhotos : '-'}}</view>
         <text class='small-title'>照片</text>
       </view>
       <view class="num">
-        <view class="num-title">{{numUserLiked || '-'}}</view>
+        <view class="num-title">{{numUserLiked !== null && numUserLiked !== undefined ? numUserLiked : '-'}}</view>
         <text class='small-title'>被赞</text>
       </view>
       <view class="num">
-        <view class="num-title">{{numUserComments || '-'}}</view>
+        <view class="num-title">{{numUserComments !== null && numUserComments !== undefined ? numUserComments : '-'}}</view>
         <text class='small-title'>便利贴</text>
       </view>
   </view>

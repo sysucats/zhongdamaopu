@@ -619,8 +619,8 @@ Page({
     });
   },
 
-   //弹出层
-   showFunction() {
+  //弹出层
+  showFunction() {
     this.setData({ showFunc: true });
   },
   closeFunction() {

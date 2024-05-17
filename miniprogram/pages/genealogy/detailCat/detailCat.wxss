@@ -123,13 +123,14 @@ swiper-item image {
   box-sizing: border-box;
   border-radius: 20rpx;
   background-color: var(--color-primary);
+  color: var(--color-white);
   padding: 6rpx 15rpx 8rpx 15rpx;
   margin-right: 20rpx;
 }
 
 
 .tags .to_star {
-  background-color: var(--color-gray-light);
+  background-color: var(--color-gray-max);
 }
 
 .tags .mpcode {
@@ -152,7 +153,7 @@ swiper-item image {
   color: var(--color-black-light);
   /* background-color: var(--color-primary); */
   border: 3rpx solid var(--color-primary);
-  border-radius: 5rpx;
+  border-radius: 20rpx;
 }
 
 .badge-all + .badge-all {
@@ -328,8 +329,6 @@ swiper-item image {
   width: 100%;
   display: flex;
   justify-content: center;
-  align-items: center;
-  z-index: 1;
 }
 .withdraw{
   width: 72rpx;
@@ -411,38 +410,6 @@ swiper-item image {
   color: var(--color-black-min);
   font-weight: 400;
   margin-bottom: 30rpx;
-}
-
-#comment-btn {
-  width: 60rpx;
-  height: 200rpx;
-  position: absolute;
-  right: 0;
-  top: 55%;
-
-  background-color: var(--color-primary);
-
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-
-  border-top-left-radius: 10rpx;
-  border-bottom-left-radius: 10rpx;
-
-  padding-top: 9rpx;
-}
-
-#comment-btn text {
-  font-size: 26rpx;
-  writing-mode: vertical-rl;
-  display: block;
-}
-
-#comment-btn image {
-  width: 22rpx;
-  height: 24rpx;
-  margin-top: 12rpx;
 }
 
 .best-photo {
@@ -537,16 +504,6 @@ swiper-item image {
 }
 
 /* 赠予徽章 */
-.mask {
-  width: 750rpx;
-  height: 100vh;
-  background-color: var(--color-gray-dark);
-  opacity: 0.8;
-  position: fixed;
-  top: 0;
-  z-index: 2;
-}
-
 .search {
   width: 750rpx;
   background-color: var(--color-white-dark);
@@ -563,13 +520,13 @@ swiper-item image {
 
   overflow: hidden;
   box-sizing: border-box;
-  transition: height 200ms ease, bottom 200ms ease;
+  transition: height 400ms ease, bottom 400ms ease;
 
   z-index: 999;
 
   background-color: var(--color-gray-light);
 
-  box-shadow: 0rpx -3rpx 10rpx 10rpx var(--color-gray-dark);
+  filter: drop-shadow(0px 12rpx 12rpx rgba(0, 0, 0, 0.15));
 }
 
 .search.hidden {
@@ -658,6 +615,7 @@ swiper-item image {
 }
 .search-btn.active {
   background-color: var(--color-primary);
+  color: var(--color-white)
 }
 .search-btn.active.hover {
   background-color: var(--color-primary-dark);

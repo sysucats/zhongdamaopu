@@ -2,8 +2,7 @@
   "usingComponents": {
     "mp-gallery": "/packages/weui/gallery/gallery",
     "badgeModal": "/components/badgeModal/badgeModal",
-    "popup": "/components/popup/popup",
-    "mask": "/components/mask/mask"
+    "popup": "/components/popup/popup"
   },
   "navigationBarTitleText": "猫猫详情",
   "disableScroll": true

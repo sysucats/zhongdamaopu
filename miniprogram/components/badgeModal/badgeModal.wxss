@@ -7,16 +7,19 @@
   border-radius: 50rpx;
   position: fixed;
   top: 200rpx;
-  left: 125rpx;
+  left: 50%;
   padding: 20rpx 0;
   display: flex;
   flex-direction: column;
   align-items: center;
-  transition: height 400ms ease, top 400ms ease;
+  transition: transform 400ms ease, opacity 400ms ease;
+  transform: translateX(-50%) translateY(100%);
   filter: drop-shadow(0px 12rpx 12rpx rgba(0, 0, 0, 0.15));
+  opacity: 0;
 }
-.modal.hidden {
-  top: 500rpx;
+.modal.show {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
 }
 
 .title {

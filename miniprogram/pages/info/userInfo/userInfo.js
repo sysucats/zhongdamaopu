@@ -118,7 +118,7 @@ Page({
   async onLoad() {
     await this.loadUser();
     
-    // 获取用户数据，有没有可能将这些数据记录到user表
+    // 获取用户数据
     const openid = this.data.user.openid;
     const {result}  = await api.getUserStats({ openid });
     this.setData({

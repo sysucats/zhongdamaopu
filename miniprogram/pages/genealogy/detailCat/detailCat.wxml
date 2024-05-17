@@ -41,6 +41,7 @@
       <text class='tag' wx:if="{{cat.adopt != undefined}}">{{adopt_desc[cat.adopt]}}</text>
       <text class='tag'>{{cat.sterilized? text_cfg.detail_cat.sterilized_true: text_cfg.detail_cat.sterilized_false}}</text>
       <text class='tag to_star' wx:if='{{cat.to_star}}'>{{text_cfg.genealogy.to_star_tip}}</text>
+      <text class='tag to_star' wx:if='{{cat.missing}}'>{{text_cfg.genealogy.missing_tip}}</text>
 
       <text class='fb-button' bindtap='bindTapFeedback'>{{text_cfg.detail_cat.button_feedback}}</text>
       <view class="mpcode" bindtap="bingMpTap">
@@ -77,7 +78,7 @@
         </view>
         <view class='value'>
           <!-- 新猫特点Char是空的数组（以前的是空值），修改判定方式 -->
-          <text>{{(cat.characteristics || '') + (cat.characteristics.length?'\n':'') + (cat.habit || '-')}}</text>
+          <text>{{(cat.characteristics || text_cfg.detail_cat.label_characteristics_empty) + (cat.characteristics.length || text_cfg.detail_cat.label_characteristics_empty.length?'\n':'') + (cat.habit || text_cfg.detail_cat.label_habit_empty)}}</text>
         </view>
       </view>
 
@@ -116,7 +117,7 @@
       <view class="item long" wx:if="{{is_manager || (cat.relations && cat.relations.length)}}">
         <view class="label">
           <view class='label-block'></view>
-          关系
+          猫际关系
         </view>
         <scroll-view scroll-x="1" class="relations">
           <view class="relation-block" wx:for="{{cat.relations}}" wx:key="_id" bindtap="toRelationCat" data-cat_id="{{item.cat._id}}" hover-class="tap">
@@ -125,7 +126,7 @@
             <view class="relation-cat-name">{{item.cat.name}}</view>
           </view>
           <view class="relation-block add" hover-class="tap" wx:if="{{is_manager}}" bindtap="toAddRelation">
-            <image class="relation-cat-avatar" mode="aspectFill"></image>
+            <image class="relation-cat-avatar" src="../../public/images/info/default_avatar.png" mode="aspectFill"></image>
             <view class="relation-name">+</view>
             <view class="relation-cat-name">添加关系</view>
           </view>
