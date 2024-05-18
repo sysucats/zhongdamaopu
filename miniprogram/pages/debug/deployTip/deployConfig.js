@@ -181,6 +181,7 @@ module.exports = {
     getPhotoRank: "v1.0",
     getTempCOS: "v1.1",
     getURL: "v1.1",
+    getUserStats: "v1.0",
     giveBadge: "v1.0",
     globalLock: "v1.0",
     isManager: "v1.1",

@@ -10,6 +10,26 @@ Page({
     text_cfg: text_cfg,
     github_link: "https://github.com/sysucats/zhongdamaopu",
     update_log: [{
+      version: "v1.13.1",
+      content: [
+        "修改关于页统计数和文档链接",
+      ],
+      time: "2024/05/18"
+    }, {
+      version: "v1.13.0",
+      content: [
+        "合入xuann大佬的PR",
+        "关于页UI设计改头换面",
+      ],
+      time: "2024/05/18"
+    }, {
+      version: "v1.12.13",
+      content: [
+        "修复照片处理小bug",
+        "优化首页白屏提示",
+      ],
+      time: "2024/04/21"
+    }, {
       version: "v1.12.12",
       content: [
         "尝试修复首页白屏问题",

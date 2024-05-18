@@ -4,7 +4,7 @@ page {
   flex-direction: column;
   align-items: center;
   box-sizing: border-box;
-  background-color: var(--color-gray-light);
+  /* background-color: var(--color-gray-light); */
 }
 
 /* 头像名字和角色 */
@@ -75,7 +75,7 @@ page {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  padding: 0 50rpx;
+  padding: 0 10rpx;
   height: auto;
   box-sizing: border-box;
   position: relative;
@@ -105,26 +105,22 @@ page {
 }
 
 .content {
-  min-height: 55vh; /* 还不能有效避免遮挡，适配其他设备 */
-  padding-bottom: 45vh;
-  margin-top: 7vh;
-  position: fixed;
+  width: 100%;
+  padding: 70rpx 0 100rpx 0;
+  background-color: var(--color-gray-light);
 }
 
 /* 一些菜单 */
 .menu-container {
   width: 100%;
-  max-height: 50vh;
-  bottom: 0;
-  position: fixed;
   padding-bottom: max(20rpx, constant(safe-area-inset-bottom));
   padding-bottom: max(20rpx, env(safe-area-inset-bottom));
   background-color: white;
   border-top-left-radius: 50rpx;
   border-top-right-radius: 50rpx;
-  box-shadow: 0 10rpx 25rpx rgba(0, 0, 0, 0.1);
   overflow: hidden;
   padding-top: 30rpx;
+  margin-top: -50rpx;
   overflow-y: auto
 }
 .type-separator {

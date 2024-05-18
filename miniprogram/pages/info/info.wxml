@@ -18,6 +18,12 @@
       <view class="num-title">{{numAllComments || '-'}}</view>
       <text class='small-title'>张便利贴</text>
     </view>
+  </view>
+  <view class="num-info">
+    <view class="num">
+      <view class="num-title">{{adoptRate || '-'}}</view>
+      <text class='small-title'>领养率</text>
+    </view>
     <view class="num">
       <view class="num-title">{{sterilizationRate || '-'}}</view>
       <text class='small-title'>绝育率</text>

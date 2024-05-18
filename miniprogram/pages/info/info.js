@@ -18,21 +18,21 @@ Page({
     // 卡片，不需要设计绘制卡片图，只需用放图标即可
     cards: [
       {
-        icon:"/pages/public/images/info/btn/user.png", // 一个示例
+        icon:"/pages/public/images/info/btn/user.svg", // 一个示例
         label:"个人主页",
         path:"/pages/info/userInfo/userInfo",
       },{
-        icon:"/pages/public/images/info/btn/badge.png",
+        icon:"/pages/public/images/info/btn/badge.svg",
         label:"徽章口袋",
         path:"/pages/info/badge/badge",
       },{
-        icon:"/pages/public/images/info/btn/tuandui.png",
+        icon:"/pages/public/images/info/btn/team.svg",
         label:"开发团队",
         path:"/pages/info/devTeam/devTeam",
       },{
-        icon:"/pages/public/images/info/btn/fankui.png",
-        label:"信息反馈",
-        path:"/pages/info/feedback/feedback",
+        icon:"/pages/public/images/info/btn/reward.svg",
+        label:"投喂罐头",
+        path:"/pages/info/reward/reward",
       }
     ],
 
@@ -187,24 +187,29 @@ Page({
     const allPhotoQf = { verified: true, photo_id: /^((?!\.heic$).)*$/i };
     // 所有便利贴数量
     const allCommentQf = { deleted: _.neq(true), needVerify: _.neq(true) };
+    // 所有领养
+    const adoptQf = { adopt: 1 };
     // 所有绝育量
     const sterilizedQf = { sterilized: true };
 
-    let [numAllCats, numAllPhotos, numAllComments, numsterilized] = await Promise.all([
+    let [numAllCats, numAllPhotos, numAllComments, numSterilized, numAdoptQf] = await Promise.all([
       db.collection('cat').where(allCatQf).count(),
       db.collection('photo').where(allPhotoQf).count(),
       db.collection('comment').where(allCommentQf).count(),
       db.collection('cat').where(sterilizedQf).count(),
+      db.collection('cat').where(adoptQf).count(),
     ]);
 
     // 计算绝育率
-    const sterilizationRate = (numsterilized.total / numAllCats.total * 100).toFixed(1);
+    const adoptRate = (numAdoptQf.total / numAllCats.total * 100).toFixed(1);
+    const sterilizationRate = (numSterilized.total / numAllCats.total * 100).toFixed(1);
 
     this.setData({
       numAllCats: numAllCats.total,
       numAllPhotos: numAllPhotos.total,
       numAllComments: numAllComments.total,
       sterilizationRate: sterilizationRate + '%',
+      adoptRate: adoptRate + '%',
     });
 
     if (!await isManagerAsync()) {
@@ -291,7 +296,7 @@ Page({
   guide(e) {
     wx.openEmbeddedMiniProgram({
         appId: 'wxd45c635d754dbf59',
-        path: 'pages/detail/detail?url=https%3A%2F%2Fdocs.qq.com%2Fdoc%2FDWEJFbkFJTGJBbUd6',// 此处链接需删除tx文档所复制路径中的.html
+        path: 'pages/detail/detail?url=https%3A%2F%2Fdocs.qq.com%2Fdoc%2FDSEl0aENOSEx5cmtE',// 此处链接需删除tx文档所复制路径中的.html
         envVersion: 'release',
         success(res) {
           // 打开成功

@@ -1,0 +1,4 @@
+name: getAllRelation
+methods:
+  - POST
+tags: []
