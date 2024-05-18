@@ -41,6 +41,7 @@
       <text class='tag' wx:if="{{cat.adopt != undefined}}">{{adopt_desc[cat.adopt]}}</text>
       <text class='tag'>{{cat.sterilized? text_cfg.detail_cat.sterilized_true: text_cfg.detail_cat.sterilized_false}}</text>
       <text class='tag to_star' wx:if='{{cat.to_star}}'>{{text_cfg.genealogy.to_star_tip}}</text>
+      <text class='tag to_star' wx:if='{{cat.missing}}'>{{text_cfg.genealogy.missing_tip}}</text>
 
       <text class='fb-button' bindtap='bindTapFeedback'>{{text_cfg.detail_cat.button_feedback}}</text>
       <view class="mpcode" bindtap="bingMpTap">
@@ -77,7 +78,7 @@
         </view>
         <view class='value'>
           <!-- 新猫特点Char是空的数组（以前的是空值），修改判定方式 -->
-          <text>{{(cat.characteristics || '') + (cat.characteristics.length?'\n':'') + (cat.habit || '-')}}</text>
+          <text>{{(cat.characteristics || text_cfg.detail_cat.label_characteristics_empty) + (cat.characteristics.length || text_cfg.detail_cat.label_characteristics_empty.length?'\n':'') + (cat.habit || text_cfg.detail_cat.label_habit_empty)}}</text>
         </view>
       </view>
 
@@ -116,7 +117,7 @@
       <view class="item long" wx:if="{{is_manager || (cat.relations && cat.relations.length)}}">
         <view class="label">
           <view class='label-block'></view>
-          关系
+          猫际关系
         </view>
         <scroll-view scroll-x="1" class="relations">
           <view class="relation-block" wx:for="{{cat.relations}}" wx:key="_id" bindtap="toRelationCat" data-cat_id="{{item.cat._id}}" hover-class="tap">
@@ -125,7 +126,7 @@
             <view class="relation-cat-name">{{item.cat.name}}</view>
           </view>
           <view class="relation-block add" hover-class="tap" wx:if="{{is_manager}}" bindtap="toAddRelation">
-            <image class="relation-cat-avatar" mode="aspectFill"></image>
+            <image class="relation-cat-avatar" src="../../public/images/info/default_avatar.png" mode="aspectFill"></image>
             <view class="relation-name">+</view>
             <view class="relation-cat-name">添加关系</view>
           </view>
@@ -178,34 +179,53 @@
   </view>
   <!-- album end -->
 
-  <!-- 点击上传图片 -->、
+  <!-- 点击上传图片 
   <view class="addPhoto" bindtap='bindAddPhoto'>
     <image class="icon" src='/pages/public/images/button/addPhoto.png'></image>
-  </view>
+  </view>-->
 
-  <!-- 进入便利贴墙 -->
+  <!-- 进入便利贴墙 
   <view id="comment-btn" bindtap="toComment">
     <text>{{text_cfg.detail_cat.label_comment_board}}</text>
     <image src="/pages/public/images/button/right_double_arrow.png" mode="aspectFit"></image>
-  </view>
+  </view>-->
+  
+  <!-- 把传照片留言按钮整到一个弹出框了 -->
+ <view class="plus" bindtap='showFunction'>
+    <image class="icon" src='/pages/public/images/button/plus.png'></image>
+ </view>
+ <popup show="{{showFunc}}" bind:close="closeFunction">
+    <view class="withdrawbtn" bindtap="closeFunction">
+          <image class="withdraw" src="/pages/public/images/button/withdraw.png"></image>
+      </view>
+      <view class="buttons"> 
+          <view class="button" bindtap='toComment'>
+            <image class="icon" src='/pages/public/images/button/comment.png'></image>
+            <view class="button-text">{{text_cfg.detail_cat.label_comment_board}}</view>
+          </view>
+          <view class="button" bindtap='bindAddPhoto' >
+            <image class="icon" src='/pages/public/images/button/addPhoto.png'></image>
+            <view class="button-text">上传喵照</view>
+          </view>
+      </view>
+ </popup>
 </scroll-view>
 
 <mp-gallery show="{{showGallery}}" gallery-photos="{{galleryPhotos}}" img-compressed-urls="{{imgCompressedUrls}}" img-urls="{{imgUrls}}" current="{{currentImg}}" hide-on-click="{{true}}" bindchange="bindGalleryChange" bindlikecountchanged="likeCountChanged"></mp-gallery>
 
 <!-- 赠予徽章弹出框 -->
-<view class="mask" bindtap="hideGiveBadge" hidden="{{!showGiveBadge}}"></view>
-<view class='search {{showGiveBadge? "": "hidden"}}'>
-  <scroll-view class="user-badge-list" scroll-y="1" enable-flex="1">
-    <view class="user-badge-item badge-level-{{item.level}} {{item.count === 0? 'zero-count': ''}} {{activeUserBadge === index? 'active': ''}}" wx:for="{{userBadges}}" wx:key="name" bindtap="bindTapUserBadge" data-index="{{index}}">
-      <image class="user-badge-item-avatar" src="{{item.img}}" mode="aspectFill" />
-      <view class="user-badge-item-count">x{{item.count}}</view>
-      <view class="user-badge-item-name">[{{item.level}}]{{item.name}}</view>
+<popup show="{{showGiveBadge}}" bind:close="hideGiveBadge">
+    <scroll-view class="user-badge-list" scroll-y="1" enable-flex="1">
+      <view class="user-badge-item badge-level-{{item.level}} {{item.count === 0? 'zero-count': ''}} {{activeUserBadge === index? 'active': ''}}" wx:for="{{userBadges}}" wx:key="name" bindtap="bindTapUserBadge" data-index="{{index}}">
+        <image class="user-badge-item-avatar" src="{{item.img}}" mode="aspectFill" />
+        <view class="user-badge-item-count">x{{item.count}}</view>
+        <view class="user-badge-item-name">[{{item.level}}]{{item.name}}</view>
+      </view>
+    </scroll-view>
+    <view class="search-buttons">
+      <view class="search-btn" bindtap="toGetBadge">获取徽章</view>
+      <view class="search-btn {{activeUserBadge != -1 ? 'active': 'disabled'}}" hover-class="hover" bindtap="toGiveBadge">赠予</view>
     </view>
-  </scroll-view>
-  <view class="search-buttons">
-    <view class="search-btn" bindtap="toGetBadge">获取徽章</view>
-    <view class="search-btn {{activeUserBadge != -1 ? 'active': 'disabled'}}" hover-class="hover" bindtap="toGiveBadge">赠予</view>
-  </view>
-</view>
+</popup>
 
-<badgeModal zindex="2" show="{{modal.show}}" title="{{modal.title}}" name="{{modal.name}}" img="{{modal.img}}" desc="{{modal.desc}}" tip="{{modal.tip}}" level="{{modal.level}}" bind:close="onModalClose"></badgeModal>
+<badgeModal zindex="2" show="{{modal.show}}" title="{{modal.title}}" name="{{modal.name}}" img="{{modal.img}}" desc="{{modal.desc}}" tip="{{modal.tip}}" level="{{modal.level}}" bind:close="hideBadgeModal"></badgeModal>

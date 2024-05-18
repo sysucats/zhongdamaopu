@@ -1,13 +1,14 @@
 <!--pages/manage/badgeDef/badgeDef.wxml-->
-<block wx:if="{{auth}}">
+<!-- 改成view以便使用modifyUserInfo.wxss改后的样式 -->
+<view class="editInfo" wx:if="{{auth}}">
   <view class="top-margin-100"></view>
 
   <view class="label-tip">id: {{badgeDef._id || 'new'}}</view>
   <view class="label-small">徽章图像</view>
   <view class="label-tip">tip: 点击进行更换</view>
   <!-- 复用了个人信息页修改的css，所以还是叫avatar -->
-  <button class="avatar-wrapper" bindtap="chooseImage">
-    <image class="avatar" src="{{badgeDef.img}}" mode="aspectFill"></image>
+  <button class="avatar-wrapper" style="border-radius: 15rpx;" bindtap="chooseImage">
+    <image class="avatar" style="border-radius: 15rpx;" src="{{badgeDef.img}}" mode="aspectFill"></image>
   </button>
 
   <view class="label-small">名称</view>
@@ -32,7 +33,7 @@
 
 
   <button class="primary" bindtap="clickUpload">提交</button>
-</block>
+</view>
 <view wx:else class="unAuth">
   <text>{{tipText}}</text>
   <button bindtap='goBack' wx:if="{{tipBtn}}">打扰了</button>

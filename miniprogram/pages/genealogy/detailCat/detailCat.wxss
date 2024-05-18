@@ -123,13 +123,14 @@ swiper-item image {
   box-sizing: border-box;
   border-radius: 20rpx;
   background-color: var(--color-primary);
+  color: var(--color-white);
   padding: 6rpx 15rpx 8rpx 15rpx;
   margin-right: 20rpx;
 }
 
 
 .tags .to_star {
-  background-color: var(--color-gray-light);
+  background-color: var(--color-gray-max);
 }
 
 .tags .mpcode {
@@ -152,7 +153,7 @@ swiper-item image {
   color: var(--color-black-light);
   /* background-color: var(--color-primary); */
   border: 3rpx solid var(--color-primary);
-  border-radius: 5rpx;
+  border-radius: 20rpx;
 }
 
 .badge-all + .badge-all {
@@ -307,25 +308,61 @@ swiper-item image {
   padding-bottom: env(safe-area-inset-bottom);
 }
 
-.addPhoto {
+/*弹出层*/
+.plus {
   width: 100rpx;
   height: 100rpx;
-  border-radius: 100rpx;
   position: fixed;
-  bottom: 50rpx;
+  bottom: 150rpx;
   right: 50rpx;
-  background-color: var(--color-primary);
-  box-shadow: 5rpx 7rpx 20rpx var(--color-gray-dark);
-  display: flex;
+  filter: drop-shadow(0px 12rpx 12rpx rgba(0, 0, 0, 0.15));
+  display: block;
   justify-content: center;
   align-items: center;
   z-index: 1;
 }
-
-.addPhoto .icon{
-  width: 60%;
-  height: 60%;
-  margin-left: 5%;
+.plus .icon{
+  width: 100%;
+  height: 100%;
+}
+.withdrawbtn{
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+.withdraw{
+  width: 72rpx;
+  height: 19.5rpx;
+  margin-top: 30rpx;
+  margin-bottom: 30rpx;
+}
+.buttons {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  box-sizing: border-box;
+  padding: 10rpx;
+}
+.button {
+  filter: drop-shadow(0px 12rpx 12rpx rgba(0, 0, 0, 0.15));
+  margin-bottom: 50rpx;
+  width: 33.33%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+.button .icon{
+  width: 100rpx;
+  height: 100rpx;
+}
+.button-text {
+  width: 100%;
+  font-size: 25rpx;
+  text-align: center;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
 }
 
 /* 下面开始悬浮标题 */
@@ -373,38 +410,6 @@ swiper-item image {
   color: var(--color-black-min);
   font-weight: 400;
   margin-bottom: 30rpx;
-}
-
-#comment-btn {
-  width: 60rpx;
-  height: 200rpx;
-  position: absolute;
-  right: 0;
-  top: 55%;
-
-  background-color: var(--color-primary);
-
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-
-  border-top-left-radius: 10rpx;
-  border-bottom-left-radius: 10rpx;
-
-  padding-top: 9rpx;
-}
-
-#comment-btn text {
-  font-size: 26rpx;
-  writing-mode: vertical-rl;
-  display: block;
-}
-
-#comment-btn image {
-  width: 22rpx;
-  height: 24rpx;
-  margin-top: 12rpx;
 }
 
 .best-photo {
@@ -499,16 +504,6 @@ swiper-item image {
 }
 
 /* 赠予徽章 */
-.mask {
-  width: 750rpx;
-  height: 100vh;
-  background-color: var(--color-gray-dark);
-  opacity: 0.8;
-  position: fixed;
-  top: 0;
-  z-index: 2;
-}
-
 .search {
   width: 750rpx;
   background-color: var(--color-white-dark);
@@ -525,13 +520,13 @@ swiper-item image {
 
   overflow: hidden;
   box-sizing: border-box;
-  transition: height 200ms ease, bottom 200ms ease;
+  transition: height 400ms ease, bottom 400ms ease;
 
-  z-index: 99;
+  z-index: 999;
 
   background-color: var(--color-gray-light);
 
-  box-shadow: 0rpx -3rpx 10rpx 10rpx var(--color-gray-dark);
+  filter: drop-shadow(0px 12rpx 12rpx rgba(0, 0, 0, 0.15));
 }
 
 .search.hidden {
@@ -540,7 +535,7 @@ swiper-item image {
 
 .user-badge-list {
   display: flex;
-  height: 300rpx;
+  height: 380rpx;
   flex-wrap: wrap;
 }
 
@@ -620,6 +615,7 @@ swiper-item image {
 }
 .search-btn.active {
   background-color: var(--color-primary);
+  color: var(--color-white)
 }
 .search-btn.active.hover {
   background-color: var(--color-primary-dark);

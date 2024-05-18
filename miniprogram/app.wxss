@@ -16,7 +16,8 @@ page {
   --color-black-min:#414141;
   --color-black-light: #222222;
 
-  --color-black-transparent: rgba(0,0,0,0.5);
+  --color-black-transparent: rgba(0,0,0,0.6);
+  --color-ltblack-transparent: rgba(0,0,0,0.05);
 
   --color-red: #dc3545;
   --color-red-dark: #8b0000;
@@ -57,4 +58,5 @@ page {
   font-size: 34rpx;
 }
 
-@import '/packages/weui/weui-wxss/dist/style/weui.wxss'
+@import '/packages/weui/weui-wxss/dist/style/weui.wxss';
+@import "./pages/public/wxss/iconfont.wxss"

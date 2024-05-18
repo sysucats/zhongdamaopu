@@ -2,5 +2,5 @@
   "usingComponents": {
     "modifyUserInfo": "/components/modifyUserInfo/modifyUserInfo"
   },
-  "navigationBarTitleText": "添加照片"
+  "navigationBarTitleText": "个人主页"
 }

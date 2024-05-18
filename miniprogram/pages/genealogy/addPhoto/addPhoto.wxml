@@ -28,7 +28,7 @@
       </view>
       <view class="update-userInfo" bindtap="getUInfo">[更新信息]</view>
     </view>
-
+    
     <button bindtap='chooseImg' class='long primary'>选择照片</button>
 
     <view class='tip' hidden='{{photos && photos.length}}'>* 如果遇到闪退，清理后台应用再试试~</view>
@@ -75,3 +75,6 @@
   </block>
 
 </block>
+
+<!-- 个人信息修改组件 -->
+<modifyUserInfo show="{{showEdit}}" bind:close="closeEdit"></modifyUserInfo>

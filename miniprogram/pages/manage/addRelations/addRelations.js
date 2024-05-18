@@ -158,6 +158,9 @@ Page({
       showSearchType: false,
     });
   },
+  hideSearch() {
+    this.triggerEvent('close');
+  },
 
   async deleteRelationType(e) {
     var idx = e.currentTarget.dataset.index;

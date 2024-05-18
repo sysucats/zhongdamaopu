@@ -1,27 +1,25 @@
 /* components/badgeModal/badgeModal.wxss */
 @import "../../pages/manage/badgeDef/badgeDef.wxss";
 
-.mask {
-  width: 750rpx;
-  height: 100vh;
-  background-color: var(--color-gray-dark);
-  opacity: 0.8;
-  position: fixed;
-  top: 0;
-}
-
 .modal {
   background-color: white;
   width: 500rpx;
   border-radius: 50rpx;
   position: fixed;
   top: 200rpx;
-  left: 125rpx;
+  left: 50%;
   padding: 20rpx 0;
-
   display: flex;
   flex-direction: column;
   align-items: center;
+  transition: transform 400ms ease, opacity 400ms ease;
+  transform: translateX(-50%) translateY(100%);
+  filter: drop-shadow(0px 12rpx 12rpx rgba(0, 0, 0, 0.15));
+  opacity: 0;
+}
+.modal.show {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
 }
 
 .title {

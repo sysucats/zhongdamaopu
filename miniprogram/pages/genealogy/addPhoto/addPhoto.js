@@ -7,7 +7,6 @@ import {
 import {
   getPageUserInfo,
   checkCanUpload,
-  toSetUserInfo
 } from "../../../utils/user";
 import {
   requestNotice,
@@ -32,6 +31,8 @@ Page({
     set_all: {},
     canUpload: false,
     text_cfg: config.text,
+    
+    showEdit: false,
   },
 
   /**
@@ -301,7 +302,14 @@ Page({
     });
   },
 
-  getUInfo(e) {
-    toSetUserInfo();
-  }
+  getUInfo: function() {
+    this.setData({
+    showEdit: true
+    });
+  },
+  closeEdit: function() {
+    this.setData({
+    showEdit: false
+    });
+  },
 })

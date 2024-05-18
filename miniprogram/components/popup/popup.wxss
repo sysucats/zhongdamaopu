@@ -1,0 +1,23 @@
+.popup-container {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  border-top-right-radius: 40rpx;
+  border-top-left-radius: 40rpx;
+  z-index: 999;
+  padding: 20rpx 20rpx;
+  padding-bottom: max(20rpx, env(safe-area-inset-bottom));
+  overflow: hidden;
+  box-sizing: border-box;
+  transition: transform 400ms ease;
+  transform: translateY(100%);
+  background-color: var(--color-gray-light);
+  filter: drop-shadow(0px 12rpx 12rpx rgba(0, 0, 0, 0.15));
+  }
+
+.popup-container.show {
+  transform: translateY(0);
+  }
+
