@@ -20,7 +20,7 @@ Page({
   async onLoad(options) {
     this.setData({
       cat_id: options.cat_id,
-      user: wx.getStorageSync('current-user')
+      user: wx.getStorageSync('current-user').item
     });
     
     await Promise.all([
@@ -53,6 +53,7 @@ Page({
     const db = await cloud.databaseAsync();
     // 获取榜单和标签定义
     if (!this.data.user.openid) {
+      console.log(this.data);
       return
     }
     let [myRatingsItems] = await Promise.all([
@@ -110,7 +111,16 @@ Page({
   },
 
   async submitRating(e) {
-    let { myRatingId, myRatings, cat_id } = this.data;
+    let { myRatingId, myRatings, cat_id, user } = this.data;
+
+    if (!user.userInfo.nickName) {
+      // 防止机器人刷评分
+      wx.showToast({
+        title: '请先设置用户昵称',
+        icon: 'none'
+      })
+      return;
+    }
     let item = {
       cat_id
     };
