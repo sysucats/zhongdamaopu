@@ -1,6 +1,6 @@
 <!--pages/genealogy/detailCat/ratingDetail/ratingDetail.wxml-->
 <view class="bd-block">
-  <view class="bd-title">{{cat.name}}（共{{cat.rating.total || 0}}人参评）</view>
+  <view class="bd-title">{{cat.name}}（共{{cat.rating.count || 0}}人参评）</view>
   <view class="one-rating">
     <view class="title">综合：</view>
     <view class="stars">
