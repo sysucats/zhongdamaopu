@@ -18,6 +18,7 @@ const permissionNeed = {
     "photo": 0,
     "photo_rank": 3,
     "badge_code": 99,
+    "rating": 0,
     "reward": 3,
     "science": 3,
     "setting": 3,
@@ -33,6 +34,7 @@ const permissionNeed = {
     "photo": 1,
     "photo_rank": 1,
     "badge_code": 3,
+    "rating": 1,
     "reward": 1,
     "science": 1,
     "setting": 99,
@@ -48,6 +50,7 @@ const permissionNeed = {
     "photo": 1,
     "photo_rank": 1,
     "badge_code": 99,
+    "rating": 99,
     "reward": 99,
     "science": 99,
     "setting": 99,
@@ -63,6 +66,7 @@ const permissionNeed = {
     "photo": 1,
     "photo_rank": 1,
     "badge_code": 99,
+    "rating": 99,
     "reward": 1,
     "science": 1,
     "setting": 1,
@@ -78,6 +82,7 @@ const permissionNeed = {
     "photo": 0,
     "photo_rank": 1,
     "badge_code": 99,
+    "rating": 99,
     "reward": 1,
     "science": 1,
     "setting": 99,
@@ -92,7 +97,8 @@ const permissionNeed = {
 const permissionAuthor = {
   "add": {},
   "update": {
-    "feedback": true
+    "feedback": true,
+    "rating": true,
   },
   "remove": {
     "comment": true
@@ -107,7 +113,7 @@ export default async function (ctx: FunctionContext) {
 
   if (body && body.deploy_test === true) {
     // 进行部署检查
-    return "v1.4";
+    return "v1.5";
   }
 
   var openid = ctx.user?.openid;  // 用户的 OpenID

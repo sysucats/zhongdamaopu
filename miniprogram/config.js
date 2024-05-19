@@ -5,7 +5,7 @@
 
 module.exports = {
   // 版本号
-  app_version: "v1.13.1",
+  app_version: "v1.13.2",
   // laf后台服务地址
   laf_url: 'https://fxkv6h.laf.run',
   // laf后台服务地址（微信开发工具中），一般和上面laf_url一致就好
@@ -78,6 +78,7 @@ module.exports = {
       label_friend: "好友",
       label_character: "性格及特点",
       label_tutorial: "撸猫指南",
+      label_rating: "猫友评分",
       label_tutorial_empty: "暂时还没有",
       label_comment_board: "便利贴墙",
       sterilized_true: "已绝育",

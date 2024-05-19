@@ -151,6 +151,14 @@ async function getUserStats(options) {
   });
 }
 
+// 更新一只猫的评分
+async function updateCatRating(options) {
+  return await cloud.callFunction({
+    name: "updateCatRating",
+    data: options
+  });
+}
+
 module.exports = {
   curdOp,
   userOp,
@@ -167,4 +175,5 @@ module.exports = {
   genBadgeCode,
   loadBadgeCode,
   getUserStats,
+  updateCatRating,
 };

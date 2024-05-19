@@ -75,6 +75,13 @@
     update: false
     remove: false
     add: false
+- collectionName: rating
+  rules:
+    read: openid
+    count: openid
+    update: false
+    remove: false
+    add: openid
 - collectionName: reward
   rules:
     read: openid

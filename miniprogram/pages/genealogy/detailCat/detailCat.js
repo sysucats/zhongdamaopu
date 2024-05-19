@@ -349,6 +349,12 @@ Page({
     });
   },
 
+  bindRating() {
+    wx.navigateTo({
+      url: '/pages/genealogy/detailCat/ratingDetail/ratingDetail?cat_id=' + this.data.cat._id,
+    });
+  },
+
   async bindTapPhoto(e) {
     wx.showLoading({
       title: '正在加载...',

@@ -1,0 +1,4 @@
+name: updateCatRating
+methods:
+  - POST
+tags: []

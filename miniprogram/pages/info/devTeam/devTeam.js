@@ -10,6 +10,12 @@ Page({
     text_cfg: text_cfg,
     github_link: "https://github.com/sysucats/zhongdamaopu",
     update_log: [{
+      version: "v1.13.2",
+      content: [
+        "增加猫猫评分",
+      ],
+      time: "2024/05/19"
+    }, {
       version: "v1.13.1",
       content: [
         "修改关于页统计数和文档链接",

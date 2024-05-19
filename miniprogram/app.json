@@ -41,7 +41,8 @@
     "pages/manage/checkComment/checkComment",
     "pages/manage/badgeCode/badgeCode",
     "pages/manage/badgeCode/addBadgeCode/addBadgeCode",
-    "pages/info/badge/badgeHistory/badgeHistory"
+    "pages/info/badge/badgeHistory/badgeHistory",
+    "pages/genealogy/detailCat/ratingDetail/ratingDetail"
   ],
   "tabBar": {
     "custom": true,
@@ -83,7 +84,9 @@
   ],
   "sitemapLocation": "sitemap.json",
   "lazyCodeLoading": "requiredComponents",
-  "embeddedAppIdList": ["wxebadf544ddae62cb","wxd45c635d754dbf59"],
-  "usingComponents": {
-  }
+  "embeddedAppIdList": [
+    "wxebadf544ddae62cb",
+    "wxd45c635d754dbf59"
+  ],
+  "usingComponents": {}
 }

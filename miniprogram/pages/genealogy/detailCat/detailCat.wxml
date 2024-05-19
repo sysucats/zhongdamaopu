@@ -85,6 +85,22 @@
       <view class='item long'>
         <view class='label'>
           <view class='label-block'></view>
+          {{text_cfg.detail_cat.label_rating}}
+          <view class="badge-all" bindtap="bindRating">评分详情</view>
+        </view>
+        <view class="stars" bind:tap="bindRating">
+          <view class="one-star {{cat.rating.avgScore >= j+1 ? '' : 'gray'}}"  wx:for="*****" wx:key="*this" wx:for-index="j">
+            <image src="/pages/public/images/button/rating_star.svg" mode="aspectFill"/>
+          </view>
+          <view class="score">{{cat.rating.avgScoreDisp || '0.0'}}</view>
+        </view>
+      </view>
+
+      
+
+      <view class='item long'>
+        <view class='label'>
+          <view class='label-block'></view>
           {{text_cfg.detail_cat.label_tutorial}}
         </view>
         <view class='value'>{{cat.tutorial || text_cfg.detail_cat.label_tutorial_empty}}</view>
