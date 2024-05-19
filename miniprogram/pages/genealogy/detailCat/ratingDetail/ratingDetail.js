@@ -1,4 +1,3 @@
-import { getUser } from "../../../../utils/user";
 import { convertRatingList, genDefaultRating } from "../../../../utils/rating";
 import api from "../../../../utils/cloudApi";
 import { cloud } from "../../../../utils/cloudAccess";
@@ -23,19 +22,11 @@ Page({
       cat_id: options.cat_id,
       user: wx.getStorageSync('current-user')
     });
-  },
-
-  async loadUser() {
-    var user = await getUser({
-      nocache: true,
-    });
-    user = deepcopy(user);
-    if (!user.userInfo) {
-      user.userInfo = {};
-    }
-    this.setData({
-      user: user
-    });
+    
+    await Promise.all([
+      this.reloadMyRatings(),
+      this.reloadCatRating()
+    ]);
   },
   /**
    * 生命周期函数--监听页面初次渲染完成
@@ -48,10 +39,6 @@ Page({
    * 生命周期函数--监听页面显示
    */
   async onShow() {
-    await Promise.all([
-      this.reloadMyRatings(),
-      this.reloadCatRating()
-    ]);
   },
 
   /**
@@ -65,6 +52,9 @@ Page({
   async reloadMyRatings() {
     const db = await cloud.databaseAsync();
     // 获取榜单和标签定义
+    if (!this.data.user.openid) {
+      return
+    }
     let [myRatingsItems] = await Promise.all([
       db.collection('rating').where({_openid: this.data.user.openid, cat_id: this.data.cat_id}).limit(1).get(),
     ]);
@@ -101,8 +91,6 @@ Page({
       });
       return;
     }
-
-    cat.rating.avgScoreDisp = cat.rating.avgScore?.toFixed(1);
 
     let {scores} = cat.rating;
     let catRatings = convertRatingList(scores);
