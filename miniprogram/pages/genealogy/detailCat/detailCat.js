@@ -232,7 +232,9 @@ Page({
     }
     cat.avatar = await getAvatar(cat._id, cat.photo_count_best);
     
-    cat.rating.catRatings = convertRatingList(cat.rating.scores);
+    if (cat.rating) {
+      cat.rating.catRatings = convertRatingList(cat.rating.scores);
+    }
 
     this.setData({
       cat: cat
