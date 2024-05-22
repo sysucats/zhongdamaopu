@@ -12,6 +12,7 @@
 .one-rating .title {
   width: 100rpx;
   text-align: right;
+
 }
 
 .stars {

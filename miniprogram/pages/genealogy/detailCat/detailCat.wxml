@@ -78,7 +78,7 @@
         </view>
         <view class='value'>
           <!-- 新猫特点Char是空的数组（以前的是空值），修改判定方式 -->
-          <text>{{(cat.characteristics || text_cfg.detail_cat.label_characteristics_empty) + (cat.characteristics.length || text_cfg.detail_cat.label_characteristics_empty.length?'\n':'') + (cat.habit || text_cfg.detail_cat.label_habit_empty)}}</text>
+          <text>{{cat.characteristics_string || '暂无记录'}}</text>
         </view>
       </view>
 
@@ -86,17 +86,34 @@
         <view class='label'>
           <view class='label-block'></view>
           {{text_cfg.detail_cat.label_rating}}
-          <view class="badge-all" bindtap="bindRating">评分详情</view>
+          <view class="badge-all" bindtap="bindDetailRating">{{showDetailRating ? '折叠详情' : '展开详情'}}</view>
+          <view class="badge-all" bindtap="bindRating">我要评分</view>
         </view>
-        <view class="stars" bind:tap="bindRating">
-          <view class="one-star {{cat.rating.avgScore >= j+1 ? '' : 'gray'}}"  wx:for="*****" wx:key="*this" wx:for-index="j">
-            <image src="/pages/public/images/button/rating_star.svg" mode="aspectFill"/>
+        <view class="one-rating">
+          <view class="title" wx:if="{{showDetailRating}}">综合：</view>
+          <view class="stars" bind:tap="bindDetailRating">
+            <view class="one-star {{cat.rating.avgScore >= j+1 ? '' : 'gray'}}" wx:for="*****" wx:key="*this" wx:for-index="j">
+              <image src="/pages/public/images/button/rating_star.svg" mode="aspectFill" />
+            </view>
+            <view class="score">{{cat.rating.avgScoreDisp || '0.0'}}</view>
           </view>
-          <view class="score">{{cat.rating.avgScoreDisp || '0.0'}}</view>
         </view>
+
+        <block wx:if="{{showDetailRating}}">
+          <view class="one-rating" wx:for="{{cat.rating.catRatings}}" wx:key="name" wx:for-item="x" wx:for-index="i"  bind:tap="bindDetailRating">
+            <view class="title">{{x.name}}：</view>
+            <view class="stars">
+              <view class="one-star {{x.score >= j+1 ? '' : 'gray'}}" wx:for="*****" wx:key="*this" wx:for-index="j">
+                <image src="/pages/public/images/button/rating_star.svg" mode="aspectFill" />
+              </view>
+              <view class="score">{{x.scoreDisp}}</view>
+            </view>
+          </view>
+        </block>
+
       </view>
 
-      
+
 
       <view class='item long'>
         <view class='label'>
@@ -205,43 +222,43 @@
     <text>{{text_cfg.detail_cat.label_comment_board}}</text>
     <image src="/pages/public/images/button/right_double_arrow.png" mode="aspectFit"></image>
   </view>-->
-  
+
   <!-- 把传照片留言按钮整到一个弹出框了 -->
- <view class="plus" bindtap='showFunction'>
+  <view class="plus" bindtap='showFunction'>
     <image class="icon" src='/pages/public/images/button/plus.svg'></image>
- </view>
- <popup show="{{showFunc}}" bind:close="closeFunction">
+  </view>
+  <popup show="{{showFunc}}" bind:close="closeFunction">
     <view class="withdrawbtn" bindtap="closeFunction">
-          <image class="withdraw" src="/pages/public/images/button/withdraw.png"></image>
+      <image class="withdraw" src="/pages/public/images/button/withdraw.png"></image>
+    </view>
+    <view class="buttons">
+      <view class="button" bindtap='toComment'>
+        <image class="icon" src='/pages/public/images/button/comment.svg'></image>
+        <view class="button-text">{{text_cfg.detail_cat.label_comment_board}}</view>
       </view>
-      <view class="buttons"> 
-          <view class="button" bindtap='toComment'>
-            <image class="icon" src='/pages/public/images/button/comment.svg'></image>
-            <view class="button-text">{{text_cfg.detail_cat.label_comment_board}}</view>
-          </view>
-          <view class="button" bindtap='bindAddPhoto' >
-            <image class="icon" src='/pages/public/images/button/addPhoto.svg'></image>
-            <view class="button-text">上传喵照</view>
-          </view>
+      <view class="button" bindtap='bindAddPhoto'>
+        <image class="icon" src='/pages/public/images/button/addPhoto.svg'></image>
+        <view class="button-text">上传喵照</view>
       </view>
- </popup>
+    </view>
+  </popup>
 </scroll-view>
 
 <mp-gallery show="{{showGallery}}" gallery-photos="{{galleryPhotos}}" img-compressed-urls="{{imgCompressedUrls}}" img-urls="{{imgUrls}}" current="{{currentImg}}" hide-on-click="{{true}}" bindchange="bindGalleryChange" bindlikecountchanged="likeCountChanged"></mp-gallery>
 
 <!-- 赠予徽章弹出框 -->
 <popup show="{{showGiveBadge}}" bind:close="hideGiveBadge">
-    <scroll-view class="user-badge-list" scroll-y="1" enable-flex="1">
-      <view class="user-badge-item badge-level-{{item.level}} {{item.count === 0? 'zero-count': ''}} {{activeUserBadge === index? 'active': ''}}" wx:for="{{userBadges}}" wx:key="name" bindtap="bindTapUserBadge" data-index="{{index}}">
-        <image class="user-badge-item-avatar" src="{{item.img}}" mode="aspectFill" />
-        <view class="user-badge-item-count">x{{item.count}}</view>
-        <view class="user-badge-item-name">[{{item.level}}]{{item.name}}</view>
-      </view>
-    </scroll-view>
-    <view class="search-buttons">
-      <view class="search-btn" bindtap="toGetBadge">获取徽章</view>
-      <view class="search-btn {{activeUserBadge != -1 ? 'active': 'disabled'}}" hover-class="hover" bindtap="toGiveBadge">赠予</view>
+  <scroll-view class="user-badge-list" scroll-y="1" enable-flex="1">
+    <view class="user-badge-item badge-level-{{item.level}} {{item.count === 0? 'zero-count': ''}} {{activeUserBadge === index? 'active': ''}}" wx:for="{{userBadges}}" wx:key="name" bindtap="bindTapUserBadge" data-index="{{index}}">
+      <image class="user-badge-item-avatar" src="{{item.img}}" mode="aspectFill" />
+      <view class="user-badge-item-count">x{{item.count}}</view>
+      <view class="user-badge-item-name">[{{item.level}}]{{item.name}}</view>
     </view>
+  </scroll-view>
+  <view class="search-buttons">
+    <view class="search-btn" bindtap="toGetBadge">获取徽章</view>
+    <view class="search-btn {{activeUserBadge != -1 ? 'active': 'disabled'}}" hover-class="hover" bindtap="toGiveBadge">赠予</view>
+  </view>
 </popup>
 
 <badgeModal zindex="2" show="{{modal.show}}" title="{{modal.title}}" name="{{modal.name}}" img="{{modal.img}}" desc="{{modal.desc}}" tip="{{modal.tip}}" level="{{modal.level}}" bind:close="hideBadgeModal"></badgeModal>

@@ -23,6 +23,7 @@ import {
 import {
   getGlobalSettings
 } from "../../../utils/page";
+import { convertRatingList, genDefaultRating } from "../../../utils/rating";
 import {
   cloud
 } from "../../../utils/cloudAccess";
@@ -81,6 +82,9 @@ Page({
     text_cfg: config.text,
 
     activeUserBadge: -1,
+
+    // 是否展开评分详情
+    showDetailRating: false,
   },
 
   jsData: {
@@ -218,8 +222,17 @@ Page({
     const db = await cloud.databaseAsync();
     const cat = (await db.collection('cat').doc(this.jsData.cat_id).get()).data;
     cat.photo = [];
-    cat.characteristics_string = (cat.colour || '') + '猫';
+    if (cat.characteristics.length) {
+      cat.characteristics_string = cat.characteristics + '\n';
+    } else {
+      cat.characteristics_string = '';
+    }
+    if (cat.habit) {
+      cat.characteristics_string += cat.habit;
+    }
     cat.avatar = await getAvatar(cat._id, cat.photo_count_best);
+    
+    cat.rating.catRatings = convertRatingList(cat.rating.scores);
 
     this.setData({
       cat: cat
@@ -804,5 +817,12 @@ Page({
   },
   hideBadgeModal() {
     this.triggerEvent('close');
+  },
+  bindDetailRating(e) {
+    let { showDetailRating } = this.data;
+
+    this.setData({
+      showDetailRating: !showDetailRating,
+    });
   }
 })

@@ -229,7 +229,7 @@ scroll-view {
 /* 广告栏 */
 
 .card-ad {
-  margin: 15rpx 0;
+  margin-bottom: 50rpx;
   width: 635rpx;
   border-radius: 15rpx;
   background-color: white;

@@ -14,6 +14,10 @@ Page({
     myRatings: genDefaultRating(),
   },
 
+  jsData: {
+    submitting: false,
+  },
+
   /**
    * 生命周期函数--监听页面加载
    */
@@ -80,7 +84,7 @@ Page({
 
   // 重新加载猫猫信息
   async reloadCatRating() {
-    let {cat_id} = this.data;
+    let { cat_id } = this.data;
     const db = await cloud.databaseAsync();
     let cat = (await db.collection('cat').doc(cat_id).get()).data;
 
@@ -111,6 +115,15 @@ Page({
   },
 
   async submitRating(e) {
+    let { submitting } = this.jsData;
+    if (submitting) {
+      return;
+    }
+    this.jsData.submitting = true;
+    wx.showLoading({
+      title: '提交中...',
+    });
+
     let { myRatingId, myRatings, cat_id, user } = this.data;
 
     if (!user.userInfo.nickName) {
@@ -154,12 +167,17 @@ Page({
 
     // 更新猫的评分
     await api.updateCatRating({cat_id});
-    await this.reloadCatRating();
+    await Promise.all([
+      this.reloadMyRatings(),
+      this.reloadCatRating()
+    ]);
+
+    wx.hideLoading();
 
     wx.showToast({
       title: '提交成功',
       icon: 'success'
     });
-
+    this.jsData.submitting = false;
   }
 })

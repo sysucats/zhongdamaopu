@@ -10,6 +10,13 @@ Page({
     text_cfg: text_cfg,
     github_link: "https://github.com/sysucats/zhongdamaopu",
     update_log: [{
+      version: "v1.13.3",
+      content: [
+        "修复猫猫部分UI问题",
+        "修复重复评分bug",
+      ],
+      time: "2024/05/22"
+    }, {
       version: "v1.13.2",
       content: [
         "增加猫猫评分",

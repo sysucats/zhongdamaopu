@@ -673,6 +673,17 @@ swiper-item image {
 
 /* 猫猫评分 */
 
+.one-rating {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.one-rating .title, one-rating-title {
+  font-size: 24rpx;
+  text-align: right;
+}
+
 .stars {
   width: 370rpx;
   height: 60rpx;
