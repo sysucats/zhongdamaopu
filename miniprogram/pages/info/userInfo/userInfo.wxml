@@ -2,9 +2,7 @@
   <view class="user-container">
     <view class="avatar-container">
       <image class="avatar" src="{{user.userInfo.avatarUrl || defaultAvatarUrl}}" mode="aspectFill"></image>
-      <text wx:if="{{showManagerBadge}}" class="manager-badge">MANAGER</text>
-      <text wx:elif="{{showProBadge}}" class="pro-badge">PRO</text>
-      <text class="badge {{badgeName}}-badge">{{badgeName}}</text>
+      <text class="badge {{badgeClass}}-badge">{{badgeName}}</text>
     </view>
     <text class="user-name">{{user.userInfo.nickName}}</text>
   </view>

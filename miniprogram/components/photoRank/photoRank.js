@@ -3,6 +3,9 @@ import { formatDate } from "../../utils/utils";
 import { text as text_cfg } from "../../config";
 import { cloud } from "../../utils/cloudAccess";
 
+//  默认头像
+const defaultAvatarUrl = "/pages/public/images/info/default_avatar.png";
+
 // components/photoRank/photoRank.ts
 Component({
   /**
@@ -17,6 +20,7 @@ Component({
    */
   data: {
     text_cfg: text_cfg,
+    defaultAvatarUrl: defaultAvatarUrl,
   },
 
   /**
@@ -27,10 +31,6 @@ Component({
       this.getRank();
       await getPageUserInfo(this);
       await this.getMyRank();
-    },
-
-    async getUInfo() {
-      toSetUserInfo()
     },
   
     async getRank() {
@@ -91,6 +91,16 @@ Component({
           return;
         }
       }
-    }
+    },
+    
+    getUInfo: function() {
+      this.setData({
+      showEdit: true
+      });
+    },
+    onUserInfoUpdated(event) {
+      const { user } = event.detail;
+      this.setData({ user });
+    },
   }
 })
