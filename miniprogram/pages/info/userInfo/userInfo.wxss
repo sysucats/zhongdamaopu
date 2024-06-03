@@ -41,13 +41,13 @@ page {
   border-radius: 10rpx;
   font-size: 20rpx;
 }
-.PRO-badge {
+.pro-badge {
   background-color: #FFD700;
 }
-.MANAGER-badge {
+.manager-badge {
   background-color: var(--color-primary);
 }
-.VISTEOR-badge {
+.visitor-badge {
   background-color: var(--color-gray-max);
 }
 

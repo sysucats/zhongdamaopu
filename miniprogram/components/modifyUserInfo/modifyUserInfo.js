@@ -68,12 +68,18 @@ Component({
         return false;
       }
 
-      if(!this.checkNickName(user.userInfo.nickName)) {
+      if (!await this.checkNickName(user.userInfo.nickName)) {
+        wx.hideLoading();
         return false;
       }
-
+    
       if (!user.userInfo.avatarUrl) {
-        user.userInfo.avatarUrl = defaultAvatarUrl;
+        wx.showToast({
+          title: '请选择头像',
+          icon: 'error',
+        });
+        wx.hideLoading();
+        return false;
       }
 
       user.userInfo.avatarUrl = await this.uploadAvatar(user.userInfo.avatarUrl);
@@ -122,12 +128,14 @@ Component({
       if (!name) {
         wx.showToast({
           title: '请输入昵称',
+          icon: 'error'
         });
         return false;
       }
       if (name.length > 30) {
         wx.showToast({
           title: '昵称太长啦...20字',
+          icon: 'error'
         });
         return false;
       }
