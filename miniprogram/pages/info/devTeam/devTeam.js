@@ -10,6 +10,12 @@ Page({
     text_cfg: text_cfg,
     github_link: "https://github.com/sysucats/zhongdamaopu",
     update_log: [{
+      version: "v1.13.4",
+      content: [
+        "修复用户头像设置问题",
+      ],
+      time: "2024/06/03"
+    }, {
       version: "v1.13.3",
       content: [
         "修复猫猫部分UI问题",
