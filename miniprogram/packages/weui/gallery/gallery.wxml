@@ -13,6 +13,10 @@
       <view bindtap="showOriginImg" class="weui-gallery__origin">查看原图</view>
       <view class="weui-gallery__tip">可缩放、转发、保存</view>
     </view>
+    <view class="weui-gallery__opr origin_photo">
+      <view bindtap="showPoster" class="weui-gallery__origin">分享喵ID</view>
+      <view class="weui-gallery__tip">生成专属喵ID卡片</view>
+    </view>
     <view class="weui-gallery__opr like_button" bindtap="clickLike">
       <heart size="120" liked="{{liked}}"></heart>
       <view class="weui-gallery__tip">{{photos[current].like_count || 0}}</view>
@@ -20,3 +24,5 @@
   </view>
   
 </view>
+
+<poster id="posterComponent" cat="{{cat}}" coverImg="{{photos[current]}}" style="z-index: 9999;"></poster>

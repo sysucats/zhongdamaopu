@@ -24,6 +24,7 @@ import {
   getGlobalSettings
 } from "../../../utils/page";
 import { convertRatingList, genDefaultRating } from "../../../utils/rating";
+import { showMpcode } from "../../../utils/mpcode";
 import {
   cloud
 } from "../../../utils/cloudAccess";
@@ -554,38 +555,8 @@ Page({
   },
 
   // 展示mpcode
-  async bingMpTap(e) {
-    // 直接显示
-    if (this.data.cat.mpcode) {
-      wx.previewImage({
-        urls: [this.data.cat.mpcode],
-      });
-      return false;
-    }
-    // 如果目前没有，那就先生成一个，再显示
-    console.log('[bingMpTap] - 生成mpcode');
-    wx.showLoading({
-      title: '生成ing...',
-    })
-    const cat = this.data.cat;
-    var res = (await api.getMpCode({
-      _id: cat._id,
-      scene: 'toC=' + cat._no,
-      page: 'pages/genealogy/genealogy',
-      width: 500,
-    })).result;
-
-    console.log("mpcode:", res);
-
-    res = await cloud.signCosUrl(res);
-
-    wx.hideLoading();
-    wx.previewImage({
-      urls: [res],
-    });
-    this.setData({
-      'cat.mpcode': res
-    });
+  async bingMpTap() {
+    await showMpcode(this.data.cat);
   },
 
   showPopularityTip() {
@@ -826,5 +797,16 @@ Page({
     this.setData({
       showDetailRating: !showDetailRating,
     });
+  },
+
+  // 展示分享海报
+  async showPoster() {
+    // 关掉弹窗
+    this.closeFunction();
+    
+    let posterComponent = this.selectComponent('#posterComponent');
+    if (posterComponent) {
+      posterComponent.startDrawing();
+    }
   }
 })
