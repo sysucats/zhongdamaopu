@@ -10,6 +10,13 @@ Page({
     text_cfg: text_cfg,
     github_link: "https://github.com/sysucats/zhongdamaopu",
     update_log: [{
+      version: "v1.14.0",
+      content: [
+        "合入xuann大佬的PR",
+        "新增喵ID海报生成功能",
+      ],
+      time: "2024/06/14"
+    }, {
       version: "v1.13.4",
       content: [
         "修复用户头像设置问题",

@@ -113,19 +113,30 @@ Page({
     }
 
     // 开始加载页面，获取设置
-    var settings = null;
-    try {
-      settings = await getGlobalSettings('genealogy');
-    } catch {
-      console.error("get settings error 'genealogy'");
+    var settings = null, retrySettings = 3;
+    while (retrySettings > 0) {
+      try {
+        settings = await getGlobalSettings('genealogy', {nocache: true});
+        break;
+      } catch {
+        console.error("get settings error 'genealogy'");
+        await sleep(1000);
+      }
     }
     
     if (!settings) {
       console.log("no setting");
       wx.showModal({
-        title: '出错了',
-        content: '网络故障，请点击右上角三个点重新进入小程序',
-        showCancel: false
+        title: '网络小故障',
+        content: '请重新进入小程序',
+        showCancel: false,
+        success () {
+          const pagesStack = getCurrentPages();
+          const path = getCurrentPath(pagesStack);
+          wx.restartMiniProgram({
+            path
+          });
+        }
       })
       return
     }
