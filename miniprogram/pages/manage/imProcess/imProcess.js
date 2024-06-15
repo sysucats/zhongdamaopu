@@ -274,8 +274,8 @@ Page({
 
     const draw_rate = Math.max(origin.width, origin.height) / canvasMax;
     console.log(origin, draw_rate);
-    const draw_width = origin.width / draw_rate;
-    const draw_height = origin.height / draw_rate;
+    const draw_width = Math.floor(origin.width / draw_rate);
+    const draw_height = Math.floor(origin.height / draw_rate);
     console.log("draw size", draw_width, draw_height);
 
     // 画上图片
@@ -286,11 +286,13 @@ Page({
     var comp_width, comp_height;
     if (origin.width > origin.height) {
       comp_width = compressLength;
-      comp_height = origin.height / origin.width * compressLength;
+      comp_height = Math.floor(origin.height / origin.width * compressLength);
     } else {
       comp_height = compressLength;
-      comp_width = origin.width / origin.height * compressLength;
+      comp_width = Math.floor(origin.width / origin.height * compressLength);
     }
+
+    console.log("comp size", comp_width, comp_height);
 
     // 变成图片显示
     var path = await drawUtils.getTempPath(gCtx, gCanvas, {
