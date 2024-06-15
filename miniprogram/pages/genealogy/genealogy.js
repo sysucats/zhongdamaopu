@@ -116,7 +116,7 @@ Page({
     var settings = null, retrySettings = 3;
     while (retrySettings > 0) {
       try {
-        settings = await getGlobalSettings('genealogy');
+        settings = await getGlobalSettings('genealogy', {nocache: true});
         break;
       } catch {
         console.error("get settings error 'genealogy'");

@@ -31,7 +31,7 @@
     "pages/leaderboard/leaderboard",
     "pages/manage/pageSettings/pageSettings",
     "pages/tools/inviteUser/inviteUser",
-    "pages/info/userInfo/modifyUserInfo/modifyUserInfo",
+    "pages/info/userInfo/userInfo",
     "pages/info/agreement/agreement",
     "pages/debug/genKeys/genKeys",
     "pages/manage/badgeDef/badgeDef",
@@ -41,7 +41,8 @@
     "pages/manage/checkComment/checkComment",
     "pages/manage/badgeCode/badgeCode",
     "pages/manage/badgeCode/addBadgeCode/addBadgeCode",
-    "pages/info/badge/badgeHistory/badgeHistory"
+    "pages/info/badge/badgeHistory/badgeHistory",
+    "pages/genealogy/detailCat/ratingDetail/ratingDetail"
   ],
   "tabBar": {
     "custom": true,
@@ -81,5 +82,11 @@
       "path": "pages/recognize/recognize"
     }
   ],
-  "sitemapLocation": "sitemap.json"
+  "sitemapLocation": "sitemap.json",
+  "lazyCodeLoading": "requiredComponents",
+  "embeddedAppIdList": [
+    "wxebadf544ddae62cb",
+    "wxd45c635d754dbf59"
+  ],
+  "usingComponents": {}
 }

@@ -2,7 +2,8 @@
   "dependencies": {
     "crypto": "^1.0.1",
     "crypto-js": "^4.1.1",
-    "laf-client-sdk": "^0.8.13"
+    "laf-client-sdk": "^0.8.13",
+    "wx-canvas-2d": "^2.5.1"
   },
   "resolutions": {
     "bson": "4.6.4"

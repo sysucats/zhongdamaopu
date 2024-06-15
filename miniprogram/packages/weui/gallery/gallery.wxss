@@ -49,7 +49,6 @@
 }
 
 .weui-gallery__opr.like_button {
-    width: 450rpx;
     display: flex;
     flex-direction: column;
     align-items: center;

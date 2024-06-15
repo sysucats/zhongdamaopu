@@ -85,6 +85,15 @@
           </view>
         </view>
 
+        <view class='line' wx:if="{{item.rating}}">
+          <image mode='aspectFit' class='icon' src='/pages/public/images/card/card/star.png'></image>
+          <view class="stars">
+            <view class="one-star {{item.rating.avgScore >= j+1 ? '' : 'gray'}}"  wx:for="*****" wx:key="*this" wx:for-item="y" wx:for-index="j">
+              <image src="/pages/public/images/button/rating_star.svg" mode="aspectFill"/>
+            </view>
+            <view class="score">{{item.rating.avgScoreDisp || '0.0'}}</view>
+          </view>
+        </view>
         <view class='line' wx:if="{{item.birthday}}">
           <image mode='aspectFit' class='icon' src='/pages/public/images/card/card/birth.png'></image>
           <text>{{item.birthday}}</text>

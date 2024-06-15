@@ -15,6 +15,27 @@ Page({
     friendLinkImgLoaded:false,
     text_cfg: text_cfg,
 
+    // 卡片，不需要设计绘制卡片图，只需用放图标即可
+    cards: [
+      {
+        icon:"/pages/public/images/info/btn/user.svg", // 一个示例
+        label:"个人主页",
+        path:"/pages/info/userInfo/userInfo",
+      },{
+        icon:"/pages/public/images/info/btn/badge.svg",
+        label:"徽章口袋",
+        path:"/pages/info/badge/badge",
+      },{
+        icon:"/pages/public/images/info/btn/team.svg",
+        label:"开发团队",
+        path:"/pages/info/devTeam/devTeam",
+      },{
+        icon:"/pages/public/images/info/btn/reward.svg",
+        label:"投喂罐头",
+        path:"/pages/info/reward/reward",
+      }
+    ],
+
     nums: {},  // 菜单栏的各个数量
     // 菜单栏是否显示的条件
     showCond: {
@@ -25,89 +46,97 @@ Page({
     // 菜单列表
     menuList: [
       {
-        title: "常用工具",
-        show: "tools",
-        items: [
-          {
-            name: "个人信息修改",
-            path: "/pages/info/userInfo/modifyUserInfo/modifyUserInfo"
-          },
-          {
-            name: "清理缓存",
-            path: "clearCache"
-          }
-        ],
-      }, {
         title: "开发者工具（手机端不显示）",
         show: "dev",
         items: [
           {
             name: "部署指引",
             path: "/pages/debug/deployTip/deployTip",
+            icon:"icon-deploy"
           },
           {
             name: "生成秘钥",
             path: "/pages/debug/genKeys/genKeys",
+            icon:"icon-genkey"
           },],
       }, {
         title: "管理后台",
         show: "manager",
         items: [
           {
+            name: "操作手册",
+            path: "guide",
+            icon: "icon-description",
+            dot: "true"
+          },
+          {
             name: "照片审核",
             path: "/pages/manage/checkPhotos/checkPhotos",
-            num: "numChkPhotos"
+            num: "numChkPhotos",
+            icon: "icon-photo-o"
           },
           {
             name: "便利贴审核",
             path: "/pages/manage/checkComment/checkComment",
-            num: "numChkComments"
+            num: "numChkComments",
+            icon: "icon-smile-comment-o"
           },
           {
             name: "反馈处理",
             path: "/pages/manage/checkFeedbacks/checkFeedbacks",
-            num: "numFeedbacks"
+            num: "numFeedbacks",
+            icon: "icon-envelop-o"
           },
           {
-            name: "创建公告（猫抓板）",
-            path: "/pages/news/createNews/createNews"
+            name: "猫抓板公告",
+            path: "/pages/news/createNews/createNews",
+            icon: "icon-edit"
           },
           {
             name: "校区/区域/花色",
-            path: "/pages/manage/filters/filters"
+            path: "/pages/manage/filters/filters",
+            icon: "icon-location-o"
           },
           {
             name: "添加新猫",
-            path: "/pages/manage/addCat/addCat"
+            path: "/pages/manage/addCat/addCat",
+            icon: "icon-add-o"
           },
           {
             name: "猫猫关系",
-            path: "/pages/manage/addRelations/addRelations"
+            path: "/pages/manage/addRelations/addRelations",
+            icon: "icon-cluster-o"
           },
           {
             name: "人员管理",
-            path: "/pages/manage/managers/managers"
-          },
-          {
-            name: "徽章管理",
-            path: "/pages/manage/badgeDef/badgeDef"
-          },
-          {
-            name: "页面配置",
-            path: "/pages/manage/pageSettings/pageSettings"
-          },
-          {
-            name: "投喂记录",
-            path: "/pages/manage/rewards/rewards"
+            path: "/pages/manage/managers/managers",
+            icon: "icon-manager-o"
           },
           {
             name: "特邀用户",
-            path: "/pages/tools/inviteUser/inviteUser"
+            path: "/pages/tools/inviteUser/inviteUser",
+            icon: "icon-star-o"
+          },
+          {
+            name: "徽章管理",
+            path: "/pages/manage/badgeDef/badgeDef",
+            icon: "icon-medel-o"
+          },
+          {
+            name: "页面配置",
+            path: "/pages/manage/pageSettings/pageSettings",
+            icon: "icon-newspaper-o"
+          },
+          {
+            name: "投喂记录",
+            path: "/pages/manage/rewards/rewards",
+            icon: "icon-balance-o"
           },
           {
             name: "照片处理",
             path: "/pages/manage/imProcess/imProcess",
-            num: "numImProcess"
+            num: "numImProcess",
+            icon: "icon-todo-list-o"
           },
         ]
       }
@@ -158,16 +187,29 @@ Page({
     const allPhotoQf = { verified: true, photo_id: /^((?!\.heic$).)*$/i };
     // 所有便利贴数量
     const allCommentQf = { deleted: _.neq(true), needVerify: _.neq(true) };
+    // 所有领养
+    const adoptQf = { adopt: 1 };
+    // 所有绝育量
+    const sterilizedQf = { sterilized: true };
 
-    let [numAllCats, numAllPhotos, numAllComments] = await Promise.all([
+    let [numAllCats, numAllPhotos, numAllComments, numSterilized, numAdoptQf] = await Promise.all([
       db.collection('cat').where(allCatQf).count(),
       db.collection('photo').where(allPhotoQf).count(),
       db.collection('comment').where(allCommentQf).count(),
+      db.collection('cat').where(sterilizedQf).count(),
+      db.collection('cat').where(adoptQf).count(),
     ]);
+
+    // 计算绝育率
+    const adoptRate = (numAdoptQf.total / numAllCats.total * 100).toFixed(1);
+    const sterilizationRate = (numSterilized.total / numAllCats.total * 100).toFixed(1);
+
     this.setData({
       numAllCats: numAllCats.total,
       numAllPhotos: numAllPhotos.total,
       numAllComments: numAllComments.total,
+      sterilizationRate: sterilizationRate + '%',
+      adoptRate: adoptRate + '%',
     });
 
     if (!await isManagerAsync()) {
@@ -211,9 +253,14 @@ Page({
     if (!to) {
       return false;
     }
-    if (to == "clearCache") {
-      // 清理缓存
-      return this.clearCache();
+    const actionMap = {
+      clearCache: () => this.clearCache(),
+      guide: () => this.guide(e),
+      // 可扩展
+    };
+    const action = actionMap[to];
+    if (action) {
+      return action();
     }
     wx.navigateTo({
       url: to,
@@ -245,10 +292,18 @@ Page({
     })
   },
 
-  clearCache() {
-    wx.clearStorageSync();
-    wx.showToast({
-      title: '清理完成',
+  // 打开管理员手册tx文档
+  guide(e) {
+    wx.openEmbeddedMiniProgram({
+        appId: 'wxd45c635d754dbf59',
+        path: 'pages/detail/detail?url=https%3A%2F%2Fdocs.qq.com%2Fdoc%2FDSEl0aENOSEx5cmtE',// 此处链接需删除tx文档所复制路径中的.html
+        envVersion: 'release',
+        success(res) {
+          // 打开成功
+        },
+        fail: function (e) {
+          console.log(e)
+        }
     })
-  },
+    },
 })

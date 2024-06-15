@@ -7,8 +7,7 @@ import {
   getPageUserInfo,
   fillUserInfo,
   checkCanComment,
-  isManagerAsync,
-  toSetUserInfo
+  isManagerAsync
 } from "../../../utils/user";
 import {
   getAvatar
@@ -182,8 +181,15 @@ Page({
   },
 
   // 授权个人信息
-  async getUInfo() {
-    await toSetUserInfo();
+  getUInfo: function() {
+    this.setData({
+    showEdit: true
+    });
+  },
+  closeEdit: function() {
+    this.setData({
+    showEdit: false
+    });
   },
 
   // 发送便利贴
