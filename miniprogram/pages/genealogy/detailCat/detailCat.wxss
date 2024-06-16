@@ -356,6 +356,9 @@ swiper-item image {
   width: 100rpx;
   height: 100rpx;
 }
+.button .icon.gray{
+  filter: grayscale(100);
+}
 .button-text {
   width: 100%;
   font-size: 25rpx;
@@ -674,9 +677,14 @@ swiper-item image {
 /* 猫猫评分 */
 
 .one-rating {
+  width: 100%;
   display: flex;
   flex-direction: row;
   align-items: center;
+}
+
+.one-rating.detail {
+  border-bottom: 1rpx solid var(--color-gray-light);
 }
 
 .one-rating .title, one-rating-title {

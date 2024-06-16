@@ -85,11 +85,11 @@
       <view class='item long'>
         <view class='label'>
           <view class='label-block'></view>
-          {{text_cfg.detail_cat.label_rating}}
+          {{text_cfg.detail_cat.label_rating}} [共{{cat.rating.count || 0}}条]
           <view class="badge-all" bindtap="bindDetailRating">{{showDetailRating ? '折叠详情' : '展开详情'}}</view>
           <view class="badge-all" bindtap="bindRating">我要评分</view>
         </view>
-        <view class="one-rating">
+        <view class="one-rating {{showDetailRating ? 'detail': ''}}">
           <view class="title" wx:if="{{showDetailRating}}">综合：</view>
           <view class="stars" bind:tap="bindDetailRating">
             <view class="one-star {{cat.rating.avgScore >= j+1 ? '' : 'gray'}}" wx:for="*****" wx:key="*this" wx:for-index="j">
@@ -243,6 +243,10 @@
       <view class="button" bindtap='showPoster' >
         <image class="icon" src='/pages/public/images/button/shareMeowId.svg'></image>
         <view class="button-text">分享喵ID</view>
+      </view>
+      <view class="button" bindtap='followCat'>
+        <image class="icon {{followedCat ? 'gray' : ''}}" src='/pages/public/images/button/follow.svg'></image>
+        <view class="button-text">{{followedCat ? "取消关注" : "关注动态"}}</view>
       </view>
     </view>
  </popup>

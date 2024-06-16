@@ -627,8 +627,16 @@ Page({
     if (!user.userInfo) {
       user.userInfo = {};
     }
+    // 处理关注
+    let followedCat;
+    if (!user.followCats || !user.followCats.includes(this.data.cat._id)) {
+      followedCat = false;
+    } else {
+      followedCat = true;
+    }
     this.setData({
-      user: user
+      user,
+      followedCat
     });
   },
 
@@ -808,5 +816,36 @@ Page({
     if (posterComponent) {
       posterComponent.startDrawing();
     }
+  },
+
+  async followCat() {
+    if (this.jsData.updatingFollowCats) {
+      return;
+    }
+
+    // 如果关注过多，禁止再继续新增关注
+    let { followCats } = this.data.user;
+    if (followCats && followCats.length > 100) {
+      wx.showModal({
+        title: '关注已满',
+        content: '总关注数最大为100哟',
+      });
+      return false;
+    }
+
+    this.jsData.updatingFollowCats = true;
+
+    let { followedCat } = this.data;
+    let res = await api.updateFollowCats({
+      updateCmd: followedCat ? "del" : "add",
+      catId: this.data.cat._id,
+    })
+    await this.loadUser();
+
+    wx.showToast({
+      title: `${followedCat ? "取关" : "关注"}${res.result ? "成功": "失败"}`,
+      icon: res.result ? "success": "error"
+    });
+    this.jsData.updatingFollowCats = false;
   }
 })

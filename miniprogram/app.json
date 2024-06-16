@@ -42,7 +42,8 @@
     "pages/manage/badgeCode/badgeCode",
     "pages/manage/badgeCode/addBadgeCode/addBadgeCode",
     "pages/info/badge/badgeHistory/badgeHistory",
-    "pages/genealogy/detailCat/ratingDetail/ratingDetail"
+    "pages/genealogy/detailCat/ratingDetail/ratingDetail",
+    "pages/followFeed/followFeed"
   ],
   "tabBar": {
     "custom": true,

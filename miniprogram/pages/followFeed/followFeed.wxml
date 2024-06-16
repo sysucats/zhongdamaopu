@@ -1,0 +1,4 @@
+<!--pages/followFeed/followFeed.wxml-->
+<text>pages/followFeed/followFeed.wxml</text>
+
+<button bind:tap="loadMoreFeed">Load More</button>
