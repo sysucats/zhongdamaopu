@@ -9,8 +9,13 @@ import {
 import {
   checkCanUpload,
   checkCanComment,
+  fillUserInfo,
   getUser
 } from "../../utils/user";
+import {
+  getCatItemMulti,
+  getAvatar
+} from "../../utils/cat";
 
 // 每次触底加载的数量
 const loadCount = 6;
@@ -130,6 +135,16 @@ Page({
       .skip(loadedCount.photo)
       .limit(loadCount+1)
       .get()).data;
+      // 填充猫和用户数据
+      var [cat_res] = await Promise.all([
+        getCatItemMulti(res.map(p => p.cat_id)),
+        await fillUserInfo(res, "_openid", "userInfo"),
+      ]);
+      for (let i = 0; i < res.length; i++) {
+        var p = res[i];
+        p.cat = cat_res[i];
+        p.cat.avatar = await getAvatar(p.cat._id, p.cat.photo_count_best)
+      }
       // 推入waiting列表
       waitingList.photo.push(...res);
       loadedCount.photo += res.length;
@@ -141,6 +156,19 @@ Page({
       .skip(loadedCount.comment)
       .limit(loadCount+1)
       .get()).data;
+      // 填充用户数据
+      await fillUserInfo(res, "user_openid", "userInfo");
+      // 填充猫和用户数据
+      var [cat_res] = await Promise.all([
+        getCatItemMulti(res.map(p => p.cat_id)),
+        await fillUserInfo(res, "user_openid", "userInfo"),
+      ]);
+      for (let i = 0; i < res.length; i++) {
+        var p = res[i];
+        p.cat = cat_res[i];
+        p.cat.avatar = await getAvatar(p.cat._id, p.cat.photo_count_best)
+      }
+
       waitingList.comment.push(...res);
       loadedCount.comment += res.length;
     }
