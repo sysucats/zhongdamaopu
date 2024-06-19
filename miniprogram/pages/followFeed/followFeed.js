@@ -118,57 +118,46 @@ Page({
     this.setData({followCats});
   },
 
+  async _loadData(coll) {
+    let {loadedCount} = this.jsData;
+    let {followCats} = this.data;
+    const db = await cloud.databaseAsync();
+    const _ = db.command;
+    let res = (await db.collection(coll)
+    .where({ cat_id: _.in(followCats) })
+    .orderBy('mdate', 'desc')
+    .skip(loadedCount[coll])
+    .limit(loadCount+1)
+    .get()).data;
+    // 填充猫和用户数据
+    let openidField = coll === 'photo' ? '_openid' : 'user_openid';
+    var [cat_res] = await Promise.all([
+      getCatItemMulti(res.map(p => p.cat_id)),
+      await fillUserInfo(res, openidField, "userInfo"),
+    ]);
+    for (let i = 0; i < res.length; i++) {
+      var p = res[i];
+      p.cat = cat_res[i];
+      p.cat.avatar = await getAvatar(p.cat._id, p.cat.photo_count_best)
+    }
+    return res;
+  },
+
   // 加载更多的猫猫照片和留言
   async loadMoreFeed() {
     // 目标效果：每次展示6条新照片或留言，每次新插入的顺序是正确的
     // 1. 加载库存未展示的数据，大于等于6+1条
     // 2. 归并排序，插入到展示队列里，补充信息
     let {waitingList, loadedCount} = this.jsData;
-    let {followCats} = this.data;
     
-    const db = await cloud.databaseAsync();
-    const _ = db.command;
     if (waitingList.photo.length <= loadCount) {
-      let res = (await db.collection("photo")
-      .where({ cat_id: _.in(followCats) })
-      .orderBy('mdate', 'desc')
-      .skip(loadedCount.photo)
-      .limit(loadCount+1)
-      .get()).data;
-      // 填充猫和用户数据
-      var [cat_res] = await Promise.all([
-        getCatItemMulti(res.map(p => p.cat_id)),
-        await fillUserInfo(res, "_openid", "userInfo"),
-      ]);
-      for (let i = 0; i < res.length; i++) {
-        var p = res[i];
-        p.cat = cat_res[i];
-        p.cat.avatar = await getAvatar(p.cat._id, p.cat.photo_count_best)
-      }
+      let res = await this._loadData("photo");
       // 推入waiting列表
       waitingList.photo.push(...res);
       loadedCount.photo += res.length;
     }
     if (waitingList.comment.length <= loadCount) {
-      let res = (await db.collection("comment")
-      .where({ cat_id: _.in(followCats) })
-      .orderBy('mdate', 'desc')
-      .skip(loadedCount.comment)
-      .limit(loadCount+1)
-      .get()).data;
-      // 填充用户数据
-      await fillUserInfo(res, "user_openid", "userInfo");
-      // 填充猫和用户数据
-      var [cat_res] = await Promise.all([
-        getCatItemMulti(res.map(p => p.cat_id)),
-        await fillUserInfo(res, "user_openid", "userInfo"),
-      ]);
-      for (let i = 0; i < res.length; i++) {
-        var p = res[i];
-        p.cat = cat_res[i];
-        p.cat.avatar = await getAvatar(p.cat._id, p.cat.photo_count_best)
-      }
-
+      let res = await this._loadData("comment");
       waitingList.comment.push(...res);
       loadedCount.comment += res.length;
     }
