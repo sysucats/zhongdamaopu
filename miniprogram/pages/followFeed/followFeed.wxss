@@ -1,1 +1,81 @@
 /* pages/followFeed/followFeed.wxss */
+@import "/pages/public/wxss/hFilter.wxss";
+@import '../genealogy/commentBoard/commentBoard.wxss';
+
+
+#comment-list {
+  width: 750rpx;
+  height: 100%;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-evenly;
+}
+
+/* 照片卡 */
+.photo {
+  width: 240rpx;
+  background-color: white;
+  border-radius: 20rpx;
+  overflow: hidden;
+  margin: 10rpx 0;
+}
+
+.photo-img {
+  width: 240rpx;
+  height: 240rpx;
+}
+
+.photo .datetime {
+  width: 100%;
+  text-align: center;
+  /* background-color: var(--color-black-transparent); */
+  /* height: 30rpx;
+  line-height: 30rpx; */
+}
+
+.cat-info {
+  height: 70rpx;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.cat-info.right {
+  justify-content: flex-end;
+}
+
+.cat-avatar {
+  margin-left: 20rpx;
+  width: 40rpx;
+  height: 40rpx;
+}
+.photo-img image, .cat-avatar image {
+  width: 100%;
+  height: 100%;
+}
+.cat-info .cat-name {
+  font-size: 24rpx;
+  color: var(--color-black-light);
+  margin-left: 10rpx;
+}
+
+/* 未关注提醒 */
+.noFollow {
+  width: 100%;
+  text-align: center;
+  color: var(--color-gray-max);
+}
+
+/* 底部加载 */
+.loading image {
+  width: 165.9rpx;
+  height: 90.3rpx;
+  margin: 10rpx 292rpx;
+}
+.loadnomore image {
+  width: 750rpx;
+  height: 100rpx;
+  margin: 10rpx 0;
+}
+

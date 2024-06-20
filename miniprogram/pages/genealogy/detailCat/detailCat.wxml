@@ -138,7 +138,7 @@
           </view>
 
           <view class="relation-block add" hover-class="tap" bindtap="showGiveBadge">
-            <image class="badge-item-avatar" src="/pages/public/images/button/addBadge.png" mode="aspectFit"></image>
+            <image class="badge-item-avatar" src="/pages/public/images/button/plus2.svg" mode="aspectFit"></image>
             <view class="badge-item-count hidden">+</view>
             <view class="badge-item-name">赠予徽章</view>
           </view>

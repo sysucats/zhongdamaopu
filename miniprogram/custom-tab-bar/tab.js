@@ -5,11 +5,11 @@ module.exports = {
     "selectedIconPath": "/pages/public/images/tabs/active/cat.png",
     "text": "猫谱"
   },
-  recognize: {
-    "pagePath": "pages/recognize/recognize",
+  followFeed: {
+    "pagePath": "pages/followFeed/followFeed",
     "iconPath": "/pages/public/images/tabs/default/recog.png",
     "selectedIconPath": "/pages/public/images/tabs/active/recog.png",
-    "text": "识猫"
+    "text": "喵友圈"
   },
   news: {
     "pagePath": "pages/news/news",

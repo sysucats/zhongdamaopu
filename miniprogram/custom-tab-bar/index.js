@@ -96,6 +96,7 @@ Component({
   methods: {
     switchTab(e) {
       const {path} = e.currentTarget.dataset;
+      console.log(path)
       if (path == this.data.activePath) {
         return;
       }
