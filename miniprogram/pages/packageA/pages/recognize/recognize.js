@@ -1,20 +1,20 @@
 import {
   text as text_cfg,
   cat_status_adopt
-} from "../../config";
+} from "../../../../config";
 import {
   hex_sha256,
   randomInt
-} from "../../utils/utils";
+} from "../../../../utils/utils";
 import {
   loadFilter,
   getGlobalSettings
-} from "../../utils/page";
+} from "../../../../utils/page";
 import {
   cloud
-} from "../../utils/cloudAccess";
+} from "../../../../utils/cloudAccess";
 
-import drawUtils from "../../utils/draw";
+import drawUtils from "../../../../utils/draw";
 
 const share_text = text_cfg.app_name + ' - ' + text_cfg.recognize.share_tip;
 

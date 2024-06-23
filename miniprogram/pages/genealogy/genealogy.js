@@ -458,9 +458,8 @@ Page({
 
   // 点击识猫按钮
   clickRecognize(e) {
-    console.log("?");
     wx.navigateTo({
-      url: '/pages/recognize/recognize',
+      url: '/pages/packageA/pages/recognize/recognize',
     });
   },
 

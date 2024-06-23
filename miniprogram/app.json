@@ -18,7 +18,6 @@
     "pages/manage/checkFeedbacks/checkFeedbacks",
     "pages/manage/replyFeedback/replyFeedback",
     "pages/manage/rewards/rewards",
-    "pages/recognize/recognize",
     "pages/genealogy/commentBoard/commentBoard",
     "pages/debug/deployTip/deployTip",
     "pages/news/news",
@@ -45,6 +44,15 @@
     "pages/genealogy/detailCat/ratingDetail/ratingDetail",
     "pages/followFeed/followFeed",
     "pages/info/myFollowCats/myFollowCats"
+  ],
+  
+  "subPackages": [
+    {
+      "root": "pages/packageA",
+      "pages": [
+        "pages/recognize/recognize"
+      ]
+    }
   ],
   "tabBar": {
     "custom": true,
