@@ -8,7 +8,7 @@
         <image src="{{item.pic}}" mode='aspectFill'></image>
       </view>
       <view class="datetime">{{item.datetime}}</view>
-      <view class="cat-info" bind:tap="toCat" data-cat_id='{{item._id}}'>
+      <view class="cat-info" bind:tap="toCat" data-cat_id='{{item.cat._id}}'>
         <view class="cat-avatar">
           <image class="avatar" src="{{item.cat.avatar.photo_compressed || item.cat.avatar.photo_id}}" mode='aspectFill'></image>
         </view>
@@ -37,7 +37,7 @@
 
         <view class="datetime">{{item.datetime}}</view>
 
-        <view class="cat-info right" bind:tap="toCat" data-cat_id='{{item._id}}'>
+        <view class="cat-info right" bind:tap="toCat" data-cat_id='{{item.cat._id}}'>
           <view class="username">
             To:
           </view>

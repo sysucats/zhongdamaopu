@@ -17,7 +17,7 @@ import {
 } from "../../utils/page";
 
 // 每次触底加载的数量
-const loadCount = 6;
+const loadCount = 13;
 
 // 正则表达式：不以 HEIC 为文件后缀的字符串
 const no_heic = /^((?!\.heic$).)*$/i;
@@ -136,7 +136,6 @@ Page({
       whereField = {
         cat_id: _.in(followCats),
         verified: true,
-        best: true,
         photo_id: no_heic
       }
     } else if (coll === 'comment') {
