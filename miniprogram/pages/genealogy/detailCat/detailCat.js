@@ -35,6 +35,8 @@ import { loadUserBadge, loadBadgeDefMap, loadCatBadge, mergeAndSortBadges, } fro
 
 const no_heic = /^((?!\.heic$).)*$/i; // 正则表达式：不以 HEIC 为文件后缀的字符串
 
+const max_follow_cats = 30; // 最大的猫猫关注数量
+
 // 获取照片的排序功能
 const photoOrder = [{
     key: 'shooting_date',
@@ -825,10 +827,10 @@ Page({
 
     // 如果关注过多，禁止再继续新增关注
     let { followCats } = this.data.user;
-    if (followCats && followCats.length > 100) {
+    if (followCats && followCats.length > max_follow_cats) {
       wx.showModal({
         title: '关注已满',
-        content: '总关注数最大为100哟',
+        content: `最多关注${max_follow_cats}只猫猫，请到关于页-个人中心管理已关注的猫猫。`,
       });
       return false;
     }

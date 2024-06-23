@@ -8,8 +8,7 @@ import {
 } from "../../utils/utils";
 import {
   loadFilter,
-  getGlobalSettings,
-  showTab
+  getGlobalSettings
 } from "../../utils/page";
 import {
   cloud
@@ -79,8 +78,6 @@ Page({
   },
 
   async onShow() {
-    // 切换自定义tab
-    showTab(this);
     if (!this.jsData.interfaceURL || !this.jsData.secretKey) {
       console.log('__wxConfig.envVersion: ', __wxConfig.envVersion);
       var settings = await getGlobalSettings(__wxConfig.envVersion === 'release' ? 'recognize' : 'recognize_test');

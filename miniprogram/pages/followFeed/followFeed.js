@@ -1,14 +1,10 @@
 import { cloud } from "../../utils/cloudAccess";
 import {
-  shareTo,
-  getCurrentPath,
   randomInt,
   formatDate,
   deepcopy
 } from "../../utils/utils";
 import {
-  checkCanUpload,
-  checkCanComment,
   fillUserInfo,
   getUser
 } from "../../utils/user";
@@ -16,6 +12,9 @@ import {
   getCatItemMulti,
   getAvatar
 } from "../../utils/cat";
+import {
+  showTab
+} from "../../utils/page";
 
 // 每次触底加载的数量
 const loadCount = 6;
@@ -59,7 +58,8 @@ Page({
    * 生命周期函数--监听页面显示
    */
   onShow() {
-
+    // 切换自定义tab
+    showTab(this);
   },
 
   /**

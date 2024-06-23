@@ -256,9 +256,10 @@ scroll-view {
   box-sizing: border-box;
 
   display: flex;
-  justify-content: flex-start;
+  justify-content: space-around;
   align-items: center;
   flex-wrap: nowrap;
+
 }
 
 #search.shadow {
@@ -266,11 +267,10 @@ scroll-view {
 }
 
 #search .input-block {
-  width: 87%;
+  width: 75%;
   display: flex;
   align-items: center;
   flex-wrap: nowrap;
-  margin-left: 25rpx;
 }
 
 #search .input-icon {
@@ -303,13 +303,18 @@ scroll-view {
 }
 
 #search .filter-btn {
-  width: 10%;
+  width: 7%;
   height: 55%;
-  padding: 10rpx 0 10rpx 20rpx;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  font-size: 16rpx;
+  text-align: center;
 }
 
 .filter-btn image {
-  width: 70%;
+  width: 100%;
   height: 100%;
 }
 

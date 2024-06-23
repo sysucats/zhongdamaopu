@@ -31,6 +31,11 @@ Page({
             btnAble: true,
             btnType: "share",
           }, {
+            label:"我关注的猫猫",
+            icon:"icon-star-o",
+            action:"/pages/info/myFollowCats/myFollowCats",
+            btnAble: false,
+          }, {
             label:"信息反馈",
             icon:"icon-chat-o",
             action:"/pages/info/feedback/feedback",

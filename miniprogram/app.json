@@ -43,7 +43,8 @@
     "pages/manage/badgeCode/addBadgeCode/addBadgeCode",
     "pages/info/badge/badgeHistory/badgeHistory",
     "pages/genealogy/detailCat/ratingDetail/ratingDetail",
-    "pages/followFeed/followFeed"
+    "pages/followFeed/followFeed",
+    "pages/info/myFollowCats/myFollowCats"
   ],
   "tabBar": {
     "custom": true,

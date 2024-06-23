@@ -7,10 +7,16 @@
     </view>
     <input class='name' placeholder='{{text_cfg.genealogy.search_tip}}' placeholder-class='searchPlaceholderStyle' value='{{filters_input}}' maxlength='20' confirm-type='search' bindinput='fSearchInput' bindconfirm='fSearch'></input>
   </view>
+
+  <view class='filter-btn' bind:tap='clickRecognize'>
+    <image mode='aspectFit' src="/pages/public/images/filter/recognize.svg"></image>
+    <view>识别</view>
+  </view>
   
-  <view class='filter-btn' bindtap='fToggle'>
+  <view class='filter-btn' bind:tap='fToggle'>
     <image wx:if='{{filters_active}}' mode='aspectFit' src="/pages/public/images/filter/filter_y.png"></image>
     <image wx:else mode='aspectFit' src="/pages/public/images/filter/filter.png"></image>
+    <view>筛选</view>
   </view>
 </view>
 

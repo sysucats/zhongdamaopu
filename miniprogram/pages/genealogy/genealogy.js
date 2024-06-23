@@ -456,6 +456,14 @@ Page({
     });
   },
 
+  // 点击识猫按钮
+  clickRecognize(e) {
+    console.log("?");
+    wx.navigateTo({
+      url: '/pages/recognize/recognize',
+    });
+  },
+
   // 点击猫猫卡片
   clickCatCard(e, isCatId) {
     const cat_id = isCatId ? e : e.currentTarget.dataset.cat_id;
