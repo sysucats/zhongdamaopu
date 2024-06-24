@@ -61,7 +61,7 @@
   </block>
 
   <!-- 没有关注 -->
-  <view class="noFollow" wx:if="{{followCats.length === 0}}">
+  <view class="noFollow" wx:if="{{!followCats || followCats.length === 0}}">
     <text>没有关注任何猫猫\n快到猫猫详情页去添加关注吧~</text>
   </view>
 
