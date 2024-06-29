@@ -1,5 +1,3 @@
-<!--pages/info/badge/badgeHistory/badgeHistory.wxml-->
-
 <view class="bd-block">
   <view class="bd-title">赠予记录</view>
   <view class="bd-item" wx:for="{{badges}}" wx:key="_id">

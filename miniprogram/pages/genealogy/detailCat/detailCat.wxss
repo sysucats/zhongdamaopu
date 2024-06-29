@@ -85,31 +85,30 @@ swiper-item image {
   width: 34rpx;
 }
 
-.info .popularity {
-  margin-left: auto;
+.info .count {
+  margin-left: 5rpx;
   order: 2;
-  display: inline;
+  display: inline-flex;
+  align-items: center;
   font-size: 22rpx;
   letter-spacing: 1rpx;
   color: var(--color-black-light);
 }
-.popularity image {
+.count image {
   height: 20rpx;
   width: 35rpx;
+  margin: 0 3rpx 0 5rpx;
 }
 
-.info .comment {
-  margin-left: 10rpx;
-  order: 2;
-  display: inline;
-  font-size: 22rpx;
-  letter-spacing: 1rpx;
-  color: var(--color-black-light);
-}
 .comment image {
   height: 27rpx;
   width: 27rpx;
 }
+
+.info .count.first {
+  margin-left: auto;
+}
+
 
 .tags {
   display: flex;
@@ -135,7 +134,7 @@ swiper-item image {
 
 .tags .mpcode {
   height: 40rpx;
-  margin-left: 20rpx;
+  margin-left: auto;
 }
 .mpcode image {
   height: 40rpx;
@@ -179,6 +178,9 @@ swiper-item image {
   height: 20rpx;
   background-color: var(--color-primary);
   display: inline-block;
+}
+.details .small {
+  font-size: 16rpx;
 }
 
 .details .item .label {

@@ -10,6 +10,14 @@ Page({
     text_cfg: text_cfg,
     github_link: "https://github.com/sysucats/zhongdamaopu",
     update_log: [{
+      version: "v1.14.1",
+      content: [
+        "更新喵友圈UI",
+        "更新关注数",
+        "代码分包优化",
+      ],
+      time: "2024/06/29"
+    }, {
       version: "v1.14.0",
       content: [
         "新增喵ID海报生成功能（xuann大佬提供）",

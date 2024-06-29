@@ -45,6 +45,9 @@ Page({
     await this.loadUser();
     await this.loadFollowCats();
     await this.loadMoreFeed();
+    this.setData({
+      refreshing: false
+    });
   },
 
   /**
@@ -79,8 +82,8 @@ Page({
   /**
    * 页面相关事件处理函数--监听用户下拉动作
    */
-  onPullDownRefresh() {
-
+  async onPullDownRefresh() {
+    await this.onLoad();
   },
 
   /**
@@ -120,7 +123,16 @@ Page({
     .get()).data[0].followCats;
 
     console.log(followCats);
-    this.setData({followCats});
+    // 重置一下，便于下拉刷新用
+    this.setData({followCats, feed: []});
+    this.jsData.waitingList = {
+      photo: [],
+      comment: [],
+    };
+    this.jsData.loadedCount = {
+      photo: 0,
+      comment: 0,
+    };
   },
 
   async _loadData(coll) {
@@ -161,7 +173,7 @@ Page({
       var p = res[i];
       p.cat = cat_res[i];
       p.cat.avatar = await getAvatar(p.cat._id, p.cat.photo_count_best)
-      p.datetime = formatDate(new Date(p.create_date), "yyyy-MM-dd hh:mm:ss")
+      p.datetime = formatDate(new Date(p.create_date), "yyyy-MM-dd hh:mm")
       if (coll == 'comment') {
         // 便签旋转
         p.rotate = randomInt(-5, 5);
@@ -225,22 +237,23 @@ Page({
 
     let res = [];
     
+    // 按时间归并排序
     while (res.length < loadCount && (waitingList.photo.length > 1 || waitingList.comment.length > 1)) {
       if (waitingList.photo.length <= 1) {
-        res.push( waitingList.comment.shift());
+        res.push(waitingList.comment.shift());
         res[res.length-1].dtype = 'comment';
         continue;
       }
       if (waitingList.comment.length <= 1) {
-        res.push( waitingList.photo.shift());
+        res.push(waitingList.photo.shift());
         res[res.length-1].dtype = 'photo';
         continue;
       }
       if (new Date(waitingList.photo[0].create_date) > new Date(waitingList.comment[0].create_date)) {
-        res.push( waitingList.photo.shift());
+        res.push(waitingList.photo.shift());
         res[res.length-1].dtype = 'photo';
       } else {
-        res.push( waitingList.comment.shift());
+        res.push(waitingList.comment.shift());
         res[res.length-1].dtype = 'comment';
       }
     }
@@ -248,7 +261,19 @@ Page({
     console.log(res);
 
     let { feed } = this.data;
-    feed.push(...res);
+    for (let i = 0; i < res.length; i++) {
+      const item = res[i];
+      if (feed.length === 0 || item.dtype != feed[feed.length-1].dtype || item.cat._id != feed[feed.length-1].cat._id) {
+        feed.push({
+          dtype: item.dtype,
+          cat: item.cat,
+          items: [item]
+        });
+      } else {
+        feed[feed.length-1].items.push(item);
+      }
+    }
+    // feed.push(...res);
     this.setData({feed});
   },
 

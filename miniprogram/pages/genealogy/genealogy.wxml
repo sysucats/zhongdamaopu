@@ -70,7 +70,7 @@
       <view class='image {{item.to_star? "to_star": ""}}'>
         <image bindload="bindImageLoaded" mode='aspectFill' src='{{item.photo.photo_compressed || item.photo.photo_id}}' data-index="{{index}}"></image>
         <view class='image-title' wx:if='{{!item.photo_count_best || item.photo_count_best === 0}}'>{{text_cfg.genealogy.no_photo_tip}}</view>
-        <view class='image-title' wx:else>{{item.photo.photo_id? (text_cfg.genealogy.photo_by_tip + (item.photo.photographer ||(item.photo.userInfo? item.photo.userInfo.nickName: text_cfg.genealogy.photo_by_unknow))): text_cfg.genealogy.photo_loading_tip}}</view>
+        <view class='image-title' wx:else>{{item.photo.photo_id? (text_cfg.genealogy.photo_by_tip + (item.photo.photographer ||(item.photo.userInfo? item.photo.userInfo.nickName: text_cfg.genealogy.photo_by_unknow_tip))): text_cfg.genealogy.photo_loading_tip}}</view>
       </view>
       <view class='info' hover-class="hoverInfo">
         <view class='line'>

@@ -24,7 +24,7 @@ Page({
       },{
         icon:"/pages/public/images/info/btn/badge.svg",
         label:"徽章口袋",
-        path:"/pages/info/badge/badge",
+        path:"/pages/packageA/pages/info/badge/badge",
       },{
         icon:"/pages/public/images/info/btn/team.svg",
         label:"开发团队",

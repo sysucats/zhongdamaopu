@@ -1,22 +1,22 @@
 import {
   cloud
-} from "../../../utils/cloudAccess";
+} from "../../../../../utils/cloudAccess";
 import {
   getUser
-} from "../../../utils/user";
+} from "../../../../../utils/user";
 import {
   deepcopy,
   sleep,
-} from "../../../utils/utils";
+} from "../../../../../utils/utils";
 import {
   loadUserBadge,
   loadBadgeDefMap
-} from "../../../utils/badge";
+} from "../../../../../utils/badge";
 import {
   getGlobalSettings
-} from "../../../utils/page";
+} from "../../../../../utils/page";
 
-import api from "../../../utils/cloudApi";
+import api from "../../../../../utils/cloudApi";
 
 Page({
 
@@ -390,7 +390,7 @@ Page({
 
   toHistory() {
     wx.navigateTo({
-      url: '/pages/info/badge/badgeHistory/badgeHistory',
+      url: '/pages/packageA/pages/info/badge/badgeHistory/badgeHistory',
     })
   },
   

@@ -189,7 +189,7 @@ Component({
             const photoPopWeight = 10;
             const popularityScore = cat.popularity + (cat.photo_count_total ? cat.photo_count_total * photoPopWeight : 0);
             
-            const photographer = text_cfg.genealogy.photo_by_tip + (coverImg.photographer || (coverImg.userInfo ? coverImg.userInfo.nickName : text_cfg.genealogy.photo_by_unknow));
+            const photographer = text_cfg.genealogy.photo_by_tip + (coverImg.photographer || (coverImg.userInfo ? coverImg.userInfo.nickName : text_cfg.genealogy.photo_by_unknow_tip));
             
             // 有关尺寸
             const coverHeight = 600;    // 封面高度

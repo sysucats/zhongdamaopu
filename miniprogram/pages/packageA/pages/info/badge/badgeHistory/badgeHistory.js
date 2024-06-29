@@ -1,20 +1,20 @@
 import {
   cloud
-} from "../../../../utils/cloudAccess";
+} from "../../../../../../utils/cloudAccess";
 import {
   getUser
-} from "../../../../utils/user";
+} from "../../../../../../utils/user";
 import {
   deepcopy,
   formatDate,
-} from "../../../../utils/utils";
+} from "../../../../../../utils/utils";
 import {
   loadBadgeDefMap
-} from "../../../../utils/badge";
+} from "../../../../../../utils/badge";
 import {
   getCatItemMulti,
   getAvatar
-} from "../../../../utils/cat";
+} from "../../../../../../utils/cat";
 
 Page({
 
