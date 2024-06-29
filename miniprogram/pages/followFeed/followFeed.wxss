@@ -15,12 +15,14 @@
 /* 一组照片 */
 .photo-block, .comment-block {
   width: 100%;
-  margin: 30rpx;
+  margin: 15rpx 30rpx 0rpx 30rpx;
   box-sizing: border-box;
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
   justify-content: space-evenly;
+  padding-bottom: 15rpx;
+  border-bottom: 1rpx solid var(--color-gray-normal);
 }
 
 .cat-info {
@@ -29,7 +31,6 @@
   display: flex;
   flex-direction: row;
   align-items: center;
-  border-bottom: 1rpx solid var(--color-gray-dark);
   margin-bottom: 10rpx;
 }
 
