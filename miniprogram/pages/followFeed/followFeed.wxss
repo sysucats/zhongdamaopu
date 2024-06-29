@@ -48,7 +48,7 @@
   height: 100%;
 }
 .cat-info .cat-name {
-  font-size: 24rpx;
+  font-size: 28rpx;
   color: var(--color-black-light);
   margin-left: 10rpx;
   display: flex;
@@ -118,11 +118,15 @@
 .loading image {
   width: 165.9rpx;
   height: 90.3rpx;
-  margin: 10rpx 292rpx;
+  margin: 10rpx 292rpx 200rpx 292rpx;
 }
 .loadnomore image {
   width: 750rpx;
   height: 100rpx;
-  margin: 10rpx 0;
+  margin: 10rpx 0 200rpx 0;
 }
-
+.loadnomore {
+  font-size: 24rpx;
+  text-align: center;
+  color: var(--color-gray-dark);
+}

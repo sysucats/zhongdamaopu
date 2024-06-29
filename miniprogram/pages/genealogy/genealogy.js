@@ -140,11 +140,13 @@ Page({
       })
       return
     }
-    console.log("get setting");
     // 先把设置拿到
     this.jsData.catsStep = settings['catsStep'] || 1;
     // 启动加载
-    this.loadFilters(fcampus);
+    await Promise.all([
+      this.loadRecognize(),
+      this.loadFilters(fcampus),
+    ]);
 
     this.setData({
       main_lower_threshold: settings['main_lower_threshold'],
@@ -167,6 +169,13 @@ Page({
 
   onShow: function () {
     showTab(this);
+  },
+
+  loadRecognize: async function () {
+    var settings = await getGlobalSettings(__wxConfig.envVersion === 'release' ? 'recognize' : 'recognize_test');
+    this.setData({
+      showRecognize: settings.interfaceURL && !settings.interfaceURL.includes("https://your.domain.com")
+    })
   },
 
   loadFilters: async function (fcampus) {

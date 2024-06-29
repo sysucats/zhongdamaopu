@@ -70,8 +70,6 @@
     </view>
     
   </view><!-- 留言 -->
-
-
   </block>
 
   <!-- 没有关注 -->
@@ -80,16 +78,15 @@
     <image class="icon" src='/pages/public/images/button/plus.svg'></image>
     <image class="icon" src='/pages/public/images/button/follow.svg'></image>
     <view>右下角菜单 → 关注猫猫</view>
-    <view>关注后，在本页面下拉获取最新动态</view>
+    <view>关注后，在本页面下拉获取近30天的动态</view>
   </view>
 
   <view class='loadnomore' wx:if='{{loadnomore && followCats.length > 0}}'>
+    <view><text>近30天内没有新的动态咯</text></view>
     <image src='/pages/public/images/system/nomore.png'></image>
   </view>
   <view class='loading' wx:if='{{!loadnomore && followCats.length > 0}}'>
     <image src='/pages/public/images/system/loading.gif'></image>
   </view>
 
-  <!-- 底tab占位 -->
-  <view style="height: 50px;"></view>
 </scroll-view>

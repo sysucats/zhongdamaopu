@@ -184,12 +184,12 @@ scroll-view {
 .loading image {
   width: 165.9rpx;
   height: 90.3rpx;
-  margin: 10rpx 292rpx;
+  margin: 10rpx 292rpx 200rpx 292rpx;
 }
 .loadnomore image {
   width: 750rpx;
   height: 100rpx;
-  margin: 10rpx 0;
+  margin: 10rpx 0 200rpx 0;
 }
 
 /* 新图标签 */

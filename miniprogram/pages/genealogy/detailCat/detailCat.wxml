@@ -31,11 +31,11 @@
         <image src='/pages/public/images/card/card/pop.png'></image>
         <text> {{cat.popularity + (cat.photo_count_total? cat.photo_count_total * photoPopWeight: 0)}}</text>
       </view>
-      <view class='count comment' bindtap="toComment" wx:if="{{cat.comment_count != undefined}}">
+      <view class='count comment' bindtap="showPopTip"  data-tip="便利贴数">
         <image src='/pages/public/images/card/card/comment.png'></image>
         <text> {{cat.comment_count || 0}}</text>
       </view>
-      <view class='count comment' bindtap="showPopTip" data-tip="关注粉丝数">
+      <view class='count comment' bindtap="showPopTip" data-tip="被关注数">
         <image src='/pages/public/images/card/card/follow.png'></image>
         <text> {{cat.follow_count || 0}}</text>
       </view>

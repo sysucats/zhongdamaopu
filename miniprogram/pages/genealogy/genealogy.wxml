@@ -8,7 +8,7 @@
     <input class='name' placeholder='{{text_cfg.genealogy.search_tip}}' placeholder-class='searchPlaceholderStyle' value='{{filters_input}}' maxlength='20' confirm-type='search' bindinput='fSearchInput' bindconfirm='fSearch'></input>
   </view>
 
-  <view class='filter-btn' bind:tap='clickRecognize'>
+  <view class='filter-btn' bind:tap='clickRecognize' wx:if="{{showRecognize}}">
     <image mode='aspectFit' src="/pages/public/images/filter/recognize.svg"></image>
     <view>识别</view>
   </view>
