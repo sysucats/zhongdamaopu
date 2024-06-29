@@ -24,7 +24,12 @@ async function uploadImg(imgObj, imgName) {
     useSSL: true,
     accessKey: OSS_SECRET_ID,
     secretKey: OSS_SECRET_KEY,
+    pathStyle: false,
   });
+
+  if (OSS_ENDPOINT == "oss.laf.run") {
+    client.pathStyle = true
+  }
 
   let ossPath = `https://${OSS_ENDPOINT}:${OSS_PORT}/${OSS_BUCKET}/`
   if (OSS_SECRET_ID) {
@@ -46,7 +51,7 @@ export default async function (ctx: FunctionContext) {
 
   if (body && body.deploy_test === true) {
     // 进行部署检查
-    return "v1.1";
+    return "v1.2";
   }
 
   // 数据库操作
