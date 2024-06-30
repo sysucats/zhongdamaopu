@@ -10,7 +10,7 @@
 <!-- 压缩图片用 -->
 <canvas style="width: 1000px; height: 1000px; border: 1px solid red; left: 100000px; position: fixed;" id="canvasForCompress" type="2d"></canvas>
 
-<image class="bgImg" src="../public/images/recognize/background.svg"></image>
+<image class="bgImg" src="/pages/packageA/pages/images/recognize/background.svg"></image>
 
 <view id="positionWrapper" class="{{catList.length ? 'flowUp' : ''}}">
 
@@ -31,22 +31,22 @@
 
       <!-- 重新选图按钮 -->
       <view wx:if="{{photoPath}}" id="resetButton" bindtap="reset">
-        <image src="/pages/public/images/recognize/back.png"></image>
+        <image src="/pages/packageA/pages/images/recognize/back.png"></image>
         {{text_cfg.recognize.reselect_btn}}
       </view>
     </view>
     <!-- 拍照/选图前功能栏 -->
     <view id="cameraControll" class="{{photoPath ? 'shrink' : ''}}">
-      <image class='btn' bindtap='choosePhoto' src='/pages/public/images/recognize/choose.png'></image>
+      <image class='btn' bindtap='choosePhoto' src='/pages/packageA/pages/images/recognize/choose.png'></image>
       <button id="shutter" disabled="{{!cameraAuth}}" bindtap="takePhoto"></button>
-      <image class='btn' bindtap='reverseCamera' src='/pages/public/images/recognize/reverse.png'></image>
+      <image class='btn' bindtap='reverseCamera' src='/pages/packageA/pages/images/recognize/reverse.png'></image>
     </view>
   </view>
 
   <!-- 识别结果 -->
   <view id="resultBox" wx:if="{{catList.length && showResultBox}}">
     <view class="tip" wx:if="{{catBoxList.length != 1}}">
-      <image mode='aspectFit' class='icon' src='/pages/public/images/recognize/tip.png'></image>
+      <image mode='aspectFit' class='icon' src='/pages/packageA/pages/images/recognize/tip.png'></image>
       <text>{{!catBoxList.length ? text_cfg.recognize.no_cat_tip : text_cfg.recognize.multi_cat_tip}}</text>
     </view>
     <view class="title">{{!catBoxList.length ? text_cfg.recognize.no_cat_rec_tip : (catBoxList.length == 1 ? text_cfg.recognize.single_cat_rec_tip : text_cfg.recognize.multi_cat_rec_tip)}}</view>
@@ -57,7 +57,7 @@
           <view class="type">
             {{campusList[campusIndex]}}
           </view>
-          <image src="/pages/public/images/recognize/down.png" class="icon"></image>
+          <image src="/pages/packageA/pages/images/recognize/down.png" class="icon"></image>
         </view>
       </picker>
       <picker bindchange="catFilter" data-type="colour" value="{{index}}" range="{{colourList}}">
@@ -65,7 +65,7 @@
           <view class="type">
             {{colourList[colourIndex]}}
           </view>
-          <image src="/pages/public/images/recognize/down.png" class="icon"></image>
+          <image src="/pages/packageA/pages/images/recognize/down.png" class="icon"></image>
         </view>
       </picker>
       <!-- <view class="campuses" bindtap="catFilter" data-type="campus">{{campus}}</view>

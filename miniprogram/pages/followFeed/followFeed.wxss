@@ -1,0 +1,132 @@
+/* pages/followFeed/followFeed.wxss */
+@import "/pages/public/wxss/hFilter.wxss";
+@import '../genealogy/commentBoard/commentBoard.wxss';
+
+
+#comment-list {
+  width: 750rpx;
+  height: 100%;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-evenly;
+}
+
+/* 一组照片 */
+.photo-block, .comment-block {
+  width: 100%;
+  margin: 15rpx 30rpx 0rpx 30rpx;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-evenly;
+  padding-bottom: 15rpx;
+  border-bottom: 1rpx solid var(--color-gray-normal);
+}
+
+.cat-info {
+  width: 100%;
+  height: 70rpx;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-bottom: 10rpx;
+}
+
+.cat-info.right {
+  justify-content: flex-end;
+}
+
+.cat-avatar {
+  margin-left: 20rpx;
+  width: 60rpx;
+  height: 60rpx;
+}
+.photo-img image, .cat-avatar image, .user-info image {
+  width: 100%;
+  height: 100%;
+}
+.cat-info .cat-name {
+  font-size: 28rpx;
+  color: var(--color-black-light);
+  margin-left: 10rpx;
+  display: flex;
+  flex-direction: column;
+}
+.cat-info .cat-campus {
+  font-size: 18rpx;
+  color: var(--color-gray-dark);
+}
+/* 照片卡 */
+.photo {
+  width: 30%;
+  background-color: white;
+  border-radius: 20rpx;
+  overflow: hidden;
+  margin: 10rpx 0;
+  padding-bottom: 10rpx;
+}
+
+.photo-img {
+  width: 240rpx;
+  height: 240rpx;
+}
+
+.photo .datetime {
+  width: 100%;
+  text-align: center;
+}
+
+.user-info {
+  width: 100%;
+  display: flex;
+  align-items: center;
+}
+
+.user-info .user-avatar {
+  margin-left: 20rpx;
+  width: 40rpx;
+  height: 40rpx;
+}
+
+.user-info .username {
+  width: 60%;
+  height: 40rpx;
+  font-size: 20rpx;
+  line-height: 40rpx;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+
+
+/* 未关注提醒 */
+.noFollow {
+  width: 100%;
+  text-align: center;
+  color: var(--color-gray-max);
+}
+
+.noFollow image {
+  width: 100rpx;
+  height: 100rpx;
+}
+
+/* 底部加载 */
+.loading image {
+  width: 165.9rpx;
+  height: 90.3rpx;
+  margin: 10rpx 292rpx 200rpx 292rpx;
+}
+.loadnomore image {
+  width: 750rpx;
+  height: 100rpx;
+  margin: 10rpx 0 200rpx 0;
+}
+.loadnomore {
+  font-size: 24rpx;
+  text-align: center;
+  color: var(--color-gray-dark);
+}

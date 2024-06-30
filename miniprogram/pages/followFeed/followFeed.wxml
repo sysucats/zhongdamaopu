@@ -1,0 +1,92 @@
+<!--pages/followFeed/followFeed.wxml-->
+
+<scroll-view id="comment-list" scroll-y="true" bindscrolltolower='loadMoreFeed' enable-back-to-top="true" enable-flex="1" refresher-enabled="{{true}}" refresher-triggered="{{refreshing}}" bindrefresherrefresh="onPullDownRefresh">
+
+  <block wx:for="{{feed}}" wx:key="_id">
+    <view wx:if="{{item.dtype == 'photo'}}" class="photo-block">
+      <view class="cat-info" bind:tap="toCat" data-cat_id='{{item.cat._id}}'>
+        <view class="cat-avatar">
+          <image class="avatar" src="{{item.cat.avatar.photo_compressed || item.cat.avatar.photo_id}}" mode='aspectFill'></image>
+        </view>
+        <view class="cat-name">
+          <text>{{item.cat.name || '-'}}</text>
+          <text class="cat-campus">[{{item.cat.campus || '-'}}]</text>
+        </view>
+      </view>
+      <view class="photo" wx:for="{{item.items}}" wx:key="_id">
+        <view class="photo-img" data-url="{{item.pic_prev}}" bind:tap="clickPhoto">
+          <image src="{{item.pic}}" mode='aspectFill'></image>
+        </view>
+        <view class="datetime">{{item.datetime}}</view>
+        <view class="user-info">
+          <view class="user-avatar">
+            <image wx:if="{{item.userInfo}}" class="avatar" src="{{item.userInfo.avatarUrl}}" mode='aspectFit'></image>
+            <image wx:else class="avatar" src="/pages/public/images/app_logo.png" mode='aspectFit'></image>
+          </view>
+          <view class="username">
+            {{item.userInfo.nickName || '-'}}
+          </view>
+        </view>
+      </view>
+
+    </view>
+
+    <!-- 留言组 -->
+    <view class="comment-block" wx:if="{{item.dtype == 'comment'}}">
+      
+      <view class="cat-info" bind:tap="toCat" data-cat_id='{{item.cat._id}}'>
+        <view class="cat-avatar">
+          <image class="avatar" src="{{item.cat.avatar.photo_compressed || item.cat.avatar.photo_id}}" mode='aspectFill'></image>
+        </view>
+        <view class="cat-name">
+          <text>{{item.cat.name || '-'}}</text>
+          <text class="cat-campus">[{{item.cat.campus || '-'}}]</text>
+        </view>
+      </view>
+    <view wx:for="{{item.items}}" wx:key="_id" class="comment {{item.paper_color}} {{item.needVerify? 'need-verify': ''}}" style="transform: rotate({{item.rotate || 0}}deg);">
+      <view class="wavy-line"></view>
+      <view class="paper">
+        <view class="user-info">
+          <view class="user-avatar">
+            <image wx:if="{{ item.userInfo}}" class="avatar" src="{{item.userInfo.avatarUrl}}" mode='aspectFit'></image>
+            <image wx:else class="avatar" src="/pages/public/images/app_logo.png" mode='aspectFit'></image>
+          </view>
+          <view class="username">
+            {{item.userInfo.nickName || '-'}}
+          </view>
+        </view>
+        <view class="content">
+          {{item.content}}
+        </view>
+
+        <view class="datetime">{{item.datetime}}</view>
+
+      </view>
+
+      <view class="tape" style="left: {{item.tape_pos_left}}rpx; transform: rotate({{item.tape_rotate}}deg);">
+        <view class="wavy-line"></view>
+        <view class="wavy-line bottom"></view>
+      </view>
+    </view>
+    
+  </view><!-- 留言 -->
+  </block>
+
+  <!-- 没有关注 -->
+  <view class="noFollow" wx:if="{{!followCats || followCats.length === 0}}">
+    <view><text>你没有关注任何猫猫\n快到猫猫详情页去添加吧~</text></view>
+    <image class="icon" src='/pages/public/images/button/plus.svg'></image>
+    <image class="icon" src='/pages/public/images/button/follow.svg'></image>
+    <view>右下角菜单 → 关注猫猫</view>
+    <view>关注后，在本页面下拉获取近30天的动态</view>
+  </view>
+
+  <view class='loadnomore' wx:if='{{loadnomore && followCats.length > 0}}'>
+    <view><text>近30天内没有新的动态咯</text></view>
+    <image src='/pages/public/images/system/nomore.png'></image>
+  </view>
+  <view class='loading' wx:if='{{!loadnomore && followCats.length > 0}}'>
+    <image src='/pages/public/images/system/loading.gif'></image>
+  </view>
+
+</scroll-view>

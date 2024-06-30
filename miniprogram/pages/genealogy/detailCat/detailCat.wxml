@@ -27,13 +27,17 @@
         <image mode='aspectFill' class='gender' wx:if='{{cat.gender === "公"}}' src="/pages/public/images/card/card/male.png"></image>
         <image mode='aspectFill' class='gender' wx:if='{{cat.gender === "母"}}' src="/pages/public/images/card/card/female.png"></image>
       </block>
-      <view class='popularity' bindtap="showPopularityTip" wx:if="{{cat.popularity != undefined}}">
+      <view class='count first' bindtap="showPopTip" wx:if="{{cat.popularity != undefined}}" data-tip="{{text_cfg.detail_cat.popularity_tip}}">
         <image src='/pages/public/images/card/card/pop.png'></image>
         <text> {{cat.popularity + (cat.photo_count_total? cat.photo_count_total * photoPopWeight: 0)}}</text>
       </view>
-      <view class='comment' bindtap="toComment" wx:if="{{cat.comment_count != undefined}}">
+      <view class='count comment' bindtap="showPopTip"  data-tip="便利贴数">
         <image src='/pages/public/images/card/card/comment.png'></image>
         <text> {{cat.comment_count || 0}}</text>
+      </view>
+      <view class='count comment' bindtap="showPopTip" data-tip="被关注数">
+        <image src='/pages/public/images/card/card/follow.png'></image>
+        <text> {{cat.follow_count || 0}}</text>
       </view>
     </view>
 
@@ -43,7 +47,7 @@
       <text class='tag to_star' wx:if='{{cat.to_star}}'>{{text_cfg.genealogy.to_star_tip}}</text>
       <text class='tag to_star' wx:if='{{cat.missing}}'>{{text_cfg.genealogy.missing_tip}}</text>
 
-      <text class='fb-button' bindtap='bindTapFeedback'>{{text_cfg.detail_cat.button_feedback}}</text>
+      <!-- <text class='fb-button' bindtap='bindTapFeedback'>{{text_cfg.detail_cat.button_feedback}}</text> -->
       <view class="mpcode" bindtap="bingMpTap">
         <image src="/pages/public/images/button/mpcode.png"></image>
       </view>
@@ -85,11 +89,11 @@
       <view class='item long'>
         <view class='label'>
           <view class='label-block'></view>
-          {{text_cfg.detail_cat.label_rating}}
+          {{text_cfg.detail_cat.label_rating}} <text class="small">[共{{cat.rating.count || 0}}条]</text>
           <view class="badge-all" bindtap="bindDetailRating">{{showDetailRating ? '折叠详情' : '展开详情'}}</view>
-          <view class="badge-all" bindtap="bindRating">我要评分</view>
+          <!-- <view class="badge-all" bindtap="bindRating">我要评分</view> -->
         </view>
-        <view class="one-rating">
+        <view class="one-rating {{showDetailRating ? 'detail': ''}}">
           <view class="title" wx:if="{{showDetailRating}}">综合：</view>
           <view class="stars" bind:tap="bindDetailRating">
             <view class="one-star {{cat.rating.avgScore >= j+1 ? '' : 'gray'}}" wx:for="*****" wx:key="*this" wx:for-index="j">
@@ -138,7 +142,7 @@
           </view>
 
           <view class="relation-block add" hover-class="tap" bindtap="showGiveBadge">
-            <image class="badge-item-avatar" src="/pages/public/images/button/addBadge.png" mode="aspectFit"></image>
+            <image class="badge-item-avatar" src="/pages/public/images/button/plus2.svg" mode="aspectFit"></image>
             <view class="badge-item-count hidden">+</view>
             <view class="badge-item-name">赠予徽章</view>
           </view>
@@ -212,17 +216,6 @@
   </view>
   <!-- album end -->
 
-  <!-- 点击上传图片 
-  <view class="addPhoto" bindtap='bindAddPhoto'>
-    <image class="icon" src='/pages/public/images/button/addPhoto.png'></image>
-  </view>-->
-
-  <!-- 进入便利贴墙 
-  <view id="comment-btn" bindtap="toComment">
-    <text>{{text_cfg.detail_cat.label_comment_board}}</text>
-    <image src="/pages/public/images/button/right_double_arrow.png" mode="aspectFit"></image>
-  </view>-->
-
   <!-- 把传照片留言按钮整到一个弹出框了 -->
   <view class="plus" bindtap='showFunction'>
     <image class="icon" src='/pages/public/images/button/plus.svg'></image>
@@ -239,6 +232,18 @@
       <view class="button" bindtap='bindAddPhoto' >
         <image class="icon" src='/pages/public/images/button/addPhoto.svg'></image>
         <view class="button-text">上传喵照</view>
+      </view>
+      <view class="button" bindtap='bindRating'>
+        <image class="icon" src='/pages/public/images/button/score.svg'></image>
+        <view class="button-text">我要评分</view>
+      </view>
+      <view class="button" bindtap='followCat'>
+        <image class="icon {{followedCat ? 'gray' : ''}}" src='/pages/public/images/button/follow.svg'></image>
+        <view class="button-text">{{followedCat ? "取消关注" : "关注动态"}}</view>
+      </view>
+      <view class="button" bindtap='bindTapFeedback'>
+        <image class="icon" src='/pages/public/images/button/flag.svg'></image>
+        <view class="button-text">{{text_cfg.detail_cat.button_feedback}}</view>
       </view>
       <view class="button" bindtap='showPoster' >
         <image class="icon" src='/pages/public/images/button/shareMeowId.svg'></image>

@@ -159,6 +159,14 @@ async function updateCatRating(options) {
   });
 }
 
+// 更新关注列表
+async function updateFollowCats(options) {
+  return await cloud.callFunction({
+    name: "updateFollowCats",
+    data: options
+  });
+}
+
 module.exports = {
   curdOp,
   userOp,
@@ -176,4 +184,5 @@ module.exports = {
   loadBadgeCode,
   getUserStats,
   updateCatRating,
+  updateFollowCats,
 };

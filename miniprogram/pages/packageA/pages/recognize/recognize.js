@@ -1,21 +1,20 @@
 import {
   text as text_cfg,
   cat_status_adopt
-} from "../../config";
+} from "../../../../config";
 import {
   hex_sha256,
   randomInt
-} from "../../utils/utils";
+} from "../../../../utils/utils";
 import {
   loadFilter,
-  getGlobalSettings,
-  showTab
-} from "../../utils/page";
+  getGlobalSettings
+} from "../../../../utils/page";
 import {
   cloud
-} from "../../utils/cloudAccess";
+} from "../../../../utils/cloudAccess";
 
-import drawUtils from "../../utils/draw";
+import drawUtils from "../../../../utils/draw";
 
 const share_text = text_cfg.app_name + ' - ' + text_cfg.recognize.share_tip;
 
@@ -79,8 +78,6 @@ Page({
   },
 
   async onShow() {
-    // 切换自定义tab
-    showTab(this);
     if (!this.jsData.interfaceURL || !this.jsData.secretKey) {
       console.log('__wxConfig.envVersion: ', __wxConfig.envVersion);
       var settings = await getGlobalSettings(__wxConfig.envVersion === 'release' ? 'recognize' : 'recognize_test');

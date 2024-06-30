@@ -6,7 +6,7 @@
     
     <button class="avatar-wrapper" open-type="chooseAvatar" bind:chooseavatar="onChooseAvatar">
       <view class="overlay">
-        <image class="overlay-icon" src='/pages/public/images/recognize/choose.png'></image>
+        <image class="overlay-icon" src='/pages/public/images/info/choose.png'></image>
       </view>
       <image class="avatar" src="{{user.userInfo.avatarUrl || defaultAvatarUrl}}" mode="aspectFill"></image>
     </button>

@@ -1,16 +1,16 @@
 <view class="container">
   <view class="up-part">
     <view class="glass">
-      <image class="balls" src="/pages/public/images/badge/balls.png" mode="aspectFit" animation="{{shakeAnimation}}" />
+      <image class="balls" src="/pages/packageA/pages/images/badge/balls.png" mode="aspectFit" animation="{{shakeAnimation}}" />
     </view>
     <view class="buttons">
       <view class="btn {{freeBadgeLoaded ? '' : 'disabled'}}" hover-class="active" bindtap='tapForGetBadge' data-reason='checkIn' data-count="1">
-        <image class="logo" src="/pages/public/images/badge/article_btn.png" mode="aspectFit" />
+        <image class="logo" src="/pages/packageA/pages/images/badge/article_btn.png" mode="aspectFit" />
         <view>每日免费<view class="btn-tip">{{freeBadgeLoaded? '立即可取': nextFreeBadgesHours + 'h' + nextFreeBadgesMins + 'm 后'}}</view>
         </view>
       </view>
       <view class="btn {{(pictureAdLoaded && todayPicCount < todayPicLimit) ? '' : 'disabled'}}" hover-class="active" bindtap='watchADForGetBadge' data-type='picture'>
-        <image class="logo" src="/pages/public/images/badge/article_btn.png" mode="aspectFit" />
+        <image class="logo" src="/pages/packageA/pages/images/badge/article_btn.png" mode="aspectFit" />
         <view>
           抽取1次
           <view wx:if="{{todayPicCount < todayPicLimit && pictureAdLoaded}}" class="btn-tip">贴片广告 ({{todayPicCount}}/{{todayPicLimit}})</view>
@@ -19,7 +19,7 @@
         </view>
       </view>
       <view class="btn {{(videoAdLoaded && todayVideoCount < todayVideoLimit) ? '' : 'disabled'}}" hover-class="active" bindtap='watchADForGetBadge' data-type='video'>
-        <image class="logo" src="/pages/public/images/badge/play_btn.png" mode="aspectFit" />
+        <image class="logo" src="/pages/packageA/pages/images/badge/play_btn.png" mode="aspectFit" />
 
         <view>
           抽取2次
@@ -31,8 +31,8 @@
     </view>
   </view>
   <view class="down-part">
-    <image class="background" src="/pages/public/images/badge/background.png" mode="aspectFit" />
-    <image class="round-btn" src="/pages/public/images/badge/round_btn.png" mode="aspectFit" animation="{{rotateAnimation}}" />
+    <image class="background" src="/pages/packageA/pages/images/badge/background.png" mode="aspectFit" />
+    <image class="round-btn" src="/pages/packageA/pages/images/badge/round_btn.png" mode="aspectFit" animation="{{rotateAnimation}}" />
     <view class="round-btn-shadow"></view>
   </view>
 </view>

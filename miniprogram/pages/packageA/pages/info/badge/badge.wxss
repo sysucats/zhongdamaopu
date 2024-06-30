@@ -1,5 +1,4 @@
-/* pages/info/badge/badge.wxss */
-@import "../../manage/badgeDef/badgeDef.wxss";
+@import "../../../../manage/badgeDef/badgeDef.wxss";
 
 page {
   background-color: #EAC843 !important;

@@ -18,7 +18,6 @@
     "pages/manage/checkFeedbacks/checkFeedbacks",
     "pages/manage/replyFeedback/replyFeedback",
     "pages/manage/rewards/rewards",
-    "pages/recognize/recognize",
     "pages/genealogy/commentBoard/commentBoard",
     "pages/debug/deployTip/deployTip",
     "pages/news/news",
@@ -36,13 +35,24 @@
     "pages/debug/genKeys/genKeys",
     "pages/manage/badgeDef/badgeDef",
     "pages/manage/badgeDef/addBadgeDef/addBadgeDef",
-    "pages/info/badge/badge",
     "pages/genealogy/detailCat/badgeDetail/badgeDetail",
     "pages/manage/checkComment/checkComment",
     "pages/manage/badgeCode/badgeCode",
     "pages/manage/badgeCode/addBadgeCode/addBadgeCode",
-    "pages/info/badge/badgeHistory/badgeHistory",
-    "pages/genealogy/detailCat/ratingDetail/ratingDetail"
+    "pages/genealogy/detailCat/ratingDetail/ratingDetail",
+    "pages/followFeed/followFeed",
+    "pages/info/myFollowCats/myFollowCats"
+  ],
+  
+  "subPackages": [
+    {
+      "root": "pages/packageA",
+      "pages": [
+        "pages/recognize/recognize",
+        "pages/info/badge/badge",
+        "pages/info/badge/badgeHistory/badgeHistory"
+      ]
+    }
   ],
   "tabBar": {
     "custom": true,
@@ -54,7 +64,7 @@
         "pagePath": "pages/genealogy/genealogy"
       },
       {
-        "pagePath": "pages/recognize/recognize"
+        "pagePath": "pages/followFeed/followFeed"
       },
       {
         "pagePath": "pages/news/news"

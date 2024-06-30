@@ -103,8 +103,13 @@ async function signCosUrl(inputUrl) {
   // 实际签名
   let signedUrl = await _doCosSign(url);
 
-  // 保存缓存
-  setCacheItem(cacheKey, signedUrl, config.sign_expires_tencent_cos / 3600);
+  // 保存缓存（签名的token过期时，或最长过期时间）
+  let accessTokenExpire = new Date(wx.getStorageSync('accessToken').expiredAt);
+  let now = new Date();
+  // 计算时间差（小时）
+  let tokenExpireHours = (now - accessTokenExpire) / (3600 * 1000); // 1小时 = 3600000毫秒
+  let expireHours = Math.min(tokenExpireHours, config.sign_expires_tencent_cos / 3600)
+  setCacheItem(cacheKey, signedUrl, expireHours);
 
   return signedUrl;
 }
