@@ -84,7 +84,7 @@ page {
 .mina-info image {
   width: 150rpx;
   height: 150rpx;
-  border-radius: 20rpx;
+  border-radius: 75rpx;
   box-shadow: 0 0 10rpx var(--color-gray);
 }
 
@@ -175,20 +175,20 @@ page {
 .badge {
   position: absolute;
   text-align: center;
-  top: 25rpx;
-  right: 70rpx;
+  top: 20rpx;
+  left: 120rpx;
   min-width: 26rpx;
   height: 26rpx;
   line-height: 26rpx;
-  border-radius: 100%;
+  border-radius: 26rpx;
   background-color: red;
   color: white;
-  font-size: 19rpx;
+  font-size: 22rpx;
   font-weight: bold;
   overflow: hidden;
   white-space: nowrap;
-  border: 3rpx solid white;
-  padding: 4rpx
+  border: 4rpx solid white;
+  padding: 4rpx;
 }
 
 .dot {

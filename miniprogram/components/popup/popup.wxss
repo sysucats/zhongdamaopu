@@ -6,7 +6,7 @@
   width: 100%;
   border-top-right-radius: 40rpx;
   border-top-left-radius: 40rpx;
-  z-index: 999;
+  z-index: 999999;
   padding: 20rpx 20rpx;
   padding-bottom: max(20rpx, env(safe-area-inset-bottom));
   overflow: hidden;

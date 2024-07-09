@@ -1,4 +1,4 @@
-<mask style="z-index: 1;" show="{{show}}" bind:close="hide"></mask>
+<mask style="z-index: 99999;" show="{{show}}" bind:close="hide"></mask>
 <view class="popup-container {{show ? 'show' : ''}}">
   <slot></slot>
 </view>
