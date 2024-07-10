@@ -156,7 +156,7 @@ image{height:auto}
   width: 100%;
   text-align: center;
   color: var(--color-gray-max);
-  top: 50%;
+  top: calc(50% - 100rpx);
   transform: translateY(-50%);
   position: absolute;
 }

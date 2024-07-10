@@ -161,7 +161,7 @@ Page({
   
     // 每只猫咪最近的照片信息
     // 并行获取每只猫咪的头像和最近的照片信息
-    const promises = followCatsList.map(async (p) => {
+    const promises = followCatsList?.map(async (p) => {
       p.avatar = await getAvatar(p._id, p.photo_count_best); // 获取猫猫头像
       p.unfollowed = false; // 默认未取关
 
@@ -181,14 +181,16 @@ Page({
 
       // 动态改变不同状态猫的svg颜色 => 旧动态：#ccc；新动态：#gradient
       // TODO: 添加动态过渡动画
-      if (latestPhoto && new Date(latestPhoto.create_date) > maxCreateDate) {
-        p.svgImg = gradientAvatarSvg('url(#gradient)');
-      } else {
-        p.svgImg = gradientAvatarSvg('#ccc');
-      }
+      p.svgImg = (latestPhoto && new Date(latestPhoto.create_date) > maxCreateDate)
+        ? (p._id === this.data.currentCatId)
+          ? gradientAvatarSvg('url(#gradient)', '5, 15') // 选中状态
+          : gradientAvatarSvg('url(#gradient)', '0')     // 有新动态，未选中
+        : gradientAvatarSvg('#ccc');                     // 无新动态
+
+      p.selected = (latestPhoto && new Date(latestPhoto.create_date) > maxCreateDate) && (p._id === this.data.currentCatId);
 
       return p;
-    });
+    }) || [];
     
     const updatedFollowCatsList = await Promise.all(promises);
 
@@ -459,7 +461,6 @@ Page({
   // 点击猫猫头像
   onCatAvatarTap(e) {
     const selectedCat = e.currentTarget.dataset.cat;
-    
     // 对于 #gradient 头像,触发点击事件
     if (selectedCat.svgImg.includes('url(%23gradient)')) {
       // 判断是展示某只猫猫的动态，还是全部动态
@@ -610,7 +611,8 @@ Page({
       return catItem;
     });
     this.setData({
-      followCatsList: updatedCatsList
+      followCatsList: updatedCatsList,
+      currentCatId: newUnfollowedStatus ? null : catid,
     });
 
     wx.showToast({
