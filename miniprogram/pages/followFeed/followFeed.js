@@ -395,6 +395,7 @@ Page({
       
       // 当展示该猫猫的动态时进行取关再刷新，此时关注列表不包含此猫，但feed数组中仍然存在该猫动态数据，因此当 item.cat 为 undefined，跳过该条数据
       if (!item.cat) {
+        this.setData({loadnomore: true});
         continue;
       }
       let newBlock = {
@@ -612,7 +613,7 @@ Page({
     });
     this.setData({
       followCatsList: updatedCatsList,
-      currentCatId: newUnfollowedStatus ? null : catid,
+      // currentCatId: newUnfollowedStatus ? null : catid,
     });
 
     wx.showToast({
