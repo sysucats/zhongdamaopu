@@ -158,9 +158,7 @@ Page({
   
     // 获取当前时间和 maxNDaysAgo 天前的时间
     const maxCreateDate = getDateWithDiffHours(-1 * maxNDaysAgo * 24);
-  
-    // 每只猫咪最近的照片信息
-    // 并行获取每只猫咪的头像和最近的照片信息
+
     const promises = followCatsList?.map(async (p) => {
       p.avatar = await getAvatar(p._id, p.photo_count_best); // 获取猫猫头像
       p.unfollowed = false; // 默认未取关
@@ -175,27 +173,43 @@ Page({
         .orderBy("create_date", "desc")
         .limit(1)
         .get()).data[0];
+        
+      const latestComment = (await db.collection("comment")
+      .where({
+        cat_id: p._id,
+        deleted: _.neq(true),
+        create_date: _.gt(maxCreateDate),
+      })
+      .orderBy("create_date", "desc")
+      .limit(1)
+      .get()).data[0];
 
-      // 记录最近照片的创建时间
-      p.latestPhotoTime = latestPhoto ? latestPhoto.create_date : 0;
+      // 记录最近照片，评论的创建时间
+      p.latestTime = Math.max(
+        latestPhoto ? latestPhoto.create_date : 0,
+        latestComment ? latestComment.create_date : 0
+      );
 
       // 动态改变不同状态猫的svg颜色 => 旧动态：#ccc；新动态：#gradient
       // TODO: 添加动态过渡动画
-      p.svgImg = (latestPhoto && new Date(latestPhoto.create_date) > maxCreateDate)
+      p.svgImg = (latestPhoto && new Date(latestPhoto.create_date) > maxCreateDate) || 
+        (latestComment && new Date(latestComment.create_date) > maxCreateDate)
         ? (p._id === this.data.currentCatId)
           ? gradientAvatarSvg('url(#gradient)', '5, 15') // 选中状态
           : gradientAvatarSvg('url(#gradient)', '0')     // 有新动态，未选中
         : gradientAvatarSvg('#ccc');                     // 无新动态
 
-      p.selected = (latestPhoto && new Date(latestPhoto.create_date) > maxCreateDate) && (p._id === this.data.currentCatId);
+      p.selected = ((latestPhoto && new Date(latestPhoto.create_date) > maxCreateDate) || 
+        (latestComment && new Date(latestComment.create_date) > maxCreateDate)) && 
+        (p._id === this.data.currentCatId);
 
       return p;
     }) || [];
     
     const updatedFollowCatsList = await Promise.all(promises);
 
-    // 按照最近照片时间对关注列表进行降序排序（只考虑照片作为猫动态，人类的留言不予考虑）
-    updatedFollowCatsList.sort((a, b) => b.latestPhotoTime - a.latestPhotoTime);
+    // 按最新动态时间排序
+    updatedFollowCatsList.sort((a, b) => b.latestTime - a.latestTime);
     console.log('关注列表', updatedFollowCatsList);
     this.setData({followCatsList: updatedFollowCatsList});
   },
