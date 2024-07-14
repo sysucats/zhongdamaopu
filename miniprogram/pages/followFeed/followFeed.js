@@ -620,6 +620,12 @@ Page({
       title: `${unfollowed ? "关注" : "取关"}${res.result ? "成功": "失败"}`,
       icon: res.result ? "success": "error"
     });
+
+    // 如果当前是该猫动态，取关后关闭
+    if (this.data.currentCatId === catid && !unfollowed) {
+      this.closeThisCatFeed();
+    }
+    
     this.jsData.updatingFollowCats = false;
   },
 })
