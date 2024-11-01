@@ -59,7 +59,7 @@ page {
   font-size: 20rpx;
 }
 .pro-badge {
-  background-color: #FFD700;
+  background-color: #ffa601;
 }
 .manager-badge {
   background-color: var(--color-primary-light);
