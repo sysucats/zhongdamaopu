@@ -20,11 +20,6 @@ Page({
         type: 'option',
         items: [
           {
-            label:"修改个人信息",
-            icon:"icon-edit",
-            action:"editProfile",
-            btnAble: false,
-          }, {
             label:"邀请好友",
             icon:"icon-friends-o",
             action:"shareApp",

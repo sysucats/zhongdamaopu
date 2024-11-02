@@ -8,9 +8,9 @@
       <text class="user-name">{{user.userInfo.nickName}}</text>
       <text class="badge {{badgeClass}}-badge">{{badgeName}}</text>
     </view>
-    <!-- <view class="edit-container">
-      <button class="edit-btn" bindtap="editProfile">✍</button>
-    </view> -->
+    <view class="edit-container" bindtap="editProfile">
+      <view class="iconfont icon-edit"></view>
+    </view>
   </view>
 
   <view class="num-info"> 
