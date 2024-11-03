@@ -20,11 +20,6 @@ Page({
         type: 'option',
         items: [
           {
-            label:"修改个人信息",
-            icon:"icon-edit",
-            action:"editProfile",
-            btnAble: false,
-          }, {
             label:"邀请好友",
             icon:"icon-friends-o",
             action:"shareApp",
@@ -123,7 +118,8 @@ Page({
     this.setData({
       numUserComments: result.numUserComments,
       numUserLiked: result.numUserLiked,
-      numUserPhotos: result.numUserPhotos
+      numUserPhotos: result.numUserPhotos,
+      numCats: result.numCats,
     });
   },
 
@@ -138,10 +134,10 @@ Page({
     }
     
     // 创建角色映射便于管理和自定义
-    const roleMapping = {                                         // 自定义部分：（感觉可以写入config.js，但就这几个不知道是否有必要）
-      visitor: { displayName: "VISITOR", className: "visitor" },  // displayName: "游客"
-      manager: { displayName: "MANAGER", className: "manager" },  // displayName: "管理员"
-      pro: { displayName: "PRO", className: "pro" }               // displayName: "特邀用户"
+    const roleMapping = {
+      visitor: { displayName: "访客", className: "visitor" },     // displayName: "游客"
+      manager: { displayName: "管理员", className: "manager" },   // displayName: "管理员"
+      pro: { displayName: "特邀用户", className: "pro" }          // displayName: "特邀用户"
     };
     
     let roleKey = 'visitor'; // 默认值

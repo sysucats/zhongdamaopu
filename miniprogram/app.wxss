@@ -7,7 +7,7 @@ page {
 
   --color-white-dark: #fafafa;
 
-  --color-gray-light: #f7f7fa;
+  --color-gray-light: #f7f7f7;
   --color-gray-normal:#eeeeee;
   --color-gray: #dddddd;
   --color-gray-dark: #bbbbbb;

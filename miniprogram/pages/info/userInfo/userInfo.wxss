@@ -4,61 +4,101 @@ page {
   flex-direction: column;
   align-items: center;
   box-sizing: border-box;
-  /* background-color: var(--color-gray-light); */
+  padding: 30rpx;
+  background-color: var(--color-gray-light);
+}
+
+#big-circle {
+  width: 1250rpx;
+  height: 1150rpx;
+  background-color: var(--color-primary);
+  border-radius: 500rpx;
+  position: absolute;
+  left: -250rpx;
+  top: -850rpx;
+  z-index: -1;
 }
 
 /* 头像名字和角色 */
 .user-container {
   display: flex;
-  flex-direction: column;
   align-items: center;
-  margin: 0 0 20rpx 0;
+  padding: 30rpx 0rpx;
 }
 
 .avatar-container {
-  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
 }
 
+.userName-container {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  margin-left: 30rpx;
+}
+
+.edit-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: auto;
+}
+
+.edit-container .icon-edit {
+  height: 60rpx;
+  width: 60rpx;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 20rpx;
+  background-color: #ffffff;
+  font-size: 40rpx;
+  color: var(--color-primary);
+  margin: 0 !important;
+}
+
 .avatar {
-  width: 250rpx;
-  height: 250rpx;
-  border-radius: calc(50% + 12rpx);
-  margin-bottom: 20rpx;
+  width: 120rpx;
+  height: 120rpx;
+  border-radius: calc(50% + 8rpx);
   background-color: white;
-  border: 12rpx solid white;
+  border: 8rpx solid white;
   box-shadow: 0rpx 10rpx 20rpx var(--color-ltblack-transparent);
 }
 
 .badge {
-  position: absolute;
   bottom: 5rpx;
+  margin-top: 15rpx;
+  text-overflow: ellipsis;
+  width: fit-content;
+  white-space: nowrap;
   color: white;
   padding: 5rpx 10rpx;
   border-radius: 10rpx;
   font-size: 20rpx;
 }
 .pro-badge {
-  background-color: #FFD700;
+  background-color: #ffa601;
 }
 .manager-badge {
-  background-color: var(--color-primary);
+  background-color: var(--color-primary-light);
+  color: rgb(56, 56, 56);
 }
 .visitor-badge {
   background-color: var(--color-gray-max);
 }
 
 .user-name {
-  width: 500rpx;
+  height: fit-content;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  text-align: center;
-  font-size: 50rpx;
+  font-size: 40rpx;
   font-weight: bold;
+  color: var(--color-white);
 }
 
 /* 用户数据 */
@@ -66,7 +106,10 @@ page {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  width: 100%;
+  background-color: white;
+  padding: 30rpx 0;
+  border-radius: 30rpx;
+  box-shadow: 0rpx 10rpx 25rpx var(--color-ltblack-transparent);
 }
 
 .num {
@@ -75,13 +118,12 @@ page {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  padding: 0 10rpx;
   height: auto;
   box-sizing: border-box;
   position: relative;
 }
 
-.num:not(:last-child)::after {
+/* .num:not(:last-child)::after {
   content: '';
   position: absolute;
   top: 50%;
@@ -90,10 +132,9 @@ page {
   height: 60%;
   width: 1rpx;
   background-color: var(--color-gray);
-}
+} */
 
 .num-title {
-  margin-bottom: -10rpx;
   font-size: 35rpx;
   font-weight: bold;
   text-align: center;
@@ -106,48 +147,44 @@ page {
 
 .content {
   width: 100%;
-  padding: 70rpx 0 100rpx 0;
-  background-color: var(--color-gray-light);
+  padding: 0 0 100rpx 0;
 }
 
 /* 一些菜单 */
 .menu-container {
   width: 100%;
-  padding-bottom: max(20rpx, constant(safe-area-inset-bottom));
-  padding-bottom: max(20rpx, env(safe-area-inset-bottom));
   background-color: white;
-  border-top-left-radius: 50rpx;
-  border-top-right-radius: 50rpx;
+  border-radius: 30rpx;
   overflow: hidden;
-  padding-top: 30rpx;
+  padding: 30rpx 0;
   margin-top: -50rpx;
-  overflow-y: auto
+  box-shadow: 0rpx 10rpx 25rpx var(--color-ltblack-transparent);
 }
 .type-separator {
   height: 1rpx;
   background-color: var(--color-gray-normal);
   width: 80%;
-  margin: 10rpx 10% 10rpx 10%;
+  margin: 15rpx 10%;
 }
 .menu-item {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 15rpx 15rpx 15rpx 15rpx;
+  padding: 15rpx;
   position: relative;
 }
 .hiddenbtn {
   opacity:0;
 	position: absolute;
-	top: 10px;
-	right: 10px;
+	top: 10rpx;
+	right: 10rpx;
 }
 .icon-and-text {
   display: flex;
   align-items: center;
 }
 .iconfont {
-  font-size: 70rpx;
+  font-size: 60rpx;
   margin: 0 30rpx 0  40rpx;
 }
 .label-small {
