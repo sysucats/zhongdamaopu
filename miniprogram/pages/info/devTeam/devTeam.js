@@ -10,6 +10,12 @@ Page({
     text_cfg: text_cfg,
     github_link: "https://github.com/sysucats/zhongdamaopu",
     update_log: [{
+      version: "v1.14.3",
+      content: [
+        "更新个人主页（xuann大佬提供）"
+      ],
+      time: "2024/11/03"
+    }, {
       version: "v1.14.2",
       content: [
         "更新喵友圈UI（xuann大佬提供）",
