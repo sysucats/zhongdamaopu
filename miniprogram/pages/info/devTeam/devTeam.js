@@ -10,6 +10,12 @@ Page({
     text_cfg: text_cfg,
     github_link: "https://github.com/sysucats/zhongdamaopu",
     update_log: [{
+      version: "v1.14.4",
+      content: [
+        "修复版本控制功能"
+      ],
+      time: "2024/11/16"
+    }, {
       version: "v1.14.3",
       content: [
         "更新个人主页（xuann大佬提供）"
