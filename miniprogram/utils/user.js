@@ -138,7 +138,7 @@ async function _checkFuncEnable(funcName) {
     || (isInvited && ctrlUser.includes(UserTypes.invited))     // 特邀用户
     || (!isInvited && ctrlUser.includes(UserTypes.guest))) {   // 游客
     // 满足人群限制，返回功能是否受限
-    !limitedFunc.split(',').includes(funcName);
+    return !limitedFunc.split(',').includes(funcName);
   }
   return true;
 }
