@@ -28,8 +28,8 @@
 
 |小程序|高校|二维码|小程序|高校|二维码|
 |:----:|:----:|:----:|:----:|:----:|:----:|
-|CQGCZY小猫之家|重庆工程职业技术学院|<img src="./readme/wx965de1cc7764cc8c.jpg" height = "100" />|莲峰猫谱|电子科技大学中山学院莲峰猫谱|<img src="./readme/wxe214252bcfc57eb1.png" height = "100" />|
-|昆院猫谱|昆明学院KMUmiao|<img src="./readme/wx49ce23a5956ba016.jpg" height = "100" />|猫猫家谱|暨南大学|<img src="./readme/wxd78f5d698fc51b30.jpg" height = "100" />|
+|CQGCZY小猫之家|重庆工程职业技术学院|<img src="./readme/wx965de1cc7764cc8c.jpg" height = "100" />|莲峰猫谱|电子科技大学中山学院|<img src="./readme/wxe214252bcfc57eb1.png" height = "100" />|
+|昆院猫谱|昆明学院KMU|<img src="./readme/wx49ce23a5956ba016.jpg" height = "100" />|猫猫家谱|暨南大学|<img src="./readme/wxd78f5d698fc51b30.jpg" height = "100" />|
 |火大猫谱|火箭军工程大学|<img src="./readme/wx5d52c6c8f098ed5e.png" height = "100" />|CW猫咪图鉴|重庆外语外事学院|<img src="./readme/wxf5a6690aef6de08a.jpg" height = "100" />|
 |龙井是公猫|广东药科大学|<img src="./readme/wxa4ff57cbf8569fbd.png" height = "100" />|技大喵喵屋|深圳技术大学|<img src="./readme/wxc0e3f6edf308a23e.jpg" height = "100" />|
 |招财喵谱|上海财经大学|<img src="./readme/wxbcf1fbad0db85bb2.jpg" height = "100" />|崴喵猫谱|山东大学（威海）|<img src="./readme/wx13022ccaecca54cc.png" height = "100" />|
