@@ -11,8 +11,6 @@ Page({
    * 页面的初始数据
    */
   data: {
-    tipText: '正在鉴权...',
-    tipBtn: false,
     feedback: undefined,
     maxlength: 300,
     length: 0,
@@ -25,11 +23,6 @@ Page({
     if (checkAuth(this, 1)) {
       await this.reload(options);
     }
-  },
-
-  // 没有权限，返回上一页
-  goBack() {
-    wx.navigateBack();
   },
 
   async reload(options) {

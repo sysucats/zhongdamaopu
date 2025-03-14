@@ -25,8 +25,6 @@ Page({
    * 页面的初始数据
    */
   data: {
-    tipText: '正在鉴权...',
-    tipBtn: false,
     campus_list: [],
   },
 
@@ -145,11 +143,6 @@ Page({
     wx.navigateTo({
       url: '/pages/genealogy/detailCat/detailCat?cat_id=' + cat_id,
     })
-  },
-
-  // 没有权限，返回上一页
-  goBack() {
-    wx.navigateBack();
   },
 
   // 确定处理

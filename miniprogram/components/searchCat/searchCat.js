@@ -2,6 +2,7 @@
 import { getAvatar } from "../../utils/cat";
 import { regReplace } from "../../utils/utils";
 import { cloud } from "../../utils/cloudAccess";
+import config from "../../config";
 
 Component({
   /**
@@ -19,6 +20,9 @@ Component({
    */
   data: {
     focusSearch: false,
+
+    text_cfg: config.text,
+
     // 与页面无关的数据
     jsData: {
       loading: false,
@@ -90,6 +94,8 @@ Component({
     hide() {
       this.setData({
         show: false,
+        searchCats: [],
+        filters_input: ''
       })
     }
   }

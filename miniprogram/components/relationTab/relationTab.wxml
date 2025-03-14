@@ -1,0 +1,64 @@
+<!-- 猫际关系管理 -->
+<view class="relation-section" wx:if="{{selectedCat}}">
+  <!-- 关系列表 -->
+  <view class="relation-list" wx:if="{{cat && cat.relations && cat.relations.length > 0}}">
+    <view class="relation-item" wx:for="{{cat.relations}}" wx:key="index">
+      <!-- 序号标签 -->
+      <view class="relation-index">#{{index+1}}</view>
+      
+      <view class="relation-content">
+        <!-- 关系类型 -->
+        <view class="relation-type" hover-class="button-hover" bindtap="bindSearch" data-type="relation" data-index="{{index}}">
+          {{item.type || '选择关系'}}
+        </view>
+        
+        <!-- 相关猫咪 -->
+        <view class="relation-cat" hover-class="button-hover" bindtap="bindSearch" data-type="cat" data-index="{{index}}">
+          <image mode="aspectFill" class="relation-cat-avatar" src="{{item.cat.avatar ? item.cat.avatar.photo_compressed || item.cat.avatar.photo_id : ''}}"></image>
+          <view class="relation-cat-info">
+            <view class="relation-cat-name">{{item.cat.name || '点击选择猫猫'}}</view>
+            <view class="relation-cat-location" wx:if="{{item.cat.campus}}">{{item.cat.campus}} {{item.cat.area}}</view>
+          </view>
+        </view>
+      
+        <view class="relation-delete-btn" hover-class="button-hover" bindtap='bindRelationTap' data-index='{{index}}' data-type="delete">删除</view>
+      </view>
+      
+      <!-- 上下移 -->
+      <view class="move-action up {{index <= 0? 'disabled': ''}}" hover-class="button-hover" bindtap='bindRelationTap' data-index='{{index}}' data-type="up"><text class="iconfont icon-arrow-up"></text></view>
+      <view class="move-action down {{index >= cat.relations.length-1? 'disabled': ''}}" hover-class="button-hover" bindtap='bindRelationTap' data-index='{{index}}' data-type="down"><text class="iconfont icon-arrow-down"></text></view>
+    </view>
+  </view>
+  
+  <view class="empty-tip" wx:elif="{{cat && cat._id}}">
+    <view class="empty-icon">🐱</view>
+    <view>暂无关系记录，点击右下角添加</view>
+  </view>
+</view>
+
+<!-- 搜索 -->
+<searchCat show="{{showSearchCat}}" bind:select="searchSelectCat" bind:close="hideSearch"></searchCat>
+
+<popup id='search' show="{{showSearchType}}" bind:close="hideSearch">
+  <view class="popup-container">
+    <view class="popup-header">
+      <text>选择关系类型</text>
+    </view>
+    <view class='search-input'>
+      <view class='input-icon'>
+        <image class="search-icon" mode='aspectFit' src="/pages/public/images/card/card/cat.png"></image>
+      </view>
+      <input class='input-field' placeholder='输入关系名，如不存在则自动新建' placeholder-class='placeholder' focus="{{focusSearchType}}" maxlength='10' confirm-type='done' bindconfirm='saveNewRelationType' value="{{relation_name}}"></input>
+    </view>
+    <scroll-view class="search-results" scroll-y="1">
+      <view class="relation-type-item" wx:for="{{relation_types}}" wx:key="item">
+        <view class="relation-type-name">{{item}}</view>
+        <view class="relation-type-actions">
+          <view class="type-action select" hover-class="button-hover" bindtap='selectRelationType' data-index='{{index}}'>选择</view>
+          <view class="type-action delete" hover-class="button-hover" bindtap='deleteRelationType' data-index='{{index}}'>删除</view>
+        </view>
+      </view>
+      <view wx:if="{{!relation_types.length}}" class="search-empty">暂无关系类型</view>
+    </scroll-view>
+  </view>
+</popup> 

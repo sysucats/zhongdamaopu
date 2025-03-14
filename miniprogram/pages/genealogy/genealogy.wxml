@@ -82,11 +82,11 @@
           <view wx:if='{{item.adopt}}' class='adopt'>{{adopt_desc[item.adopt]}}</view>
           <view wx:if='{{item.to_star}}' class='to_star'>{{text_cfg.genealogy.to_star_tip}}</view>
           <view class='popularity'>
-            <image src='/pages/public/images/card/card/pop.png'></image>
+            <view class='iconfont icon-fire'></view>
             <text> {{item.popularity + (item.photo_count_total? item.photo_count_total * photoPopWeight: 0) }}</text>
           </view>
           <view class='comment' wx:if="{{item.comment_count}}">
-            <image src='/pages/public/images/card/card/comment.png'></image>
+            <view class='iconfont icon-chat'></view>
             <text> {{item.comment_count}}</text>
           </view>
         </view>

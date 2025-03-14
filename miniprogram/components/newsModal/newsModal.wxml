@@ -1,8 +1,5 @@
 <!--components/newsModal/newsModal.wxml-->
-<view class='wx_modal_container' hidden="{{!isShow}}">
-  <view class='wx-mask'></view>
-
-
+<popup show="{{isShow}}" position="center" bind:close="_cancelEvent" class="news-popup">
   <view class='wx-modal'>
     <image class="wx-modal-catlogo" mode='heightFix' src='/pages/public/images/news/cat.png'></image>
     <view class='wx-modal-title'>{{ title }}</view>
@@ -12,13 +9,11 @@
       <view class='wx-modal-time'>{{ time }}</view>
     </view>
 
-
-
-    <scroll-view class='wx-modal-scroll' enable-flex='true' scroll-y='true' enable-back-to-top='true' lower-threshold='50'>
-      <view class='wx-modal-content' wx:if="{{content.length != 0}}">{{ content }}</view>
-      <view wx:if="{{ imagePath != '' }}">
+    <scroll-view class='wx-modal-scroll {{imagePath == "" ? "no-image" : ""}}' enable-flex='true' scroll-y='true' enable-back-to-top='true' lower-threshold='50'>
+      <view class='wx-modal-content {{imagePath == "" ? "full-height" : ""}}' wx:if="{{content.length != 0}}">{{ content }}</view>
+      <block wx:if="{{ imagePath != '' }}">
         <image class="wx-modal-image" mode='widthFix' src='{{ imagePath }}'></image>
-      </view>
+      </block>
     </scroll-view>
 
     <view class='wx-modal-footer'>
@@ -26,5 +21,4 @@
       <view class='wx-modal-btn' catchtap='_confirmEvent'>{{ confirmText }}</view>
     </view>
   </view>
-
-</view>
+</popup>

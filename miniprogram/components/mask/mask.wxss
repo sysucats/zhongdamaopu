@@ -7,10 +7,13 @@
   opacity: 0;
   transition: opacity 0.3s, background-color 0.3s;
   pointer-events: none;
+  z-index: 9999;
+  touch-action: none;
 }
 
 .mask.show {
   background-color: rgba(0, 0, 0, 0.6);
   opacity: 1;
-  pointer-events: auto;
+  pointer-events: auto !important;
+  touch-action: none;
 }

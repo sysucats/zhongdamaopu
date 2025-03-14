@@ -510,7 +510,7 @@ Page({
     if (res) {
       const cat_id = e.currentTarget.dataset.cat_id;
       wx.navigateTo({
-        url: '/pages/manage/addCat/addCat?cat_id=' + cat_id,
+        url: '/pages/manage/catManage/catManage?cat_id=' + cat_id + '&activeTab=info',
       });
       return;
     }

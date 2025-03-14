@@ -1,4 +1,6 @@
 {
-  "usingComponents": {},
+  "usingComponents": {
+    "no-auth": "/components/noAuth/noAuth"
+  },
   "navigationBarTitleText": "反馈处理"
 }

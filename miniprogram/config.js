@@ -56,6 +56,7 @@ module.exports = {
       photo_by_unknow_tip: "匿名猫友",
       photo_loading_tip: "加载照片ing",
       to_star_tip: "返回喵星",
+      missing_tip:"已失踪",
       adopt_btn: "只小猫",
     },
     // 关于页，pages/info/info

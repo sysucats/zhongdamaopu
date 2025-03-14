@@ -7,8 +7,7 @@ Page({
    * 页面的初始数据
    */
   data: {
-    tipText: '正在鉴权...',
-    tipBtn: false,
+    
   },
 
   /**
@@ -20,11 +19,6 @@ Page({
 
   async onShow() {
     await this.loadBadgeDefs();
-  },
-
-  // 没有权限，返回上一页
-  goBack() {
-    wx.navigateBack();
   },
 
   // 加载所有徽章

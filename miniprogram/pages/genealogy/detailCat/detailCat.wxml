@@ -10,7 +10,7 @@
   <!-- 这是黄色的半圆形 -->
   <view id='big-circle'></view>
 
-  <swiper indicator-dots='{{false}}' bindchange='swiperLast' previous-margin='60rpx' next-margin='60rpx'>
+  <swiper indicator-dots='{{false}}' bindchange='swiperLast' previous-margin='60rpx' next-margin='60rpx' circular="true">
     <swiper-item class="best-photo" wx:for='{{cat.photo}}' wx:key="_id" bindtap='bindTapPhoto' data-index="{{item.index}}" data-kind='best'>
       <image bindload='bindImageLoaded' mode='aspectFill' src='{{item.photo_compressed || item.photo_id}}'></image>
       <item class="like-count" wx:if="{{item.like_count}}">
@@ -28,15 +28,15 @@
         <image mode='aspectFill' class='gender' wx:if='{{cat.gender === "母"}}' src="/pages/public/images/card/card/female.png"></image>
       </block>
       <view class='count first' bindtap="showPopTip" wx:if="{{cat.popularity != undefined}}" data-tip="{{text_cfg.detail_cat.popularity_tip}}">
-        <image src='/pages/public/images/card/card/pop.png'></image>
+        <view class='iconfont icon-fire'></view>
         <text> {{cat.popularity + (cat.photo_count_total? cat.photo_count_total * photoPopWeight: 0)}}</text>
       </view>
       <view class='count comment' bindtap="showPopTip"  data-tip="便利贴数">
-        <image src='/pages/public/images/card/card/comment.png'></image>
+        <view class='iconfont icon-chat'></view>
         <text> {{cat.comment_count || 0}}</text>
       </view>
-      <view class='count comment' bindtap="showPopTip" data-tip="被关注数">
-        <image src='/pages/public/images/card/card/follow.png'></image>
+      <view class='count comment' bindtap="showPopTip" data-tip="粉丝量">
+        <view class='iconfont icon-like'></view>
         <text> {{cat.follow_count || 0}}</text>
       </view>
     </view>
@@ -47,93 +47,127 @@
       <text class='tag to_star' wx:if='{{cat.to_star}}'>{{text_cfg.genealogy.to_star_tip}}</text>
       <text class='tag to_star' wx:if='{{cat.missing}}'>{{text_cfg.genealogy.missing_tip}}</text>
 
-      <!-- <text class='fb-button' bindtap='bindTapFeedback'>{{text_cfg.detail_cat.button_feedback}}</text> -->
       <view class="mpcode" bindtap="bingMpTap">
-        <image src="/pages/public/images/button/mpcode.png"></image>
+        <view class='iconfont icon-qrcode'></view>
       </view>
     </view>
     <view class='details'>
-      <view class='item'>
-        <view class='label'>
-          <view class='label-block'></view>
-          {{text_cfg.detail_cat.label_nickname}}
-        </view>
-        <view class='value'>{{cat.nickname || '-'}}</view>
-      </view>
-      <view class='item'>
-        <view class='label'>
-          <view class='label-block'></view>
-          {{text_cfg.detail_cat.label_location}}
-        </view>
-        <view class='value'>{{(cat.campus + cat.area) || '-'}}</view>
-      </view>
-      <view class='item'>
-        <view class='label'>
-          <view class='label-block'></view>
-          {{text_cfg.detail_cat.label_birthday}}
-        </view>
-        <view class='value'>{{cat.birthday || '-'}}</view>
-      </view>
 
-      <view class='item long'>
-        <view class='label'>
-          <view class='label-block'></view>
-          {{text_cfg.detail_cat.label_character}}
+      <!-- 基本信息 -->
+      <view class="card">
+        <view class="card-header">
+          <view class="card-title">
+            <view class="iconfont icon-newspaper-o"></view>
+            猫猫档案
+          </view>
         </view>
-        <view class='value'>
-          <!-- 新猫特点Char是空的数组（以前的是空值），修改判定方式 -->
-          <text>{{cat.characteristics_string || '暂无记录'}}</text>
+        <view class='item long' wx:if="{{cat.nickname && cat.nickname.length > 0}}">
+          <view class='label'>
+            <view class='label-block'></view>
+            {{text_cfg.detail_cat.label_nickname}}
+          </view>
+          <view class='value'>{{cat.nickname}}</view>
         </view>
-      </view>
+        <view class='item long'>
+          <view class='label'>
+            <view class='label-block'></view>
+            {{text_cfg.detail_cat.label_location}}
+          </view>
+          <view class='value'>{{(cat.campus + cat.area) || '-'}}</view>
+        </view>
+        <view class='item long' wx:if="{{cat.birthday}}">
+          <view class='label'>
+            <view class='label-block'></view>
+            {{text_cfg.detail_cat.label_birthday}}
+          </view>
+          <view class='value'>{{cat.birthday}}</view>
+        </view>
 
-      <view class='item long'>
-        <view class='label'>
-          <view class='label-block'></view>
-          {{text_cfg.detail_cat.label_rating}} <text class="small">[共{{cat.rating.count || 0}}条]</text>
-          <view class="badge-all" bindtap="bindDetailRating">{{showDetailRating ? '折叠详情' : '展开详情'}}</view>
-          <!-- <view class="badge-all" bindtap="bindRating">我要评分</view> -->
-        </view>
-        <view class="one-rating {{showDetailRating ? 'detail': ''}}">
-          <view class="title" wx:if="{{showDetailRating}}">综合：</view>
-          <view class="stars" bind:tap="bindDetailRating">
-            <view class="one-star {{cat.rating.avgScore >= j+1 ? '' : 'gray'}}" wx:for="*****" wx:key="*this" wx:for-index="j">
-              <image src="/pages/public/images/button/rating_star.svg" mode="aspectFill" />
-            </view>
-            <view class="score">{{cat.rating.avgScoreDisp || '0.0'}}</view>
+        <view class='item long'>
+          <view class='label'>
+            <view class='label-block'></view>
+            {{text_cfg.detail_cat.label_character}}
+          </view>
+          <view class='value'>
+            <!-- 新猫特点Char是空的数组（以前的是空值），修改判定方式 -->
+            <text>{{cat.characteristics_string || text_cfg.detail_cat.label_characteristics_empty}}</text>
           </view>
         </view>
 
-        <block wx:if="{{showDetailRating}}">
-          <view class="one-rating" wx:for="{{cat.rating.catRatings}}" wx:key="name" wx:for-item="x" wx:for-index="i"  bind:tap="bindDetailRating">
-            <view class="title">{{x.name}}：</view>
-            <view class="stars">
-              <view class="one-star {{x.score >= j+1 ? '' : 'gray'}}" wx:for="*****" wx:key="*this" wx:for-index="j">
+        <view class='item long'>
+          <view class='label'>
+            <view class='label-block'></view>
+            {{text_cfg.detail_cat.label_tutorial}}
+          </view>
+          <view class='value'>{{cat.tutorial || text_cfg.detail_cat.label_tutorial_empty}}</view>
+        </view>
+
+        <view class='item long'>
+          <view class='label'>
+            <view class='label-block'></view>
+            {{text_cfg.detail_cat.label_rating}} （共{{cat.rating.count || 0}}条）
+            <view class="badge-all" bindtap="bindDetailRating">{{showDetailRating ? '折叠详情' : '展开详情'}}</view>
+            <!-- <view class="badge-all" bindtap="bindRating">我要评分</view> -->
+          </view>
+          <view class="one-rating {{showDetailRating ? 'detail': ''}}">
+            <view class="title" wx:if="{{showDetailRating}}">综合：</view>
+            <view class="stars" bind:tap="bindDetailRating">
+              <view class="one-star {{cat.rating.avgScore >= j+1 ? '' : 'gray'}}" wx:for="*****" wx:key="*this" wx:for-index="j">
                 <image src="/pages/public/images/button/rating_star.svg" mode="aspectFill" />
               </view>
-              <view class="score">{{x.scoreDisp}}</view>
+              <view class="score">{{cat.rating.avgScoreDisp || '0.0'}}</view>
             </view>
           </view>
-        </block>
 
+          <block wx:if="{{showDetailRating}}">
+            <view class="one-rating" wx:for="{{cat.rating.catRatings}}" wx:key="name" wx:for-item="x" wx:for-index="i"  bind:tap="bindDetailRating">
+              <view class="title">{{x.name}}：</view>
+              <view class="stars">
+                <view class="one-star {{x.score >= j+1 ? '' : 'gray'}}" wx:for="*****" wx:key="*this" wx:for-index="j">
+                  <image src="/pages/public/images/button/rating_star.svg" mode="aspectFill" />
+                </view>
+                <view class="score">{{x.scoreDisp}}</view>
+              </view>
+            </view>
+          </block>
+
+        </view>
       </view>
 
-
-
-      <view class='item long'>
-        <view class='label'>
-          <view class='label-block'></view>
-          {{text_cfg.detail_cat.label_tutorial}}
+      <!-- 疫苗记录 -->
+      <view class="card" wx:if="{{cat.lastVaccine}}">
+        <view class="card-header">
+          <view class="card-title">
+            <view class="iconfont icon-vaccine"></view>
+            疫苗记录
+          </view>
+          <view class="badge-all" bindtap="toVaccineDetail">查看详情</view>
         </view>
-        <view class='value'>{{cat.tutorial || text_cfg.detail_cat.label_tutorial_empty}}</view>
+
+        <view class='item long' >
+          <view class="latest-vaccine">  
+            <view class="iconfont icon-success"></view>
+            <view class='value vaccine-info'>
+              <text>{{cat.lastVaccine.vaccine_type}}</text>
+              <text>{{cat.lastVaccine.vaccine_date_formatted}}</text>
+            </view>
+          </view>
+        </view>
       </view>
 
-      <view class='item long' wx:if="{{showBadge}}">
-        <view class='label'>
-          <view class='label-block'></view>
-          徽章口袋
-          <view class="badge-all" bindtap="showGiveBadge" wx:if="{{detailBadges.length > 4}}">赠予徽章</view>
-          <view class="badge-all" bindtap="toBadgeDetail" wx:if="{{detailBadges.length}}">查看详情</view>
+      <!-- 徽章口袋 --> 
+      <view class="card" wx:if="{{showBadge}}">
+        <view class="card-header">
+          <view class="card-title">
+            <view class="iconfont icon-medel-o"></view>
+            徽章口袋
+          </view>
+          <view class="badge-btn">
+              <view class="badge-all" bindtap="showGiveBadge" wx:if="{{detailBadges.length > 4}}">赠予徽章</view>
+              <view class="badge-all" bindtap="toBadgeDetail" wx:if="{{detailBadges.length}}">查看详情</view>
+          </view>
         </view>
+
         <scroll-view class="badge-list" scroll-x="1">
           <view class="badge-item badge-level-{{item.level}}" wx:for="{{catBadges}}" wx:key="_id" hover-class="tap" bindtap="showBadgeModal" data-index="{{index}}">
             <image class="badge-item-avatar" src="{{item.img}}" mode="aspectFill" />
@@ -147,15 +181,17 @@
             <view class="badge-item-name">赠予徽章</view>
           </view>
         </scroll-view>
-        <view class=""></view>
       </view>
 
       <!-- 关系 -->
-      <view class="item long" wx:if="{{is_manager || (cat.relations && cat.relations.length)}}">
-        <view class="label">
-          <view class='label-block'></view>
-          猫际关系
+      <view class="card" wx:if="{{is_manager || (cat.relations && cat.relations.length)}}">
+        <view class="card-header">
+          <view class="card-title">
+            <view class="iconfont icon-relation"></view>
+            猫际关系
+          </view>
         </view>
+        
         <scroll-view scroll-x="1" class="relations">
           <view class="relation-block" wx:for="{{cat.relations}}" wx:key="_id" bindtap="toRelationCat" data-cat_id="{{item.cat._id}}" hover-class="tap">
             <image class="relation-cat-avatar" src='{{item.cat.avatar.photo_compressed || item.cat.avatar.photo_id}}' mode="aspectFill"></image>
@@ -174,7 +210,7 @@
   <!-- info end -->
 
   <!-- scroll-view包裹下sticky失效，再套个view作父容器 -->
-  <view>
+  <view class="card">
     <view class='big-header'>
       <image class='avatar' mode='aspectFill' src='{{cat.avatar.photo_compressed || cat.avatar.photo_id}}'></image>
       <view class='name-and-count'>
@@ -196,7 +232,7 @@
     <view class='album'>
       <view wx:for="{{album}}" class='album-block' wx:key='date' wx:for-item="albumBlock">
         <view class='header'>
-          <image src='/pages/public/images/card/card/time.png'></image>
+          <view class='icon-clock-o'></view>
           <view class='time'>{{albumBlock.date[0]}}年{{albumBlock.date[1]}}月</view>
           <view wx:if='{{albumBlock.age[0] >= 0 && albumBlock.age[1] >= 0}}' class='age'>{{albumBlock.age[0]}}岁{{albumBlock.age[1]}}个月</view>
         </view>
@@ -267,6 +303,37 @@
   <view class="search-buttons">
     <view class="search-btn" bindtap="toGetBadge">获取徽章</view>
     <view class="search-btn {{activeUserBadge != -1 ? 'active': 'disabled'}}" hover-class="hover" bindtap="toGiveBadge">赠予</view>
+  </view>
+</popup>
+
+<!-- 疫苗记录弹出层 -->
+<popup show="{{showVaccineHistory}}" position="center" bind:close="hideVaccineHistory">
+  <view class="modal-content-wrapper">
+    <view class="modal-header">
+      <text>{{cat.name}}的疫苗记录</text>
+      <view class="modal-close" bindtap="hideVaccineHistory">×</view>
+    </view>
+    <scroll-view class="modal-body" scroll-y="1">
+      <view class="vaccine-timeline" wx:if="{{vaccineHistory && vaccineHistory.length}}">
+        <view class="timeline-item" wx:for="{{vaccineHistory}}" wx:key="_id">
+          <view class="timeline-icon {{index === 0 ? 'iconfont icon-success' : (item.is_expired ? 'iconfont icon-bulb-o' : 'timeline-dot')}}"></view>
+          <view class="timeline-connector" wx:if="{{index !== vaccineHistory.length - 1}}"></view>
+          <view class="timeline-content {{index === 0 ? 'first-card' : ''}} {{item.is_expired ? 'expired-card' : ''}}">
+            <view class="timeline-header">
+              <view class="timeline-title">{{item.vaccine_type}}</view>
+              <view class="timeline-date {{item.is_expired ? 'expired' : ''}}">{{item.vaccine_date_formatted}}</view>
+            </view>
+            <view class="timeline-body">
+              <view class="timeline-info" wx:if="{{item.location}}">接种地点：{{item.location}}</view>
+              <view class="timeline-info" wx:if="{{item.expire_date_formatted && !item.is_expired}}">有效期至：{{item.expire_date_formatted}}</view>
+              <view class="timeline-info expired" wx:if="{{item.is_expired}}">已过期</view>
+              <view class="timeline-info" wx:if="{{item.next_vaccine_date_formatted}}">下次接种：{{item.next_vaccine_date_formatted}}</view>
+              <view class="timeline-info" wx:if="{{item.remarks}}">备注：{{item.remarks}}</view>
+            </view>
+          </view>
+        </view>
+      </view>
+    </scroll-view>
   </view>
 </popup>
 

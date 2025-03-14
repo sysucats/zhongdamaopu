@@ -1,0 +1,59 @@
+/* 未授权提示 */
+.no-auth-container {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, calc(-50% - 0.5 * 100%));
+}
+
+.no-auth {
+  text-align: center;
+  padding: 100rpx 0;
+  color: var(--color-gray-max);
+}
+
+.no-auth-icon {
+  font-size: 80rpx;
+  margin-bottom: 20rpx;
+  animation: bounceIn 0.6s ease;
+}
+
+.no-auth-text {
+  font-size: 28rpx;
+}
+
+button {
+  width: 45%;
+  display: inline-block;
+  font-size: 30rpx;
+  box-sizing: border-box;
+}
+.no-auth-btn {
+  background-color: var(--color-gray);
+  color: white;
+  margin-top: 20rpx;
+  justify-content: center;
+  align-items: center;
+  display: flex;
+  border-radius: 50rpx;
+}
+.no-auth-btn::after {
+  border: none;
+}
+
+@keyframes bounceIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.3);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+  70% {
+    transform: scale(0.9);
+  }
+  100% {
+    transform: scale(1);
+  }
+}

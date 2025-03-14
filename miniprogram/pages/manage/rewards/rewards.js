@@ -9,8 +9,6 @@ Page({
    * 页面的初始数据
    */
   data: {
-    tipText: '正在鉴权...',
-    tipBtn: false,
     rewards: [],
     adding: false,
     today: formatDate(new Date(), "yyyy-MM"),

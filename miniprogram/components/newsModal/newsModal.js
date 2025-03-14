@@ -33,13 +33,18 @@ Component({
         type : String ,
         value : ''
       },
-      // 图片路径
+      // 时间
       time :{
         type : String ,
         value : ''
       },
-      // 图片路径
+      // 分类
       newsClass :{
+        type : String ,
+        value : ''
+      },
+      // 用户名
+      user :{
         type : String ,
         value : ''
       },
@@ -52,7 +57,7 @@ Component({
      */
     data: {
       // 弹窗显示控制
-      isShow:false
+      isShow: false
     },
   
     /**
@@ -81,10 +86,12 @@ Component({
        * triggerEvent 用于触发事件
        */
       _cancelEvent(){
+        this.hideNewsModal();
         //触发取消回调
         this.triggerEvent("cancelEvent")
       },
       _confirmEvent(){
+        this.hideNewsModal();
         //触发成功回调
         this.triggerEvent("confirmEvent");
       }

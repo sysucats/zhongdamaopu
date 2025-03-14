@@ -85,7 +85,7 @@ button.primary::after {
 button.primary {
   border-radius: 100rpx;
   background-color: var(--color-primary);
-  color: var(--color-white);
+  color: var(--color-text);
   width: 500rpx;
   margin-bottom: 30rpx;
 }

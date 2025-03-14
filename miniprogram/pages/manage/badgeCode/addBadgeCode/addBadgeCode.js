@@ -12,8 +12,6 @@ Page({
   data: {
     input: {},
     allBadgeLevels: Object.keys(levelOrderMap),
-    tipText: '正在鉴权...',
-    tipBtn: false,
   },
 
   /**

@@ -88,6 +88,10 @@ Page({
 
     // 是否展开评分详情
     showDetailRating: false,
+
+    // 疫苗记录相关
+    showVaccineHistory: false,
+    vaccineHistory: [],
   },
 
   jsData: {
@@ -131,7 +135,7 @@ Page({
       });
     }
 
-    // 记录访问时间，消除“有新相片”
+    // 记录访问时间，消除"有新相片"
     // TODO：用cache
     setVisitedDate(this.jsData.cat_id);
   },
@@ -249,6 +253,7 @@ Page({
       this.loadFollowCount(),
       this.loadRelations(),
       this.reloadCatBadge(),
+      this.getLatestVaccine(cat._id),
     ]);
 
     var query = wx.createSelectorQuery();
@@ -613,7 +618,7 @@ Page({
 
   toAddRelation() {
     var cat_id = this.data.cat._id;
-    const url = `/pages/manage/addRelations/addRelations?cat_id=${cat_id}`;
+    const url = `/pages/manage/catManage/catManage?cat_id=${cat_id}&activeTab=relation`;
     wx.navigateTo({
       url: url,
     });
@@ -859,5 +864,71 @@ Page({
       icon: res.result ? "success": "error"
     });
     this.jsData.updatingFollowCats = false;
-  }
+  },
+
+  // 获取最新疫苗记录
+  async getLatestVaccine(cat_id) {
+    try {
+      const { result } = await cloud.callFunction({
+        name: 'vaccineOp',
+        data: {
+          operation: 'list',
+          cat_id: cat_id
+        }
+      });
+
+      if (result?.result === true && Array.isArray(result.data) && result.data.length > 0) {
+        // 处理所有疫苗记录的日期格式
+        const vaccineHistory = result.data.map(vaccine => {
+          // 判断疫苗是否过期
+          const today = new Date();
+          const expireDate = vaccine.expire_date ? new Date(vaccine.expire_date) : null;
+          const is_expired = expireDate ? today > expireDate : false;
+          
+          return {
+            ...vaccine,
+            vaccine_date_formatted: vaccine.vaccine_date ? formatDate(vaccine.vaccine_date, "yyyy-MM-dd") : '',
+            expire_date_formatted: vaccine.expire_date ? formatDate(vaccine.expire_date, "yyyy-MM-dd") : '',
+            next_vaccine_date_formatted: vaccine.next_vaccine_date ? formatDate(vaccine.next_vaccine_date, "yyyy-MM-dd") : '',
+            is_expired
+          };
+        });
+
+        // 按日期排序
+        vaccineHistory.sort((a, b) => {
+          const dateA = a.vaccine_date ? new Date(a.vaccine_date).getTime() : 0;
+          const dateB = b.vaccine_date ? new Date(b.vaccine_date).getTime() : 0;
+          return dateB - dateA;
+        });
+
+        // 保存所有疫苗记录
+        this.setData({
+          vaccineHistory
+        });
+
+        // 设置最新的疫苗记录
+        if (vaccineHistory[0] && vaccineHistory[0].vaccine_date) {
+          this.setData({
+            'cat.lastVaccine': vaccineHistory[0]
+          });
+        }
+      }
+    } catch (error) {
+      console.error('获取疫苗记录失败:', error);
+    }
+  },
+
+  // 显示疫苗记录历史
+  toVaccineDetail() {
+    this.setData({
+      showVaccineHistory: true
+    });
+  },
+
+  // 隐藏疫苗记录历史
+  hideVaccineHistory() {
+    this.setData({
+      showVaccineHistory: false
+    });
+  },
 })
