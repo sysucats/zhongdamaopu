@@ -20,5 +20,9 @@ Component({
       this.setData({ show: false });
       this.triggerEvent('close');
     },
+    catchTouchMove: function() {
+      // 阻止滑动穿透，不执行任何操作，仅捕获事件
+      return false;
+    }
   }
 });

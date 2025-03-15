@@ -5,7 +5,7 @@
 
 module.exports = {
   // 版本号
-  app_version: "v1.14.4",
+  app_version: "v1.15.0",
   // laf后台服务地址
   laf_url: 'https://fxkv6h.laf.run',
   // laf后台服务地址（微信开发工具中），一般和上面laf_url一致就好
@@ -56,6 +56,7 @@ module.exports = {
       photo_by_unknow_tip: "匿名猫友",
       photo_loading_tip: "加载照片ing",
       to_star_tip: "返回喵星",
+      missing_tip:"已失踪",
       adopt_btn: "只小猫",
     },
     // 关于页，pages/info/info

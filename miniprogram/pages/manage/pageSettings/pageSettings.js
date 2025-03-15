@@ -10,8 +10,6 @@ Page({
    * 页面的初始数据
    */
   data: {
-    tipText: '正在鉴权...',
-    tipBtn: false,
     settings: {},
     desc,
   },
@@ -32,10 +30,6 @@ Page({
     }
   },
 
-  // 没有权限，返回上一页
-  goBack() {
-    wx.navigateBack();
-  },
 
   setDefaultValues(settings) {
     let shouldUpload = false;

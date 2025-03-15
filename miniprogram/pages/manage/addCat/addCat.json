@@ -1,6 +1,0 @@
-{
-  "usingComponents": {
-      "searchCat": "/components/searchCat/searchCat"
-  },
-  "navigationBarTitleText": "修改猫猫信息"
-}

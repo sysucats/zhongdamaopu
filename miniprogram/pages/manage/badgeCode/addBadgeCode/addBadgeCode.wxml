@@ -24,7 +24,6 @@
 
   <button class="primary" bindtap="clickSubmit">提交</button>
 </view>
-<view wx:else class="unAuth">
-  <text>{{tipText}}</text>
-  <button bindtap='goBack' wx:if="{{tipBtn}}">打扰了</button>
-</view>
+
+<!-- 未授权提示 -->
+<no-auth wx:else tip-text="{{tipText}}"></no-auth>

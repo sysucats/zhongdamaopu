@@ -18,8 +18,6 @@ Page({
    * 页面的初始数据
    */
   data: {
-    tipText: '正在鉴权...',
-    tipBtn: false,
     phase: 0,
     phase2str: [
       '未开始',
@@ -123,11 +121,6 @@ Page({
       now: 0,
       processing: false,
     });
-  },
-
-  // 没有权限，返回上一页
-  goBack() {
-    wx.navigateBack();
   },
 
   clickProcessBtn: async function (e) {

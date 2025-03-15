@@ -1,22 +1,21 @@
 <!--components/badgeModal/badgeModal.wxml-->
-<!-- 换成统一的mask组件 -->
-<mask style="z-index: 1;" show="{{show}}" bind:close="hide">
-<view class="modal {{show ? 'show' : ''}} badge-level-{{level}}" style="z-index: {{zindex}};">
-  <view class="title">{{title}}</view>
-  <view class="close-btn" bindtap="hide">x</view>
-  <image class="badge-img" src="{{img}}" mode="aspectFill"/>
-  <view class="badge-name-line">
-    <view class="arrow">
-      <view class="arrow-left"></view>
-      <view class="round left"></view>
+<popup position="center" show="{{show}}" zindex="{{zindex}}" bind:close="hide">
+  <view class="modal badge-level-{{level}}">
+    <view class="title">{{title}}</view>
+    <view class="close-btn" bindtap="hide">x</view>
+    <image class="badge-img" src="{{img}}" mode="aspectFill"/>
+    <view class="badge-name-line">
+      <view class="arrow">
+        <view class="arrow-left"></view>
+        <view class="round left"></view>
+      </view>
+      <view class="badge-name">{{name}}</view>
+      <view class="arrow">
+        <view class="arrow-right"></view>
+        <view class="round right"></view>
+      </view>
     </view>
-    <view class="badge-name">{{name}}</view>
-    <view class="arrow">
-      <view class="arrow-right"></view>
-      <view class="round right"></view>
-    </view>
+    <view class="desc">{{desc}}</view>
+    <view class="tip">{{tip}}</view>
   </view>
-  <view class="desc">{{desc}}</view>
-  <view class="tip">{{tip}}</view>
-</view>
-</mask>
+</popup>

@@ -1,0 +1,163 @@
+<!-- 疫苗信息管理 -->
+<view class="vaccine-section" wx:if="{{selectedCat}}">
+  <!-- 疫苗列表 -->
+  <view class="vaccine-list" wx:if="{{vaccineList && vaccineList.length > 0}}">
+    <view class="vaccine-item" wx:for="{{vaccineList}}" wx:key="_id">
+      <!-- 内容 -->
+      <view class="vaccine-content" style="transform: translateX({{item.offsetX || 0}}rpx)"
+            catch:touchstart="touchStart" catch:touchmove="touchMove" catch:touchend="touchEnd"
+            data-id="{{item._id}}" data-index="{{index}}">
+        <view class="vaccine-header">
+          <view class="vaccine-type">{{item.vaccine_type}}</view>
+          <view class="vaccine-date">{{item.vaccine_date_formatted}}</view>
+        </view>
+        <view class="vaccine-body">
+          <view class="vaccine-location" wx:if="{{item.location}}">接种地点：{{item.location}}</view>
+          <view class="vaccine-expire" wx:if="{{item.expire_date_formatted}}">有效期至：{{item.expire_date_formatted}}</view>
+          <view class="vaccine-next" wx:if="{{item.next_vaccine_date_formatted}}">下次接种：{{item.next_vaccine_date_formatted}}</view>
+          <view class="vaccine-remarks" wx:if="{{item.remarks}}">备注：{{item.remarks}}</view>
+        </view>
+        <view class="item-indicator"></view>
+      </view>
+      
+      <!-- 滑动操作 -->
+      <view class="swipe-actions">
+        <view class="action-edit" catchtap="editVaccine" data-id="{{item._id}}">编辑</view>
+        <view class="action-delete" catchtap="deleteVaccine" data-id="{{item._id}}">删除</view>
+      </view>
+    </view>
+  </view>
+  
+  <view class="empty-tip" wx:else>
+    <view class="empty-icon">📋</view>
+    <view>暂无疫苗记录，点击右下角添加</view>
+  </view>
+</view>
+
+<!-- 疫苗表单 -->
+<popup show="{{showVaccineModal}}" position="center" zindex="1000" bind:close="cancelVaccine">
+  <view class="modal-content-wrapper">
+    <view class="modal-header">
+      <text>{{isEditingVaccine ? '编辑疫苗记录' : '添加疫苗记录'}}</text>
+      <view class="modal-close" bindtap="cancelVaccine">×</view>
+    </view>
+    <view class="modal-body">
+      <form bindsubmit="saveVaccine">
+        <view class="form-item">
+          <view class="form-label">疫苗类型</view>
+          <picker bindchange="vaccineTypeChange" value="{{selectedTypeIndex}}" range="{{vaccineTypes}}">
+            <view class="picker">{{vaccineForm.vaccine_type || '请选择疫苗类型'}}</view>
+          </picker>
+          <view class="custom-type-option" bindtap="toggleCustomType">
+            <text>{{useCustomType ? '选择预设类型' : '使用自定义类型'}}</text>
+          </view>
+          <input wx:if="{{useCustomType}}" class="custom-type-input" type="text" 
+                 placeholder="请输入自定义疫苗类型" 
+                 bindinput="customTypeInput" 
+                 value="{{vaccineForm.custom_vaccine_type}}"></input>
+        </view>
+        <view class="form-item">
+          <view class="form-label">接种日期</view>
+          <picker mode="date" bindchange="vaccineDateChange" value="{{vaccineForm.vaccine_date}}">
+            <view class="picker">{{vaccineForm.vaccine_date_formatted || '请选择接种日期'}}</view>
+          </picker>
+        </view>
+        <view class="form-item">
+          <view class="form-label">有效期至</view>
+          <picker mode="date" bindchange="expireDateChange" value="{{vaccineForm.expire_date}}">
+            <view class="picker">{{vaccineForm.expire_date_formatted || '请选择有效期'}}</view>
+          </picker>
+        </view>
+        <view class="form-item">
+          <view class="form-label">下次接种日期</view>
+          <picker mode="date" bindchange="nextDateChange" value="{{vaccineForm.next_vaccine_date}}">
+            <view class="picker">{{vaccineForm.next_vaccine_date_formatted || '请选择下次接种日期'}}</view>
+          </picker>
+        </view>
+        <view class="form-item">
+          <view class="form-label">接种地点</view>
+          <input class="location-input" type="text" name="location" placeholder="请输入接种地点" value="{{vaccineForm.location}}"></input>
+        </view>
+        <view class="form-item">
+          <view class="form-label">备注</view>
+          <textarea class="remarks-input" name="remarks" placeholder="请输入备注信息（如：药物品牌、剂量、注意事项等）" value="{{vaccineForm.remarks}}"></textarea>
+        </view>
+        <view class="form-buttons">
+          <button class="cancel-btn" bindtap="cancelVaccine">取消</button>
+          <button class="submit-btn" form-type="submit">保存</button>
+        </view>
+      </form>
+    </view>
+  </view>
+</popup>
+
+<!-- 疫苗类型管理 -->
+<popup show="{{showTypeManageModal}}" position="center" zindex="1000" bind:close="cancelTypeManage">
+  <view class="modal-content-wrapper">
+    <view class="modal-header">
+      <text>编辑疫苗类型</text>
+      <view class="modal-close" bindtap="cancelTypeManage">×</view>
+    </view>
+    <view class="modal-body">
+      <view class="type-add-form">
+        <input type="text" placeholder="输入新疫苗名称" bindinput="onNewTypeInput" value="{{newVaccineType}}"></input>
+        <button class="add-type-btn" bindtap="addVaccineType">添加</button>
+      </view>
+      <view class="type-list">
+        <view class="type-item" wx:for="{{vaccineTypes}}" wx:key="*this">
+          <text class="type-name">{{item}}</text>
+          <view class="type-delete" catchtap="deleteVaccineType" data-type="{{item}}">×</view>
+        </view>
+        <view class="empty-tip" wx:if="{{!vaccineTypes || vaccineTypes.length === 0}}">暂无疫苗</view>
+      </view>
+      <view class="type-tips">提示：已经被使用的疫苗无法删除</view>
+      <view class="form-buttons">
+        <button class="cancel-btn" bindtap="cancelTypeManage">关闭</button>
+      </view>
+    </view>
+  </view>
+</popup>
+
+<!-- 已接种猫咪列表 -->
+<popup show="{{showVaccinatedCatsModal}}" position="center" zindex="1000" bind:close="closeVaccinatedCatsModal">
+  <view class="modal-content-wrapper">
+    <view class="modal-header">
+      <text>已接种疫苗的猫猫</text>
+      <view class="modal-close" bindtap="closeVaccinatedCatsModal">×</view>
+    </view>
+    <view class="modal-body">
+      <!-- 疫苗类型筛选 -->
+      <view class="vaccine-type-filter">
+        <view class="filter-options">
+          <view class="filter-option {{selectedVaccineType === '' ? 'active' : ''}}" 
+                bindtap="selectVaccineTypeFilter" data-type="">全部</view>
+          <view class="filter-option {{selectedVaccineType === item ? 'active' : ''}}" 
+                wx:for="{{vaccineTypes}}" wx:key="*this"
+                bindtap="selectVaccineTypeFilter" data-type="{{item}}">{{item}}</view>
+        </view>
+      </view>
+      
+      <!-- 猫咪列表 -->
+      <view class="vaccinated-cats-list">
+        <view class="cat-item" wx:for="{{vaccinatedCats}}" wx:key="_id" bindtap="viewCatDetail" data-cat-id="{{item._id}}">
+          <image class="cat-avatar" mode="aspectFill" src="{{item.avatar.photo_compressed || item.avatar.photo_id}}"></image>
+          <view class="cat-info">
+            <view class="cat-name">{{item.name}}</view>
+            <view class="cat-details">{{item.campus}} {{item.area}}</view>
+            <view class="vaccine-info" wx:if="{{item.last_vaccine}}">
+              <text>最近接种: {{item.last_vaccine.vaccine_type}} ({{item.last_vaccine.vaccine_date_formatted}})</text>
+            </view>
+          </view>
+        </view>
+        <view class="empty-tip" wx:if="{{!vaccinatedCats || vaccinatedCats.length === 0}}">
+          <view class="empty-icon">🐱</view>
+          <view>暂无已接种疫苗的猫咪</view>
+        </view>
+      </view>
+      
+      <view class="form-buttons">
+        <button class="cancel-btn" bindtap="closeVaccinatedCatsModal">关闭</button>
+      </view>
+    </view>
+  </view>
+</popup> 

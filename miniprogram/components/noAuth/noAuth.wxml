@@ -1,0 +1,7 @@
+<view class="no-auth-container">
+  <view class="no-auth">
+    <view class="no-auth-icon">🔒</view>
+    <view class="no-auth-text">{{tipText}}</view>
+    <button class='no-auth-btn' bindtap='goBack' wx:if='{{tipBtn}}'>打扰了</button>
+  </view>
+</view> 

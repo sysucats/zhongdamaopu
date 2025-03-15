@@ -2,31 +2,18 @@
 @import "../../pages/manage/badgeDef/badgeDef.wxss";
 
 .modal {
-  background-color: white;
   width: 500rpx;
-  border-radius: 50rpx;
-  position: fixed;
-  top: 200rpx;
-  left: 50%;
-  padding: 20rpx 0;
+  padding: 20rpx;
   display: flex;
   flex-direction: column;
   align-items: center;
-  transition: transform 400ms ease, opacity 400ms ease;
-  transform: translateX(-50%) translateY(100%);
-  filter: drop-shadow(0px 12rpx 12rpx rgba(0, 0, 0, 0.15));
-  opacity: 0;
-}
-.modal.show {
-  transform: translateX(-50%) translateY(0);
-  opacity: 1;
 }
 
 .title {
   width: 100%;
   text-align: center;
   font-size: 24rpx;
-  color: black;
+  font-weight: bold;
 }
 
 .close-btn {
@@ -60,6 +47,9 @@
 .badge-name-line {
   display: flex;
   align-items: center;
+  width: 100%;
+  justify-content: center;
+  flex-wrap: nowrap;
 }
 
 .arrow {
@@ -67,6 +57,7 @@
   width: 126rpx;
   height: 12rpx;
   overflow: hidden;
+  flex-shrink: 0;
 }
 
 .arrow-left,
@@ -117,12 +108,16 @@
 }
 
 .badge-name {
-  width: 200rpx;
+  width: auto;
+  min-width: 200rpx;
+  max-width: 100%;
   font-size: 30rpx;
   text-align: center;
   font-weight: bold;
-  background-color: white;
   border-radius: 200%;
+  padding: 0 10rpx;
+  white-space: nowrap;
+  overflow: visible;
 }
 
 
@@ -139,10 +134,12 @@
 }
 
 .desc {
-  width: 80%;
+  width: 100%;
   font-size: 22rpx;
   color: var(--color-black-min);
   margin: 10rpx;
+  text-align: center;
+  word-break: break-word;
 }
 
 .tip {

@@ -1,6 +1,6 @@
 {
   "component": true,
   "usingComponents": {
-    "mask":"/components/mask/mask"
+    "popup":"/components/popup/popup"
   }
 }

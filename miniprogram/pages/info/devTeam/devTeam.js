@@ -10,6 +10,17 @@ Page({
     text_cfg: text_cfg,
     github_link: "https://github.com/sysucats/zhongdamaopu",
     update_log: [{
+      version: "v1.15.0",
+      content: [
+        "猫猫详情页面支持查看疫苗记录",
+        "优化猫猫详情页面样式和弹窗组件交互",
+        "重构管理页面目录结构",
+        "修复mask组件的事件穿透问题",
+        "优化喵友圈页面性能和缓存策略",
+        "统一管理页面权限提示样式",
+      ],
+      time: "2024/3/14"
+    }, {
       version: "v1.14.4",
       content: [
         "修复版本控制功能"

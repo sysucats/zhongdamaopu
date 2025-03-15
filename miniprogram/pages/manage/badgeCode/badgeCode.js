@@ -11,8 +11,7 @@ Page({
    * 页面的初始数据
    */
   data: {
-    tipText: '正在鉴权...',
-    tipBtn: false,
+    
   },
 
   jsData: {

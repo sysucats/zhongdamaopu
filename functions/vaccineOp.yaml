@@ -1,0 +1,4 @@
+name: vaccineOp
+methods:
+  - POST
+tags: [] 

@@ -1,3 +1,5 @@
 {
-  "usingComponents": {}
+  "usingComponents": {
+    "no-auth": "/components/noAuth/noAuth"
+  }
 }

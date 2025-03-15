@@ -3,8 +3,8 @@
 <!-- 外显筛选 -->
 <view class="h-filter-list" wx:if="{{filters.length > 1}}">
   <view class='h-filter-item long {{index === activeFilter? "active": ""}}' bindtap='fClickTime' data-index='{{index}}' wx:for="{{filters}}" wx:key="name">
-    <image class="time-logo" wx:if="{{index !== activeFilter}}" src="/pages/public/images/filter/time_gray.png" mode="aspectFit"></image>
-    <image class="time-logo" wx:else src="/pages/public/images/filter/time_active.png" mode="aspectFit"></image>
+    <view class="icon-clock" wx:if="{{index !== activeFilter}}"></view>
+    <view class="icon-clock" wx:else></view>
     {{item.name}}
   </view>
 </view>

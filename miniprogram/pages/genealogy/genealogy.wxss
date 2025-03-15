@@ -100,7 +100,8 @@ scroll-view {
   font-size: 18rpx;
   line-height: 30rpx;
   text-align: center;
-  background-color: var(--color-primary);
+  background-color: var(--color-primary-light);
+  color: var(--color-primary);
   margin-left: 8rpx;
 }
 
@@ -122,10 +123,10 @@ scroll-view {
   display: flex;
   align-items: center;
 }
-.popularity image {
-  height: 20rpx;
-  width: 35rpx;
+.iconfont {
+  font-size: 25rpx;
   margin-right: 8rpx;
+  color: var(--color-primary);
 }
 
 .card .info .comment {

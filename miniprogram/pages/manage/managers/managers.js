@@ -78,10 +78,6 @@ Page({
   onShareAppMessage: function () {
 
   },
-  // 没有权限，返回上一页
-  goBack() {
-    wx.navigateBack();
-  },
 
   // 读取用户列表
   loadUsers: async function(reload) {

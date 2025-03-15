@@ -1,3 +1,4 @@
+@import "../wxss/iconfont.wxss";
 
 .h-filter-list {
   width: 750rpx;
@@ -45,9 +46,9 @@
 }
 
 
-.h-filter-item .time-logo {
-  width: 28rpx;
-  height: 28rpx;
+.h-filter-item .icon-clock {
+  font-family: 'iconfont';
+  font-size: 28rpx;
   margin-right: 4rpx;
 }
 

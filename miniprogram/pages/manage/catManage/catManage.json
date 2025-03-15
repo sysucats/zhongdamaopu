@@ -1,0 +1,9 @@
+{
+  "navigationBarTitleText": "猫猫管理",
+  "usingComponents": {
+    "relation-tab": "/components/relationTab/relationTab",
+    "vaccine-tab": "/components/vaccineTab/vaccineTab",
+    "cat-info-tab": "/components/catInfoTab/catInfoTab",
+    "no-auth": "/components/noAuth/noAuth"
+  }
+} 

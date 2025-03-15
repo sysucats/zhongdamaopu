@@ -49,7 +49,6 @@
     <view style="height: 50rpx; opacity: 0;"></view> <!--加个透明块防止内容偏低按不到-->
   </scroll-view>
 </block>
-<view wx:else class='unAuth'>
-  <text>{{tipText}}</text>
-  <button bindtap='goBack' wx:if='{{tipBtn}}'>打扰了</button>
-</view>
+
+<!-- 未授权提示 -->
+<no-auth wx:else tip-text="{{tipText}}"></no-auth>

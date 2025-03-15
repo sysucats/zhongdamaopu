@@ -14,8 +14,6 @@ Page({
    * 页面的初始数据
    */
   data: {
-    tipText: '正在鉴权...',
-    tipBtn: false,
     campus_list: [],
   },
 
@@ -43,11 +41,6 @@ Page({
 
     // 发送审核消息
     sendVerifyNotice(this.jsData.notice_list);
-  },
-
-  // 没有权限，返回上一页
-  goBack() {
-    wx.navigateBack();
   },
 
   async loadPhotosAndFillUserInfo(skip_i) {

@@ -98,13 +98,8 @@ Page({
             icon: "icon-location-o"
           },
           {
-            name: "添加新猫",
-            path: "/pages/manage/addCat/addCat",
-            icon: "icon-add-o"
-          },
-          {
-            name: "猫猫关系",
-            path: "/pages/manage/addRelations/addRelations",
+            name: "猫猫管理",
+            path: "/pages/manage/catManage/catManage",
             icon: "icon-cluster-o"
           },
           {
@@ -137,7 +132,7 @@ Page({
             path: "/pages/manage/imProcess/imProcess",
             num: "numImProcess",
             icon: "icon-todo-list-o"
-          },
+          }
         ]
       }
     ],
@@ -191,13 +186,20 @@ Page({
     const adoptQf = { adopt: 1 };
     // 所有绝育量
     const sterilizedQf = { sterilized: true };
+    // 去除已领养、失踪、去喵星的猫猫
+    const currentCatsQf = { 
+      adopt: _.neq(1), 
+      to_star: _.neq(true),
+      missing: _.neq(true)
+    };
 
-    let [numAllCats, numAllPhotos, numAllComments, numSterilized, numAdoptQf] = await Promise.all([
+    let [numAllCats, numAllPhotos, numAllComments, numSterilized, numAdoptQf, numCurrentCats] = await Promise.all([
       db.collection('cat').where(allCatQf).count(),
       db.collection('photo').where(allPhotoQf).count(),
       db.collection('comment').where(allCommentQf).count(),
       db.collection('cat').where(sterilizedQf).count(),
       db.collection('cat').where(adoptQf).count(),
+      db.collection('cat').where(currentCatsQf).count(),
     ]);
 
     // 计算绝育率
@@ -210,6 +212,7 @@ Page({
       numAllComments: numAllComments.total,
       sterilizationRate: sterilizationRate + '%',
       adoptRate: adoptRate + '%',
+      currentCatsCount: numCurrentCats.total,
     });
 
     if (!await isManagerAsync()) {

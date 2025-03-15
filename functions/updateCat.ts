@@ -50,7 +50,7 @@ function deepcopy(origin) {
   // not for modifying.
   const copyKeys = ['area', 'campus', 'characteristics',
     'colour', 'father', 'gender', 'mother', 'name', 'nickname', 'popularity', 'sterilized', 'adopt',
-    'birthday', 'habit', 'tutorial', 'relation', 'to_star']
+    'missing', 'birthday', 'habit', 'tutorial', 'relation', 'to_star']
   var res = {};
   for (const key of copyKeys) {
     res[key] = origin[key];

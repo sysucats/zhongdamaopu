@@ -9,8 +9,6 @@ Page({
    * 页面的初始数据
    */
   data: {
-    tipText: '正在鉴权...',
-    tipBtn: false,
     filters: [],
   },
 
@@ -21,11 +19,6 @@ Page({
     if (await checkAuth(this, 2)) {
       await this.reloadFilter();
     }
-  },
-
-  // 没有权限，返回上一页
-  goBack() {
-    wx.navigateBack();
   },
 
   // 加载数据库里的filters，应该只有一个

@@ -1,20 +1,24 @@
 <!--components/searchCat/searchCat.wxml-->
-<view class="mask" bindtap="hide" hidden="{{!show}}"></view>
-<view class='search {{show? "": "hidden"}}'>
-  <view class='input-block'>
-    <view class='input-icon'>
-      <image class="search-logo" mode='aspectFit' src="/pages/public/images/filter/search.png"></image>
+<popup id='search' show="{{show}}" bind:close="hide">
+  <view class="popup-container">
+    <view class="popup-header">
+      <text>选择猫猫</text>
     </view>
-    <input class='name' placeholder='搜索猫猫名称、昵称' placeholder-class='searchPlaceholderStyle' focus="{{focusSearch}}" value='{{filters_input}}' maxlength='20' confirm-type='search' bindinput='fSearchInput' bindconfirm='doSearchCat'></input>
-  </view>
-  <scroll-view class="search-results" scroll-y="1">
-    <view class="search-cat" hover-class="search-cat-click" wx:for="{{searchCats}}" wx:key="_id" bindtap="searchSelectCat" data-index="{{index}}">
-      <image mode="aspectFill" class="search-cat-avatar" src="{{item.avatar ? item.avatar.photo_compressed || item.avatar.photo_id : ''}}"></image>
-      <view class="search-cat-info">
-        <view class="search-cat-name">{{item.name}}</view>
-        <view class="search-cat-position">{{item.campus}} {{item.area}}</view>
+    <view class='search-input'>
+      <view class='input-icon'>
+        <image class="search-icon" mode='aspectFit' src="/pages/public/images/filter/search.png"></image>
       </view>
+      <input class='input-field' placeholder='{{text_cfg.genealogy.search_tip}}' placeholder-class='placeholder' focus="{{focusSearch}}" value='{{filters_input}}' maxlength='20' confirm-type='search' bindinput='fSearchInput' bindconfirm='doSearchCat'></input>
     </view>
-    <view hidden="{{searchCats.length}}" class="search-empty">请搜索后进行选择</view>
-  </scroll-view>
-</view>
+    <scroll-view class="search-results" scroll-y="1">
+      <view class="search-cat-item" hover-class="item-hover" wx:for="{{searchCats}}" wx:key="_id" bindtap="searchSelectCat" data-index="{{index}}">
+        <image mode="aspectFill" class="search-cat-avatar" src="{{item.avatar ? item.avatar.photo_compressed || item.avatar.photo_id : ''}}"></image>
+        <view class="search-cat-info">
+          <view class="search-cat-name">{{item.name}}</view>
+          <view class="search-cat-location">{{item.campus}} {{item.area}}</view>
+        </view>
+      </view>
+      <view wx:if="{{!searchCats.length}}" class="search-empty">请搜索后进行选择</view>
+    </scroll-view>
+  </view>
+</popup>

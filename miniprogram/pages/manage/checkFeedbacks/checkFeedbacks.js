@@ -13,8 +13,6 @@ Page({
    * 页面的初始数据
    */
   data: {
-    tipText: '正在鉴权...',
-    tipBtn: false,
     feedbacks: [],
     total: 0,
     checkHistory: false,
@@ -27,11 +25,6 @@ Page({
     if (await checkAuth(this, 1)) {
       this.reload();
     }
-  },
-
-  // 没有权限，返回上一页
-  goBack() {
-    wx.navigateBack();
   },
 
   async loadFeedbacks() {
@@ -185,7 +178,7 @@ Page({
   toCatManage(e) {
     const cat_id = e.currentTarget.dataset.cat_id;
     wx.navigateTo({
-      url: '/pages/manage/addCat/addCat?cat_id=' + cat_id,
+      url: '/pages/manage/catManage/catManage?cat_id=' + cat_id + '&activeTab=info',
     });
   },
 
