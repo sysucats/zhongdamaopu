@@ -20,6 +20,7 @@ button {
 
 button.primary {
   background-color: var(--color-primary);
+  color: var(--color-text-onPrimary);
 }
 
 button + button {
@@ -40,6 +41,7 @@ button.long {
 button.bottom {
   width: 100%;
   background-color: var(--color-primary);
+  color: var(--color-text-onPrimary);
 }
 
 .reward-box {

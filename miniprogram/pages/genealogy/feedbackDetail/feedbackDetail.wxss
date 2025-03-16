@@ -30,6 +30,7 @@ button.long {
 
 button.primary {
   background-color: var(--color-primary);
+  color: var(--color-text-onPrimary);
 }
 
 input, picker, textarea {
@@ -52,6 +53,7 @@ input, picker, textarea {
 
 button {
   background-color: var(--color-primary);
+  color: var(--color-text-onPrimary);
   width: 100%;
   display: inline-block;
   box-sizing: border-box;

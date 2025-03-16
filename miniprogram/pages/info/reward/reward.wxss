@@ -18,6 +18,7 @@
   font-size: 28rpx;
   font-weight: 500;
   background-color: var(--color-primary);
+  color: var(--color-text-onPrimary);
   display: inline-block;
   padding: 10rpx;
   box-shadow: 0 0 10rpx var(--color-gray-max);
@@ -56,6 +57,7 @@ button {
 
 button.primary {
   background-color: var(--color-primary);
+  color: var(--color-text-onPrimary);
 }
 
 /* 最后的小tip */
