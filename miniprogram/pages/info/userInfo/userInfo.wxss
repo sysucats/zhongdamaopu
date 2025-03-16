@@ -98,7 +98,7 @@ page {
   white-space: nowrap;
   font-size: 40rpx;
   font-weight: bold;
-  color: var(--color-text);
+  color: var(--color-text-onPrimary);
 }
 
 /* 用户数据 */

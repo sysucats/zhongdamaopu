@@ -34,7 +34,7 @@ page {
   width: 50rpx;
   border: 1rpx solid var(--color-primary-dark);
   background-color: var(--color-primary);
-  color: var(--color-black-min);
+  color: var(--color-text-onPrimary);
   border-radius: 10rpx;
   padding: 10rpx 30rpx;
   margin-left: auto;
@@ -53,6 +53,7 @@ page {
 button.primary {
   margin: 20rpx auto 30rpx auto;
   background-color: var(--color-primary);
+  color: var(--color-text-onPrimary);
   width: 300rpx;
 }
 

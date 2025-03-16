@@ -44,6 +44,7 @@ button {
 
 button.submit {
   background-color: var(--color-primary);
+  color: var(--color-text-onPrimary);
   width: 100%;
   display: inline-block;
   box-sizing: border-box;

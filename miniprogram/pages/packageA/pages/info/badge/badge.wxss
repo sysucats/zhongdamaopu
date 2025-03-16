@@ -181,7 +181,8 @@ page {
 .code-btn {
   font-size: 26rpx;
   padding: 10rpx 30rpx;
-  color: #726735;
+  color: var(--color-text-onPrimary);
+  background-color: var(--color-primary);
 }
 
 .code-btn.hover {

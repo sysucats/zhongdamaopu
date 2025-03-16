@@ -191,7 +191,7 @@
   left: 0;
   right: 0;
   background-color: var(--color-primary);
-  color: white;
+  color: var(--color-text-onPrimary);
   opacity: .8;
   padding: 8rpx 0;
   font-size: 24rpx;
@@ -257,7 +257,7 @@
 
 .primary-button {
   background-color: var(--color-primary);
-  color: white;
+  color: var(--color-text-onPrimary);
 }
 
 .secondary-button {

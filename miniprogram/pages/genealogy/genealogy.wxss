@@ -111,8 +111,9 @@ scroll-view {
   font-size: 18rpx;
   line-height: 30rpx;
   text-align: center;
-  background-color: var(--color-gray-light);
-  
+  background-color: var(--color-gray-max);
+  color: #fff;
+
   padding: 0 10rpx;
   margin: 0 10rpx;
 }
@@ -199,7 +200,7 @@ scroll-view {
   text-align: left;
   background-color: var(--color-primary);
   border-color: var(--color-primary-dark);
-  color: var(--color-black-light);
+  color: var(--color-text-onPrimary);
   border-radius: 0 10rpx 10rpx 0;
   padding: 10rpx;
   font-size: 22rpx;
@@ -365,7 +366,7 @@ scroll-view {
 }
 
 .f-column.main .item.active {
-  color: black;
+  color:var(--color-text-onPrimary);
   background-color: var(--color-primary);
   border-radius: 40rpx;
 }
