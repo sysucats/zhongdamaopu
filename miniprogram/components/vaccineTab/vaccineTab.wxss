@@ -411,7 +411,7 @@ button::after {
 
 .filter-option.active {
   background: var(--color-primary);
-  color: var(--color-text);
+  color: var(--color-text-onPrimary);
 }
 
 /* 适配较小屏幕的弹窗高度 */

@@ -178,7 +178,7 @@
   z-index: 100;
   font-size: 55rpx;
   background-color: var(--color-primary);
-  color: white;
+  color: var(--color-text-onPrimary);
 }
 
 .action-button:active {
@@ -285,42 +285,6 @@
 .tip-text {
   font-size: 28rpx;
 }
-
-/* 未授权提示 */
-/* .no-auth-container {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, calc(-50% - 0.5 * 100%));
-}
-
-.no-auth {
-  text-align: center;
-  padding: 100rpx 0;
-  color: var(--color-gray-max);
-}
-
-.no-auth-icon {
-  font-size: 80rpx;
-  margin-bottom: 20rpx;
-  animation: bounceIn 0.6s ease;
-}
-
-.no-auth-text {
-  font-size: 28rpx;
-}
-
-.no-auth-btn {
-  background-color: var(--color-gray);
-  color: white;
-  height: 80rpx;
-  margin-top: 20rpx;
-  justify-content: center;
-  align-items: center;
-  display: flex;
-  border-radius: 50rpx;
-  padding: 10rpx 20rpx;
-} */
 
 @keyframes bounceIn {
   0% {

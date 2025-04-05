@@ -37,6 +37,7 @@ button + button {
 
 button.primary {
   background-color: var(--color-primary);
+  color: var(--color-text-onPrimary);
 }
 
 button.long {
@@ -96,6 +97,7 @@ input.content {
 button.bottom {
   width: 100%;
   background-color: var(--color-primary);
+  color: var(--color-text-onPrimary);
 }
 
 .bottom-bar {

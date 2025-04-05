@@ -13,6 +13,7 @@ button {
 
 button.primary {
   background-color: var(--color-primary);
+  color: var(--color-text-onPrimary);
   margin-top: 8rpx;
 }
 
@@ -143,6 +144,7 @@ button.long {
 .bubble2 .floating .content {
   float: left;
   background: var(--color-primary);
+  color: var(--color-text-onPrimary);
 }
 
 .bubble1 .floating .content::before {

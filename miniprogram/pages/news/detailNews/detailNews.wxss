@@ -15,6 +15,7 @@ button {
   font-size: 30rpx;
   box-sizing: border-box;
   background-color: var(--color-primary);
+  color: var(--color-text-onPrimary);
 }
 
 button+button {
