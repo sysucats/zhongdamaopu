@@ -10,6 +10,12 @@ Page({
     text_cfg: text_cfg,
     github_link: "https://github.com/sysucats/zhongdamaopu",
     update_log: [{
+      version: "v1.15.1",
+      content: [
+        "统一主题色背景的文字颜色变量",
+      ],
+      time: "2024/3/14"
+    }, {
       version: "v1.15.0",
       content: [
         "猫猫详情页面支持查看疫苗记录",
