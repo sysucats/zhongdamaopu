@@ -1,0 +1,422 @@
+/* 疫苗信息管理样式 */
+@import "../../pages/public/wxss/iconfont.wxss";
+
+/* 疫苗列表 */
+.vaccine-list {
+  padding: 0 30rpx;
+  margin-bottom: 20rpx;
+}
+
+.vaccine-item {
+  position: relative;
+  margin-bottom: 30rpx;
+  border-radius: 15rpx;
+  background-color: white;
+  overflow: hidden;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.08);
+}
+
+.vaccine-content {
+  position: relative;
+  padding: 20rpx 30rpx;
+  background-color: white;
+  z-index: 2;
+  transition: transform 0.3s ease;
+}
+
+.vaccine-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16rpx;
+}
+
+.vaccine-type {
+  font-size: 30rpx;
+  font-weight: 500;
+  color: #333;
+}
+
+.vaccine-date {
+  font-size: 24rpx;
+  color: var(--color-primary);
+}
+
+.vaccine-body {
+  font-size: 26rpx;
+  color: #666;
+  line-height: 1.6;
+}
+
+.vaccine-location, .vaccine-expire, .vaccine-next, .vaccine-remarks {
+  margin-top: 8rpx;
+}
+
+.item-indicator {
+  position: absolute;
+  right: 20rpx;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #ccc;
+  font-size: 24rpx;
+}
+
+.item-indicator:after {
+  content: '›';
+  font-size: 36rpx;
+}
+
+/* 左滑操作 */
+.swipe-actions {
+  position: absolute;
+  right: 0;
+  top: 0;
+  height: 100%;
+  display: flex;
+  z-index: 1;
+}
+
+.action-edit, .action-delete {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 160rpx;
+  color: white;
+  font-size: 28rpx;
+}
+
+.action-edit {
+  background-color: #787AFF;
+}
+
+.action-delete {
+  background-color: #FF3B30;
+}
+
+.iconfont {
+  font-family: 'iconfont';
+  font-size: 55rpx;
+}
+
+/* 空数据提示 */
+.empty-tip {
+  text-align: center;
+  padding: 60rpx 0;
+  color: #999;
+  font-size: 28rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: all 0.3s ease-in-out;
+  animation: fadeIn 0.5s ease;
+}
+
+.empty-icon {
+  font-size: 80rpx;
+  color: #ddd;
+  margin-bottom: 20rpx;
+  animation: bounceIn 0.6s ease;
+}
+
+@keyframes bounceIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.3);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+  70% {
+    transform: scale(0.9);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* 弹窗 */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fadeOut {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+.modal-content-wrapper {
+  width: 80vw;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background-color: white;
+  border-radius: 40rpx;
+  overflow: hidden;
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.15);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 30rpx;
+  background-color: var(--color-gray-light);
+  font-size: 32rpx;
+  font-weight: bold;
+}
+
+.modal-close {
+  font-size: 40rpx;
+  color: var(--color-gray);
+}
+
+.modal-body {
+  flex: 1;
+  padding: 0 30rpx;
+  max-height: 70vh;
+  overflow-y: auto;
+}
+
+.form-item {
+  margin-bottom: 30rpx;
+}
+
+.form-label {
+  font-size: 28rpx;
+  color: #666;
+  margin-bottom: 10rpx;
+}
+
+.picker {
+  height: 80rpx;
+  line-height: 80rpx;
+  border: 1rpx solid #eee;
+  border-radius: 10rpx;
+  padding: 0 20rpx;
+  font-size: 28rpx;
+  color: #333;
+  background-color: var(--color-gray-light);
+}
+
+input, textarea {
+  width: 100%;
+  border: 1rpx solid #eee;
+  border-radius: 10rpx;
+  padding: 20rpx;
+  font-size: 28rpx;
+  color: #333;
+  background-color: var(--color-gray-light);
+  box-sizing: border-box;
+}
+
+/* 普通输入框 */
+input {
+  height: 80rpx;
+}
+
+/* 文本区域 */
+textarea {
+  min-height: 150rpx;
+}
+
+/* 接种地点 */
+.location-input {
+  height: 80rpx !important;
+}
+
+/* 备注 */
+.remarks-input {
+  min-height: 120rpx;
+}
+
+.form-buttons {
+  display: flex;
+  margin: 30rpx;
+  padding: 0;
+  flex-shrink: 0;
+}
+
+button::after {
+  border: none;
+}
+
+.cancel-btn, .submit-btn {
+  flex: 1;
+  height: 80rpx;
+  line-height: 80rpx;
+  text-align: center;
+  border-radius: 40rpx;
+  font-size: 28rpx;
+  margin: 0 10rpx;
+}
+
+.cancel-btn {
+  background-color: #f0f0f0;
+  color: #666;
+}
+
+.submit-btn {
+  background-color: var(--color-primary);
+  color: #fff;
+}
+
+/* 疫苗类型管理 */
+.type-add-form {
+  display: flex;
+  margin: 20rpx 0;
+  border-bottom: 1rpx solid #eee;
+  padding-bottom: 20rpx;
+}
+
+.type-add-form input {
+  flex: 1;
+  height: 80rpx;
+  background-color: #f8f8f8;
+  border-radius: 8rpx;
+  padding: 0 20rpx;
+  margin-right: 20rpx;
+}
+
+.add-type-btn {
+  width: 160rpx;
+  height: 80rpx;
+  line-height: 80rpx;
+  font-size: 28rpx;
+  background-color: var(--color-primary);
+  color: white;
+  text-align: center;
+  border-radius: 8rpx;
+}
+
+.type-list {
+  max-height: 600rpx;
+  overflow-y: auto;
+}
+
+.type-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20rpx 0;
+  border-bottom: 1rpx solid #f0f0f0;
+}
+
+.type-name {
+  flex: 1;
+  font-size: 30rpx;
+}
+
+.type-delete {
+  width: 60rpx;
+  height: 60rpx;
+  line-height: 60rpx;
+  text-align: center;
+  font-size: 40rpx;
+  color: #e64340;
+  border-radius: 50%;
+}
+
+.type-delete:active {
+  background-color: #f8f8f8;
+}
+
+.type-tips {
+  margin-top: 20rpx;
+  font-size: 24rpx;
+  color: #888;
+  text-align: center;
+  margin-bottom: 30rpx;
+}
+
+/* 自定义类型选项 */
+.custom-type-option {
+  margin-top: 10rpx;
+  font-size: 26rpx;
+  color: var(--color-primary);
+  text-align: right;
+}
+
+.custom-type-input {
+  margin-top: 10rpx;
+  height: 70rpx;
+  background-color: #f8f8f8;
+  border-radius: 8rpx;
+  padding: 0 20rpx;
+  font-size: 28rpx;
+}
+
+/* 已接种猫咪列表样式 */
+.vaccinated-cats-list {
+  margin-bottom: 20rpx;
+}
+
+.cat-item {
+  display: flex;
+  padding: 20rpx 0;
+  border-bottom: 1rpx solid #f0f0f0;
+}
+
+.cat-avatar {
+  width: 90rpx;
+  height: 90rpx;
+  border-radius: 50%;
+  margin-right: 20rpx;
+  flex-shrink: 0;
+}
+
+.cat-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.cat-name {
+  font-size: 30rpx;
+  font-weight: 500;
+  margin-bottom: 6rpx;
+}
+
+.cat-details {
+  font-size: 24rpx;
+  color: #666;
+  margin-bottom: 6rpx;
+}
+
+.vaccine-info {
+  font-size: 24rpx;
+  color: var(--color-primary);
+}
+
+/* 疫苗类型筛选样式 */
+.vaccine-type-filter {
+  margin-top: 20rpx;
+}
+
+.filter-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10rpx;
+}
+
+.filter-option {
+  font-size: 24rpx;
+  padding: 8rpx 20rpx;
+  background: #f5f5f5;
+  border-radius: 30rpx;
+  color: #666;
+}
+
+.filter-option.active {
+  background: var(--color-primary);
+  color: var(--color-text-onPrimary);
+}
+
+/* 适配较小屏幕的弹窗高度 */
+@media screen and (max-height: 700px) {
+  .vaccinated-cats-list {
+    max-height: 60vh;
+  }
+}

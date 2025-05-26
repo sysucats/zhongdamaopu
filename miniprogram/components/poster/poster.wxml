@@ -1,0 +1,9 @@
+<view class="canvas-container">
+    <canvas
+        type="2d"
+        id="poster-canvas"
+        class="poster-canvas"
+        style="width: 100%; height: 100%;"
+        disable-scroll="{{ true }}"
+    />
+</view >

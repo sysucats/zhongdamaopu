@@ -1,0 +1,37 @@
+<!--pages/genealogy/detailCat/badgeDetail/badgeDetail.wxml-->
+<view class="bd-block">
+  <view class="bd-title">徽章排名</view>
+  <view class="bd-item" wx:for="{{orderBadges}}" wx:key="badgeDef">
+    <view class="badge-order">{{item.order}}</view>
+    <image class="badge-img" src="{{item.badgeInfo.img}}" mode="aspectFill" />
+    <view class="badge-info order badge-level-{{item.badgeInfo.level}}">
+      <view class="badge-name">
+        <text class="badge-level">[{{item.badgeInfo.level}}]</text>
+        {{item.badgeInfo.name}}
+      </view>
+      <view class="badge-desc">{{item.badgeInfo.desc}}</view>
+    </view>
+    <view class="badge-count">{{item.count}}枚</view>
+  </view>
+</view>
+
+<view class="bd-block">
+  <view class="bd-title">赠予记录</view>
+  <view class="bd-item" wx:for="{{detailBadges}}" wx:key="_id">
+    <image class="badge-img" src="{{item.badgeInfo.img}}" mode="aspectFill" />
+    <view class="badge-info badge-level-{{item.badgeInfo.level}}">
+      <view class="badge-name">
+        <text class="badge-level">[{{item.badgeInfo.level}}]</text>
+        {{item.badgeInfo.name}}
+      </view>
+      <!-- <view class="badge-desc">{{item.badgeInfo.desc}}</view> -->
+    </view>
+    <view class="user-info {{item._openid === userOpenid ? 'current-user' : ''}}">
+      <view class="user-info-name">
+        <image class="user-avatar" src="{{item.userInfo.avatarUrl}}" mode="aspectFill" />
+        <text class="user-info-name-text">{{item.userInfo.nickName || '匿名'}}</text>
+      </view>
+      <view class="user-info-time">{{item.dispTime}}</view>
+    </view>
+  </view>
+</view>

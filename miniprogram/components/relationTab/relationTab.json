@@ -1,0 +1,7 @@
+{
+  "component": true,
+  "usingComponents": {
+    "popup": "/components/popup/popup",
+    "searchCat": "/components/searchCat/searchCat"
+  }
+} 

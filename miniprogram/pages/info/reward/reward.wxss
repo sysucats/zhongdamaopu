@@ -1,0 +1,68 @@
+/* miniprogram/pages/info/reward/reward.wxss */
+
+.block {
+  width: 690rpx;
+  margin: 50rpx 30rpx 0 30rpx;
+  padding: 50rpx 30rpx 25rpx 30rpx;
+  box-sizing: border-box;
+  border-radius: 10rpx;
+  box-shadow: 0 0 10rpx var(--color-gray-max);
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-content: center;
+  flex-wrap: wrap;
+}
+
+.block .title {
+  font-size: 28rpx;
+  font-weight: 500;
+  background-color: var(--color-primary);
+  color: var(--color-text-onPrimary);
+  display: inline-block;
+  padding: 10rpx;
+  box-shadow: 0 0 10rpx var(--color-gray-max);
+  position: absolute;
+  top: -20rpx;
+  left: -15rpx;
+}
+
+.block .desc {
+  width: 100%;
+  font-size: 26rpx;
+  color: var(--color-black-light);
+  line-height: 50rpx;
+  margin-bottom: 10rpx;
+}
+
+.block .hl {
+  font-weight: 600;
+  /* background-color: lightgoldenrodyellow; */
+  text-align: center;
+}
+
+.block .buttons {
+  width: 100%;
+  display: flex;
+}
+
+button {
+  font-size: 30rpx;
+  line-height: 40rpx;
+  margin: 10rpx;
+  padding: 16rpx 30rpx;
+  border: 1rpx solid var(--color-gray-max);
+  border-radius: 25rpx;
+}
+
+button.primary {
+  background-color: var(--color-primary);
+  color: var(--color-text-onPrimary);
+}
+
+/* 最后的小tip */
+.tip {
+  font-size: 28rpx;
+  margin: 15rpx 40rpx;
+  color: var(--color-gray-max);
+}

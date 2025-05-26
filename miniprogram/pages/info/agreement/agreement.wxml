@@ -1,0 +1,3 @@
+<view class="title">用户与隐私协议</view>
+
+<text class="agreement" user-select="1">{{agreement}}</text>

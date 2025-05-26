@@ -1,0 +1,125 @@
+/* pages/manage/manageNews/modifyNews/modifyNews.wxss */
+page {
+  width: 750rpx;
+  padding: 30rpx 30rpx;
+  box-sizing: border-box;
+}
+
+.label {
+  font-size: 30rpx;
+  font-weight: 600;
+  margin: 25rpx 0 5rpx 0;
+}
+
+.label.light {
+  font-weight: 400;
+  margin: 5rpx 0;
+}
+
+input,
+picker,
+textarea {
+  width: 670rpx;
+  border-bottom: 2rpx var(--color-primary) solid;
+  background-color: var(--color-white-dark);
+  padding: 15rpx;
+  color: var(--color-black-light);
+}
+
+button {
+  width: 100%;
+  font-size: 30rpx;
+  margin-top: 10rpx;
+  margin-bottom: 10rpx;
+  border: 1rpx solid var(--color-gray-max);
+  border-radius: 20rpx;
+}
+
+.submitButton, 
+.authButton {
+  width: 100%;
+  font-size: 30rpx;
+  margin-top: 10rpx;
+  margin-bottom: 10rpx;
+  background-color: var(--color-primary);
+  border: 1rpx solid var(--color-gray-max);
+  border-radius: 20rpx;
+}
+
+.userInfo {
+  width: 100%;
+  padding: 0rpx 0rpx 30rpx 0;
+  display: flex;
+}
+
+.userInfo image {
+  height: 50rpx;
+  width: 50rpx;
+  margin-right: 10rpx;
+  border-radius: 5rpx;
+}
+
+.userInfo text {
+  height: 50rpx;
+  line-height: 50rpx;
+  font-size: 35rpx;
+}
+
+.lengthTips {
+  font-size: 26rpx;
+  color: var(--color-gray-max);
+  float: right;
+  margin-right: 10rpx;
+  margin-top: 5rpx;
+}
+
+.album {
+  width: 100%;
+  text-align: center;
+  background-color: var(--color-gray-light);
+  color: var(--color-gray);
+  font-size: 28rpx;
+  padding: 5rpx 0;
+}
+
+.album-block {
+  width: 750rpx;
+  display: flex;
+  flex-wrap: wrap;
+  background-color: var(--color-gray-light);
+}
+
+.alb-image {
+  width: 220rpx;
+  height: 220rpx;
+  box-sizing: border-box;
+  margin: 5rpx 5rpx;
+  background-color: white;
+}
+
+.button_container {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+}
+
+/* 按钮未选中 */
+.normal_button {
+  margin: 10rpx;
+  background-color: white;
+}
+
+/* 按钮选中 */
+.checked_button {
+  margin: 10rpx;
+  background-color: var(--color-primary);
+  color: white
+}
+
+.line {
+  background: #e0e3da;
+  width: 100%;
+  margin-top: 30rpx;
+  margin-bottom: 20rpx;
+  height: 2rpx;
+}

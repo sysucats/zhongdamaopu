@@ -1,0 +1,51 @@
+<view class="content">
+  <view id='big-circle'></view>
+  <view class="user-container">
+    <view class="avatar-container">
+      <image class="avatar" src="{{user.userInfo.avatarUrl || defaultAvatarUrl}}" mode="aspectFill"></image>
+    </view>
+    <view class="userName-container">
+      <text class="user-name">{{user.userInfo.nickName}}</text>
+      <text class="badge {{badgeClass}}-badge">{{badgeName}}</text>
+    </view>
+    <view class="edit-container" bindtap="editProfile">
+      <view class="iconfont icon-edit"></view>
+    </view>
+  </view>
+
+  <view class="num-info"> 
+      <view class="num"> 
+        <view class="num-title">{{numUserPhotos !== null && numUserPhotos !== undefined ? numUserPhotos : '0'}}</view>
+        <text class='small-title'>照片</text>
+      </view>
+      <view class="num">
+        <view class="num-title">{{numUserLiked !== null && numUserLiked !== undefined ? numUserLiked : '0'}}</view>
+        <text class='small-title'>照片被赞</text>
+      </view>
+      <view class="num">
+        <view class="num-title">{{numCats !== null && numCats !== undefined ? numCats : '0'}}</view>
+        <text class='small-title'>拍过猫猫</text>
+      </view>
+      <view class="num">
+        <view class="num-title">{{numUserComments !== null && numUserComments !== undefined ? numUserComments : '0'}}</view>
+        <text class='small-title'>便利贴</text>
+      </view>
+  </view>
+</view>
+
+<view class="menu-container">
+  <view wx:for="{{menu}}" wx:key="type" wx:for-index="typeIndex">
+    <!-- 如果不是第一个type，则添加分割线 -->
+    <view wx:if="{{typeIndex > 0}}" class="type-separator"></view>
+      <view class="menu-item" wx:for="{{item.items}}" wx:key="label" bindtap="clickbtn" data-to="{{item.action}}">
+        <button wx:if="{{item.btnAble}}" open-type="{{item.btnType}}" style="width: 100%; height: 100%; position: absolute; top: 0; left: 0; opacity: 0;" data-to="{{item.action}}"></button>
+        <view class="icon-and-text">
+          <view class="iconfont {{item.icon}}"></view>
+          <text class="label-small">{{item.label}}</text>
+        </view>
+        <view class="right-arrow"><image mode='aspectFill' src="/pages/public/images/filter/right.png"></image></view>
+      </view>
+  </view>
+</view>
+
+<modifyUserInfo bind:userInfoUpdated="onUserInfoUpdated" show="{{showEdit}}" bind:close="closeEdit"></modifyUserInfo>

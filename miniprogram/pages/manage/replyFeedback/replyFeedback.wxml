@@ -1,0 +1,29 @@
+<block wx:if="{{auth}}">
+  <view class='feedback-info'>
+    <image src='{{feedback.userInfo.avatarUrl}}'></image>
+    <view>
+      <text>正在回复[<text style="font-weight:600;">{{feedback.userInfo.nickName}}</text>]的反馈信息：\n</text>
+    </view>
+  </view>
+  <view>
+    <text class='feedback-content' selectable='true'>反馈内容：\n{{feedback.feedbackInfo}}\n\n</text>
+    <text class='label user' selectable='true'>联系方式：{{feedback.contactInfo}}\n</text>
+    <text class='label user' selectable='true'>反馈时间：{{feedback.openDateStr}}\n\n</text>
+  </view>
+  
+  <form bindsubmit='bindReply'>
+    <view class='inputColumns'>
+      <view>
+        <text>回复内容：\n</text>
+        <textarea class='replyColumn' placeholder="有什么进展、待确认事项等~" name='replyInfo' maxlength='{{maxlength}}' bindinput='bindInput' />
+        <text class='lengthTips'>字数：{{length}}/{{maxlength}}\n</text>
+      </view>
+    </view>
+    <view class='submitButton'>
+      <button class='submit' form-type='submit'>提交回复</button>
+    </view>
+  </form>
+</block>
+
+<!-- 未授权提示 -->
+<no-auth wx:else tip-text="{{tipText}}"></no-auth>

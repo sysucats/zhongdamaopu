@@ -1,0 +1,51 @@
+/* miniprogram/pages/science/sciDetail/sciDetail.wxss */
+
+swiper {
+  width: 692rpx;
+  height: 261rpx;
+  margin: 20rpx 29rpx;
+  border-radius: 15rpx;
+  overflow: hidden;
+}
+
+swiper image {
+  width: 692rpx;
+  height: 261rpx;
+  border-radius: 15rpx;
+}
+
+/* 下面是qna环节 */
+.qna {
+  width: 692rpx;
+  margin: 30rpx 29rpx;
+  border-radius: 15rpx;
+  font-size: 30rpx;
+  /* background-color: rgb(229,229,229); */
+  border: 3rpx solid var(--color-primary);
+  padding: 30rpx;
+  box-sizing: border-box;
+}
+
+.qna .question {
+  text-align: center;
+}
+
+.qna .answer {
+  height: 0;
+  font-size: 26rpx;
+  line-height: 40rpx;
+  overflow: hidden;
+}
+
+.qna.active {
+  border: 5rpx solid var(--color-primary);
+}
+
+.qna.active .question {
+  font-weight: bold;
+}
+
+.qna.active .answer {
+  height: auto;
+  margin-top: 20rpx;
+}

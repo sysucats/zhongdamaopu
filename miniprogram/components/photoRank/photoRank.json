@@ -1,0 +1,6 @@
+{
+  "component": true,
+  "usingComponents": {
+    "modifyUserInfo": "/components/modifyUserInfo/modifyUserInfo"
+  }
+}

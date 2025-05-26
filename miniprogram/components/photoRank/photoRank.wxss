@@ -1,0 +1,133 @@
+/* miniprogram/pages/info/photoRank/photoRank.wxss */
+.top-block {
+  position: fixed;
+  top: 0;
+  width: 750rpx;
+  height: 100rpx;
+  /* background-color: var(--color-primary); */
+  z-index: -1;
+}
+
+.cen-block {
+  width: 690rpx;
+  height: auto;
+  padding: 40rpx 50rpx 30rpx 50rpx;
+  margin: 30rpx;
+  box-sizing: border-box;
+  background-color: white;
+  border-radius: 20rpx;
+
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  flex-wrap: wrap;
+
+  box-shadow: 0rpx 0rpx 10rpx var(--color-gray);
+}
+
+/* 未授权的 */
+.unAuth .title {
+  font-size: 30rpx;
+}
+.my-info image,
+.avatar image.avatar {
+  width: 150rpx;
+  height: 150rpx;
+  border-radius: 150rpx;
+  background-color: var(--color-white-dark);
+}
+
+
+/* 布局 */
+.text.cen {
+  text-align: center;
+}
+.text.left{
+  width: 20%;
+}
+.text.right {
+  text-align: right;
+  width: 20%;
+}
+
+/* 文字大小 */
+.text .title {
+  font-size: 24rpx;
+  color: var(--color-gray-max);
+}
+.text .number {
+  font-size: 50rpx;
+  font-weight: 650;
+}
+.text .number.active {
+  color: var(--color-primary);
+}
+.text .name {
+  font-size: 35rpx;
+  font-weight: 500;
+}
+
+/* 一行排名 */
+.row {
+  min-width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 10rpx 0;
+}
+.row + .row {
+  border-top: 1rpx solid var(--color-gray-light);
+}
+.row .rank {
+  font-size: 32rpx;
+  width: 80rpx;
+  text-align: left;
+}
+.row .avatar {
+  width: 120rpx;
+  height: 120rpx;
+  position: relative;
+}
+.row .avatar image.medal {
+  width: 50rpx;
+  height: 50rpx;
+  position: absolute;
+  top: -6rpx;
+  left: 0rpx;
+}
+.row .avatar image.avatar {
+  width: 100rpx;
+  height: 100rpx;
+  position: absolute;
+  top: 10rpx;
+  left: 10rpx;
+}
+.row .name {
+  font-size: 30rpx;
+  padding-left: 20rpx;
+  width: 300rpx; /*避免用户名称过长*/
+}
+.row .photo_count {
+  font-size: 40rpx;
+  font-weight: 650;
+  margin-left: auto;
+}
+.row .photo_count.active {
+  color: var(--color-primary);
+}
+
+/* 最后的小tip */
+.tip {
+  font-size: 24rpx;
+  margin: 30rpx;
+  color: var(--color-gray-max);
+}
+
+.btn {
+  width: 100%;
+  font-size: 30rpx;
+  background-color: var(--color-primary);
+  margin: 10rpx;
+  border: 1rpx solid var(--color-gray-max);
+  border-radius: 20rpx;
+}

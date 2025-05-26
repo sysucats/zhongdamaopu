@@ -1,0 +1,42 @@
+<!--pages/news/detailNews/detailNews.wxml-->
+
+<view class='loading' wx:if='{{updateRequest}}'>
+    <image src='/pages/public/images/system/loading.gif'></image>
+</view>
+
+
+<scroll-view enable-flex='true' class='cards' style='height: {{heights.windowHeight - heights.filters}}px;' scroll-y='true' enable-back-to-top='true' bindscrolltolower='onRefresh' bindscroll='fScroll' lower-threshold='50'>
+
+    <view class='news-box' wx:if='{{news != 0}}'>
+        <view class='news title'>{{news.title}}</view>
+        <view class="news row-container">
+            <view class='news tag'>{{news.class}}</view>
+            <view class='news user'>{{news.userNicknameLastModify?news.userNicknameLastModify:news.userNickname}} </view>
+            <view class='news time'>{{news.ddate}} </view>
+        </view>
+
+        <view class='news content'>{{news.mainContent}}</view>
+
+        <!-- 文字结束，单图/多图部分 -->
+        <view wx:if='{{photos_path.length == 1}}'>
+            <image mode='widthFix' class="single-image" src='{{photos_path[0]}}' bindtap='previewImg'></image>
+        </view>
+        <view wx:elif='{{photos_path.length > 1}}' class='album'>
+            <view class='album-block'>
+                <block wx:for="{{photos_path}}" wx:key="_id" wx:for-index="idx">
+                    <image mode='aspectFill' class='alb-image' src='{{item}}' bindtap='previewImg' data-index="{{idx}}"></image>
+                </block>
+            </view>
+        </view>
+        <view wx:if='{{news.ddateLastModify}}' class='news editTime'>修改于：{{news.ddateLastModify}} </view>
+
+        <view wx:if="{{showManager}}">
+            <button bindtap='removeNews'>删除</button>
+            <button bindtap='modifyNews'>修改</button>
+        </view>
+    </view>
+    <view class='verify-box' wx:if='{{err}}'>
+        <view class='news err'>喵公告消失了？</view>
+    </view>
+
+</scroll-view>

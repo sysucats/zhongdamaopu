@@ -1,0 +1,73 @@
+<!--pages/genealogy/commentBoard.wxml-->
+
+<scroll-view id="comment-list" scroll-y="true" bindscrolltolower='loadMoreComment' enable-back-to-top="true" bindscroll="bindCommentScroll" enable-flex="1">
+  <!-- 猫猫名称 -->
+  <view class='big-header'>
+    <image class='avatar' mode='aspectFill' src='{{cat.avatar.photo_compressed || cat.avatar.photo_id || "/pages/public/images/app_logo.png"}}'></image>
+    <view class='name-and-count'>
+      <view class='name'>{{cat.name}}的便利贴墙</view>
+      <view class='count'>共{{comment_count}}张便利贴</view>
+    </view>
+  </view>
+
+  <!-- 评论列表 -->
+
+  <view class="comment {{item.paper_color}} {{item.needVerify? 'need-verify': ''}}" wx:for="{{comments}}" wx:key="_id" style="transform: rotate({{item.rotate || 0}}deg);">
+    <view class="wavy-line"></view>
+    <view class="paper">
+      <view class="user-info">
+        <view class="user-avatar">
+          <image wx:if="{{!item.needVerify && item.userInfo}}" class="avatar" src="{{item.userInfo.avatarUrl}}" mode='aspectFit'></image>
+          <image wx:else class="avatar" src="/pages/public/images/app_logo.png" mode='aspectFit'></image>
+        </view>
+        <view class="username">
+          <text wx:if="{{item.needVerify}}">喵友</text>
+          <text wx:else>{{item.userInfo.nickName || '-'}}</text>
+          <text>：</text>
+        </view>
+        <view wx:if="{{is_manager || item.user_openid === user.openid}}" class="delete" bindtap="deleteComment" data-item="{{item}}" data-index="{{index}}">删除</view>
+      </view>
+      <view class="content">
+        <text wx:if="{{item.needVerify}}">（内容审核中...）</text>
+        <text wx:else>{{item.content}}</text>
+      </view>
+
+      <view class="datetime">{{item.datetime}}</view>
+    </view>
+
+    <view class="tape" style="left: {{item.tape_pos_left}}rpx; transform: rotate({{item.tape_rotate}}deg);">
+      <view class="wavy-line"></view>
+      <view class="wavy-line bottom"></view>
+    </view>
+  </view>
+
+  <!-- 输入框占位 -->
+  <view class="input-block-ph"></view>
+</scroll-view>
+
+<!-- 悬浮的猫猫名称栏 -->
+<view class='big-header fix' hidden="{{!show_fix_header}}">
+  <image class='avatar' mode='aspectFill' src='{{cat.avatar.photo_compressed || cat.avatar.photo_id}}'></image>
+  <view class='name-and-count'>
+    <view class='name'>{{cat.name}}的便利贴墙</view>
+    <view class='count'>共{{comments.length}}张便利贴</view>
+  </view>
+</view>
+
+
+<view id="input-block" style="margin-bottom: {{keyboard_height}}px;" class="{{keyboard_height>0 ? 'active': ''}}" wx:if="{{canComment}}">
+  <button wx:if="{{!isAuth}}" class='long primary' bindtap='getUInfo'>{{text_cfg.comment_board.auth_tip}}</button>
+  <block wx:else>
+    <textarea id="comment-input" value="{{comment_input}}" auto-height="{{true}}" show-confirm-bar="{{false}}" maxlength="300" placeholder="{{text_cfg.comment_board.comment_tip}}" adjust-position="{{false}}" bindfocus="commentFocus" bindblur="commentBlur" bindinput="commentInput"></textarea>
+    <view class="bottom-line">
+      颜色
+      <view class="input-colors">
+        <view class="input-color {{item}} {{paper_color_select == index? 'selected': ''}}" wx:for="{{paper_colors}}" wx:key="*this" bindtap="selectPaperColor" data-index="{{index}}"></view>
+      </view>
+      <view class="send-btn" bindtap="sendComment">发 送</view>
+    </view>
+  </block>
+  <!-- 解决iOS UI兼容性 -->
+  <view wx:if="{{keyboard_height == 0}}" id="input-block-bottom"></view>
+</view>
+<view wx:else class="comment-input-closed"><text>便利贴功能已被关闭... QAQ</text></view>

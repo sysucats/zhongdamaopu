@@ -1,0 +1,6 @@
+/* 定义海报高宽 */
+.canvas-container {
+    width: 650rpx;
+    height: 1000rpx;
+    margin-bottom: 40rpx
+}

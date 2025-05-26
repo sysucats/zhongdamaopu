@@ -1,0 +1,604 @@
+/* miniprogram/pages/genealogy/genealogy.wxss */
+@import "/pages/public/wxss/hFilter.wxss";
+
+page {
+  height: 100%;
+  background-color: var(--color-gray-light);
+}
+/* 下面开始猫卡布局 */
+scroll-view {
+  -webkit-overflow-scrolling: touch;
+  z-index: 0;
+  background-color: var(--color-gray-light);
+}
+
+.cards{
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.card {
+  margin-bottom: 50rpx;
+  font-size: 24rpx;
+  line-height: 24rpx;
+  width: 635rpx;
+  border-radius: 15rpx;
+
+  box-sizing: border-box;
+  background-color: white;
+
+  box-shadow: 13rpx 13rpx 30rpx var(--color-gray);
+  position: relative;
+  /* TODO：重写为flex布局 */
+}
+
+.card view.image {
+  height:590rpx;
+  border-radius: 15rpx 15rpx 0 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.card view.image .image-title{
+  width: 100%;
+  height: 40rpx;
+  line-height: 40rpx;
+  background-color: var(--color-black-light);
+  opacity: .4;
+  text-align: center;
+  color: white;
+  position: absolute;
+  bottom: 0;
+}
+
+.card view.image image {
+  width: 100%;
+  height: 590rpx;
+  background-color: var(--color-gray-light);
+	background-image: var(--img-default);
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-size: 50% 50%;
+  position: absolute;
+}
+
+.card view.image.to_star image {
+  filter: grayscale(100%);
+}
+
+.card .info {
+  padding: 35rpx 35rpx 20rpx 35rpx;
+}
+
+.card .hoverInfo{
+  background-color: var(--color-gray-light);
+  border-radius: 15rpx;
+}
+
+.card .info .name {
+  height: 30rpx;
+  font-size: 33rpx;
+  line-height: 30rpx;
+
+  font-weight: 600;
+  letter-spacing: 2rpx;
+}
+
+.card .info image.gender {
+  height: 27rpx;
+  width: 27rpx;
+  margin-right: 15rpx;
+  margin-left: 8rpx;
+}
+
+.card .info .adopt {
+  padding: 0 10rpx;
+  height: 30rpx;
+  border-radius: 15rpx;
+  font-size: 18rpx;
+  line-height: 30rpx;
+  text-align: center;
+  background-color: var(--color-primary-light);
+  color: var(--color-primary);
+  margin-left: 8rpx;
+}
+
+.card .info .to_star {
+  height: 30rpx;
+  border-radius: 15rpx;
+  font-size: 18rpx;
+  line-height: 30rpx;
+  text-align: center;
+  background-color: var(--color-gray-max);
+  color: #fff;
+
+  padding: 0 10rpx;
+  margin: 0 10rpx;
+}
+
+.card .info .popularity {
+  margin-left: auto;
+  order: 2;
+  display: flex;
+  align-items: center;
+}
+.iconfont {
+  font-size: 25rpx;
+  margin-right: 8rpx;
+  color: var(--color-primary);
+}
+
+.card .info .comment {
+  margin-left: 15rpx;
+  order: 2;
+  display: flex;
+  align-items: center;
+}
+.comment image {
+  height: 27rpx;
+  width: 27rpx;
+  margin-right: 8rpx;
+}
+
+.card .line {
+  display: flex;
+  /* align-items: flex-start; */
+  vertical-align: baseline;
+  margin-bottom: 10rpx;
+
+  color: var(--color-black-min);
+  line-height: 1.05rem;
+}
+
+.card .line:first-child{
+  display: flex;
+  align-items: center;
+  margin-bottom: 20rpx;
+  margin-left: 3rpx;
+}
+
+.card .line image.icon {
+  height: 28rpx;
+  width: 28rpx;
+  min-width: 26rpx;
+  margin-right: 20rpx;
+  vertical-align: text-top;
+}
+
+.card .line .index {
+  margin-left:auto;
+  order:2;
+  color: var(--color-gray);
+}
+
+.card .line .characteristics{
+  line-height: 1.05rem;
+  vertical-align: text-top;
+}
+
+.card .line .habit{
+  line-height: 1.05rem;
+  vertical-align: text-top;
+}
+
+.loading image {
+  width: 165.9rpx;
+  height: 90.3rpx;
+  margin: 10rpx 292rpx 200rpx 292rpx;
+}
+.loadnomore image {
+  width: 750rpx;
+  height: 100rpx;
+  margin: 10rpx 0 200rpx 0;
+}
+
+/* 新图标签 */
+.card .label {
+  display: inline-block;
+  text-align: left;
+  background-color: var(--color-primary);
+  border-color: var(--color-primary-dark);
+  color: var(--color-text-onPrimary);
+  border-radius: 0 10rpx 10rpx 0;
+  padding: 10rpx;
+  font-size: 22rpx;
+  position: absolute;
+  top: 30rpx;
+  left: -17.5rpx;
+  z-index: 1;
+}
+
+.card .label::after {
+    position: absolute;
+    top: 100%;
+    right: auto;
+    left: 0;
+
+    border-style: solid;
+    border-width: 0 17.5rpx 17.5rpx 0;
+    border-color: transparent;
+    border-top-color: inherit!important;
+    background-color: transparent!important;
+    border-right-color: inherit!important;
+
+    content: '';
+    width: 0;
+    height: 0;
+}
+
+/* 广告栏 */
+
+.card-ad {
+  margin-bottom: 50rpx;
+  width: 635rpx;
+  border-radius: 15rpx;
+  background-color: white;
+  box-shadow: 13rpx 13rpx 30rpx var(--color-gray);
+  overflow: hidden;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  min-height: 200rpx;
+  box-sizing: border-box;
+
+}
+
+.card-ad.hidden {
+  display: none;
+}
+
+/* 顶部的搜索框还有筛选 */
+#search {
+  width: 750rpx;
+  background-color: var(--color-gray-light);
+  box-sizing: border-box;
+
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  flex-wrap: nowrap;
+
+}
+
+#search.shadow {
+  box-shadow: 0 0 10rpx var(--color-gray);
+}
+
+#search .input-block {
+  width: 75%;
+  display: flex;
+  align-items: center;
+  flex-wrap: nowrap;
+}
+
+#search .input-icon {
+  width: 10%;
+  height: 2.2rem;
+  background-color: white;
+  border-top-left-radius: 10rpx;
+  border-bottom-left-radius: 10rpx;
+  display: inline-block;
+}
+
+#search .input-icon image {
+  width: 60%;
+  height: 100%;
+  margin: 0 20%;
+}
+
+#search input.name {
+  width: 90%;
+  height: 2.2rem;
+  line-height: 2.2rem;
+  background-color: white;
+  border-top-right-radius: 10rpx;
+  border-bottom-right-radius: 10rpx;
+  display: inline-block;
+  box-sizing: border-box;
+  margin: 0;
+
+  font-size: 80%;
+}
+
+#search .filter-btn {
+  width: 7%;
+  height: 55%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  font-size: 16rpx;
+  text-align: center;
+}
+
+.filter-btn image {
+  width: 100%;
+  height: 100%;
+}
+
+/* 过滤器点开的部分 */
+#filter-block {
+  width: 750rpx;
+  position: fixed;
+  z-index: 2;
+  background-color: rgba(0, 0, 0, .8);
+}
+
+
+#filter-block .filters {
+  width: 100%;
+  background-color: white;
+  display: flex;
+  flex-wrap: nowrap;
+}
+
+.f-column {
+  padding: 0rpx 10rpx;
+  height: 400rpx;
+}
+.f-column .padding-block {
+  height: 20rpx;
+}
+.f-column-1 {
+  width: 31%;
+  box-sizing: border-box;
+}
+
+.f-column .item {
+  height: 40rpx;
+  font-size: 30rpx;
+  line-height: 40rpx;
+  margin: 10rpx;
+  padding: 2rpx 20rpx;
+  display: inline-flex;
+  flex-wrap: nowrap;
+  border: 3rpx solid transparent;
+}
+
+.f-column .item.active {
+  color: var(--color-primary);
+  border: 3rpx solid var(--color-primary);
+  border-radius: 40rpx;
+}
+
+.f-column.main .item.active {
+  color:var(--color-text-onPrimary);
+  background-color: var(--color-primary);
+  border-radius: 40rpx;
+}
+
+.f-column .item .right-arrow {
+  width: 20rpx;
+  height: 40rpx;
+  margin-left: 10rpx;
+
+  display: inline-block;
+}
+
+.right-arrow image {
+  height: 20rpx;
+  width: 20rpx;
+}
+
+#filter-block .divider {
+  width: 100%;
+  height: 1rpx;
+  background-color: var(--color-gray);
+}
+
+#filter-block .buttons {
+  width: 100%;
+  background-color: var(--color-gray);
+  display: flex;
+  justify-content: space-between;
+}
+
+#filter-block .buttons .btn {
+  /* 留1rpx给中间的分割线 */
+  width: 374.8rpx;
+  height: 80rpx;
+  line-height: 80rpx;
+  font-size: 30rpx;
+  background-color: white;
+  color: var(--color-gray-dark);
+  text-align: center;
+}
+
+#filter-block .buttons .active {
+  color: var(--color-primary);
+}
+
+.searchPlaceholderStyle{
+  display: flex;
+}
+
+/* 寻找领养按钮 */
+#find-adopt {
+  position: fixed;
+  bottom: 300rpx;
+  right: 30rpx;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+
+  filter: drop-shadow(0 0 5rpx var(--color-gray-dark));
+  transform: translateZ(0);
+}
+
+/* 返回首页 */
+#back-to-firstpage {
+  position: fixed;
+  bottom: 200rpx;
+  right: 30rpx;
+
+  filter: drop-shadow(0 0 5rpx var(--color-gray-dark));
+  transform: translateZ(0);
+}
+
+#find-adopt .logo {
+  width: 99rpx;
+  height: 50rpx;
+  display: block;
+}
+
+#find-adopt .count {
+  font-size: 20rpx;
+  padding: 1rpx 10rpx;
+  background-color: var(--color-primary);
+  border-radius: 5rpx;
+  color: var(--color-black-light);
+}
+
+.adopt-filter-tip {
+  position: fixed;
+  top: 100rpx;
+  right: 20rpx;
+  opacity: 1;
+
+  transition: top 1s, opacity 1s;
+}
+
+.adopt-filter-tip.hide {
+  opacity: 0;
+  top: 50rpx;
+}
+
+.adopt-filter-tip .tri {
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 0 10rpx 10rpx 10rpx;
+  border-color: transparent transparent var(--color-black-transparent) transparent;
+
+  position: absolute;
+  right: 20rpx;
+}
+
+.adopt-filter-tip .content {
+  width: 180rpx;
+  text-align: center;
+  font-size: 22rpx;
+  padding: 10rpx;
+  background-color: var(--color-black-transparent);
+  color: white;
+
+  border-radius: 10rpx;
+  
+  position: absolute;
+  right: 0;
+  top: 10rpx;
+}
+
+.shake {
+  /* 摇晃动画 */
+  animation-name: upAnimation;
+  animation-duration: 2s;
+  animation-fill-mode: both;
+  animation-iteration-count: 6;
+  animation-delay: 2s;
+}
+@keyframes upAnimation {
+  0% {
+      transform: rotate(0deg);
+      transition-timing-function: cubic-bezier(0.215, .61, .355, 1)
+  }
+
+  10% {
+      transform: rotate(-12deg);
+      transition-timing-function: cubic-bezier(0.215, .61, .355, 1)
+  }
+
+  20% {
+      transform: rotate(12deg);
+      transition-timing-function: cubic-bezier(0.215, .61, .355, 1)
+  }
+
+  28% {
+      transform: rotate(-10deg);
+      transition-timing-function: cubic-bezier(0.215, .61, .355, 1)
+  }
+
+  36% {
+      transform: rotate(10deg);
+      transition-timing-function: cubic-bezier(0.755, .5, .855, .06)
+  }
+
+  42% {
+      transform: rotate(-8deg);
+      transition-timing-function: cubic-bezier(0.755, .5, .855, .06)
+  }
+
+  48% {
+      transform: rotate(8deg);
+      transition-timing-function: cubic-bezier(0.755, .5, .855, .06)
+  }
+
+  52% {
+      transform: rotate(-4deg);
+      transition-timing-function: cubic-bezier(0.755, .5, .855, .06)
+  }
+
+  56% {
+      transform: rotate(4deg);
+      transition-timing-function: cubic-bezier(0.755, .5, .855, .06)
+  }
+
+  60% {
+      transform: rotate(0deg);
+      transition-timing-function: cubic-bezier(0.755, .5, .855, .06)
+  }
+
+  100% {
+      transform: rotate(0deg);
+      transition-timing-function: cubic-bezier(0.215, .61, .355, 1)
+  }
+}
+
+
+#back-to-firstpage .back-btn {
+  width: 80rpx;
+  height: 80rpx;
+  margin: 0rpx 10rpx;
+  display: block;
+}
+
+.news-container {
+  z-index: 99;
+}
+/* 猫猫评分 */
+.stars {
+  width: 220rpx;
+  height: 30rpx;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.one-star {
+  width: 30rpx;
+  height: 30rpx;
+}
+
+.one-star.gray {
+  filter: grayscale(100%);
+  opacity: 0.3;
+}
+
+.one-star image {
+  width: 100%;
+  height: 100%;
+}
+
+.score {
+  margin-left: 20rpx;
+  width: 30rpx;
+  text-align: center;
+  color: var(--color-primary);
+  font-weight: bold;
+}

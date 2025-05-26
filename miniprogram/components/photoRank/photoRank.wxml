@@ -1,0 +1,42 @@
+<!--miniprogram/pages/info/photoRank/photoRank.wxml-->
+
+<view class='top-block'></view>
+
+<view class='cen-block unAuth' wx:if='{{!user}}'>
+  <view class='title'>{{text_cfg.photo_rank.auth_tip_title}}</view>
+  <button class="btn" bindtap='getUInfo'>{{text_cfg.photo_rank.auth_tip}}</button>
+</view>
+<view class='cen-block my' wx:else>
+  <view class='text left'>
+    <view class='title'>排名</view>
+    <view class='number {{user.photo_rank && user.photo_rank <= 3? "active": ""}}'>{{user.photo_rank || '---'}}</view>
+  </view>
+  <view class='text cen my-info'>
+    <image mode='aspectFill' src='{{user.userInfo.avatarUrl || defaultAvatarUrl}}' bindtap='getUInfo'></image>
+    <view class='name'>{{user.nickName}}</view>
+  </view>
+  <view class='text right'>
+    <view class='title'>照片</view>
+    <view class='number {{user.photo_rank && user.photo_rank <= 3? "active": ""}}'>{{user.photo_count || '---'}}</view>
+  </view>
+</view>
+
+
+<view class='cen-block'>
+  <view class='row' wx:for='{{ranks}}' wx:key='openid'>
+    <view class='rank'>{{item.rank}}</view>
+    <view class='avatar'>
+      <image class='avatar' mode='aspectFill' src='{{item.userInfo.avatarUrl || defaultAvatarUrl}}'></image>
+      <image wx:if='{{item.rank<=3}}' class='medal' mode='aspectFill' src='/pages/public/images/info/rank/{{item.rank}}.png'></image>
+    </view>
+    <view class='name'>{{item.userInfo.nickName || text_cfg.genealogy.photo_by_unknow_tip}}</view>
+    <view class='photo_count {{item.rank<=3? "active": ""}}'>{{item.count}}</view>
+  </view>
+</view>
+
+<view class='tip'>{{text_cfg.photo_rank.count_tip}}，上次更新时间：{{rankTime}}</view>
+
+<view style='margin-top: 20rpx;'></view>
+
+<!-- 个人信息修改组件 -->
+<modifyUserInfo show="{{showEdit}}" bind:close="closeEdit"></modifyUserInfo>

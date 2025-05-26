@@ -1,0 +1,349 @@
+/* pages/followFeed/followFeed.wxss */
+@import "../public/wxss/hFilter.wxss";
+@import '../genealogy/commentBoard/commentBoard.wxss';
+
+/* 去掉滚动条 */
+::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+  color: transparent;
+}
+
+image{height:auto}
+
+#comment-list {
+  width: 750rpx;
+  height: 100%;
+  display: flex;
+  align-items: flex-start;
+  position: relative;
+}
+
+/* 一组照片 */
+.photo-block, .comment-block {
+  width: 100%;
+  box-sizing: border-box;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  padding: 30rpx 30rpx 20rpx 30rpx;
+  border-top: 1rpx solid var(--color-gray);
+}
+
+.cat-info {
+  width: 100%;
+  height: 70rpx;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.cat-info .cat-avatar {
+  width: 60rpx;
+  height: 60rpx;
+}
+
+.photo-img image, .cat-avatar image {
+  width: 100%;
+  height: 100%;
+}
+.cat-avatar image {
+  border-radius: 50%;
+  background-color: var(--color-gray);
+}
+
+.cat-info .cat-name {
+  font-size: 28rpx;
+  color: var(--color-black-light);
+  margin-left: 10rpx;
+  display: flex;
+  flex-direction: column;
+}
+.cat-info .cat-campus {
+  font-size: 18rpx;
+  color: var(--color-gray-dark);
+  align-items: center;
+  display: flex;
+}
+.location-logo {
+  width: 24rpx;
+  height: 24rpx;
+  margin-right: 4rpx;
+}
+
+/* 照片卡 */
+.photo-container {
+  width: 100%;
+  display: grid;
+  gap: 10rpx;
+  padding: 15rpx 0;
+  grid-template-columns: 1fr 1fr 1fr;
+  transition: all 0.4s ease;
+  animation: fadeIn 0.5s; /* 图片渲染慢，动画过渡一下 */
+}
+.photo-block .single-photo {
+  grid-template-columns: 1fr;  /* 单张图片时全宽度 */
+}
+
+.photo-img {
+  /* 令高等于宽度 */
+  height: 0;
+  padding-bottom: 100%;
+  position: relative;
+
+  width: 100%;
+  border-radius: 15rpx;
+  overflow: hidden;
+  background-color: white;
+  background-image: var(--img-default);
+  background-size: 60% 60%;
+  background-repeat: no-repeat;
+  background-position: center center;
+  transition: all 0.4s ease;
+}
+.photo-container .single-photo {
+  padding-bottom: 75%;
+}
+.photo-img image {
+  /* 令高等于宽 */
+  position: absolute;
+}
+
+.photo-by {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  align-content: flex-start;
+}
+
+.photo-block .datetime {
+  text-align: left;
+  width: auto;
+  font-size: 24rpx;
+  margin-left: 10rpx;
+  margin-bottom: 10rpx;
+}
+
+.dot {
+  width: 6rpx;
+  height: 6rpx;
+  background-color: var(--color-black-min);
+  border-radius: 50%;
+  margin-bottom: 10rpx;
+}
+
+.photo-block .user-info {
+  width: auto;
+  align-items: center;
+  border-radius: 50rpx;
+  margin-block-end: 10rpx;
+}
+
+.photo-block .username {
+  /* width: 100%; */
+  font-size: 24rpx;
+  margin: 0 10rpx;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: var(--color-black-min);
+}
+
+/* 未关注提醒 */
+.noFollow {
+  width: 100%;
+  text-align: center;
+  color: var(--color-gray-max);
+  top: calc(50% - 100rpx);
+  transform: translateY(-50%);
+  position: absolute;
+}
+
+.noFollow image {
+  width: 100rpx;
+  height: 100rpx;
+}
+
+/* 底部加载 */
+.loading image {
+  width: 165.9rpx;
+  height: 90.3rpx;
+  margin: 10rpx 292rpx 200rpx 292rpx;
+}
+.loadnomore image {
+  width: 750rpx;
+  height: 100rpx;
+  margin: 10rpx 0 200rpx 0;
+}
+.loadnomore {
+  font-size: 24rpx;
+  text-align: center;
+  color: var(--color-gray-dark);
+}
+
+/* 顶部导航 */
+.menu-item, .story-item  {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.story-bar {
+  padding-bottom: 10rpx;
+}
+
+.story-container {
+  display: inline-flex;
+  margin: 30rpx 15rpx 0 15rpx;
+}
+
+.story-item {
+  margin: 0 15rpx 0 15rpx;
+  box-sizing: border-box;
+}
+
+.story-item .cat-avatar-wrapper {
+  width: 170rpx;
+  height: 170rpx;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+
+.cat-avatar-wrapper .gradientBorder{
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  transition: transform 0.2s linear;
+}
+
+.cat-avatar-wrapper .gradientBorder.scale {
+  transform: scale(1.02);
+}
+
+.story-item .cat-avatar {
+  /* cat-avatar-wrapper的宽高减去两倍边框宽度 */
+  width: 146rpx;
+  height: 146rpx;
+  border-radius: 50%;
+  animation: fadeIn 0.5s; /* 图片渲染慢，动画过渡一下 */
+}
+
+.story-item .cat-avatar .scale-avatar {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  overflow: hidden;
+  background-color: var(--color-gray);
+  transition: transform 0.2s linear;
+}
+
+.story-item .cat-avatar .scale-avatar.scale {
+  transform: scale(0.92);
+}
+
+.story-item .cat-name {
+  width: 100%;
+  font-size: 24rpx;
+  margin-top: 10rpx;
+  color: var(--color-black-light);
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.selected-cat {
+  width: 100%;
+  padding: 10rpx 30rpx;
+  box-sizing: border-box;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  animation: fadeIn 0.3s;
+}
+
+.selected-cat .cat-name {
+  display: inline-block;
+  font-size: 28rpx;
+  font-weight: 700;
+}
+.iconfont {
+  color: var(--color-gray-max);
+  animation: rotate 0.3s ease;
+}
+
+/* 菜单 */
+.menu-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+.menu-item {
+  width: 100%;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  margin: 30rpx 0;
+}
+
+.menu-item:first-child {
+  margin-bottom: 0;
+  padding-bottom: 30rpx;
+  border-bottom: 1rpx solid var(--color-gray);
+}
+
+.menu-item .cat-avatar-wrapper {
+  width: 120rpx;
+  height: 120rpx;
+  border-radius: 50%;
+  overflow: hidden;
+}
+
+.menu-item .cat-avatar {
+  width: 100%;
+  height: 100%;
+}
+
+.menu-item .cat-name {
+  width: 100%;
+  font-size: 24rpx;
+  font-weight: 700; /* 粗体：ios真机上无效 */
+  margin-top: 20rpx;
+  color: var(--color-black-light);
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.follow-btn.unfollowed {
+  color: #FF0000;
+}
+
+.follow-btn.followed {
+  color: var(--color-gray-dark);
+}
+
+/* 动画 */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(90deg);
+  }
+}

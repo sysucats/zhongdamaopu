@@ -1,0 +1,24 @@
+<!--components/newsModal/newsModal.wxml-->
+<popup show="{{isShow}}" position="center" bind:close="_cancelEvent" class="news-popup">
+  <view class='wx-modal'>
+    <image class="wx-modal-catlogo" mode='heightFix' src='/pages/public/images/news/cat.png'></image>
+    <view class='wx-modal-title'>{{ title }}</view>
+    <view class="wx-modal-row">
+      <view class='wx-modal-class'>{{ newsClass }}</view>
+      <view class='wx-modal-user'>{{ user }}</view>
+      <view class='wx-modal-time'>{{ time }}</view>
+    </view>
+
+    <scroll-view class='wx-modal-scroll {{imagePath == "" ? "no-image" : ""}}' enable-flex='true' scroll-y='true' enable-back-to-top='true' lower-threshold='50'>
+      <view class='wx-modal-content {{imagePath == "" ? "full-height" : ""}}' wx:if="{{content.length != 0}}">{{ content }}</view>
+      <block wx:if="{{ imagePath != '' }}">
+        <image class="wx-modal-image" mode='widthFix' src='{{ imagePath }}'></image>
+      </block>
+    </scroll-view>
+
+    <view class='wx-modal-footer'>
+      <view class='wx-modal-btn' catchtap='_cancelEvent'>{{ cancelText }}</view>
+      <view class='wx-modal-btn' catchtap='_confirmEvent'>{{ confirmText }}</view>
+    </view>
+  </view>
+</popup>

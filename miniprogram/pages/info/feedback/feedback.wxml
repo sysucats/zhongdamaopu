@@ -1,0 +1,31 @@
+<!--miniprogram/pages/info/feedback/feedback.wxml-->
+
+<view class='block'>
+  <view class='title'>{{text_cfg.feedback.feedback_tip_title}}</view>
+  <view class='desc' style='text-align:center;'>
+    <text>{{text_cfg.feedback.feedback_tip}}</text>
+  </view>
+  <view style='flex-basis:100%;'>
+    <view class='buttons'>
+      <button bindtap='toMyFeedback' style='flex-basis:100%;'>我的反馈</button>
+      <button class="primary" bindtap='toFeedback' style='flex-basis:100%;'>点击反馈</button>
+    </view>
+  </view>
+</view>
+
+<view class='block'>
+  <view class='title'>{{text_cfg.feedback.new_cat_tip_title}}</view>
+  <view class='desc' style='text-align:center;'>
+    <text>{{text_cfg.feedback.new_cat_tip}}</text>
+  </view>
+  <view style='flex-basis:100%;'>
+    <button class="primary" bindtap='toNewCat'>点击填写</button>
+  </view>
+</view>
+
+<view class='block'>
+  <view class='title'>{{text_cfg.feedback.contract_tip_title}}</view>
+  <view class='desc'>
+    <text>{{text_cfg.feedback.contract_tip}}</text>
+  </view>
+</view>

@@ -1,0 +1,28 @@
+<view class="weui-gallery {{show ? 'weui-gallery_show' : ''}} {{extClass}}">
+  <view class="weui-gallery__info">{{current+1}}/{{imgCompressedUrls.length}}</view>
+  <swiper class="weui-gallery__img__wrp" bindtap="hideGallery" bindlongpress="bindGalleryLongPress"
+          indicator-dots="{{false}}" bindchange="change" current="{{current}}" autoplay="{{false}}" duration="{{500}}">
+    <block wx:for="{{imgCompressedUrls}}" wx:key="*this">
+      <swiper-item>
+        <image mode="aspectFit" class="weui-gallery__img" src="{{item}}"></image>
+      </swiper-item>
+    </block>
+  </swiper>
+  <view class="operations">
+    <view class="weui-gallery__opr origin_photo">
+      <view bindtap="showOriginImg" class="weui-gallery__origin">查看原图</view>
+      <view class="weui-gallery__tip">可缩放、转发、保存</view>
+    </view>
+    <view class="weui-gallery__opr origin_photo">
+      <view bindtap="showPoster" class="weui-gallery__origin">分享喵ID</view>
+      <view class="weui-gallery__tip">生成专属喵ID卡片</view>
+    </view>
+    <view class="weui-gallery__opr like_button" bindtap="clickLike">
+      <heart size="120" liked="{{liked}}"></heart>
+      <view class="weui-gallery__tip">{{photos[current].like_count || 0}}</view>
+    </view>
+  </view>
+  
+</view>
+
+<poster id="posterComponent" cat="{{cat}}" coverImg="{{photos[current]}}" style="z-index: 9999;"></poster>

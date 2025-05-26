@@ -1,0 +1,149 @@
+/* miniprogram/pages/manage/managers.wxss */
+page {
+  width: 750rpx;
+}
+
+button {
+  width: 45%;
+  display: inline-block;
+  font-size: 35rpx;
+  box-sizing: border-box;
+}
+
+button.primary {
+  background-color: var(--color-primary);
+  color: var(--color-text-onPrimary);
+}
+
+button + button {
+  margin-left: 10%;
+  /* float: right; */
+}
+
+button.long {
+  margin: 20rpx 0 0 0;
+  width: 100%;
+}
+
+.filter-block {
+  align-items: center;
+  padding: 20rpx 35rpx;
+  margin: 20rpx 20rpx 30rpx 20rpx;
+  box-shadow: 0rpx 0rpx 10rpx var(--color-gray);
+  border-radius: 10rpx;
+}
+
+.search {
+  display: flex;
+}
+
+.line {
+  width: 100%;
+  height: 2rpx;
+  background: var(--color-gray);
+  margin: 15rpx 0rpx;
+}
+
+
+.filters checkbox .wx-checkbox-input {
+  width: 30rpx;
+  height: 30rpx;
+}
+
+.filters checkbox .wx-checkbox-input.wx-checkbox-input-checked {
+  background: var(--color-primary);
+}
+
+.filters checkbox .wx-checkbox-input.wx-checkbox-input-checked::before {
+  width: 28rpx;
+  height: 28rpx;
+  line-height: 28rpx;
+  text-align: center;
+  font-size: 22rpx;
+  color: #fff;
+  background: transparent;
+  transform: translate(-50%, -50%) scale(1);
+  -webkit-transform: translate(-50%, -50%) scale(1);
+}
+
+.filters {
+  font-size: 30rpx;
+  color: var(--color-gray-max);
+  display: flex;
+  flex-direction: row-reverse;
+}
+
+/* 下面开始用户管理的CSS */
+.user-box {
+  box-sizing: border-box;
+  padding: 15rpx 10rpx;
+  margin: 20rpx 20rpx 50rpx 20rpx;
+  box-shadow: 0rpx 0rpx 10rpx var(--color-gray);
+  border-radius: 10rpx;
+}
+
+.user-box .info {
+  border-bottom: 1px rgba(221, 221, 221, 0.377) solid;
+  margin-bottom: 20rpx;
+  display: flex;
+  align-items: center;
+}
+
+.user-box image.avatar {
+  width: 80rpx;
+  height: 80rpx;
+}
+
+.name-and-others {
+  display: inline-block;
+  margin-left: 10rpx;
+}
+
+.name-and-others .nickName,
+.unknow-info {
+  font-size: 32rpx;
+}
+
+.name-and-others .info {
+  font-size: 26rpx;
+  color: var(--color-gray-max);
+}
+
+.operation {
+  width: 100%;
+  display: flex;
+  align-items: flex-end;
+}
+
+picker.manager-level {
+  width: 400rpx;
+  height: 60rpx;
+  line-height: 60rpx;
+  border-bottom: 2rpx var(--color-primary) solid;
+  background-color: var(--color-white-dark);
+  padding: 10rpx;
+  color: var(--color-black-light);
+  display: inline-block;
+  overflow: hidden;
+}
+
+button.manager-update {
+  width: 200rpx;
+  font-size: 32rpx;
+  margin-left: 20rpx;
+  display: inline-block;
+}
+
+.index {
+  font-size: 28rpx;
+  color: var(--color-gray);
+  margin-left: auto;
+  display: inline-block;
+}
+
+.old-invite {
+  font-size: 26rpx;
+  color: var(--color-gray-dark);
+  text-align: center;
+  text-decoration: underline dotted;
+}

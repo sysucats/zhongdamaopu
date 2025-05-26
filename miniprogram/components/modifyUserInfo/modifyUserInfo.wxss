@@ -1,0 +1,96 @@
+@import "../../pages/public/wxss/iconfont.wxss";
+
+.editInfo {
+  margin: 20rpx 6rpx 20rpx 6rpx;
+  padding: 15rpx 15rpx;
+  display: flex;
+  flex-direction: column;
+}
+
+.avatar-wrapper {
+  align-items: center;
+  justify-content: center;
+  width: 270rpx;
+  height: 270rpx;
+  border-radius: 50%;
+  padding: 0;
+  border: 0;
+  box-shadow: 0rpx 10rpx 20rpx var(--color-ltblack-transparent);
+  margin-bottom: 40rpx;
+  border: 12rpx solid white;
+  position: relative;
+}
+.overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.35);
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.overlay-icon {
+  width: 160rpx;
+  height: 160rpx;
+  filter: brightness(10);
+}
+.avatar {
+  width: 250rpx;
+  height: 250rpx;
+  border-radius: 50%;
+  margin-bottom: 20rpx;
+  background-color: white;
+  box-shadow: 0rpx 10rpx 20rpx var(--color-ltblack-transparent);
+}
+
+.user-name {
+  width: 500rpx;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-align: center;
+  font-size: 50rpx;
+  font-weight: bold;
+}
+
+.label-tip {
+  font-size: 20rpx;
+  color: var(--color-gray-dark);
+  margin-bottom: 10rpx;
+}
+
+.name-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20rpx 0 20rpx 0;
+}
+
+picker, input {
+  border-bottom: 2rpx var(--color-primary) solid;
+  background-color: var(--color-white-dark);
+  padding: 15rpx;
+  color: var(--color-black-light);
+  text-align: center;
+  height: fit-content;
+  margin-bottom: 80rpx;
+}
+
+button.primary::after {
+  border: none;
+}
+button.primary {
+  border-radius: 100rpx;
+  background-color: var(--color-primary);
+  color: var(--color-text-onPrimary);
+  width: 500rpx;
+  margin-bottom: 30rpx;
+}
+
+.label-small {
+  font-size: 28rpx;
+  flex: 1;
+}

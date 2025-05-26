@@ -1,0 +1,16 @@
+/* pages/tools/updateUserRole/updateUserRole.wxss */
+
+button {
+  margin: 30rpx;
+}
+
+.tip-title {
+  font-size: 30rpx;
+  text-align: center;
+}
+
+.tip-item {
+  text-align: center;
+  font-size: 25rpx;
+  padding: 0 30rpx;
+}

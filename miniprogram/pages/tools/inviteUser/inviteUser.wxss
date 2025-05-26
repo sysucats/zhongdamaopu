@@ -1,0 +1,19 @@
+/* pages/tools/inviteUser/inviteUser.wxss */
+@import "/pages/public/wxss/form.wxss";
+
+page {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding-top: 200rpx;
+}
+
+.tip {
+  text-align: center;
+  font-size: 26rpx;
+  color: var(--color-black-min);
+}
+
+button {
+  margin-top: 20rpx;
+}

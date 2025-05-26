@@ -1,0 +1,9 @@
+<!--miniprogram/custom-tab-bar/index.wxml-->
+
+<view class="tab-bar {{showTabBar ? '' : 'hidden'}}">
+  <view class="tab-bar-border"></view>
+  <view wx:for="{{list}}" wx:key="index" class="tab-bar-item" data-path="{{item.pagePath}}" bindtap="switchTab">
+    <image class="tab-bar-img" src="{{activePath === item.pagePath ? item.selectedIconPath : item.iconPath}}"></image>
+    <view class="tab-bar-title" style="color: {{activePath === item.pagePath ? selectedColor : color}}">{{item.text}}</view>
+  </view>
+</view>

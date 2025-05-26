@@ -1,0 +1,245 @@
+/* miniprogram/pages/info/info.wxss */
+page {
+  width: 750rpx;
+  padding: 30rpx 30rpx;
+  box-sizing: border-box;
+  background-color: var(--color-gray-light);
+}
+
+.mina-info {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  align-items: center;
+  padding: 40rpx 0 15rpx 0;
+}
+
+/* 卡片布局 */
+.card-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  row-gap: 30rpx;
+  margin: 10rpx 6rpx 10rpx 6rpx;
+}
+
+.card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: calc(50% - 15rpx);
+  height: 180rpx;
+  border-top-right-radius: 15rpx;
+  border-top-left-radius: 15rpx;
+  border-bottom-right-radius: 10rpx;
+  border-bottom-left-radius: 10rpx;
+  box-shadow: 0rpx 1rpx 10rpx var(--color-ltblack-transparent);
+  background-color: white;
+}
+.card:after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 10rpx;
+  border-bottom-right-radius: 10rpx;
+  border-bottom-left-radius: 10rpx;
+  background-color: var(--color-primary);
+}
+
+.icon {
+  align-items: center;
+  width: 80rpx;
+  height: 80rpx;
+  margin-bottom:0rpx;
+}
+.card-text {
+  font-size: 30rpx;
+  text-align: center;
+  white-space: nowrap;
+  font-weight: bolder;
+  letter-spacing: 5rpx;
+  color: var(--color-black-light);
+  filter: drop-shadow(0px 5rpx 5rpx rgba(0, 0, 0, 0.15));
+}
+
+.tool {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  width: calc(50% - 15rpx);
+  height: 100rpx;
+  border-radius: 15rpx;
+  box-shadow: 0rpx 1rpx 10rpx var(--color-ltblack-transparent);
+  background-color: white;
+  overflow: hidden;
+}
+
+/* 下面是旧的 */
+
+.mina-info image {
+  width: 150rpx;
+  height: 150rpx;
+  border-radius: 75rpx;
+  box-shadow: 0 0 10rpx var(--color-gray);
+}
+
+.mina-info .title {
+  font-size: 33rpx;
+  font-weight: 500;
+  margin-top: 20rpx;
+}
+
+.mina-info .dev {
+  font-size: 23rpx;
+  font-weight: 300;
+  margin-top: 5rpx;
+  text-align: center;
+}
+
+.block-name {
+  font-size:30rpx;
+  font-weight: 400;
+  margin-top: 35rpx;
+  width: 100%;
+  text-align: center;
+}
+
+.block{
+  background-color: white;
+  margin: 10rpx 6rpx 10rpx 6rpx;
+  padding: 15rpx 15rpx;
+  box-shadow: 0rpx 10rpx 25rpx var(--color-ltblack-transparent);
+  border-radius: 15rpx;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+
+.friend-link {
+  margin: 28rpx 10rpx 20rpx 5rpx;
+  width: 148rpx;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.friend-link image {
+  width: 100rpx;
+  height: 100rpx;
+  border-radius: 50rpx;
+  margin-bottom: 15rpx;
+}
+
+.friend-link-text {
+  width: 100%;
+  font-size: 25rpx;
+  text-align: center;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+/* grid */
+.grid-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  width: 33.33%; /* 三列宫格 */
+  box-sizing: border-box;
+  padding: 10px;
+}
+
+.grid-text {
+  width: 100%;
+  font-size: 25rpx;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.iconfont {
+  font-family: 'iconfont';
+  font-size: 55rpx;
+  filter: drop-shadow(0px 12rpx 12rpx rgba(0, 0, 0, 0.05));
+}
+
+.badge {
+  position: absolute;
+  text-align: center;
+  top: 20rpx;
+  left: 120rpx;
+  min-width: 26rpx;
+  height: 26rpx;
+  line-height: 26rpx;
+  border-radius: 26rpx;
+  background-color: red;
+  color: white;
+  font-size: 22rpx;
+  font-weight: bold;
+  overflow: hidden;
+  white-space: nowrap;
+  border: 4rpx solid white;
+  padding: 4rpx;
+}
+
+.dot {
+  position: absolute;
+  top: 35rpx;
+  right: 70rpx;
+  width: 11rpx;
+  height: 11rpx;
+  background-color: red;
+  border-radius: 50%;
+}
+
+/* 各项数据 */
+.num-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10rpx 0 0rpx 0;
+  width: 100%;
+}
+
+.num {
+  display: flex;
+  flex: 1; /* 平分宽度 */
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 0 40rpx;
+  height: auto;
+  box-sizing: border-box;
+  position: relative;
+}
+
+.num:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  right: 0;
+  transform: translateY(-50%);
+  height: 60%;
+  width: 1rpx;
+  background-color: var(--color-gray);
+}
+
+.num-title {
+  margin-bottom: -10rpx;
+  font-size: 25rpx;
+  text-align: center;
+  white-space: nowrap;
+}
+.small-title {
+  font-size: 20rpx;
+  font-weight: 300;
+}

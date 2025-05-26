@@ -1,0 +1,189 @@
+/* pages/news/news.wxss */
+.news-box {
+  box-sizing: border-box;
+  padding: 25rpx 25rpx 25rpx 30rpx;
+  margin: 30rpx;
+  box-shadow: 5rpx 5rpx 30rpx var(--color-gray-normal);
+  border-radius: 20rpx;
+  background-color: #FFFFFF;
+
+  display: flex;
+  justify-content: space-between;
+  flex-grow: 1;
+  overflow: hidden;
+}
+
+.news {
+  font-weight: 300;
+  /* margin: 10rpx 0; */
+}
+
+.news.infoBox{
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  overflow: hidden;
+  flex-grow: 1;
+}
+
+.news.title {
+  font-size: 33rpx;
+  font-weight: 600;
+  margin-bottom: 6rpx;
+}
+
+.news .row-container{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-bottom: 8rpx;
+}
+.news.tag {
+  width: 80rpx;
+  height: 38rpx;
+  border-radius: 15rpx;
+  margin: 4rpx 12rpx 0 0;
+  
+  font-size: 24rpx;
+  font-weight: 500;
+  text-align: center;
+  line-height: 38rpx;
+
+  background-color: var(--color-primary-light);
+  color: var(--color-primary);
+}
+
+.news.user {
+  font-size: 26rpx;
+  color: var(--color-gray-dark);
+  margin-right: 10rpx;
+
+  white-space: nowrap;  
+  text-overflow:ellipsis; 
+  overflow:hidden;
+}
+.news.time {
+  font-size: 26rpx;
+  color: var(--color-gray-dark);
+  flex-grow: 1;
+  text-align: right;
+  white-space: nowrap;  
+  text-overflow:ellipsis; 
+  overflow: hidden;
+}
+
+.news.content-wrapper{
+
+  flex-grow: 1;
+}
+.news.content {
+  font-size: 28rpx;
+  font-weight: 400;
+  /* letter-spacing:0.005rpx; */
+
+  margin-bottom: 10rpx;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+
+  color: var(--color-gray-max);
+
+}
+
+.loading image {
+  width: 165.9rpx;
+  height: 90.3rpx;
+  margin: 10rpx 292rpx;
+  margin-top: 40rpx;
+}
+
+.cover-image {
+  width: 200rpx;
+  height: 200rpx;
+
+  border-radius: 10rpx;
+  margin: 5rpx 5rpx 5rpx 30rpx;
+  float: right;
+
+  flex-shrink: 0;
+  /* flex-grow: 1; */
+}
+
+
+
+.button_container {
+  display: flex;
+  flex-direction: row;
+  margin: 20rpx 20rpx 0rpx 20rpx;
+  justify-content: space-around;
+  height: 130rpx;
+}
+
+/* 按钮未选中 */
+.normal_button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  width: 15%;
+  border-bottom: 5rpx solid transparent;
+  background-color: white;
+  padding: 8rpx 5rpx;
+  box-sizing: border-box;
+  transition: background-color 500ms ease,
+              border-color 500ms ease,
+              color 500ms ease,
+              font-weight 500ms ease;
+}
+
+/* 按钮选中 */
+.checked_button {
+  border-color: var(--color-primary-dark);
+  color: var(--color-primary-dark);
+  font-weight: bold;
+}
+
+.tab-logo{
+  width: 80rpx;
+  height: 86rpx;
+  padding: 8rpx 10rpx;
+  transition: background-color 500ms ease,
+              border-color 500ms ease,
+              color 500ms ease,
+              font-weight 500ms ease;
+}
+.checked_button .tab-logo {
+background-color: var(--color-primary-light);
+border-radius: 10rpx;
+}
+
+.tab-text{
+  font-size: 24rpx;
+  text-align: center;
+}
+
+.checked_button.tab-text{
+  color: white;
+  font-weight: 500;
+}
+
+swiper {
+  width: 692rpx;
+  height: 261rpx;
+  margin: 25rpx 28rpx 23rpx 28rpx;
+  border-radius: 15rpx;
+  overflow: hidden;
+}
+
+swiper image {
+  width: 692rpx;
+  height: 261rpx;
+  border-radius: 15rpx;
+}
+
+.emptyImg {
+  width: 750rpx;
+  height: 100rpx;
+  margin: 30rpx 0;
+}

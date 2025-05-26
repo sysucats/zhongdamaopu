@@ -1,0 +1,2 @@
+/* pages/manage/badgeDef/addBadgeDef/addBadgeDef.wxss */
+@import "../../../../components/modifyUserInfo/modifyUserInfo.wxss";

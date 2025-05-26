@@ -1,0 +1,42 @@
+<view class='loading' wx:if='{{updateRequest}}'>
+  <image src='/pages/public/images/system/loading.gif'></image>
+</view>
+
+<swiper indicator-dots="1" indicator-active-color="var(--color-primary)" circular="1" autoplay="true" interval="4000" duration="1000">
+  <swiper-item wx:for="{{images}}" wx:key="unique" bindtap='gotoSciDetail' data-cate='{{index}}'>
+    <image src='{{item}}'></image>
+  </swiper-item>
+</swiper>
+
+<view class='button_container'>
+  <block wx:for="{{buttons}}" wx:key="buttons">
+    <view class='{{item.checked?"normal_button checked_button":"normal_button"}}' data-id='{{item.id}}' bindtap='radioButtonTap'>
+      <image class="tab-logo" mode='heightFix' src="{{item.logo}}"></image>
+      <view class="tab-text">{{item.name}}</view>
+    </view>
+  </block>
+</view>
+
+<view wx:if="{{newsList_show.length === 0}}">
+  <image class="emptyImg" src='/pages/public/images/system/nomore.png'></image>
+</view>
+<view wx:for='{{newsList_show}}' wx:key="_id" class='news-box' bindtap='clickNews' data-news_id='{{item._id}}'>
+  <view class='news infoBox'>
+    <view class='news title'>{{item.title}}</view>
+    <view class="news content-wrapper">
+      <!-- 兼容flex-grow和多行省略 -->
+      <view class="news content">{{item.mainContent}}</view>
+    </view>
+    <view class="news row-container">
+      <view wx:if="{{item.class}}" class='news tag'>{{item.class}}</view>
+      <view class='news user'>{{item.userNicknameLastModify?item.userNicknameLastModify:item.userInfoLastModify.nickName}} </view>
+      <view class='news time'>{{item.ddate}}</view>
+
+    </view>
+  </view>
+
+  <image mode='aspectFill' class='cover-image' wx:if='{{item.coverPath}}' src='{{item.coverPath}}'></image>
+</view>
+
+<!-- 底tab占位 -->
+<view style="height: {{tabBarHeight}}px;"></view>

@@ -1,0 +1,24 @@
+{
+  "rules": [
+    {
+      "action": "allow",
+      "page": "pages/genealogy/genealogy"
+    },
+    {
+      "action": "allow",
+      "page": "pages/recognize/recognize"
+    },
+    {
+      "action": "allow",
+      "page": "pages/info/info"
+    },
+    {
+      "action": "allow",
+      "page": "pages/news/news"
+    },
+    {
+      "action": "disallow",
+      "page": "*"
+    }
+  ]
+}

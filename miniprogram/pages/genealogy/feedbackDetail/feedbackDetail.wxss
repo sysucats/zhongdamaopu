@@ -1,0 +1,99 @@
+page {
+  width: 750rpx;
+  padding: 50rpx 30rpx;
+  box-sizing: border-box;
+}
+
+.userInfo {
+  width: 100%;
+  padding: 0rpx 0rpx 30rpx 0;
+  display: flex;
+}
+
+.userInfo image {
+  height: 50rpx;
+  width: 50rpx;
+  margin-right: 10rpx;
+  border-radius: 5rpx;
+}
+
+.userInfo text {
+  height: 50rpx;
+  line-height: 50rpx;
+  font-size: 35rpx;
+}
+
+button.long {
+  /* width: 690rpx; */
+  width: 100%;
+}
+
+button.primary {
+  background-color: var(--color-primary);
+  color: var(--color-text-onPrimary);
+}
+
+input, picker, textarea {
+  width: 650rpx;
+  border-bottom: 2rpx var(--color-primary) solid;
+  background-color: var(--color-white-dark);
+  padding: 20rpx;
+  color: var(--color-black-light);
+  /* border-radius: 20rpx; */
+  margin-top: 8rpx;
+}
+
+.inputTitle{
+  margin-left: 15rpx;
+}
+
+.feedbackColumn {
+  height: 12rem;
+}
+
+button {
+  background-color: var(--color-primary);
+  color: var(--color-text-onPrimary);
+  width: 100%;
+  display: inline-block;
+  box-sizing: border-box;
+  font-size: 35rpx;
+  line-height: 40rpx;
+  padding: 20rpx 30rpx;
+  border: 1rpx solid var(--color-gray-max);
+  border-radius: 20rpx;
+  margin-top: 20rpx;
+}
+
+.inputColumn {
+  font-size: 35rpx;
+  line-height: 40rpx;
+}
+
+.lengthTips {
+  font-size: 26rpx;
+  color: var(--color-gray-max);
+  float: right;
+  margin-right: 10rpx;
+  margin-top: 5rpx;
+}
+
+.submitButton {
+  margin-top: 20rpx;
+}
+
+.footnote {
+  /* margin-top: 20rpx; */
+  font-size: 26rpx;
+  color: var(--color-gray-max);
+}
+
+.agreement {
+  margin-top: 20rpx;
+  font-size: 24rpx;
+}
+
+.agreement navigator {
+  display: inline;
+  color: var(--color-primary);
+}

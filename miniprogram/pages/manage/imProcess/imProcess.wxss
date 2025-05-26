@@ -1,0 +1,69 @@
+page {
+  width: 750rpx;
+  padding: 30rpx 30rpx;
+  box-sizing: border-box;
+}
+
+.buttons {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+button {
+  width: 60%;
+  display: inline-block;
+  font-size: 35rpx;
+  box-sizing: border-box;
+  margin: 20rpx 0;
+}
+
+button.primary {
+  background-color: var(--color-primary);
+  color: var(--color-text-onPrimary);
+}
+
+button.short {
+  width: 35%;
+}
+
+button.long {
+  width: 100%;
+}
+
+.image-blocks {
+  display: flex;
+  justify-content: space-between;
+}
+
+.image-block {
+  width: 220rpx;
+}
+
+.image-block .title {
+  width: 220rpx;
+  text-align: center;
+  font-weight: bold;
+  margin: 30rpx 0 10rpx 0;
+}
+
+.image-block image {
+  width: 220rpx;
+  height: 220rpx;
+  background-color: linen;
+}
+
+.image-block .no-image {
+  width: 220rpx;
+  height: 220rpx;
+  background-color: var(--color-gray-light);
+}
+
+/* 文字说明 */
+.info-block {
+  width: 100%;
+  color: var(--color-black-min);
+  font-size: 22rpx;
+  word-wrap: break-word;
+}

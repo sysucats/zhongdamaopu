@@ -1,0 +1,55 @@
+/* pages/genealogy/detailCat/ratingDetail/ratingDetail.wxss */
+@import "../badgeDetail/badgeDetail.wxss";
+
+.one-rating {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+  align-items: center;
+  margin-bottom: 30rpx;
+}
+
+.one-rating .title {
+  width: 100rpx;
+  text-align: right;
+
+}
+
+.stars {
+  width: 300rpx;
+  height: 60rpx;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.one-star {
+  width: 50rpx;
+  height: 50rpx;
+}
+
+.one-star.gray {
+  filter: grayscale(100%);
+  opacity: 0.3;
+}
+
+.one-star image {
+  width: 100%;
+  height: 100%;
+}
+
+.score {
+  width: 50rpx;
+  text-align: center;
+  color: var(--color-primary);
+  font-weight: bold;
+}
+
+button.primary {
+  border-radius: 40rpx;
+  background-color: var(--color-primary);
+  color: var(--color-text-onPrimary);
+  width: 500rpx;
+  margin-bottom: 30rpx;
+}

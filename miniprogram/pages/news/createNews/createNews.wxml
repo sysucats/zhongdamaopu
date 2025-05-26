@@ -1,0 +1,63 @@
+<!--pages/manage/manageNews/createNews/createNews.wxml-->
+
+<form wx:if="{{auth}}" bindsubmit="bindSubmit">
+    <view class='label'>自定义昵称：（选填）</view>
+    <input name='name' type='text' placeholder="{{user.userInfo.nickName}}" bindinput='bindInputName' maxlength='{{namemaxlength}}'></input>
+    <view class='lengthTips'>字数：{{namelength}}/{{namemaxlength}}</view>
+
+    <view class='label'>标题：（必填）</view>
+    <input name='title' type='text' bindinput='bindInputTitle' maxlength='{{titlemaxlength}}'></input>
+    <view class='lengthTips'>字数：{{titlelength}}/{{titlemaxlength}}</view>
+
+    <view class='label'>公告分类：（必选）</view>
+    <view class='button_container'>
+        <block wx:for="{{buttons}}" wx:key="buttons">
+            <button class='{{item.checked?"checked_button":"normal_button"}}' data-id='{{item.id}}' bindtap='radioButtonTap'>{{item.name}}</button>
+        </block>
+    </view>
+
+    <view class='label'>正文：（选填）</view>
+    <textarea placeholder="喵喵 喵喵喵" name='mainContent' maxlength='{{maxlength}}' bindinput='bindInput'></textarea>
+    <view class='lengthTips'>字数：{{length}}/{{maxlength}}</view>
+
+    <view class='label'>封面图：封面图会在公告栏界面显示（长按删除）</view>
+    <view class='album'>
+        <view class='album-block' wx:if="{{cover != 0}}">
+            <image mode='aspectFill' class='alb-image' src='{{cover.path}}' bindtap='previewImg' data-url='{{cover.path}}' bindlongpress="deleteCover"></image>
+        </view>
+    </view>
+
+    <view class='uploadImageButton'>
+        <button bindtap="chooseCover">添加封面</button>
+    </view>
+
+    <view class='label'>图片：（长按删除图片）</view>
+    <view class='album'>
+        <view class='album-block'>
+            <block wx:for="{{photos}}" wx:key="_id">
+                <image mode='aspectFill' class='alb-image' src='{{item.file.path}}' bindtap='previewImg' data-url='{{item.file.path}}' bindlongpress="deleteImg" data-index="{{index}}"></image>
+            </block>
+        </view>
+    </view>
+    <view class='lengthTips'>图片数目：{{photos.length}}/9</view>
+
+
+    <view class='uploadImageButton'>
+        <button bindtap="chooseImg">添加图片</button>
+    </view>
+
+    <view class='label'>公告弹窗：设置公告弹窗将会在小程序首页弹出此公告</view>
+    <view class='button_container'>
+        <block wx:for="{{modalButtons}}" wx:key="modalButtons">
+            <button class='{{item.checked?"checked_button":"normal_button"}}' data-id='{{item.id}}' bindtap='radioModalButtonTap'>{{item.name}}</button>
+        </block>
+    </view>
+
+    <view class="line"></view>
+
+    <button class='submitButton' form-type='submit'>发布公告</button>
+</form>
+<view wx:else class='unAuth'>
+    <text>{{tipText}}</text>
+    <button bindtap='goBack' wx:if='{{tipBtn}}'>打扰了</button>
+</view>

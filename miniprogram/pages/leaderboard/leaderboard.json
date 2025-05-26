@@ -1,0 +1,9 @@
+{
+  "usingComponents": {
+    "heart": "/packages/heart-button/heart",
+    "photoRank": "/components/photoRank/photoRank",
+    "badgeRank": "/components/badgeRank/badgeRank"
+  },
+  "disableScroll": true,
+  "navigationBarTitleText": "榜单"
+}

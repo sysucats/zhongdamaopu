@@ -1,0 +1,13 @@
+<!--miniprogram/pages/science/sciDetail/sciDetail.wxml-->
+<mp-navigation-bar loading="{{loading}}" title="猫咪科普"></mp-navigation-bar>
+
+<swiper indicator-dots="1" indicator-active-color="var(--color-primary)" circular="1" current="{{cate_current}}" bindchange="changeCate">
+  <swiper-item wx:for="{{images}}" wx:key="*this">
+    <image src='{{item}}'></image>
+  </swiper-item>
+</swiper>
+
+<view class='qna {{item.active? "active": ""}}' wx:for='{{qnas}}' wx:key='_id' bindtap='activateQna' data-index='{{index}}' hidden='{{item.cate != cate_active}}'>
+  <view class='question'>{{item.question}}</view>
+  <view class='answer'><text>{{item.answer}}</text></view>
+</view>

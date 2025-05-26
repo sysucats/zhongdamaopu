@@ -1,0 +1,82 @@
+<!--miniprogram/pages/info/info.wxml-->
+<!-- <text>miniprogram/pages/info/info.wxml</text> -->
+<view class='mina-info'>
+  <image src='{{logo_img}}' bindtap="showMpCode" show-menu-by-longpress="1"></image>
+  <view class='title'>{{text_cfg.app_name}}</view>
+  <view class='dev'><text>{{version ? version + "\n" : ""}} {{text_cfg.info.slogan}}</text></view>
+  
+  <!-- 数据看板 -->
+  <view class="num-info"> 
+    <view class="num"> 
+      <view class="num-title">{{numAllCats || '-'}}</view>
+      <text class='small-title'>只猫猫</text>
+    </view>
+    <view class="num">
+      <view class="num-title">{{numAllPhotos || '-'}}</view>
+      <text class='small-title'>张照片</text>
+    </view>
+    <view class="num">
+      <view class="num-title">{{numAllComments || '-'}}</view>
+      <text class='small-title'>张便利贴</text>
+    </view>
+  </view>
+  <view class="num-info">
+    <view class="num">
+      <view class="num-title">{{currentCatsCount || '-'}}</view>
+      <text class='small-title'>现存猫猫</text>
+    </view>
+    <view class="num">
+      <view class="num-title">{{adoptRate || '-'}}</view>
+      <text class='small-title'>领养率</text>
+    </view>
+    <view class="num">
+      <view class="num-title">{{sterilizationRate || '-'}}</view>
+      <text class='small-title'>绝育率</text>
+    </view>
+  </view>
+</view>
+
+<!-- 卡片布局 -->
+<view class="card-container">
+  <view class="card" wx:for="{{cards}}" wx:key="label" bindtap='clickbtn' data-to='{{item.path}}'>
+    <image class="icon" src="{{item.icon}}"></image>
+    <view class="card-text">{{item.label}}</view>
+  </view>
+</view>
+
+<view class='block-name'>友情链接</view>
+
+<!-- <scroll-view class="scroll-friend-link-box" scroll-x="true" enable-flex='true' enhanced="true" show-scrollbar='false'></scroll-view> -->
+<view class="block">
+  <view wx:for="{{friendApps}}" class="friend-link" bindtap="clickFriendLink" data-appid="{{item.appid}}" wx:key="name">
+    <image mode='aspectFit' src="{{item.logo}}"></image>
+    <view class="friend-link-text">{{item.name}}</view>
+  </view>
+</view>
+
+<!-- 工具 -->
+<block wx:for="{{menuList}}" wx:key="title" wx:for-item="menu" wx:if="{{showCond[menu.show]}}">
+  <view wx:if="{{menu.title != '管理后台'}}" class='block-name'>{{menu.title}}</view>
+  <view wx:if="{{menu.title != '管理后台'}}" class='card-container'>
+    <view class="tool" wx:for="{{menu.items}}" wx:key="name" bindtap='clickbtn' data-to='{{item.path}}'>
+      <view class="iconfont {{item.icon}}"></view>
+      <view class="card-text" style="margin-left: 30rpx;">{{item.name}}</view>
+    </view>
+  </view>
+</block>
+
+<!-- 宫格式布局，待处理数量右上角红点标记 -->
+<block wx:for="{{menuList}}" wx:key="title" wx:for-item="menu" wx:if="{{showCond[menu.show]}}">
+  <view wx:if="{{menu.title == '管理后台'}}" class='block-name'>{{menu.title}}</view>
+    <view wx:if="{{menu.title == '管理后台'}}" class="block">
+      <view wx:for="{{menu.items}}" wx:key="name" class="grid-item" bindtap='clickbtn' data-to='{{item.path}}'>
+          <view class="iconfont {{item.icon}}"></view>
+          <text wx:if="{{nums[item.num]}}" class="badge">{{nums[item.num]}}</text>
+          <view wx:if="{{item.dot}}" class="dot"></view>
+          <text class="grid-text">{{item.name}}</text>
+      </view>
+    </view>
+</block>
+
+<!-- 底tab占位 -->
+<view style="height: {{tabBarHeight}}px;"></view>

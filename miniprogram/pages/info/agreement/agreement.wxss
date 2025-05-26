@@ -1,0 +1,13 @@
+/* pages/info/agreement/agreement.wxss */
+
+.title {
+  font-size: 50rpx;
+  text-align: center;
+}
+
+.agreement {
+  width: 750rpx;
+  margin: 30rpx 0;
+  font-size: 28rpx;
+  box-sizing: border-box;
+}

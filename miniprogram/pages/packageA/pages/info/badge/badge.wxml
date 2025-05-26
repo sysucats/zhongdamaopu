@@ -1,0 +1,65 @@
+<view class="container">
+  <view class="up-part">
+    <view class="glass">
+      <image class="balls" src="/pages/packageA/pages/images/badge/balls.png" mode="aspectFit" animation="{{shakeAnimation}}" />
+    </view>
+    <view class="buttons">
+      <view class="btn {{freeBadgeLoaded ? '' : 'disabled'}}" hover-class="active" bindtap='tapForGetBadge' data-reason='checkIn' data-count="1">
+        <image class="logo" src="/pages/packageA/pages/images/badge/article_btn.png" mode="aspectFit" />
+        <view>每日免费<view class="btn-tip">{{freeBadgeLoaded? '立即可取': nextFreeBadgesHours + 'h' + nextFreeBadgesMins + 'm 后'}}</view>
+        </view>
+      </view>
+      <view class="btn {{(pictureAdLoaded && todayPicCount < todayPicLimit) ? '' : 'disabled'}}" hover-class="active" bindtap='watchADForGetBadge' data-type='picture'>
+        <image class="logo" src="/pages/packageA/pages/images/badge/article_btn.png" mode="aspectFit" />
+        <view>
+          抽取1次
+          <view wx:if="{{todayPicCount < todayPicLimit && pictureAdLoaded}}" class="btn-tip">贴片广告 ({{todayPicCount}}/{{todayPicLimit}})</view>
+          <view wx:elif="{{todayPicCount >= todayPicLimit}}" class="btn-tip">今日上限 ({{todayPicCount}}/{{todayPicLimit}})</view>
+          <view wx:else class="btn-tip">暂无广告~</view>
+        </view>
+      </view>
+      <view class="btn {{(videoAdLoaded && todayVideoCount < todayVideoLimit) ? '' : 'disabled'}}" hover-class="active" bindtap='watchADForGetBadge' data-type='video'>
+        <image class="logo" src="/pages/packageA/pages/images/badge/play_btn.png" mode="aspectFit" />
+
+        <view>
+          抽取2次
+          <view wx:if="{{todayVideoCount < todayVideoLimit && videoAdLoaded}}" class="btn-tip">视频广告 ({{todayVideoCount}}/{{todayVideoLimit}})</view>
+          <view wx:elif="{{todayVideoCount >= todayVideoLimit}}" class="btn-tip">今日上限 ({{todayVideoCount}}/{{todayVideoLimit}})</view>
+          <view wx:else class="btn-tip">暂无广告~</view>
+        </view>
+      </view>
+    </view>
+  </view>
+  <view class="down-part">
+    <image class="background" src="/pages/packageA/pages/images/badge/background.png" mode="aspectFit" />
+    <image class="round-btn" src="/pages/packageA/pages/images/badge/round_btn.png" mode="aspectFit" animation="{{rotateAnimation}}" />
+    <view class="round-btn-shadow"></view>
+  </view>
+</view>
+
+<view class="code-block">
+  <input class='input-code' placeholder='输入兑换码' value='{{inputBadgeCode}}' maxlength='100' bindinput="bindInputCode"></input>
+  <view class="code-btn" hover-class="hover" bindtap="useBadgeCode">兑换</view>
+</view>
+
+<view class="tip">抽取概率：S级 1%，A级 9%，B级 30%，C级 60%</view>
+
+<view class="badge-list">
+  <view class="badge-list-title">徽章口袋
+    <text class="sub-title">{{userBadges.length ? '快去送给心动猫猫吧' : '暂无徽章，点击上方按钮获取吧~'}}</text>
+    <text class="sub-title-btn" bindtap="toHistory">赠予详情</text>
+  </view>
+  <scroll-view class="badge-list-inner" scroll-y="1">
+    <view class="badge badge-level-{{item.level}}" wx:for="{{userBadges}}" wx:key="_id" bindtap="tapUserModal" data-index="{{index}}">
+      <image src="{{item.img}}" mode="aspectFill" />
+      <view class="badge-info">
+        <view class="badge-name"><text class="badge-level">[{{item.level}}]</text>{{item.name}}</view>
+        <view class="badge-desc">{{item.desc}}</view>
+      </view>
+      <view class="badge-count">x{{item.count}}</view>
+    </view>
+  </scroll-view>
+</view>
+<view style="height: 1rpx;"></view>
+
+<badgeModal zindex="2" show="{{modal.show}}" title="{{modal.title}}" name="{{modal.name}}" img="{{modal.img}}" desc="{{modal.desc}}" tip="{{modal.tip}}" level="{{modal.level}}" bind:close="onModalClose"></badgeModal>

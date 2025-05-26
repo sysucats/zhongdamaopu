@@ -1,0 +1,4 @@
+<mask style="z-index: {{zindex}};" show="{{show && !closing}}" bind:close="hide"></mask>
+<view class="popup-container {{position}} {{show ? 'show' : ''}} {{closing ? 'hide' : ''}}" wx:if="{{internalShow || show}}">
+  <slot></slot>
+</view>

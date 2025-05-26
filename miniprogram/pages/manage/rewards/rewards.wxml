@@ -1,0 +1,29 @@
+<block wx:if="{{auth}}">
+  <view id='top-box'><text>这是投喂记录管理页面！\n修改时，同一月份的投喂记录用'#'分隔哦~</text></view>
+  <block wx:for="{{rewards}}" wx:key="mdateStr">
+    <view wx:if='{{item.mdate}}' class='reward-box'>
+      <view class='label reward'>{{item.mdateStr}}</view>
+      <block wx:if='{{!item.changing}}'>
+        <block wx:for="{{item.records}}" wx:for-item="record" wx:for-index="rindex" wx:key="record">
+          <view class='label record'>- {{record}}</view>
+        </block>
+      </block>
+      <block wx:else>
+        <form bindsubmit="changeConfirm" data-index='{{index}}'>
+          <textarea class='changecolumn' value='{{item.records_raw}}' name='records_raw' maxlength='-1' />
+          <button class='long primary' form-type="submit">提交修改</button>
+        </form>
+      </block>
+      <button class='long' wx:if="{{!item.changing}}" bindtap='clickChange' data-index='{{index}}'>编辑{{item.mdateStr}}投喂记录</button>
+    </view>
+    <view wx:else class='reward-box'>
+      <picker mode='date' fields='month' end='{{today}}' value='{{today}}' bindchange='addMonthConfirm'>请选择月份</picker>
+    </view>
+  </block>
+  <view class='bottom-bar'>
+    <button class='bottom' bindtap='addMonth' disabled="{{adding}}">增加一个月份</button>
+  </view>
+</block>
+
+<!-- 未授权提示 -->
+<no-auth wx:else tip-text="{{tipText}}"></no-auth>

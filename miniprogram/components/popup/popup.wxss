@@ -1,0 +1,98 @@
+.popup-container {
+  position: fixed;
+  left: 0;
+  right: 0;
+  z-index: 999999;
+  box-sizing: border-box;
+  transition: all 0.3s ease;
+  background-color: var(--color-gray-light);
+  filter: drop-shadow(0px 12rpx 12rpx rgba(0, 0, 0, 0.15));
+  pointer-events: auto;
+}
+
+.popup-container.hide {
+  pointer-events: none;
+}
+
+/* 底部弹出样式 */
+.popup-container.bottom {
+  bottom: 0;
+  width: 100%;
+  border-top-right-radius: 40rpx;
+  border-top-left-radius: 40rpx;
+  padding: 20rpx 20rpx;
+  padding-bottom: max(20rpx, env(safe-area-inset-bottom));
+  transform: translateY(100%);
+}
+
+.popup-container.bottom.show {
+  animation: slideUp 0.3s forwards;
+}
+
+.popup-container.bottom.hide {
+  animation: slideDown 0.3s forwards;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideDown {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(100%);
+  }
+}
+
+/* 中部弹出样式 */
+.popup-container.center {
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.8);
+  width: fit-content;
+  max-height: 80vh;
+  border-radius: 40rpx;
+  opacity: 0;
+}
+
+.popup-container.center.show {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
+  animation: scaleIn 0.3s forwards;
+}
+
+.popup-container.center.hide {
+  opacity: 0;
+  transform: translate(-50%, -50%) scale(0.8);
+  animation: scaleOut 0.3s forwards;
+}
+
+@keyframes scaleIn {
+  from {
+    transform: translate(-50%, -50%) scale(0.8);
+    opacity: 0;
+  }
+  to {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes scaleOut {
+  from {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+  }
+  to {
+    transform: translate(-50%, -50%) scale(0.8);
+    opacity: 0;
+  }
+}
+

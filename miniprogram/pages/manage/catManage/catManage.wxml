@@ -1,0 +1,102 @@
+<!--pages/manage/catManage/catManage.wxml-->
+<view class="container" wx:if="{{auth}}">
+  <!-- 搜索猫咪 -->
+  <view class="search-box">
+    <view class='input-block'>
+      <image class="search-logo" mode='aspectFit' src="/pages/public/images/filter/search.png"></image>
+      <input class='search-input' placeholder='{{text_cfg.genealogy.search_tip}}' bindinput="onSearchInput" confirm-type='search' bindconfirm="searchCat"></input>
+    </view>
+  </view>
+
+  <!-- 选项卡切换 -->
+  <view class="tabs">
+    <view class="tab {{activeTab === 'info' ? 'active' : ''}}" bindtap="switchTab" data-tab="info">
+      <text class="iconfont icon-edit"></text>
+      <text class="tab-text">信息</text>
+    </view>
+    <view class="tab {{activeTab === 'relation' ? 'active' : ''}}" bindtap="switchTab" data-tab="relation">
+      <text class="iconfont icon-relation"></text>
+      <text class="tab-text">关系</text>
+    </view>
+    <view class="tab {{activeTab === 'vaccine' ? 'active' : ''}}" bindtap="switchTab" data-tab="vaccine">
+      <text class="iconfont icon-vaccine"></text>
+      <text class="tab-text">疫苗</text>
+    </view>
+  </view>
+
+  <!-- 选中的猫咪信息 -->
+  <view class="selected-cat" wx:if="{{selectedCat}}" bindtap="navigateToCat" data-cat="{{selectedCat}}">
+    <image class="cat-avatar" mode="aspectFill" src="{{selectedCat.avatar.photo_compressed || selectedCat.avatar.photo_id}}"></image>
+    <view class="cat-info">
+      <view class="cat-name">{{selectedCat.name}}</view>
+      <view class="cat-details">{{selectedCat.campus}} {{selectedCat.area}}</view>
+    </view>
+  </view>
+
+  <!-- 内容区域 -->
+  <view class="content" wx:if="{{selectedCat || activeTab === 'info' || activeTab === 'vaccine'}}">
+    <!-- 关系组件 -->
+    <relation-tab wx:if="{{activeTab === 'relation'}}" selected-cat="{{selectedCat}}" id="relationTab"></relation-tab>
+    
+    <!-- 疫苗组件 - 始终加载 -->
+    <vaccine-tab wx:if="{{activeTab === 'vaccine'}}" selected-cat="{{selectedCat}}" id="vaccineTab" bind:selectCat="onVaccineTabSelectCat"></vaccine-tab>
+    
+    <!-- 猫咪信息编辑组件 -->
+    <cat-info-tab wx:if="{{activeTab === 'info'}}" 
+                 selected-cat="{{selectedCat}}" 
+                 cat_id="{{selectedCat._id || ''}}" 
+                 auth="{{auth}}" 
+                 id="catInfoTab"
+                 is-new-cat="{{isNewMode && !selectedCat}}"
+                 bind:catCreated="onCatCreated" 
+                 bind:catUpdated="onCatUpdated" 
+                 bind:modeChange="onInfoTabModeChange"></cat-info-tab>
+    
+    <!-- 浮动添加按钮 -->
+    <view class="floating-actions">
+      <!-- 疫苗管理选项 (仅在疫苗选项卡显示) -->
+      <view class="vaccine-options {{showVaccineOptions ? 'show' : ''}}" wx:if="{{activeTab === 'vaccine'}}">
+        <view class="vaccine-option" bindtap="handleVaccineTypeManager" wx:if="{{selectedCat}}">
+          <text class="option-text">疫苗类型</text>
+          <view class="option-icon iconfont icon-setting-o"></view>
+        </view>
+        <view class="vaccine-option" bindtap="handleAddVaccine" wx:if="{{selectedCat}}">
+          <text class="option-text">添加记录</text>
+          <view class="option-icon iconfont icon-plus"></view>
+        </view>
+        <view class="vaccine-option" bindtap="handleViewVaccinatedCats">
+          <text class="option-text">已接种</text>
+          <view class="option-icon iconfont icon-success"></view>
+        </view>
+      </view>
+      
+      <!-- 主按钮 -->
+      <view class="iconfont {{activeTab === 'info' && (selectedCat || isNewMode) ? 'icon-success' : 'icon-plus'}} action-button {{showVaccineOptions ? 'rotate' : ''}}" 
+            bindtap="handleActionButtonClick"></view>
+    </view>
+  </view>
+
+  <!-- 猫咪搜索结果 -->
+  <view class="search-results {{(!searchResults || searchResults.length === 0) ? 'empty' : ''}}" wx:if="{{showSearchResults}}">
+    <block wx:if="{{searchResults && searchResults.length > 0}}">
+      <view class="search-cat" wx:for="{{searchResults}}" wx:key="_id" bindtap="selectCat" data-id="{{item._id}}">
+        <image class="search-cat-avatar" mode="aspectFill" src="{{item.avatar.photo_compressed || item.avatar.photo_id}}"></image>
+        <view class="search-cat-info">
+          <view class="search-cat-name">{{item.name}}</view>
+          <view class="search-cat-details">{{item.campus}} {{item.area}}</view>
+        </view>
+      </view>
+    </block>
+    <view class="empty-message" wx:else>未找到匹配的猫猫</view>
+  </view>
+
+  <!-- 提示信息 -->
+  <view class="tips" wx:if="{{!selectedCat && !isNewMode}}">
+    <view class="tip-icon">🔍</view>
+    <view class="tip-text">请搜索并选择一只猫猫进行管理</view>
+    <view class="tip-text" wx:if="{{activeTab === 'info'}}">或点击右下角按钮添加新猫</view>
+  </view>
+</view>
+
+<!-- 未授权提示 -->
+<no-auth wx:else tip-text="{{tipText}}"></no-auth>

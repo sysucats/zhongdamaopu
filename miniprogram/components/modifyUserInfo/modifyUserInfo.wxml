@@ -1,0 +1,21 @@
+<!-- 换成统一的popup组件 -->
+<popup show="{{show}}" bind:close="hide">
+  <view class="editInfo">
+    <view class="label-small">头像</view>
+    <view class="label-tip">tip: 点击头像进行更换<text wx:if="{{!user.userInfo.avatarUrl}}">（当前是默认头像）</text></view>
+    
+    <button class="avatar-wrapper" open-type="chooseAvatar" bind:chooseavatar="onChooseAvatar">
+      <view class="overlay">
+        <image class="overlay-icon" src='/pages/public/images/info/choose.png'></image>
+      </view>
+      <image class="avatar" src="{{user.userInfo.avatarUrl || defaultAvatarUrl}}" mode="aspectFill"></image>
+    </button>
+    <view class="label-small">昵称</view>
+    <view class="label-tip">tip: 若使用微信昵称后保存无效，请尝试增删一个字符再保存（wx的bug）</view>
+    <view class="name-container">
+      <input type="nickname" class="user-name" placeholder="请输入昵称" value="{{user.userInfo.nickName}}" bindinput="onChangeNickName"/>
+  
+      <button class="primary" bindtap="clickUpload">保存</button>
+    </view>
+  </view>
+</popup>

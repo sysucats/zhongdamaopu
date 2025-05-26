@@ -1,0 +1,21 @@
+<!--pages/info/myFollowCats/myFollowCats.wxml-->
+
+
+<view class="follow-count">共关注{{followCount || 0}}只猫猫</view>
+
+<view class="cat-info-container">
+<view class="cat-info" wx:for="{{followCats}}" wx:key="_id">
+  <view class="cat-avatar">
+    <image src="{{item.avatar.photo_compressed || item.avatar.photo_id}}" mode="aspectFill"/>
+  </view>
+  <view class="cat-name">
+    <text>{{item.name || '-'}}</text>
+    <view class='cat-campus'>
+      <image class="location-logo" src="/pages/public/images/filter/location_gray.png" mode="aspectFit"></image>
+      {{item.campus || '-'}}
+    </view>
+  </view>
+  
+  <view class="follow-btn {{item.unfollowed ? 'unfollowed' : 'followed'}}" bind:tap="doFollowCat" data-index="{{index}}" data-catid="{{item._id}}" data-unfollowed="{{item.unfollowed}}">{{item.unfollowed ? '继续关注' : '取消关注'}}</view>
+</view>
+</view>

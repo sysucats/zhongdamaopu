@@ -1,0 +1,182 @@
+@import "/pages/public/wxss/hFilter.wxss";
+
+page {
+  height: 100%;
+  background: var(--color-gray-light);
+}
+
+.thread-list {
+  display: flex;
+  justify-content: space-around;
+  padding: 10rpx 100rpx 0 100rpx;
+  overflow: hidden;
+  background-color: white;
+  box-sizing: border-box;
+  box-shadow: 0rpx 0rpx 10rpx var(--color-gray);
+}
+
+.thread-item {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.thread-item-name {
+  font-size: 28rpx;
+  color: var(--color-gray-max);
+}
+
+.thread-item-bar {
+  width: 100rpx;
+  height: 4rpx;
+  border-radius: 10rpx;
+}
+
+.thread-item.active .thread-item-bar {
+  background-color: var(--color-primary);
+}
+
+.thread-item.active .thread-item-name {
+  color: var(--color-black-light);
+}
+
+/* 左右滑动的频道内容 */
+#main-swiper {
+  /* TODO: 偷懒了，不一定充满屏幕 */
+  min-height: 80%;
+}
+
+.main {
+  display: flex;
+  align-items: flex-start;
+  padding: 0 8rpx;
+}
+
+.column {
+  width: 50%;
+}
+
+.column_item {
+  width: 350rpx;
+  background: #fff;
+  margin: 0rpx auto 20rpx auto;
+  border-radius: 10rpx;
+  overflow: hidden;
+}
+
+.column_pic {
+  position: relative;
+  /* width: 100%; */
+  overflow: hidden;
+}
+.column_pic image{
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  vertical-align: bottom;
+}
+.location{
+  position: absolute;
+  top: 18rpx;
+  right: 15rpx;
+  color: var(--color-gray);
+  text-align:end;
+  font-size: 18rpx;
+  background-color:var(--color-black-transparent);
+  padding:5rpx 10rpx;
+  border-radius: 10rpx;
+}
+
+.info {
+  width: 350rpx;
+  display: flex;
+  padding: 18rpx 0rpx 18rpx 24rpx;
+  align-items: center;
+  box-sizing: border-box;
+  justify-content: space-between;
+}
+
+.names {
+  display: inline-block;
+  width: 300rpx;
+  max-width: 300rpx;
+  box-sizing: border-box;
+}
+
+.cat-name {
+  font-size: 28rpx;
+  font-weight: bold;
+  letter-spacing: 2rpx;
+  color: var(--color-black-min);
+}
+.cat-name .campus {
+  font-size: 18rpx;
+  color: var(--color-gray-dark);
+  font-weight: lighter;
+}
+
+.photo-info{
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+}
+.pher-name{
+  font-size: 22rpx;
+  color: var(--color-gray-max);
+  margin-right: 16rpx;
+}
+.photo-date {
+  font-size: 22rpx;
+  color: var(--color-gray-max);
+  flex-shrink: 0;
+}
+
+
+.like-button {
+  /* width: 100rpx; */
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+heart {
+  margin: -20rpx 0 -25rpx 0;
+}
+
+.like-num {
+  width: 100rpx;
+  text-align: center;
+  font-size: 20rpx;
+  color: var(--color-gray-max);
+}
+
+.hide {
+  display: none;
+}
+
+
+.loading image {
+  width: 165.9rpx;
+  height: 90.3rpx;
+  margin: 10rpx 292rpx;
+
+}
+.loadnomore image {
+  width: 750rpx;
+  height: 100rpx;
+  margin: 10rpx 0;
+}
+
+.ellipsis-text {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.h-filter-list {
+  display: flex;
+  justify-content: center;
+}
+.h-filter-item.long {
+  margin: 20rpx 20rpx 20rpx 20rpx;
+}

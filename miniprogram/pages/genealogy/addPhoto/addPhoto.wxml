@@ -1,0 +1,80 @@
+<view wx:if="{{!canUpload}}">
+    <view class='userInfo'>
+      <image src='/pages/public/images/system/user.png'></image>
+      <view>
+        <text>暂时无法上传，请联系管理员 TAT...\n</text>
+      </view>
+    </view>
+  <button class='long primary' bindtap="goBackIndex">返回首页</button>
+</view>
+
+<block wx:else>
+  <view wx:if="{{!isAuth}}" class='unAuth'>
+    <!-- <text>请授权后进行操作</text> -->
+    <view class='userInfo'>
+      <image src='/pages/public/images/system/user.png' mode="aspectFill"></image>
+      <view>
+        <text>[等待授权]\n--- 准备为「<text style="font-weight:600;">{{cat.name}}</text>」添加照片</text>
+      </view>
+    </view>
+    <button class='long primary' bindtap='getUInfo'>{{text_cfg.add_photo.auth_tip}}</button>
+  </view>
+  <block wx:else>
+    <!-- <view>--已经授权--</view> -->
+    <view class='userInfo'>
+      <image src='{{user.userInfo.avatarUrl}}' mode="aspectFill"></image>
+      <view class="userInfo-cat">
+        <text>{{user.userInfo.nickName}}\n--- 正在为「<text style="font-weight:600;">{{cat.name}}</text>」添加照片</text>
+      </view>
+      <view class="update-userInfo" bindtap="getUInfo">[更新信息]</view>
+    </view>
+    
+    <button bindtap='chooseImg' class='long primary'>选择照片</button>
+
+    <view class='tip' hidden='{{photos && photos.length}}'>* 如果遇到闪退，清理后台应用再试试~</view>
+
+    <view class='set-all' hidden='{{!photos || photos.length<2}}'>
+      <view class='title'>统一设置</view>
+      <view class='label'>拍摄日期：</view>
+      <view>
+        <picker mode='date' fields='month' bindchange='setAllDate' start='{{birth_date || "2008-01-01"}}' end='{{now_date}}'>{{set_all.shooting_date? set_all.shooting_date: '选择拍摄日期'}}</picker>
+      </view>
+      <view class='label'>摄影师：</view>
+      <view>
+        <input type='text' placeholder='（选填）默认为上传者' bindinput='setAllPher'>{{set_all.pher}}</input>
+      </view>
+      <view class='tip'>* 在此填写会覆盖下面所有设置</view>
+
+
+      <button class='long primary' bindtap='uploadAllClick' disabled="{{!uploading ? false: true}}">全部上传</button>
+      
+    </view>
+    
+    <wxs module="isHEIC">
+      module.exports.isHEIC = function (str) {
+        return str.indexOf(".HEIC") != -1
+      }
+    </wxs>
+
+    <view class='card' wx:for="{{photos}}" wx:key="path">
+      <image class='selected-image' mode='aspectFit' src='{{item.file.path}}'	show-menu-by-longpress="1"></image>
+
+      <view wx:if='{{isHEIC.isHEIC(item.file.path)}}' class='tip'>* 照片格式为.HEIC，可能会显示不出来</view>
+
+      <view class='label'>拍摄日期：</view>
+      <view>
+        <picker mode='date' fields='month' bindchange='pickDate' start='{{birth_date || "2008-01-01"}}' end='{{now_date}}' data-index='{{index}}'>{{item.shooting_date? item.shooting_date: '选择拍摄日期'}}</picker>
+      </view>
+      <view class='label'>摄影师：</view>
+      <view>
+        <input type='text' placeholder='（选填）默认为上传者' bindinput='inputPher' data-index='{{index}}' value='{{item.pher}}'></input>
+      </view>
+        <button bindtap='removeOne' data-index='{{index}}'>移除</button>
+        <button class='primary' disabled='{{item.shooting_date && item.file.path && !uploading? false: true}}' data-index='{{index}}' bindtap='uploadSingleClick'>确定上传</button>
+    </view>
+  </block>
+
+</block>
+
+<!-- 个人信息修改组件 -->
+<modifyUserInfo show="{{showEdit}}" bind:close="closeEdit"></modifyUserInfo>

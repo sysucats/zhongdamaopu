@@ -1,0 +1,20 @@
+<view class="bd-block">
+  <view class="bd-title">赠予记录</view>
+  <view class="bd-item" wx:for="{{badges}}" wx:key="_id">
+    <image class="badge-img" src="{{badgeDefMap[item.badgeDef].img}}" mode="aspectFill" />
+    <view class="badge-info badge-level-{{badgeDefMap[item.badgeDef].level}}">
+      <view class="badge-name">
+        <text class="badge-level">[{{badgeDefMap[item.badgeDef].level}}]</text>
+        {{badgeDefMap[item.badgeDef].name}}
+      </view>
+      <!-- <view class="badge-desc">{{badgeDefMap[item.badgeDef].desc}}</view> -->
+    </view>
+    <view class="user-info">
+      <view class="user-info-name">
+        <image class="user-avatar" src="{{avatarMap[item.catId]}}" mode="aspectFill" />
+        <text class="user-info-name-text">{{catInfoMap[item.catId].name || '-'}}</text>
+      </view>
+      <view class="user-info-time">{{item.dispTime}}</view>
+    </view>
+  </view>
+</view>

@@ -1,0 +1,6 @@
+{
+  "usingComponents": {
+    "newsModal": "/components/newsModal/newsModal"
+  },
+  "disableScroll": true
+}

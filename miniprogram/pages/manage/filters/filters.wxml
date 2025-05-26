@@ -1,0 +1,50 @@
+<block wx:if="{{auth}}">
+  <!-- 校区管理 -->
+  <view class='mainF-block'>
+    <view class="campus-block">
+      <view class="title">校区选项</view>
+      <view class="container">
+        <view class='category-box' wx:for="{{filters[0].category}}" wx:for-item="ctg" wx:for-index='cateindex' wx:key='name'>
+          <!-- <view class="category">{{ctg.name}}</view> -->
+          <view class='sub-option'>
+            <view class='content'>{{ctg.name}}</view>
+            <button class='short' bindtap='deleteCampus' data-cateindex='{{cateindex}}'>删</button>
+          </view>
+        </view>
+
+        <form wx:if="{{addingCampus}}" bindsubmit="addCampusConfirm">
+          <input class='content' name='name'></input>
+          <button class='submit' form-type='submit'>确定</button>
+        </form>
+        <button wx:if='{{!addingCampus}}' class='long' bindtap='addCampus'>加校区</button>
+      </view>
+    </view>
+  </view>
+
+  <!-- 区域管理 -->
+  <view class='mainF-block' wx:for='{{filters}}' wx:for-item='mainF' wx:for-index="filters_sub" wx:key='name'>
+    <view class="title">{{mainF.name}}选项</view>
+    <view class='container'>
+      <view class='category-box' wx:for="{{mainF.category}}" wx:for-item="ctg" wx:for-index='cateindex' wx:key='name'>
+        <view class="category">{{ctg.name}}</view>
+        <view class='sub-option' wx:for="{{ctg.items}}" wx:for-index='innerindex' wx:key='name'>
+          <view class='content'>{{item.name}}</view>
+          <button class='short' bindtap='moveOption' data-innerindex='{{innerindex}}' data-cateindex='{{cateindex}}' data-filterssub='{{filters_sub}}' data-direct='up'>上</button>
+          <button class='short' bindtap='moveOption' data-innerindex='{{innerindex}}' data-cateindex='{{cateindex}}' data-filterssub='{{filters_sub}}' data-direct='down'>下</button>
+          <button class='short' bindtap='deleteOption' data-innerindex='{{innerindex}}' data-cateindex='{{cateindex}}' data-filterssub='{{filters_sub}}'>删</button>
+        </view>
+        <form wx:if="{{ctg.adding}}" data-filterssub='{{filters_sub}}' data-cateindex='{{cateindex}}' bindsubmit="addOptionConfirm">
+          <input class='content' name='name'></input>
+          <button class='submit' form-type='submit'>确定</button>
+        </form>
+        <button wx:if='{{!ctg.adding}}' class='long' bindtap='addOptionInput' data-filterssub='{{filters_sub}}' data-cateindex='{{cateindex}}'>加{{ctg.name}}选项</button>
+      </view>
+    </view>
+  </view>
+  <view class='bottom-bar'>
+    <button class='bottom' bindtap='uploadFilters'>确定上传</button>
+  </view>
+</block>
+
+<!-- 未授权提示 -->
+<no-auth wx:else tip-text="{{tipText}}"></no-auth>

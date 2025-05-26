@@ -1,0 +1,120 @@
+page {
+  width: 750rpx;
+  padding: 30rpx 30rpx 150rpx 30rpx;
+  box-sizing: border-box;
+}
+
+.mainF-block {
+  padding-bottom: 30rpx;
+  margin-bottom: 30rpx;
+}
+
+.mainF-block .title {
+  font-size: 50rpx;
+  text-align: center;
+}
+
+button {
+  width: 45%;
+  display: inline-block;
+  font-size: 30rpx;
+  box-sizing: border-box;
+}
+
+button + button {
+  margin-left: 10%;
+  /* float: right; */
+}
+
+#container {
+  display: flex;
+  align-content: space-between;
+}
+
+.category-box {
+  width: 100%;
+}
+
+button.primary {
+  background-color: var(--color-primary);
+  color: var(--color-text-onPrimary);
+}
+
+button.long {
+  margin: 20rpx 0 0 0;
+  width: 100%;
+}
+
+button.short {
+  width: 12%;
+  height: 100%;
+  margin: 2%;
+  padding: 2%;
+  font-size: 24rpx;
+  line-height: 24rpx;
+}
+
+.category {
+  width: 100%;
+  margin-top: 30rpx;
+  border-bottom: 4rpx var(--color-gray-dark) solid;
+  padding: 10rpx;
+  color: var(--color-gray-max);
+  display: flex;
+  align-content: space-around;
+  justify-content: left;
+  align-items: left;
+  font-size: 40rpx;
+}
+
+.sub-option {
+  width: 100%;
+  border-bottom: 2rpx var(--color-primary) solid;
+  /* background-color: var(--color-white-dark); */
+  padding: 10rpx;
+  color: var(--color-black-light);
+  display: flex;
+  align-content: space-around;
+  justify-content: center;
+  align-items: center;
+}
+
+.content {
+  width: 50%;
+  display: inline-block;
+}
+
+.submit {
+  margin-top: 10rpx;
+  margin-left: 30rpx;
+}
+
+input.content {
+  border-bottom: 2rpx var(--color-primary) solid;
+  background-color: var(--color-white-dark);
+}
+
+button.bottom {
+  width: 100%;
+  background-color: var(--color-primary);
+  color: var(--color-text-onPrimary);
+}
+
+.bottom-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  padding: 16rpx 40rpx env(safe-area-inset-bottom) 40rpx; /*底部iOS小黑边safe-area*/
+  border-top: 1rpx solid var(--color-gray);
+  background-color: #FFFFFF;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.bottom-bar button.primary, .bottom-bar button.long {
+  margin-top: 0;
+}
+
+form {
+  width: 100%;
+}

@@ -1,0 +1,3 @@
+<view class="mask {{show ? 'show' : ''}}" style="z-index: {{zindex}};" catchtap="hide" catchtouchmove="catchTouchMove">
+    <slot></slot>
+</view>

@@ -1,0 +1,40 @@
+<block wx:if="{{auth}}">
+  <view id='tips'><text>目前共有 {{total}} 条反馈{{checkHistory? '已': '待'}}处理，\n点击所属猫猫名字可以跳转到该猫猫详情。\n</text></view>
+  <block wx:for="{{feedbacks}}" wx:key="_id">
+    <view class='verify-box'>
+      <view wx:if="{{item.cat}}" class='line'>
+        <image mode='aspectFit' class='icon' src='/pages/public/images/card/card/cat.png'></image>
+        <text user-select='false' bindtap='toCatDetail' bindlongpress='toCatManage' data-cat_id="{{item.cat_id}}">{{item.cat.name}}（{{item.cat.campus}}）</text>
+      </view>
+      <view wx:else class='line'>
+        <text user-select='true'>信息反馈</text>
+      </view>
+      <view class='bubble1'>
+        <view class='date'><text user-select='true'>{{item.openDateStr}}</text></view>
+        <view class='name'><text user-select='true'>{{item.userInfo.nickName}}</text></view>
+        <view class='floating'>
+          <view class='content'><text user-select='true'>{{item.feedbackInfo}}</text></view>
+          <view class='footer' wx:if="{{item.contactInfo}}"><text user-select='true'>联系方式：{{item.contactInfo}}</text></view>
+        </view>
+      </view>
+      <view wx:if="{{!item.repliable}}" class='noReplyLabel'>对方没有订阅回复通知，无法回复</view>
+      <view wx:elif="{{item.replied}}" class='bubble2'>
+        <view class='date'><text user-select='true'>{{item.replyDateStr}}</text></view>
+        <view class='name'><text user-select='true'>管理员的回复</text></view>
+        <view class='floating'>
+          <view class='content'><text user-select='true'>{{item.replyInfo}}</text></view>
+        </view>
+      </view>
+      <button class="{{checkHistory? 'long': ''}}" bindtap='bindCopy' data-feedback='{{item}}'>复制</button>
+      <button class='primary' wx:if="{{!checkHistory}}" disabled='{{item.replied || !item.repliable}}' bindtap='toReply' data-fbid='{{item._id}}'>{{item.replied? '已回复': '回复'}}</button>
+      <button class='long primary' wx:if="{{!checkHistory}}" bindtap='bindCheck' data-feedback='{{item}}'>标记为已处理</button>
+    </view>
+  </block>
+  <view class='bottom-bar'>
+    <button class='primary' bindtap="refreshStatus">刷新+订阅</button>
+    <button bindtap="switchHistory">{{checkHistory? '查看待处理': '查看已处理'}}</button>
+  </view>
+</block>
+
+<!-- 未授权提示 -->
+<no-auth wx:else tip-text="{{tipText}}"></no-auth>

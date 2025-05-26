@@ -1,0 +1,88 @@
+page {
+  width: 750rpx;
+  padding: 50rpx 30rpx;
+  box-sizing: border-box;
+}
+
+.feedback-info {
+  width: 100%;
+  padding: 0rpx 0rpx 30rpx 0;
+  display: flex;
+}
+
+.feedback-info image {
+  height: 50rpx;
+  width: 50rpx;
+  margin-right: 10rpx;
+  border-radius: 5rpx;
+}
+
+.feedback-info text {
+  height: 50rpx;
+  line-height: 50rpx;
+  font-size: 35rpx;
+}
+
+input, picker, textarea {
+  width: 670rpx;
+  border-bottom: 2rpx var(--color-primary) solid;
+  background-color: var(--color-white-dark);
+  padding: 10rpx;
+  color: var(--color-black-light);
+}
+
+.replyColumn {
+  height: 10rem;
+}
+
+button {
+  width: 45%;
+  display: inline-block;
+  font-size: 35rpx;
+  box-sizing: border-box;
+}
+
+button.submit {
+  background-color: var(--color-primary);
+  color: var(--color-text-onPrimary);
+  width: 100%;
+  display: inline-block;
+  box-sizing: border-box;
+  font-size: 35rpx;
+  line-height: 40rpx;
+  padding: 20rpx 30rpx;
+  border: 1rpx solid var(--color-gray-max);
+  border-radius: 10rpx;
+  margin-top: 20rpx;
+}
+
+
+.inputColumn {
+  font-size: 35rpx;
+  line-height: 40rpx;
+}
+
+.lengthTips {
+  font-size: 26rpx;
+  color: var(--color-gray-max);
+  float: right;
+}
+
+.submitButton {
+  margin-top: 20rpx;
+}
+
+.feedback-content {
+  font-size: 30rpx;
+  font-weight: 400;
+  margin: 10rpx 0;
+}
+
+.label {
+  font-size: 30rpx;
+  font-weight: 400;
+}
+
+.label.user {
+  color: var(--color-gray-max);
+}

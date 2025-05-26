@@ -1,0 +1,352 @@
+/* pages/manage/catManage/catManage.wxss */
+.container {
+  min-height: 100vh;
+  background-color: #f8f8f8;
+  box-sizing: border-box;
+}
+
+/* 搜索框 */
+.search-box {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  box-sizing: border-box;
+  padding: 30rpx;
+}
+
+.input-block {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  background-color: #fff;
+  border-radius: 50rpx;
+  padding: 10rpx 30rpx;
+  box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.05);
+}
+
+.search-logo {
+  width: 50rpx;
+  height: 50rpx;
+  margin-right: 20rpx;
+  display: flex;
+  justify-content: center;
+}
+
+.search-input {
+  flex: 1;
+  height: 70rpx;
+  font-size: 28rpx;
+  margin-right: 20rpx;
+}
+
+/* 选项卡 */
+.tabs {
+  position: fixed;
+  bottom: calc(20rpx + env(safe-area-inset-bottom));
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  background-color: #fff;
+  border-radius: 50rpx;
+  overflow: hidden;
+  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.15);
+  z-index: 100;
+  width: 600rpx;
+}
+
+.tab {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 15rpx 0;
+  position: relative;
+  transition: all 0.3s ease;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.tab .iconfont {
+  font-size: 40rpx;
+  color: #666;
+  margin-bottom: 5rpx;
+  transition: all 0.3s ease;
+}
+
+.tab .tab-text {
+  font-size: 24rpx;
+  color: #666;
+  transition: all 0.3s ease;
+}
+
+.tab.active .iconfont,
+.tab.active .tab-text {
+  color: var(--color-primary);
+  font-weight: bold;
+  transform: translateY(-2rpx);
+}
+
+.tab::before {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: var(--color-primary-light);
+  transform: translateY(100%);
+  transition: transform 0.3s ease;
+  z-index: -1;
+}
+
+.tab.active::before {
+  transform: translateY(0);
+}
+
+/* 添加点击反馈效果 */
+.tab:active {
+  opacity: 0.8;
+  transform: scale(0.98);
+}
+
+/* 选中的猫咪 */
+.selected-cat {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  margin-bottom: 30rpx;
+  width: 100%;
+  padding: 0 30rpx;
+  box-sizing: border-box;
+}
+
+.cat-avatar {
+  width: 120rpx;
+  height: 120rpx;
+  border-radius: 60rpx;
+  margin-right: 20rpx;
+  background-color: #f0f0f0;
+  flex-shrink: 0;
+}
+
+.cat-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  flex: 1;
+}
+
+.cat-name {
+  font-size: 34rpx;
+  font-weight: bold;
+  margin-bottom: 10rpx;
+}
+
+.cat-details {
+  font-size: 26rpx;
+  color: #999;
+}
+
+/* 内容区域 */
+.content {
+  width: 100%;
+  box-sizing: border-box;
+  margin-bottom: calc(120rpx + env(safe-area-inset-bottom)); /* 为底部选项卡留出空间 */
+}
+
+/* 浮动操作按钮区域 */
+.floating-actions {
+  position: fixed;
+  right: 30rpx;
+  bottom: calc(180rpx + env(safe-area-inset-bottom));
+  z-index: 90;
+  display: flex;
+  flex-direction: column;
+  gap: 20rpx;
+}
+
+.action-button {
+  width: 100rpx;
+  height: 100rpx;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 6rpx 20rpx rgba(0, 0, 0, 0.15);
+  transition: transform 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease;
+  z-index: 100;
+  font-size: 55rpx;
+  background-color: var(--color-primary);
+  color: var(--color-text-onPrimary);
+}
+
+.action-button:active {
+  transform: scale(0.95);
+  box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.2);
+}
+
+.iconfont {
+  font-family: 'iconfont';
+  font-size: 55rpx;
+}
+
+/* 按钮旋转动画 */
+.rotate {
+  transform: rotate(45deg);
+}
+
+/* 搜索结果 */
+.search-results {
+  position: absolute;
+  top: 120rpx;
+  left: 30rpx;
+  right: 30rpx;
+  background-color: #fff;
+  border-radius: 20rpx;
+  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.1);
+  max-height: 600rpx;
+  overflow-y: auto;
+  z-index: 1000;
+}
+
+/* 搜索结果为空时的样式 */
+.search-results.empty {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 40rpx;
+  min-height: 120rpx;
+}
+
+.search-results .empty-message {
+  color: #999;
+  font-size: 28rpx;
+  text-align: center;
+}
+
+/* 搜索结果项 */
+.search-cat {
+  display: flex;
+  align-items: center;
+  padding: 20rpx;
+  border-bottom: 1rpx solid #f0f0f0;
+}
+
+.search-cat:last-child {
+  border-bottom: none;
+}
+
+.search-cat:active {
+  background-color: #f8f8f8;
+}
+
+.search-cat-avatar {
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 40rpx;
+  margin-right: 20rpx;
+  background-color: #f0f0f0;
+}
+
+.search-cat-info {
+  flex: 1;
+}
+
+.search-cat-name {
+  font-size: 28rpx;
+  color: #333;
+  margin-bottom: 6rpx;
+}
+
+.search-cat-details {
+  font-size: 24rpx;
+  color: #999;
+}
+
+/* 提示信息 */
+.tips {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, calc(-50% - 0.5 * 100% ));
+  text-align: center;
+  width: 100%;
+  padding: 100rpx 0;
+  color: var(--color-gray-max);
+}
+
+.tip-icon {
+  font-size: 80rpx;
+  margin-bottom: 20rpx;
+  animation: bounceIn 0.6s ease;
+}
+
+.tip-text {
+  font-size: 28rpx;
+}
+
+@keyframes bounceIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.3);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+  70% {
+    transform: scale(0.9);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* 疫苗选项弹出动画 */
+.vaccine-options {
+  position: absolute;
+  bottom: 120rpx;
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 20rpx;
+  opacity: 0;
+  transform: translateY(20rpx);
+  pointer-events: none;
+  transition: all 0.3s ease;
+}
+
+.vaccine-options.show {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.vaccine-option {
+  display: flex;
+  align-items: center;
+  background: white;
+  padding: 10rpx 20rpx;
+  border-radius: 50rpx;
+  box-shadow: 0 4rpx 15rpx rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease;
+}
+
+.vaccine-option:active {
+  transform: scale(0.95);
+  box-shadow: 0 2rpx 5rpx rgba(0, 0, 0, 0.1);
+}
+
+.option-text {
+  font-size: 26rpx;
+  color: #333;
+  margin-right: 10rpx;
+  white-space: nowrap;
+}
+
+.option-icon {
+  color: var(--color-black-light);
+  font-size: 36rpx;
+} 

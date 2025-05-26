@@ -1,0 +1,299 @@
+/* 猫咪信息编辑区域 */
+@import "../../pages/public/wxss/iconfont.wxss";
+.iconfont {
+  font-family: 'iconfont';
+}
+
+.cat-info-section {
+  padding: 0 30rpx 160rpx;
+}
+
+/* 编辑模式指示 */
+.edit-mode-indicator {
+  text-align: center;
+  font-size: 28rpx;
+  color: #666;
+}
+
+/* 信息卡片 */
+.info-card {
+  background-color: #fff;
+  border-radius: 15rpx;
+  margin-bottom: 30rpx;
+  box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+}
+
+.card-header {
+  padding: 20rpx 30rpx;
+  border-bottom: 1rpx solid #f0f0f0;
+}
+
+.card-title {
+  display: flex;
+  align-items: center;
+  font-size: 30rpx;
+  font-weight: bold;
+  color: #333;
+}
+
+.card-title .iconfont {
+  font-size: 36rpx;
+}
+
+.card-body {
+  padding: 20rpx 30rpx;
+}
+
+/* 表单 */
+.form-item {
+  margin-bottom: 25rpx;
+}
+
+.form-item:last-child {
+  margin-bottom: 0;
+}
+
+.form-label {
+  font-size: 28rpx;
+  color: #666;
+  margin-bottom: 10rpx;
+}
+
+.form-item input, .form-item textarea {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1rpx solid #eee;
+  border-radius: 8rpx;
+  padding: 15rpx 20rpx;
+  font-size: 28rpx;
+  background-color: var(--color-gray-light);
+}
+
+.form-item textarea {
+  min-height: 150rpx;
+}
+
+/* 选择器 */
+.picker-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  height: 80rpx;
+  box-sizing: border-box;
+  border: 1rpx solid #eee;
+  border-radius: 8rpx;
+  padding: 0 20rpx;
+  font-size: 28rpx;
+  background-color: var(--color-gray-light);
+}
+
+.picker-text {
+  color: #333;
+}
+
+.picker-text.placeholder {
+  color: #999;
+}
+
+.picker-icon {
+  color: #999;
+  font-size: 24rpx;
+}
+
+/* 人气 */
+.popularity-info {
+  text-align: right;
+  font-size: 26rpx;
+  color: #999;
+  padding: 10rpx 0 30rpx;
+}
+
+/* 空状态提示 */
+.empty-tip {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 100rpx 0;
+}
+
+.empty-icon {
+  font-size: 80rpx;
+  margin-bottom: 20rpx;
+}
+
+.empty-text {
+  color: #999;
+  font-size: 28rpx;
+  text-align: center;
+  padding: 0 40rpx;
+}
+
+/* 照片 */
+.photo-header-card {
+  border-radius: 16rpx;
+  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.08);
+  margin-bottom: 30rpx;
+}
+
+.filter-control {
+  margin-bottom: 0;
+}
+
+.switch-container {
+  display: flex;
+  align-items: center;
+}
+
+.switch-label {
+  margin-left: 16rpx;
+  font-size: 28rpx;
+  color: #333;
+}
+
+/* 照片网格 */
+.photo-grid {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 30rpx;
+  margin-bottom: 30rpx;
+}
+
+/* 卡片 */
+.photo-card {
+  background-color: #fff;
+  border-radius: 16rpx;
+  overflow: hidden;
+  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.08);
+}
+
+.photo-container {
+  position: relative;
+  width: 100%;
+  height: 400rpx;
+  overflow: hidden;
+  background-color: #f2f2f7;
+}
+
+.photo-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.best-badge {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: var(--color-primary);
+  color: var(--color-text-onPrimary);
+  opacity: .8;
+  padding: 8rpx 0;
+  font-size: 24rpx;
+  text-align: center;
+  font-weight: 500;
+  letter-spacing: 1rpx;
+}
+
+/* 照片信息 */
+.photo-info {
+  padding: 24rpx;
+}
+
+.photo-number {
+  font-size: 40rpx;
+  font-weight: 500;
+  color: #1d1d1f;
+  margin-bottom: 16rpx;
+}
+
+.photo-meta {
+  margin-bottom: 24rpx;
+}
+
+.meta-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12rpx;
+}
+
+.meta-label {
+  font-size: 26rpx;
+  color: #6e6e73;
+}
+
+.meta-value {
+  font-size: 26rpx;
+  color: #1d1d1f;
+  font-weight: 500;
+}
+
+.action-buttons {
+  display: flex;
+  justify-content: space-between;
+  gap: 16rpx;
+  margin-top: 16rpx;
+}
+
+.action-button {
+  flex: 1;
+  height: 80rpx;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 12rpx;
+  font-size: 28rpx;
+  font-weight: 500;
+  padding: 0;
+  line-height: 1;
+  border: none;
+}
+
+.primary-button {
+  background-color: var(--color-primary);
+  color: var(--color-text-onPrimary);
+}
+
+.secondary-button {
+  background-color: #f2f2f7;
+  color: var(--color-primary);
+}
+
+.danger-button {
+  background-color: var(--color-gray-light);
+  color: var(--color-gray-max);
+}
+
+/* 加载更多部分 */
+.load-more-container {
+  margin-top: 10rpx;
+  margin-bottom: 30rpx;
+  padding: 0 30rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.bottom-hint {
+  font-size: 26rpx;
+  color: #8e8e93;
+  margin-bottom: 16rpx;
+}
+
+.load-more-button {
+  background-color: white;
+  color: var(--color-primary);
+  font-size: 28rpx;
+  font-weight: 500;
+  width: 100%;
+  height: 80rpx;
+  line-height: 80rpx;
+  border-radius: 12rpx;
+  border: none;
+}

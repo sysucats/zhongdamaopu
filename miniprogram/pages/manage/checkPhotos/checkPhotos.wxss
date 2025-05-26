@@ -1,0 +1,162 @@
+page {
+  width: 750rpx;
+  padding: 35rpx 35rpx 160rpx 35rpx;
+  box-sizing: border-box;
+}
+
+button {
+  width: 47%;
+  display: inline-block;
+  font-size: 30rpx;
+  box-sizing: border-box;
+}
+
+button.primary {
+  background-color: var(--color-primary);
+  color: var(--color-text-onPrimary);
+}
+
+button + button {
+  margin-left: 6%;
+  /* float: right; */
+}
+
+button.long {
+  margin: 20rpx 0 0 0;
+  width: 100%;
+}
+
+.verify-box {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 30rpx 40rpx;
+  margin-bottom: 40rpx;
+  box-shadow: 0rpx 0rpx 30rpx var(--color-gray);
+  border-radius: 20rpx;
+  background-color: #FFFFFF;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+image {
+  border-radius: 10rpx;
+  width: 210rpx;
+  height: 210rpx;
+  background-color: var(--color-gray-light);
+  margin-top: 10rpx;
+}
+
+.verify-box .info {
+  margin-left: 20rpx;
+}
+
+/* 并排处理的按钮 */
+.buttons {
+  display: flex;
+  flex-direction: row;
+}
+
+.buttons .button {
+  border: 1rpx solid var(--color-gray-dark);
+  padding: 10rpx 30rpx;
+  font-size: 30rpx;
+  background-color: #FFFFFF;
+  transition: background-color 500ms ease,
+              border-color 500ms ease,
+              color 500ms ease;
+}
+
+.buttons :nth-child(1) {
+  border-top-left-radius: 10rpx;
+  border-bottom-left-radius: 10rpx;
+}
+.buttons :nth-last-child(1) {
+  border-top-right-radius: 10rpx;
+  border-bottom-right-radius: 10rpx;
+}
+.button.delete {
+  color: red;
+}
+.button.delete.marked {
+  border-color: var(--color-red-dark);
+  background-color: var(--color-red);
+  color: white;
+}
+.button.pass.marked {
+  border-color: var(--color-green-dark);
+  background-color: var(--color-green);
+  color: white;
+}
+.button.best.marked {
+  border-color: var(--color-primary-dark);
+  background-color: var(--color-primary);
+  color: white;
+}
+
+.label {
+  font-size: 24rpx;
+  font-weight: 300;
+}
+.label.cat text {
+  font-size: 28rpx;
+  font-weight: bold;
+  text-decoration: underline;
+}
+.label.user.shotTime{
+  margin-bottom: 20rpx;
+}
+
+#total-count {
+  font-size: 30rpx;
+  font-weight: 300;
+  color: var(--color-gray-max);
+  box-shadow: 0rpx 0rpx 30rpx var(--color-gray);
+  padding: 40rpx;
+  margin-bottom: 30rpx;
+  border-radius: 10rpx;
+}
+
+.bottom-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  padding: 16rpx 40rpx env(safe-area-inset-bottom) 40rpx; /*底部iOS小黑边safe-area*/
+  border-top: 1rpx solid var(--color-gray);
+  background-color: #FFFFFF;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.bottom-bar button.primary, .bottom-bar button.long {
+  margin-top: 0;
+}
+
+/* 校区选择器 */
+.campus-list {
+  width: 100%;
+}
+
+.campus {
+  display: inline-block;
+  margin: 10rpx 10rpx;
+  padding: 0 10rpx;
+  color: var(--color-black-min);
+  border: 3rpx solid transparent;
+  border-radius: 15rpx;
+  font-size: 28rpx;
+}
+
+.campus.active {
+  /* font-weight: bold; */
+  border-left: 3rpx solid var(--color-primary);
+  border-right: 3rpx solid var(--color-primary);
+}
+
+/* 提示选择 */
+.tip {
+  width: 100%;
+  font-size: 24rpx;
+  color: var(--color-gray-dark);
+  text-align: center;
+}

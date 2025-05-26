@@ -1,0 +1,109 @@
+<!--pages/recognize/recognize.wxml-->
+
+<wxs module="m1">
+  var toFixed = function (value, precision) {
+    return value.toFixed(precision);
+  }
+  module.exports.toFixed = toFixed;
+</wxs>
+
+<!-- 压缩图片用 -->
+<canvas style="width: 1000px; height: 1000px; border: 1px solid red; left: 100000px; position: fixed;" id="canvasForCompress" type="2d"></canvas>
+
+<image class="bgImg" src="/pages/packageA/pages/images/recognize/background.svg"></image>
+
+<view id="positionWrapper" class="{{catList.length ? 'flowUp' : ''}}">
+
+  <view id="photoBox">
+    <view id="previewArea">
+      <!-- 无摄像头权限 -->
+      <view wx:if="{{!cameraAuth && !photoPath}}" id="authTips">
+        <text>{{text_cfg.recognize.select_tip}}</text>
+        <button bindtap="reqCamAuth">{{text_cfg.recognize.select_btn}}</button>
+      </view>
+      <!-- 相机取景预览 -->
+      <camera wx:if="{{cameraAuth && !photoPath}}" device-position="{{devicePosition}}" resolution="high" frame-size="large" flash="off" id="cameraPreview"></camera>
+      <!-- 拍照/选图结果预览 -->
+      <view wx:if="{{photoPath}}" id="photoPreview" style="background-image: url('data:image/png;base64,{{photoBase64}}');" bindtap="tapPreview">
+        <view wx:for="{{catBoxList}}" wx:key="item" class="catBox {{(!catIdx || catIdx > catBoxList.length) && index === 0 || index === catIdx ? 'chosen' : ''}}" style="top: {{item.y}}rpx; left: {{item.x}}rpx; width: {{item.width}}rpx; height: {{item.height}}rpx;" catchtap="tapCatBox" data-index="{{index}}">
+        </view>
+      </view>
+
+      <!-- 重新选图按钮 -->
+      <view wx:if="{{photoPath}}" id="resetButton" bindtap="reset">
+        <image src="/pages/packageA/pages/images/recognize/back.png"></image>
+        {{text_cfg.recognize.reselect_btn}}
+      </view>
+    </view>
+    <!-- 拍照/选图前功能栏 -->
+    <view id="cameraControll" class="{{photoPath ? 'shrink' : ''}}">
+      <image class='btn' bindtap='choosePhoto' src='/pages/packageA/pages/images/recognize/choose.png'></image>
+      <button id="shutter" disabled="{{!cameraAuth}}" bindtap="takePhoto"></button>
+      <image class='btn' bindtap='reverseCamera' src='/pages/packageA/pages/images/recognize/reverse.png'></image>
+    </view>
+  </view>
+
+  <!-- 识别结果 -->
+  <view id="resultBox" wx:if="{{catList.length && showResultBox}}">
+    <view class="tip" wx:if="{{catBoxList.length != 1}}">
+      <image mode='aspectFit' class='icon' src='/pages/packageA/pages/images/recognize/tip.png'></image>
+      <text>{{!catBoxList.length ? text_cfg.recognize.no_cat_tip : text_cfg.recognize.multi_cat_tip}}</text>
+    </view>
+    <view class="title">{{!catBoxList.length ? text_cfg.recognize.no_cat_rec_tip : (catBoxList.length == 1 ? text_cfg.recognize.single_cat_rec_tip : text_cfg.recognize.multi_cat_rec_tip)}}</view>
+
+    <view class="filter">
+      <picker bindchange="catFilter" data-type="campus" value="{{index}}" range="{{campusList}}">
+        <view class="picker">
+          <view class="type">
+            {{campusList[campusIndex]}}
+          </view>
+          <image src="/pages/packageA/pages/images/recognize/down.png" class="icon"></image>
+        </view>
+      </picker>
+      <picker bindchange="catFilter" data-type="colour" value="{{index}}" range="{{colourList}}">
+        <view class="picker">
+          <view class="type">
+            {{colourList[colourIndex]}}
+          </view>
+          <image src="/pages/packageA/pages/images/recognize/down.png" class="icon"></image>
+        </view>
+      </picker>
+      <!-- <view class="campuses" bindtap="catFilter" data-type="campus">{{campus}}</view>
+      <view class="colour" bindtap="catFilter" data-type="colour">{{colour}}</view> -->
+    </view>
+
+    <view wx:for="{{catList}}" wx:key="_id" class="catCard" data-cat-id="{{item._id}}" bindtap="tapCatCard">
+      <image class="photo" mode="aspectFill" src="{{item.photo.photo_compressed}}"></image>
+      <view class="info">
+        <view class='line first'>
+          <text class='name'>{{item.name}}</text>
+          <block wx:if='{{item.gender}}'>
+            <image mode='aspectFill' class='gender' wx:if='{{item.gender === "公"}}' src="/pages/public/images/card/card/male.png"></image>
+            <image mode='aspectFill' class='gender' wx:if='{{item.gender === "母"}}' src="/pages/public/images/card/card/female.png"></image>
+          </block>
+          <view wx:if='{{item.to_star}}' class='to_star'>{{text_cfg.genealogy.to_star_tip}}</view>
+          <view wx:elif='{{item.adopt != undefined && item.adopt != 0}}' class='adopt'>{{adopt_desc[item.adopt]}}</view>
+        </view>
+        <view class='line'>
+          <image mode='aspectFit' class='icon' src='/pages/public/images/card/card/cat.png'></image>
+          <text class="characteristics">{{item.colour}}猫</text>
+        </view>
+        <view class='line'>
+          <image mode='aspectFit' class='icon' src='/pages/public/images/card/card/pos.png'></image>
+          <text>{{(item.campus + item.area) || '-'}}</text>
+        </view>
+      </view>
+      <view class="prob">{{m1.toFixed(100 * item.prob, 1) + '%'}}</view>
+    </view>
+    <view class="footnote">{{text_cfg.recognize.bottom_tip}}</view>
+  </view>
+
+  <view id="adBox" wx:if="{{catList.length && showResultBox && showAdBox}}">
+    <view class="ad-tip">{{text_cfg.recognize.ad_tip}}</view>
+    <ad unit-id="{{ad.banner}}" ad-intervals="30" bindload="adLoad" binderror="adError" bindclose="adClose"></ad>
+  </view>
+
+  <!-- 底tab占位 -->
+  <view wx:if="{{showResultBox}}" style="height: {{tabBarHeight}}px;"></view>
+
+</view><!-- positionWrapper -->

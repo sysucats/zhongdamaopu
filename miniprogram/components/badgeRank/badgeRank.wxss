@@ -1,0 +1,185 @@
+/* components/badgeRank/badgeRank.wxss */
+@import "/pages/public/wxss/hFilter.wxss";
+
+.h-filter-list {
+  display: flex;
+  justify-content: center;
+}
+.h-filter-item.long {
+  margin: 20rpx 10rpx;
+}
+
+.tip {
+  width: 100%;
+  text-align: center;
+  color: var(--color-gray-dark);
+  font-size: 22rpx;
+}
+
+.badge-block {
+  width: 750rpx;
+  padding: 0 30rpx 30rpx 30rpx;
+  box-sizing: border-box;
+}
+
+.badge-header {
+  display: flex;
+  flex-direction: row;
+  padding: 0 30rpx;
+  /* align-items: flex-end; */
+  align-items: center;
+}
+
+.badge-img {
+  width: 120rpx;
+  height: 120rpx;
+  border-radius: 20rpx;
+  /* background-color: white; */
+}
+
+.badge-info {
+  width: 400rpx;
+  margin-left: 20rpx;
+}
+
+.badge-name {
+  font-size: 28rpx;
+}
+
+.badge-desc {
+  font-size: 22rpx;
+  color: var(--color-black-transparent);
+}
+
+.badge-to-detail {
+  font-size: 22rpx;
+  align-self: flex-end;
+  text-decoration: underline;
+  color: var(--color-gray-dark);
+}
+
+/* 榜单的标题背景 */
+.badge-header-bg {
+  margin-top: -110rpx;
+  width: 100%;
+  height: 120rpx;
+  background-color: aqua;
+  border-top-left-radius: 50rpx;
+  border-top-right-radius: 50rpx;
+
+  background: white;
+  background: linear-gradient(to bottom, var(--color-primary-light) 0%, rgba(255,255,255,1) 100%);
+}
+
+.badge-list {
+  border-bottom-left-radius: 50rpx;
+  border-bottom-right-radius: 50rpx;
+  padding-bottom: 10rpx ;
+  background-color: white;
+}
+
+.badge-cat {
+  display: flex;
+  flex-direction: row;
+  margin-bottom: 20rpx;
+  align-items: center;
+  padding: 0 50rpx;
+}
+
+.badge-cat.hover {
+  background-color: var(--color-gray-light);
+}
+
+.badge-cat-img {
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 100%;
+  margin-left: 20rpx;
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-size: 70% 70%;
+  background-image: var(--img-default);
+}
+
+.badge-cat-order {
+  width: 30rpx;
+  font-size: 28rpx;
+  color: var(--color-gray-dark);
+}
+
+.badge-cat-order.highlight {
+  color: var(--color-primary);
+}
+
+.badge-cat-info {
+  width: 380rpx;
+  margin-left: 20rpx;
+}
+.badge-to-detail, .badge-cat-count {
+  margin-left: auto;
+}
+
+.badge-cat-name {
+  font-size: 30rpx;
+}
+
+.badge-cat-campus {
+  font-size: 20rpx;
+  color: var(--color-gray-dark);
+}
+.badge-cat-habit {
+  width: 380rpx;
+  font-size: 22rpx;
+  color: var(--color-gray-max);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.badge-cat-count {
+  text-align: right;
+  width: 40rpx;
+  font-size: 28rpx;
+  font-weight: bold;
+}
+
+.badge-cat-count.highlight {
+  font-size: 28rpx;
+  color: var(--color-primary);
+  font-weight: bold;
+}
+
+/* 分等级颜色 */
+
+.badge-level-A .badge-img {
+  filter: drop-shadow(0rpx 0rpx 7rpx var(--color-badge-A));
+  transform: translateZ(0);
+}
+
+.badge-level-B .badge-img {
+  filter: drop-shadow(0rpx 0rpx 7rpx var(--color-badge-B));
+  transform: translateZ(0);
+}
+
+.badge-level-C .badge-img {
+  filter: drop-shadow(0rpx 0rpx 7rpx var(--color-badge-C));
+  transform: translateZ(0);
+}
+
+.badge-level-A .badge-name {
+  color: var(--color-badge-A);
+}
+
+.badge-level-B .badge-name {
+  color: var(--color-badge-B);
+}
+
+.badge-level-C .badge-name {
+  color: var(--color-badge-C);
+}
+
+.loading image {
+  width: 165.9rpx;
+  height: 90.3rpx;
+  margin: 10rpx 292rpx;
+}

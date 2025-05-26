@@ -1,0 +1,6 @@
+{
+  "usingComponents": {
+    "popup": "/components/popup/popup"
+  },
+  "navigationBarTitleText": "喵友圈"
+}

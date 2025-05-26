@@ -1,0 +1,54 @@
+<block wx:if="{{auth}}">
+  <view class='filter-block'>
+    <view class='search'>
+      <icon size='30rpx' type='search' style="transform: translateY(15%)"></icon>
+      <input style="font-size: 30rpx; margin-left: 25rpx; width: 100%;" placeholder='搜索用户'
+      value='{{userSearch}}' maxlength='20' confirm-type='search' bindinput='fSearchInput' bindconfirm='fSearch'>
+      </input>
+    </view>
+    <!--分割线--><view class="line"></view>
+    <view class='filters'>
+      <checkbox-group bindchange="filterChange">
+        <checkbox value="manager-only" style="font-size: 28rpx;  margin-right: 20rpx;">只看管理员</checkbox>
+        <checkbox value="role1-only" style="font-size: 28rpx;">只看特邀</checkbox>
+      </checkbox-group>
+    </view>
+  </view>
+  <navigator class="old-invite" url="/pages/tools/updateUserRole/updateUserRole">设置已传照片用户为特邀</navigator>
+
+  <scroll-view style="height: {{windowHeight}}px;" scroll-y="true" enable-back-to-top="true" bindscrolltolower="scrollToReload">
+    <view class="user-box" wx:for="{{users}}" wx:key="_id">
+      <view wx:if="{{item.userInfo}}" class="info">
+        <image class="avatar" src="{{item.userInfo.avatarUrl}}"></image>
+        <view class="name-and-others">
+          <view class="nickName">{{item.userInfo.nickName}}</view>
+          <view class="info">
+            [{{item.role == 1 ? "特邀用户": "游客"}}]
+            <block wx:if="{{item.userInfo.gender}}">  
+              {{item.userInfo.gender == 2? '女': '男'}}
+            </block>
+            {{item.userInfo.country || '-'}}, {{item.userInfo.province || '-'}}, {{item.userInfo.city || '-'}}
+          </view>
+        </view>
+      </view>
+      <view wx:else class="unknow-info info">匿名用户</view>
+
+      <form bindsubmit="updateUserLevel">
+        <input style="display: none;" name="index" value="{{index}}"></input>
+        <input style="display: none;" name="_id" value="{{item._id}}"></input>
+        <view class="operation">
+              <picker mode="selector" range="{{manager_types}}" class="manager-level" name="level" value="{{item.manager == 99? (manager_types.length-1) : (item.manager || 0)}}" bindchange="changePickerValue" data-index="{{index}}">
+                {{manager_types[item.manager == 99? (manager_types.length-1) : (item.manager || 0)]}}
+              </picker>
+          <button form-type="submit" class="manager-update primary">更新等级</button>
+
+          <view class="index">#{{index}}</view>
+        </view>
+      </form>
+    </view>
+    <view style="height: 50rpx; opacity: 0;"></view> <!--加个透明块防止内容偏低按不到-->
+  </scroll-view>
+</block>
+
+<!-- 未授权提示 -->
+<no-auth wx:else tip-text="{{tipText}}"></no-auth>

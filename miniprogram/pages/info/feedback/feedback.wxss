@@ -1,0 +1,3 @@
+/* miniprogram/pages/info/feedback/feedback.wxss */
+
+@import '../reward/reward.wxss';

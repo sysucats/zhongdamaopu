@@ -1,0 +1,318 @@
+/* pages/recognize/recognize.wxss */
+
+#positionWrapper {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translateX(-50%) translateY(-50%);
+  transition: top 0.5s ease-in-out, transform 0.5s ease-in-out;
+}
+
+#positionWrapper.flowUp {
+  top: 4%;
+  transform: translateX(-50%);
+}
+
+#photoBox, #resultBox, #adBox {
+  width: 675rpx;
+  background-color: white;
+  box-shadow: 13rpx 13rpx 30rpx var(--color-gray);
+  border-bottom-left-radius: 15rpx;
+  border-bottom-right-radius: 15rpx;
+  overflow: hidden;
+  box-sizing: border-box;
+  margin-bottom: 50rpx;
+}
+
+#previewArea {
+  width: 675rpx;
+  height: 675rpx;
+  background-color: var(--color-gray-dark);
+}
+
+#authTips {
+  width: 90%;
+  text-align: center;
+  position: absolute;
+  top: calc(675rpx / 2);
+  left: 50%;
+  transform: translateX(-50%) translateY(-50%);
+}
+
+#authTips text {
+  font-size: 30rpx;
+  color: white;
+}
+
+#authTips button {
+  width: 300rpx;
+  margin-top: 40rpx;
+  background-color: var(--color-primary);
+  color: var(--color-text-onPrimary);
+  border-radius: 20rpx;
+  font-size: 30rpx;
+}
+
+#cameraPreview, #photoPreview {
+  width: 100%;
+  height: 100%;
+}
+
+#photoPreview {
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+  position: relative;
+}
+
+#photoPreview .catBox {
+  position: absolute;
+  /* top,left,width,height在wxml中绑定JS计算结果 */
+  border: 4rpx solid var(--color-gray);
+  border-radius: 10rpx;
+  box-sizing: border-box;
+}
+
+#photoPreview .catBox.chosen {
+  border-color: var(--color-primary);
+}
+
+#cameraControll {
+  padding: 0 40rpx;
+  display: flex;
+  align-items: center;
+  box-sizing: border-box;
+  overflow: hidden;
+  height: 180rpx;
+  transition: height 1s ease-in-out;
+}
+
+#cameraControll.shrink {
+  height: 0;
+}
+
+#cameraControll .btn {
+  width: 80rpx;
+  height: 80rpx;
+}
+
+#shutter {
+  width: 100rpx;
+  height: 100rpx;
+  background-color: var(--color-primary);
+  border-radius: 50rpx;
+  border: 8rpx solid white;
+  box-shadow: 0 0 0 8rpx var(--color-primary);
+}
+
+#shutter::after {
+  /*去掉微信自带按钮组件样式*/
+  border: none;
+}
+
+#shutter:active {
+  background-color: var(--color-primary-dark);
+}
+
+#resetButton {
+  display: flex;
+  align-items: center;
+  font-size: 24rpx;
+  font-weight: bold;
+  color: var(--color-gray-max);
+  background-color: var(--color-gray-light);
+  border-radius: 12rpx 0 0 12rpx;
+  box-shadow: 0 0 8rpx var(--color-black-transparent);
+  padding: 8rpx 12rpx;
+  position: absolute;
+  top: 28rpx;
+  right: -16rpx;
+}
+
+#resetButton image {
+  width: 24rpx;
+  height: 24rpx;
+}
+
+#resetButton::after {
+  display: block;
+  content: '';
+  width: 0;
+  height: 0;
+  border-top: 16rpx solid var(--color-gray-dark);
+  border-right: 16rpx solid transparent;
+  position: absolute;
+  right: 0;
+  top: 100%;
+}
+
+#shutter[disabled] {
+  background-color: var(--color-gray);
+}
+
+#resultBox {
+  padding: 30rpx 40rpx;
+}
+
+#resultBox .title{
+  /* margin-bottom: 10rpx; */
+  font-size: 36rpx;
+  font-weight: 500;
+  color: var(--color-primary);
+}
+
+#resultBox .tip {
+  display: flex;
+  align-items: center;
+  color: var(--color-gray-max);
+  font-size: 26rpx;
+  margin: 10rpx 0;
+}
+
+#resultBox .tip image.icon {
+  height: 26rpx;
+  width: 26rpx;
+  min-width: 26rpx;
+  margin-right: 15rpx;
+}
+
+#resultBox .footnote {
+  margin-top: 10rpx;
+  font-size: 26rpx;
+  color: var(--color-gray-max);
+}
+
+
+.bgImg{
+  width: 100%;
+  height: 1500rpx;
+}
+
+.filter {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  height: 70rpx;
+}
+
+.filter .picker{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.filter .picker .icon{
+  height: 12rpx;
+  width: 16rpx;
+}
+
+.filter .picker .type{
+  font-size: 25rpx;
+  margin-right: 10rpx;
+  color: var(--color-black-light);
+}
+
+.catCard {
+  font-size: 24rpx;
+  padding: 20rpx 8rpx;
+  display: flex;
+  align-items: center;
+}
+
+.catCard:active {
+  background-color: var(--color-gray-light);
+}
+
+.catCard {
+  border-top: 1px solid var(--color-gray-light);
+}
+
+.catCard .photo {
+  width: 125rpx;
+  height: 125rpx;
+  border-radius: 66rpx;
+  background-color: var(--color-gray-light);
+}
+
+.catCard .info {
+  flex: 1;
+  margin-left: 32rpx;
+}
+
+.catCard .info .line {
+  display: flex;
+  align-items: center;
+  margin-top: 8rpx;
+  color: var(--color-gray-max);
+}
+
+.catCard .info .line.first {
+  margin-bottom: 20rpx;
+  color: var(--color-black-light);
+}
+
+.catCard .info .name {
+  height: 30rpx;
+  font-size: 33rpx;
+  line-height: 30rpx;
+  font-weight: 500;
+  letter-spacing: 3rpx;
+}
+
+.catCard .info image.gender {
+  height: 27rpx;
+  width: 27rpx;
+  margin-right: 8rpx;
+  margin-left: 8rpx;
+}
+
+.catCard .info .adopt {
+  padding: 0 10rpx;
+  height: 30rpx;
+  border-radius: 15rpx;
+  font-size: 18rpx;
+  line-height: 30rpx;
+  text-align: center;
+  background-color: var(--color-primary);
+  color: var(--color-text-onPrimary);
+  margin-left: 8rpx;
+}
+
+.catCard .info .to_star {
+  height: 30rpx;
+  border-radius: 15rpx;
+  font-size: 18rpx;
+  line-height: 30rpx;
+  text-align: center;
+  background-color: var(--color-gray-light);
+  padding: 0 10rpx;
+  margin: 0 10rpx;
+}
+
+.catCard .line image.icon {
+  height: 26rpx;
+  width: 26rpx;
+  min-width: 26rpx;
+  margin-right: 15rpx;
+}
+
+.catCard .line .characteristics {
+  line-height: 0.9rem;
+}
+
+.catCard .prob {
+  font-size: 36rpx;
+  font-weight: 600;
+  color: var(--color-primary);
+  width: 100rpx;
+  text-align:right;
+  /* align-self:flex-end; */
+}
+
+.ad-tip {
+  margin-top: 8rpx;
+  font-size: 24rpx;
+  color: var(--color-gray-max);
+  text-align: center;
+}

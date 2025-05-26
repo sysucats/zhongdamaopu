@@ -1,0 +1,192 @@
+page {
+  width: 750rpx;
+  padding: 180rpx 30rpx 150rpx 30rpx;
+  box-sizing: border-box;
+}
+
+button {
+  width: 47%;
+  display: inline-block;
+  font-size: 30rpx;
+  box-sizing: border-box;
+}
+
+button.primary {
+  background-color: var(--color-primary);
+  color: var(--color-text-onPrimary);
+  margin-top: 8rpx;
+}
+
+button + button {
+  margin-left: 5%;
+  /* float: right; */
+}
+
+button.long {
+  margin: 0;
+  width: 100%;
+}
+
+.bottom-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  padding: 16rpx 40rpx env(safe-area-inset-bottom) 40rpx; /*底部iOS小黑边safe-area*/
+  border-top: 1rpx solid var(--color-gray);
+  background-color: #FFFFFF;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.bottom-bar button.primary, .bottom-bar button.long {
+  margin-top: 0;
+}
+
+#tips {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  box-sizing: border-box;
+  z-index: 1;
+  font-size: 30rpx;
+  color: var(--color-gray-max);
+  box-shadow: 0rpx 0rpx 30rpx var(--color-gray);
+  padding: 30rpx;
+  background-color: #FFFFFF;
+}
+
+#tips text {
+  display: block;
+  width: 100%;
+  text-align: center;
+}
+
+.verify-box {
+  box-sizing: border-box;
+  margin-bottom: 50rpx;
+  padding: 40rpx 40rpx 30rpx 40rpx;
+  box-shadow: 0rpx 0rpx 30rpx var(--color-gray);
+  border-radius: 20rpx;
+  background-color: #FFFFFF;
+}
+
+.line {
+  display: flex;
+  align-items: center;
+  font-size: 32rpx;
+  color: var(--color-gray-max);
+  margin-bottom: 8rpx;
+}
+
+.line image.icon {
+  height: 40rpx;
+  width: 40rpx;
+  min-width: 40rpx;
+  margin-right: 15rpx;
+}
+
+.bubble1, .bubble2 {
+  margin-bottom: 12rpx;
+}
+
+.bubble1 .date, .bubble2 .date {
+  font-size: 28rpx;
+  color: var(--color-gray-max);
+  text-align: center;
+}
+
+.bubble1 .name, .bubble2 .name {
+  font-size: 28rpx;
+  color: var(--color-gray-max);
+}
+
+.bubble1 .name {
+  text-align: right;
+}
+
+.bubble2 .name {
+  text-align: left;
+}
+
+.bubble1 .floating, .bubble2 .floating {
+  width: max-content;
+  max-width: 90%;
+}
+
+.bubble1 .floating {
+  margin: 0 0 0 auto;
+}
+
+.bubble2 .floating {
+  margin: 0 auto 0 0;
+}
+
+.bubble1 .floating::after, .bubble2 .floating::after {
+  display: block;
+  content: "";
+  clear: both;
+}
+
+.bubble1 .floating .content, .bubble2 .floating .content {  
+  clear: both;
+  position: relative;
+  border-radius: 8rpx;
+  padding: 4rpx 20rpx;
+  font-size: 30rpx;
+}
+
+.bubble1 .floating .content {
+  float: right;
+  background: var(--color-gray);
+}
+
+.bubble2 .floating .content {
+  float: left;
+  background: var(--color-primary);
+  color: var(--color-text-onPrimary);
+}
+
+.bubble1 .floating .content::before {
+  display: block;
+  content: "";
+  width: 0;
+  height: 0;
+  border-top: 8rpx solid transparent;
+  border-left: 8rpx solid var(--color-gray);
+  border-bottom: 8rpx solid transparent;
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateX(100%) translateY(-50%);
+}
+
+.bubble2 .floating .content::before {
+  display: block;
+  content: "";
+  width: 0;
+  height: 0;
+  border-top: 8rpx solid transparent;
+  border-right: 8rpx solid var(--color-primary);
+  border-bottom: 8rpx solid transparent;
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateX(-100%) translateY(-50%);
+}
+
+.bubble1 .floating .footer, .bubble2 .floating .footer {
+  float: left;
+  clear: both;
+  background-color: var(--color-gray-light);
+  font-size: 28rpx;
+  border-radius: 8rpx;
+  padding: 4rpx 20rpx;
+  margin-top: 4rpx;
+}
+
+.noReplyLabel {
+  font-size: 30rpx;
+  color: var(--color-primary-dark);
+  text-align: center;
+}

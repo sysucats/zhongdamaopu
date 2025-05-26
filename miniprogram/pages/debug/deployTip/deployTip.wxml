@@ -1,0 +1,12 @@
+<!--pages/debug/deployTip/deployTip.wxml-->
+<scroll-view scroll-y="1">
+  <view class="h1">部署检查&指引</view>
+
+  <view class="check" wx:for="{{check_list}}" wx:for-index="key" wx:key="key">
+    <view class="line">
+      <view class="title">{{key}} {{item.title}}</view>
+      <view class="status {{status_to_css[item.status]}}">{{status_to_text[item.status]}}</view>
+    </view>
+    <view class="tip"><text>提示：{{item.tip}}<text class="highlight">{{item.addition}}</text></text></view>
+  </view>
+</scroll-view>
