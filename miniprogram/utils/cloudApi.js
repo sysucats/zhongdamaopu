@@ -1,4 +1,5 @@
 // 存放所有需要调用云函数的接口
+import userApi from "./user";
 import { getCurrentUserOpenid } from "./common";
 const app = getApp();
 

@@ -11,6 +11,7 @@ import {
   formatDate
 } from "../../utils/utils";
 import * as config from "../../config";
+import { signCosUrl } from "../../utils/common";
 const app = getApp();
 Component({
   /**
@@ -149,7 +150,7 @@ Component({
     async _getRankInfo(key, badgeDefMap) {
       if (key === 'count') {
         return {
-          img: config.badge_rank_count_img,
+          img: await signCosUrl(config.badge_rank_count_img),
           name: "徽章总数榜",
           rankDesc: "拥有徽章个数最多的猫猫",
           level: "A",
@@ -157,7 +158,7 @@ Component({
       }
       if (key === 'score') {
         return {
-          img: config.badge_rank_score_img,
+          img: await signCosUrl(config.badge_rank_score_img),
           name: "徽章价值榜",
           rankDesc: "徽章总价值最大的猫猫",
           level: "A",

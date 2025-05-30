@@ -1,3 +1,4 @@
+import { signCosUrl } from './common'
 const app = getApp();
 // 等级序
 const levelOrderMap = {
@@ -22,6 +23,13 @@ async function loadBadgeDefMap() {
     }
   }
 
+  // 对每个徽章定义的 img 字段进行签名处理
+  for (let badgeDef of badgeDefMap) {
+    if (badgeDef.img) {
+      badgeDef.img = await signCosUrl(badgeDef.img);
+    }
+  }
+
   return badgeDefMap.reduce((badgeDefMap, badgeDef) => {
     badgeDefMap[badgeDef._id] = badgeDef;
     return badgeDefMap
@@ -32,7 +40,6 @@ async function loadUserBadge(openid, badgeDefMap, options) {
   const userBadges = (await app.mpServerless.db.collection("badge").find({
     _openid: openid
   })).result;
-
   const res = await mergeAndSortBadges(userBadges, badgeDefMap, options);
   return res;
 }

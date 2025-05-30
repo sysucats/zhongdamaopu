@@ -2,7 +2,7 @@
 import { randomInt } from './utils';
 import { getGlobalSettings } from "./page";
 import { getCacheItem, setCacheItem } from "./cache";
-import { getCurrentUserOpenid } from "./common";
+import { getCurrentUserOpenid, signCosUrl } from "./common";
 import config from "../config";
 
 const app = getApp();
@@ -38,6 +38,9 @@ async function getUser(options) {
     op: 'get',
     openid: openid
   })).result;
+  if (userRes && userRes.userInfo) {
+    userRes.userInfo.avatarUrl = await signCosUrl(userRes.userInfo.avatarUrl);
+  }
 
   setCacheItem(key, userRes, 0, randomInt(25, 35))
   return userRes;

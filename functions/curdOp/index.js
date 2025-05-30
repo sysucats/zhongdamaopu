@@ -198,13 +198,19 @@ module.exports = async (ctx) => {
     // 删除图片
     async function delete_photo_for_news(item_id) {
         let { result: item } = await ctx.mpserverless.db.collection('news').findOne({ _id: item_id });
-
         // 删除云储存的图片
-        if (item.photosPathId && item.photosPathId.length > 0) {
-            await ctx.mpserverless.function.invoke("deleteFiles", { photoIDs: item.photosPathId });
-        }
         if (item.coverPathId) {
-            await ctx.mpserverless.function.invoke("deleteFiles", { photoIDs: [item.coverPathId] });
+            var photoIDs = [item.coverPathId];
+            if (item.photosPathId.length > 0) {
+                photoIDs.concat(item.photosPathId);
+            }
+            await ctx.mpserverless.function.invoke("deleteFiles", { photoIDs: photoIDs });
+        } else {
+            var photoUrls = [item.coverPath];
+            if (item.photosPath.length > 0) {
+                photoUrls.concat(item.photosPath);
+            }
+            await ctx.mpserverless.function.invoke("deleteCosFiles", { photoUrls: photoUrls });
         }
     }
 }

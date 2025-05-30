@@ -8,6 +8,7 @@ import {
   isManagerAsync
 } from "../../../utils/user";
 import api from "../../../utils/cloudApi";
+import { signCosUrl } from "../../../utils/common";
 
 const app = getApp();
 Page({
@@ -70,11 +71,19 @@ Page({
     if (news.dateLastModify) {
       news.ddateLastModify = formatDate(new Date(news.dateLastModify), "yyyy年MM月dd日 hh:mm:ss");
     }
+    // 签名 coverPath
+    if (news.coverPath) {
+      news.coverPath = await signCosUrl(news.coverPath);
+    }
+
+    // 签名 photosPath
+    const signedPhotosPath = await Promise.all(news.photosPath.map(val => signCosUrl(val)));
+
     that.setData({
       news: news,
-      photos_path: news.photosPath,
+      photos_path: signedPhotosPath,
       cover_path: news.coverPath,
-    })
+    });
   },
 
   previewImg: function (event) {

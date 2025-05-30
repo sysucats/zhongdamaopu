@@ -15,12 +15,18 @@ module.exports = async (ctx) => {
     } else if (opType == "delete") {
         if (photo.photo_file_id) {
             var photoIDs = [photo.photo_file_id];
-            // if (photo.photo_compressed) {
-            //     photoIDs.push(photo.photo_compressed);
-            //     photoIDs.push(photo.photo_watermark);
-            // }
+            if (photo.photo_compressed_id) {
+                photoIDs.push(photo.photo_compressed_id);
+                photoIDs.push(photo.photo_watermark_id);
+            }
             await ctx.mpserverless.function.invoke("deleteFiles", { photoIDs: photoIDs });
-            // updateMphoto(photo.cat_id);
+        } else {
+            var photoUrls = [photo.photo_id];
+            if (photo.photo_compressed) {
+                photoUrls.push(photo.photo_compressed);
+                photoUrls.push(photo.photo_watermark);
+            }
+            await ctx.mpserverless.function.invoke("deleteCosFiles", { photoUrls: photoUrls });
         }
         await ctx.mpserverless.db.collection('photo').deleteOne({ _id: photo._id });
     } else if (opType == "setBest") {
@@ -34,15 +40,24 @@ module.exports = async (ctx) => {
         }
         if (photo.photo_compressed && photo.photo_id != 'deleted') {
             // 如果原图没有删掉，那么就删除压缩图和水印图
-            await ctx.mpserverless.function.invoke("deleteFiles", { photoIDs: [photo.photo_compressed, photo.photo_watermark] });
+            var photoIDs = [photo.photo_compressed, photo.photo_watermark];
+            if (photo.photo_compressed_id) {
+                photoIDs.push(photo.photo_compressed_id);
+                photoIDs.push(photo.photo_watermark_id);
+                await ctx.mpserverless.function.invoke("deleteFiles", { photoIDs: photoIDs });
+            } else {
+                await ctx.mpserverless.function.invoke("deleteCosFiles", { photoUrls: photoIDs });
+            }
         }
         // 把水印和压缩图的链接去掉
         await ctx.mpserverless.db.collection('photo').updateOne({ _id: photo._id }, { $set: { photographer: photographer, photo_compressed: '', photo_watermark: '' } });
     } else if (opType == 'setProcess') {
         // 修改数据库中记录的压缩图、水印图的URL
         const compressed = ctx.args.compressed;
+        const compressedId = ctx.args.compressedId;
         const watermark = ctx.args.watermark;
-        const res = await ctx.mpserverless.db.collection('photo').updateOne({ _id: photo._id }, { $set: { photo_compressed: compressed, photo_watermark: watermark } });
+        const watermarkId = ctx.args.watermarkId;
+        const res = await ctx.mpserverless.db.collection('photo').updateOne({ _id: photo._id }, { $set: { photo_compressed: compressed, photo_compressed_id: compressedId, photo_watermark: watermark, photo_watermark_id: watermarkId } });
         console.log("setProcess res:", res);
     } else {
         console.log("Unknown type");

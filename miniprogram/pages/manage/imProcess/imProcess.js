@@ -3,7 +3,7 @@ import { generateUUID } from "../../../utils/utils";
 import { text as text_cfg } from "../../../config";
 import { checkAuth, fillUserInfo } from "../../../utils/user";
 import api from "../../../utils/cloudApi";
-
+import { uploadFile } from "../../../utils/common"
 import drawUtils from "../../../utils/draw";
 // import lockUtils from "./lock";
 
@@ -249,11 +249,11 @@ Page({
     // 上传水印图
     this.setPhase(5);
     const watermarkCloudPath = `/watermark/${generateUUID()}.jpg`;
-    const watermarkCloudID = await this.uploadImage(watermarkPath, watermarkCloudPath);
-    console.log("watermarkCloudID", watermarkCloudID);
+    const watermarkCloud = await this.uploadImage(watermarkPath, watermarkCloudPath);
+    console.log("watermarkCloud", watermarkCloud);
     // 更新数据库
     this.setPhase(6);
-    await this.updataDatabase(photoInfo, compressCloudID, watermarkCloudID);
+    await this.updataDatabase(photoInfo, compressCloudID, watermarkCloud);
     // 结束
     this.setPhase(0);
   },
@@ -337,20 +337,22 @@ Page({
 
   // 上传图片
   uploadImage: async function (filePath, cloudPath) {
-    const res = await app.mpServerless.file.uploadFile({
+    const res = await uploadFile({
       filePath: filePath,
       cloudPath: cloudPath,
     })
-    return res.fileUrl;
+    return res;
   },
 
   // 更新数据库
-  updataDatabase: async function (oriPhoto, compressFileID, watermarkCloudID) {
+  updataDatabase: async function (oriPhoto, compressFile, watermarkCloud) {
     await api.managePhoto({
       photo: oriPhoto,
       type: 'setProcess',
-      compressed: compressFileID,
-      watermark: watermarkCloudID,
+      compressed: compressFile.fileUrl,
+      compressedId: compressFile.fileId,
+      watermark: watermarkCloud.fileUrl,
+      watermarkId: watermarkCloud.fileId,
     })
   },
 

@@ -1,4 +1,5 @@
 import api from "./cloudApi";
+import { signCosUrl } from "../utils/common";
 
 // 生成小程序码
 async function generateMpCode(cat) {
@@ -14,7 +15,7 @@ async function generateMpCode(cat) {
     page: 'pages/genealogy/genealogy',
     width: 500,
     });
-
+    res = await signCosUrl(res);
     cat.mpcode = res;
     return cat.mpcode;
 }
@@ -23,7 +24,7 @@ async function generateMpCode(cat) {
 async function showMpcode(cat) {
     const mpcode = await generateMpCode(cat);
     wx.previewImage({
-        urls: [mpcode],
+        urls: [await signCosUrl(mpcode)],
     });
 }
 

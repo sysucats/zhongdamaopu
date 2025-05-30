@@ -2,7 +2,7 @@
 import { text as text_cfg, reward_img } from "../../../config";
 import { checkCanReward } from "../../../utils/user";
 import { getGlobalSettings } from "../../../utils/page";
-
+import { signCosUrl } from "../../../utils/common";
 const share_text = text_cfg.app_name + ' - ' + text_cfg.reward.share_tip;
 const app = getApp();
 Page({
@@ -91,7 +91,7 @@ Page({
 
   // 打开大图
   async openImg(e) {
-    const src = reward_img;
+    const src = await signCosUrl(reward_img);
     wx.previewImage({
       urls: [src],
       success: (res) => {

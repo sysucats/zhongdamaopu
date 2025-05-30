@@ -17,6 +17,7 @@ import cache from "../../utils/cache";
 import config from "../../config";
 import { loadFilter, getGlobalSettings, showTab } from "../../utils/page";
 import { isManagerAsync, checkCanShowNews } from "../../utils/user";
+import { signCosUrl } from "../../utils/common";
 
 const default_png = undefined;
 
@@ -81,6 +82,13 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: async function (options) {
+    if (!this.jsData) {
+      this.jsData = {
+        catsStep: 1,
+        loadingLock: 0,
+        pageLoadingLock: false,
+      };
+    }
     // 从缓存里读取options
     var fcampus = options.fcampus;
     if (!fcampus) {
@@ -450,7 +458,7 @@ Page({
         c.comment_count = cat2commentCount[c._id];
       }
     }
-
+    console.log("new_catsnew_cats",new_cats);
     await this.setData({
       cats: new_cats
     });
@@ -923,11 +931,11 @@ Page({
 
     if (newsList[0].coverPath) {
       this.setData({
-        newsImage: newsList[0].coverPath
+        newsImage: await signCosUrl(newsList[0].coverPath)
       })
     } else if (newsList[0].photosPath.length != 0) {
       this.setData({
-        newsImage: newsList[0].photosPath[0]
+        newsImage: await signCosUrl(newsList[0].photosPath[0])
       })
     }
     if (!this.checkNewsVisited()) {

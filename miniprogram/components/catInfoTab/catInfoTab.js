@@ -2,6 +2,7 @@ import { text as text_cfg, cat_status_adopt } from "../../config";
 import { checkAuth, fillUserInfo } from "../../utils/user";
 import { loadFilter } from "../../utils/page";
 import { getCatItemMulti } from "../../utils/cat";
+import { signCosUrl } from "../../utils/common";
 import api from "../../utils/cloudApi";
 const app = getApp();
 
@@ -299,6 +300,17 @@ Component({
       await fillUserInfo(newPhotos, "_openid", "userInfo");
 
       console.log("[loadMorePhotos] -", newPhotos);
+      for (var photos of newPhotos) {
+        if (photos.photo_id) {
+          photos.photo_id = await signCosUrl(photos.photo_id);
+        }
+        if (photos.photo_compressed) {
+          photos.photo_compressed = await signCosUrl(photos.photo_compressed);
+        }
+        if (photos.photo_watermark) {
+          photos.photo_watermark = await signCosUrl(photos.photo_watermark);
+        }
+      }
       photo = photo.concat(newPhotos);
       this.setData({
         photo: photo

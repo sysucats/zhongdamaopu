@@ -17,6 +17,7 @@ import {
 } from "../../utils/page";
 
 import api from "../../utils/cloudApi";
+import { signCosUrl } from "../../utils/common.js";
 
 const app = getApp();
 
@@ -348,7 +349,7 @@ Page({
     const fillUserPromise = fillUserInfo(res, openidField, "userInfo");
 
     // 同时预处理每条数据
-    res.forEach(p => {
+    res.forEach(async p => {
       // 已经在followCatsList中的猫咪数据，直接引用
       p.cat = this.data.followCatsList.find(cat => cat._id === p.cat_id);
 
@@ -364,8 +365,8 @@ Page({
 
       if (coll == 'photo') {
         // 使用压缩版图片
-        p.pic = p.photo_compressed || p.photo_id;
-        p.pic_prev = p.photo_watermark || p.photo_id;
+        p.pic = await signCosUrl(p.photo_compressed || p.photo_id);
+        p.pic_prev = await signCosUrl(p.photo_watermark || p.photo_id);
       }
     });
 
@@ -925,11 +926,11 @@ Page({
       // 处理数据
       if (newPhotos.length > 0) {
         await fillUserInfo(newPhotos, '_openid', "userInfo");
-        newPhotos.forEach(p => {
+        newPhotos.forEach(async p => {
           p.cat = this.data.followCatsList.find(cat => cat._id === p.cat_id);
           p.datetime = this.formatDateTime(new Date(p.create_date));
-          p.pic = p.photo_compressed || p.photo_id;
-          p.pic_prev = p.photo_watermark || p.photo_id;
+          p.pic = await signCosUrl(p.photo_compressed || p.photo_id);
+          p.pic_prev = await signCosUrl(p.photo_watermark || p.photo_id);
           p.dtype = 'photo';
         });
       }

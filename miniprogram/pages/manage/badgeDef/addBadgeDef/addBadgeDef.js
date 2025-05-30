@@ -2,6 +2,7 @@ import { checkAuth } from "../../../../utils/user";
 import { levelOrderMap } from "../../../../utils/badge";
 import api from "../../../../utils/cloudApi";
 import { generateUUID } from "../../../../utils/utils";
+import { uploadFile, signCosUrl } from "../../../../utils/common"
 
 const app = getApp();
 
@@ -32,6 +33,9 @@ Page({
     const { result: badgeDef } = await app.mpServerless.db.collection('badge_def').findOne({
       _id: id,
     });
+    if (badgeDef.img) {
+      badgeDef.img = await signCosUrl(badgeDef.img);
+    }
     this.setData({
       badgeDef: badgeDef,
     });
@@ -112,7 +116,7 @@ Page({
       });
       this.setData({
         "badgeDef._id": res.insertedId,
-        "badgeDef.img": cloudUrl,
+        "badgeDef.img": await signCosUrl(cloudUrl),
       })
     }
 
@@ -130,7 +134,7 @@ Page({
     const index = tempFilePath.lastIndexOf(".");
     const ext = tempFilePath.substr(index + 1);
     // 上传图片
-    let upRes = await app.mpServerless.file.uploadFile({
+    let upRes = await uploadFile({
       cloudPath: `/badgeDef/${generateUUID()}.${ext}`, // 上传至云端的路径
       filePath: tempFilePath, // 小程序临时文件路径
     });

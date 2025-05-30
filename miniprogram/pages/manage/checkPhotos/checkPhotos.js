@@ -2,6 +2,7 @@
 import { checkAuth, fillUserInfo } from "../../../utils/user";
 import { requestNotice, sendVerifyNotice, getMsgTplId } from "../../../utils/msg";
 import cache from "../../../utils/cache";
+import { signCosUrl } from "../../../utils/common";
 import { getCatItem } from "../../../utils/cat";
 import api from "../../../utils/cloudApi";
 const app = getApp();
@@ -66,6 +67,7 @@ Page({
     var campus_list = {};
     var memory_cache = {};
     for (var photo of photos) {
+      photo.photo_id = await signCosUrl(photo.photo_id)
       if (memory_cache[photo.cat_id]) {
         photo.cat = memory_cache[photo.cat_id];
       } else {

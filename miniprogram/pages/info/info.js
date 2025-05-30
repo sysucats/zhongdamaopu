@@ -7,6 +7,8 @@ const share_text = text_cfg.app_name + ' - ' + text_cfg.info.share_tip;
 
 const logo_img = "/pages/public/images/app_logo.png";
 
+import { signCosUrl } from "../../utils/common";
+
 const app = getApp();
 
 Page({
@@ -273,16 +275,16 @@ Page({
 
   async showMpCode(e) {
     wx.previewImage({
-      urls: [mpcode_img],
+      urls: [await signCosUrl(mpcode_img)],
       fail: function (e) {
         console.error(e)
       }
     })
   },
 
-  showLogo(e) {
+  async showLogo(e) {
     wx.previewImage({
-      urls: [logo_img],
+      urls: [await signCosUrl(logo_img)],
       fail: function (e) {
         console.error(e)
       }

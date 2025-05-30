@@ -14,6 +14,7 @@ import {
 } from "../../../utils/msg";
 import config from "../../../config";
 import api from "../../../utils/cloudApi";
+import { uploadFile } from "../../../utils/common"
 const app = getApp();
 Page({
   /**
@@ -215,10 +216,11 @@ Page({
     const index = tempFilePath.lastIndexOf(".");
     const ext = tempFilePath.substr(index + 1);
 
-    let upRes = await app.mpServerless.file.uploadFile({
-      filePath: tempFilePath, // 小程序临时文件路径
-      cloudPath: '/' + cat.campus + '/' + generateUUID() + '.' + ext, // 上传至云端的路径
+    let upRes = await uploadFile({
+      filePath: tempFilePath,
+      cloudPath: '/' + cat.campus + '/' + generateUUID() + '.' + ext,
     })
+    console.log("上传图片:", upRes);
     // 返回文件 ID
     console.log(upRes.fileUrl);
 

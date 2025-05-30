@@ -25,6 +25,7 @@ import {
 } from "../../../utils/page";
 import { convertRatingList, genDefaultRating } from "../../../utils/rating";
 import { showMpcode } from "../../../utils/mpcode";
+import { signCosUrl } from "../../../utils/common";
 import api from "../../../utils/cloudApi";
 
 const app = getApp();
@@ -239,7 +240,6 @@ Page({
     if (cat.rating) {
       cat.rating.catRatings = convertRatingList(cat.rating.scores);
     }
-
     this.setData({
       cat: cat
     });
@@ -357,6 +357,16 @@ Page({
     const offset = cat.photo.length;
     for (let i = 0; i < res.length; ++i) {
       res[i].index = offset + i; // 把index加上，gallery预览要用到
+      // 签名处理
+      if (res[i].photo_id) {
+        res[i].photo_id = await signCosUrl(res[i].photo_id);
+      }
+      if (res[i].photo_compressed) {
+        res[i].photo_compressed = await signCosUrl(res[i].photo_compressed);
+      }
+      if (res[i].photo_watermark) {
+        res[i].photo_watermark = await signCosUrl(res[i].photo_watermark);
+      }
     }
     cat.photo = cat.photo.concat(res);
     this.setData({
@@ -469,12 +479,22 @@ Page({
     const offset = this.jsData.album_raw.length;
     for (let i = 0; i < res.length; ++i) {
       res[i].index = offset + i; // 把index加上，gallery预览要用到
+      // 签名处理
+      if (res[i].photo_id) {
+        res[i].photo_id = await signCosUrl(res[i].photo_id);
+      }
+      if (res[i].photo_compressed) {
+        res[i].photo_compressed = await signCosUrl(res[i].photo_compressed);
+      }
+      if (res[i].photo_watermark) {
+        res[i].photo_watermark = await signCosUrl(res[i].photo_watermark);
+      }
     }
     this.jsData.album_raw = this.jsData.album_raw.concat(res);
     this.updateAlbum();
   },
 
-  updateAlbum() {
+  async updateAlbum() {
     // 为了页面显示，要把这个结构处理一下
     // 先按日期分类，分为拍摄日期、上传日期
     var orderIdx = this.data.photoOrderSelected;
@@ -515,6 +535,7 @@ Page({
         age[0] = year;
         age[1] = month;
       }
+
       result.push({
         date: shooting_date,
         photos: group[key],

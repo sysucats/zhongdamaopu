@@ -1,5 +1,6 @@
 // 放置与cat对象有关的函数
 import { randomInt } from "./utils";
+import { signCosUrl } from "./common";
 import { getCacheItem, setCacheItem, getCacheDate, setCacheDate, cacheTime } from "./cache";
 const app = getApp();
 
@@ -25,7 +26,20 @@ async function getAvatar(cat_id, total) {
   var index = randomInt(0, total);
 
   const { result: pho_src } = await app.mpServerless.db.collection('photo').find(qf, { skip: index, limit: 1 })
-  cacheItem = pho_src[0];
+  const photo = pho_src[0];
+
+  // 签名处理
+  if (photo.photo_id) {
+    photo.photo_id = await signCosUrl(photo.photo_id);
+  }
+  if (photo.photo_compressed) {
+    photo.photo_compressed = await signCosUrl(photo.photo_compressed);
+  }
+  if (photo.photo_watermark) {
+    photo.photo_watermark = await signCosUrl(photo.photo_watermark);
+  }
+
+  cacheItem = photo;
 
   setCacheItem(cacheKey, cacheItem, cacheTime.catAvatar);
   return cacheItem;

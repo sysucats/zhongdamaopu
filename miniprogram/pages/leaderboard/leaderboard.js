@@ -9,6 +9,7 @@ import {
 import { getDateWithDiffHours, formatDate } from "../../utils/utils";
 import config from "../../config";
 import { showTab } from "../../utils/page";
+import { signCosUrl } from "../../utils/common";
 
 const app = getApp();
 
@@ -180,8 +181,8 @@ Page({
     ]);
     for (let i = 0; i < photos.length; i++) {
       var p = photos[i];
-      p.pic = p.photo_compressed || p.photo_id;
-      p.pic_prev = p.photo_watermark || p.photo_id;
+      p.pic = await signCosUrl(p.photo_compressed || p.photo_id);
+      p.pic_prev = await signCosUrl(p.photo_watermark || p.photo_id);
       p.cat = cat_res[i];
       p.liked = like_res[i];
       p.mdate_str = formatDate(p.mdate, "yyyy/MM/dd")
@@ -260,7 +261,7 @@ Page({
     });
   },
   // 点击照片
-  clickPhoto(e) {
+  async clickPhoto(e) {
     const { url } = e.currentTarget.dataset;
     wx.previewImage({
       urls: [url],

@@ -67,8 +67,8 @@ Component({
       }
 
       // 准备搜索
-      var query = filters.length ? filters : {};
-      const { result: cats } = await app.mpServerless.db.collection('cat').find({ $and: query });
+      var query = filters.length ? _.and(filters) : {};
+      const { result: cats } = await app.mpServerless.db.collection('cat').find(query);
       // 获取头像
       for (var cat of cats) {
         cat.avatar = await getAvatar(cat._id, cat.photo_count_best);

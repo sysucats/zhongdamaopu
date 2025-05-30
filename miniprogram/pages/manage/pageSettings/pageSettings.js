@@ -82,7 +82,7 @@ Page({
 
   // 加载数据库设置
   async reloadSettings() {
-    let settings = await getGlobalSettings(null, {nocache: true});
+    let settings = await getGlobalSettings(null, { nocache: true });
     console.log(JSON.stringify(settings));
     delete settings._id;
     delete settings.openid;
@@ -114,8 +114,8 @@ Page({
 
   // 获取输入
   inputChange(e) {
-    var {i, j} = e.currentTarget.dataset;
-    var {value} = e.detail;
+    var { i, j } = e.currentTarget.dataset;
+    var { value } = e.detail;
     this.setData({
       [`settings.${i}.${j}`]: value
     });
@@ -123,8 +123,8 @@ Page({
 
   // 获取checkBox输入
   checkBoxChange(e) {
-    var {i, j} = e.currentTarget.dataset;
-    var {value} = e.detail;
+    var { i, j } = e.currentTarget.dataset;
+    var { value } = e.detail;
     this.setData({
       [`settings.${i}.${j}`]: value.join(",")
     });
@@ -132,7 +132,7 @@ Page({
 
   // 检查设置类型有效
   checkAvaliable() {
-    var {settings, desc} = this.data;
+    var { settings, desc } = this.data;
     for (const i in settings) {
       for (const j in settings[i]) {
         const type = desc[i][j].type;
@@ -167,18 +167,19 @@ Page({
 
     const { settings } = this.data;
 
-    await api.curdOp({
+    const res = await api.curdOp({
       operation: "update",
       collection: "setting",
       item_id: "pages",
       data: settings
     })
-
-    wx.showToast({
-      title: '保存成功',
-      icon: "success"
-    });
-    await this.reloadSettings();
+    if (res.ok) {
+      wx.showToast({
+        title: '保存成功',
+        icon: "success"
+      });
+      await this.reloadSettings();
+    }
   },
 
 })

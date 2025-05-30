@@ -3,6 +3,7 @@ import {
   science_imgs
 } from "../../../config";
 import api from "../../../utils/cloudApi";
+import { signCosUrl } from "../../../utils/common";
 const cates = ['猫咪救助', '撸猫指南', '猫咪领养', '猫咪喂养', '猫咪健康'];
 const share_text = text_cfg.app_name + ' - ' + text_cfg.science.share_tip;
 
@@ -27,7 +28,7 @@ Page({
       cate_active: cates[cate_current]
     });
 
-    let images = science_imgs;
+    let images = await Promise.all(science_imgs.map(val => signCosUrl(val)));
     this.setData({
       images: images
     })

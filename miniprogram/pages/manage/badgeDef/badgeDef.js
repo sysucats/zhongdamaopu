@@ -1,4 +1,5 @@
 import { checkAuth } from "../../../utils/user";
+import { signCosUrl } from "../../../utils/common";
 const app = getApp();
 Page({
 
@@ -20,14 +21,14 @@ Page({
     await this.loadBadgeDefs();
   },
 
-  // 加载所有徽章
   async loadBadgeDefs() {
     const { result: badgeDefCount } = await app.mpServerless.db.collection('badge_def').count({});
     let badgeDefs = [];
     while (badgeDefs.length < badgeDefCount) {
-      const { result: tmp } = await app.mpServerless.db.collection('badge_def').find({}, { skip: badgeDefs.length })
+      const { result: tmp } = await app.mpServerless.db.collection('badge_def').find({}, { skip: badgeDefs.length });
       badgeDefs = badgeDefs.concat(tmp);
     }
+
     // 获取现存数量
     let getCountTask = [];
     for (const b of badgeDefs) {
@@ -35,10 +36,18 @@ Page({
       getCountTask.push(count);
     }
     let badgeCount = await Promise.all(getCountTask);
+
+    // 签名 img 字段
     for (let i = 0; i < badgeDefs.length; i++) {
       // 记录数量
       badgeDefs[i].count = badgeCount[i].total;
+
+      // 签名 img
+      if (badgeDefs[i].img) {
+        badgeDefs[i].img = await signCosUrl(badgeDefs[i].img);
+      }
     }
+
     this.setData({
       badgeDefs: badgeDefs,
     });

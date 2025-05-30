@@ -6,6 +6,7 @@ import {
   checkAuth
 } from "../../../utils/user";
 import api from "../../../utils/cloudApi";
+import { uploadFile } from "../../../utils/common"
 const app = getApp();
 Page({
   /**
@@ -252,7 +253,7 @@ Page({
     const ext = tempFilePath.substr(index + 1);
 
     const that = this;
-    const upRes = await app.mpServerless.file.uploadFile({
+    const upRes = await uploadFile({
       filePath: tempFilePath, // 小程序临时文件路径
       cloudPath: '/news' + '/' + generateUUID() + '.' + ext, // 上传至云端的路径
     })

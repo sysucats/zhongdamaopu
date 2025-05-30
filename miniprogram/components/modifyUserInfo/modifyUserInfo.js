@@ -1,6 +1,7 @@
 import { getUser } from "../../utils/user";
 import { deepcopy } from "../../utils/utils";
 import api from "../../utils/cloudApi";
+import { uploadFile } from "../../utils/common"
 const app = getApp();
 
 Component({
@@ -118,7 +119,7 @@ Component({
       const index = tempFilePath.lastIndexOf(".");
       const ext = tempFilePath.substr(index + 1);
       // 上传图片
-      let upRes = await app.mpServerless.file.uploadFile({
+      let upRes = await uploadFile({
         filePath: tempFilePath, // 小程序临时文件路径
         cloudPath: `/user/avatar/${openid}.${ext}`, // 上传至云端的路径
       })

@@ -3,6 +3,7 @@ import { sleep } from "../../utils/utils";
 import { text as text_cfg, science_imgs } from "../../config";
 import { checkAuth } from "../../utils/user";
 import { showTab } from "../../utils/page";
+import { signCosUrl } from "../../utils/common";
 const share_text = text_cfg.app_name + ' - ' + text_cfg.science.share_tip;
 
 const app = getApp();
@@ -47,6 +48,13 @@ Page({
    */
   onLoad: async function (options) {
     var { result } = await app.mpServerless.db.collection('news').find({}, { sort: { date: -1 } });
+
+    // 签名 coverPath 字段
+    for (let i = 0; i < result.length; i++) {
+      if (result[i].coverPath) {
+        result[i].coverPath = await signCosUrl(result[i].coverPath);
+      }
+    }
 
     this.setData({
       newsList: result,
@@ -96,6 +104,13 @@ Page({
   // 重新载入数据库
   async getData() {
     var { result } = await app.mpServerless.db.collection('news').find({}, { sort: { date: -1 } });
+
+    // 签名 coverPath 字段
+    for (let i = 0; i < result.length; i++) {
+      if (result[i].coverPath) {
+        result[i].coverPath = await signCosUrl(result[i].coverPath);
+      }
+    }
 
     this.setData({
       newsList: result,
@@ -177,7 +192,7 @@ Page({
   // 科普轮播图相关代码
 
   async setSciImgs() {
-    const sciImgList = science_imgs;
+    const sciImgList = await Promise.all(science_imgs.map(val => signCosUrl(val)));;
     const cacheKey = 'sciImgStorage';
     const dataKey = 'images';
 
