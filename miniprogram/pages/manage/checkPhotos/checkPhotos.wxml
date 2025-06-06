@@ -12,7 +12,7 @@
   </view>
   <view class="tip" wx:if="{{!campus_list || campus_list.length == 0}}">没有待审核的照片啦~</view>
   <view class="tip" wx:elif="{{!campus_list[active_campus]}}">请在上方选择一个校区</view>
-  <block wx:for="{{campus_list[active_campus]}}" wx:key="_id" wx:if="{{index < 20}}">
+  <block wx:for="{{campus_list[active_campus]}}" wx:key="_id">
     <view class='verify-box'>
       <!-- <view class="imageShadowMask"></view> -->
       <image mode='aspectFill' src='{{item.photo_id}}' bindtap='openBigPhoto' data-pid='{{item.photo_id}}'></image>

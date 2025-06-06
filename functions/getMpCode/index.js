@@ -14,12 +14,21 @@ module.exports = async (ctx) => {
     const rsp = await ctx.httpclient.request(`https://api.weixin.qq.com/wxa/getwxacodeunlimit?access_token=${access_token.result}`, {
         method: 'POST',
         data: requestData,
+        contentType: 'json',
         responseType: 'arraybuffer'
     },);
 
     // 检查响应状态
     if (rsp.status !== 200) {
         throw new Error(`获取小程序码失败: ${rsp.status}`);
+    }
+
+    // 判断返回内容类型
+    const contentType = rsp.headers['content-type'];
+    if (contentType && contentType.indexOf('application/json') !== -1) {
+        // 解析错误信息
+        const errJson = JSON.parse(Buffer.from(rsp.data).toString());
+        throw new Error(`微信接口错误: ${errJson.errmsg || '未知错误'} (errcode: ${errJson.errcode})`);
     }
 
     // 将二进制数据写入临时文件

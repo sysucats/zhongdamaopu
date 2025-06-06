@@ -43,8 +43,8 @@ async function uploadFile(options) {
 
   if (!use_private_tencent_cos) {
     return await app.mpServerless.file.uploadFile({
-      filePath: fileName, // 小程序临时文件路径
-      cloudPath: filePath, // 上传至云端的路径
+      filePath: filePath, // 小程序临时文件路径
+      cloudPath: fileName, // 上传至云端的路径
     })
   }
 

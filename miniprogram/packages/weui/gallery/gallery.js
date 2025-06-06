@@ -225,11 +225,11 @@ Component({
                             mask: true,
                         })
                         let downloadRes = await downloadFile(that.data.imgUrls[that.data.current]);
-
+                        console.log('downloadFile', downloadRes);
                         wx.hideLoading();
                         if (downloadRes) {
                             wx.saveImageToPhotosAlbum({
-                                filePath: downloadRes.url,
+                                filePath: downloadRes.tempFilePath,
                                 success(res) {
                                     wx.showToast({
                                         title: '已保存到相册',
