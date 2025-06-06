@@ -1,5 +1,5 @@
 // 存放所有需要调用云函数的接口
-import userApi from "./user";
+import config from "../config";
 import { getCurrentUserOpenid } from "./common";
 const app = getApp();
 
@@ -43,6 +43,7 @@ async function getMpCode(options) {
     scene: options.scene,
     page: options.page,
     width: 500,
+    use_private_tencent_cos: config.use_private_tencent_cos
   }
   return (await app.mpServerless.function.invoke('getMpCode', params)).result;
 }

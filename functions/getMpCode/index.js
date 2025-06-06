@@ -1,5 +1,7 @@
 module.exports = async (ctx) => {
-    const { _id, scene, page, width } = ctx.args
+    const axios = require('axios');
+    const FormData = require('form-data');
+    const { _id, scene, page, width, use_private_tencent_cos } = ctx.args
     const access_token = await ctx.mpserverless.function.invoke('getAccessToken')
 
     var requestData = {
@@ -41,18 +43,33 @@ module.exports = async (ctx) => {
 
     try {
         // 使用临时文件路径上传
-        const uploadResult = await ctx.mpserverless.file.uploadFile({
-            filePath: tmpFile.name,
-            cloudPath: `/mpcode/${cat_id}.jpg`,
-        });
+        if (use_private_tencent_cos) {
+            const data = (await ctx.mpserverless.function.invoke('getURL', {
+                fileName: `/mpcode/${cat_id}.jpg`
+            })).result;
+            const formData = new FormData();
+            for (const key in data.formData) {
+                formData.append(key, data.formData[key]);
+            }
+            formData.append('file', fs.createReadStream(tmpFile.name));
+            const uploadRsp = await axios.post(data.postURL, formData, {
+                headers: formData.getHeaders()
+            });
+            const cleanKey = data.formData.key.startsWith("/") ? data.formData.key.slice(1) : data.formData.key;
+            const fileUrl = data.postURL + cleanKey;
+            fs.unlinkSync(tmpFile.name);
+            await ctx.mpserverless.db.collection('cat').updateOne({ _id: cat_id }, { $set: { mpcode: fileUrl } });
+            return fileUrl;
+        } else {
+            const uploadResult = await ctx.mpserverless.file.uploadFile({
+                filePath: tmpFile.name,
+                cloudPath: `/mpcode/${cat_id}.jpg`,
+            });
+            fs.unlinkSync(tmpFile.name);
+            await ctx.mpserverless.db.collection('cat').updateOne({ _id: cat_id }, { $set: { mpcode: uploadResult.fileUrl } });
+            return uploadResult.fileUrl;
+        }
 
-        // 删除临时文件
-        fs.unlinkSync(tmpFile.name);
-
-        // 更新数据库
-        await ctx.mpserverless.db.collection('cat').updateOne({ _id: cat_id }, { $set: { mpcode: uploadResult.fileUrl } });
-
-        return uploadResult.fileUrl;
     } catch (error) {
         // 删除临时文件
         if (fs.existsSync(tmpFile.name)) {
