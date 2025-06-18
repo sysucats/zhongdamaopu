@@ -17,7 +17,7 @@
 
 
 
-## :scroll:部署-[EMAS版部署文档](https://www.notion.so/1fa27c4aee2880de9c55eea7527ce9e2?v=1fa27c4aee28819eb503000c8d50bf42&pvs=4)
+## :scroll:部署-[EMAS版部署文档](https://tender-scarf-c5c.notion.site/1fa27c4aee2880de9c55eea7527ce9e2?v=1fa27c4aee28819eb503000c8d50bf42)
 
 该部署文档主要讲述如何使用EMAS服务部署小程序；已用laf的小程序如何迁移至EMAS中。
 
