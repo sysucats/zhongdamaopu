@@ -109,7 +109,7 @@ Component({
       let maxTry = 3;
       let res = undefined;
       while (res === undefined && maxTry > 0) {
-        res = await getGlobalSettings("tabBarCtrl", {nocache: true});
+        res = await getGlobalSettings("tabBarCtrl");
         maxTry --;
         await sleep(300);
       }

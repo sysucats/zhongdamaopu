@@ -1,7 +1,4 @@
 import {
-  cloud
-} from "../../../../../utils/cloudAccess";
-import {
   getUser
 } from "../../../../../utils/user";
 import {
@@ -17,7 +14,7 @@ import {
 } from "../../../../../utils/page";
 
 import api from "../../../../../utils/cloudApi";
-
+const app = getApp();
 Page({
 
   /**
@@ -91,7 +88,7 @@ Page({
       })
       pictureAd.onClose(() => {
         // 抽取一次
-        this.getBadge({count: 1, reason: 'watchPictureAD'}).then();
+        this.getBadge({ count: 1, reason: 'watchPictureAD' }).then();
       })
     }
 
@@ -115,7 +112,7 @@ Page({
           return;
         }
         // 抽取两次
-        this.getBadge({count: 2, reason: 'watchVideoAD'}).then();
+        this.getBadge({ count: 2, reason: 'watchVideoAD' }).then();
       })
     }
 
@@ -146,12 +143,13 @@ Page({
       this.jsData.badgeDefMap = await loadBadgeDefMap();
       await this.checkBadgeDefEmpty();
     }
-
-    const db = await cloud.databaseAsync();
-    const lastesBadges = (await db.collection("badge").where({
+    const { result: lastesBadges } = await app.mpServerless.db.collection("badge").find({
       _openid: this.data.user.openid,
-      reason: "checkIn",
-    }).orderBy("acquireTime", "desc").limit(1).get()).data;
+      reason: "checkIn"
+    }, {
+      limit: 1,
+      sort: { acquireTime: -1 },
+    })
 
     if (!lastesBadges.length) {
       this.setData({
@@ -162,7 +160,7 @@ Page({
     }
 
     const todayZero = new Date(new Date().setHours(0, 0, 0, 0));
-    const tomorrowZero = new Date(new Date(new Date().setDate(new Date().getDate() + 1)).setHours(0,0,0,0));
+    const tomorrowZero = new Date(new Date(new Date().setDate(new Date().getDate() + 1)).setHours(0, 0, 0, 0));
     const freeBadgeLoaded = todayZero > new Date(lastesBadges[0].acquireTime);
     let nextFreeBadgesMins = Math.ceil((tomorrowZero.getTime() - (new Date()).getTime()) / 60000);
     let nextFreeBadgesHours = parseInt(nextFreeBadgesMins / 60);
@@ -180,29 +178,34 @@ Page({
 
   async checkDailyLimit() {
     // 检查广告次数上限
-    const db = await cloud.databaseAsync();
-    const picAdBadges = (await db.collection("badge").where({
+    const { result: picAdBadges } = await app.mpServerless.db.collection("badge").find({
       _openid: this.data.user.openid,
-      reason: "watchPictureAD",
-    }).orderBy("acquireTime", "desc").limit(10).get()).data;
-    const videoAdBadges = (await db.collection("badge").where({
+      reason: "watchPictureAD"
+    }, {
+      sort: { acquireTime: -1 },
+      limit: 10
+    })
+    const { result: videoAdBadges } = await app.mpServerless.db.collection("badge").find({
       _openid: this.data.user.openid,
-      reason: "watchVideoAD",
-    }).orderBy("acquireTime", "desc").limit(10).get()).data;
+      reason: "watchVideoAD"
+    }, {
+      sort: { acquireTime: -1 },
+      limit: 10
+    })
     const todayZero = new Date(new Date().setHours(0, 0, 0, 0));
     let todayPicCount = 0, todayVideoCount = 0;
 
     for (const b of picAdBadges) {
       if (todayZero < new Date(b.acquireTime)) {
-        todayPicCount ++;
+        todayPicCount++;
       }
     }
     for (const b of videoAdBadges) {
       if (todayZero < new Date(b.acquireTime)) {
-        todayVideoCount ++;
+        todayVideoCount++;
       }
     }
-    this.setData({todayPicCount, todayVideoCount});
+    this.setData({ todayPicCount, todayVideoCount });
   },
 
   async tapForGetBadge(e) {
@@ -214,7 +217,7 @@ Page({
       reason
     } = e.currentTarget.dataset;
 
-    await this.getBadge({count: 1, reason});
+    await this.getBadge({ count: 1, reason });
   },
 
   // 处理获取徽章的请求与 UI
@@ -224,11 +227,11 @@ Page({
     }
     this.jsData.badgeGetting = true;
 
-    const res = (await api.getBadge({
+    const res = await api.getBadge({
       count: options.count,  // 如果有code，会按code的个数来抽取
       reason: options.reason,
       badgeCode: options.badgeCode
-    })).result;
+    });
 
     if (!res.ok) {
       wx.showModal({
@@ -302,10 +305,10 @@ Page({
       }
     }
   },
-  
+
   runAni: function () {
     // 旋转动画
-    this.jsData.rotateCounter ++;
+    this.jsData.rotateCounter++;
     this.jsData.rotateAnimationObj.rotate(360 * this.jsData.rotateCounter).step();
     // 震动动画
     for (let i = 0; i < 10; i++) {
@@ -330,12 +333,12 @@ Page({
       level: badge.level,
       tip: tip,
     };
-    this.setData({modal});
+    this.setData({ modal });
   },
 
   // 用户点击已有徽章
   tapUserModal(e) {
-    const {index} = e.currentTarget.dataset;
+    const { index } = e.currentTarget.dataset;
     const badge = this.data.userBadges[index];
     this.showBadgeModal("徽章详情", "获得的徽章请送给心动猫咪哦~", badge);
   },
@@ -351,9 +354,9 @@ Page({
     if (!waittingCount) {
       return;
     }
-    
+
     const badge = this.jsData.waitingBadge.shift();
-    waittingCount --;
+    waittingCount--;
 
     wx.vibrateLong();
     this.runAni();
@@ -377,7 +380,7 @@ Page({
     }
     this.jsData.usingCode = true;
     console.log("using code: ", inputBadgeCode);
-    const badges = await this.getBadge({badgeCode: inputBadgeCode});
+    const badges = await this.getBadge({ badgeCode: inputBadgeCode });
 
     // 抽到了再清空
     if (badges) {
@@ -393,11 +396,11 @@ Page({
       url: '/pages/packageA/pages/info/badge/badgeHistory/badgeHistory',
     })
   },
-  
+
   /**
    * 用户点击右上角分享
    */
-  onShareAppMessage: function () {},
+  onShareAppMessage: function () { },
 
-  onShareTimeline: function () {},
+  onShareTimeline: function () { },
 })

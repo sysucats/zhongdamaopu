@@ -1,25 +1,26 @@
-import { cloud } from "../../utils/cloudAccess";
 import { getAvatar } from "../../utils/cat";
-
+import { getUser } from "../../utils/user";
+import api from "../../utils/cloudApi";
+const app = getApp();
 // 日期格式化函数
 function formatDate(date) {
   if (!date) return '';
-  
+
   let dateObj;
   if (typeof date === 'string') {
     dateObj = new Date(date);
   } else {
     dateObj = date;
   }
-  
+
   if (isNaN(dateObj.getTime())) {
     return '';
   }
-  
+
   const year = dateObj.getFullYear();
   const month = String(dateObj.getMonth() + 1).padStart(2, '0');
   const day = String(dateObj.getDate()).padStart(2, '0');
-  
+
   return `${year}-${month}-${day}`;
 }
 
@@ -37,7 +38,7 @@ Component({
     selectedCat: {
       type: Object,
       value: null,
-      observer: function(newVal) {
+      observer: function (newVal) {
         if (newVal && newVal._id) {
           // 只在首次加载或猫咪ID变化时加载疫苗列表
           if (!this.data.vaccineLoaded || this.data.currentCatId !== newVal._id) {
@@ -101,7 +102,6 @@ Component({
       } else {
         this.setData({ vaccineTypes: globalVaccineTypes });
       }
-      
       // 如果有选中的猫咪，尝试使用缓存的数据
       if (this.properties.selectedCat && this.properties.selectedCat._id) {
         const cachedList = globalVaccineLists[this.properties.selectedCat._id];
@@ -146,25 +146,24 @@ Component({
         this.setData({ vaccineTypes: globalVaccineTypes });
         return;
       }
-      
+
       try {
-        const db = await cloud.databaseAsync();
-        const settingDoc = await db.collection('setting').doc('vaccine_types').get();
-        
-        if (settingDoc && settingDoc.data && settingDoc.data.types && settingDoc.data.types.length > 0) {
-          console.log("成功获取疫苗类型:", settingDoc.data.types);
-          globalVaccineTypes = settingDoc.data.types;
+        const { result: settingDoc } = await app.mpServerless.db.collection('setting').findOne({ _id: 'vaccine_types' })
+
+        if (settingDoc && settingDoc && settingDoc.types && settingDoc.types.length > 0) {
+          console.log("成功获取疫苗类型:", settingDoc.types);
+          globalVaccineTypes = settingDoc.types;
           this.setData({ vaccineTypes: globalVaccineTypes });
           return;
         }
-        
+
         console.log("未找到疫苗类型，初始化并使用默认值");
-        cloud.callFunction({ name: "initVaccineTypes", data: {} })
-          .catch(err => console.error("初始化疫苗类型失败:", err));
-        
+        const user = await getUser();
+        app.mpServerless.function.invoke('initVaccineTypes', { openid: user.openid }).catch(err => console.error("初始化疫苗类型失败:", err));
+        console.log("使用默认值");
         globalVaccineTypes = DEFAULT_VACCINE_TYPES;
         this.setData({ vaccineTypes: globalVaccineTypes });
-        
+
       } catch (error) {
         console.error("加载疫苗类型失败:", error);
         globalVaccineTypes = DEFAULT_VACCINE_TYPES;
@@ -179,20 +178,17 @@ Component({
     // 加载疫苗列表
     async loadVaccineList() {
       if (!this.properties.selectedCat?._id) return;
-      
+
       try {
         this.setData({ isLoading: true });
-        
-        const { result } = await cloud.callFunction({
-          name: 'vaccineOp',
-          data: {
-            operation: 'list',
-            cat_id: this.properties.selectedCat._id
-          }
+
+        const result = await api.vaccineOp({
+          operation: 'list',
+          cat_id: this.properties.selectedCat._id
         });
-        
+
         let vaccineList = [];
-        
+
         if (result?.result === true && Array.isArray(result.data)) {
           vaccineList = result.data.map(item => ({
             ...item,
@@ -208,11 +204,11 @@ Component({
             icon: 'none'
           });
         }
-        
+
         // 更新全局缓存
         globalVaccineLists[this.properties.selectedCat._id] = vaccineList;
-        
-        this.setData({ 
+
+        this.setData({
           vaccineList,
           vaccineLoaded: true,
           currentCatId: this.properties.selectedCat._id
@@ -223,7 +219,7 @@ Component({
           title: '获取疫苗记录失败',
           icon: 'none'
         });
-        this.setData({ 
+        this.setData({
           vaccineList: [],
           vaccineLoaded: true,
           currentCatId: this.properties.selectedCat._id
@@ -252,9 +248,9 @@ Component({
     // 疫苗表单
     async showVaccineForm(isEditing = false, vaccineId = null) {
       this.ensureVaccineTypes();
-      
+
       const emptyForm = this.getEmptyVaccineForm();
-      
+
       if (!isEditing) {
         this.setData({
           isEditingVaccine: false,
@@ -265,30 +261,26 @@ Component({
         });
         return;
       }
-      
       if (!vaccineId) {
         console.error("编辑模式下需要提供疫苗ID");
         return;
       }
-      
+
       try {
-        const result = await cloud.callFunction({
-          name: "vaccineOp",
-          data: {
-            operation: "get",
-            vaccine_id: vaccineId
-          }
+        const result = await api.vaccineOp({
+          operation: "get",
+          vaccine_id: vaccineId
         });
-        
+
         let vaccine = null;
-        if (result && result.result && result.result.data) {
-          vaccine = result.result.data;
+        if (result && result.result && result.data) {
+          vaccine = result.data;
         } else {
           throw new Error("获取疫苗详情失败");
         }
-        
+
         const typeIndex = this.data.vaccineTypes.findIndex(type => type === vaccine.vaccine_type);
-        
+
         this.setData({
           isEditingVaccine: true,
           showVaccineModal: true,
@@ -326,7 +318,6 @@ Component({
       if (this.touchEndTime && Date.now() - this.touchEndTime < 300) {
         return;
       }
-      
       const vaccineId = e.currentTarget.dataset.id;
       if (!vaccineId) {
         console.error("未找到疫苗ID");
@@ -349,7 +340,6 @@ Component({
       const index = e.detail.value;
       const types = this.ensureVaccineTypes();
       const type = types[index];
-      
       this.setData({
         selectedTypeIndex: index,
         'vaccineForm.vaccine_type': type
@@ -375,7 +365,6 @@ Component({
     toggleCustomType() {
       const useCustomType = !this.data.useCustomType;
       this.setData({ useCustomType });
-      
       if (!useCustomType && this.data.vaccineTypes.length > 0) {
         const index = this.data.selectedTypeIndex;
         const type = this.data.vaccineTypes[index] || this.data.vaccineTypes[0];
@@ -402,7 +391,6 @@ Component({
     async saveVaccine(e) {
       const formValues = e.detail.value;
       const vaccineForm = this.data.vaccineForm;
-      
       const vaccineData = {
         vaccine_type: vaccineForm.vaccine_type,
         vaccine_date: vaccineForm.vaccine_date,
@@ -419,29 +407,25 @@ Component({
         });
         return;
       }
-      
       try {
         wx.showLoading({
           title: '保存中...',
         });
 
-        if (this.data.useCustomType && 
-            vaccineData.vaccine_type && 
-            !this.data.vaccineTypes.includes(vaccineData.vaccine_type)) {
-          
+        if (this.data.useCustomType &&
+          vaccineData.vaccine_type &&
+          !this.data.vaccineTypes.includes(vaccineData.vaccine_type)) {
+
           try {
-            const addTypeResult = await cloud.callFunction({
-              name: "vaccineOp",
-              data: {
-                operation: "addType",
-                type: vaccineData.vaccine_type
-              }
+            const addTypeResult = await api.vaccineOp({
+              operation: "addType",
+              type: vaccineData.vaccine_type
             });
-            
-            if (addTypeResult?.result?.result === true) {
-              if (addTypeResult.result.data) {
+
+            if (addTypeResult?.result === true) {
+              if (addTypeResult.data) {
                 this.setData({
-                  vaccineTypes: addTypeResult.result.data
+                  vaccineTypes: addTypeResult.data
                 });
               }
             }
@@ -452,33 +436,26 @@ Component({
 
         let result;
         if (this.data.isEditingVaccine) {
-          result = await cloud.callFunction({
-            name: "vaccineOp",
-            data: {
-              operation: "update",
-              vaccine_id: vaccineForm._id,
-              data: vaccineData
-            }
+          result = await api.vaccineOp({
+            operation: "update",
+            vaccine_id: vaccineForm._id,
+            data: vaccineData
           });
         } else {
           vaccineData.cat_id = this.properties.selectedCat._id;
-          result = await cloud.callFunction({
-            name: "vaccineOp",
-            data: {
-              operation: "add",
-              data: vaccineData
-            }
+          result = await api.vaccineOp({
+            operation: "add",
+            data: vaccineData
           });
         }
 
-        if (result?.result?.result === true) {
+        if (result?.result === true) {
           wx.hideLoading();
-          
+
           wx.showToast({
             title: this.data.isEditingVaccine ? '编辑成功' : '添加成功',
             icon: 'success'
           });
-          
           this.setData({
             showVaccineModal: false,
             vaccineForm: this.getEmptyVaccineForm(),
@@ -486,17 +463,15 @@ Component({
             currentVaccineId: '',
             vaccineLoaded: false
           });
-          
           // 清除缓存
           if (this.properties.selectedCat?._id) {
             delete globalVaccineLists[this.properties.selectedCat._id];
           }
-          
           setTimeout(() => {
             this.loadVaccineList();
           }, 1500);
         } else {
-          throw new Error(result?.result?.msg || '操作失败');
+          throw new Error(result?.msg || '操作失败');
         }
       } catch (error) {
         console.error("保存疫苗记录失败:", error);
@@ -513,13 +488,11 @@ Component({
       if (this.touchEndTime && Date.now() - this.touchEndTime < 300) {
         return;
       }
-      
       const vaccineId = e.currentTarget.dataset.id;
       if (!vaccineId) {
         console.error("未找到疫苗ID");
         return;
       }
-      
       wx.showModal({
         title: '确认删除',
         content: '确定要删除这条疫苗记录吗？此操作不可撤销。',
@@ -528,36 +501,30 @@ Component({
         success: async (res) => {
           if (res.confirm) {
             try {
-              
-              
-              const result = await cloud.callFunction({
-                name: "vaccineOp",
-                data: {
-                  operation: "remove",
-                  vaccine_id: vaccineId
-                }
+              const result = await api.vaccineOp({
+                operation: "remove",
+                vaccine_id: vaccineId
               });
-              
-              if (result?.result?.result === true) {
+
+              if (result?.result === true) {
                 wx.showToast({
                   title: '删除成功',
                   icon: 'success'
                 });
-                
                 // 清除缓存
                 if (this.properties.selectedCat?._id) {
                   delete globalVaccineLists[this.properties.selectedCat._id];
                 }
-                
+
                 this.setData({
                   vaccineLoaded: false
                 });
-                
+
                 this.loadVaccineList();
               } else {
-                throw new Error(result?.result?.msg || '删除失败');
+                throw new Error(result?.msg || '删除失败');
               }
-              
+
             } catch (error) {
               console.error("删除疫苗记录失败:", error);
               wx.hideLoading();
@@ -573,7 +540,7 @@ Component({
 
     // 显示疫苗类型管理
     showVaccineTypeManager() {
-      this.setData({ 
+      this.setData({
         showTypeManageModal: true,
         newVaccineType: ''
       });
@@ -596,7 +563,6 @@ Component({
     // 添加新的疫苗类型
     async addVaccineType() {
       const { newVaccineType } = this.data;
-      
       if (!newVaccineType) {
         wx.showToast({
           title: '请输入疫苗类型名称',
@@ -604,24 +570,21 @@ Component({
         });
         return;
       }
-      
+
       try {
-        const result = await cloud.callFunction({
-          name: "vaccineOp",
-          data: {
-            operation: "addType",
-            type: newVaccineType
-          }
+        const result = await api.vaccineOp({
+          operation: "addType",
+          type: newVaccineType
         });
-        
-        if (result?.result?.result === true) {
+
+        if (result?.result === true) {
           wx.showToast({
             title: '添加成功',
             icon: 'success'
           });
-          
-          if (result.result.data) {
-            globalVaccineTypes = result.result.data;
+
+          if (result.data) {
+            globalVaccineTypes = result.data;
             this.setData({
               vaccineTypes: globalVaccineTypes,
               newVaccineType: ''
@@ -630,9 +593,9 @@ Component({
             this.loadVaccineTypes();
           }
         } else {
-          throw new Error(result?.result?.msg || '添加失败');
+          throw new Error(result?.msg || '添加失败');
         }
-        
+
       } catch (error) {
         console.error("添加疫苗类型失败:", error);
         wx.showToast({
@@ -652,7 +615,6 @@ Component({
         });
         return;
       }
-      
       wx.showModal({
         title: '确认删除',
         content: `确定要删除"${typeToDelete}"疫苗类型吗？如果该类型已被使用，将无法删除。`,
@@ -660,23 +622,20 @@ Component({
         confirmColor: '#e64340',
         success: async (res) => {
           if (res.confirm) {
-            try {              
-              const result = await cloud.callFunction({
-                name: "vaccineOp",
-                data: {
-                  operation: "removeType",
-                  type: typeToDelete
-                }
+            try {
+              const result = await api.vaccineOp({
+                operation: "removeType",
+                type: typeToDelete
               });
-              
-              if (result?.result?.result === true) {
+
+              if (result?.result === true) {
                 wx.showToast({
                   title: '删除成功',
                   icon: 'success'
                 });
-                
-                if (result.result.data) {
-                  globalVaccineTypes = result.result.data;
+
+                if (result.data) {
+                  globalVaccineTypes = result.data;
                   this.setData({
                     vaccineTypes: globalVaccineTypes
                   });
@@ -684,12 +643,12 @@ Component({
                   this.loadVaccineTypes();
                 }
               } else {
-                let errorMsg = result?.result?.msg || '删除失败';
-                
-                if (result?.result?.inUseCount > 0) {
-                  errorMsg = `该疫苗类型已被使用 ${result.result.inUseCount} 次，无法删除`;
+                let errorMsg = result?.msg || '删除失败';
+
+                if (result?.inUseCount > 0) {
+                  errorMsg = `该疫苗类型已被使用 ${result.inUseCount} 次，无法删除`;
                 }
-                
+
                 throw new Error(errorMsg);
               }
             } catch (error) {
@@ -711,7 +670,6 @@ Component({
       this.startX = touch.clientX;
       this.startY = touch.clientY;
       this.itemIndex = e.currentTarget.dataset.index;
-      
       const vaccineList = this.data.vaccineList.map((item, index) => {
         if (index !== this.itemIndex && item.offsetX !== 0) {
           return { ...item, offsetX: 0 };
@@ -725,7 +683,6 @@ Component({
     touchMove(e) {
       if (this.data.isLoading) return;
       if (!this.startX || !this.startY) return;
-      
       const touch = e.touches[0];
       const moveX = touch.clientX - this.startX;
       const moveY = touch.clientY - this.startY;
@@ -746,7 +703,6 @@ Component({
     touchEnd(e) {
       if (this.data.isLoading) return;
       if (!this.startX || !this.startY) return;
-      
       const vaccineList = [...this.data.vaccineList];
       const offsetX = vaccineList[this.itemIndex].offsetX || 0;
 
@@ -757,7 +713,6 @@ Component({
       }
 
       this.setData({ vaccineList });
-      
       this.startX = 0;
       this.startY = 0;
       this.touchEndTime = Date.now();
@@ -767,19 +722,16 @@ Component({
     async showVaccinatedCats() {
       try {
         this.setData({ isLoading: true });
-        
+
         // 确保已加载疫苗类型
         await this.ensureVaccineTypes();
-        
+
         // 调用云函数获取已接种疫苗的猫咪列表
-        const { result } = await cloud.callFunction({
-          name: 'vaccineOp',
-          data: {
-            operation: 'listVaccinatedCats',
-            vaccine_type: this.data.selectedVaccineType // 可以为空，表示获取所有类型
-          }
+        const result = await api.vaccineOp({
+          operation: 'listVaccinatedCats',
+          vaccine_type: this.data.selectedVaccineType // 可以为空，表示获取所有类型
         });
-        
+
         if (result?.result === true && Array.isArray(result.data)) {
           // 处理猫咪头像
           const catsWithAvatars = await Promise.all(result.data.map(async (cat) => {
@@ -787,7 +739,6 @@ Component({
             cat.avatar = await getAvatar(cat._id, cat.photo_count_best);
             return cat;
           }));
-          
           this.setData({
             vaccinatedCats: catsWithAvatars,
             showVaccinatedCatsModal: true
@@ -809,41 +760,38 @@ Component({
         this.setData({ isLoading: false });
       }
     },
-    
     // 关闭已接种猫咪列表弹窗
     closeVaccinatedCatsModal() {
       this.setData({
         showVaccinatedCatsModal: false
       });
     },
-    
+
     // 选择疫苗类型筛选已接种猫咪
     selectVaccineTypeFilter(e) {
       const { type } = e.currentTarget.dataset;
-      
+
       // 设置加载状态
       this.setData({
         isLoading: true
       });
-      
       // 先设置类型，但不立即重新加载，给动画留出时间
       this.setData({
         selectedVaccineType: type
       });
-      
       // 延迟一点时间再重新加载，让动画有时间展示
       setTimeout(() => {
         this.showVaccinatedCats();
       }, 100);
     },
-    
+
     // 查看猫咪详情
     viewCatDetail(e) {
       const { catId } = e.currentTarget.dataset;
-      
+
       // 通知父页面切换到选中的猫咪
       this.triggerEvent('selectCat', { catId });
-      
+
       // 关闭弹窗
       this.closeVaccinatedCatsModal();
     },

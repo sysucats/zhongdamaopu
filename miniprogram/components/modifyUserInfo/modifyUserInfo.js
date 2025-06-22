@@ -1,7 +1,8 @@
 import { getUser } from "../../utils/user";
 import { deepcopy } from "../../utils/utils";
-import { cloud } from "../../utils/cloudAccess";
 import api from "../../utils/cloudApi";
+import { uploadFile } from "../../utils/common"
+const app = getApp();
 
 Component({
   data: {
@@ -13,7 +14,7 @@ Component({
     show: {
       type: Boolean,
       value: false,
-      observer: function(newVal, oldVal) {
+      observer: function (newVal, oldVal) {
         if (newVal && !oldVal) {
           this.loadUser();
         }
@@ -26,7 +27,7 @@ Component({
 
   methods: {
     onChooseAvatar(e) {
-      const { avatarUrl } = e.detail 
+      const { avatarUrl } = e.detail
       this.setData({
         "user.userInfo.avatarUrl": avatarUrl,
       });
@@ -72,7 +73,6 @@ Component({
         wx.hideLoading();
         return false;
       }
-    
       if (!user.userInfo.avatarUrl) {
         wx.showToast({
           title: '请选择头像',
@@ -82,10 +82,12 @@ Component({
         return false;
       }
 
-      user.userInfo.avatarUrl = await this.uploadAvatar(user.userInfo.avatarUrl);
+      var fileInfo = await this.uploadAvatar(user.userInfo.avatarUrl);
+      user.userInfo.avatarUrl = fileInfo.fileUrl;
+      user.userInfo.avatarUrlId = fileInfo.fileId;
 
       console.log(user);
-      
+
       // 更新数据库的userInfo
       await api.userOp({
         op: 'update',
@@ -108,20 +110,22 @@ Component({
 
     async uploadAvatar(tempFilePath) {
       const openid = this.data.user.openid;
-      if (! tempFilePath.includes("://tmp")) {
+      if (!tempFilePath.includes("://tmp")) {
         return tempFilePath;
       }
-      
+
       //获取后缀
       const index = tempFilePath.lastIndexOf(".");
       const ext = tempFilePath.substr(index + 1);
       // 上传图片
-      let upRes = await cloud.uploadFile({
-        cloudPath: `user/avatar/${openid}.${ext}`, // 上传至云端的路径
+      let upRes = await uploadFile({
         filePath: tempFilePath, // 小程序临时文件路径
-      });
+        cloudPath: `/user/avatar/${openid}.${ext}`, // 上传至云端的路径
+      })
 
-      return upRes.fileID;
+      console.log('upRes', upRes);
+
+      return { fileId: upRes.fileId, fileUrl: upRes.fileUrl };
     },
 
     async checkNickName(name) {

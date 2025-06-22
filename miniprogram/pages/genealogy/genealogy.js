@@ -17,7 +17,7 @@ import cache from "../../utils/cache";
 import config from "../../config";
 import { loadFilter, getGlobalSettings, showTab } from "../../utils/page";
 import { isManagerAsync, checkCanShowNews } from "../../utils/user";
-import { cloud } from "../../utils/cloudAccess";
+import { signCosUrl } from "../../utils/common";
 
 const default_png = undefined;
 
@@ -25,6 +25,8 @@ const tipInterval = 24; // 提示间隔时间 hours
 
 // 分享的标语
 const share_text = config.text.app_name + ' - ' + config.text.genealogy.share_tip;
+
+const app = getApp();
 
 Page({
 
@@ -80,6 +82,13 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: async function (options) {
+    if (!this.jsData) {
+      this.jsData = {
+        catsStep: 1,
+        loadingLock: 0,
+        pageLoadingLock: false,
+      };
+    }
     // 从缓存里读取options
     var fcampus = options.fcampus;
     if (!fcampus) {
@@ -97,40 +106,41 @@ Page({
       console.log("scene:", scene);
       if (scene.startsWith('toC=')) {
         const cat_No = scene.substr(4);
-        const db = await cloud.databaseAsync();
-        var cat_res = await db.collection('cat').where({
-          _no: cat_No
-        }).field({
-          _no: true
-        }).get()
+        const { result: cat_res } = await app.mpServerless.db.collection('cat').find({ _no: cat_No }, { projection: { _no: 1 } });
 
-        if (!cat_res.data.length) {
+        if (!cat_res.length) {
           return;
         }
-        const _id = cat_res.data[0]._id;
+        const _id = cat_res[0]._id;
         this.clickCatCard(_id, true);
       }
+
+
     }
 
     // 开始加载页面，获取设置
     var settings = null, retrySettings = 3;
     while (retrySettings > 0) {
       try {
-        settings = await getGlobalSettings('genealogy', {nocache: true});
+        settings = await getGlobalSettings('genealogy', { nocache: true });
         break;
       } catch {
         console.error("get settings error 'genealogy'");
+        retrySettings--;
+        if (retrySettings <= 0) {
+          break;
+        }
         await sleep(1000);
       }
     }
-    
+
     if (!settings) {
       console.log("no setting");
       wx.showModal({
         title: '网络小故障',
         content: '请重新进入小程序',
         showCancel: false,
-        success () {
+        success() {
           const pagesStack = getCurrentPages();
           const path = getCurrentPath(pagesStack);
           wx.restartMiniProgram({
@@ -334,10 +344,8 @@ Page({
     // 增加lock
     this.jsData.loadingLock++;
     const nowLoadingLock = this.jsData.loadingLock;
-    const db = await cloud.databaseAsync();
-    const cat = db.collection('cat');
     const query = await this.fGet();
-    const cat_count = (await cat.where(query).count()).total;
+    const { result: cat_count } = await app.mpServerless.db.collection('cat').count(query);
 
     if (this.jsData.loadingLock != nowLoadingLock) {
       // 说明过期了
@@ -374,11 +382,8 @@ Page({
 
     var cats = this.data.cats;
     var step = this.jsData.catsStep;
-    const db = await cloud.databaseAsync();
-    const cat = db.collection('cat');
-    const _ = db.command;
     const query = await this.fGet();
-    var new_cats = (await cat.where(query).orderBy('mphoto', 'desc').orderBy('popularity', 'desc').skip(cats.length).limit(step).get()).data
+    var { result: new_cats } = await app.mpServerless.db.collection('cat').find(query, { sort: { mphoto: -1, popularity: -1 }, skip: cats.length, limit: step });
     new_cats = shuffle(new_cats);
 
     if (this.jsData.loadingLock != nowLoadingLock) {
@@ -432,6 +437,7 @@ Page({
           continue;
         }
         if (!cat2photos[cat._id].userInfo) {
+          console.log("userinfo", (await getUserInfo(cat2photos[cat._id]._openid)));
           cat2photos[cat._id].userInfo = (await getUserInfo(cat2photos[cat._id]._openid)).userInfo;
         }
         cat2commentCount[cat._id] = await getCatCommentCount(cat._id);
@@ -452,7 +458,7 @@ Page({
         c.comment_count = cat2commentCount[c._id];
       }
     }
-
+    console.log("new_catsnew_cats",new_cats);
     await this.setData({
       cats: new_cats
     });
@@ -558,7 +564,7 @@ Page({
   fClickCategory: async function (e, singleChoose) {
     console.log(e);
     var filters = this.data.filters;
-    var {index, filters_sub} = e.target.dataset;
+    var { index, filters_sub } = e.target.dataset;
     if (filters_sub == undefined) {
       filters_sub = this.data.filters_sub;
     }
@@ -632,18 +638,17 @@ Page({
     }
     return true;
   },
-  fGet: async function () {
-    const db = await cloud.databaseAsync();
-    const _ = db.command;
+  fGet: async function fGet() {
     const filters = this.data.filters;
-    var res = []; // 先把查询条件全部放进数组，最后用_.and包装，这样方便跨字段使用or逻辑
-    // 这些是点击选择的filters
+    var res = []; // 先把查询条件全部放进数组，最后用 $and 包装，这样方便跨字段使用 or 逻辑
+
+    // 这些是点击选择的 filters
     for (const mainF of filters) {
-      // 把数据库要用的key拿出来
+      // 把数据库要用的 key 拿出来
       const key = mainF.key;
       var selected = []; // 储存已经选中的项
       const cateFilter = Boolean(mainF.cateKey);
-      if (cateFilter) { // 如果分类的名字也会作为筛选内容，这种筛选可能是因为不同类间key字段可能重名
+      if (cateFilter) {
         var cateKey = mainF.cateKey;
         var cateSelected = [];
       }
@@ -652,12 +657,12 @@ Page({
       if (mainF.category[0].all_active) continue; // 选择了'全部', 不用管这个类
 
       for (const category of mainF.category) {
-        let cateKeyPushed = false; // 一个category只用push一次，记一下
+        let cateKeyPushed = false; // 一个 category 只用 push 一次，记一下
         for (const item of category.items) {
           if (category.all_active || item.active) {
             var choice = item.name;
             if (item.value === null) {
-              choice = _.exists(false); // 判断字段不存在
+              choice = { $type: "missing" }; // 替换 _.exists(false)，判断字段不存在
             } else if (item.value != undefined) {
               choice = item.value;
             }
@@ -672,14 +677,16 @@ Page({
 
       // console.log(key, selected);
       res.push({
-        [key]: _.in(selected)
+        [key]: { $in: selected } // 使用 $in
       });
-      if (cateFilter) res.push({
-        [cateKey]: _.in(cateSelected)
-      });
+      if (cateFilter) {
+        res.push({
+          [cateKey]: { $in: cateSelected } // 使用 $in
+        });
+      }
     }
-    // 判断一下filters生效没有
 
+    // 判断一下 filters 生效没有
     this.setData({
       filters_active: res.length > 0
     });
@@ -687,7 +694,6 @@ Page({
     // 如果用户还输入了东西，也要一起搜索
     const filters_input = regReplace(this.data.filters_input);
     if (filters_input.length) {
-
       var search_str = '';
       for (const n of filters_input.trim().split(' ')) {
         if (search_str === '') {
@@ -696,18 +702,18 @@ Page({
           search_str += '|(.*' + n + '.*)';
         }
       }
-      // res['name'] = _.in(filters_input.trim().split(' '));
-      let regexp = db.RegExp({
-        regexp: search_str,
-        options: 'is',  // 'g' 在 laf 这边会报错
+
+      // 使用 MongoDB 的正则表达式语法
+      res.push({
+        $or: [ // 使用 $or
+          { name: { $regex: search_str } },
+          { nickname: { $regex: search_str } }
+        ]
       });
-      res.push(_.or([{
-        name: regexp
-      }, {
-        nickname: regexp
-      }]));
     }
-    return res.length ? _.and(res) : {};
+
+    // 使用 $and，如果 res 为空则返回 {}
+    return res.length ? { $and: res } : {};
   },
   fComfirm: function (e) {
     if (!this.data.filters_legal) {
@@ -817,14 +823,9 @@ Page({
       return x === target
     });
 
-    const db = await cloud.databaseAsync();
-    const cat = db.collection('cat');
-    const query = {
-      adopt: value
-    };
-
+    const { result: adopt_count } = await app.mpServerless.db.collection('cat').count({ adopt: value });
     this.setData({
-      adopt_count: (await cat.where(query).count()).total
+      adopt_count: adopt_count
     });
   },
 
@@ -918,10 +919,7 @@ Page({
       return;
     }
     // 载入需要弹窗的公告
-    const db = await cloud.databaseAsync();
-    var newsList = (await db.collection('news').orderBy('date', 'desc').where({
-      setNewsModal: true
-    }).get()).data
+    const { result: newsList } = await app.mpServerless.db.collection('news').find({ setNewsModal: true }, { sort: { date: -1 } });
 
     this.setData({
       newsList: newsList,
@@ -933,11 +931,11 @@ Page({
 
     if (newsList[0].coverPath) {
       this.setData({
-        newsImage: newsList[0].coverPath
+        newsImage: await signCosUrl(newsList[0].coverPath)
       })
     } else if (newsList[0].photosPath.length != 0) {
       this.setData({
-        newsImage: newsList[0].photosPath[0]
+        newsImage: await signCosUrl(newsList[0].photosPath[0])
       })
     }
     if (!this.checkNewsVisited()) {

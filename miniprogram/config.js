@@ -3,38 +3,45 @@
 // 不要删除设置项，例如识猫页，删除会导致编译出错！
 // 修改时频繁保存、频繁编译，发现改错了立马撤销
 
+
+// EMAS空间ID
+const space_id = 'mp-f298e784-56e1-44b1-b410-b971539e1746';
+
 module.exports = {
   // 版本号
   app_version: "v1.15.1",
-  // laf后台服务地址
-  laf_url: 'https://fxkv6h.laf.run',
-  // laf后台服务地址（微信开发工具中），一般和上面laf_url一致就好
-  laf_dev_url: 'https://fxkv6h.laf.run',
-  // 使用私有的腾讯云cos存储，需要url签名
-  use_private_tencent_cos: true,
+  // 小程序appid
+  app_id: 'wx5bd705b2bc91c73b',
+  // EMAS空间ID
+  space_id,
+  // 服务空间 secret key
+  space_secret: require('./appSecret').space_secret,
+  // 服务空间地址Api Endpoint
+  space_endpoint: 'https://api.next.bspapp.com',
+  use_private_tencent_cos: false,
   // 私有的腾讯云cos签名过期时间（秒）
   sign_expires_tencent_cos: 3600 * 2,
 
   // 科普页图片
   science_imgs: [
-    "https://cos.ap-guangzhou.myqcloud.com/maopu-1251740905/系统/科普1.png",
-    "https://cos.ap-guangzhou.myqcloud.com/maopu-1251740905/系统/科普2.png",
-    "https://cos.ap-guangzhou.myqcloud.com/maopu-1251740905/系统/科普3.png",
-    "https://cos.ap-guangzhou.myqcloud.com/maopu-1251740905/系统/科普4.png",
-    "https://cos.ap-guangzhou.myqcloud.com/maopu-1251740905/系统/科普5.png"
+    `https://${space_id}.cdn.bspapp.com/系统/科普1.png`,
+    `https://${space_id}.cdn.bspapp.com/系统/科普2.png`,
+    `https://${space_id}.cdn.bspapp.com/系统/科普3.png`,
+    `https://${space_id}.cdn.bspapp.com/系统/科普4.png`,
+    `https://${space_id}.cdn.bspapp.com/系统/科普5.png`
   ],
 
   // 赞赏码图片
-  reward_img: "https://cos.ap-guangzhou.myqcloud.com/maopu-1251740905/系统/赞赏码.jpg",
+  reward_img: `https://${space_id}.cdn.bspapp.com/系统/赞赏码.jpg`,
   // 新猫问卷图片
-  feedback_wj_img: "https://cos.ap-guangzhou.myqcloud.com/maopu-1251740905/系统/新猫问卷.png",
+  feedback_wj_img: `https://${space_id}.cdn.bspapp.com/系统/新猫问卷.png`,
   // 小程序菊花码图片
-  mpcode_img: "https://cos.ap-guangzhou.myqcloud.com/maopu-1251740905/系统/菊花码.jpg",
+  mpcode_img: `https://${space_id}.cdn.bspapp.com/系统/菊花码.jpg`,
 
   // 徽章排行榜的数量榜logo
-  badge_rank_count_img: "https://cos.ap-guangzhou.myqcloud.com/maopu-1251740905/系统/badge_rank_count.png",
+  badge_rank_count_img: `https://${space_id}.cdn.bspapp.com/系统/badge_rank_count.png`,
   // 徽章排行榜的价值榜logo
-  badge_rank_score_img: "https://cos.ap-guangzhou.myqcloud.com/maopu-1251740905/系统/badge_rank_score.png",
+  badge_rank_score_img: `https://${space_id}.cdn.bspapp.com/系统/badge_rank_score.png`,
 
   // 猫猫领养状态字符串，对应数据库cat.adopt中的数字下标
   cat_status_adopt: ["未领养", "已领养", "寻找领养中"],

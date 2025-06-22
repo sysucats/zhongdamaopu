@@ -56,7 +56,7 @@ const cacheTime = {
   catItem: 0.1,  // 猫猫信息
   commentCount: 0,  // 便利贴数量
   likeItem: 72,  // 点赞行为
-  pageSetting: 0,  // 页面设置
+  pageSetting: 24*7,  // 页面设置
   genealogyFCampus: 24*7*31,  // 首页校区过滤选项
   checkPhotoCampus: 24*7*31,  // 最后一次审核照片的校区
   genealogyNews: 0, // 首页的news弹窗

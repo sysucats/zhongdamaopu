@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "tencentcloud-sdk-nodejs": "^4.1.48"
+  }
+}

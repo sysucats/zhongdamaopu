@@ -1,11 +1,10 @@
 // miniprogram/pages/info/reward/reward.js
 import { text as text_cfg, reward_img } from "../../../config";
 import { checkCanReward } from "../../../utils/user";
-import { cloud } from "../../../utils/cloudAccess";
 import { getGlobalSettings } from "../../../utils/page";
-
+import { signCosUrl } from "../../../utils/common";
 const share_text = text_cfg.app_name + ' - ' + text_cfg.reward.share_tip;
-
+const app = getApp();
 Page({
 
   /**
@@ -23,7 +22,6 @@ Page({
 
   onLoad: async function (option) {
     this.loadReward();
-    
     // 是否开启
     this.setData({
       canReward: await checkCanReward()
@@ -31,7 +29,6 @@ Page({
 
     // 设置广告ID
     const ads = await getGlobalSettings('ads') || {};
-    
     // 在页面onLoad回调事件中创建激励视频广告实例
     var that = this;
     if (wx.createRewardedVideoAd) {
@@ -77,23 +74,22 @@ Page({
   },
 
   async loadReward() {
-    const db = await cloud.databaseAsync();
-    var rewardRes = await db.collection('reward').orderBy('mdate', 'desc').get();
-    
-    console.log(rewardRes.data);
-    for (var r of rewardRes.data) {
+    var { result: rewardRes } = await app.mpServerless.db.collection('reward').find({}, { sort: { mdate: -1 } })
+
+    console.log(rewardRes);
+    for (var r of rewardRes) {
       const tmp = r.recordDate ? new Date(r.recordDate) : new Date(r.mdate);
-      r.mdate = tmp.getFullYear() + '年' + (tmp.getMonth()+1) + '月';
+      r.mdate = tmp.getFullYear() + '年' + (tmp.getMonth() + 1) + '月';
       r.records = r.records.replace(/^\#+|\#+$/g, '').split('#');
     }
     this.setData({
-      reward: rewardRes.data
+      reward: rewardRes
     });
   },
 
   // 打开大图
   async openImg(e) {
-    const src = await cloud.signCosUrl(reward_img);
+    const src = await signCosUrl(reward_img);
     wx.previewImage({
       urls: [src],
       success: (res) => {

@@ -2,10 +2,10 @@
 import { randomInt } from './utils';
 import { getGlobalSettings } from "./page";
 import { getCacheItem, setCacheItem } from "./cache";
-import { cloud } from "./cloudAccess";
-import api from "./cloudApi";
+import { getCurrentUserOpenid, signCosUrl } from "./common";
 import config from "../config";
 
+const app = getApp();
 
 const UserTypes = {
   manager: "manager",
@@ -32,16 +32,14 @@ async function getUser(options) {
     return userRes;
   }
 
-  const wx_code = (await wx.login()).code;
-  console.log("wx_code", wx_code);
-  userRes = (await api.userOp({
+  // 直接调用云函数，不再通过 api 对象
+  const openid = await getCurrentUserOpenid();
+  userRes = (await app.mpServerless.function.invoke('userOp', {
     op: 'get',
-    wx_code: wx_code
+    openid: openid
   })).result;
-
-  console.log(userRes);
   if (userRes && userRes.userInfo) {
-    userRes.userInfo.avatarUrl = await cloud.signCosUrl(userRes.userInfo.avatarUrl);
+    userRes.userInfo.avatarUrl = await signCosUrl(userRes.userInfo.avatarUrl);
   }
 
   setCacheItem(key, userRes, 0, randomInt(25, 35))
@@ -57,18 +55,14 @@ async function getUserInfo(openid, options) {
   }
 
   // 重新获取
-  const db = await cloud.databaseAsync();
-  const _ = db.command;
-  const coll_user = db.collection('user');
-  value = (await coll_user.where({openid: openid}).get()).data[0];
-
-  if (value.length === 0) {
+  const { result } = await app.mpServerless.db.collection('user').findOne({ openid: openid });
+  if (!result) {
     console.log("user " + openid + " not existed.");
     return null;
   }
 
   // 写入缓存（25-35min过期）
-  setCacheItem(key, value, 0, randomInt(25, 35));
+  setCacheItem(key, result, 0, randomInt(25, 35));
 
   return value;
 }
@@ -95,11 +89,8 @@ async function getUserInfoMulti(openids, cacheOptions, retMap) {
   }
 
   // 请求没有的
-  const db = await cloud.databaseAsync();
-  const _ = db.command;
-  const coll_user = db.collection('user');
   if (not_found.length) {
-    var db_res = (await coll_user.where({openid: _.in(not_found)}).get()).data;
+    var { result: db_res } = await app.mpServerless.db.collection('user').find({ openid: { $in: not_found } });
     for (var user of db_res) {
       const cacheKey = `uinfo-${user.openid}`;
       setCacheItem(cacheKey, user, 0, randomInt(25, 35));
@@ -110,7 +101,6 @@ async function getUserInfoMulti(openids, cacheOptions, retMap) {
   if (retMap) {
     return res;
   }
-  
   return openids.map(x => res[x]);
 }
 
@@ -129,14 +119,13 @@ async function _checkFuncEnable(funcName) {
     // 版本不匹配，限制不生效
     return true;
   }
-  
   const user = await getUser();
   const isManager = await isManagerAsync();
   const isInvited = user.role == 1;
   ctrlUser = ctrlUser.split(",");
   if ((isManager && ctrlUser.includes(UserTypes.manager))      // 管理员
     || (isInvited && ctrlUser.includes(UserTypes.invited))     // 特邀用户
-    || (!isInvited && ctrlUser.includes(UserTypes.guest))) {   // 游客
+    || (!isManager && !isInvited && ctrlUser.includes(UserTypes.guest))) {   // 游客
     // 满足人群限制，返回功能是否受限
     return !limitedFunc.split(',').includes(funcName);
   }
@@ -181,8 +170,6 @@ async function checkCanShowNews() {
 async function getPageUserInfo(page) {
   // 检查用户信息有没有拿到，如果有就更新this.data
   const userRes = await getUser();
-  
-  console.log(userRes);
   if (!userRes.userInfo || !userRes.userInfo == {}) {
     console.log('无用户信息');
     return false;
@@ -210,7 +197,6 @@ async function checkAuth(page, level) {
     });
     return true;
   }
-  
   page.setData({
     tipText: `只有管理员Level-${level}能进入嗷`,
     tipBtn: true,
@@ -221,8 +207,7 @@ async function checkAuth(page, level) {
 // 去设置用户信息页，上传照片时点更新个人信息改为了跳出组件
 // 不过貌似有些地方不能用组件，不太确定跳出组件或者跳转到页面哪种比较好
 function toSetUserInfo() {
-  const url = "/pages/info/userInfo/userInfo"; 
-  console.log(url);
+  const url = "/pages/info/userInfo/userInfo";
   wx.navigateTo({
     url: url,
   })
@@ -230,12 +215,15 @@ function toSetUserInfo() {
 
 // 设置用户等级
 async function setUserRole(openid, role) {
-  return (await api.userOp({
+  // 直接调用云函数，不再通过 api 对象
+  const currentOpenid = await getCurrentUserOpenid();
+  return (await app.mpServerless.function.invoke('userOp', {
     "op": "updateRole",
     "user": {
       openid: openid,
       role: role
     },
+    openid: currentOpenid
   })).result;
 }
 
@@ -281,4 +269,4 @@ module.exports = {
   toSetUserInfo,
   setUserRole,
   fillUserInfo,
-} 
+}

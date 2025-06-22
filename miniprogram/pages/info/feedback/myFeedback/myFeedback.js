@@ -1,9 +1,8 @@
 import { formatDate } from "../../../../utils/utils";
 import { getUser } from "../../../../utils/user";
-import { cloud } from "../../../../utils/cloudAccess";
 
 const step = 6;
-
+const app = getApp();
 Page({
 
   /**
@@ -19,7 +18,7 @@ Page({
     currentUser: null,
   },
 
-  onLoad: async function() {
+  onLoad: async function () {
     this.jsData.currentUser = await getUser();
     console.log(this.jsData.currentUser);
     if (!this.jsData.currentUser) {
@@ -36,12 +35,9 @@ Page({
       title: '加载中...',
     });
     const that = this;
-    const db = await cloud.databaseAsync();
-    const countRes = await db.collection('feedback').where({
-      _openid: this.jsData.currentUser.openid
-    }).count();
+    const countRes = await app.mpServerless.db.collection('feedback').count({ _openid: this.jsData.currentUser.openid })
     that.setData({
-      total: countRes.total,
+      total: countRes.result,
     });
     // 清空，loadFeedbacks再填充
     this.data.feedbacks = [];
@@ -50,19 +46,13 @@ Page({
   },
 
   async loadFeedbacks() {
-    const db = await cloud.databaseAsync();
     const nowLoaded = this.data.feedbacks.length;
-    var feedbacks = (await db.collection('feedback').where({
-      _openid: this.jsData.currentUser.openid
-    }).orderBy('openDate', 'desc').skip(nowLoaded).limit(step).get()).data;
+    var { result: feedbacks } = await app.mpServerless.db.collection('feedback').find({ _openid: this.jsData.currentUser.openid }, { sort: { openDate: -1 }, skip: nowLoaded, limit: step })
     console.log(feedbacks);
     // 获取对应猫猫信息；将Date对象转化为字符串；判断是否已回复
     for (let i = 0; i < feedbacks.length; ++i) {
       if (feedbacks[i].cat_id != undefined) {
-        feedbacks[i].cat = (await db.collection('cat').doc(feedbacks[i].cat_id).field({
-          name: true,
-          campus: true
-        }).get()).data;
+        feedbacks[i].cat = (await app.mpServerless.db.collection('cat').findOne({ _id: feedbacks[i].cat_id }, { projection: { name: 1, campus: 1 } })).result;
       }
       feedbacks[i].openDateStr = formatDate(feedbacks[i].openDate, "yyyy-MM-dd hh:mm:ss");
       feedbacks[i].replied = feedbacks[i].hasOwnProperty('replyDate');
@@ -100,7 +90,7 @@ Page({
   toCatDetail(e) {
     const cat_id = e.currentTarget.dataset.cat_id;
     wx.navigateTo({
-    url: '/pages/genealogy/detailCat/detailCat?cat_id=' + cat_id,
+      url: '/pages/genealogy/detailCat/detailCat?cat_id=' + cat_id,
     })
   },
 })

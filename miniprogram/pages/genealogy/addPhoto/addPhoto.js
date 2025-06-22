@@ -13,11 +13,9 @@ import {
   sendNotifyVertifyNotice
 } from "../../../utils/msg";
 import config from "../../../config";
-import {
-  cloud
-} from "../../../utils/cloudAccess";
 import api from "../../../utils/cloudApi";
-
+import { uploadFile } from "../../../utils/common"
+const app = getApp();
 Page({
   /**
    * 页面的初始数据
@@ -31,7 +29,6 @@ Page({
     set_all: {},
     canUpload: false,
     text_cfg: config.text,
-    
     showEdit: false,
   },
 
@@ -39,17 +36,17 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: async function (options) {
-    const db = await cloud.databaseAsync();
     const cat_id = options.cat_id;
-    var catRes = await db.collection('cat').doc(cat_id).field({
-      birthday: true,
-      name: true,
-      campus: true,
-      _id: true
-    }).get();
+    // var catRes = await db.collection('cat').doc(cat_id).field({
+    //   birthday: true,
+    //   name: true,
+    //   campus: true,
+    //   _id: true
+    // }).get();
+    var catRes = (await app.mpServerless.db.collection('cat').findOne({ _id: cat_id }, { projection: { birthday: 1, name: 1, campus: 1 } })).result;
     this.setData({
-      cat: catRes.data,
-      birth_date: catRes.data.birthday || ''
+      cat: catRes,
+      birth_date: catRes.birthday || ''
     });
     //this.checkUInfo();
 
@@ -194,13 +191,12 @@ Page({
   },
 
   async ifSendNotifyVeriftMsg() {
-    const db = await cloud.databaseAsync();
-    const subMsgSetting = await db.collection('setting').doc('subscribeMsg').get();
-    const triggerNum = subMsgSetting.data.verifyPhoto.triggerNum; //几条未审核才触发
+    const subMsgSetting = (await app.mpServerless.db.collection('setting').findOne({ _id: 'subscribeMsg' })).result;
+    const triggerNum = subMsgSetting.verifyPhoto.triggerNum; //几条未审核才触发
     // console.log("triggerN",triggerNum);
-    var numUnchkPhotos = (await db.collection('photo').where({
+    var numUnchkPhotos = (await app.mpServerless.db.collection('photo').count({
       verified: false
-    }).count()).total;
+    })).result;
 
     if (numUnchkPhotos >= triggerNum) {
       await sendNotifyVertifyNotice(numUnchkPhotos);
@@ -219,28 +215,30 @@ Page({
     const index = tempFilePath.lastIndexOf(".");
     const ext = tempFilePath.substr(index + 1);
 
-    let upRes = await cloud.uploadFile({
-      cloudPath: cat.campus + '/' + generateUUID() + '.' + ext, // 上传至云端的路径
-      filePath: tempFilePath, // 小程序临时文件路径
-    });
+    let upRes = await uploadFile({
+      filePath: tempFilePath,
+      cloudPath: '/' + cat.campus + '/' + generateUUID() + '.' + ext,
+    })
+    console.log("上传图片:", upRes);
     // 返回文件 ID
-    console.log(upRes.fileID);
+    console.log(upRes.fileUrl);
 
     // 添加记录
     const params = {
       cat_id: cat._id,
-      photo_id: upRes.fileID,
+      photo_id: upRes.fileUrl,
+      photo_file_id: upRes.fileId,
       user_id: this.data.user._id,
       verified: false,
       shooting_date: photo.shooting_date,
       photographer: photo.pher
     };
 
-    let dbAddRes = (await api.curdOp({
+    let dbAddRes = await api.curdOp({
       operation: "add",
       collection: "photo",
       data: params
-    })).result;
+    })
     console.log("curdOp(add-photo) result:", dbAddRes);
   },
 
@@ -302,14 +300,14 @@ Page({
     });
   },
 
-  getUInfo: function() {
+  getUInfo: function () {
     this.setData({
-    showEdit: true
+      showEdit: true
     });
   },
-  closeEdit: function() {
+  closeEdit: function () {
     this.setData({
-    showEdit: false
+      showEdit: false
     });
   },
 })

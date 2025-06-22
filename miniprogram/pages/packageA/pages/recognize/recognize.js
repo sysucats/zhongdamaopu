@@ -10,14 +10,11 @@ import {
   loadFilter,
   getGlobalSettings
 } from "../../../../utils/page";
-import {
-  cloud
-} from "../../../../utils/cloudAccess";
 
 import drawUtils from "../../../../utils/draw";
 
 const share_text = text_cfg.app_name + ' - ' + text_cfg.recognize.share_tip;
-
+const app = getApp();
 Page({
 
   /**
@@ -234,16 +231,16 @@ Page({
     // 记录图片长宽比。用于重新映射后端返回的catBox位置信息。
     this.jsData.widthHeightRatio = photoInfo.width / photoInfo.height;
     // 使用canvas方法压缩图片
-    const {canvasSideLen} = this.jsData;
+    const { canvasSideLen } = this.jsData;
     const drawRate = Math.max(photoInfo.width, photoInfo.height) / canvasSideLen; // 计算缩放比
     const drawWidth = photoInfo.width / drawRate;
     const drawHeight = photoInfo.height / drawRate;
     if (!this.jsData.ctx) {
-      const {ctx, canvas} = await drawUtils.initCanvas('#canvasForCompress');
+      const { ctx, canvas } = await drawUtils.initCanvas('#canvasForCompress');
       this.jsData.ctx = ctx;
       this.jsData.canvas = canvas;
     }
-    const {ctx, canvas} = this.jsData;
+    const { ctx, canvas } = this.jsData;
     await drawUtils.drawImage(ctx, canvas, photoInfo.path, 0, 0, drawWidth, drawHeight);
 
     const compressPhotoPath = await drawUtils.getTempPath(ctx, canvas, {
@@ -264,7 +261,7 @@ Page({
     const previewSideLen = 675; // view#previewArea的长宽rpx值
     const compressSideLen = this.jsData.canvasSideLen; // 上传到后台的图片的长边长度
     const ratio = previewSideLen / compressSideLen; // 缩放比
-    const {compressPhotoInfo} = this.jsData;
+    const { compressPhotoInfo } = this.jsData;
     for (let catBox of catBoxes) {
       let xOffset = 0, yOffset = 0;
       // 短边由于居中会产生offset
@@ -386,15 +383,12 @@ Page({
   },
 
   async getCatInfo(cat) {
-    const db = await cloud.databaseAsync();
-    const catInfo = (await db.collection('cat').doc(cat.catID).get()).data;
+    const { result: catInfo } = await app.mpServerless.db.collection('cat').findOne({ _id: cat.catID });
     catInfo.score = cat.score;
     return catInfo;
   },
 
   async getCatPhoto(catInfo) {
-    const db = await cloud.databaseAsync();
-    const photo = db.collection('photo');
     // 从精选照片里随机挑选一张
     const query = {
       cat_id: catInfo._id,
@@ -403,7 +397,7 @@ Page({
     };
     var total = catInfo.photo_count_best;
     var index = randomInt(0, total);
-    var photoURL = (await photo.where(query).skip(index).limit(1).get()).data[0];
+    var { result: photoURL } = await app.mpServerless.db.collection('photo').findOne(query, { skip: index });
     return photoURL;
   },
 

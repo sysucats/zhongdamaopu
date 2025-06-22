@@ -1,7 +1,5 @@
-import {
-  cloud
-} from "../utils/cloudAccess";
-
+import { signCosUrl } from './common'
+const app = getApp();
 // 等级序
 const levelOrderMap = {
   'S': 0,
@@ -11,18 +9,24 @@ const levelOrderMap = {
 }
 
 async function loadBadgeDefMap() {
-  const db = await cloud.databaseAsync();
-  let badgeDefMap = (await db.collection("badge_def").get()).data;
+  let { result: badgeDefMap } = await app.mpServerless.db.collection('badge_def').find({})
   if (!badgeDefMap) {
     return;
   }
 
   // 超过100种徽章定义，需要分批获取
   if (badgeDefMap.length === 100) {
-    let count = (await db.collection("badge_def").get()).total;
+    let count = (await app.mpServerless.db.collection('badge_def').count({})).result;
     while (badgeDefMap.length < count) {
-      let tmp = (await db.collection("badge_def").get()).data;
+      let tmp = (await app.mpServerless.db.collection('badge_def').find({})).result;
       badgeDefMap = badgeDefMap.concat(tmp);
+    }
+  }
+
+  // 对每个徽章定义的 img 字段进行签名处理
+  for (let badgeDef of badgeDefMap) {
+    if (badgeDef.img) {
+      badgeDef.img = await signCosUrl(badgeDef.img);
     }
   }
 
@@ -33,27 +37,20 @@ async function loadBadgeDefMap() {
 }
 
 async function loadUserBadge(openid, badgeDefMap, options) {
-  const db = await cloud.databaseAsync();
-
-  const userBadges = (await db.collection("badge").where({
-    _openid: openid,
-    catId: null,
-  }).get()).data;
-
+  const userBadges = (await app.mpServerless.db.collection("badge").find({
+    _openid: openid
+  })).result;
   const res = await mergeAndSortBadges(userBadges, badgeDefMap, options);
   return res;
 }
 
 async function loadCatBadge(catId) {
-  const db = await cloud.databaseAsync();
-  const count = (await db.collection('badge').where({
-    catId: catId
-  }).count()).total;
+  const count = (await app.mpServerless.db.collection('badge').count({ catId: catId })).result;
   let allBadges = [];
   while (allBadges.length < count) {
-    const tmp = (await db.collection('badge').where({
-      catId: catId
-    }).skip(allBadges.length).get()).data;
+    const tmp = (await app.mpServerless.db.collection('badge').find({
+      catId: catId,
+    }, { skip: allBadges.length })).result;
     allBadges = allBadges.concat(tmp);
   }
   return allBadges;
@@ -64,7 +61,6 @@ async function mergeAndSortBadges(badges, badgeDefMap, options) {
   if (!badges || !badgeDefMap) {
     return;
   }
-  
   // 顺便统计0个的情况
   let userBadgesMap = {};
   for (const id in badgeDefMap) {

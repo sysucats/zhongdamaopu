@@ -1,0 +1,7 @@
+{
+  "dependencies": {
+    "axios": "^1.9.0",
+    "form-data": "^4.0.3",
+    "tmp": "^0.2.3"
+  }
+}

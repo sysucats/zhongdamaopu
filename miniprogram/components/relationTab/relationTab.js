@@ -1,6 +1,6 @@
-import { cloud } from "../../utils/cloudAccess";
 import { getCatItem, getAvatar } from "../../utils/cat";
 import api from "../../utils/cloudApi";
+const app = getApp();
 
 // 添加全局缓存
 const globalRelationsCache = {};
@@ -10,7 +10,7 @@ Component({
     selectedCat: {
       type: Object,
       value: null,
-      observer: function(newVal) {
+      observer: function (newVal) {
         if (newVal && newVal._id) {
           this.loadRelations();
         }
@@ -43,11 +43,12 @@ Component({
   methods: {
     // 加载setting里的relation types
     async loadRelationTypes() {
+      const app = getApp();
       try {
-        const db = await cloud.databaseAsync();
         var types = [];
-        var data = (await db.collection('setting').where({_id: 'relation'}).get()).data;
-
+        var data = [];
+        var { result } = await app.mpServerless.db.collection('setting').find({ _id: 'relation' });
+        data = result;
         if (data.length == 0) {
           // 当数据库setting中不存在时，进行初始化
           await api.curdOp({
@@ -58,7 +59,8 @@ Component({
               types: ["爸爸", "妈妈"]
             }
           });
-          data = (await db.collection('setting').where({_id: 'relation'}).get()).data;
+          const { result1 } = await app.mpServerless.db.collection('setting').find({ _id: 'relation' });
+          data = result1;
         }
         types = data[0].types;
         this.setData({
@@ -79,21 +81,21 @@ Component({
       var types = this.data.relation_types;
 
       // 判断一下是否已存在
-    var idx = types.indexOf(t);
-    if (idx == -1) {
-      // 不存在
-      types.push(t);
-      // console.log(types);
-      await api.curdOp({
-        operation: "update",
-        collection: "setting",
-        item_id: "relation",
-        data: {
-          types: types
-        }
-      });
-      idx = types.length - 1;
-    }
+      var idx = types.indexOf(t);
+      if (idx == -1) {
+        // 不存在
+        types.push(t);
+        // console.log(types);
+        await api.curdOp({
+          operation: "update",
+          collection: "setting",
+          item_id: "relation",
+          data: {
+            types: types
+          }
+        });
+        idx = types.length - 1;
+      }
 
       this.selectRelationType(null, idx);
 
@@ -106,16 +108,15 @@ Component({
     async selectRelationType(e, idx) {
       const index = idx !== undefined ? idx : e.currentTarget.dataset.index;
       const type = this.data.relation_types[index];
-      
       // 判断是新增关系还是修改已有关系
       if (this.data.isAddingNewRelation) {
         // 新增关系模式
         this.setData({
           selectedRelationType: type
         });
-        
+
         this.hideSearch();
-        
+
         // 如果猫咪已选择，则自动创建关系
         if (this.data.selectedCatForRelation) {
           this.createRelation();
@@ -126,12 +127,10 @@ Component({
         if (relationIdx !== undefined) {
           const cat = this.data.cat;
           cat.relations[relationIdx].type = type;
-          
           this.setData({
             cat: cat,
             showSearchType: false
           });
-          
           // 自动保存修改
           this.saveRelations();
         }
@@ -192,24 +191,16 @@ Component({
     },
 
     async doSearchCat() {
+      const app = getApp();
       const value = this.data.filters_input;
       if (!value) {
         return;
       }
 
       try {
-        const db = await cloud.databaseAsync();
-        const cats = await db.collection('cat')
-          .where({
-            name: db.RegExp({
-              regexp: value,
-              options: 'i',
-            })
-          })
-          .limit(10)
-          .get();
+        const { result: cats } = await app.mpServerless.db.collection('cat').find({ name: { $regex: value } }, { limit: 10 })
 
-        const searchCats = await Promise.all(cats.data.map(async (cat) => {
+        const searchCats = await Promise.all(cats.map(async (cat) => {
           cat.avatar = await getAvatar(cat._id, cat.photo_count_best);
           return cat;
         }));
@@ -229,7 +220,6 @@ Component({
     // 选择猫猫
     async searchSelectCat(e) {
       const selectedCat = e.detail;
-      
       // 判断是新增还是修改
       if (this.data.isAddingNewRelation) {
         // 新增关系模式
@@ -238,7 +228,6 @@ Component({
           searchKeyword: '',
           showSearchCat: false,
         });
-        
         // 关闭搜索后打开关系类型选择
         this.setData({
           showSearchType: true,
@@ -248,7 +237,6 @@ Component({
         // 编辑现有关系
         const relations = this.data.cat.relations;
         const index = this.data.editingRelationIndex;
-        
         if (index !== undefined && index >= 0 && index < relations.length) {
           relations[index].cat = selectedCat;
           this.setData({
@@ -261,13 +249,13 @@ Component({
 
     // 更新关系列表
     async loadRelations() {
+      const app = getApp();
       if (!this.properties.selectedCat?._id) {
         return;
       }
 
       try {
         const catId = this.properties.selectedCat._id;
-        
         // 检查缓存
         if (globalRelationsCache[catId]) {
           this.setData({
@@ -281,14 +269,9 @@ Component({
           title: '加载中...',
         });
 
-        const db = await cloud.databaseAsync();
-        const catData = await db.collection('cat')
-          .doc(catId)
-          .get();
-        
-        const cat = catData.data;
+        const { result: cat } = await app.mpServerless.db.collection('cat').findOne({ _id: catId });
         cat.avatar = await getAvatar(cat._id, cat.photo_count_best);
-        
+
         if (!cat.relations) {
           cat.relations = [];
         }
@@ -298,10 +281,8 @@ Component({
           if (!relation.cat_id) {
             continue;
           }
-          const relatedCatData = await db.collection('cat')
-            .doc(relation.cat_id)
-            .get();
-          relation.cat = relatedCatData.data;
+          const { result: relatedCatData } = await app.mpServerless.db.collection('cat').findOne({ _id: relation.cat_id });
+          relation.cat = relatedCatData;
           relation.cat.avatar = await getAvatar(relation.cat_id, relation.cat.photo_count_best);
         }
 
@@ -313,9 +294,8 @@ Component({
         });
 
         // 更新全局缓存
-        const app = getApp();
         if (app?.globalData?.catsList) {
-          app.globalData.catsList = app.globalData.catsList.map(c => 
+          app.globalData.catsList = app.globalData.catsList.map(c =>
             c._id === cat._id ? cat : c
           );
         }
@@ -375,7 +355,6 @@ Component({
       this.setData({
         cat: cat
       });
-      
       // 保存关系顺序变化
       this.saveRelations();
     },
@@ -384,7 +363,6 @@ Component({
     bindSearch(e) {
       const type = e.currentTarget.dataset.type;
       const index = e.currentTarget.dataset.index;
-      
       if (type === 'cat') {
         this.setData({
           editingRelationIndex: index,
@@ -408,7 +386,6 @@ Component({
       if (!await this.checkSaveRelations()) {
         return false;
       }
-      
       try {
         var cat = this.data.cat;
         var relations = [];
@@ -424,7 +401,7 @@ Component({
           collection: "cat",
           item_id: cat._id,
           data: {
-            relations: relations  
+            relations: relations
           }
         });
 
@@ -460,7 +437,7 @@ Component({
         const r = cat.relations[i];
         if (!r.type || !r.cat_id) {
           wx.showToast({
-            title: `#${i+1}号关系不完整~`,
+            title: `#${i + 1}号关系不完整~`,
             icon: "error"
           });
           return false;
@@ -476,7 +453,6 @@ Component({
       const relation = this.data.cat.relations[index];
       const relationCatName = relation.cat?.name || '这只猫';
       const relationType = relation.type || '关系';
-      
       const res = await new Promise((resolve) => {
         wx.showModal({
           title: '确认删除',
@@ -489,16 +465,15 @@ Component({
           }
         });
       });
-      
       if (res.confirm) {
         // 确认删除
         const cat = this.data.cat;
         cat.relations.splice(index, 1);
-        
+
         this.setData({
           cat: cat
         });
-        
+
         // 保存
         await this.saveRelations();
       }
@@ -509,16 +484,16 @@ Component({
       if (!this.data.selectedCatForRelation || !this.data.selectedRelationType) {
         return;
       }
-      
+
       const cat = this.data.cat;
       const relatedCat = this.data.selectedCatForRelation;
       const relationType = this.data.selectedRelationType;
-      
+
       // 检查是否存在相同猫
-      const existingCatIndex = cat.relations.findIndex(r => 
+      const existingCatIndex = cat.relations.findIndex(r =>
         r.cat_id === relatedCat._id
       );
-      
+
       if (existingCatIndex >= 0) {
         wx.showToast({
           title: '该猫猫已在关系列表中',
@@ -526,20 +501,17 @@ Component({
         });
         return;
       }
-      
       // 添加新关系
       cat.relations.push({
         type: relationType,
         cat_id: relatedCat._id,
         cat: relatedCat
       });
-      
       this.setData({
         cat: cat,
         selectedCatForRelation: null,
         selectedRelationType: null
       });
-      
       // 保存更改
       this.saveRelations();
     },

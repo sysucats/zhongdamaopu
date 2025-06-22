@@ -1,4 +1,3 @@
-import { cloud } from "../../../utils/cloudAccess";
 import {
   deepcopy
 } from "../../../utils/utils";
@@ -9,7 +8,7 @@ import {
   getAvatar
 } from "../../../utils/cat";
 import api from "../../../utils/cloudApi";
-
+const app = getApp();
 Page({
 
   /**
@@ -86,23 +85,22 @@ Page({
     });
   },
 
-  
+
   async loadFollowCats() {
-    const db = await cloud.databaseAsync();
-    const _ = db.command;
     let { openid } = this.data.user;
     // 获取用户的关注列表
-    const followCatIds = (await db.collection("user")
-    .where({ openid })
-    .field({ followCats: 1 })
-    .get()).data[0].followCats;
+    const followCatIds = (await app.mpServerless.db.collection('user').findOne({
+      openid: openid
+    }, {
+      projection: {
+        followCats: 1
+      }
+    })).result.followCats;
 
     console.log(followCatIds);
 
     // 加载猫猫的信息
-    const followCats = (await db.collection("cat")
-    .where({ _id: _.in(followCatIds) })
-    .get()).data;
+    const { result: followCats } = await app.mpServerless.db.collection('cat').find({ _id: { $in: followCatIds } })
     console.log(followCats);
 
     for (let i = 0; i < followCats.length; i++) {
@@ -138,8 +136,8 @@ Page({
     });
 
     wx.showToast({
-      title: `${unfollowed ? "关注" : "取关"}${res.result ? "成功": "失败"}`,
-      icon: res.result ? "success": "error"
+      title: `${unfollowed ? "关注" : "取关"}${res ? "成功" : "失败"}`,
+      icon: res ? "success" : "error"
     });
     this.jsData.updatingFollowCats = false;
   }

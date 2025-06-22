@@ -1,8 +1,10 @@
 import { checkAuth } from "../../../../utils/user";
-import { cloud } from "../../../../utils/cloudAccess";
 import { levelOrderMap } from "../../../../utils/badge";
 import api from "../../../../utils/cloudApi";
 import { generateUUID } from "../../../../utils/utils";
+import { uploadFile, signCosUrl } from "../../../../utils/common"
+
+const app = getApp();
 
 Page({
 
@@ -28,8 +30,12 @@ Page({
 
   // 加载已有的徽章
   async loadBadgeDef(id) {
-    const db = await cloud.databaseAsync();
-    const badgeDef = (await db.collection('badge_def').doc(id).get()).data;
+    const { result: badgeDef } = await app.mpServerless.db.collection('badge_def').findOne({
+      _id: id,
+    });
+    if (badgeDef.img) {
+      badgeDef.img = await signCosUrl(badgeDef.img);
+    }
     this.setData({
       badgeDef: badgeDef,
     });
@@ -43,27 +49,26 @@ Page({
       sourceType: ['album'],
       maxDuration: 30,
     });
-    
     this.setData({
       "badgeDef.img": res.tempFiles[0].tempFilePath,
     })
   },
   onChangeText(e) {
-    const {field} = e.currentTarget.dataset;
+    const { field } = e.currentTarget.dataset;
     const value = e.detail.value;
     this.setData({
-      [`badgeDef.${field}`]: value 
+      [`badgeDef.${field}`]: value
     });
     return value;
   },
-  onLevelChange: function(e) {
+  onLevelChange: function (e) {
     this.setData({
       "badgeDef.level": this.data.levelDefs[e.detail.value],
     })
   },
   // 提交
   async clickUpload() {
-    let {badgeDef} = this.data;
+    let { badgeDef } = this.data;
     // 检查
     const checkList = {
       'img': '图像',
@@ -92,7 +97,6 @@ Page({
       level: badgeDef.level,
       rankDesc: badgeDef.rankDesc,
     }
-    
     // 写入数据库
     if (badgeDef._id) {
       // 是更新
@@ -109,8 +113,8 @@ Page({
         data: uploadItem
       });
       this.setData({
-        "badgeDef._id": res.result.id,
-        "badgeDef.img": await cloud.signCosUrl(cloudUrl),
+        "badgeDef._id": res.insertedId,
+        "badgeDef.img": await signCosUrl(cloudUrl),
       })
     }
 
@@ -120,19 +124,19 @@ Page({
   },
 
   async uploadAvatar(tempFilePath) {
-    if (! tempFilePath.includes("://tmp")) {
+    if (!tempFilePath.includes("://tmp")) {
       return tempFilePath;
     }
-    
+
     //获取后缀
     const index = tempFilePath.lastIndexOf(".");
     const ext = tempFilePath.substr(index + 1);
     // 上传图片
-    let upRes = await cloud.uploadFile({
-      cloudPath: `badgeDef/${generateUUID()}.${ext}`, // 上传至云端的路径
+    let upRes = await uploadFile({
+      cloudPath: `/badgeDef/${generateUUID()}.${ext}`, // 上传至云端的路径
       filePath: tempFilePath, // 小程序临时文件路径
     });
-    return upRes.fileID;
+    return upRes.fileUrl;
   },
 
   removeURLParams(url) {
@@ -140,10 +144,10 @@ Page({
     if (url.indexOf('?') === -1) {
       return url; // 如果没有参数，直接返回原始 URL
     }
-  
+
     // 获取 URL 中的基础部分
     const baseUrl = url.split('?')[0];
-  
+
     // 返回基础 URL
     return baseUrl;
   },

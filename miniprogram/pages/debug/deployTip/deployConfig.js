@@ -1,7 +1,6 @@
 import config from "../../../config";
 
 // 用于初始化数据库的默认数据（不要修改！）
-const default_init_data_id = "deploy_test";
 const default_init_data = [];
 
 // 科普页的默认数据（不要修改！部署完成后，在数据库science中修改）
@@ -195,8 +194,8 @@ module.exports = {
     userOp: "v1.1",
     utils: "v1.0",
   },
-  default_init_data_id: default_init_data_id,
   collections: {
+    "app_secret": default_init_data,
     "badge": default_init_data,
     "badge_def": default_init_data,
     "badge_rank": default_init_data,
@@ -213,6 +212,7 @@ module.exports = {
     "science": init_science,
     "setting": init_setting,
     "user": default_init_data,
+    "vaccine": default_init_data,
   },
   images: {
     "science_imgs[0]": config.science_imgs[0],

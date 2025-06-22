@@ -2,10 +2,10 @@
 import { formatDate } from "../../../utils/utils";
 import { requestNotice, getMsgTplId } from "../../../utils/msg";
 import { checkAuth, fillUserInfo } from "../../../utils/user";
-import { cloud } from "../../../utils/cloudAccess";
 import api from "../../../utils/cloudApi";
 
 const step = 6;
+const app = getApp();
 
 Page({
 
@@ -28,21 +28,18 @@ Page({
   },
 
   async loadFeedbacks() {
-    const db = await cloud.databaseAsync();
     const nowLoaded = this.data.feedbacks.length;
-    var feedbacks = (await db.collection('feedback').where({
-      dealed: this.data.checkHistory
-    }).orderBy('openDate', 'desc').skip(nowLoaded).limit(step).get()).data;
+    var { result: feedbacks } = await app.mpServerless.db.collection('feedback').find({ dealed: this.data.checkHistory }, { sort: { openDate: -1 }, skip: nowLoaded, limit: step })
     console.log("[loadFeedbacks] -", feedbacks);
     // 填充userInfo
     await fillUserInfo(feedbacks, "openid", "userInfo");
     // 获取对应猫猫信息；将Date对象转化为字符串；判断是否已回复
     for (let i = 0; i < feedbacks.length; ++i) {
       if (feedbacks[i].cat_id != undefined) {
-        feedbacks[i].cat = (await db.collection('cat').doc(feedbacks[i].cat_id).field({
-          name: true,
-          campus: true
-        }).get()).data;
+        const { result: cat } = await app.mpServerless.db.collection('cat').findOne({ _id: feedbacks[i].cat_id }, {
+          projection: { name: 1, campus: 1 }
+        })
+        feedbacks[i].cat = cat;
       }
       feedbacks[i].openDateStr = formatDate(feedbacks[i].openDate, "yyyy-MM-dd hh:mm:ss");
       feedbacks[i].replied = feedbacks[i].hasOwnProperty('replyDate');
@@ -56,19 +53,18 @@ Page({
     });
   },
 
-  async refreshStatus(){
+  async refreshStatus() {
     await this.requestSubscribeMessage();
     await this.reload();
   },
-  
+
   async reload() {
     wx.showLoading({
       title: '加载中...',
     });
-    const db = await cloud.databaseAsync();
-    var fbRes = await db.collection('feedback').where({
+    var { result: fbRes } = await app.mpServerless.db.collection('feedback').count({
       dealed: this.data.checkHistory
-    }).count();
+    });
 
     console.log("[reload] - feedbacks: ", fbRes);
     this.setData({
@@ -99,8 +95,8 @@ Page({
           }
         }
       },
-      complete:res=>{
-        console.log("[requestSubscribeMessage] - complete:",res);
+      complete: res => {
+        console.log("[requestSubscribeMessage] - complete:", res);
       }
     })
   },
