@@ -1,10 +1,5 @@
 import dp_cfg from "./deployConfig";
-// import {
-//   cloud,
-//   ensureToken,
-// } from "../../../utils/cloudAccess";
 import { getCurrentUserOpenid } from "../../../utils/common"
-// import { use_private_tencent_cos } from "../../../config";
 
 const app = getApp();
 

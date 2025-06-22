@@ -153,9 +153,14 @@ Page({
       "showCond.dev": sysInfo.platform === "devtools"
     });
 
-    const { result: friendLinkRes } = await app.mpServerless.db.collection('setting').findOne({ _id: 'friendLink' })
+    const { result: friendLinkRes } = await app.mpServerless.db.collection('setting').findOne({ _id: 'friendLink' });
+    
+    let { apps } = friendLinkRes;
+    for (let i = 0; i < apps.length; i++) {
+      apps[i].logo = await signCosUrl(apps[i].logo);
+    }
     this.setData({
-      friendApps: friendLinkRes.apps,
+      friendApps: apps,
     });
 
     // 设置为特邀用户

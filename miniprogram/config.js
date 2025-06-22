@@ -18,7 +18,7 @@ module.exports = {
   space_secret: require('./appSecret').space_secret,
   // 服务空间地址Api Endpoint
   space_endpoint: 'https://api.next.bspapp.com',
-  use_private_tencent_cos: false,
+  use_private_tencent_cos: true,
   // 私有的腾讯云cos签名过期时间（秒）
   sign_expires_tencent_cos: 3600 * 2,
 
