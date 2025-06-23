@@ -51,7 +51,7 @@ module.exports = {
   // 各种文字内容
   text: {
     // 小程序名
-    app_name: "中大猫谱",
+    app_name: "笃行猫谱",
     // 首页，pages/genealogy/genealogy
     genealogy: {
       share_tip: "发现身边校园猫咪",

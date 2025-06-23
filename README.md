@@ -22,7 +22,7 @@
 ## 体验一下
 打开微信，扫码或搜索“笃行猫谱”（原名中大猫谱，23年底更名）。
 
-<img src="./readme/qrcode1.png" height = "150" alt="中大猫谱菊花码" />
+<img src="./readme/qrcode1.png" height = "150" alt="笃行猫谱菊花码" />
 
 ### 朋友们的小程序
 
