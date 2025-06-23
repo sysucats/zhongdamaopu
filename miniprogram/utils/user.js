@@ -247,6 +247,10 @@ async function fillUserInfo(items, openidKey, userInfoKey, cacheOptions) {
     }
     const openid = item[openidKey];
     item[userInfoKey] = res[openid]?.userInfo;
+    console.log(item[userInfoKey]);
+    if (item[userInfoKey]?.avatarUrl) {
+      item[userInfoKey].avatarUrl = await signCosUrl(item[userInfoKey].avatarUrl);
+    }
   }
   return;
 }

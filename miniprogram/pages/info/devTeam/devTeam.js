@@ -10,6 +10,12 @@ Page({
     text_cfg: text_cfg,
     github_link: "https://github.com/sysucats/zhongdamaopu",
     update_log: [{
+      version: "v1.16.0",
+      content: [
+        "迁移到EMAS，感谢Smileye-v大佬",
+      ],
+      time: "2024/6/23"
+    }, {
       version: "v1.15.1",
       content: [
         "统一主题色背景的文字颜色变量",

@@ -9,7 +9,7 @@ const space_id = 'mp-f298e784-56e1-44b1-b410-b971539e1746';
 
 module.exports = {
   // 版本号
-  app_version: "v1.15.1",
+  app_version: "v1.16.0",
   // 小程序appid
   app_id: 'wx5bd705b2bc91c73b',
   // EMAS空间ID
