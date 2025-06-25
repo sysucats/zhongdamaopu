@@ -3,7 +3,7 @@ import { generateUUID } from "../../../utils/utils";
 import { text as text_cfg } from "../../../config";
 import { checkAuth, fillUserInfo } from "../../../utils/user";
 import api from "../../../utils/cloudApi";
-import { uploadFile } from "../../../utils/common"
+import { uploadFile, signCosUrl } from "../../../utils/common"
 import drawUtils from "../../../utils/draw";
 // import lockUtils from "./lock";
 
@@ -207,7 +207,7 @@ Page({
     }
     try {
       var photoObj = await wx.getImageInfo({
-        src: photoInfo.photo_id,
+        src: await signCosUrl(photoInfo.photo_id),
       });
     } catch (error) {
       console.error(error);

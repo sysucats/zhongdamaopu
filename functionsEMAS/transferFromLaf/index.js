@@ -24,10 +24,7 @@ module.exports = async (ctx) => {
             }
         }
 
-        // 步骤2: 解析JSON数据
-        // let data = JSON.parse(data);
-
-        // 步骤3: 写入数据库
+        // 步骤2: 写入数据库
         await ctx.mpserverless.db.collection(coll).insertMany(data);
         
         // 返回成功响应
@@ -38,11 +35,12 @@ module.exports = async (ctx) => {
 
     } catch (error) {
         // 错误时，切换成逐个插入
+        const { coll, data } = body;
         let res = [];
         for (let i = 0; i < data.length; i++) {
             const element = data[i];
-            await ctx.mpserverless.db.collection(coll).insertOne(data);
             try {
+                await ctx.mpserverless.db.collection(coll).insertOne(element);
                 res.push({
                     success: true,
                     _id: element._id,
