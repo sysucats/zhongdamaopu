@@ -1,4 +1,16 @@
 module.exports = async (ctx) => {
+    // 读取缓存
+    const { triggerName  } = ctx.args; // 如果是触发器，则有这个参数
+
+    const { result: record } = await ctx.mpserverless.db.collection('setting').findOne({ _id: "tempCOSToken" });
+
+    if (!triggerName && (record && Math.floor(Date.now() / 1000) < record.expiredAt)) {
+        // 未超时，直接返回
+        console.log("未超时，直接返回", record);
+        return record.tempCOSToken;
+    }
+
+    // 正常获取流程
     const { result: app_secret } = await ctx.mpserverless.db.collection('app_secret').findOne()
     if (!app_secret) {
         return null;
@@ -37,7 +49,23 @@ module.exports = async (ctx) => {
             "Policy": `{"version":"2.0","statement":[{"effect":"allow","action":["name/cos:GetObject"],"resource":["qcs::cos:${region}:uid/${uid}:${bucket}/*"]}]}`,
             "DurationSeconds": 7200,
         };
-        return await client.GetFederationToken(params);
+
+        const tempCOSToken = await client.GetFederationToken(params);
+
+        // 更新数据库
+        const data = {
+            tempCOSToken,
+            expiredAt: Math.floor(Date.now() / 1000) + 3600
+        };
+        await ctx.mpserverless.db.collection('setting').findOneAndUpdate({
+            _id: "tempCOSToken"
+        }, {
+            $set: data
+        }, {
+            upsert: true
+        })
+
+        return tempCOSToken;
     }
 }
 
