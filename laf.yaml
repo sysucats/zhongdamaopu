@@ -1,7 +1,0 @@
-version: 1.0.0
-name: maopu
-spec:
-  runtime: node
-  dependencies:
-    tencentcloud-sdk-nodejs: 4.0.571
-    crypto-js: 4.1.1
