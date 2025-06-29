@@ -1,7 +1,7 @@
 import { getUser, setUserRole } from "./user";
 import { getCacheItem, setCacheItem, cacheTime } from "./cache";
-import { cloud } from "./cloudAccess";
 import api from "./cloudApi";
+const app = getApp();
 
 var user = undefined;
 
@@ -27,10 +27,8 @@ async function _likeGet(item_ids) {
     return [];
   }
   await ensureUser();
-  const db = await cloud.databaseAsync();
-  const _ = db.command;
-  const coll_inter = db.collection('inter');
-  return (await coll_inter.where({type: TYPE_LIKE, uid: user.openid, item_id: _.in(item_ids)}).get()).data;
+  const { result } = await app.mpServerless.db.collection('inter').find({ type: TYPE_LIKE, uid: user.openid, item_id: { $in: item_ids } });
+  return result;
 }
 
 // 批量检查是否有点赞记录，item可以是photo、cat、comment
@@ -65,19 +63,18 @@ async function likeCheck(item_ids, options) {
 
 // 点赞成为特邀
 async function likeToInvite() {
-  const db = await cloud.databaseAsync();
   if (user.role) {
     // 已经是了
     console.log("already role");
     return;
   }
 
-  const count = (await db.collection('inter').where({uid: user.openid, type: TYPE_LIKE}).count()).total;
-  
+  const { result: count } = await app.mpServerless.db.collection('inter').count({ type: TYPE_LIKE, uid: user.openid });
+
   if (count >= 2) {
     console.log("invite user with like_count >= 2");
     await setUserRole(user.openid, 1);
-    await getUser({nocache: true});
+    await getUser({ nocache: true });
   }
 }
 

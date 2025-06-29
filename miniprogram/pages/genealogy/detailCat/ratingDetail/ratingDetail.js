@@ -1,8 +1,7 @@
 import { convertRatingList, genDefaultRating } from "../../../../utils/rating";
 import api from "../../../../utils/cloudApi";
-import { cloud } from "../../../../utils/cloudAccess";
 
-
+const app = getApp();
 Page({
 
   /**
@@ -26,7 +25,6 @@ Page({
       cat_id: options.cat_id,
       user: wx.getStorageSync('current-user').item
     });
-    
     await Promise.all([
       this.reloadMyRatings(),
       this.reloadCatRating()
@@ -54,39 +52,33 @@ Page({
 
   // 重新加载自己的评分
   async reloadMyRatings() {
-    const db = await cloud.databaseAsync();
     // 获取榜单和标签定义
     if (!this.data.user.openid) {
       console.log(this.data);
       return
     }
-    let [myRatingsItems] = await Promise.all([
-      db.collection('rating').where({_openid: this.data.user.openid, cat_id: this.data.cat_id}).limit(1).get(),
-    ]);
+    const { result: myRatingsItems } = await app.mpServerless.db.collection('rating').findOne({ _openid: this.data.user.openid, cat_id: this.data.cat_id })
 
     console.log(myRatingsItems);
 
-    if (!myRatingsItems.data || !myRatingsItems.data.length) {
+    if (!myRatingsItems) {
       // 还没有评分
-      return ;
+      return;
     }
 
-    let data = myRatingsItems.data[0];
+    let myRatings = convertRatingList(myRatingsItems);
 
-    let myRatings = convertRatingList(data);
-    
     console.log(myRatings);
     this.setData({
       myRatings,
-      myRatingId: data._id,
+      myRatingId: myRatingsItems._id,
     })
   },
 
   // 重新加载猫猫信息
   async reloadCatRating() {
     let { cat_id } = this.data;
-    const db = await cloud.databaseAsync();
-    let cat = (await db.collection('cat').doc(cat_id).get()).data;
+    let { result: cat } = await app.mpServerless.db.collection('cat').findOne({ _id: cat_id })
 
     console.log(cat);
 
@@ -97,7 +89,7 @@ Page({
       return;
     }
 
-    let {scores} = cat.rating;
+    let { scores } = cat.rating;
     let catRatings = convertRatingList(scores);
 
     this.setData({
@@ -107,10 +99,10 @@ Page({
   },
 
   changRating(e) {
-    let {i, j} = e.currentTarget.dataset;
+    let { i, j } = e.currentTarget.dataset;
     // console.log(i, j);
     this.setData({
-      [`myRatings[${i}].score`]: j+1,
+      [`myRatings[${i}].score`]: j + 1,
     });
   },
 
@@ -149,24 +141,24 @@ Page({
     }
 
     if (!myRatingId) {
-      var res = (await api.curdOp({
+      var res = await api.curdOp({
         operation: "add",
         collection: "rating",
         data: item
-      })).result;
+      });
     } else {
-      var res = (await api.curdOp({
+      var res = await api.curdOp({
         operation: "update",
         collection: "rating",
         data: item,
         item_id: myRatingId
-      })).result;
+      });
     }
-    
+
     console.log(res);
 
     // 更新猫的评分
-    await api.updateCatRating({cat_id});
+    await api.updateCatRating({ cat_id });
     await Promise.all([
       this.reloadMyRatings(),
       this.reloadCatRating()

@@ -1,7 +1,6 @@
 import config from "../../../config";
 
 // 用于初始化数据库的默认数据（不要修改！）
-const default_init_data_id = "deploy_test";
 const default_init_data = [];
 
 // 科普页的默认数据（不要修改！部署完成后，在数据库science中修改）
@@ -143,7 +142,7 @@ const init_setting = [{
     "apps": [{
       "appid": "wx5bd705b2bc91c73b",
       "logo": "/pages/public/images/system/zdmp.png",
-      "name": "中大猫谱"
+      "name": "笃行猫谱"
     }]
   },
   {
@@ -166,37 +165,36 @@ const init_setting = [{
 module.exports = {
   // 云函数的名称
   functions: {
-    commentCheck: "v1.1",
-    countPhoto: "v1.1",
-    curdOp: "v1.5",
-    deleteFiles: "v1.1",
-    deployTest: "v1.2",
-    genBadgeCode: "v1.0",
-    getAccessToken: "v1.1",
-    getAllSci: "v1.0",
-    getAppSecret: "v1.2",
-    getBadge: "v1.2",
-    getBadgeRank: "v1.2",
-    getMpCode: "v1.2",
-    getPhotoRank: "v1.0",
-    getTempCOS: "v1.1",
-    getURL: "v1.1",
-    getUserStats: "v1.0",
-    giveBadge: "v1.0",
-    globalLock: "v1.0",
-    isManager: "v1.1",
-    login: "v1.1",
-    managePhoto: "v1.1",
-    sendMsgV2: "v1.1",
-    timeTriggers: "v1.1",
-    updateCat: "v1.1",
-    updateCatRating : "v1.0",
-    updateFollowCats : "v1.0",
-    userOp: "v1.1",
-    utils: "v1.0",
+    "commentCheck": "v2.0",
+    "countPhoto": "v2.0",
+    "curdOp": "v2.0",
+    "deleteCosFiles": "v2.0",
+    "deleteFiles": "v2.0",
+    "genBadgeCode": "v2.0",
+    "getAccessToken": "v2.0",
+    "getAllSci": "v2.0",
+    "getBadge": "v2.0",
+    "getBadgeRank": "v2.0",
+    "getMpCode": "v2.0",
+    "getPhotoRank": "v2.0",
+    "getTempCOS": "v2.0",
+    "getURL": "v2.0",
+    "getUserStats": "v2.0",
+    "giveBadge": "v2.0",
+    "initVaccineTypes": "v2.0",
+    "isManager": "v2.0",
+    "managePhoto": "v2.0",
+    "sendMsgV2": "v2.0",
+    "transferFromLaf": "v2.0",
+    "updateCat": "v2.0",
+    "updateCatRating": "v2.0",
+    "updateFollowCats": "v2.0",
+    "userOp": "v2.0",
+    "vaccineOp": "v2.0",
+
   },
-  default_init_data_id: default_init_data_id,
   collections: {
+    // "app_secret": default_init_data,
     "badge": default_init_data,
     "badge_def": default_init_data,
     "badge_rank": default_init_data,
@@ -213,6 +211,7 @@ module.exports = {
     "science": init_science,
     "setting": init_setting,
     "user": default_init_data,
+    "vaccine": default_init_data,
   },
   images: {
     "science_imgs[0]": config.science_imgs[0],

@@ -1,8 +1,8 @@
 import { formatDate } from "../../../utils/utils";
 import { checkAuth } from "../../../utils/user";
-import { cloud } from "../../../utils/cloudAccess";
 import api from "../../../utils/cloudApi";
 
+const app = getApp();
 Page({
 
   /**
@@ -27,9 +27,8 @@ Page({
     wx.showLoading({
       title: '加载投喂记录中',
     })
-    const db = await cloud.databaseAsync();
-    var res = await db.collection('reward').orderBy('recordDate', 'desc').orderBy('mdate', 'desc').get();
-    for (var r of res.data) {
+    var { result } = await app.mpServerless.db.collection('reward').find({}, { sort: { mdate: -1, recordDate: -1 } });
+    for (var r of result) {
       r.mdate = r.recordDate ? new Date(r.recordDate) : new Date(r.mdate);
       r.mdateStr = r.mdate.getFullYear() + '年' + (r.mdate.getMonth() + 1) + '月';
       r.records_raw = r.records;
@@ -37,9 +36,8 @@ Page({
       r.changing = false;
     }
     this.setData({
-      rewards: res.data
+      rewards: result
     });
-    console.log(res.data);
     wx.hideLoading();
   },
 

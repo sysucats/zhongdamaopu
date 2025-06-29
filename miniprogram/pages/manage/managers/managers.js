@@ -1,11 +1,10 @@
 // miniprogram/pages/manage/managers.js
 import { checkAuth } from "../../../utils/user";
-import { cloud } from "../../../utils/cloudAccess";
 import api from "../../../utils/cloudApi";
 
 // 是否正在加载
 var loading = false;
-
+const app = getApp();
 Page({
 
   /**
@@ -80,11 +79,10 @@ Page({
   },
 
   // 读取用户列表
-  loadUsers: async function(reload) {
+  loadUsers: async function (reload) {
     if (loading) {
       return false;
     }
-    const db = await cloud.databaseAsync();
     var users = this.data.users;
     loading = true;
     wx.showLoading({
@@ -93,22 +91,22 @@ Page({
     var userSearch = this.data.userSearch;
     var query = {};
     if (userSearch) {
-      query["userInfo.nickName"] = db.RegExp({regexp: userSearch, options: 'ims'});
+      query["userInfo.nickName"] = { $regex: userSearch }
     }
     if (this.data.managerOnly) {
-      query["manager"] = db.command.gt(0);
+      query["manager"] = { $gt: 0 }
     }
     if (this.data.role1Only) {
-      query["role"] = db.command.gt(0);
+      query["role"] = { $gt: 0 }
     }
     console.log("query", query);
-    var userRes = await db.collection('user').where(query).skip(users.length).limit(10).get();
+    var { result: userRes } = await app.mpServerless.db.collection('user').find(query, { skip: users.length, limit: 10 })
     console.log(userRes);
     wx.hideLoading();
     if (reload) {
-      users = userRes.data;
+      users = userRes;
     } else {
-      if (!userRes.data.length) {
+      if (!userRes.length) {
         wx.showToast({
           title: '加载完啦',
           icon: 'none',
@@ -116,7 +114,7 @@ Page({
         loading = false;
         return;
       }
-      users = users.concat(userRes.data);
+      users = users.concat(userRes);
     }
     this.setData({
       users: users
@@ -125,7 +123,7 @@ Page({
   },
 
   // 滑到底部来reload
-  scrollToReload: async function(e) {
+  scrollToReload: async function (e) {
     await this.loadUsers();
   },
 
@@ -137,7 +135,7 @@ Page({
   },
 
   // 搜索
-  fSearch: async function(e) {
+  fSearch: async function (e) {
     this.data.users = [];
     await this.loadUsers(true);
   },
@@ -171,25 +169,25 @@ Page({
       // 最后一个是99管理员
       level = 99;
     }
-    console.log("#"+index, _id, level);
+    console.log("#" + index, _id, level);
 
-    const res = (await api.curdOp({
+    const res = await api.curdOp({
       operation: "update",
       collection: "user",
       item_id: _id,
       data: {
         manager: level
       }
-    })).result;
-    
+    })
+
     console.log("updateManager Result:", res);
-    if (res.ok && res.updated == 1) {
+    if (res.ok && res.n == 1) {
       wx.showToast({
         title: '更新成功',
       });
     } else {
       wx.showToast({
-        title: '更新失败\r\n' + res.msg,
+        title: '更新失败',
         icon: 'none',
       })
     }

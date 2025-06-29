@@ -5,11 +5,9 @@ import {
   getPageUserInfo,
   checkAuth
 } from "../../../utils/user";
-import {
-  cloud
-} from "../../../utils/cloudAccess";
 import api from "../../../utils/cloudApi";
-
+import { uploadFile } from "../../../utils/common"
+const app = getApp();
 Page({
   /**
    * 页面的初始数据
@@ -26,8 +24,10 @@ Page({
     maxlength: 800,
     photos: [],
     photos_path: [],
+    photos_pathId: [],
     cover: 0,
     cover_path: "",
+    cover_pathId: "",
     uploading: false,
     buttons: [{
       id: 0,
@@ -253,20 +253,23 @@ Page({
     const ext = tempFilePath.substr(index + 1);
 
     const that = this;
-    const upRes = await cloud.uploadFile({
-      cloudPath: 'news' + '/' + generateUUID() + '.' + ext, // 上传至云端的路径
+    const upRes = await uploadFile({
       filePath: tempFilePath, // 小程序临时文件路径
-    });
+      cloudPath: '/news' + '/' + generateUUID() + '.' + ext, // 上传至云端的路径
+    })
 
     console.log("[uploadImg] - upload Result: ", upRes);
-    if (type == 0) { // 上传普通图片，更新路径 photos_path
-      that.data.photos_path.push(upRes.fileID);
+    if (type == 0) { 
+      that.data.photos_path.push(upRes.fileUrl);
+      that.data.photos_pathId.push(upRes.fileId);
       that.setData({
-        photos_path: that.data.photos_path
+        photos_path: that.data.photos_path,
+        photos_pathId: that.data.photos_pathId
       });
     } else { // 上传封面，更新路径 cover_path
       that.setData({
-        cover_path: upRes.fileID
+        cover_path: upRes.fileUrl,
+        cover_pathId: upRes.fileId
       });
     }
   },
@@ -335,20 +338,23 @@ Page({
       title: submitData.title,
       mainContent: submitData.mainContent,
       coverPath: that.data.cover_path,
+      coverPathId: that.data.cover_pathId,
       photosPath: that.data.photos_path,
+      photosPathId: that.data.photos_pathId,
       class: classBelongto,
       setNewsModal: setNewsModal
     };
+    console.log("[bindSubmit] - data: ", data);
 
-    const res = (await api.curdOp({
+    const res = await api.curdOp({
       operation: "add",
       collection: "news",
       data: data
-    })).result;
+    });
     console.log("newOp(create) Result:", res);
     if (res.ok) {
       that.setData({
-        news_id: res._id
+        news_id: res.insertedId
       });
       wx.showToast({
         title: '发布成功',

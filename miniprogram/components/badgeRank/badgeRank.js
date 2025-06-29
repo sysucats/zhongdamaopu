@@ -1,8 +1,5 @@
 // components/badgeRank/badgeRank.ts
 import {
-  cloud
-} from "../../utils/cloudAccess";
-import {
   loadBadgeDefMap,
   sortBadgeDef
 } from "../../utils/badge";
@@ -14,7 +11,8 @@ import {
   formatDate
 } from "../../utils/utils";
 import * as config from "../../config";
-
+import { signCosUrl } from "../../utils/common";
+const app = getApp();
 Component({
   /**
    * 组件的属性列表
@@ -53,21 +51,20 @@ Component({
       this.setData({
         loading: true
       })
-      const db = await cloud.databaseAsync();
       // 获取榜单和标签定义
       let [rankRes, badgeDefMap] = await Promise.all([
-        db.collection('badge_rank').orderBy('mdate', 'desc').limit(1).get(),
+        app.mpServerless.db.collection('badge_rank').findOne({}, { sort: { mdate: -1 } }),
         loadBadgeDefMap(),
       ]);
-      rankRes = rankRes.data;
-      if (!rankRes || !rankRes.length) {
+      rankRes = rankRes.result;
+      if (!rankRes) {
         return;
       }
-      let updateTime = formatDate(new Date(rankRes[0].mdate), "yyyy-MM-dd hh:mm");
+      let updateTime = formatDate(new Date(rankRes.mdate), "yyyy-MM-dd hh:mm");
       // 找到激活的filter
       const {filters, activeFilter} = this.data;
       let activeRankKey = filters[activeFilter].days;
-      rankRes = rankRes[0].rankV2[activeRankKey];
+      rankRes = rankRes.rankV2[activeRankKey];
       // console.log(rankRes);
 
       // 获取标签定义，按等级进行排序，作为展示顺
@@ -153,7 +150,7 @@ Component({
     async _getRankInfo(key, badgeDefMap) {
       if (key === 'count') {
         return {
-          img: await cloud.signCosUrl(config.badge_rank_count_img),
+          img: await signCosUrl(config.badge_rank_count_img),
           name: "徽章总数榜",
           rankDesc: "拥有徽章个数最多的猫猫",
           level: "A",
@@ -161,7 +158,7 @@ Component({
       }
       if (key === 'score') {
         return {
-          img: await cloud.signCosUrl(config.badge_rank_score_img),
+          img: await signCosUrl(config.badge_rank_score_img),
           name: "徽章价值榜",
           rankDesc: "徽章总价值最大的猫猫",
           level: "A",

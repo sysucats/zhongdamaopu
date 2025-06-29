@@ -1,8 +1,7 @@
 import { getPageUserInfo, toSetUserInfo, fillUserInfo } from "../../utils/user";
 import { formatDate } from "../../utils/utils";
 import { text as text_cfg } from "../../config";
-import { cloud } from "../../utils/cloudAccess";
-
+const app = getApp();
 //  默认头像
 const defaultAvatarUrl = "/pages/public/images/info/default_avatar.png";
 
@@ -32,17 +31,16 @@ Component({
       await getPageUserInfo(this);
       await this.getMyRank();
     },
-  
+
     async getRank() {
-      const db = await cloud.databaseAsync();
-      var rankRes = await db.collection('photo_rank').orderBy('mdate', 'desc').limit(1).get();
-      
-      if (rankRes.data.length == 0) {
+      var { result: rankRes } = await app.mpServerless.db.collection('photo_rank').find({}, { sort: { mdate: -1 }, limit: 1 })
+
+      if (rankRes.length == 0) {
         // 还没有月榜
         return false;
       }
-      const rankTime = formatDate(new Date(rankRes.data[0].mdate), "yyyy-MM-dd hh:mm");
-      const rank_stat = rankRes.data[0].stat;
+      const rankTime = formatDate(new Date(rankRes[0].mdate), "yyyy-MM-dd hh:mm");
+      const rank_stat = rankRes[0].stat;
 
       var ranks = [];
       for (const key in rank_stat) {
@@ -58,28 +56,27 @@ Component({
         return parseInt(b.count) - parseInt(a.count)
       });
       for (var i = 0; i < ranks.length; i++) {
-        ranks[i].rank = i+1;
+        ranks[i].rank = i + 1;
       }
-      for (var i = 1; i<ranks.length; i++) {
-        if (ranks[i].count == ranks[i-1].count) {
+      for (var i = 1; i < ranks.length; i++) {
+        if (ranks[i].count == ranks[i - 1].count) {
           ranks[i].rank = ranks[i - 1].rank;
         }
       }
-  
+
       this.setData({
         ranks,
         rankTime
       });
-  
+
       await this.getMyRank();
     },
-  
+
     async getMyRank() {
       if (!this.data.user || !this.data.ranks) {
         return false;
       }
       const ranks = this.data.ranks;
-    
       const openid = this.data.user.openid;
       console.log(openid, ranks);
       for (const i in ranks) {
@@ -92,10 +89,10 @@ Component({
         }
       }
     },
-    
-    getUInfo: function() {
+
+    getUInfo: function () {
       this.setData({
-      showEdit: true
+        showEdit: true
       });
     },
     onUserInfoUpdated(event) {

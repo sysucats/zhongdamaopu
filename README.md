@@ -22,7 +22,7 @@
 ## 体验一下
 打开微信，扫码或搜索“笃行猫谱”（原名中大猫谱，23年底更名）。
 
-<img src="./readme/qrcode1.png" height = "150" alt="中大猫谱菊花码" />
+<img src="./readme/qrcode1.png" height = "150" alt="笃行猫谱菊花码" />
 
 ### 朋友们的小程序
 
@@ -49,26 +49,22 @@
 ## 资料整理
 |资料名|类型|链接|
 |:----:|:----:|:----:|
-|猫谱-部署文档|文档|https://docs.qq.com/doc/DSGFvWGF4UnVrQ3VN|
+|猫谱-部署文档|文档|https://docs.qq.com/doc/DSE1vd0p3RERvWXJS|
 |猫谱-管理员手册|文档|https://docs.qq.com/doc/DSEl0aENOSEx5cmtE|
 
 # :scroll:部署
 
 :smirk_cat:*无需从零开始，只要一些耐心。*
 
-Laf版暂时没有录制部署视频，部署流程请参考：[猫谱Laf版文档](https://docs.qq.com/doc/DSGFvWGF4UnVrQ3VN)
+EMAS版暂时没有录制部署视频，部署流程请参考：[猫谱EMAS版文档](https://docs.qq.com/doc/DSE1vd0p3RERvWXJS)
 
-考虑到wx云开发的[新收费标准](https://developers.weixin.qq.com/community/minihome/doc/0000a680588d3891fa2ec250c51401)（约50元/月），我们将代码迁移到[Laf云开发](https://laf.run/signup?code=Ld9h8b4)平台。
-
-    Laf云是一个开源的云开发平台，可以私有部署到自己的服务器上，也可以使用目前Laf官方的付费资源，约13元/月。
-
-国内高校同学可以免费使用，参考文档进行申请：[【腾讯文档】中大猫谱-Laf高校代金券计划](https://docs.qq.com/doc/DSGhxbVhuUnJqaUhF)
+注：考虑到Laf平台不再维护，迁移到阿里云的EMAS Serverless平台，比较稳定。费用每个月：EMAS后端5元左右，腾讯云COS存照片约5元左右。代码迁移过程非常感谢[maopu-EMAS项目](https://github.com/Smileye-v/maopu-EMAS)。
 
 # :dancers:开发团队
 
 本项目的开发工作100%用爱发电，特别感谢每一位为此付出的小伙伴。
 
-:computer:代码开发：[Zing22](https://github.com/Zing22)、[Jazon](https://github.com/jxzhn)、[Junius](https://github.com/JunDeer)、[yw](https://github.com/WondrousWisdomcard)、[Lauzeyu](https://github.com/parsifal486)
+:computer:代码开发：[Zing22](https://github.com/Zing22)、[Jazon](https://github.com/jxzhn)、[Junius](https://github.com/JunDeer)、[yw](https://github.com/WondrousWisdomcard)、[Lauzeyu](https://github.com/parsifal486)、[Smileye-v](https://github.com/Smileye-v)
 
 :black_nib:UI设计：蓝卷、[Junius](https://github.com/JunDeer)、[yw](https://github.com/WondrousWisdomcard)
 

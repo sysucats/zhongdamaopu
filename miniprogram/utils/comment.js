@@ -1,5 +1,4 @@
 import { getCacheItem, setCacheItem, cacheTime } from "./cache";
-import { cloud } from "./cloudAccess"
 
 function _commentCountKey(cat_id) {
   return `cat-comment-count-${cat_id}`;
@@ -15,22 +14,17 @@ async function getCatCommentCount(cat_id, options) {
   }
 
   cacheItem = await _doGetCatCommentCount(cat_id);
-  
   setCacheItem(cacheKey, cacheItem, cacheTime.commentCount);
   return cacheItem;
 }
 
 async function _doGetCatCommentCount(cat_id) {
+  const app = getApp();
   if (cat_id === undefined) {
     return 0;
   }
-  const db = await cloud.databaseAsync();
-  const _ = db.command;
-  const coll_comment = db.collection('comment');
-  return (await coll_comment.where({
-    cat_id: cat_id, 
-    deleted: _.neq(true)
-  }).count()).total;
+  const { result } = await app.mpServerless.db.collection('comment').count({ cat_id: cat_id, deleted: { $ne: true } })
+  return result;
 }
 
 module.exports = {

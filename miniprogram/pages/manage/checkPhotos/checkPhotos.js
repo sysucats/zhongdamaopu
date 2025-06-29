@@ -1,12 +1,11 @@
 // 审核照片
 import { checkAuth, fillUserInfo } from "../../../utils/user";
-import { sleep } from "../../../utils/utils";
 import { requestNotice, sendVerifyNotice, getMsgTplId } from "../../../utils/msg";
 import cache from "../../../utils/cache";
+import { signCosUrl } from "../../../utils/common";
 import { getCatItem } from "../../../utils/cat";
-import { cloud } from "../../../utils/cloudAccess";
 import api from "../../../utils/cloudApi";
-
+const app = getApp();
 
 Page({
 
@@ -44,36 +43,31 @@ Page({
   },
 
   async loadPhotosAndFillUserInfo(skip_i) {
-    const db = await cloud.databaseAsync();
-    var res = await db.collection("photo").where({verified: false}).skip(skip_i).limit(20).get();
-    await fillUserInfo(res.data, "_openid", "userInfo");
-    return res;
+    var { result } = await app.mpServerless.db.collection('photo').find({ verified: false }, { skip: skip_i, limit: 20 })
+    await fillUserInfo(result, "_openid", "userInfo");
+    return { data: result };
   },
 
   async loadAllPhotos() {
     wx.showLoading({
       title: '加载中...',
     });
-    const db = await cloud.databaseAsync();
     // 获取所有照片
-    var total_count = (await db.collection('photo').where({
-      verified: false
-    }).count()).total;
+    var { result: total_count } = await app.mpServerless.db.collection('photo').count({ verified: false });
 
     var pools = [];
-    for (var i=0; i<total_count; i+=20) {
+    for (var i = 0; i < total_count; i += 20) {
       pools.push(this.loadPhotosAndFillUserInfo(i));
     }
-
     var photos = await Promise.all(pools);
-    
+
     // 拼接多个array
     photos = photos.map(x => x.data);
     photos = Array.prototype.concat.apply([], photos);
-
     var campus_list = {};
     var memory_cache = {};
     for (var photo of photos) {
+      photo.photo_id = await signCosUrl(photo.photo_id)
       if (memory_cache[photo.cat_id]) {
         photo.cat = memory_cache[photo.cat_id];
       } else {
@@ -89,18 +83,18 @@ Page({
       // console.log("[loadAllPhotos] - ", campus, photo);
       campus_list[campus].push(photo);
     }
-    
     // 恢复最后一次审批的校区
     var cache_active_campus = cache.getCacheItem("checkPhotoCampus");
     if (!cache_active_campus || !campus_list[cache_active_campus]) {
       cache_active_campus = undefined
     }
-    
+
+    console.log("[loadAllPhotos] - ", campus_list);
+
     this.setData({
       campus_list: campus_list,
       active_campus: cache_active_campus,
     })
-    
     await wx.hideLoading();
   },
 
@@ -112,7 +106,6 @@ Page({
     if (active_campus == campus) {
       return;
     }
-    
     this.setData({
       active_campus: campus
     });
@@ -191,13 +184,12 @@ Page({
     var active_campus = this.data.active_campus;
     var photos = this.data.campus_list[active_campus];
     var nums = {}, total_num = 0;
-    if(photos == undefined || photos.length == 0){
+    if (photos == undefined || photos.length == 0) {
       wx.showToast({
         title: '无审核图片',
       });
       return;
     }
-    
     for (const photo of photos) {
       if (!photo.mark || photo.mark == "") {
         continue;
@@ -205,14 +197,13 @@ Page({
       if (!(photo.mark in nums)) {
         nums[photo.mark] = 0;
       }
-      nums[photo.mark] ++;
-      total_num ++;
+      nums[photo.mark]++;
+      total_num++;
     }
 
     if (total_num == 0) {
       return false;
     }
-    
     var modalRes = await wx.showModal({
       title: '确定批量审核？',
       content: `删除${nums['delete'] || 0}张，通过${nums['pass'] || 0}张，精选${nums['best'] || 0}张`,

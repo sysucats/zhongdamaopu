@@ -2,11 +2,8 @@ import {
   getPageUserInfo,
   checkAuth
 } from "../../../utils/user";
-import {
-  cloud
-} from "../../../utils/cloudAccess";
 import api from "../../../utils/cloudApi";
-
+const app = getApp();
 Page({
 
   /**
@@ -69,16 +66,15 @@ Page({
   onShow: async function () {
     await getPageUserInfo(this);
   },
-  
+
   async loadNews() {
     const that = this;
-    const db = await cloud.databaseAsync();
-    const res = await db.collection('news').where({
-      "_id": this.data.news_id
-    }).get();
-    console.log("[loadNews] - NewsDetail:", res);
+    const { result } = await app.mpServerless.db.collection('news').findOne({
+      _id: this.data.news_id
+    })
+    console.log("[loadNews] - NewsDetail:", result);
     for (var i = 0; i < that.data.buttons.length; i++) {
-      if (that.data.buttons[i].name == res.data[0].class) {
+      if (that.data.buttons[i].name == result.class) {
         that.data.buttons[i].checked = true;
       }
     }
@@ -91,7 +87,7 @@ Page({
       name: '是',
       checked: false,
     }];
-    if (res.data[0].setNewsModal == true) {
+    if (result.setNewsModal == true) {
       modalButtons = [{
         id: 0,
         name: '否',
@@ -103,10 +99,10 @@ Page({
       }];
     }
     that.setData({
-      news: res.data[0],
-      photos_path: res.data[0].photosPath,
-      titlelength: res.data[0].title.length,
-      length: res.data[0].mainContent.length,
+      news: result,
+      photos_path: result.photosPath,
+      titlelength: result.title.length,
+      length: result.mainContent.length,
       buttons: that.data.buttons,
       modalButtons: modalButtons,
     })
@@ -219,7 +215,6 @@ Page({
     const resModal = await wx.showModal({
       content: '确认修改'
     })
-    
     if (resModal.confirm) {
       await this.doModify(this.data.news_id, data)
     }
@@ -233,7 +228,6 @@ Page({
       item_id: item_id,
       data: item_data
     })).result;
-    
     console.log("[doModify] - 修改成功", res);
     wx.showToast({
       title: '修改成功',

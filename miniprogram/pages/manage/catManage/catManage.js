@@ -1,8 +1,7 @@
-import { cloud } from "../../../utils/cloudAccess";
 import { checkAuth } from "../../../utils/user";
 import { getAvatar, getCatItem } from "../../../utils/cat";
 import config from "../../../config";
-
+const app = getApp();
 Page({
   /**
    * 页面的初始数据
@@ -28,7 +27,7 @@ Page({
   async onLoad(options) {
     // 检查用户权限
     if (await checkAuth(this, 2)) {
-      this.setData({ 
+      this.setData({
         auth: true,
         catInfoTab: this.selectComponent('#catInfoTab')
       });
@@ -105,7 +104,6 @@ Page({
     this.setData({
       searchKeyword: e.detail.value
     });
-    
     // 清除输入框时隐藏搜索结果
     if (!e.detail.value.trim()) {
       this.setData({
@@ -125,22 +123,17 @@ Page({
 
     try {
       wx.showLoading({ title: '搜索中...' });
-      
-      const db = await cloud.databaseAsync();
-      const _ = db.command;
-      
       // 搜索名称或昵称
-      const results = await db.collection('cat')
-        .where(_.or([
-          { name: db.RegExp({ regexp: keyword, options: 'i' }) },
-          { nickname: db.RegExp({ regexp: keyword, options: 'i' }) }
-        ]))
-        .limit(10)
-        .get();
-      
+      const { result } = await app.mpServerless.db.collection('cat').find({
+        $or: [
+          { name: { $regex: keyword} },
+          { nickname: { $regex: keyword} },
+        ]
+      }, { limit: 10 });
+
       // 加载头像
       const cats = [];
-      for (const cat of results.data) {
+      for (const cat of result) {
         cat.avatar = await getAvatar(cat._id, cat.photo_count_best);
         cats.push(cat);
       }
@@ -168,7 +161,7 @@ Page({
     const catId = e.currentTarget.dataset.id;
     console.log('选中猫咪ID:', catId);
     this.getCatById(catId);
-    this.setData({ 
+    this.setData({
       showSearchResults: false,
       searchKeyword: '',
       hasShownInfoModal: false // 重置弹窗标志，以便下次未选猫时能够再次弹出
@@ -190,24 +183,24 @@ Page({
    */
   async getCatById(catId) {
     if (!catId) return;
-    
+
     try {
       wx.showLoading({ title: '加载中...' });
       console.log('正在获取猫咪信息, ID:', catId);
-      
+
       // 获取猫咪基本信息和头像
       const cat = await getCatItem(catId);
       cat.avatar = await getAvatar(cat._id, cat.photo_count_best);
-      
+
       console.log('获取到猫咪信息:', cat);
-      
-      this.setData({ 
+
+      this.setData({
         selectedCat: cat,
         isNewMode: false // 重置新建模式
       });
-      
+
       console.log('selectedCat已更新:', this.data.selectedCat);
-      
+
       // 确保catInfoTab加载最新的猫咪信息
       setTimeout(() => {
         const catInfoTab = this.selectComponent('#catInfoTab');
@@ -225,7 +218,6 @@ Page({
           }
         }
       }, 300);
-      
       wx.hideLoading();
     } catch (error) {
       console.error("加载猫咪信息失败:", error);
@@ -277,7 +269,6 @@ Page({
       showVaccineOptions: false
     });
   },
-  
   // 查看已接种疫苗的猫
   handleViewVaccinatedCats() {
     const vaccineTab = this.selectComponent('#vaccineTab');
@@ -308,7 +299,6 @@ Page({
     this.setData({
       isNewMode: true
     });
-    
     const infoTab = this.selectComponent('#catInfoTab');
     if (infoTab) {
       infoTab.createNewCat();
@@ -318,7 +308,6 @@ Page({
     } else {
       console.log('未找到catInfoTab组件，请确保在信息选项卡已激活');
     }
-    
     // 如果当前不在信息选项卡，则切换到信息选项卡
     if (this.data.activeTab !== 'info') {
       this.setData({ activeTab: 'info' });
@@ -368,7 +357,6 @@ Page({
   // 按钮
   handleActionButtonClick() {
     const { activeTab } = this.data;
-    
     if (activeTab === 'vaccine') {
       this.toggleVaccineOptions();
     } else if (activeTab === 'relation') {

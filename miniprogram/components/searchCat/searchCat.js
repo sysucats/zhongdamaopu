@@ -1,8 +1,8 @@
 // components/searchCat/searchCat.js
 import { getAvatar } from "../../utils/cat";
 import { regReplace } from "../../utils/utils";
-import { cloud } from "../../utils/cloudAccess";
 import config from "../../config";
+const app = getApp();
 
 Component({
   /**
@@ -41,10 +41,8 @@ Component({
         filters_input: value
       })
     },
-  
+
     async doSearchCat() {
-      const db = await cloud.databaseAsync();
-      const _ = db.command;
       if (!this.data.filters_input || this.data.jsData.loading) {
         return false;
       }
@@ -59,20 +57,18 @@ Component({
         for (const n of filters_input.trim().split(' ')) {
           search_str.push(`(.*${n}.*)`);
         }
-        let regexp = db.RegExp({
-          regexp: search_str.join("|"),
-          options: 'is',
+        // EMAS Serverless 查询方式
+        filters.push({
+          $or: [ // 使用 $or
+            { name: { $regex: search_str.join("|") } },
+            { nickname: { $regex: search_str.join("|") } }
+          ]
         });
-        filters.push(_.or([{
-          name: regexp
-        }, {
-          nickname: regexp
-        }]));
       }
-      
+
       // 准备搜索
-      var query = filters.length ? _.and(filters) : {};
-      var cats = (await db.collection('cat').where(query).get()).data;
+      var query = filters.length ? {"$and" : (filters)} : {};
+      const { result: cats } = await app.mpServerless.db.collection('cat').find(query);
       // 获取头像
       for (var cat of cats) {
         cat.avatar = await getAvatar(cat._id, cat.photo_count_best);

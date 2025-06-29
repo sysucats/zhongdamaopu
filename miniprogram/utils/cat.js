@@ -1,7 +1,8 @@
 // 放置与cat对象有关的函数
 import { randomInt } from "./utils";
+import { signCosUrl } from "./common";
 import { getCacheItem, setCacheItem, getCacheDate, setCacheDate, cacheTime } from "./cache";
-import { cloud } from "./cloudAccess";
+const app = getApp();
 
 // 获取猫猫的封面图
 async function getAvatar(cat_id, total) {
@@ -14,22 +15,31 @@ async function getAvatar(cat_id, total) {
   if (cacheItem) {
     return cacheItem;
   }
-  
   // photo_id : 不以 HEIC 为文件后缀的字符串
   const qf = {
     cat_id: cat_id,
     verified: true,
-    best: true,
-    photo_id: /^((?!\.heic$).)*$/i
+    best: true
   };
 
   var index = randomInt(0, total);
-  
-  const db = await cloud.databaseAsync();
-  const coll_photo = db.collection('photo');
-  var pho_src = (await coll_photo.where(qf).skip(index).limit(1).get()).data;
-  cacheItem = pho_src[0];
-  
+
+  const { result: pho_src } = await app.mpServerless.db.collection('photo').find(qf, { skip: index, limit: 1 })
+  const photo = pho_src[0];
+
+  // 签名处理
+  if (photo.photo_id) {
+    photo.photo_id = await signCosUrl(photo.photo_id);
+  }
+  if (photo.photo_compressed) {
+    photo.photo_compressed = await signCosUrl(photo.photo_compressed);
+  }
+  if (photo.photo_watermark) {
+    photo.photo_watermark = await signCosUrl(photo.photo_watermark);
+  }
+
+  cacheItem = photo;
+
   setCacheItem(cacheKey, cacheItem, cacheTime.catAvatar);
   return cacheItem;
 }
@@ -56,9 +66,8 @@ async function getCatItem(cat_id, options) {
     return cacheItem;
   }
 
-  const db = await cloud.databaseAsync();
-  const coll_cat = db.collection('cat');
-  cacheItem = (await coll_cat.doc(cat_id).get()).data;
+  const { result } = await app.mpServerless.db.collection('cat').findOne({ _id: cat_id });
+  cacheItem = result
   setCacheItem(cacheKey, cacheItem, cacheTime.catItem);
   return cacheItem;
 }
@@ -81,27 +90,24 @@ async function getCatItemMulti(cat_ids, options) {
   }
 
   // 请求没有的
-  const db = await cloud.databaseAsync();
-  const _ = db.command;
-  const coll_cat = db.collection('cat');
-  if (not_found.length) {
+  if (not_found.length > 0) {
     let db_query = [];
-    for (let i = 0; i < not_found.length; i+=100) {
-      db_query.push(coll_cat.where({_id: _.in(not_found)}).skip(i).get());
+    for (let i = 0; i < not_found.length; i += 100) {
+      const { result: db_res } = await app.mpServerless.db.collection('cat').find({ _id: { $in: not_found } }, { skip: i });
+      db_query.push(db_res)
     }
 
     let db_res = [];
     for (const res of (await Promise.all(db_query))) {
-      db_res = db_res.concat(res.data);
+      db_res = db_res.concat(res);
     }
-
+    console.log("db_res", db_res);
     for (var c of db_res) {
       var cacheKey = `cat-item-${c._id}`;
       setCacheItem(cacheKey, c, cacheTime.catItem);
       res[c._id] = c;
     }
   }
-  
   return cat_ids.map(x => res[x]);
 }
 
@@ -116,7 +122,7 @@ async function getAllCats(options) {
   // 请求没有的
   var res = [];
   while (true) {
-    const cats = (await db.collection('cat').skip(res.length).get()).data;
+    const cats = (await app.mpServerless.db.collection('cat').find({}, { skip: res.length })).result;
     if (!cats || cats.length === 0) {
       break;
     }
@@ -131,7 +137,6 @@ async function getAllCats(options) {
     }
   }
   setCacheItem(cacheKey, res, cacheTime.catItem);
-  
   return res;
 }
 

@@ -1,36 +1,50 @@
 import dp_cfg from "./deployConfig";
-import {
-  cloud,
-  ensureToken,
-} from "../../../utils/cloudAccess";
-import { use_private_tencent_cos } from "../../../config";
+import { getCurrentUserOpenid, signCosUrl, downloadFile } from "../../../utils/common"
+
+const app = getApp();
 
 const STATUS_DOING = 0;
 const STATUS_OK = 1;
 const STATUS_FAIL = 2;
 
 
+async function _checkFuncs() {
+  let res = {
+    "ok": [],
+    "ver_err": [],
+    "not_exist": [],
+  };
+  const funcs = dp_cfg.functions
+  for (const name in funcs) {
+    try {
+      const {result: funcRes} = await await app.mpServerless.function.invoke(name, { deploy_test: true });
+      console.log(name, funcs[name], funcRes);
+      if (funcRes == funcs[name]) {
+        res["ok"].push(name);
+      } else {
+        res["ver_err"].push(name);
+      }
+    } catch {
+        res["not_exist"].push(name);
+    }
+    
+  }
+  return res;
+}
+
+
+
 // 检查云函数是否都部署了
 async function checkFunctions() {
-  // 清理缓存
-  wx.clearStorageSync();
-  // 重新获取token
-  await ensureToken();
-
-  if (!wx.getStorageSync('accessToken')) {
+  const openid = await getCurrentUserOpenid();
+  if (!openid) {
     return {
       status: STATUS_FAIL,
-      addition: "登录失败，尝试重启Laf后台应用，或检查云函数依赖。"
+      addition: "登录失败，请检查本地“AppSecret.js”是否配置正确、检查EMAS云函数是否部署"
     };
   }
-
-  const res = (await cloud.callFunction({
-    name: "deployTest",
-    data: {
-      opType: "function",
-      funcs: dp_cfg.functions,
-    }
-  })).result;
+  
+  const res = await _checkFuncs();
   console.log(res);
 
   if (res["ver_err"].length === 0 && res["not_exist"].length === 0) {
@@ -47,93 +61,17 @@ async function checkFunctions() {
   };
 };
 
-// 检查AppSecret表是否正确填入
-async function checkAppSecret() {
-  var addition = [];
-  const MP_ERR_MSG = "MP_APPID、MP_SECRET";
-  const OSS_ERR_MSG = "OSS_PORT、OSS_ENDPOINT、OSS_BUCKET";
-  const COS_ERR_MSG = "OSS_SECRET_ID、OSS_SECRET_KEY";
-  // 重置一下后台缓存
-  await cloud.callFunction({
-    name: "deployTest",
-    data: {
-      opType: "resetSecret",
-    }
-  });
-
-  // 检查cos配置
-  console.log(cloud.cos);
-  if (use_private_tencent_cos && !cloud.cos) {
-    addition.push(COS_ERR_MSG);
-  }
-  // 签名一个cos链接
-  try {
-    console.log("check signCosUrl");
-    const res = await cloud.signCosUrl("https://test-123456789.cos.ap-guangzhou.myqcloud.com/user/avatar/test.png");
-    console.log("checksignCosUrl", res);
-    if (!res) {
-      addition.push(COS_ERR_MSG);
-    }
-  } catch (err) {
-    addition.push(COS_ERR_MSG);
-    console.error(err);
-  }
-
-  // 获取openid
-  try {
-    const code = (await wx.login()).code;
-    const res = await cloud.invokeFunction('login', { code });
-    console.log("checkAppSecret", res);
-    if (!res.openid) {
-      addition.push(MP_ERR_MSG);
-    }
-  } catch (err) {
-    addition.push(MP_ERR_MSG);
-    console.error(err);
-  }
-
-  // 上传文件
-  const data = (await cloud.callFunction({
-    name: "getURL",
-    data: {
-      fileName: "deployTest"
-    }
-  })).result;
-  console.log("checkAppSecret data", data);
-  if (!data || data.error || !data.postURL) {
-    addition.push(OSS_ERR_MSG)
-  }
-
-  if (!addition.length) {
-    return {
-      status: STATUS_OK
-    };
-  }
-
-  return {
-    status: STATUS_FAIL,
-    addition: "配置错误：" + addition.join("、")
-  }
-}
-
 // 检查云数据库是否创建完成
 async function checkDatabase() {
   const collections = dp_cfg.collections;
   var fail_list = [];
   for (const collName in collections) {
-    const initData = collections[collName];
-    console.log(collName, initData);
+    // const initData = collections[collName];
+    // console.log(collName, initData);
     try {
-      const res = (await cloud.callFunction({
-        name: "deployTest",
-        data: {
-          opType: "database",
-          dbName: collName,
-          dbInit: initData,
-        }
-      })).result;
-      console.log("checkDatabase", collName, res)
-      if (!res.ok) {
+      const res = await app.mpServerless.db.collection(collName).count({});
+      // console.log("checkDatabase", collName, res)
+      if (res.result === 'undefined') {
         fail_list.push(collName);
       }
     } catch (error) {
@@ -145,10 +83,10 @@ async function checkDatabase() {
   if (fail_list.length == 0) {
     return {
       status: STATUS_OK,
-      addition: "创建完成。"
+      addition: "数据表创建成功"
     };
   }
-  var addition = "未创建集合：" + fail_list.join(", ") + "。";
+  var addition = "未创建数据表：" + fail_list.join(", ") + "。";
   return {
     status: STATUS_FAIL,
     addition: addition
@@ -160,12 +98,9 @@ async function checkImage() {
   var fail_list = [];
   for (var key in dp_cfg.images) {
     const oriUrl = dp_cfg.images[key];
-    let url = await cloud.signCosUrl(oriUrl);
+    let url = await signCosUrl(oriUrl);
     try {
-      const res = await cloud.downloadFile({
-        fileID: url
-      });
-      console.log("checkImage", res);
+      const res = await downloadFile(url);
       if (res.statusCode !== 200) {
         fail_list.push(`("${key}": "${oriUrl}")`);
         console.log(`download fail: ${url}`);
@@ -174,7 +109,7 @@ async function checkImage() {
       console.log(`download success: ${url}`);
     } catch (error) {
       fail_list.push(`("${key}": "${oriUrl}")`);
-      console.log(`download fail: ${url}`);
+      console.log(`download fail: ${url}, error: ${JSON.stringify(error)}`);
     }
   }
   if (fail_list.length == 0) {
@@ -211,7 +146,7 @@ Page({
         title: "部署云函数",
         status: STATUS_DOING,
         func: checkFunctions,
-        tip: "请更新云函数，“laf func push”。\n",
+        tip: "请创建上传并部署云函数。\n",
         addition: "",
         break: true,
       },
@@ -219,22 +154,14 @@ Page({
         title: "数据库初始化",
         status: STATUS_DOING,
         func: checkDatabase,
-        tip: "数据库如果未创建，将会自动创建并初始化，稍等...\n",
+        tip: "数据表如果未创建，请通过控制台添加数据表吧\n",
         addition: "",
       },
       3: {
-        title: "Laf后台配置",
-        status: STATUS_DOING,
-        func: checkAppSecret,
-        tip: "在Laf后台，左下角设置，填写环境变量，保存重启laf应用。\n" +
-          "如果使用Laf的存储，则无需填OSS_PORT、OSS_ENDPOINT、OSS_SECRET_ID、OSS_SECRET_KEY。\n",
-        addition: "",
-      },
-      4: {
         title: "系统云存储图片",
         status: STATUS_DOING,
         func: checkImage,
-        tip: "请将系统图片上传至【云开发】-【存储】，并修改config.js中的图片链接。",
+        tip: "请将系统图片上传至【云存储】，并修改config.js中的图片链接。",
         addition: "",
         break: true,
       },

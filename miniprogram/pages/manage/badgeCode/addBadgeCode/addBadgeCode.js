@@ -1,5 +1,4 @@
 import { checkAuth } from "../../../../utils/user";
-import { cloud } from "../../../../utils/cloudAccess";
 import { levelOrderMap } from "../../../../utils/badge";
 import api from "../../../../utils/cloudApi";
 import { generateUUID } from "../../../../utils/utils";
@@ -65,7 +64,7 @@ Page({
   async clickSubmit() {
     console.log(this.data.input);
     // 有效性检查放到后端来检查
-    const res = (await api.genBadgeCode(this.data.input)).result;
+    const res = await api.genBadgeCode(this.data.input);
 
     if (res.ok) {
       wx.showModal({
@@ -76,7 +75,7 @@ Page({
     } else {
       wx.showModal({
         title: '失败了',
-        content: res.msg,
+        content: res.message,
         showCancel: false,
       })
     }

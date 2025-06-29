@@ -1,7 +1,6 @@
 import { getUser } from "../../../utils/user";
 import { deepcopy } from "../../../utils/utils";
 import config from "../../../config";
-import { cloud } from "../../../utils/cloudAccess";
 import api from "../../../utils/cloudApi";
 
 const defaultAvatarUrl = "/pages/public/images/info/default_avatar.png"
@@ -114,7 +113,7 @@ Page({
     
     // 获取用户数据
     const openid = this.data.user.openid;
-    const {result}  = await api.getUserStats({ openid });
+    const result = await api.getUserStats({ openid });
     this.setData({
       numUserComments: result.numUserComments,
       numUserLiked: result.numUserLiked,

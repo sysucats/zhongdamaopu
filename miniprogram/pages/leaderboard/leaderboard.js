@@ -6,10 +6,12 @@ import {
   likeCheck,
   likeAdd
 } from "../../utils/inter";
-import {getDateWithDiffHours, formatDate} from "../../utils/utils";
+import { getDateWithDiffHours, formatDate } from "../../utils/utils";
 import config from "../../config";
 import { showTab } from "../../utils/page";
-import { cloud } from "../../utils/cloudAccess";
+import { signCosUrl } from "../../utils/common";
+
+const app = getApp();
 
 const share_text = config.text.app_name + ' - ' + config.text.genealogy.share_tip;
 
@@ -33,17 +35,17 @@ Page({
     threadsActive: 1,
     filters: [{
       name: "周精选",
-      hours: 24*7,
+      hours: 24 * 7,
     }, {
       name: "月精选",
-      hours: 24*31,
+      hours: 24 * 31,
       active: true,
     }, {
       name: "年精选",
-      hours: 24*365
+      hours: 24 * 365
     }, {
       name: "总精选",
-      hours: 24*365*30
+      hours: 24 * 365 * 30
     },]
   },
   onShow: function () {
@@ -136,7 +138,7 @@ Page({
       return f.hours;
     }
     // 兜底
-    return 24*356;
+    return 24 * 356;
   },
   // 加载数据
   loadData: async function () {
@@ -148,16 +150,17 @@ Page({
       loadnomore: false
     });
 
-    const db = await cloud.databaseAsync();
-    const _ = db.command;
     const curCount = this.data.columns[0].length + this.data.columns[1].length;
     const timeRange = this.getTimeRange();
     const oneMonth = getDateWithDiffHours(-timeRange);
-    var photos = (await db.collection('photo').where({
-      mdate: _.or([_.gte(oneMonth), _.gte(oneMonth.toISOString())]),
-      like_count: _.gte(1),
-    }).orderBy('like_count', 'desc').skip(curCount).limit(7).get()).data;
-    
+    var { result: photos } = await app.mpServerless.db.collection('photo').find({
+      $or: [
+        { mdate: { $gte: oneMonth } },
+        { mdate: { $gte: oneMonth.toISOString() } }
+      ],
+      like_count: { $gte: 1 },
+    }, { sort: { like_count: -1 }, skip: curCount, limit: 7 })
+
     await fillUserInfo(photos, "_openid", "userInfo");
 
     // 浏览过程中点赞，会导致序变化，但目前只会加点赞，因此只需要去重
@@ -178,8 +181,8 @@ Page({
     ]);
     for (let i = 0; i < photos.length; i++) {
       var p = photos[i];
-      p.pic = p.photo_compressed || p.photo_id;
-      p.pic_prev = p.photo_watermark || p.photo_id;
+      p.pic = await signCosUrl(p.photo_compressed || p.photo_id);
+      p.pic_prev = await signCosUrl(p.photo_watermark || p.photo_id);
       p.cat = cat_res[i];
       p.liked = like_res[i];
       p.mdate_str = formatDate(p.mdate, "yyyy/MM/dd")
@@ -252,21 +255,21 @@ Page({
   // 点击猫猫名称
   clickCatName(e) {
     const detail_url = '/pages/genealogy/detailCat/detailCat';
-    const {cat_id} = e.currentTarget.dataset;
+    const { cat_id } = e.currentTarget.dataset;
     wx.navigateTo({
       url: detail_url + '?cat_id=' + cat_id,
     });
   },
   // 点击照片
-  clickPhoto(e) {
-    const {url} = e.currentTarget.dataset;
+  async clickPhoto(e) {
+    const { url } = e.currentTarget.dataset;
     wx.previewImage({
       urls: [url],
     });
   },
   // 点击时间筛选
   fClickTime(e) {
-    var {index} = e.currentTarget.dataset;
+    var { index } = e.currentTarget.dataset;
     const filters = this.data.filters;
     if (this.jsData.isLoading || filters[index].active) {
       return;
@@ -295,11 +298,11 @@ Page({
     await this.loadData();
   },
   async fClickThread(e) {
-    const {index} = e.currentTarget.dataset;
+    const { index } = e.currentTarget.dataset;
     this.activateThread(index);
   },
   async onSwiperChange(e) {
-    const {current} = e.detail;
+    const { current } = e.detail;
     this.activateThread(current);
   },
   async activateThread(index) {

@@ -3,9 +3,10 @@ import { sleep } from "../../utils/utils";
 import { text as text_cfg, science_imgs } from "../../config";
 import { checkAuth } from "../../utils/user";
 import { showTab } from "../../utils/page";
-import { cloud } from "../../utils/cloudAccess";
+import { signCosUrl } from "../../utils/common";
 const share_text = text_cfg.app_name + ' - ' + text_cfg.science.share_tip;
 
+const app = getApp();
 
 Page({
   data: {
@@ -46,12 +47,18 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: async function (options) {
-    const db = await cloud.databaseAsync();
-    var res = await db.collection('news').orderBy('date', 'desc').get();
+    var { result } = await app.mpServerless.db.collection('news').find({}, { sort: { date: -1 } });
+
+    // 签名 coverPath 字段
+    for (let i = 0; i < result.length; i++) {
+      if (result[i].coverPath) {
+        result[i].coverPath = await signCosUrl(result[i].coverPath);
+      }
+    }
 
     this.setData({
-      newsList: res.data,
-      newsList_show: res.data,
+      newsList: result,
+      newsList_show: result,
     })
     await checkAuth(this, 2);
 
@@ -96,11 +103,17 @@ Page({
 
   // 重新载入数据库
   async getData() {
-    const db = await cloud.databaseAsync();
-    const res = await db.collection('news').orderBy('date', 'desc').get();
+    var { result } = await app.mpServerless.db.collection('news').find({}, { sort: { date: -1 } });
+
+    // 签名 coverPath 字段
+    for (let i = 0; i < result.length; i++) {
+      if (result[i].coverPath) {
+        result[i].coverPath = await signCosUrl(result[i].coverPath);
+      }
+    }
 
     this.setData({
-      newsList: res.data,
+      newsList: result,
     });
     await this.filterNews();
 
@@ -179,17 +192,16 @@ Page({
   // 科普轮播图相关代码
 
   async setSciImgs() {
-    const sciImgList = await Promise.all(science_imgs.map(val => cloud.signCosUrl(val)));
+    const sciImgList = await Promise.all(science_imgs.map(val => signCosUrl(val)));;
     const cacheKey = 'sciImgStorage';
     const dataKey = 'images';
 
     const fileSystem = wx.getFileSystemManager();
-    
     var cachePathList = wx.getStorageSync(cacheKey);
     try {
       fileSystem.accessSync(cachePathList[0]);
       this.useCacheImg(cacheKey, dataKey);
-    } catch(e) {
+    } catch (e) {
       this.useCloudImg(sciImgList, dataKey);
       this.cacheCloudImg(cacheKey, sciImgList);
     }
@@ -207,21 +219,31 @@ Page({
     })
   },
 
+  async downloadFile(fileID) {
+    return new Promise(function (resolve, reject) {
+      wx.downloadFile({
+        url: fileID,
+        success(res) {
+          resolve(res);
+        },
+        fail: res => reject(res)
+      });
+    });
+  },
+
   async cacheCloudImg(cacheKey, imgUrlList) { // 下载并缓存封面
     const fileSystem = wx.getFileSystemManager();
     var promiseAll = [];
     var cachePathList = [];
-    
+
     for (let i = 0; i < imgUrlList.length; i++) {
-      promiseAll.push(cloud.downloadFile({
-        fileID: imgUrlList[i],
-      }));
+      promiseAll.push(this.downloadFile(imgUrlList[i]));
     }
 
     var res = await Promise.all(promiseAll);
 
-    console.log("[cacheCloudImg] -",res);
-    for(let i = 0; i < res.length; i++){
+    console.log("[cacheCloudImg] -", res);
+    for (let i = 0; i < res.length; i++) {
       var savedFilePath = fileSystem.saveFileSync(res[i].tempFilePath);
       cachePathList.push(savedFilePath);
     }

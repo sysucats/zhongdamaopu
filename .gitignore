@@ -15,7 +15,6 @@ node_modules/
 miniprogram_npm/
 cloudfunctions/package-lock.json
 project.private.config.json
-laf.json
 miniprogram/appSecret.js
 .secret.yaml
 miniprogram/signKey.js

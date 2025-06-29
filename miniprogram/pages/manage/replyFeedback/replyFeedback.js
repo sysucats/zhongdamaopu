@@ -2,9 +2,9 @@
 import { formatDate } from "../../../utils/utils";
 import { sendReplyNotice } from "../../../utils/msg";
 import { checkAuth, getUserInfo } from "../../../utils/user";
-import { cloud } from "../../../utils/cloudAccess";
 import api from "../../../utils/cloudApi";
 
+const app = getApp();
 Page({
 
   /**
@@ -29,16 +29,16 @@ Page({
     wx.showLoading({
       title: '加载中...',
     });
-    const db = await cloud.databaseAsync();
-    var res = await db.collection('feedback').doc(options.fb_id).get();
-    console.log(res);
-    if (!res.data.userInfo) {
-      res.data.userInfo = (await getUserInfo(res.data.openid)).userInfo;
+    var { result } = await app.mpServerless.db.collection('feedback').findOne({
+      _id: options.fb_id
+    })
+    if (!result.userInfo) {
+      result.userInfo = (await getUserInfo(result.openid)).userInfo;
     }
-    
-    res.data.openDateStr = formatDate(res.data.openDate, "yyyy-MM-dd hh:mm:ss");
+
+    result.openDateStr = formatDate(result.openDate, "yyyy-MM-dd hh:mm:ss");
     this.setData({
-      feedback: res.data
+      feedback: result
     });
     wx.hideLoading();
   },
@@ -78,7 +78,7 @@ Page({
         await api.curdOp({
           operation: 'update',
           collection: "feedback",
-          item_id: that.data.feedback._id, 
+          item_id: that.data.feedback._id,
           data: {
             replyDate: api.getDate(),
             replyInfo: submitData.replyInfo,

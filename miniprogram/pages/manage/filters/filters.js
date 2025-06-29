@@ -1,8 +1,7 @@
 import { checkAuth } from "../../../utils/user";
 import { loadFilter } from "../../../utils/page";
-import { cloud } from "../../../utils/cloudAccess";
 import api from "../../../utils/cloudApi";
-
+const app = getApp();
 Page({
 
   /**
@@ -26,7 +25,7 @@ Page({
     wx.showLoading({
       title: '加载中...',
     });
-    var filterRes = await loadFilter({nocache: true});
+    var filterRes = await loadFilter({ nocache: true });
     var filters = [];
     var area_item = {
       key: 'area',
@@ -90,7 +89,6 @@ Page({
     const name = e.detail.value.name;
     const filters_sub = e.currentTarget.dataset.filterssub;
     const index = e.currentTarget.dataset.cateindex;
-    
     var mainF = filters[filters_sub]
     var category = mainF.category[index];
 
@@ -106,7 +104,6 @@ Page({
         return false;
       }
     }
-    
     category.items.push({
       name: name,
       campus: category.name
@@ -122,13 +119,13 @@ Page({
 
     const filters_sub = e.currentTarget.dataset.filterssub;
     const cateindex = e.currentTarget.dataset.cateindex;
-    const index = e.currentTarget.dataset.innerindex; 
+    const index = e.currentTarget.dataset.innerindex;
     const direct = e.currentTarget.dataset.direct; // 'up' or 'down'
 
     const category = filters[filters_sub].category[cateindex];
-    
+
     const len = category.items.length;
-    const new_index = (direct === 'up') ? index - 1: index + 1;
+    const new_index = (direct === 'up') ? index - 1 : index + 1;
     if (new_index < 0 || new_index >= len) {
       return false;
     }
@@ -154,17 +151,15 @@ Page({
     const mainF = filters[filters_sub];
     const category = mainF.category[cateindex];
     const delete_value = category.items[index];
-    
+
     // 检查一下数据库里这个地址有没有猫，如果有就不能删
-    const db = await cloud.databaseAsync();
     var qf = { [mainF.key]: category.items[index].name };
     if (mainF.cateKey) {
       qf[mainF.cateKey] = category.name;
     }
-    var catCountRes = await db.collection('cat').where(qf).count();
-    
+    var { result: catCountRes } = await app.mpServerless.db.collection('cat').count(qf)
     console.log("[deleteOption] -", catCountRes);
-    if (catCountRes.total) {
+    if (catCountRes) {
       wx.showToast({
         title: '无法删除有猫猫的选项',
         icon: 'none',
@@ -207,7 +202,6 @@ Page({
         }
       }
     }
-    
     await api.curdOp({
       operation: "update",
       collection: "setting",
@@ -225,7 +219,6 @@ Page({
       addingCampus: true,
     })
   },
-  
   async addCampusConfirm(e) {
     const category = this.data.filters[0].category;
     const name = e.detail.value.name;
@@ -248,10 +241,10 @@ Page({
       uploadCampus.push(tmp);
     }
     uploadCampus.push(name);
-    
+
     // 直接上传
     await this.doUploadCampus(uploadCampus);
-    
+
     this.setData({
       addingCampus: false,
     });
@@ -259,8 +252,9 @@ Page({
 
   async deleteCampus(e) {
     const category = this.data.filters[0].category;
-    const {cateindex} = e.currentTarget.dataset;
-
+    const { cateindex } = e.currentTarget.dataset;
+console.log("删除111", category);
+console.log("删除", cateindex);
     let uploadCampus = [];
     for (let k = 0; k < category.length; ++k) {
       if (k == cateindex) {

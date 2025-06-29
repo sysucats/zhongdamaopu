@@ -1,7 +1,4 @@
 import {
-  cloud
-} from "../../../../../../utils/cloudAccess";
-import {
   getUser
 } from "../../../../../../utils/user";
 import {
@@ -15,7 +12,7 @@ import {
   getCatItemMulti,
   getAvatar
 } from "../../../../../../utils/cat";
-
+const app = getApp();
 Page({
 
   /**
@@ -61,12 +58,10 @@ Page({
     }
     this.jsData.loading = true;
     let {badges} = this.data;
-    const db = await cloud.databaseAsync();
-    const _ = db.command;
-    let tmp = (await db.collection('badge').where({
+    let { result: tmp } = await app.mpServerless.db.collection('badge').find({
       _openid: this.data.user.openid,
-      catId: _.neq(null)
-    }).skip(badges.length).limit(20).get()).data;
+      catId: { $ne: null }
+    }, { skip: badges.length, limit: 20 })
 
     for (let b of tmp) {
       b.dispTime = formatDate(new Date(b.givenTime), "yyyy-MM-dd hh:mm")

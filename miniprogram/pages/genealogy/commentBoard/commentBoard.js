@@ -16,13 +16,10 @@ import {
   getCatCommentCount
 } from "../../../utils/comment";
 import {
-  cloud
-} from "../../../utils/cloudAccess";
-import {
   requestNotice,
 } from "../../../utils/msg";
 import api from "../../../utils/cloudApi";
-
+const app = getApp();
 Page({
 
   /**
@@ -144,8 +141,7 @@ Page({
   },
 
   async loadCat() {
-    const db = await cloud.databaseAsync();
-    var cat = (await db.collection('cat').doc(this.jsData.cat_id).get()).data;
+    var cat = (await app.mpServerless.db.collection('cat').findOne({ _id: this.jsData.cat_id })).result;
     console.log(cat);
 
     // 获取头像
@@ -181,14 +177,14 @@ Page({
   },
 
   // 授权个人信息
-  getUInfo: function() {
+  getUInfo: function () {
     this.setData({
-    showEdit: true
+      showEdit: true
     });
   },
-  closeEdit: function() {
+  closeEdit: function () {
     this.setData({
-    showEdit: false
+      showEdit: false
     });
   },
 
@@ -233,7 +229,7 @@ Page({
     }
 
     // 插入便利贴
-    const {paper_colors, paper_color_select} = this.data;
+    const { paper_colors, paper_color_select } = this.data;
     var item = {
       content: content,
       user_openid: user.openid,
@@ -260,11 +256,11 @@ Page({
 
   async addComment(item, user) {
     try {
-      var res = (await api.curdOp({
+      var res = await api.curdOp({
         operation: "add",
         collection: "comment",
         data: item
-      })).result;
+      });
 
       console.log("curdOp(add-Comment) result): ", res, user);
       // 插入最新便利贴 + 清空输入框
@@ -301,21 +297,28 @@ Page({
   // TODO(zing): 支持排序方式修改
   async loadMoreComment() {
     // 常用的对象
-    const db = await cloud.databaseAsync();
-    const _ = db.command;
-    const coll_comment = db.collection('comment');
-    var comments = this.data.comments;
+    var { comments, loadNoMore } = this.data;
+
+    if (loadNoMore) {
+      return;
+    }
+
     var qf = {
-      deleted: _.neq(true),
+      deleted: { $ne: true },
       cat_id: this.jsData.cat_id
     };
-    var res = await coll_comment.where(qf).orderBy("create_date", "desc")
-      .skip(comments.length).limit(10).get();
+    var res = (await app.mpServerless.db.collection('comment').find(qf, { skip: comments.length, sort: { create_date: -1 }, limit: 10 })).result;
     console.log(res);
+    if (res.length === 0) {
+      this.setData({
+        loadNoMore: true
+      });
+      return;
+    }
 
     // 填充userInfo
-    await fillUserInfo(res.data, "user_openid", "userInfo");
-    for (var item of res.data) {
+    await fillUserInfo(res, "user_openid", "userInfo");
+    for (var item of res) {
       item.datetime = formatDate(new Date(item.create_date), "yyyy-MM-dd hh:mm:ss")
       // 便签旋转
       item.rotate = randomInt(-5, 5);
@@ -326,7 +329,7 @@ Page({
     }
 
     console.log(comments);
-    this.setData({comments});
+    this.setData({ comments });
 
   },
 
@@ -362,13 +365,12 @@ Page({
   },
 
   async ifSendNotifyVeriftMsg() {
-    const db = await cloud.databaseAsync();
-    const subMsgSetting = await db.collection('setting').doc('subscribeMsg').get();
-    const triggerNum = subMsgSetting.data.verifyPhoto.triggerNum;  //几条未审核才触发
+    const subMsgSetting = (await app.mpServerless.db.collection('setting').findOne({ _id: 'subscribeMsg' })).result;
+    const triggerNum = subMsgSetting.verifyPhoto.triggerNum;  //几条未审核才触发
     // console.log("triggerN",triggerNum);
-    var numUnchkPhotos = (await db.collection('comment').where({
+    var numUnchkPhotos = (await app.mpServerless.db.collection('comment').count({
       needVerify: true
-    }).count()).total;
+    })).result;
 
     if (numUnchkPhotos >= triggerNum) {
       await sendNotifyVertifyNotice(numUnchkPhotos);
@@ -377,7 +379,7 @@ Page({
   },
 
   selectPaperColor(e) {
-    const {index} = e.currentTarget.dataset;
+    const { index } = e.currentTarget.dataset;
     this.setData({
       paper_color_select: index
     });

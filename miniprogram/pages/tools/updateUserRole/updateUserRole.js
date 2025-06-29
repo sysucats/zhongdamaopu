@@ -1,7 +1,6 @@
 // pages/tools/updateUserRole/updateUserRole.js
-import { cloud } from "../../../utils/cloudAccess";
 import api from "../../../utils/cloudApi";
-
+const app = getApp();
 Page({
 
   /**
@@ -61,32 +60,32 @@ Page({
   },
 
   async updateUserRole() {
-    const db = await cloud.databaseAsync();
-    const _ = db.command;
-    const $ = db.command.aggregate
-    var totalCount = await db.collection('photo').aggregate()
-      .group({
-        // 按 category 字段分组
-        _id: '$_openid',
-        count: $.sum(1),
-      })
-      .count('totalCount')
-      .end();
-    totalCount = totalCount.list[0].totalCount;
+    var { result: total } = await app.mpServerless.db.collection('photo').aggregate([
+      {
+        $group: {
+          _id: '$_openid',
+          count: { $sum: 1 }
+        }
+      }
+    ])
+    totalCount = total.length;
     console.log(totalCount);
     this.setData({
       totalCount
     })
     var count = 0;
     while (1) {
-      const users = (await db.collection('photo').aggregate()
-      .group({
-        // 按 category 字段分组
-        _id: '$_openid',
-        count: $.sum(1),
-      })
-      .skip(count)
-      .end()).list;
+      const { result: users } = await app.mpServerless.db.collection('photo').aggregate([
+        {
+          $group: {
+            _id: '$_openid',
+            count: { $sum: 1 }
+          }
+        },
+        {
+          $skip: count
+        },
+      ])
       console.log(count, users)
       if (!users.length) {
         break;

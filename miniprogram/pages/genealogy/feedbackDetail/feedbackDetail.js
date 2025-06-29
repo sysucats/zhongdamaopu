@@ -2,9 +2,8 @@ import { getCurrentPath, shareTo } from "../../../utils/utils";
 import { getPageUserInfo, checkCanFeedback } from "../../../utils/user";
 import { requestNotice, sendNotifyChkFeeedback } from "../../../utils/msg";
 import { text as text_cfg } from "../../../config";
-import { cloud } from "../../../utils/cloudAccess";
 import api from "../../../utils/cloudApi";
-
+const app = getApp();
 Page({
   /**
    * 页面的初始数据
@@ -22,11 +21,10 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: async function (options) {
-    const db = await cloud.databaseAsync();
     if (options.cat_id != undefined) {
-      const catRes = await db.collection('cat').doc(options.cat_id).field({ name: true, _id: true }).get();
+      const { result: catRes } = await app.mpServerless.db.collection('cat').findOne({ _id: options.cat_id }, { projection: { name: 1, _id: 1 } })
       this.setData({
-        cat: catRes.data
+        cat: catRes
       });
     }
 
@@ -46,19 +44,18 @@ Page({
   onShareAppMessage: function () {
     const pagesStack = getCurrentPages();
     const path = getCurrentPath(pagesStack);
-    
     const share_text = `来给${this.data.cat.name}反馈信息 - ${text_cfg.app_name}`;
     return shareTo(share_text, path);
   },
 
-  getUInfo: function() {
+  getUInfo: function () {
     this.setData({
-    showEdit: true
+      showEdit: true
     });
   },
-  closeEdit: function() {
+  closeEdit: function () {
     this.setData({
-    showEdit: false
+      showEdit: false
     });
   },
 
@@ -81,7 +78,6 @@ Page({
   },
 
   async safeCheck(submitData) {
-    
   },
 
   async bindSubmit(e) {
@@ -93,7 +89,6 @@ Page({
       })
       return;
     }
-    
     // 安全检查
     console.log(submitData);
     const checkRes = await api.contentSafeCheck(submitData.feedbackInfo + submitData.contactInfo, "");
@@ -119,11 +114,11 @@ Page({
       data.cat_id = this.data.cat._id;
       data.cat_name = this.data.cat_name;
     }
-    const res = (await api.curdOp({
+    const res = await api.curdOp({
       operation: "add",
       collection: "feedback",
       data: data
-    })).result;
+    });
 
     console.log("curdOp(add-feedback) result:", res);
     if (!res.ok) {
@@ -131,7 +126,7 @@ Page({
       return;
     }
     this.setData({
-      feedbackId : res.id
+      feedbackId: res.insertedId
     });
     await this.askNotice();
     wx.hideLoading();
@@ -142,24 +137,24 @@ Page({
       duration: 1000
     })
   },
-  
+
   async askNotice() {
     let repliable = await requestNotice('feedback'); // 请求订阅消息推送
 
-    const res = (await api.curdOp({
+    const res = await api.curdOp({
       operation: "update",
       collection: "feedback",
       item_id: this.data.feedbackId,
       data: { repliable: repliable },
-    })).result;
+    });
 
     console.log("curdOp(feedback-update) result:", res);
     if (res.ok) {
       wx.navigateBack();
     } else {
-      console.log('repliable record fail:\n',res);
+      console.log('repliable record fail:\n', res);
     }
-     
+
   },
 
   async changeAgreement(e) {

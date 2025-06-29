@@ -18,11 +18,12 @@
     </view>
   </view>
   <view>[{{now}}/{{total}}] 目前阶段：{{phase}} | {{phase2str[phase]}}</view>
-  <view class="buttons" wx:if="{{gLocking}}">
+  <!-- <view class="buttons" wx:if="{{gLocking}}"> -->
+  <view class="buttons">
     <button class='short' bindtap='clickProcessBtn' data-test="{{true}}">{{processing ? "停止" : "试运行"}}</button>
     <button class='primary' bindtap='clickProcessBtn'>{{processing ? "停止" : "开始处理"}}</button>
   </view>
-  <button wx:else class="long" bindtap='getLock'>其他人正在操作...点击重试</button>
+  <!-- <button wx:else class="long" bindtap='getLock'>其他人正在操作...点击重试</button> -->
   <!-- 说明一下 -->
   <view class="info-block">
     <view>【功能说明】</view>

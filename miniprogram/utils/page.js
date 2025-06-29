@@ -1,5 +1,5 @@
 import { getCacheItem, setCacheItem, cacheTime } from "./cache";
-import { cloud } from "./cloudAccess";
+const app = getApp();
 
 function _getSettingCacheKey(setting_id) {
   return `setting-${setting_id}-cache`;
@@ -7,16 +7,18 @@ function _getSettingCacheKey(setting_id) {
 
 async function _getSetting(_id, options) {
   const cacheKey = _getSettingCacheKey(_id);
+  var nocache = false
+  if (options && options.nocache) {
+    nocache = true;
+  }
 
-  var cacheItem = getCacheItem(cacheKey, options);
-  // console.log(cacheKey, cacheItem);
+  var cacheItem = getCacheItem(cacheKey, { nocache: nocache });
   if (cacheItem !== undefined) {
     return cacheItem;
   }
+  const { result } = await app.mpServerless.db.collection('setting').findOne({ _id: _id });
+  cacheItem = result
 
-  const db = await cloud.databaseAsync();
-  cacheItem = (await db.collection('setting').doc(_id).get()).data;
-  
   setCacheItem(cacheKey, cacheItem, cacheTime.pageSetting);
   return cacheItem;
 }
@@ -51,7 +53,6 @@ function showTab(page) {
   if (typeof page.getTabBar != 'function' || !page.getTabBar()) {
     return;
   }
-  
   const path = getCurrentPath();
   console.log("current path:", path);
   page.getTabBar().setData({

@@ -11,6 +11,7 @@ import getTempFilePath from './extends/getTempFilePath';
 import config from "../../config";
 import { getUserInfo } from "../../utils/user";
 import { generateMpCode } from "../../utils/mpcode";
+import { signCosUrl } from "../../utils/common";
 
 WxCanvas2d.use(SaveToAlbum)
 WxCanvas2d.use(Debugger)
@@ -62,7 +63,7 @@ Component({
     },
 
     lifetimes: {
-        async attached () {
+        async attached() {
             // 在组件实例进入页面节点树时执行
             canvas.debugger = true // open debugger
 
@@ -93,8 +94,8 @@ Component({
                 })
             }, 200)
         },
-       
-        detached () {
+
+        detached() {
             // 在组件实例被从页面节点树移除时执行
         }
     },
@@ -104,7 +105,7 @@ Component({
      */
     methods: {
         // 开始生成海报
-        async startDrawing () {
+        async startDrawing() {
             // 先检查平台, 似乎只支持安卓和ios，开发者工具也可以，其余平台未能正常绘制，没定位到原因
             const { platform } = await wx.getSystemInfo();
             if (!['ios', 'devtools', 'android'].includes(platform)) {
@@ -117,12 +118,12 @@ Component({
                 });
                 return false;
             }
-            
             if (!this.properties.cat) return;
 
             wx.showLoading({ title: '生成ing...', mask: true });
 
             const { cat, coverImg } = this.properties;
+            console.log('Cat:', cat);
 
             // 检查缓存
             if (this.checkCache(cat.id, coverImg._id)) {
@@ -161,15 +162,14 @@ Component({
             }
             return false;
         },
-        
         // 测量文本宽度
         measureTextWidth(text, fontSize, fontWeight = '', fontFamily = canvas.fontFamily) {
             const originalFont = canvas.ctx.font; // 保存原始字体样式
             canvas.ctx.font = `${fontWeight} ${fontSize}px ${fontFamily}`; // 设置新的字体样式
-            
+
             const width = canvas.ctx.measureText(text).width; // 测量文本宽度
             canvas.ctx.font = originalFont; // 恢复原始字体样式
-            
+
             return width;
         },
 
@@ -188,9 +188,9 @@ Component({
             // photoPopWeight如何获取？
             const photoPopWeight = 10;
             const popularityScore = cat.popularity + (cat.photo_count_total ? cat.photo_count_total * photoPopWeight : 0);
-            
+
             const photographer = text_cfg.genealogy.photo_by_tip + (coverImg.photographer || (coverImg.userInfo ? coverImg.userInfo.nickName : text_cfg.genealogy.photo_by_unknow_tip));
-            
+
             // 有关尺寸
             const coverHeight = 600;    // 封面高度
             const coverWidth = 600;     // 封面宽度
@@ -204,10 +204,10 @@ Component({
             const lineHeight_n = 8;     // 行间距
 
             // 测量文字宽度
-            const adoptDescWidth = this.measureTextWidth(adopt_desc,tag);
-            const sterilizedWidth = this.measureTextWidth(sterilized,tag);
-            const popularityScoreWidth = this.measureTextWidth(popularityScore,desc);
-            const to_starWidth = this.measureTextWidth(to_star,tag);
+            const adoptDescWidth = this.measureTextWidth(adopt_desc, tag);
+            const sterilizedWidth = this.measureTextWidth(sterilized, tag);
+            const popularityScoreWidth = this.measureTextWidth(popularityScore, desc);
+            const to_starWidth = this.measureTextWidth(to_star, tag);
             // 标签padding
             const tagPadding = 7.5;
 
@@ -237,203 +237,200 @@ Component({
         },
 
         // 执行绘制
-        executeDrawing(config) {
+        async executeDrawing(config) {
             const { text_cfg, coverImg, popularityScore, adopt_desc, sterilized, to_star, photographer, coverHeight, coverWidth, tagBgHeight, name, name_width, title, desc, tag, lineHeight_n, adoptDescWidth, sterilizedWidth, to_starWidth, popularityScoreWidth, tagPadding } = config;
-            // console.log('绘制配置', config);
             const { cat } = this.properties;
-
             // 标签的初始位置
             let tagX = 50;
 
             // 如果有性别，调整标签的位置
             if (cat.gender) {
-                tagX += 50; 
+                tagX += 50;
             }
 
             // 绘制海报
-            return canvas.draw({
-                series: [
-                    // 大图
-                    {
-                        type: Image,
-                        url: '/pages/public/images/card/poster_bg.png',
-                        x: 0,
-                        y: 0,
-                        width: 650,
-                        height: 1000,
-                        mode: 'aspectFill',
-                        zIndex: 999
-                    },{
-                        type: Image,
-                        url: coverImg.photo_compressed || coverImg.photo_id,
-                        x: 25,
-                        y: 25,
-                        width: coverWidth,
-                        height: coverHeight,
-                        mode: 'aspectFill'
-                    },
-                    // 摄影师
-                    {
-                        type: Rect,
-                        x: 25,
-                        y: 595,
-                        width: coverWidth,
-                        height: 30,
-                        bgColor: 'rgba(34, 34, 34, 0.4)'
-                    },{
-                        type: Text,
-                        text: photographer,
-                        x: 25,
-                        y: 595,
-                        fontSize: desc,
-                        width: coverWidth,     // 名字最大宽度
-                        ellipsis: 1,    // 超出部分显示省略号
-                        lineHeight: 30,
-                        align: 'center',
-                        color: 'rgba(255, 255, 255, 0.4)'
-                    },
-                    // 猫猫信息
-                    {
-                        type: Text,
-                        text: cat.name,
-                        flag: 'name',
-                        x: 50,
-                        y: 640,
-                        fontSize: name,
-                        lineHeight: name * 1.6,
-                        width: name_width,
-                        ellipsis: 1,    // 超出部分显示省略号
-                        color: '#222',
-                        fontWeight: 'bold'
-                    },{
-                        type: Image,
-                        url: '/pages/public/images/card/card/pop.png',
-                        x: this.data.posterWidth - tagPadding * 2 - popularityScoreWidth - 85,
-                        y: 657,
-                        height: 20,
-                        width: 35,
-                        mode: 'aspectFit'
-                    },{
-                        type: Text,
-                        text: popularityScore,
-                        x: 0 - tagPadding,
-                        y: 657.5,
-                        width: coverWidth,
-                        lineHeight: desc,
-                        align: 'right',
-                        fontSize: desc,
-                        color: '#222'
-                    },
-                    // 判断性别是否有记录,没有的话此时wx-canvas-2d debugger会报错，但不影响使用
-                    cat.gender ? {
-                        type: Image,
-                        url: cat.gender === '公' ? '/pages/public/images/card/card/male.png'
-                            : cat.gender === '母' ? '/pages/public/images/card/card/female.png'
-                                : '/pages/public/images/card/card/cat.png',
-                        x: 50,
-                        y: 705,
-                        width: 30,
-                        height: 30
-                    } : '',
-
-                    // 领养 & 绝育 & 喵星的标签
-                    {
-                        type: Rect,
-                        x: tagX,
-                        y: 705,
-                        width: adoptDescWidth + tagPadding * 2,
-                        height: tagBgHeight,
-                        bgColor: this.data.primaryColor,
-                        radius: tagBgHeight / 2
-                    },{
-                        type: Text,
-                        text: adopt_desc,
-                        x: tagX,
-                        y: 705 + tag / 2,
-                        width: adoptDescWidth + tagPadding * 2,
-                        fontSize: tag,
-                        ellipsis: 1,
-                        align: 'center',
-                        fontWeight: 'bold',
-                        color: this.data.fontColor
-                    },{
-                        type: Rect,
-                        x: tagX + 10 + adoptDescWidth + tagPadding * 2,
-                        y: 705,
-                        width: sterilizedWidth + tagPadding * 2,
-                        height: tagBgHeight,
-                        bgColor: this.data.primaryColor,
-                        radius: tagBgHeight / 2
-                    },{
-                        type: Text,
-                        text: sterilized,
-                        x: tagX + 10 + adoptDescWidth + tagPadding * 2,
-                        y: 705 + tag / 2,
-                        width: sterilizedWidth + tagPadding * 2,
-                        fontSize: tag,
-                        ellipsis: 1,
-                        align: 'center',
-                        fontWeight: 'bold',
-                        color: this.data.fontColor
-                    },
-                    cat.to_star ? {
-                        type: Rect,
-                        x: tagX + 20 + sterilizedWidth + tagPadding * 2 + adoptDescWidth + tagPadding * 2,
-                        y: 705,
-                        width: to_starWidth + tagPadding * 2,
-                        height: tagBgHeight,
-                        bgColor: '#888',
-                        radius: tagBgHeight / 2
-                    } : '',
-                    cat.to_star ? {
-                        type: Text,
-                        text: to_star,
-                        x: tagX + 20 + sterilizedWidth + tagPadding * 2 + adoptDescWidth + tagPadding * 2,
-                        y: 705 + tag / 2,
-                        width: to_starWidth + tagPadding * 2,
-                        fontSize: tag,
-                        ellipsis: 1,
-                        align: 'center',
-                        fontWeight: 'bold',
-                        color: '#fff'
-                    } : '',
-                    // 这里是分界线
-                    {
-                        type: Text,
-                        text: text_cfg.app_name,
-                        x: 50,
-                        y: 790,
-                        fontSize: title,
-                        lineHeight: title * 1.8,
-                        color: '#222'
-                    },{
-                        type: Text,
-                        text: text_cfg.detail_cat.slogan1,
-                        x: 50,
-                        y: 790 + title * 1.8,
-                        fontSize: desc,
-                        lineHeight: desc + lineHeight_n,
-                        color: '#777'
-                    },{
-                        type: Text,
-                        text: text_cfg.detail_cat.slogan2,
-                        x: 50,
-                        y: 790 + title * 1.8 + desc + lineHeight_n,
-                        fontSize: desc,
-                        lineHeight: desc + lineHeight_n,
-                        color: '#777'
-                    },{
-                        type: Image,
-                        url: cat.mpcode,
-                        x: 480,
-                        y: 785,
-                        width: 120,
-                        height: 120,
-                        radius: 20
-                    }
-                ]
-                
-            }).then(() => {
+            const series = [
+                // 大图
+                {
+                    type: Image,
+                    url: '/pages/public/images/card/poster_bg.png',
+                    x: 0,
+                    y: 0,
+                    width: 650,
+                    height: 1000,
+                    mode: 'aspectFill',
+                    zIndex: 999
+                }, {
+                    type: Image,
+                    url: coverImg.photo_compressed || coverImg.photo_id,
+                    x: 25,
+                    y: 25,
+                    width: coverWidth,
+                    height: coverHeight,
+                    mode: 'aspectFill'
+                },
+                // 摄影师
+                {
+                    type: Rect,
+                    x: 25,
+                    y: 595,
+                    width: coverWidth,
+                    height: 30,
+                    bgColor: 'rgba(34, 34, 34, 0.4)'
+                }, {
+                    type: Text,
+                    text: photographer,
+                    x: 25,
+                    y: 595,
+                    fontSize: desc,
+                    width: coverWidth,     // 名字最大宽度
+                    ellipsis: 1,    // 超出部分显示省略号
+                    lineHeight: 30,
+                    align: 'center',
+                    color: 'rgba(255, 255, 255, 0.4)'
+                },
+                // 猫猫信息
+                {
+                    type: Text,
+                    text: cat.name,
+                    flag: 'name',
+                    x: 50,
+                    y: 640,
+                    fontSize: name,
+                    lineHeight: name * 1.6,
+                    width: name_width,
+                    ellipsis: 1,    // 超出部分显示省略号
+                    color: '#222',
+                    fontWeight: 'bold'
+                }, {
+                    type: Image,
+                    url: '/pages/public/images/card/card/pop.png',
+                    x: this.data.posterWidth - tagPadding * 2 - popularityScoreWidth - 85,
+                    y: 657,
+                    height: 20,
+                    width: 35,
+                    mode: 'aspectFit'
+                }, {
+                    type: Text,
+                    text: popularityScore,
+                    x: 0 - tagPadding,
+                    y: 657.5,
+                    width: coverWidth,
+                    lineHeight: desc,
+                    align: 'right',
+                    fontSize: desc,
+                    color: '#222'
+                },
+                // 判断性别是否有记录,没有的话此时wx-canvas-2d debugger会报错，但不影响使用
+                cat.gender ? {
+                    type: Image,
+                    url: cat.gender === '公' ? '/pages/public/images/card/card/male.png'
+                        : cat.gender === '母' ? '/pages/public/images/card/card/female.png'
+                            : '/pages/public/images/card/card/cat.png',
+                    x: 50,
+                    y: 705,
+                    width: 30,
+                    height: 30
+                } : null,
+                // 领养 & 绝育 & 喵星的标签
+                {
+                    type: Rect,
+                    x: tagX,
+                    y: 705,
+                    width: adoptDescWidth + tagPadding * 2,
+                    height: tagBgHeight,
+                    bgColor: this.data.primaryColor,
+                    radius: tagBgHeight / 2
+                }, {
+                    type: Text,
+                    text: adopt_desc,
+                    x: tagX,
+                    y: 705 + tag / 2,
+                    width: adoptDescWidth + tagPadding * 2,
+                    fontSize: tag,
+                    ellipsis: 1,
+                    align: 'center',
+                    fontWeight: 'bold',
+                    color: this.data.fontColor
+                }, {
+                    type: Rect,
+                    x: tagX + 10 + adoptDescWidth + tagPadding * 2,
+                    y: 705,
+                    width: sterilizedWidth + tagPadding * 2,
+                    height: tagBgHeight,
+                    bgColor: this.data.primaryColor,
+                    radius: tagBgHeight / 2
+                }, {
+                    type: Text,
+                    text: sterilized,
+                    x: tagX + 10 + adoptDescWidth + tagPadding * 2,
+                    y: 705 + tag / 2,
+                    width: sterilizedWidth + tagPadding * 2,
+                    fontSize: tag,
+                    ellipsis: 1,
+                    align: 'center',
+                    fontWeight: 'bold',
+                    color: this.data.fontColor
+                },
+                cat.to_star ? {
+                    type: Rect,
+                    x: tagX + 20 + sterilizedWidth + tagPadding * 2 + adoptDescWidth + tagPadding * 2,
+                    y: 705,
+                    width: to_starWidth + tagPadding * 2,
+                    height: tagBgHeight,
+                    bgColor: '#888',
+                    radius: tagBgHeight / 2
+                } : null,
+                cat.to_star ? {
+                    type: Text,
+                    text: to_star,
+                    x: tagX + 20 + sterilizedWidth + tagPadding * 2 + adoptDescWidth + tagPadding * 2,
+                    y: 705 + tag / 2,
+                    width: to_starWidth + tagPadding * 2,
+                    fontSize: tag,
+                    ellipsis: 1,
+                    align: 'center',
+                    fontWeight: 'bold',
+                    color: '#fff'
+                } : null,
+                // 这里是分界线
+                {
+                    type: Text,
+                    text: text_cfg.app_name,
+                    x: 50,
+                    y: 790,
+                    fontSize: title,
+                    lineHeight: title * 1.8,
+                    color: '#222'
+                }, {
+                    type: Text,
+                    text: text_cfg.detail_cat.slogan1,
+                    x: 50,
+                    y: 790 + title * 1.8,
+                    fontSize: desc,
+                    lineHeight: desc + lineHeight_n,
+                    color: '#777'
+                }, {
+                    type: Text,
+                    text: text_cfg.detail_cat.slogan2,
+                    x: 50,
+                    y: 790 + title * 1.8 + desc + lineHeight_n,
+                    fontSize: desc,
+                    lineHeight: desc + lineHeight_n,
+                    color: '#777'
+                }, {
+                    type: Image,
+                    url: await signCosUrl(cat.mpcode),
+                    x: 480,
+                    y: 785,
+                    width: 120,
+                    height: 120,
+                    radius: 20
+                }
+            ]
+            // 过滤无效的元素
+            const validSeries = series.filter(item => item && item.type);
+            return canvas.draw({ series: validSeries }).then(() => {
                 wx.hideLoading();
             });
         },
