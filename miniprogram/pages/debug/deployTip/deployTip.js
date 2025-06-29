@@ -1,5 +1,5 @@
 import dp_cfg from "./deployConfig";
-import { getCurrentUserOpenid } from "../../../utils/common"
+import { getCurrentUserOpenid, signCosUrl, downloadFile } from "../../../utils/common"
 
 const app = getApp();
 
@@ -8,28 +8,57 @@ const STATUS_OK = 1;
 const STATUS_FAIL = 2;
 
 
+async function _checkFuncs() {
+  let res = {
+    "ok": [],
+    "ver_err": [],
+    "not_exist": [],
+  };
+  const funcs = dp_cfg.functions
+  for (const name in funcs) {
+    try {
+      const {result: funcRes} = await await app.mpServerless.function.invoke(name, { deploy_test: true });
+      console.log(name, funcs[name], funcRes);
+      if (funcRes == funcs[name]) {
+        res["ok"].push(name);
+      } else {
+        res["ver_err"].push(name);
+      }
+    } catch {
+        res["not_exist"].push(name);
+    }
+    
+  }
+  return res;
+}
+
+
+
 // 检查云函数是否都部署了
 async function checkFunctions() {
   const openid = await getCurrentUserOpenid();
   if (!openid) {
     return {
       status: STATUS_FAIL,
-      addition: "登录失败，尝试重启Laf后台应用，或检查云函数依赖。"
+      addition: "登录失败，请检查本地“AppSecret.js”是否配置正确、检查EMAS云函数是否部署"
     };
   }
-  try {
-    const res = await app.mpServerless.function.invoke('deleteFiles', {})
-    if (!res.result.success) {
-      return {
-        status: STATUS_OK
-      };
-    }
-  } catch (err) {
+  
+  const res = await _checkFuncs();
+  console.log(res);
+
+  if (res["ver_err"].length === 0 && res["not_exist"].length === 0) {
     return {
-      status: STATUS_FAIL,
-      addition: err.message,
+      status: STATUS_OK
     };
   }
+
+  var addition = res["not_exist"].length ? `未部署函数：${res["not_exist"].join(", ")}。` : "";
+  addition += res["ver_err"].length ? `版本错误：${res["ver_err"].join(", ")}。` : "";
+  return {
+    status: STATUS_FAIL,
+    addition: addition
+  };
 };
 
 // 检查云数据库是否创建完成
@@ -66,9 +95,33 @@ async function checkDatabase() {
 
 // 检查云存储图片是否放好
 async function checkImage() {
+  var fail_list = [];
+  for (var key in dp_cfg.images) {
+    const oriUrl = dp_cfg.images[key];
+    let url = await signCosUrl(oriUrl);
+    try {
+      const res = await downloadFile(url);
+      if (res.statusCode !== 200) {
+        fail_list.push(`("${key}": "${oriUrl}")`);
+        console.log(`download fail: ${url}`);
+        continue;
+      }
+      console.log(`download success: ${url}`);
+    } catch (error) {
+      fail_list.push(`("${key}": "${oriUrl}")`);
+      console.log(`download fail: ${url}, error: ${JSON.stringify(error)}`);
+    }
+  }
+  if (fail_list.length == 0) {
+    return {
+      status: STATUS_OK,
+      addition: ""
+    };
+  }
+  var addition = "未上传图片：" + fail_list.join(", ") + "。";
   return {
-    status: '请自查',
-    addition: ''
+    status: STATUS_FAIL,
+    addition: addition
   };
 }
 

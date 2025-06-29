@@ -107,6 +107,11 @@ const permissionAuthor = {
 }
 
 module.exports = async (ctx) => {
+  if (ctx.args?.deploy_test === true) {
+    // 进行部署检查
+    return "v2.0";
+  }
+
     const openid = ctx.args?.openid
     if (!openid) {
         return;
@@ -118,7 +123,6 @@ module.exports = async (ctx) => {
     const operation = ctx.args?.operation;  // DB 操作 ["add", "update", "remove", "set", "inc", "read"]
     const permissionLevel = permissionNeed[operation][collection];  // 操作要求的最低权限
     if (permissionLevel === undefined) {
-        console.log("unk req.")
         return { errMsg: 'unk req.', ok: false };;
     }
     const item_id = ctx.args?.item_id;
@@ -180,7 +184,6 @@ module.exports = async (ctx) => {
 
     // 权限检查
     async function check_permission(collection, item_id, openid, level, allowAuthor) {
-        console.log(`Check premission for ${openid} with level ${level}, allowAuthor: ${allowAuthor}.`);
         // 是否满足管理员等级
         if (await ctx.mpserverless.function.invoke('isManager', { openid: openid, req: level })) {
             return true

@@ -297,13 +297,24 @@ Page({
   // TODO(zing): 支持排序方式修改
   async loadMoreComment() {
     // 常用的对象
-    var comments = this.data.comments;
+    var { comments, loadNoMore } = this.data;
+
+    if (loadNoMore) {
+      return;
+    }
+
     var qf = {
       deleted: { $ne: true },
       cat_id: this.jsData.cat_id
     };
-    var res = (await app.mpServerless.db.collection('comment').find(qf, { sort: { create_date: -1 }, limit: 10 })).result;
+    var res = (await app.mpServerless.db.collection('comment').find(qf, { skip: comments.length, sort: { create_date: -1 }, limit: 10 })).result;
     console.log(res);
+    if (res.length === 0) {
+      this.setData({
+        loadNoMore: true
+      });
+      return;
+    }
 
     // 填充userInfo
     await fillUserInfo(res, "user_openid", "userInfo");

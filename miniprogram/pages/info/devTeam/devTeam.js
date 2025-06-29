@@ -10,6 +10,13 @@ Page({
     text_cfg: text_cfg,
     github_link: "https://github.com/sysucats/zhongdamaopu",
     update_log: [{
+      version: "v1.16.2",
+      content: [
+        "修复部分BUG",
+        "修复部署指引，准备发布EMAS版",
+      ],
+      time: "2024/6/29"
+    }, {
       version: "v1.16.1",
       content: [
         "修复部分BUG，修改后端为按量付费",
