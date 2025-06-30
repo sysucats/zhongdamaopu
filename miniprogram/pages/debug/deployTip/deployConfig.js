@@ -166,7 +166,7 @@ module.exports = {
   // 云函数的名称
   functions: {
     "commentCheck": "v2.0",
-    "countPhoto": "v2.0",
+    "countPhoto": "v2.1",
     "curdOp": "v2.0",
     "deleteCosFiles": "v2.0",
     "deleteFiles": "v2.0",

@@ -1,17 +1,12 @@
 module.exports = async (ctx) => {
   if (ctx.args?.deploy_test === true) {
-    // 进行部署检查
-    return "v2.0";
+    return "v2.1";
   }
 
   const MAX_LIMIT = 100;
-  // 只取这个月的
-  const today = new Date(),
-    y = today.getFullYear(),
-    m = today.getMonth();
-  const firstDay = new Date(y, m, 1);
+  const today = new Date();
+  const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
 
-  // 先取出集合记录总数
   const {
     result: countResult
   } = await ctx.mpserverless.db.collection('photo').count({
@@ -21,58 +16,59 @@ module.exports = async (ctx) => {
     verified: true
   });
 
-  // 计算需分几次取
-  const batchTimes = Math.ceil(countResult / 100);
+  const batchTimes = Math.ceil(countResult / MAX_LIMIT);
+  const photosPromises = [];
 
-  // 承载所有读操作的 promise 的数组
-  const photos = []
+  // 添加投影设置只返回_openid字段
+  const queryOptions = {
+    projection: {
+      _openid: 1,
+      _id: 0
+    } // 只获取_openid，禁止获取_id
+  };
+
   for (let i = 0; i < batchTimes; i++) {
-    const {
-      result: promise
-    } = await ctx.mpserverless.db.collection('photo').find({
-      mdate: {
-        $gt: firstDay
-      },
-      verified: true
-    }, {
-      skip: i * MAX_LIMIT,
-      limit: MAX_LIMIT
-    })
-    photos.push(promise)
+    photosPromises.push(
+      ctx.mpserverless.db.collection('photo').find({
+        mdate: {
+          $gt: firstDay
+        },
+        verified: true
+      }, {
+        ...queryOptions,
+        skip: i * MAX_LIMIT,
+        limit: MAX_LIMIT
+      }).then(res => res.result)
+    );
   }
-  // 等待所有
-  const all_promise = (await Promise.all(photos));
+
+  const all_promise = await Promise.all(photosPromises);
+
   if (!all_promise.length) {
     return {
       all_photos: [],
       stat: {}
     };
   }
-  // 否则就进行统计
-  const all_photos = all_promise.reduce((acc, cur) => acc.concat(cur), []);
+
+  const all_photos = all_promise.flat();
   const stat = getStat(all_photos);
+
   await ctx.mpserverless.db.collection('photo_rank').insertOne({
     stat,
     mdate: today
-  })
-  // 删除旧的
+  });
+
   await removeOld();
 
-  return {
-    all_photos: all_photos,
-    stat: stat
-  };
+  return ;
 
-  function getStat(all_photos) {
-    var stat = {};
-    for (const ph of all_photos) {
+  function getStat(photos) {
+    const stat = {};
+    for (const ph of photos) {
       const key = ph._openid;
-      if (!key) {
-        // 系统直接写入的
-        continue;
-      }
+      if (!key) continue;
 
-      // 否则就计数
       if (stat[key] === undefined) {
         stat[key] = {
           count: 1
@@ -84,17 +80,14 @@ module.exports = async (ctx) => {
     return stat;
   }
 
-
-  // 删除旧的
   async function removeOld() {
-    var weekAgo = new Date();
+    const weekAgo = new Date();
     weekAgo.setDate(weekAgo.getDate() - 7);
 
-    const res = await ctx.mpserverless.db.collection('photo_rank').deleteMany({
+    await ctx.mpserverless.db.collection('photo_rank').deleteMany({
       mdate: {
         $lt: weekAgo
       }
     });
   }
-
 }
