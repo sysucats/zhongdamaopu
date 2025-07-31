@@ -473,7 +473,7 @@ Page({
     if (orderItem.name == "最早收录") {
       res = (await app.mpServerless.db.collection('photo').find(qf, { skip: now, limit: step })).result;
     } else {
-      res = (await app.mpServerless.db.collection('photo').find(qf, { sort: { mdate: -1 }, skip: now, limit: step })).result;
+      res = (await app.mpServerless.db.collection('photo').find(qf, { sort: { shooting_date: -1 }, skip: now, limit: step })).result;
     }
 
     const offset = this.jsData.album_raw.length;
