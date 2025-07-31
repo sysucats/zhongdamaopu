@@ -38,7 +38,8 @@ async function loadBadgeDefMap() {
 
 async function loadUserBadge(openid, badgeDefMap, options) {
   const userBadges = (await app.mpServerless.db.collection("badge").find({
-    _openid: openid
+    _openid: openid,
+    catId: null
   })).result;
   const res = await mergeAndSortBadges(userBadges, badgeDefMap, options);
   return res;
