@@ -519,7 +519,7 @@ Page({
     var result = [];
     var keys = Object.keys(group);
     var order = photoOrder[orderIdx].order == 'asc' ? 1 : -1;
-    keys.sort((a, b) => order * (a - b));
+    keys.sort((a, b) => order * a.localeCompare(b));
     for (const key of keys) {
       const shooting_date = key.split('-');
       var birth = this.data.cat.birthday;
