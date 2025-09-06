@@ -1,5 +1,5 @@
 {
-  "appid": "wx7a768c809634ade7",
+  "appid": "wxda17b675d1cf6f46",
   "compileType": "miniprogram",
   "libVersion": "3.8.0",
   "packOptions": {
@@ -24,5 +24,6 @@
   "editorSetting": {
     "tabIndent": "insertSpaces",
     "tabSize": 2
-  }
+  },
+  "projectname": "miniprogram"
 }
