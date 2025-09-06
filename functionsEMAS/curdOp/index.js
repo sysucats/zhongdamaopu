@@ -109,7 +109,7 @@ const permissionAuthor = {
 module.exports = async (ctx) => {
   if (ctx.args?.deploy_test === true) {
     // 进行部署检查
-    return "v2.0";
+    return "v2.1";
   }
 
     const openid = ctx.args?.openid
@@ -174,8 +174,8 @@ module.exports = async (ctx) => {
         }
     }
     else if (operation == "read") {
-        const { skip, limit } = ctx.args;
-        const { result } = await ctx.mpserverless.db.collection(collection).find({}, { skip: skip, sort: { genTime: -1 }, limit: limit })
+        const { skip, limit, projection } = ctx.args;
+        const { result } = await ctx.mpserverless.db.collection(collection).find({}, { skip, sort: { genTime: -1 }, limit, projection })
         return result;
     }
     else {

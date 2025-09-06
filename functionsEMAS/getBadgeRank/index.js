@@ -1,26 +1,25 @@
 module.exports = async (ctx) => {
   if (ctx.args?.deploy_test === true) {
-    // 进行部署检查
-    return "v2.0";
+    return "v2.1";
   }
 
   let rank = await getRank();
   // 写入数据库
-  const record = {
+  await ctx.mpserverless.db.collection("badge_rank").insertOne({
     mdate: new Date(),
-    rank: rank[365], // 兼容旧版前端
     rankV2: rank,
-  }
-  await ctx.mpserverless.db.collection("badge_rank").insertOne(record);
+  });
   // 清理旧数据
   await removeOld();
 
-  async function getAllRecords(coll, cond) {
+  // 通用查询函数添加投影支持
+  async function getAllRecords(coll, cond, projection = {}) {
     let {
       result
-    } = await ctx.mpserverless.db.collection(coll).find(cond)
+    } = await ctx.mpserverless.db.collection(coll).find(cond, {
+      projection
+    });
     if (result.length < 100) {
-      // 不超过100条，一次能取完
       return result;
     }
     const {
@@ -30,354 +29,196 @@ module.exports = async (ctx) => {
       const {
         result: tmp
       } = await ctx.mpserverless.db.collection(coll).find(cond, {
-        skip: result.length
+        skip: result.length,
+        projection
       })
       result = result.concat(tmp);
     }
     return result;
   }
 
-
+  // 徽章分数映射
   async function getBadgeScoreMap() {
-    // 徽章分数
     const levelScoreMap = {
       'S': 5,
       'A': 3,
       'B': 2,
       'C': 1,
     }
-    // 获取徽章定义
-    const badgeDefs = await getAllRecords("badge_def", {});
+    // 优化：只读取_id和level字段
+    const badgeDefs = await getAllRecords("badge_def", {}, {
+      _id: 1,
+      level: 1
+    });
     if (badgeDefs.length === 0) {
-      // 还没有徽章定义
       return null;
     }
-    let badgeScoreMap = [];
-    for (const bd of badgeDefs) {
-      badgeScoreMap.push({
-        case: {
-          $eq: ["$badgeDef", bd._id]
-        },
-        then: levelScoreMap[bd.level]
-      })
-    }
-    return badgeScoreMap;
+
+    return badgeDefs.map(bd => ({
+      case: {
+        $eq: ["$badgeDef", bd._id]
+      },
+      then: levelScoreMap[bd.level]
+    }));
   }
 
-  async function _buildBase(nDaysAgo) {
-    const idScoreMap = await getBadgeScoreMap();
-    let base = [];
-
-    if (nDaysAgo !== 0) {
-      base = (await ctx.mpserverless.db.collection('badge').aggregate([{
-          $match: {
-            catId: {
-              $ne: null
-            },
-            givenTime: {
-              $gte: getNDaysAgo(nDaysAgo)
-            }
-          }
-        },
-        {
-          $project: {
-            catId: 1,
-            givenTime: 1,
-            badgeDef: 1
-          }
-        },
-        {
-          $addFields: {
-            score: {
-              $switch: {
-                branches: idScoreMap,
-                default: 0
-              }
-            }
-          }
-        }
-      ])).result
-    } else {
-      base = (await ctx.mpserverless.db.collection('badge').aggregate([{
-          $match: {
-            catId: {
-              $ne: null
-            }
-          }
-        },
-        {
-          $project: {
-            catId: 1,
-            givenTime: 1,
-            badgeDef: 1
-          }
-        },
-        {
-          $addFields: {
-            score: {
-              $switch: {
-                branches: idScoreMap,
-                default: 0
-              }
-            }
-          }
-        }
-      ])).result
-    }
-
-    return base;
-  }
-
-  // 统计总数量、总价值榜
+  // 统计函数优化字段选择
   async function getTotalRank(nDaysAgo, sumScore) {
-    // 每个榜单最大数量
     const maxRankCount = 20;
-    let sumField = sumScore ? '$score' : 1;
-
-    // let base = await _buildBase(nDaysAgo);
+    const sumField = sumScore ? '$score' : 1;
     const idScoreMap = await getBadgeScoreMap();
-    let data = [];
-
-    if (nDaysAgo !== 0) {
-      data = (await ctx.mpserverless.db.collection('badge').aggregate([{
-          $match: {
-            catId: {
-              $ne: null
-            },
-            givenTime: {
-              $gte: getNDaysAgo(nDaysAgo)
-            }
-          }
+    const matchCondition = nDaysAgo !== 0 ?
+      {
+        catId: {
+          $ne: null
         },
-        {
-          $project: {
-            catId: 1,
-            givenTime: 1,
-            badgeDef: 1
-          }
-        },
-        {
-          $addFields: {
-            score: {
-              $switch: {
-                branches: idScoreMap,
-                default: 0
-              }
-            }
-          }
-        },
-        {
-          $group: {
-            _id: "$catId",
-            total: {
-              $sum: sumField
-            }
-          }
-        },
-        {
-          $sort: {
-            total: -1
-          }
-        },
-        {
-          $limit: maxRankCount
+        givenTime: {
+          $gte: getNDaysAgo(nDaysAgo)
         }
-      ])).result
-    } else {
-      data = (await ctx.mpserverless.db.collection('badge').aggregate([{
-          $match: {
-            catId: {
-              $ne: null
-            }
-          }
-        },
-        {
-          $project: {
-            catId: 1,
-            givenTime: 1,
-            badgeDef: 1
-          }
-        },
-        {
-          $addFields: {
-            score: {
-              $switch: {
-                branches: idScoreMap,
-                default: 0
-              }
-            }
-          }
-        },
-        {
-          $group: {
-            _id: "$catId",
-            total: {
-              $sum: sumField
-            }
-          }
-        },
-        {
-          $sort: {
-            total: -1
-          }
-        },
-        {
-          $limit: maxRankCount
+      } :
+      {
+        catId: {
+          $ne: null
         }
-      ])).result
-    }
+      };
 
-    // 整理返回格式为_id: number
-    let res = {};
-    for (const d of data) {
-      res[d._id] = d.total
-    }
-
-    return res;
-  }
-
-
-  // 统计每个徽章的排行榜
-  async function getBadgeRank(nDaysAgo) {
-    // 每个榜单最大数量
-    const maxRankCount = 20;
-    const idScoreMap = await getBadgeScoreMap();
-    let data = [];
-
-    if (nDaysAgo !== 0) {
-      data = (await ctx.mpserverless.db.collection('badge').aggregate([{
-          $match: {
-            catId: {
-              $ne: null
-            },
-            givenTime: {
-              $gte: getNDaysAgo(nDaysAgo)
+    const data = (await ctx.mpserverless.db.collection('badge').aggregate([{
+        $match: matchCondition
+      },
+      // 优化：只投影必要字段
+      {
+        $project: {
+          catId: 1,
+          badgeDef: 1,
+          ...(idScoreMap ? {
+            _id: 0
+          } : {}) // 仅当需要转换分数时排除_id
+        }
+      },
+      ...(idScoreMap ? [{
+        $addFields: {
+          score: {
+            $switch: {
+              branches: idScoreMap,
+              default: 0
             }
           }
-        },
-        {
-          $project: {
-            catId: 1,
-            givenTime: 1,
-            badgeDef: 1
+        }
+      }] : []),
+      {
+        $group: {
+          _id: "$catId",
+          total: {
+            $sum: sumField
           }
-        },
-        {
-          $addFields: {
-            score: {
-              $switch: {
-                branches: idScoreMap,
-                default: 0
-              }
-            }
-          }
-        },
-        {
-          $group: {
-            _id: {
-              badgeDef: "$badgeDef",
-              catId: "$catId",
-            },
-            total: {
-              $sum: 1
-            }
-          }
-        },
-        {
-          $project: {
-            _id: 0,
-            badgeDef: "$_id.badgeDef",
-            catId: "$_id.catId",
-            total: 1
-          }
-        },
-      ])).result
-    } else {
-      data = (await ctx.mpserverless.db.collection('badge').aggregate([{
-          $match: {
-            catId: {
-              $ne: null
-            }
-          }
-        },
-        {
-          $project: {
-            catId: 1,
-            givenTime: 1,
-            badgeDef: 1
-          }
-        },
-        {
-          $addFields: {
-            score: {
-              $switch: {
-                branches: idScoreMap,
-                default: 0
-              }
-            }
-          }
-        },
-        {
-          $group: {
-            _id: {
-              badgeDef: "$badgeDef",
-              catId: "$catId",
-            },
-            total: {
-              $sum: 1
-            }
-          }
-        },
-        {
-          $project: {
-            _id: 0,
-            badgeDef: "$_id.badgeDef",
-            catId: "$_id.catId",
-            total: 1
-          }
-        },
-      ])).result
-    }
-
-    // 整理返回格式为 badgeDef: { catId: number }
-    let res = {};
-    for (const d of data) {
-      if (!res[d.badgeDef]) {
-        res[d.badgeDef] = {}
+        }
+      },
+      {
+        $sort: {
+          total: -1
+        }
+      },
+      {
+        $limit: maxRankCount
       }
-      res[d.badgeDef][d.catId] = d.total
+    ])).result;
+
+    return Object.fromEntries(data.map(d => [d._id, d.total]));
+  }
+
+  // 徽章排行统计优化
+  async function getBadgeRank(nDaysAgo) {
+    const maxRankCount = 20;
+    const idScoreMap = await getBadgeScoreMap();
+    const matchCondition = nDaysAgo !== 0 ?
+      {
+        catId: {
+          $ne: null
+        },
+        givenTime: {
+          $gte: getNDaysAgo(nDaysAgo)
+        }
+      } :
+      {
+        catId: {
+          $ne: null
+        }
+      };
+
+    const data = (await ctx.mpserverless.db.collection('badge').aggregate([{
+        $match: matchCondition
+      },
+      // 优化：只投影必要字段
+      {
+        $project: {
+          catId: 1,
+          badgeDef: 1,
+          ...(idScoreMap ? {
+            _id: 0
+          } : {}) // 仅当需要转换分数时排除_id
+        }
+      },
+      ...(idScoreMap ? [{
+        $addFields: {
+          score: 1
+        } // 此处score字段实际未使用，但保持结构一致
+      }] : []),
+      {
+        $group: {
+          _id: {
+            badgeDef: "$badgeDef",
+            catId: "$catId",
+          },
+          total: {
+            $sum: 1
+          }
+        }
+      },
+      {
+        $project: {
+          _id: 0,
+          badgeDef: "$_id.badgeDef",
+          catId: "$_id.catId",
+          total: 1
+        }
+      }
+    ])).result;
+
+    // 分组整理数据
+    const res = {};
+    for (const d of data) {
+      (res[d.badgeDef] || (res[d.badgeDef] = {}))[d.catId] = d.total;
     }
 
+    // 获取每个徽章的TopN
     for (const badgeDef in res) {
-      res[badgeDef] = getDictTopN(res[badgeDef], maxRankCount)
+      res[badgeDef] = getDictTopN(res[badgeDef], maxRankCount);
     }
 
     return res;
   }
 
-  // 统计所有需要的表
+  // 主排行获取函数
   async function getRank() {
-    // 获取徽章定义
-    const badgeDefs = await getAllRecords("badge_def", {});
-    if (badgeDefs.length === 0) {
-      // 还没有徽章定义
-      return {};
-    }
+    // 优化：只读取必要字段
+    const badgeDefs = await getAllRecords("badge_def", {}, {
+      _id: 1,
+      level: 1
+    });
+    if (!badgeDefs.length) return {};
 
-    let stat = {};
-    // 季度、半年、整年、总榜
+    const stat = {};
     for (const nDaysAgo of [90, 180, 365]) {
-      // 先获取各个徽章的统计
-      stat[nDaysAgo] = await getBadgeRank(nDaysAgo);
-      // 再获取总数量、总分数的统计
-      stat[nDaysAgo]['count'] = await getTotalRank(nDaysAgo, false);
-      stat[nDaysAgo]['score'] = await getTotalRank(nDaysAgo, true);
+      stat[nDaysAgo] = {
+        ...await getBadgeRank(nDaysAgo),
+        count: await getTotalRank(nDaysAgo, false),
+        score: await getTotalRank(nDaysAgo, true)
+      };
     }
     return stat;
   }
 
-
-  // 删除旧的
+  // 工具函数保持不变
   async function removeOld() {
     await ctx.mpserverless.db.collection('badge_rank').deleteMany({
       mdate: {
@@ -387,17 +228,14 @@ module.exports = async (ctx) => {
   }
 
   function getNDaysAgo(n) {
-    const today = new Date();
-    const ago = new Date(today.getTime());
-    ago.setDate(today.getDate() - n);
-    return ago;
+    return new Date(Date.now() - n * 86400000);
   }
 
-  // 获取字典里value排名top n的内容
   function getDictTopN(dict, n) {
-    const entries = Object.entries(dict);
-    entries.sort((a, b) => b[1] - a[1]);
-    const topN = entries.slice(0, n);
-    return Object.fromEntries(topN);
+    return Object.fromEntries(
+      Object.entries(dict)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, n)
+    );
   }
 }
