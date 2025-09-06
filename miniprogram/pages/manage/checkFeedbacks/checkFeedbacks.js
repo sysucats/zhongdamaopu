@@ -24,8 +24,31 @@ Page({
   onLoad: async function (options) {
     if (await checkAuth(this, 1)) {
       this.reload();
+      // 监听反馈更新时间
+      app.globalData.eventBus.$on('feedbackUpdated', this.handleFeedbackUpdate);
     }
   },
+  handleFeedbackUpdate: function(payload) {
+    console.log('收到反馈更新事件:', payload);
+    
+    // 更新特定反馈项
+    const feedbacks = this.data.feedbacks.map(fb => {
+      if (fb._id === payload.id) {
+        return {
+          ...fb,
+          replied: true,
+          replyDate: new Date(),
+          replyDateStr: formatDate(new Date(), "yyyy-MM-dd hh:mm:ss"),
+          replyInfo: payload.replyInfo
+        };
+      }
+      return fb;
+    });
+    
+    this.setData({ feedbacks });
+  },
+
+
 
   async loadFeedbacks() {
     const nowLoaded = this.data.feedbacks.length;
