@@ -353,7 +353,13 @@ Page({
       compressedId: compressFile.fileId,
       watermark: watermarkCloud.fileUrl,
       watermarkId: watermarkCloud.fileId,
-    })
+    });
+
+    // 触发图片处理完成事件
+    app.globalData.eventBus.$emit('photoProcessed', {
+      photoId: oriPhoto._id,
+      catId: oriPhoto.cat_id // 假设照片记录中有关联的猫ID
+    });
   },
 
   preview: function (e) {
