@@ -10,38 +10,87 @@ async function getAvatar(cat_id, total) {
     return undefined;
   }
 
-  var cacheKey = `cat-avatar-${cat_id}`;
-  var cacheItem = getCacheItem(cacheKey);
+  const cacheKey = `cat-avatar-${cat_id}`;
+  const cacheItem = getCacheItem(cacheKey);
   if (cacheItem) {
     return cacheItem;
   }
-  // photo_id : 不以 HEIC 为文件后缀的字符串
-  const qf = {
-    cat_id: cat_id,
-    verified: true,
-    best: true
-  };
 
-  var index = randomInt(0, total);
+  // 先尝试获取精选照片
+  let photo = await getBestPhoto(cat_id);
+  
+  // 如果没有精选照片，获取最新照片
+  if (!photo) {
+    photo = await getLatestPhoto(cat_id);
+  }
 
-  const { result: pho_src } = await app.mpServerless.db.collection('photo').find(qf, { skip: index, limit: 1 })
-  const photo = pho_src[0];
+  // 如果没有照片，返回 undefined
+  if (!photo) {
+    return undefined;
+  }
 
   // 签名处理
-  if (photo.photo_id) {
-    photo.photo_id = await signCosUrl(photo.photo_id);
-  }
-  if (photo.photo_compressed) {
-    photo.photo_compressed = await signCosUrl(photo.photo_compressed);
-  }
-  if (photo.photo_watermark) {
-    photo.photo_watermark = await signCosUrl(photo.photo_watermark);
-  }
+  photo = await signPhotoUrls(photo);
 
-  cacheItem = photo;
+  setCacheItem(cacheKey, photo, cacheTime.catAvatar);
+  return photo;
+}
 
-  setCacheItem(cacheKey, cacheItem, cacheTime.catAvatar);
-  return cacheItem;
+// 辅助函数
+async function getBestPhoto(cat_id) {
+  try {
+    const { result: photos } = await app.mpServerless.db.collection('photo').find({
+      cat_id: cat_id,
+      verified: true,
+      best: true
+    }, {
+      sort: { mdate: -1 },
+      limit: 1
+    });
+    
+    return photos && photos.length > 0 ? photos[0] : null;
+  } catch (error) {
+    console.error("获取精选照片失败:", error);
+    return null;
+  }
+}
+
+async function getLatestPhoto(cat_id) {
+  try {
+    const { result: photos } = await app.mpServerless.db.collection('photo').find({
+      cat_id: cat_id,
+      verified: true
+    }, {
+      sort: { mdate: -1 },
+      limit: 1
+    });
+    
+    return photos && photos.length > 0 ? photos[0] : null;
+  } catch (error) {
+    console.error("获取最新照片失败:", error);
+    return null;
+  }
+}
+
+async function signPhotoUrls(photo) {
+  try {
+    const signedPhoto = { ...photo };
+    
+    if (signedPhoto.photo_id) {
+      signedPhoto.photo_id = await signCosUrl(signedPhoto.photo_id);
+    }
+    if (signedPhoto.photo_compressed) {
+      signedPhoto.photo_compressed = await signCosUrl(signedPhoto.photo_compressed);
+    }
+    if (signedPhoto.photo_watermark) {
+      signedPhoto.photo_watermark = await signCosUrl(signedPhoto.photo_watermark);
+    }
+    
+    return signedPhoto;
+  } catch (error) {
+    console.error("签名照片URL失败:", error);
+    return photo; // 返回原始照片
+  }
 }
 
 // 消除“有新相片”提示
