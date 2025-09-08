@@ -175,7 +175,63 @@ Page({
         banner: ads.genealogy_banner
       },
     })
+
+    // 添加事件监听
+    app.globalData.eventBus.$on('photoProcessed', this.handlePhotoProcessed);
   },
+  onUnload: function () {
+    // 移除事件监听
+    app.globalData.eventBus.$off('photoProcessed', this.handlePhotoProcessed);
+  },
+  // 新增处理函数
+handlePhotoProcessed: function (data) {
+  console.log('收到图片处理完成事件', data);
+  
+  // 刷新特定猫的数据（如果知道具体猫ID）
+  if (data.catId) {
+    this.refreshCatData(data.catId);
+  } 
+  // 或者刷新整个列表
+  else {
+    this.reloadCats();
+  }
+  },
+  // 刷新单个猫的数据
+refreshCatData: async function (catId) {
+  const index = this.data.cats.findIndex(cat => cat._id === catId);
+  if (index === -1) return;
+  
+  // 重新获取该猫的数据
+  const { result: [updatedCat] } = await app.mpServerless.db.collection('cat').find({ 
+    _id: catId 
+  });
+  
+  if (updatedCat) {
+    // 更新本地数据
+    this.setData({
+      [`cats[${index}]`]: updatedCat
+    });
+    
+    // 重新加载照片
+    this.loadCatPhoto(updatedCat, index);
+  }
+},
+// 加载单个猫的照片
+loadCatPhoto: async function (cat, index) {
+  const photo = await getAvatar(cat._id, cat.photo_count_best);
+  if (!photo) return;
+  
+  if (!photo.userInfo) {
+    photo.userInfo = (await getUserInfo(photo._openid)).userInfo;
+  }
+  
+  const commentCount = await getCatCommentCount(cat._id);
+  
+  this.setData({
+    [`cats[${index}].photo`]: photo,
+    [`cats[${index}].comment_count`]: commentCount
+  });
+},
 
   onShow: function () {
     showTab(this);
