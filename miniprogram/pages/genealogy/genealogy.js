@@ -20,62 +20,41 @@ import { isManagerAsync, checkCanShowNews } from "../../utils/user";
 import { signCosUrl } from "../../utils/common";
 
 const default_png = undefined;
-
 const tipInterval = 24; // 提示间隔时间 hours
-
-// 分享的标语
 const share_text = config.text.app_name + ' - ' + config.text.genealogy.share_tip;
-
 const app = getApp();
 
 Page({
-
-  /**
-   * 页面的初始数据
-   */
   data: {
     cats: [],
-
     filters: [],
-    filters_sub: 0, // 过滤器子菜单
-    filters_legal: true, // 这组过滤器是否合法
-    filters_show: false, // 是否显示过滤器
-    filters_input: '', // 输入的内容，目前只用于挑选名字
-    filters_show_shadow: false, // 滚动之后才显示阴影
-    filters_empty: true, // 过滤器是否为空
-
-    // 高度，单位为px（后面会覆盖掉）
-    heights: {
-      filters: 40,
-    },
-    // 总共有多少只猫
+    filters_sub: 0,
+    filters_legal: true,
+    filters_show: false,
+    filters_input: '',
+    filters_show_shadow: false,
+    filters_empty: true,
+    heights: { filters: 40 },
     catsMax: 0,
-
-    // 加载相关
-    loading: false, // 正在加载
-    loadnomore: false, // 没有再多了
-
-    // 领养状态
+    loading: false,
+    loadnomore: false,
     adopt_desc: config.cat_status_adopt,
-    // 寻找领养的按钮
     adopt_count: 0,
-
-    // 广告是否展示
     ad_show: {},
-    // 广告id
     ad: {},
-
-    // 需要弹出的公告
     newsList: [],
     newsImage: "",
-
-    text_cfg: config.text
+    text_cfg: config.text,
+    // 新增：数据加载完成标志
+    dataReady: false
   },
 
   jsData: {
     catsStep: 1,
     loadingLock: 0,
     pageLoadingLock: false,
+    // 新增：待处理的scene参数
+    pendingScene: null
   },
 
   /**
@@ -87,35 +66,30 @@ Page({
         catsStep: 1,
         loadingLock: 0,
         pageLoadingLock: false,
+        pendingScene: null
       };
     }
+    
+    // 保存scene参数，但不立即处理
+    if (options.scene) {
+      const scene = decodeURIComponent(options.scene);
+      console.log("scene:", scene);
+      if (scene.startsWith('toC=')) {
+        this.jsData.pendingScene = scene;
+      }
+    }
+
     // 从缓存里读取options
     var fcampus = options.fcampus;
     if (!fcampus) {
       fcampus = this.getFCampusCache();
     }
+    
     // 从分享点进来，到跳转到其他页面
     if (options.toPath) {
       wx.navigateTo({
         url: decodeURIComponent(options.toPath),
       });
-    }
-    // 从扫描二维码扫进来，目前只用于猫猫二维码跳转
-    if (options.scene) {
-      const scene = decodeURIComponent(options.scene);
-      console.log("scene:", scene);
-      if (scene.startsWith('toC=')) {
-        const cat_No = scene.substr(4);
-        const { result: cat_res } = await app.mpServerless.db.collection('cat').find({ _no: cat_No }, { projection: { _no: 1 } });
-
-        if (!cat_res.length) {
-          return;
-        }
-        const _id = cat_res[0]._id;
-        this.clickCatCard(_id, true);
-      }
-
-
     }
 
     // 开始加载页面，获取设置
@@ -150,8 +124,10 @@ Page({
       })
       return
     }
+    
     // 先把设置拿到
     this.jsData.catsStep = settings['catsStep'] || 1;
+    
     // 启动加载
     await Promise.all([
       this.loadRecognize(),
@@ -178,75 +154,93 @@ Page({
 
     // 添加事件监听
     app.globalData.eventBus.$on('photoProcessed', this.handlePhotoProcessed);
+    
+    // 标记数据加载完成
+    this.setData({ dataReady: true });
+    
+    // 处理待处理的scene参数
+    if (this.jsData.pendingScene) {
+      this.handlePendingScene();
+    }
   },
+  
+  // 新增：处理待处理的scene参数
+  async handlePendingScene() {
+    const scene = this.jsData.pendingScene;
+    if (scene.startsWith('toC=')) {
+      const cat_No = scene.substr(4);
+      // 使用正确的字段名 'no' 而不是 '_no'
+      const { result: cat_res } = await app.mpServerless.db.collection('cat').find({ no: cat_No }, { projection: { _id: 1 } });
+      
+      if (!cat_res.length) {
+        wx.showToast({
+          title: '未找到对应猫咪',
+          icon: 'none'
+        });
+        return;
+      }
+      const _id = cat_res[0]._id;
+      this.clickCatCard(_id, true);
+    }
+    this.jsData.pendingScene = null;
+  },
+
   onUnload: function () {
-    // 移除事件监听
     app.globalData.eventBus.$off('photoProcessed', this.handlePhotoProcessed);
   },
-  // 新增处理函数
-handlePhotoProcessed: function (data) {
-  console.log('收到图片处理完成事件', data);
-  
-  // 刷新特定猫的数据（如果知道具体猫ID）
-  if (data.catId) {
-    this.refreshCatData(data.catId);
-  } 
-  // 或者刷新整个列表
-  else {
-    this.reloadCats();
-  }
+
+  handlePhotoProcessed: function (data) {
+    if (data.catId) {
+      this.refreshCatData(data.catId);
+    } else {
+      this.reloadCats();
+    }
   },
-  // 刷新单个猫的数据
-refreshCatData: async function (catId) {
-  const index = this.data.cats.findIndex(cat => cat._id === catId);
-  if (index === -1) return;
-  
-  // 重新获取该猫的数据
-  const { result: [updatedCat] } = await app.mpServerless.db.collection('cat').find({ 
-    _id: catId 
-  });
-  
-  if (updatedCat) {
-    // 更新本地数据
-    this.setData({
-      [`cats[${index}]`]: updatedCat
+
+  refreshCatData: async function (catId) {
+    const index = this.data.cats.findIndex(cat => cat._id === catId);
+    if (index === -1) return;
+    
+    const { result: [updatedCat] } = await app.mpServerless.db.collection('cat').find({ 
+      _id: catId 
     });
     
-    // 重新加载照片
-    this.loadCatPhoto(updatedCat, index);
-  }
-},
-// 加载单个猫的照片
-loadCatPhoto: async function (cat, index) {
-  const photo = await getAvatar(cat._id, cat.photo_count_best);
-  if (!photo) return;
-  
-  if (!photo.userInfo) {
-    photo.userInfo = (await getUserInfo(photo._openid)).userInfo;
-  }
-  
-  const commentCount = await getCatCommentCount(cat._id);
-  
-  this.setData({
-    [`cats[${index}].photo`]: photo,
-    [`cats[${index}].comment_count`]: commentCount
-  });
-},
+    if (updatedCat) {
+      this.setData({ [`cats[${index}]`]: updatedCat });
+      this.loadCatPhoto(updatedCat, index);
+    }
+  },
+
+  loadCatPhoto: async function (cat, index) {
+    const photo = await getAvatar(cat._id, cat.photo_count_best);
+    if (!photo) return;
+    
+    if (!photo.userInfo) {
+      photo.userInfo = (await getUserInfo(photo._openid)).userInfo;
+    }
+    
+    const commentCount = await getCatCommentCount(cat._id);
+    
+    this.setData({
+      [`cats[${index}].photo`]: photo,
+      [`cats[${index}].comment_count`]: commentCount
+    });
+  },
 
   onShow: function () {
     showTab(this);
   },
 
   loadRecognize: async function () {
-    var settings = await getGlobalSettings(__wxConfig.envVersion === 'release' ? 'recognize' : 'recognize_test');
+    const env = __wxConfig.envVersion === 'release' ? 'recognize' : 'recognize_test';
+    const settings = await getGlobalSettings(env);
     this.setData({
       showRecognize: settings.interfaceURL && !settings.interfaceURL.includes("https://your.domain.com")
-    })
+    });
   },
 
   loadFilters: async function (fcampus) {
-    // 下面开始加载filters
-    var res = await loadFilter();
+    const res = await loadFilter();
     if (!res) {
       wx.showModal({
         title: '出错了...',
@@ -255,70 +249,69 @@ loadCatPhoto: async function (cat, index) {
       });
       return false;
     }
-    var filters = [];
-    var area_item = {
+    
+    const filters = [];
+    
+    // 校区过滤器
+    const area_item = {
       key: 'area',
       cateKey: 'campus',
       name: '校区',
-      category: []
+      category: [{
+        name: '全部校区',
+        items: [],
+        all_active: true
+      }]
     };
-    area_item.category.push({
-      name: '全部校区',
-      items: [], // '全部校区'特殊处理
-      all_active: true
-    });
-    // 用个object当作字典，把area分下类
-    var classifier = {};
-    for (let i = 0, len = res.campuses.length; i < len; ++i) {
-      classifier[res.campuses[i]] = {
-        name: res.campuses[i],
-        items: [], // 记录属于这个校区的area
+    
+    const classifier = {};
+    res.campuses.forEach(campus => {
+      classifier[campus] = {
+        name: campus,
+        items: [],
         all_active: false
       };
-    }
-    for (let k = 0, len = res.area.length; k < len; ++k) {
-      classifier[res.area[k].campus].items.push(res.area[k]);
-    }
-    for (let i = 0, len = res.campuses.length; i < len; ++i) {
-      area_item.category.push(classifier[res.campuses[i]]);
-    }
-    // 把初始fcampus写入，例如"011000"
-    if (fcampus && fcampus.length === area_item.category.length) {
-      console.log("fcampus exist", fcampus, area_item);
-      for (let i = 0; i < fcampus.length; i++) {
-        const active = fcampus[i] == "1";
-        area_item.category[i].all_active = active;
+    });
+    
+    res.area.forEach(area => {
+      if (classifier[area.campus]) {
+        classifier[area.campus].items.push(area);
       }
+    });
+    
+    Object.values(classifier).forEach(category => {
+      area_item.category.push(category);
+    });
+    
+    if (fcampus && fcampus.length === area_item.category.length) {
+      fcampus.split('').forEach((activeFlag, i) => {
+        if (area_item.category[i]) {
+          area_item.category[i].all_active = activeFlag === "1";
+        }
+      });
     }
+    
     filters.push(area_item);
-
-    var colour_item = {
+    
+    // 花色过滤器
+    const colour_item = {
       key: 'colour',
       name: '花色',
       category: [{
         name: '全部花色',
-        items: res.colour.map(name => {
-          return {
-            name: name
-          };
-        }),
+        items: res.colour.map(name => ({ name })),
         all_active: true
       }]
-    }
+    };
     filters.push(colour_item);
-
-    var adopt_status = [{
-      name: "未知",
-      value: null
-    }];
-    adopt_status = adopt_status.concat(config.cat_status_adopt.map((name, i) => {
-      return {
-        name: name,
-        value: i, // 数据库里存的
-      };
-    }));
-
-    var adopt_item = {
+    
+    // 领养状态过滤器
+    const adopt_status = [{ name: "未知", value: null }];
+    config.cat_status_adopt.forEach((name, i) => {
+      adopt_status.push({ name, value: i });
+    });
+    
+    const adopt_item = {
       key: 'adopt',
       name: '领养',
       category: [{
@@ -326,70 +319,51 @@ loadCatPhoto: async function (cat, index) {
         items: adopt_status,
         all_active: true
       }]
-    }
+    };
     filters.push(adopt_item);
-
-    // 默认把第一个先激活了
+    
+    // 设置默认激活的过滤器
     filters[0].active = true;
-    console.log(filters);
+    
     this.newUserTip();
-    this.setData({
-      filters: filters,
-    });
+    this.setData({ filters });
+    
+    // 确保加载猫咪数据
     await this.reloadCats();
   },
 
-  /**
-   * 生命周期函数--监听页面初次渲染完成
-   */
   onReady: function () {
     this.getHeights();
   },
 
-  /**
-   * 页面上拉触底事件的处理函数
-   */
   onReachBottom: async function () {
     await this.loadMoreCats();
   },
 
-  /**
-   * 用户点击右上角分享
-   */
   onShareAppMessage: function () {
-    // 分享是保留校区外显filter
     const pagesStack = getCurrentPages();
     const path = getCurrentPath(pagesStack);
     const fcampus = this.getFCampusStr();
     const query = `${path}fcampus=${fcampus}`;
-    console.log(query);
     return {
       title: share_text,
       path: query
     };
   },
 
-  // 获取二进制的campus filter字符串
   getFCampusStr: function () {
-    var fcampus = [];
-    for (var item of this.data.filters[0].category) {
-      fcampus.push(item.all_active ? "1" : "0");
-    }
-    return fcampus.join("");
+    return this.data.filters[0].category
+      .map(item => item.all_active ? "1" : "0")
+      .join("");
   },
 
   onShareTimeline: function () {
-    return {
-      title: share_text,
-      // query: 'cat_id=' + this.data.cat._id
-    }
+    return { title: share_text };
   },
 
   checkNeedLoad() {
     if (this.data.cats.length >= this.data.catsMax) {
-      this.setData({
-        loadnomore: true
-      });
+      this.setData({ loadnomore: true });
       this.jsData.pageLoadingLock = false;
       return false;
     }
@@ -397,165 +371,145 @@ loadCatPhoto: async function (cat, index) {
   },
 
   async reloadCats() {
-    // 增加lock
     this.jsData.loadingLock++;
     const nowLoadingLock = this.jsData.loadingLock;
+    
     const query = await this.fGet();
     const { result: cat_count } = await app.mpServerless.db.collection('cat').count(query);
-
-    if (this.jsData.loadingLock != nowLoadingLock) {
-      // 说明过期了
-      return false;
-    }
+    
+    if (this.jsData.loadingLock !== nowLoadingLock) return false;
+    
     this.setData({
       cats: [],
       catsMax: cat_count,
       loadnomore: false,
       filters_empty: Object.keys(query).length === 0,
     });
+    
     await Promise.all([
       this.loadMoreCats(),
-      // 加载待领养
       this.countWaitingAdopt(),
-      // 刷新cache一下
       this.setFCampusCache()
     ]);
-
+    
     this.unlockBtn();
   },
 
-  // 加载更多的猫猫
   async loadMoreCats() {
-    // 加载lock
     const nowLoadingLock = this.jsData.loadingLock;
-    if (!this.checkNeedLoad() || this.data.loading) {
-      return false;
-    }
-
-    await this.setData({
-      loading: true,
-    });
-
-    var cats = this.data.cats;
-    var step = this.jsData.catsStep;
+    if (!this.checkNeedLoad() || this.data.loading) return false;
+    
+    await this.setData({ loading: true });
+    
+    const cats = this.data.cats;
+    const step = this.jsData.catsStep;
     const query = await this.fGet();
-    var { result: new_cats } = await app.mpServerless.db.collection('cat').find(query, { sort: { mphoto: -1, popularity: -1 }, skip: cats.length, limit: step });
+    
+    let { result: new_cats } = await app.mpServerless.db.collection('cat').find(query, { 
+      sort: { mphoto: -1, popularity: -1 }, 
+      skip: cats.length, 
+      limit: step 
+    });
+    
     new_cats = shuffle(new_cats);
-
-    if (this.jsData.loadingLock != nowLoadingLock) {
-      // 说明过期了
-      console.log(`过期了 ${this.jsData.loadingLock}, ${nowLoadingLock}`)
-      return false;
-    }
-    console.log(new_cats);
-    for (var d of new_cats) {
+    
+    if (this.jsData.loadingLock !== nowLoadingLock) return false;
+    
+    const today = new Date();
+    new_cats.forEach(d => {
       d.photo = default_png;
       d.characteristics_string = [(d.colour || '') + ''].concat(d.characteristics || []).join('，');
-      if (!d.mphoto) {
-        d.mphoto_new = false;
-        continue;
-      }
-
-      const today = new Date();
-      const modified_date = new Date(d.mphoto);
-      const delta_date = today - modified_date; // milliseconds
-
-      // 小于7天
-      d.mphoto_new = ((delta_date / 1000 / 3600 / 24) < 7);
-
-      // 是否最近看过了
-      const visit_date = getVisitedDate(d._id);
-      if (visit_date >= modified_date) {
+      
+      if (d.mphoto) {
+        const modified_date = new Date(d.mphoto);
+        const delta_days = (today - modified_date) / (1000 * 3600 * 24);
+        d.mphoto_new = delta_days < 7;
+        
+        const visit_date = getVisitedDate(d._id);
+        if (visit_date >= modified_date) {
+          d.mphoto_new = false;
+        }
+      } else {
         d.mphoto_new = false;
       }
-    }
-    new_cats = cats.concat(new_cats);
-    await this.setData({
-      cats: new_cats,
-      loading: false,
-      loadnomore: Boolean(new_cats.length === this.data.catsMax)
     });
+    
+    const updatedCats = [...cats, ...new_cats];
+    await this.setData({
+      cats: updatedCats,
+      loading: false,
+      loadnomore: updatedCats.length === this.data.catsMax
+    });
+    
     await this.loadCatsPhoto();
   },
 
   async loadCatsPhoto() {
-    // 加载lock
     const nowLoadingLock = this.jsData.loadingLock;
-
     const cats = this.data.cats;
-
-    var cat2photos = {};
-    var cat2commentCount = {};
-    for (var cat of cats) {
+    
+    const cat2photos = {};
+    const cat2commentCount = {};
+    
+    await Promise.all(cats.map(async cat => {
       if (cat.photo === default_png) {
-        cat2photos[cat._id] = await getAvatar(cat._id, cat.photo_count_best);
-        if (!cat2photos[cat._id]) {
-          continue;
+        const photo = await getAvatar(cat._id, cat.photo_count_best);
+        if (photo) {
+          if (!photo.userInfo) {
+            try {
+              const userInfoRes = await getUserInfo(photo._openid);
+              photo.userInfo = userInfoRes.userInfo;
+            } catch (e) {
+              console.error("获取用户信息失败:", e);
+            }
+          }
+          cat2photos[cat._id] = photo;
+          cat2commentCount[cat._id] = await getCatCommentCount(cat._id);
         }
-        if (!cat2photos[cat._id].userInfo) {
-          console.log("userinfo", (await getUserInfo(cat2photos[cat._id]._openid)));
-          cat2photos[cat._id].userInfo = (await getUserInfo(cat2photos[cat._id]._openid)).userInfo;
-        }
-        cat2commentCount[cat._id] = await getCatCommentCount(cat._id);
       }
-    }
-
-    if (this.jsData.loadingLock != nowLoadingLock) {
-      console.log("过期了，照片数量：" + cats.length);
-      // 说明过期了
-      return false;
-    }
-
-    // 这里重新获取一遍，因为可能已经刷新了
-    var new_cats = this.data.cats;
-    for (var c of new_cats) {
+    }));
+    
+    if (this.jsData.loadingLock !== nowLoadingLock) return false;
+    
+    const updatedCats = cats.map(c => {
       if (cat2photos[c._id]) {
-        c.photo = cat2photos[c._id];
-        c.comment_count = cat2commentCount[c._id];
+        return {
+          ...c,
+          photo: cat2photos[c._id],
+          comment_count: cat2commentCount[c._id]
+        };
       }
-    }
-    console.log("new_catsnew_cats",new_cats);
-    await this.setData({
-      cats: new_cats
+      return c;
     });
+    
+    this.setData({ cats: updatedCats });
   },
 
   bindImageLoaded(e) {
     const idx = e.currentTarget.dataset.index;
-    this.setData({
-      [`cats[${idx}].imageLoaded`]: true
-    });
+    this.setData({ [`cats[${idx}].imageLoaded`]: true });
   },
 
-  // 点击识猫按钮
   clickRecognize(e) {
-    wx.navigateTo({
-      url: '/pages/packageA/pages/recognize/recognize',
-    });
+    wx.navigateTo({ url: '/pages/packageA/pages/recognize/recognize' });
   },
 
-  // 点击猫猫卡片
   clickCatCard(e, isCatId) {
     const cat_id = isCatId ? e : e.currentTarget.dataset.cat_id;
     const index = this.data.cats.findIndex(cat => cat._id == cat_id);
-    const detail_url = '/pages/genealogy/detailCat/detailCat';
-
-    if (index != -1) {
-      this.setData({
-        [`cats[${index}].mphoto_new`]: false
-      });
+    
+    if (index !== -1) {
+      this.setData({ [`cats[${index}].mphoto_new`]: false });
     }
-
+    
     wx.navigateTo({
-      url: detail_url + '?cat_id=' + cat_id,
+      url: `/pages/genealogy/detailCat/detailCat?cat_id=${cat_id}`,
     });
   },
 
-  // 开始计算各个东西高度
   getHeights() {
     wx.getSystemInfo({
       success: res => {
-        // console.log(res);
         this.setData({
           "heights.filters": res.screenHeight * 0.065,
           "heights.screenHeight": res.screenHeight,
@@ -566,488 +520,362 @@ loadCatPhoto: async function (cat, index) {
       }
     });
   },
-  // 管理员判断，其实可以存到global里
+
   async bindManageCat(e) {
-    var res = await isManagerAsync();
-    if (res) {
+    if (await isManagerAsync()) {
       const cat_id = e.currentTarget.dataset.cat_id;
       wx.navigateTo({
-        url: '/pages/manage/catManage/catManage?cat_id=' + cat_id + '&activeTab=info',
+        url: `/pages/manage/catManage/catManage?cat_id=${cat_id}&activeTab=info`,
       });
-      return;
     }
-    console.log("not a manager");
   },
 
-  ////// 下面开始新的filter //////
-  // mask滑动事件catch
+  // 过滤器相关函数
   voidMove: function () { },
-  // toggle filters
+  
   fToggle: function () {
-    // 这里只管显示和隐藏，类似取消键的功能
-    this.setData({
-      filters_show: !this.data.filters_show
-    });
+    this.setData({ filters_show: !this.data.filters_show });
   },
+  
   fShow: function () {
-    // 这里只管显示和隐藏，类似取消键的功能
-    this.setData({
-      filters_show: true
-    });
+    this.setData({ filters_show: true });
   },
+  
   fHide: function () {
-    // 这里只管显示和隐藏，类似取消键的功能
-    this.setData({
-      filters_show: false
-    });
+    this.setData({ filters_show: false });
   },
-  // 点击main filter，切换sub的
+  
   fClickMain: function (e) {
-    var filters = this.data.filters;
-    const click_idx = e.currentTarget.dataset.index;
-
-    for (var item of filters) {
-      item.active = false;
-    }
-    filters[click_idx].active = true;
-
+    const filters = this.data.filters.map((f, i) => ({
+      ...f,
+      active: i === e.currentTarget.dataset.index
+    }));
+    
     this.setData({
-      filters: filters,
-      filters_sub: click_idx
+      filters,
+      filters_sub: e.currentTarget.dataset.index
     });
   },
-  // 点击category filter，全选/反选该类下所有sub
+  
   fClickCategory: async function (e, singleChoose) {
-    console.log(e);
-    var filters = this.data.filters;
-    var { index, filters_sub } = e.target.dataset;
-    if (filters_sub == undefined) {
-      filters_sub = this.data.filters_sub;
-    }
-
-    const all_active = !filters[filters_sub].category[index].all_active;
-    var category = filters[filters_sub].category[index];
-    if (index == 0 || singleChoose) { // 默认第0个是'全部'
-      for (let i = 0, len = filters[filters_sub].category.length; i < len; ++i) { // 把所有项反激活
-        var ctg = filters[filters_sub].category[i];
-        ctg.all_active = false;
-        for (let k = 0, length = ctg.items.length; k < length; ++k) {
-          ctg.items[k].active = false;
-        }
-      }
-      filters[filters_sub].category[index].all_active = all_active; // '全部'的激活状态
+    const filters = [...this.data.filters];
+    let filters_sub = e.target.dataset.filters_sub;
+    if (filters_sub === undefined) filters_sub = this.data.filters_sub;
+    
+    const index = e.target.dataset.index;
+    const category = filters[filters_sub].category[index];
+    const all_active = !category.all_active;
+    
+    if (index === 0 || singleChoose) {
+      filters[filters_sub].category.forEach((ctg, i) => {
+        ctg.all_active = i === index ? all_active : false;
+        ctg.items.forEach(item => { item.active = false; });
+      });
     } else {
-      filters[filters_sub].category[0].all_active = false; // 取消'全部'的激活，默认第0个是'全部'
-      category.all_active = all_active; // 点击的category状态取反
-      /* for (let k = 0, len = category.items.length; k < len; ++k) {  // 其下的所有项目激活状态与category一致
-        category.items[k].active = all_active;
-      } */
-      for (let k = 0, len = category.items.length; k < len; ++k) { // 反激活其下所有sub
-        category.items[k].active = false;
-      }
+      filters[filters_sub].category[0].all_active = false;
+      category.all_active = all_active;
+      category.items.forEach(item => { item.active = false; });
     }
-    const fLegal = this.fCheckLegal(filters);
+    
     this.setData({
-      filters: filters,
-      filters_legal: fLegal
+      filters,
+      filters_legal: this.fCheckLegal(filters)
     });
   },
-  // 点击sub filter，切换激活项
+  
   fClickSub: function (e) {
-    var filters = this.data.filters;
-    var filters_sub = this.data.filters_sub;
-
-    const category = filters[filters_sub].category[e.target.dataset.index];
-    const index = e.target.dataset.innerindex;
-
-    category.items[index].active = !category.items[index].active; // 激活状态取反
-    filters[filters_sub].category[0].all_active = false; // 取消'全部'的激活，默认第0个是'全部'
-    /* // 看看是否要把category激活/反激活
-    var counter = 0;
-    for (let k = 0, len = category.items.length; k < len; ++k) {
-      if (category.items[k].active) ++counter;
+    const filters = [...this.data.filters];
+    const filters_sub = this.data.filters_sub;
+    const categoryIndex = e.target.dataset.index;
+    const itemIndex = e.target.dataset.innerindex;
+    
+    const category = filters[filters_sub].category[categoryIndex];
+    category.items[itemIndex].active = !category.items[itemIndex].active;
+    category.all_active = false;
+    
+    if (categoryIndex !== 0) {
+      filters[filters_sub].category[0].all_active = false;
     }
-    category.all_active = (counter == category.items.length); */
-    category.all_active = false; // 直接反激活category
-
-    const fLegal = this.fCheckLegal(filters);
+    
     this.setData({
-      filters: filters,
-      filters_legal: fLegal
+      filters,
+      filters_legal: this.fCheckLegal(filters)
     });
   },
-  // 检查现在这个filter是否有效，如果没有，那就deactive完成键
+  
   fCheckLegal: function (filters) {
     for (const mainF of filters) {
-      var count = 0; // 激活的数量
-      if (mainF.category[0].all_active) continue; // '全部'是激活的
+      if (mainF.category[0].all_active) continue;
+      
+      let count = 0;
       for (const category of mainF.category) {
         if (category.all_active) {
           count += category.items.length;
-          continue;
-        }
-        for (const item of category.items) {
-          if (item.active) ++count;
+        } else {
+          count += category.items.filter(item => item.active).length;
         }
       }
-      if (count == 0) return false;
+      
+      if (count === 0) return false;
     }
     return true;
   },
-  fGet: async function fGet() {
+  
+  fGet: async function() {
     const filters = this.data.filters;
-    var res = []; // 先把查询条件全部放进数组，最后用 $and 包装，这样方便跨字段使用 or 逻辑
-
-    // 这些是点击选择的 filters
-    for (const mainF of filters) {
-      // 把数据库要用的 key 拿出来
-      const key = mainF.key;
-      var selected = []; // 储存已经选中的项
+    const conditions = [];
+    
+    // 处理选择的过滤器
+    filters.forEach(mainF => {
+      if (mainF.category[0].all_active) return;
+      
+      const selected = [];
+      let cateSelected = [];
       const cateFilter = Boolean(mainF.cateKey);
-      if (cateFilter) {
-        var cateKey = mainF.cateKey;
-        var cateSelected = [];
-      }
-
-      // 下面开始遍历每个分类下的子项
-      if (mainF.category[0].all_active) continue; // 选择了'全部', 不用管这个类
-
-      for (const category of mainF.category) {
-        let cateKeyPushed = false; // 一个 category 只用 push 一次，记一下
-        for (const item of category.items) {
+      
+      mainF.category.forEach(category => {
+        let cateKeyPushed = false;
+        
+        category.items.forEach(item => {
           if (category.all_active || item.active) {
-            var choice = item.name;
-            if (item.value === null) {
-              choice = { $type: "missing" }; // 替换 _.exists(false)，判断字段不存在
-            } else if (item.value != undefined) {
-              choice = item.value;
-            }
+            let choice = item.name;
+            if (item.value === null) choice = { $type: "missing" };
+            else if (item.value !== undefined) choice = item.value;
+            
             selected.push(choice);
+            
             if (cateFilter && !cateKeyPushed) {
               cateSelected.push(category.name);
               cateKeyPushed = true;
             }
           }
-        }
-      }
-
-      // console.log(key, selected);
-      res.push({
-        [key]: { $in: selected } // 使用 $in
-      });
-      if (cateFilter) {
-        res.push({
-          [cateKey]: { $in: cateSelected } // 使用 $in
         });
-      }
-    }
-
-    // 判断一下 filters 生效没有
-    this.setData({
-      filters_active: res.length > 0
-    });
-
-    // 如果用户还输入了东西，也要一起搜索
-    const filters_input = regReplace(this.data.filters_input);
-    if (filters_input.length) {
-      var search_str = '';
-      for (const n of filters_input.trim().split(' ')) {
-        if (search_str === '') {
-          search_str += '(.*' + n + '.*)';
-        } else {
-          search_str += '|(.*' + n + '.*)';
+      });
+      
+      if (selected.length > 0) {
+        conditions.push({ [mainF.key]: { $in: selected } });
+        if (cateFilter && cateSelected.length > 0) {
+          conditions.push({ [mainF.cateKey]: { $in: cateSelected } });
         }
       }
-
-      // 使用 MongoDB 的正则表达式语法
-      res.push({
-        $or: [ // 使用 $or
-          { name: { $regex: search_str } },
-          { nickname: { $regex: search_str } }
+    });
+    
+    // 处理搜索输入
+    const filters_input = regReplace(this.data.filters_input);
+    if (filters_input) {
+      const searchTerms = filters_input.trim().split(' ');
+      const regexPattern = searchTerms.map(term => `.*${term}.*`).join('|');
+      
+      conditions.push({
+        $or: [
+          { name: { $regex: regexPattern } },
+          { nickname: { $regex: regexPattern } }
         ]
       });
     }
-
-    // 使用 $and，如果 res 为空则返回 {}
-    return res.length ? { $and: res } : {};
+    
+    this.setData({ filters_active: conditions.length > 0 });
+    return conditions.length > 0 ? { $and: conditions } : {};
   },
-  fComfirm: function (e) {
-    if (!this.data.filters_legal) {
-      return false;
-    }
-
+  
+  fComfirm: function() {
+    if (!this.data.filters_legal) return false;
+    
     this.lockBtn();
-
     this.reloadCats();
     this.fHide();
     this.unlockBtn();
   },
-  fReset: async function () {
-    // 重置所有分类
-    var filters = this.data.filters;
-    // const filters_sub = this.data.filters_sub;
-    for (let sub = 0, len = filters.length; sub < len; ++sub) {
-      for (let i = 0, catelen = filters[sub].category.length; i < catelen; ++i) {
-        var category = filters[sub].category[i];
-        category.all_active = false;
-        for (let k = 0, itemlen = category.items.length; k < itemlen; ++k) {
-          category.items[k].active = false;
-        }
-      }
-      filters[sub].category[0].all_active = true; // 默认第0个是'全部'
-    }
-
-    const fLegal = this.fCheckLegal(filters);
-    await this.setData({
-      filters: filters,
-      filters_legal: fLegal
+  
+  fReset: async function() {
+    const filters = this.data.filters.map(mainF => ({
+      ...mainF,
+      category: mainF.category.map(category => ({
+        ...category,
+        all_active: category.name.includes('全部'),
+        items: category.items.map(item => ({ ...item, active: false }))
+      }))
+    }));
+    
+    this.setData({
+      filters,
+      filters_legal: this.fCheckLegal(filters)
     });
-
-    // 确认过滤器并关闭展板
+    
     await this.fComfirm();
   },
-  // 点击外显的校区
-  fClickCampus: async function (e) {
-    if (this.jsData.pageLoadingLock) {
-      console.log("Page is locked");
-      return false;
-    }
+  
+  fClickCampus: async function(e) {
+    if (this.jsData.pageLoadingLock) return false;
     await this.fClickCategory(e, true);
     await this.fComfirm();
   },
-  // 发起文字搜索
-  fSearchInput: function (e) {
-    const value = e.detail.value;
-    this.setData({
-      filters_input: value
-    });
+  
+  fSearchInput: function(e) {
+    this.setData({ filters_input: e.detail.value });
   },
-  fSearch: function (e) {
+  
+  fSearch: function() {
     this.reloadCats();
   },
-  fSearchClear: async function () {
-    await this.setData({
-      filters_input: ""
-    });
+  
+  fSearchClear: async function() {
+    await this.setData({ filters_input: "" });
     this.fSearch();
   },
-  // 搜索框是否要显示阴影
-  fScroll: function (e) {
+  
+  fScroll: function(e) {
     const scrollTop = e.detail.scrollTop;
-    const filters_show_shadow = this.data.filters_show_shadow;
-    if ((scrollTop < 50 && filters_show_shadow == true) || (scrollTop >= 50 && filters_show_shadow == false)) {
-      this.setData({
-        filters_show_shadow: !filters_show_shadow
-      });
+    const showShadow = scrollTop >= 50;
+    if (this.data.filters_show_shadow !== showShadow) {
+      this.setData({ filters_show_shadow: showShadow });
     }
   },
 
-  ////// 广告相关
+  // 广告相关
   changeState(ad_id, show) {
-    var ad_show = this.data.ad_show;
-    if (ad_show[ad_id] != show) {
-      ad_show[ad_id] = show;
-      this.setData({
-        ad_show: ad_show
-      });
-    }
+    const ad_show = { ...this.data.ad_show, [ad_id]: show };
+    this.setData({ ad_show });
   },
 
-  // 广告加载成功，展示出来
   adLoad(e) {
-    const ad_id = e.currentTarget.dataset.ad_id;
-    console.log('广告加载成功', ad_id);
-    this.changeState(ad_id, true);
+    this.changeState(e.currentTarget.dataset.ad_id, true);
   },
-  // 加载失败
+  
   adError(e) {
-    const ad_id = e.currentTarget.dataset.ad_id;
-    console.log('广告加载失败', ad_id);
-    this.changeState(ad_id, false);
+    this.changeState(e.currentTarget.dataset.ad_id, false);
   },
-  // 被关闭
+  
   adClose(e) {
-    const ad_id = e.currentTarget.dataset.ad_id;
-    console.log('广告被关闭', ad_id);
-    this.changeState(ad_id, false);
+    this.changeState(e.currentTarget.dataset.ad_id, false);
   },
 
-  // 查找有多少只猫待领养
-  countWaitingAdopt: async function () {
+  async countWaitingAdopt() {
     const target = config.cat_status_adopt_target;
-    const value = config.cat_status_adopt.findIndex((x) => {
-      return x === target
-    });
-
+    const value = config.cat_status_adopt.indexOf(target);
     const { result: adopt_count } = await app.mpServerless.db.collection('cat').count({ adopt: value });
-    this.setData({
-      adopt_count: adopt_count
-    });
+    this.setData({ adopt_count });
   },
 
-  // 点击领养按钮
-  clickAdoptBtn: async function (e) {
-    if (this.jsData.pageLoadingLock) {
-      console.log("[点击领养按钮] Page is locking");
+  async clickAdoptBtn() {
+    if (this.jsData.pageLoadingLock) return false;
+    this.lockBtn();
+    
+    const filters = [...this.data.filters];
+    const filters_sub = filters.findIndex(f => f.key === "adopt");
+    if (filters_sub === -1) {
+      this.unlockBtn();
       return false;
     }
-    this.lockBtn();
-
-    var filters = this.data.filters;
-    var filters_sub = filters.findIndex((x) => {
-      this.unlockBtn();
-      return x.key === "adopt"
-    });
-
+    
     const target_status = config.cat_status_adopt_target;
     const category = filters[filters_sub].category[0];
-    const index = category.items.findIndex((x) => {
-      return x.name === target_status
-    }); // 寻找领养中
-
-    if (category.items[index].active) {
-      // 已经激活了
+    const index = category.items.findIndex(item => item.name === target_status);
+    
+    if (index === -1 || category.items[index].active) {
       this.unlockBtn();
       return false;
     }
-
-    category.items[index].active = !category.items[index].active; // 激活状态取反
-    filters[filters_sub].category[0].all_active = false; // 取消'全部'的激活，默认第0个是'全部'
-
-    category.all_active = false; // 直接反激活category
-
-    const fLegal = this.fCheckLegal(filters);
+    
+    category.items[index].active = true;
+    category.all_active = false;
+    filters[filters_sub].category[0].all_active = false;
+    
     this.setData({
-      filters: filters,
-      filters_legal: fLegal
+      filters,
+      filters_legal: this.fCheckLegal(filters)
     });
-
-    await Promise.all([
-      this.reloadCats(),
-      this.showFilterTip()
-    ])
+    
+    await Promise.all([this.reloadCats(), this.showFilterTip()]);
     this.unlockBtn();
   },
 
-  // 显示过滤器的提示
   async showFilterTip() {
-    await this.setData({
-      show_filter_tip: true
-    });
+    this.setData({ show_filter_tip: true });
     await sleep(6000);
-    await this.setData({
-      show_filter_tip: false
-    });
+    this.setData({ show_filter_tip: false });
   },
 
   newUserTip() {
     const key = "newUserTip";
-    var lastTime = wx.getStorageSync(key);
-
-    if (lastTime != undefined && getDeltaHours(lastTime) < tipInterval) {
-      // 刚提示没多久
-      return false;
-    }
-
-    // 显示提示
+    const lastTime = wx.getStorageSync(key);
+    if (lastTime && getDeltaHours(lastTime) < tipInterval) return;
+    
     this.showFilterTip();
-
-    // 写入时间
     wx.setStorageSync(key, new Date());
   },
 
-  // 返回首页
   async clickBackFirstPageBtn() {
-    if (this.jsData.pageLoadingLock) {
-      console.log("[返回首页] page is locked");
-      return false;
-    }
-
+    if (this.jsData.pageLoadingLock) return false;
     this.lockBtn();
-
     await this.fReset();
     await this.fSearchClear();
     this.unlockBtn();
   },
 
   async loadNews() {
-    if (!await checkCanShowNews()) {
-      return;
-    }
-    // 载入需要弹窗的公告
-    const { result: newsList } = await app.mpServerless.db.collection('news').find({ setNewsModal: true }, { sort: { date: -1 } });
-
-    this.setData({
-      newsList: newsList,
-    });
-    console.log("公告弹出模块: ", this.data.newsList);
-    if (newsList.length == 0) {
-      return;
-    }
-
+    if (!await checkCanShowNews()) return;
+    
+    const { result: newsList } = await app.mpServerless.db.collection('news').find({ 
+      setNewsModal: true 
+    }, { sort: { date: -1 } });
+    
+    this.setData({ newsList });
+    if (!newsList.length) return;
+    
+    let newsImage = "";
     if (newsList[0].coverPath) {
-      this.setData({
-        newsImage: await signCosUrl(newsList[0].coverPath)
-      })
-    } else if (newsList[0].photosPath.length != 0) {
-      this.setData({
-        newsImage: await signCosUrl(newsList[0].photosPath[0])
-      })
+      newsImage = await signCosUrl(newsList[0].coverPath);
+    } else if (newsList[0].photosPath?.length) {
+      newsImage = await signCosUrl(newsList[0].photosPath[0]);
     }
+    
+    this.setData({ newsImage });
+    
     if (!this.checkNewsVisited()) {
       this.newsModal.showNewsModal();
     }
   },
 
-  // 取消事件
   _cancelEvent() {
     this.newsModal.hideNewsModal();
     this.setNewsVisited();
   },
-  // 确认事件: 查看公告详情
+  
   _confirmEvent() {
     this.newsModal.hideNewsModal();
     this.setNewsVisited();
-    const news_id = this.data.newsList[0]._id;
-    const detail_url = '/pages/news/detailNews/detailNews';
     wx.navigateTo({
-      url: detail_url + '?news_id=' + news_id,
+      url: `/pages/news/detailNews/detailNews?news_id=${this.data.newsList[0]._id}`,
     });
   },
-  // 检测公告是否已读
+  
   checkNewsVisited() {
-    const news_id = this.data.newsList[0]._id;
-    var key = `visit-news-${news_id}`;
-    var visited = cache.getCacheItem(key);
-    // console.log(visited);
-    return visited;
+    const news_id = this.data.newsList[0]?._id;
+    return news_id ? cache.getCacheItem(`visit-news-${news_id}`) : false;
   },
-  // 设置已读时间
+  
   setNewsVisited() {
-    const news_id = this.data.newsList[0]._id;
-    var key = `visit-news-${news_id}`;
-    cache.setCacheItem(key, true, cache.cacheTime.genealogyNews);
+    const news_id = this.data.newsList[0]?._id;
+    if (news_id) {
+      cache.setCacheItem(`visit-news-${news_id}`, true, cache.cacheTime.genealogyNews);
+    }
   },
 
-  // 上锁
   lockBtn() {
-    // console.log("lock");
     this.jsData.pageLoadingLock = true;
   },
-  // 解锁
+  
   unlockBtn() {
-    // console.log("unlock");
     this.jsData.pageLoadingLock = false;
   },
 
-  // campus过滤器cache起来
-  setFCampusCache: function () {
+  setFCampusCache: function() {
     const fc = this.getFCampusStr();
     cache.setCacheItem("genealogy-fcampus", fc, cache.cacheTime.genealogyFCampus);
   },
 
-  // campus过滤器取cache
-  getFCampusCache: function () {
+  getFCampusCache: function() {
     return cache.getCacheItem("genealogy-fcampus");
   }
 })
