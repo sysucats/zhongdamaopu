@@ -64,7 +64,7 @@ async function getUserInfo(openid, options) {
   // 写入缓存（25-35min过期）
   setCacheItem(key, result, 0, randomInt(25, 35));
 
-  return value;
+  return result;
 }
 
 
