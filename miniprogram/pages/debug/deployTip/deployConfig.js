@@ -179,7 +179,7 @@ module.exports = {
     "getPhotoRank": "v2.1",
     "getTempCOS": "v2.0",
     "getURL": "v2.0",
-    "getUserStats": "v2.0",
+    "getUserStats": "v2.1",
     "giveBadge": "v2.0",
     "initVaccineTypes": "v2.0",
     "isManager": "v2.0",

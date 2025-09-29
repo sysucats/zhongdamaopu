@@ -10,6 +10,12 @@ Page({
     text_cfg: text_cfg,
     github_link: "https://github.com/sysucats/zhongdamaopu",
     update_log: [{
+      version: "v1.16.4",
+      content: [
+        "修复已知BUG（感谢LightHouse-1024、xuannfx）",
+      ],
+      time: "2024/9/29"
+    }, {
       version: "v1.16.3",
       content: [
         "修复徽章BUG（LightHouse-1024大佬提供）",
