@@ -30,9 +30,7 @@ module.exports = async (ctx) => {
       secretKey: OSS_SECRET_KEY,
       pathStyle: false,
     }
-    // if (OSS_ENDPOINT == "oss.laf.run") {
-    //     minioClient.pathStyle = true
-    // }
+
     const client = new Minio.Client(minioClient);
     return new Promise((resolve, reject) => {
       let policy = client.newPostPolicy()

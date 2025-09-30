@@ -138,7 +138,6 @@ module.exports = async (ctx) => {
     }
 
     if (operation == "add") {  // 添加记录
-        // Laf云不会主动存储 _openid ，但是微信云（在前端直接往数据库增加记录时）会
         // 前端可能需要跟据 _openid 字段进行数据库搜索，故手动保存
         if (openid) {
             data._openid = openid;
