@@ -12,7 +12,7 @@
 .edit-mode-indicator {
   text-align: center;
   font-size: 28rpx;
-  color: #666;
+  color: var(--color-gray-max);
 }
 
 /* 信息卡片 */
@@ -26,7 +26,7 @@
 
 .card-header {
   padding: 20rpx 30rpx;
-  border-bottom: 1rpx solid #f0f0f0;
+  border-bottom: 1rpx solid var(--color-gray-normal);
 }
 
 .card-title {
@@ -34,7 +34,7 @@
   align-items: center;
   font-size: 30rpx;
   font-weight: bold;
-  color: #333;
+  color: var(--color-black-light);
 }
 
 .card-title .iconfont {
@@ -56,7 +56,7 @@
 
 .form-label {
   font-size: 28rpx;
-  color: #666;
+  color: var(--color-gray-max);
   margin-bottom: 10rpx;
 }
 
@@ -90,15 +90,15 @@
 }
 
 .picker-text {
-  color: #333;
+  color: var(--color-black-light);
 }
 
 .picker-text.placeholder {
-  color: #999;
+  color: var(--color-gray-max);
 }
 
 .picker-icon {
-  color: #999;
+  color: var(--color-gray-max);
   font-size: 24rpx;
 }
 
@@ -106,7 +106,7 @@
 .popularity-info {
   text-align: right;
   font-size: 26rpx;
-  color: #999;
+  color: var(--color-gray-max);
   padding: 10rpx 0 30rpx;
 }
 
@@ -125,7 +125,7 @@
 }
 
 .empty-text {
-  color: #999;
+  color: var(--color-gray-max);
   font-size: 28rpx;
   text-align: center;
   padding: 0 40rpx;
@@ -150,7 +150,7 @@
 .switch-label {
   margin-left: 16rpx;
   font-size: 28rpx;
-  color: #333;
+  color: var(--color-black-light);
 }
 
 /* 照片网格 */
@@ -173,9 +173,9 @@
 .photo-container {
   position: relative;
   width: 100%;
-  height: 400rpx;
+  aspect-ratio: 5/4;
   overflow: hidden;
-  background-color: #f2f2f7;
+  background-color: var(--color-gray-light);
 }
 
 .photo-image {
@@ -208,7 +208,7 @@
 .photo-number {
   font-size: 40rpx;
   font-weight: 500;
-  color: #1d1d1f;
+  color: var(--color-black-light);
   margin-bottom: 16rpx;
 }
 
@@ -225,12 +225,12 @@
 
 .meta-label {
   font-size: 26rpx;
-  color: #6e6e73;
+  color: var(--color-gray-max);
 }
 
 .meta-value {
   font-size: 26rpx;
-  color: #1d1d1f;
+  color: var(--color-black-light);
   font-weight: 500;
 }
 
@@ -261,7 +261,7 @@
 }
 
 .secondary-button {
-  background-color: #f2f2f7;
+  background-color: var(--color-gray-light);
   color: var(--color-primary);
 }
 
@@ -282,7 +282,7 @@
 
 .bottom-hint {
   font-size: 26rpx;
-  color: #8e8e93;
+  color: var(--color-gray-max);
   margin-bottom: 16rpx;
 }
 

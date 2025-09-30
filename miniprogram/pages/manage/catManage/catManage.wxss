@@ -1,7 +1,7 @@
 /* pages/manage/catManage/catManage.wxss */
 .container {
   min-height: 100vh;
-  background-color: #f8f8f8;
+  background-color: var(--color-gray-light);
   box-sizing: border-box;
 }
 
@@ -69,14 +69,14 @@
 
 .tab .iconfont {
   font-size: 40rpx;
-  color: #666;
+  color: var(--color-gray-max);
   margin-bottom: 5rpx;
   transition: all 0.3s ease;
 }
 
 .tab .tab-text {
   font-size: 24rpx;
-  color: #666;
+  color: var(--color-gray-max);
   transition: all 0.3s ease;
 }
 
@@ -126,7 +126,7 @@
   height: 120rpx;
   border-radius: 60rpx;
   margin-right: 20rpx;
-  background-color: #f0f0f0;
+  background-color: var(--color-gray-light);
   flex-shrink: 0;
 }
 
@@ -145,7 +145,7 @@
 
 .cat-details {
   font-size: 26rpx;
-  color: #999;
+  color: var(--color-gray-max);
 }
 
 /* 内容区域 */
@@ -220,7 +220,7 @@
 }
 
 .search-results .empty-message {
-  color: #999;
+  color: var(--color-gray-max);
   font-size: 28rpx;
   text-align: center;
 }
@@ -230,7 +230,7 @@
   display: flex;
   align-items: center;
   padding: 20rpx;
-  border-bottom: 1rpx solid #f0f0f0;
+  border-bottom: 1rpx solid var(--color-gray-normal);
 }
 
 .search-cat:last-child {
@@ -238,7 +238,7 @@
 }
 
 .search-cat:active {
-  background-color: #f8f8f8;
+  background-color: var(--color-gray-light);
 }
 
 .search-cat-avatar {
@@ -246,7 +246,7 @@
   height: 80rpx;
   border-radius: 40rpx;
   margin-right: 20rpx;
-  background-color: #f0f0f0;
+  background-color: var(--color-gray-light);
 }
 
 .search-cat-info {
@@ -255,13 +255,13 @@
 
 .search-cat-name {
   font-size: 28rpx;
-  color: #333;
+  color: var(--color-black-light);
   margin-bottom: 6rpx;
 }
 
 .search-cat-details {
   font-size: 24rpx;
-  color: #999;
+  color: var(--color-gray-max);
 }
 
 /* 提示信息 */
@@ -341,7 +341,7 @@
 
 .option-text {
   font-size: 26rpx;
-  color: #333;
+  color: var(--color-black-light);
   margin-right: 10rpx;
   white-space: nowrap;
 }
