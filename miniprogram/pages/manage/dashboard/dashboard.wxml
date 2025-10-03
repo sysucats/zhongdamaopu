@@ -17,6 +17,10 @@
             <view class="label">现存</view>
           </view>
           <view class="stat-item">
+            <view class="value large">{{stats.basic.adopted || 0}}</view>
+            <view class="label">领养</view>
+          </view>
+          <view class="stat-item">
             <view class="value large">{{stats.basic.missing || 0}}</view>
             <view class="label">失踪</view>
           </view>
@@ -34,7 +38,7 @@
       <view class="card-content">
         <!-- 总体绝育情况 -->
         <view class="progress-container total">
-          <view class="label">全部猫猫</view>
+          <view class="label">已绝育/全部猫猫</view>
           <view class="progress-text">
             <text class="value large">{{stats.basic.sterilized || 0}}</text>
             <text class="progress-total">/{{stats.basic.total || 0}}</text>
@@ -47,7 +51,7 @@
 
         <!-- 现存猫猫绝育情况 -->
         <view class="progress-container">
-          <view class="label">现存猫猫</view>
+          <view class="label">已绝育/现存猫猫</view>
           <view class="progress-text">
             <text class="value large">{{stats.basic.currentSterilized || 0}}</text>
             <text class="progress-total">/{{stats.basic.current || 0}}</text>

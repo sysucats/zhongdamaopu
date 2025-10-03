@@ -1,7 +1,7 @@
 module.exports = async function (ctx) {
   if (ctx.args && ctx.args.deploy_test === true) {
     // 进行部署检查
-    return "v1.0";
+    return "v1.1";
   }
   const db = ctx.mpserverless.db;
 
@@ -103,7 +103,10 @@ async function getGenderStats(db) {
   const [numMaleRes, numFemaleRes, unknownCatsRes] = await Promise.all([
     db.collection('cat').count({ gender: '公' }),
     db.collection('cat').count({ gender: '母' }),
-    db.collection('cat').find({ gender: '未知' }, { field: { name: 1 } })
+    db.collection('cat').find({ $or: [
+      { gender: { $exists: false } },
+      { gender: '未知' }
+    ] }, { field: { name: 1 } })
   ]);
   
   const numMale = numMaleRes.result || 0;

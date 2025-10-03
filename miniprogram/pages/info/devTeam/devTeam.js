@@ -10,6 +10,12 @@ Page({
     text_cfg: text_cfg,
     github_link: "https://github.com/sysucats/zhongdamaopu",
     update_log: [{
+      version: "v1.17.0",
+      content: [
+        "管理员数据看板重磅上线（感谢xuannfx）",
+      ],
+      time: "2025/10/03"
+    }, {
       version: "v1.16.4",
       content: [
         "修复已知BUG（感谢LightHouse-1024、xuannfx）",

@@ -1,7 +1,7 @@
 module.exports = async (ctx) => {
   if (ctx.args?.deploy_test === true) {
     // 进行部署检查
-    return "v2.0";
+    return "v2.1";
   }
 
   const {

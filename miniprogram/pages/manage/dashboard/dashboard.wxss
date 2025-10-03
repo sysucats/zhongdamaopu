@@ -460,6 +460,7 @@
 .campus-selector {
   display: flex;
   justify-content: flex-start;
+  gap: 20rpx;
 }
 
 .campus-tab {
@@ -470,10 +471,12 @@
   font-weight: bold;
   color: var(--color-gray-max);
   background-color: var(--color-gray-light);
-}
 
-.campus-tab:first-child {
-  margin-left: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;    /* 上下居中 */
+  align-items: center;        /* 左右居中 */
+  text-align: center;
 }
 
 .campus-tab.active {
