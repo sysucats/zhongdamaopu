@@ -74,6 +74,11 @@ Page({
             dot: "true"
           },
           {
+            name: "数据看板",
+            path: "/pages/manage/dashboard/dashboard",
+            icon: "icon-bar-chart-o"
+          },
+          {
             name: "照片审核",
             path: "/pages/manage/checkPhotos/checkPhotos",
             num: "numChkPhotos",

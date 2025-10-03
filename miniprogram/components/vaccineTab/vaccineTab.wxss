@@ -34,7 +34,7 @@
 .vaccine-type {
   font-size: 30rpx;
   font-weight: 500;
-  color: #333;
+  color: var(--color-black-light);
 }
 
 .vaccine-date {
@@ -44,7 +44,7 @@
 
 .vaccine-body {
   font-size: 26rpx;
-  color: #666;
+  color: var(--color-gray-max);
   line-height: 1.6;
 }
 
@@ -57,7 +57,7 @@
   right: 20rpx;
   top: 50%;
   transform: translateY(-50%);
-  color: #ccc;
+  color: var(--color-gray);
   font-size: 24rpx;
 }
 
@@ -102,7 +102,7 @@
 .empty-tip {
   text-align: center;
   padding: 60rpx 0;
-  color: #999;
+  color: var(--color-gray-max);
   font-size: 28rpx;
   display: flex;
   flex-direction: column;
@@ -113,7 +113,7 @@
 
 .empty-icon {
   font-size: 80rpx;
-  color: #ddd;
+  color: var(--color-gray-max);
   margin-bottom: 20rpx;
   animation: bounceIn 0.6s ease;
 }
@@ -174,7 +174,7 @@
 
 .modal-body {
   flex: 1;
-  padding: 0 30rpx;
+  padding: 20rpx 30rpx 0 30rpx;
   max-height: 70vh;
   overflow-y: auto;
 }
@@ -185,7 +185,7 @@
 
 .form-label {
   font-size: 28rpx;
-  color: #666;
+  color: var(--color-gray-max);
   margin-bottom: 10rpx;
 }
 
@@ -196,7 +196,7 @@
   border-radius: 10rpx;
   padding: 0 20rpx;
   font-size: 28rpx;
-  color: #333;
+  color: var(--color-black-light);
   background-color: var(--color-gray-light);
 }
 
@@ -206,7 +206,7 @@ input, textarea {
   border-radius: 10rpx;
   padding: 20rpx;
   font-size: 28rpx;
-  color: #333;
+  color: var(--color-black-light);
   background-color: var(--color-gray-light);
   box-sizing: border-box;
 }
@@ -253,8 +253,8 @@ button::after {
 }
 
 .cancel-btn {
-  background-color: #f0f0f0;
-  color: #666;
+  background-color: var(--color-gray-normal);
+  color: var(--color-gray-max);
 }
 
 .submit-btn {
@@ -266,14 +266,14 @@ button::after {
 .type-add-form {
   display: flex;
   margin: 20rpx 0;
-  border-bottom: 1rpx solid #eee;
+  border-bottom: 1rpx solid var(--color-gray-normal);
   padding-bottom: 20rpx;
 }
 
 .type-add-form input {
   flex: 1;
   height: 80rpx;
-  background-color: #f8f8f8;
+  background-color: var(--color-gray-light);
   border-radius: 8rpx;
   padding: 0 20rpx;
   margin-right: 20rpx;
@@ -300,7 +300,7 @@ button::after {
   justify-content: space-between;
   align-items: center;
   padding: 20rpx 0;
-  border-bottom: 1rpx solid #f0f0f0;
+  border-bottom: 1rpx solid var(--color-gray-normal);
 }
 
 .type-name {
@@ -319,13 +319,13 @@ button::after {
 }
 
 .type-delete:active {
-  background-color: #f8f8f8;
+  background-color: var(--color-gray-light);
 }
 
 .type-tips {
   margin-top: 20rpx;
   font-size: 24rpx;
-  color: #888;
+  color: var(--color-gray-max);
   text-align: center;
   margin-bottom: 30rpx;
 }
@@ -341,7 +341,7 @@ button::after {
 .custom-type-input {
   margin-top: 10rpx;
   height: 70rpx;
-  background-color: #f8f8f8;
+  background-color: var(--color-gray-light);
   border-radius: 8rpx;
   padding: 0 20rpx;
   font-size: 28rpx;
@@ -355,7 +355,7 @@ button::after {
 .cat-item {
   display: flex;
   padding: 20rpx 0;
-  border-bottom: 1rpx solid #f0f0f0;
+  border-bottom: 1rpx solid var(--color-gray-normal);
 }
 
 .cat-avatar {
@@ -404,9 +404,9 @@ button::after {
 .filter-option {
   font-size: 24rpx;
   padding: 8rpx 20rpx;
-  background: #f5f5f5;
+  background: var(--color-gray-light);
   border-radius: 30rpx;
-  color: #666;
+  color: var(--color-gray-max);
 }
 
 .filter-option.active {

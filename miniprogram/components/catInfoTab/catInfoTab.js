@@ -96,13 +96,11 @@ Component({
         this.jsData.cat_id = this.properties.cat_id;
         await this.loadCat();
       } else if (this.properties.isNewCat) {
-        // 如果是新建猫咪模式，初始化数据
+        // 如果是新建猫咪模式，初始化数据，避免出现空值
+        const { defaultCatState, defaultPickerSelected } = this._initNewCatState();
         this.setData({
-          cat: {
-            nickname: [],
-            characteristics: [],
-            popularity: 0,
-          },
+          cat: defaultCatState,
+          picker_selected: defaultPickerSelected, // 设置默认选中索引
           isNewMode: true
         });
         // 触发模式变化事件
@@ -118,6 +116,28 @@ Component({
     // 返回上一页
     goBack() {
       this.triggerEvent('back');
+    },
+
+    // 初始化新猫状态
+    _initNewCatState() {
+      const defaultPickerSelected = {
+        gender: 2, // '未知'
+        sterilized: 0, // '未绝育' (false)
+        missing: 0, // '否' (false)
+        to_star: 0, // '否' (false)
+        adopt: 0 // 第一个状态 (index 0)
+      };
+      const defaultCatState = {
+        nickname: [],
+        characteristics: [],
+        popularity: 0,
+        gender: this.data.pickers.gender[defaultPickerSelected.gender], // '未知'
+        sterilized: this.data.pickerValueMaps.sterilized[defaultPickerSelected.sterilized], // false
+        missing: this.data.pickerValueMaps.missing[defaultPickerSelected.missing], // false
+        to_star: this.data.pickerValueMaps.to_star[defaultPickerSelected.to_star], // false
+        adopt: defaultPickerSelected.adopt // 0
+      };
+      return { defaultCatState, defaultPickerSelected };
     },
 
     // 加载外部传入的猫咪数据
@@ -143,12 +163,11 @@ Component({
       if (!this.jsData) {
         this.jsData = { cat_id: undefined, phers: {} };
       }
+      
+      const { defaultCatState, defaultPickerSelected } = this._initNewCatState();
       this.setData({
-        cat: {
-          nickname: [],
-          characteristics: [],
-          popularity: 0,
-        },
+        cat: defaultCatState,
+        picker_selected: defaultPickerSelected, // 设置默认选中索引
         isNewMode: true
       });
       this.jsData.cat_id = undefined;
