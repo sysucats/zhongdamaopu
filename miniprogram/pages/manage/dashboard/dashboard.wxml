@@ -106,7 +106,7 @@
           <view class="latest-events-list-summary">
             <block wx:if="{{stats.events && stats.events.length > 0}}">
               <view class="event-item">
-                <view class="event-type {{stats.events[0].type === '绝育' ? 'sterilized' : (stats.events[0].type === '领养' ? 'adopted' : (stats.events[0].type === '失踪' ? 'missing' : (stats.events[0].type === '去往喵星' ? 'deceased' : 'newcat')))}}">{{stats.events[0].type}}</view>
+                <view class="event-type {{stats.events[0].className}}">{{stats.events[0].type}}</view>
                 <view class="event-cat-name">{{stats.events[0].name}}</view>
                 <view class="event-date">{{stats.events[0].date}}</view>
               </view>
@@ -308,7 +308,7 @@
       </view>
        <view class="details-content">
           <view wx:for="{{stats.events}}" wx:key="index" class="event-item">
-            <view class="event-type {{item.type === '绝育' ? 'sterilized' : (item.type === '领养' ? 'adopted' : (item.type === '失踪' ? 'missing' : (item.type === '去往喵星' ? 'deceased' : 'newcat')))}}">{{item.type}}</view>
+            <view class="event-type {{item.className}}">{{item.type}}</view>
             <view class="event-cat-name">{{item.name}}</view>
             <view class="event-date">{{item.date}}</view>
           </view>
@@ -398,4 +398,4 @@
   <view class="update-time" wx:if="{{lastUpdateTime}}">
     <text>数据更新时间：{{lastUpdateTime}}</text>
   </view>
-</view> 
+</view>
