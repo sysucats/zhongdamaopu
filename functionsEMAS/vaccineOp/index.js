@@ -308,14 +308,16 @@ module.exports = async (ctx) => {
   } else if (operation === 'listVaccinatedCats') {
     // 获取已接种疫苗的列表
     const vaccine_type = ctx.args.vaccine_type; // 筛选特定疫苗类型
+    const query = {};
+    if (vaccine_type) {
+      query.vaccine_type = vaccine_type;
+    }
 
     try {
       // 获取所有符合条件的疫苗记录
       const {
         result: vaccines
-      } = await ctx.mpserverless.db.collection('vaccine').find({
-        vaccine_type: vaccine_type
-      }, {
+      } = await ctx.mpserverless.db.collection('vaccine').find(query, {
         sort: {
           vaccine_date: -1
         }
@@ -367,6 +369,11 @@ module.exports = async (ctx) => {
           }
         };
       });
+
+      // 按最近接种日期降序排序更为合理且方便查看
+      result.sort((a, b) => 
+        new Date(b.last_vaccine.vaccine_date).getTime() - new Date(a.last_vaccine.vaccine_date).getTime()
+      );
 
       return {
         msg: '获取成功',
