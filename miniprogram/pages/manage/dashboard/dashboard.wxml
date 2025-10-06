@@ -179,7 +179,8 @@
       <view class="card-content">
         <!-- 校区选择器和排序按钮 -->
         <view class="distribution-header">
-          <view class="campus-selector">
+          <scroll-view class="campus-scroll" scroll-x="true" enable-flex="true" show-scrollbar="false">
+            <view class="campus-selector">
             <view 
               wx:for="{{stats.campus}}" 
               wx:key="campus" 
@@ -188,7 +189,8 @@
               data-index="{{index}}">
               {{item.campus}}
             </view>
-          </view>
+            </view>
+          </scroll-view>
           <view class="sort-button" bindtap="showSortPicker">
             <image class="sort-icon" src="/pages/public/images/button/sort.png" mode="aspectFit"></image>
           </view>
