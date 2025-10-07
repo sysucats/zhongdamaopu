@@ -457,6 +457,10 @@
 }
 
 /* 校区选择器 */
+.campus-scroll {
+  max-width: calc(100% - 60rpx);
+  white-space: nowrap;
+}
 .campus-selector {
   display: flex;
   justify-content: flex-start;

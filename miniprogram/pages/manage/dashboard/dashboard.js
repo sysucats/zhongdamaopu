@@ -20,6 +20,23 @@ function getCachedCatStats() {
   return null;
 }
 
+// eventType 事件标签样式
+function processEvents(stats) {
+  if (stats && stats.events) {
+    const eventTypeMap = {
+      '绝育': 'sterilized',
+      '领养': 'adopted',
+      '失踪': 'missing',
+      '喵星': 'deceased',
+      '新猫': 'newcat',
+    };
+    stats.events.forEach(event => {
+      event.className = eventTypeMap[event.type] || '';
+    });
+  }
+  return stats;
+}
+
 Page({
   data: {
     stats: {},
@@ -62,7 +79,7 @@ Page({
         const formattedTime = formatDate(cache.timestamp, "yyyy年MM月dd日 hh:mm");
         
         this.setData({
-          stats: cachedStats,
+          stats: processEvents(cachedStats),
           loading: false,
           lastUpdateTime: formattedTime
         });
@@ -85,7 +102,7 @@ Page({
         const formattedTime = formatDate(Date.now(), "yyyy年MM月dd日 hh:mm");
         
         this.setData({
-          stats,
+          stats: processEvents(stats),
           loading: false,
           lastUpdateTime: formattedTime
         });
