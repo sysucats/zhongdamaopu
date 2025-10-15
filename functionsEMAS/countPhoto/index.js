@@ -1,6 +1,6 @@
 module.exports = async (ctx) => {
   if (ctx.args?.deploy_test === true) {
-    return "v2.1";
+    return "v2.2";
   }
 
   var frontOneHour = new Date(new Date().getTime() - 1 * 60 * 60 * 1000);
@@ -46,15 +46,11 @@ module.exports = async (ctx) => {
 
   // 3. 合并查询结果（只包含 _id 的数组）
   const results = await Promise.all(tasks);
-  const cats = results.reduce((acc, cur) => ({
-    data: [...acc.data, ...cur.data.map(cat => ({
-      _id: cat._id
-    }))],
-    errMsg: acc.errMsg
-  }), {
-    data: []
-  });
-
+  const cats = {
+    data: results.flatMap(r => r.result.map(cat => ({ _id: cat._id }))),
+    errMsg: ''
+  };
+  
   // 4. 为每只猫更新精选图片统计
   const stats = [];
   for (const cat of cats.data) {
