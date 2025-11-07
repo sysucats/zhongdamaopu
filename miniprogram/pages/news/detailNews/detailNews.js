@@ -53,6 +53,27 @@ Page({
     return shareTo(share_text, path);
   },
 
+  /**
+   * 用户点击右上角分享到朋友圈（新增）
+   */
+  onShareTimeline: function () {
+    const share_text = `${this.data.news.title}`;
+    let imageUrl = '';
+    if (this.data.cover_path) {
+      imageUrl = this.data.cover_path;
+    } else if (this.data.photos_path && this.data.photos_path.length > 0) {
+      imageUrl = this.data.photos_path[0];
+    }
+    // 如果连内容图片都没有，则默认获取当前的app_logo.png
+    if (!imageUrl) {
+      imageUrl = '/pages/public/images/app_logo.png'; 
+    }
+    return {
+      title: share_text,
+      imageUrl: imageUrl
+    };
+  },
+
   async loadNews() {
     const that = this;
     var { result } = await app.mpServerless.db.collection('news').findOne({
