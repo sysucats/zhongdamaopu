@@ -18,6 +18,8 @@ module.exports = {
   use_private_tencent_cos: true,
   // 私有的腾讯云cos签名过期时间（秒）
   sign_expires_tencent_cos: 3600 * 2,
+  // 图片选择数量限制
+  chooseMediaCount: 20, 
 
   // 科普页图片
   science_imgs: [
