@@ -92,7 +92,7 @@ Page({
     }
     
     var res = await wx.chooseMedia({
-      count: 20,
+      count: config.chooseMediaCount,
       mediaType: ['image'],
       sizeType: ["compressed"],
       sourceType: ['album', 'camera'],
