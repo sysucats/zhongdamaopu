@@ -4,6 +4,11 @@ module.exports = async (ctx) => {
     return "v2.1";
   }
 
+  // 新增：处理迁移请求（无参直接处理）
+  if (ctx.args?.action === 'migrate_no_field' || Object.keys(ctx.args || {}).length === 0) {
+    return await migrateNoField(ctx);
+  }
+
   const {
     result: is_manager
   } = await ctx.mpserverless.function.invoke('isManager', {
@@ -71,20 +76,28 @@ module.exports = async (ctx) => {
     const {
       result: count
     } = await db.collection('cat').count({});
-    var _no = 'c' + (count || 0);
+    
+    // 修改：使用 no 字段而不是 _no
+    var no = 'c' + (count || 0);
     while (true) {
       var {
         result: existNum
       } = await ctx.mpserverless.db.collection('cat').count({
-        _no: _no
+        $or: [
+          { _no: no },  // 检查旧字段
+          { no: no }    // 检查新字段
+        ]
       });
       if (!(existNum > 0)) {
         break;
       }
       // 加上俩随机字符
-      _no += random_string(2);
+      no += random_string(2);
     }
-    cat._no = _no;
+    
+    // 修改：同时设置 no 字段，不再设置 _no 字段
+    cat.no = no;
+    
     // 添加创建时间和更新时间
     cat.create_time = currentTime;
     cat.update_time = currentTime;
@@ -112,7 +125,9 @@ module.exports = async (ctx) => {
       'colour', 'father', 'gender', 'mother', 'name', 'nickname', 'popularity', 'sterilized', 'adopt',
       'missing', 'birthday', 'habit', 'tutorial', 'relation', 'to_star',
       // 添加时间相关字段
-      'create_time', 'update_time', 'sterilized_time', 'adopt_time', 'missing_time', 'deceased_time'
+      'create_time', 'update_time', 'sterilized_time', 'adopt_time', 'missing_time', 'deceased_time',
+      // 添加 no 字段
+      'no'
     ]
     var res = {};
     for (const key of copyKeys) {
@@ -126,5 +141,89 @@ module.exports = async (ctx) => {
   function random_string(len) {
     var s = Math.random().toString(36);
     return s.substr(s.length - len);
+  }
+}
+
+// 新增：迁移函数，将 _no 字段批量改为 no 字段
+async function migrateNoField(ctx) {
+  const db = ctx.mpserverless.db;
+  
+  try {
+    console.log('开始迁移 _no 字段到 no 字段...');
+    
+    // 获取所有猫咪记录
+    const allCats = await db.collection('cat').find({});
+    
+    let migratedCount = 0;
+    let alreadyMigratedCount = 0;
+    let errorCount = 0;
+    
+    if (allCats.result && allCats.result.length > 0) {
+      console.log(`找到 ${allCats.result.length} 只猫咪，开始处理...`);
+      
+      for (const cat of allCats.result) {
+        try {
+          // 如果已经有 no 字段，跳过
+          if (cat.no) {
+            // 如果同时有 _no 字段，移除它
+            if (cat._no) {
+              await db.collection('cat').updateOne(
+                { _id: cat._id },
+                { $unset: { _no: "" } }
+              );
+              console.log(`猫咪 ${cat._id} 已有 no 字段，已移除 _no 字段`);
+            }
+            alreadyMigratedCount++;
+            continue;
+          }
+          
+          // 如果有 _no 字段，迁移到 no
+          if (cat._no) {
+            await db.collection('cat').updateOne(
+              { _id: cat._id },
+              { 
+                $set: { no: cat._no },
+                $unset: { _no: "" }
+              }
+            );
+            migratedCount++;
+            console.log(`已迁移猫咪 ${cat._id}: _no=${cat._no} -> no=${cat._no}`);
+          } else {
+            // 既没有 _no 也没有 no，生成新的 no
+            const newNo = 'c' + migratedCount + alreadyMigratedCount + errorCount;
+            await db.collection('cat').updateOne(
+              { _id: cat._id },
+              { $set: { no: newNo } }
+            );
+            migratedCount++;
+            console.log(`已为新猫咪 ${cat._id} 生成 no: ${newNo}`);
+          }
+        } catch (error) {
+          console.error(`处理猫咪 ${cat._id} 时出错:`, error);
+          errorCount++;
+        }
+      }
+    }
+    
+    const result = {
+      success: true,
+      message: '迁移完成',
+      stats: {
+        total: allCats.result ? allCats.result.length : 0,
+        migrated: migratedCount,        // 成功迁移的数量
+        already_migrated: alreadyMigratedCount, // 已经迁移的数量
+        errors: errorCount              // 出错的数量
+      }
+    };
+    
+    console.log('迁移完成:', result);
+    return result;
+    
+  } catch (error) {
+    console.error('迁移过程出错:', error);
+    return {
+      success: false,
+      message: '迁移失败: ' + error.message
+    };
   }
 }
