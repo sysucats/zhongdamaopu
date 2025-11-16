@@ -10,6 +10,13 @@ Page({
     text_cfg: text_cfg,
     github_link: "https://github.com/sysucats/zhongdamaopu",
     update_log: [{
+      version: "v1.17.3",
+      content: [
+        "数据看板入口公开给所有用户",
+        "修复已知BUG（感谢LightHouse-1024）",
+      ],
+      time: "2025/11/16"
+    }, {
       version: "v1.17.2",
       content: [
         "修复已知BUG（感谢LightHouse-1024）",

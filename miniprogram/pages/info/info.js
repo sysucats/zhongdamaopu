@@ -21,7 +21,11 @@ Page({
     // 卡片，不需要设计绘制卡片图，只需用放图标即可
     cards: [
       {
-        icon: "/pages/public/images/info/btn/user.svg", // 一个示例
+        label: "详细数据看板",
+        path: "/pages/info/dashboard/dashboard",
+        css: "long"
+      }, {
+        icon: "/pages/public/images/info/btn/user.svg",
         label: "个人主页",
         path: "/pages/info/userInfo/userInfo",
       }, {
@@ -73,11 +77,11 @@ Page({
             icon: "icon-description",
             dot: "true"
           },
-          {
-            name: "数据看板",
-            path: "/pages/manage/dashboard/dashboard",
-            icon: "icon-bar-chart-o"
-          },
+          // {
+          //   name: "数据看板",
+          //   path: "/pages/manage/dashboard/dashboard",
+          //   icon: "icon-bar-chart-o"
+          // },
           {
             name: "照片审核",
             path: "/pages/manage/checkPhotos/checkPhotos",

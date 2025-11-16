@@ -50,6 +50,11 @@ page {
   background-color: var(--color-primary);
 }
 
+.card.long {
+  width: 100%;
+  height: 80rpx;
+}
+
 .icon {
   align-items: center;
   width: 80rpx;
