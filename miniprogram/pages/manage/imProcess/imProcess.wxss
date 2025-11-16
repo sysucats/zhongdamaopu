@@ -72,26 +72,26 @@ button.long {
 /* 原有样式保持不变，新增以下样式 */
 
 .status-info {
-  padding: 10px;
-  background: #f5f5f5;
-  margin: 10px 0;
-  border-radius: 5px;
+  padding: 20rpx;
+  background: var(--color-gray-light);
+  margin: 20rpx 0;
+  border-radius: 10rpx;
 }
 
 .photo-list {
-  margin-top: 20px;
-  border-top: 1px solid #eee;
-  padding-top: 10px;
+  margin-top: 40rpx;
+  border-top: 1rpx solid var(--color-gray-light);
+  padding-top: 20rpx;
 }
 
 .list-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 10px;
-  background: #f9f9f9;
-  border-radius: 5px;
-  margin-bottom: 10px;
+  padding: 20rpx;
+  background: var(--color-gray-light);
+  border-radius: 10rpx;
+  margin-bottom: 20rpx;
 }
 
 .select-all {
@@ -100,34 +100,33 @@ button.long {
 }
 
 .selected-count {
-  color: #666;
-  font-size: 14px;
+  color: var(--color-gray-max);
+  font-size: 28rpx;
 }
 
 .photos-container {
-  max-height: 400px;
+  max-height: 500rpx;
   overflow-y: auto;
 }
 
 .photo-item {
   display: flex;
   align-items: center;
-  padding: 10px;
-  border-bottom: 1px solid #f0f0f0;
-  background: #fff;
+  padding: 20rpx;
+  border-bottom: 1rpx solid var(--color-gray-light);
+  background: white;
 }
 
 .photo-checkbox {
-  margin-right: 10px;
+  margin-right: 20rpx;
 }
 
 .photo-preview {
-  width: 60px;
-  height: 60px;
-  margin-right: 10px;
-  border-radius: 5px;
-  overflow: hidden;
-  border: 1px solid #eee;
+  width: 60rpx;
+  height: 120rpx;
+  margin-right: 20rpx;
+  border-radius: 10rpx;
+  border: 1rpx solid var(--color-gray-light);
 }
 
 .photo-preview image {
@@ -135,14 +134,24 @@ button.long {
   height: 100%;
 }
 
+.photo-preview .not-show-img {
+  width: 100%;
+  height: 100%;
+  text-align: center;
+  font-size: 30rpx;
+  line-height: 40rpx;
+  color: var(--color-black-min);
+}
+
 .photo-info {
-  flex: 1;
-  font-size: 12px;
-  color: #666;
+  width: 400rpx;
+  font-size: 24rpx;
+  color: var(--color-gray-dark);
 }
 
 .photo-info view {
-  margin-bottom: 2px;
+  width: 100%;
+  margin-bottom: 4rpx;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -154,19 +163,19 @@ button.long {
 }
 
 .btn-small {
-  font-size: 12px;
-  padding: 4px 8px;
-  margin: 2px 0;
-  min-width: 60px;
+  width: 100rpx;
+  font-size: 20rpx;
+  padding: 8rpx 16rpx;
+  margin: 4rpx 0;
 }
 
 .btn-danger {
-  background: #ff4d4f;
+  background: var(--color-red);
   color: white;
 }
 
 .btn-primary {
-  background: #1890ff;
+  background: var(--color-primary-dark);
   color: white;
 }
 
@@ -174,7 +183,7 @@ button.long {
 .image-blocks {
   display: flex;
   justify-content: space-around;
-  margin: 10px 0;
+  margin: 20rpx 0;
 }
 
 .image-block {
@@ -184,44 +193,44 @@ button.long {
 
 .image-block .title {
   font-weight: bold;
-  margin-bottom: 5px;
+  margin-bottom: 10rpx;
 }
 
 .image-block image {
   width: 100%;
-  height: 100px;
-  border: 1px solid #eee;
+  height: 200rpx;
+  border: 1rpx solid var(--color-gray-light);
 }
 
 .no-image {
   width: 100%;
-  height: 100px;
-  border: 1px dashed #ccc;
+  height: 200rpx;
+  border: 1rpx dashed var(--color-black-min);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #999;
+  color: var(--color-gray-dark);
 }
 
 .buttons {
   display: flex;
   justify-content: center;
-  margin: 10px 0;
+  margin: 20rpx 0;
 }
 
 .buttons button {
-  margin: 0 5px;
+  margin: 0 10rpx;
 }
 
 .info-block {
-  margin: 10px 0;
-  padding: 10px;
-  background: #f9f9f9;
-  border-radius: 5px;
+  margin: 20rpx 0;
+  padding: 20rpx;
+  background: var(--color-gray-light);
+  border-radius: 10rpx;
 }
 
 .info-block view {
-  margin: 5px 0;
-  font-size: 14px;
+  margin: 10rpx 0;
+  font-size: 28rpx;
   line-height: 1.4;
 }

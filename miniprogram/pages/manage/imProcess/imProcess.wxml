@@ -54,7 +54,8 @@
           <checkbox checked="{{item.checked}}" bindtap="togglePhotoSelect" data-index="{{index}}" />
         </view>
         <view class="photo-preview" bindtap="previewPhoto" data-index="{{index}}">
-          <image src="{{item.signedPhotoId}}" mode="aspectFill"></image>
+          <image wx:if="{{item.showImg}}" src="{{item.signedPhotoId}}" mode="aspectFill"></image>
+          <view class="not-show-img" wx:else>点击显示照片</view>
         </view>
         <view class="photo-info">
           <view class="photo-id">ID: {{item._id}}</view>

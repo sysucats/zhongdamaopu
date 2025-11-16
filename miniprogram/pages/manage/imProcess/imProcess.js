@@ -446,6 +446,14 @@ Page({
   previewPhoto: function(e) {
     const index = e.currentTarget.dataset.index;
     const photo = this.data.photoList[index];
+
+    if (!photo.showImg) {
+      this.setData({
+        [`photoList[${index}].showImg`]: true,
+      });
+      return;
+    }
+
     wx.previewImage({
       urls: [photo.signedPhotoId]
     });
