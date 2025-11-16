@@ -67,3 +67,161 @@ button.long {
   font-size: 22rpx;
   word-wrap: break-word;
 }
+
+/* 1107 新增 lighthouse_1024*/
+/* 原有样式保持不变，新增以下样式 */
+
+.status-info {
+  padding: 10px;
+  background: #f5f5f5;
+  margin: 10px 0;
+  border-radius: 5px;
+}
+
+.photo-list {
+  margin-top: 20px;
+  border-top: 1px solid #eee;
+  padding-top: 10px;
+}
+
+.list-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  background: #f9f9f9;
+  border-radius: 5px;
+  margin-bottom: 10px;
+}
+
+.select-all {
+  display: flex;
+  align-items: center;
+}
+
+.selected-count {
+  color: #666;
+  font-size: 14px;
+}
+
+.photos-container {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.photo-item {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  border-bottom: 1px solid #f0f0f0;
+  background: #fff;
+}
+
+.photo-checkbox {
+  margin-right: 10px;
+}
+
+.photo-preview {
+  width: 60px;
+  height: 60px;
+  margin-right: 10px;
+  border-radius: 5px;
+  overflow: hidden;
+  border: 1px solid #eee;
+}
+
+.photo-preview image {
+  width: 100%;
+  height: 100%;
+}
+
+.photo-info {
+  flex: 1;
+  font-size: 12px;
+  color: #666;
+}
+
+.photo-info view {
+  margin-bottom: 2px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.photo-actions {
+  display: flex;
+  flex-direction: column;
+}
+
+.btn-small {
+  font-size: 12px;
+  padding: 4px 8px;
+  margin: 2px 0;
+  min-width: 60px;
+}
+
+.btn-danger {
+  background: #ff4d4f;
+  color: white;
+}
+
+.btn-primary {
+  background: #1890ff;
+  color: white;
+}
+
+/* 原有样式 */
+.image-blocks {
+  display: flex;
+  justify-content: space-around;
+  margin: 10px 0;
+}
+
+.image-block {
+  text-align: center;
+  width: 30%;
+}
+
+.image-block .title {
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.image-block image {
+  width: 100%;
+  height: 100px;
+  border: 1px solid #eee;
+}
+
+.no-image {
+  width: 100%;
+  height: 100px;
+  border: 1px dashed #ccc;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #999;
+}
+
+.buttons {
+  display: flex;
+  justify-content: center;
+  margin: 10px 0;
+}
+
+.buttons button {
+  margin: 0 5px;
+}
+
+.info-block {
+  margin: 10px 0;
+  padding: 10px;
+  background: #f9f9f9;
+  border-radius: 5px;
+}
+
+.info-block view {
+  margin: 5px 0;
+  font-size: 14px;
+  line-height: 1.4;
+}

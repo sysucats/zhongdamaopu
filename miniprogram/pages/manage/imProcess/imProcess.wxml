@@ -1,5 +1,6 @@
 <canvas style="width: 1200px; height: 1200px; left: 1000px; position: fixed;" id="bigPhoto" type="2d"></canvas>
 <block wx:if="{{auth}}">
+  <!-- 原图预览区域 -->
   <view class="image-blocks">
     <view class="image-block">
       <view class='title'>原图</view>
@@ -17,31 +18,58 @@
       <view wx:else class="no-image"></view>
     </view>
   </view>
-  <view>[{{now}}/{{total}}] 目前阶段：{{phase}} | {{phase2str[phase]}}</view>
-  <!-- <view class="buttons" wx:if="{{gLocking}}"> -->
+  
+  <!-- 处理状态信息 -->
+  <view class="status-info">
+    <view>[{{now}}/{{total}}] 目前阶段：{{phase}} | {{phase2str[phase]}}</view>
+    <view>选中照片: {{selectedCount}}/{{photoList.length}}</view>
+  </view>
+  
+  <!-- 操作按钮 -->
   <view class="buttons">
     <button class='short' bindtap='clickProcessBtn' data-test="{{true}}">{{processing ? "停止" : "试运行"}}</button>
     <button class='primary' bindtap='clickProcessBtn'>{{processing ? "停止" : "开始处理"}}</button>
   </view>
-  <!-- <button wx:else class="long" bindtap='getLock'>其他人正在操作...点击重试</button> -->
-  <!-- 说明一下 -->
+  
+  <!-- 功能说明 -->
   <view class="info-block">
     <view>【功能说明】</view>
     <view>1. 首次使用，请点击试运行，再点击缩略图和水印图，查看是否正常</view>
-    <view>2. 为防止处理冲突，同时只能有1个用户操作</view>
-    <view>3. 水印会使用系统字体，昵称包含Emoji时，建议使用iOS设备</view>
+    <view>2. 水印会使用系统字体，昵称包含Emoji时，建议使用iOS设备</view>
+    <view>3. 选中照片后点击"开始处理"进行批量处理</view>
   </view>
-  <!-- 展示一下锁 -->
-  <view class="info-block">
-    <view>【此设备ID】</view>
-    <view>{{gLockKey}}</view>
-    <view>【页面操作者】</view>
-    <view wx:for="{{allLocks}}" wx:key="key">
-      <view>{{item.key}}</view>
-      <view>过期时间: {{item.expire_date_str}}</view>
+  
+  <!-- 待处理照片列表 -->
+  <view class="photo-list">
+    <view class="list-header">
+      <view class="select-all">
+        <checkbox checked="{{allSelected}}" bindtap="toggleSelectAll" /> 全选
+      </view>
+      <view class="selected-count">已选中 {{selectedCount}} 张照片</view>
+    </view>
+    
+    <view class="photos-container">
+      <view class="photo-item" wx:for="{{photoList}}" wx:key="_id" wx:for-index="index">
+        <view class="photo-checkbox">
+          <checkbox checked="{{item.checked}}" bindtap="togglePhotoSelect" data-index="{{index}}" />
+        </view>
+        <view class="photo-preview" bindtap="previewPhoto" data-index="{{index}}">
+          <image src="{{item.signedPhotoId}}" mode="aspectFill"></image>
+        </view>
+        <view class="photo-info">
+          <view class="photo-id">ID: {{item._id}}</view>
+          <view class="photo-user">上传者: {{item.userInfo.nickName || '未知'}}</view>
+          <view class="photo-date">时间: {{item.formattedDate}}</view>
+        </view>
+        <view class="photo-actions">
+          <button class="btn-small btn-danger" bindtap="deletePhoto" data-index="{{index}}">删除</button>
+          <button class="btn-small btn-primary" bindtap="processSinglePhoto" data-index="{{index}}">处理</button>
+        </view>
+      </view>
     </view>
   </view>
-  <!-- 展示错误信息 -->
+  
+  <!-- 错误信息 -->
   <view class="info-block" wx:if="{{errMsg}}">
     <view>【错误信息】</view>
     <view bind:tap="copyText" data-text="{{errMsg}}">{{errMsg}}</view>
