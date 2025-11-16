@@ -1,0 +1,340 @@
+<wxs module="filter" src="../../../utils/filter.wxs"></wxs>
+
+<view class="container">
+  <!-- 权限检查 -->
+  <block wx:if="{{!auth}}">
+    <view class="loading-container">
+      <text>检查权限中...</text>
+    </view>
+  </block>
+
+  <block wx:else>
+    <!-- 加载状态 -->
+    <block wx:if="{{loading}}">
+      <view class="loading-container">
+        <text>加载中...</text>
+      </view>
+    </block>
+
+    <block wx:else>
+      <!-- 首页导航栏 -->
+      <block wx:if="{{currentLevel === 'cats'}}">
+        <view class="photo-header">
+          <view class="header-content">
+            <!-- 搜索框 -->
+            <view class="search-box">
+              <input 
+                class="search-input" 
+                placeholder="搜索猫猫名字..." 
+                value="{{searchKeyword}}"
+                bindinput="onSearchInput"
+              />
+              <block wx:if="{{searchKeyword}}">
+                <view class="search-clear" bindtap="clearSearch">
+                  <text class="clear-icon">×</text>
+                </view>
+              </block>
+              <view class="search-icon">🔍</view>
+            </view>
+            <view class="header-actions">
+              <view class="action-btn" bindtap="refreshCats">
+                <text class="action-icon">🔄</text>
+              </view>
+            </view>
+          </view>
+        </view>
+      </block>
+
+      <!-- 首页统计卡片 -->
+      <block wx:if="{{currentLevel === 'cats'}}">
+        <view class="stats-section">
+          <view class="stats-grid">
+            <view class="stat-card card1">
+              <view class="stat-value">{{stats.totalCats}}</view>
+              <view class="stat-label">猫猫数量</view>
+            </view>
+            <view class="stat-card card2">
+              <view class="stat-value">{{stats.totalPhotos || 0}}</view>
+              <view class="stat-label">总照片数</view>
+            </view>
+            <view class="stat-card card3">
+              <view class="stat-value">{{stats.currentUserPhotos || 0}}</view>
+              <view class="stat-label">我的上传</view>
+            </view>
+          </view>
+        </view>
+
+        <!-- 位置筛选栏 -->
+        <view class="filter-section">
+          <view class="filter-group">
+            <view class="campus-scroll-container">
+              <scroll-view class="campus-scroll" scroll-x="true">
+                <view class="campus-list">
+                  <view 
+                    class="campus-tag {{filterCampus === 'all' ? 'active' : ''}}"
+                    bindtap="selectCampusFilter"
+                    data-campus="all"
+                  >
+                    <text class="campus-name">全部位置</text>
+                    <text class="campus-count">{{stats.totalCats}}</text>
+                  </view>
+                  <block wx:for="{{campuses}}" wx:key="name">
+                    <view 
+                      class="campus-tag {{filterCampus === item.name ? 'active' : ''}}"
+                      bindtap="selectCampusFilter"
+                      data-campus="{{item.name}}"
+                    >
+                      <text class="campus-name">{{item.name}}</text>
+                      <text class="campus-count">{{item.count}}</text>
+                    </view>
+                  </block>
+                </view>
+              </scroll-view>
+            </view>
+          </view>
+        </view>
+      </block>
+
+      <!-- 内容区域 -->
+      <view class="content-area {{currentLevel === 'cats' ? 'cats-content' : ''}}">
+        <!-- 猫猫列表 - 三列布局 -->
+        <block wx:if="{{currentLevel === 'cats'}}">
+          <view class="cats-grid">
+            <block wx:for="{{filteredCats}}" wx:key="_id">
+              <view class="cat-item" bindtap="selectCat" data-cat-id="{{item._id}}">
+                <image class="cat-avatar" src="{{item.avatar}}" mode="aspectFill" />
+                <view class="cat-info">
+                  <view class="cat-name">{{item.displayName}}</view>
+                  <block wx:if="{{item.campus}}">
+                    <view class="cat-campus">
+                      <text class="campus-badge">{{item.campus}}</text>
+                    </view>
+                  </block>
+                  <view class="cat-stats">
+                    <text class="photo-count">{{item.photo_count_total || 0}}</text>
+                    <block wx:if="{{item.photo_count_best > 0}}">
+                      <text class="best-count">{{item.photo_count_best}}精选</text>
+                    </block>
+                  </view>
+                </view>
+              </view>
+            </block>
+          </view>
+
+          <!-- 空状态 -->
+          <block wx:if="{{filteredCats.length === 0}}">
+            <view class="empty-state">
+              <view class="empty-icon">🐱</view>
+              <view class="empty-text">
+                <block wx:if="{{searchKeyword}}">没有找到"{{searchKeyword}}"相关的猫猫</block>
+                <block wx:else>没有找到符合条件的猫猫</block>
+              </view>
+              <view class="empty-subtext">尝试调整搜索条件或位置筛选</view>
+            </view>
+          </block>
+        </block>
+
+        <!-- 照片列表 -->
+        <block wx:if="{{currentLevel === 'photos'}}">
+          <!-- 顶部导航栏 -->
+          <view class="photo-header">
+            <view class="header-content">
+              <view class="back-btn" bindtap="goBack">
+                <text class="back-icon">←</text>
+                <text class="back-text">返回</text>
+              </view>
+              <view class="header-title">
+                <text class="cat-name">{{selectedCat.displayName}}</text>
+                <text class="photo-count">({{currentCatPhotos.length}}张)</text>
+              </view>
+              <view class="header-actions">
+                <view class="action-btn" bindtap="reloadCurrentCatData">
+                  <text class="action-icon">🔄</text>
+                </view>
+                <view class="action-btn" bindtap="toggleEditMode">
+                  <text class="action-icon">{{editMode ? '❌' : '✏️'}}</text>
+                </view>
+              </view>
+            </view>
+          </view>
+
+          <!-- 筛选栏 -->
+          <view class="filter-section">
+            <!-- 上传者筛选 -->
+            <view class="filter-group" wx:if="{{uploaders.length > 0}}">
+              <view class="uploader-scroll-container">
+                <scroll-view class="uploader-scroll" scroll-x="true">
+                  <view class="uploader-list">
+                    <block wx:for="{{uploaders}}" wx:key="_id">
+                      <view 
+                        class="uploader-tag {{filterUploader === item._id ? 'active' : ''}}"
+                        bindtap="selectUploaderFilter"
+                        data-uploader-id="{{item._id}}"
+                      >
+                        <image class="uploader-avatar" src="{{item.avatar}}" mode="aspectFill" />
+                        <text class="uploader-name">{{item.nickname}}</text>
+                        <text class="uploader-count">{{item.totalPhotos}}</text>
+                      </view>
+                    </block>
+                  </view>
+                </scroll-view>
+              </view>
+            </view>
+
+            <!-- 精选筛选 -->
+            <view class="filter-group">
+              <view class="best-filter">
+                <view 
+                  class="filter-tab {{!filterBest ? 'active' : ''}}"
+                  bindtap="toggleBestFilter"
+                >
+                  <text class="filter-icon">📷</text>
+                  <text class="filter-text">全部</text>
+                  <text class="filter-text">{{currentCatPhotos.length}}</text>
+                </view>
+                <view 
+                  class="filter-tab {{filterBest ? 'active' : ''}}"
+                  bindtap="toggleBestFilter"
+                >
+                  <text class="filter-icon">⭐</text>
+                  <text class="filter-text">精选</text>
+                  <text class="filter-text">{{bestCount}}</text>
+                </view>
+              </view>
+            </view>
+          </view>
+
+          <!-- 照片网格 -->
+          <view class="photos-container">
+            <view class="photos-grid {{editMode ? 'edit-mode' : ''}}">
+              <block wx:for="{{photos}}" wx:key="_id">
+                <view 
+                  class="photo-item {{(filter.indexOf(selectedPhotos, item._id)) > -1 ? 'selected' : ''}}"
+                  bindtap="{{editMode ? 'togglePhotoSelection' : 'previewPhoto'}}"
+                  data-photo-id="{{item._id}}"
+                  bindlongpress="toggleEditMode"
+                >
+
+                  <image 
+                    class="photo-image" 
+                    src="{{item.photo_compressed || item.photo_watermark}}" 
+                    mode="aspectFill" 
+                    lazy-load="true"
+                  />
+                  
+                  <!-- 精选标识 -->
+                  <block wx:if="{{item.best}}">
+                    <view class="photo-badge">⭐</view>
+                  </block>
+
+                  <!-- 选择框 -->
+                  <block wx:if="{{editMode}}">
+                    <view class="photo-checkbox">
+                      <block wx:if="{{(filter.indexOf(selectedPhotos, item._id)) > -1}}">✔</block>
+                    </view>
+                  </block>
+                </view>
+              </block>
+            </view>
+
+            <!-- 空状态 -->
+            <block wx:if="{{photos.length === 0}}">
+              <view class="empty-state">
+                <view class="empty-icon">
+                  <block wx:if="{{currentCatPhotos.length === 0}}">📸</block>
+                  <block wx:else>🔍</block>
+                </view>
+                <view class="empty-text">
+                  <block wx:if="{{currentCatPhotos.length === 0}}">该猫猫还没有照片</block>
+                  <block wx:else>没有找到符合条件的照片</block>
+                </view>
+                <view class="empty-subtext">
+                  <block wx:if="{{currentCatPhotos.length === 0}}">
+                    还没有人为 {{selectedCat.displayName}} 上传过照片
+                  </block>
+                  <block wx:else>
+                    尝试调整筛选条件
+                  </block>
+                </view>
+              </view>
+            </block>
+          </view>
+        </block>
+      </view>
+
+      <!-- 编辑模式操作栏 -->
+      <block wx:if="{{editMode && currentLevel === 'photos'}}">
+        <view class="action-bar">
+          <view class="action-info">
+            已选择 {{selectedPhotos.length}} 张照片
+          </view>
+          <view class="action-buttons">
+            <button 
+              class="action-btn primary" 
+              bindtap="showSetBestConfirm"
+              disabled="{{selectedPhotos.length === 0}}"
+            >
+              设为精选
+            </button>
+            <button 
+              class="action-btn secondary" 
+              bindtap="showCancelBestConfirm"
+              disabled="{{selectedPhotos.length === 0}}"
+            >
+              取消精选
+            </button>
+            <button 
+              class="action-btn danger" 
+              bindtap="showDeleteConfirm"
+              disabled="{{selectedPhotos.length === 0}}"
+            >
+              删除
+            </button>
+          </view>
+        </view>
+      </block>
+    </block>
+  </block>
+
+  <!-- 删除确认弹窗 -->
+  <block wx:if="{{showDeleteConfirm}}">
+    <view class="modal-mask" bindtap="hideDeleteConfirm">
+      <view class="modal-content" catchtap="stopPropagation">
+        <view class="modal-title">确认删除</view>
+        <view class="modal-message">确定要删除选中的{{selectedPhotos.length}}张照片吗？此操作不可恢复。</view>
+        <view class="modal-actions">
+          <button class="modal-btn cancel" bindtap="hideDeleteConfirm">取消</button>
+          <button class="modal-btn confirm" bindtap="confirmBatchDelete">删除</button>
+        </view>
+      </view>
+    </view>
+  </block>
+
+  <!-- 设为精选确认弹窗 -->
+  <block wx:if="{{showSetBestConfirm}}">
+    <view class="modal-mask" bindtap="hideSetBestConfirm">
+      <view class="modal-content" catchtap="stopPropagation">
+        <view class="modal-title">设为精选</view>
+        <view class="modal-message">确定要将选中的{{selectedPhotos.length}}张照片设为精选吗？</view>
+        <view class="modal-actions">
+          <button class="modal-btn cancel" bindtap="hideSetBestConfirm">取消</button>
+          <button class="modal-btn confirm" bindtap="confirmBatchSetBest">确定</button>
+        </view>
+      </view>
+    </view>
+  </block>
+
+  <!-- 取消精选确认弹窗 -->
+  <block wx:if="{{showCancelBestConfirm}}">
+    <view class="modal-mask" bindtap="hideCancelBestConfirm">
+      <view class="modal-content" catchtap="stopPropagation">
+        <view class="modal-title">取消精选</view>
+        <view class="modal-message">确定要取消选中的{{selectedPhotos.length}}张照片的精选状态吗？</view>
+        <view class="modal-actions">
+          <button class="modal-btn cancel" bindtap="hideCancelBestConfirm">取消</button>
+          <button class="modal-btn confirm" bindtap="confirmBatchCancelBest">确定</button>
+        </view>
+      </view>
+    </view>
+  </block>
+</view>
