@@ -1,6 +1,6 @@
 module.exports = async (ctx) => {
   if (ctx.args?.deploy_test === true) {
-    return "v2.0";
+    return "v2.1";
   }
 
   const { result: app_secret } = await ctx.mpserverless.db.collection('app_secret').findOne();
