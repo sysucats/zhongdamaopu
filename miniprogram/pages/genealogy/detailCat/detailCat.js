@@ -351,7 +351,7 @@ Page({
 
     let { result: res } = await app.mpServerless.db.collection('photo').find(
       qf,
-      { skip: now, limit: step }
+      { sort: { mdate: -1 }, skip: now, limit: step } // 按时间倒序，先展示最新的
     )
     console.log("[loadMorePhotos] -", res);
     const offset = cat.photo.length;

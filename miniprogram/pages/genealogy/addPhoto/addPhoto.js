@@ -61,6 +61,10 @@ Page({
     this.setData({
       isIOS: device.platform == 'ios'
     });
+
+    // 监听用户信息更新事件
+    this.boundOnUserInfoUpdated = this.onUserInfoUpdated.bind(this);
+    app.globalData.eventBus.$on('userInfoUpdated', this.boundOnUserInfoUpdated);
   },
 
   async onShow() {
@@ -68,7 +72,14 @@ Page({
   },
 
   onUnload: async function (options) {
-    await this.ifSendNotifyVeriftMsg()
+    await this.ifSendNotifyVeriftMsg();
+
+    // 移除用户信息更新事件监听
+    app.globalData.eventBus.$off('userInfoUpdated', this.boundOnUserInfoUpdated);
+  },
+
+  async onUserInfoUpdated() {
+    await getPageUserInfo(this);
   },
 
   /**

@@ -304,22 +304,41 @@ Page({
     };
     filters.push(colour_item);
     
-    // 领养状态过滤器
-    const adopt_status = [{ name: "未知", value: null }];
-    config.cat_status_adopt.forEach((name, i) => {
-      adopt_status.push({ name, value: i });
-    });
-    
-    const adopt_item = {
-      key: 'adopt',
-      name: '领养',
-      category: [{
-        name: '全部状态',
-        items: adopt_status,
-        all_active: true
-      }]
+    // advance版状态过滤器
+    const status_item = {
+      key: 'status',
+      name: '状态',
+      category: [
+        { name: '全部状态', items: [], all_active: true },
+        {
+          name: '领养状态',
+          items: [
+            { name: "未知", value: null },
+            ...config.cat_status_adopt.map((name, i) => ({ name: name, value: i }))
+          ],
+          all_active: false
+        },
+        {
+          name: '绝育状态',
+          items: [
+            { name: '待绝育', value: false },
+            { name: '已绝育', value: true }
+          ],
+          all_active: false
+        },
+        {
+          name: '其他',
+          items: [
+            { name: '未失踪', value: { field: 'missing', condition: false } },
+            { name: '已失踪', value: { field: 'missing', condition: true } },
+            { name: '去往喵星', value: { field: 'to_star', condition: true } }
+          ],
+          all_active: false
+        }
+      ],
+      active: false
     };
-    filters.push(adopt_item);
+    filters.push(status_item);
     
     // 设置默认激活的过滤器
     filters[0].active = true;
@@ -619,6 +638,76 @@ Page({
     }
     return true;
   },
+
+  // advance版状态过滤器，临时添加，期待完全重构。（TODO）
+  // 获取某个状态子分类被选择的值
+  selectStatusValues: function (subCategory) {
+    if (!subCategory || !Array.isArray(subCategory.items)) return [];
+    if (subCategory.all_active) return subCategory.items.map(it => it.value);
+    const values = [];
+    for (const it of subCategory.items) {
+      if (it.active) values.push(it.value);
+    }
+    return values;
+  },
+
+  // 状态处理条件构建
+  buildStatusConditions: function (mainF) {
+    const conditions = [];
+    if (!mainF || !Array.isArray(mainF.category)) return conditions;
+    // 全部状态被激活则无需添加条件
+    if (mainF.category[0] && mainF.category[0].all_active) return conditions;
+
+    const adoptCategory = mainF.category.find(c => c.name === '领养状态');
+    const sterilCategory = mainF.category.find(c => c.name === '绝育状态');
+    const otherCategory  = mainF.category.find(c => c.name === '其他');
+
+    // 领养状态支持数值 in 与 null不存在，null算是脏数据了
+    const adoptVals = this.selectStatusValues(adoptCategory);
+    if (adoptVals.length) {
+      const or = [];
+      const numeric = adoptVals.filter(v => v !== null);
+      if (numeric.length) or.push({ adopt: { $in: numeric } });
+      if (adoptVals.includes(null)) or.push({ adopt: { $exists: false } });
+      if (or.length === 1) conditions.push(or[0]);
+      else if (or.length > 0) conditions.push({ $or: or });
+    }
+
+    // 绝育状态同时选中true/false忽略该条件
+    const sterilVals = this.selectStatusValues(sterilCategory);
+    if (sterilVals.length) {
+      const hasT = sterilVals.includes(true);
+      const hasF = sterilVals.includes(false);
+      if (!(hasT && hasF)) {
+        if (hasF) {
+          conditions.push({ $or: [ { sterilized: false }, { sterilized: { $exists: false } } ] });
+        } else if (hasT) {
+          conditions.push({ sterilized: true });
+        }
+      }
+    }
+
+    // 其他，missing 与 to_star……
+    const otherVals = this.selectStatusValues(otherCategory);
+    if (otherVals.length) {
+      const otherConds = [];
+      for (const val of otherVals) {
+        if (!val || !val.field) continue;
+        if (val.field === 'missing') {
+          if (val.condition === true) {
+            otherConds.push({ missing: true });
+          } else {
+            otherConds.push({ $or: [ { missing: false }, { missing: { $exists: false } } ] });
+          }
+        } else if (val.field === 'to_star' && val.condition === true) {
+          otherConds.push({ to_star: true });
+        }
+      }
+      if (otherConds.length) conditions.push({ $or: otherConds });
+    }
+
+    return conditions;
+  },
   
   fGet: async function() {
     const filters = this.data.filters;
@@ -626,6 +715,15 @@ Page({
     
     // 处理选择的过滤器
     filters.forEach(mainF => {
+      const key = mainF.key;
+      // 状态过滤
+      if (key === 'status') {
+        const statusConds = this.buildStatusConditions(mainF);
+        if (statusConds.length) conditions.push(...statusConds);
+        return;
+      }
+      
+      // 处理其他过滤器 (area, colour)
       if (mainF.category[0].all_active) return;
       
       const selected = [];
@@ -638,12 +736,16 @@ Page({
         category.items.forEach(item => {
           if (category.all_active || item.active) {
             let choice = item.name;
-            if (item.value === null) choice = { $type: "missing" };
-            else if (item.value !== undefined) choice = item.value;
+            if (item.value !== undefined) {
+              choice = item.value;
+            }
+            if (item.value === null) {
+              choice = { $exists: false };
+            }
             
             selected.push(choice);
             
-            if (cateFilter && !cateKeyPushed) {
+            if (cateFilter && !cateKeyPushed && category.name) {
               cateSelected.push(category.name);
               cateKeyPushed = true;
             }
@@ -652,7 +754,23 @@ Page({
       });
       
       if (selected.length > 0) {
-        conditions.push({ [mainF.key]: { $in: selected } });
+        let hasNull = selected.some(val => typeof val === 'object' && val !== null && val.$exists === false);
+        let nonNullSelected = selected.filter(val => !(typeof val === 'object' && val !== null && val.$exists === false));
+        
+        let fieldCondition = [];
+        if (nonNullSelected.length > 0) {
+          fieldCondition.push({ [key]: { $in: nonNullSelected } });
+        }
+        if (hasNull) {
+          fieldCondition.push({ [key]: { $exists: false } });
+        }
+        
+        if (fieldCondition.length > 1) {
+          conditions.push({ $or: fieldCondition });
+        } else if (fieldCondition.length === 1) {
+          conditions.push(fieldCondition[0]);
+        }
+        
         if (cateFilter && cateSelected.length > 0) {
           conditions.push({ [mainF.cateKey]: { $in: cateSelected } });
         }
@@ -761,24 +879,54 @@ Page({
     this.lockBtn();
     
     const filters = [...this.data.filters];
-    const filters_sub = filters.findIndex(f => f.key === "adopt");
-    if (filters_sub === -1) {
+    // 查找 status 过滤器的索引
+    const status_filter_index = filters.findIndex(f => f.key === "status");
+    if (status_filter_index === -1) {
+      this.unlockBtn();
+      return false;
+    }
+    
+    // 查找领养状态子类别的索引
+    const adopt_category_index = filters[status_filter_index].category.findIndex(
+      category => category.name === "领养状态"
+    );
+    if (adopt_category_index === -1) {
       this.unlockBtn();
       return false;
     }
     
     const target_status = config.cat_status_adopt_target;
-    const category = filters[filters_sub].category[0];
-    const index = category.items.findIndex(item => item.name === target_status);
+    const adoptCategory = filters[status_filter_index].category[adopt_category_index];
     
-    if (index === -1 || category.items[index].active) {
+    // 查找目标状态在子类别中的索引
+    const target_index = adoptCategory.items.findIndex(item => item.name === target_status);
+    
+    if (target_index === -1) {
+      console.log("[点击领养按钮] 找不到目标领养状态");
       this.unlockBtn();
       return false;
     }
     
-    category.items[index].active = true;
-    category.all_active = false;
-    filters[filters_sub].category[0].all_active = false;
+    if (adoptCategory.items[target_index].active) {
+      // 已经激活了
+      this.unlockBtn();
+      return false;
+    }
+    
+    // 重置所有状态选项
+    for (let i = 0; i < filters[status_filter_index].category.length; i++) {
+      const category = filters[status_filter_index].category[i];
+      category.all_active = false; // 全部设为false，包括全部状态
+      
+      if (category.items) {
+        for (let j = 0; j < category.items.length; j++) {
+          category.items[j].active = false;
+        }
+      }
+    }
+    
+    // 激活目标领养状态
+    adoptCategory.items[target_index].active = true;
     
     this.setData({
       filters,

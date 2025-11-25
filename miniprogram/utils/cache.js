@@ -49,6 +49,11 @@ function setCacheDate(key, date) {
   wx.setStorageSync(key, date);
 }
 
+// 移除缓存项 for userInfoUpdated event
+function removeCacheItem(key) {
+  wx.removeStorageSync(key);
+}
+
 // 缓存时长设置（单位默认为hours）
 // TODO(zing): 缓存图片链接会导致cos签名过期
 const cacheTime = {
@@ -67,5 +72,6 @@ module.exports = {
   setCacheDate,
   getCacheItem,
   setCacheItem,
-  cacheTime
+  cacheTime,
+  removeCacheItem
 }

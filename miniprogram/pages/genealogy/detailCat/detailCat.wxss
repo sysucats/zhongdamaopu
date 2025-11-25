@@ -52,6 +52,20 @@ swiper-item image {
   height: 450rpx;
   border-radius: 15rpx;
 }
+/* 缺少封面图，显示占位图 */
+.cover-default {
+  background-color: var(--color-gray-normal);
+  background-image: var(--img-default);
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-size: 50% 50%;
+}
+/* 占位容器尺寸对齐真实图片 */
+.best-photo .cover-default {
+  width: 600rpx;
+  height: 450rpx;
+  border-radius: 15rpx;
+}
 
 .info {
   width: 750rpx;

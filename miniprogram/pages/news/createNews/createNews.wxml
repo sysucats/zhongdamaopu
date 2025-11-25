@@ -57,7 +57,4 @@
 
     <button class='submitButton' form-type='submit'>发布公告</button>
 </form>
-<view wx:else class='unAuth'>
-    <text>{{tipText}}</text>
-    <button bindtap='goBack' wx:if='{{tipBtn}}'>打扰了</button>
-</view>
+<no-auth wx:else tip-text="{{tipText}}" tip-btn="{{tipBtn}}"></no-auth>

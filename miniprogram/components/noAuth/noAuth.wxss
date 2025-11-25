@@ -4,6 +4,7 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, calc(-50% - 0.5 * 100%));
+  width: 100%;
 }
 
 .no-auth {
@@ -20,6 +21,7 @@
 
 .no-auth-text {
   font-size: 28rpx;
+  white-space: nowrap;
 }
 
 button {
@@ -34,7 +36,7 @@ button {
   margin-top: 20rpx;
   justify-content: center;
   align-items: center;
-  display: flex;
+  display: inline-flex;
   border-radius: 50rpx;
 }
 .no-auth-btn::after {

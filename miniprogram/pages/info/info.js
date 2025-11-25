@@ -21,6 +21,7 @@ Page({
     // 卡片，不需要设计绘制卡片图，只需用放图标即可
     cards: [
       {
+        icon: "/pages/public/images/info/btn/dashboard.svg",
         label: "详细数据看板",
         path: "/pages/info/dashboard/dashboard",
         css: "long"
