@@ -20,6 +20,12 @@ Page({
       bestCount: 0
     },
     
+    // 分页相关
+    pageSize: 20,
+    pageNum: 1,
+    hasMore: true,
+    loadingMore: false,
+    
     // 猫猫列表
     cats: [],
     filteredCats: [],
@@ -67,6 +73,9 @@ Page({
         })
       });
 
+      // 加载总的统计数据
+      this.loadTotalStats();
+
       // 如果有传递cat_id，直接加载该猫猫的数据
       if (options.cat_id) {
         this.setData({ loading: true });
@@ -87,8 +96,9 @@ Page({
   onPullDownRefresh() {
     if (this.data.currentLevel === 'cats') {
       Promise.all([
-        this.loadCats(),
-        this.loadCurrentUserPhotosCount()
+        this.loadCats(true),
+        this.loadCurrentUserPhotosCount(),
+        this.loadTotalStats()
       ]).then(() => {
         wx.stopPullDownRefresh();
         wx.showToast({
@@ -165,14 +175,21 @@ Page({
   },
 
   // 刷新猫猫列表
-  refreshCats() {
+  async refreshCats() {
     this.setData({ searchKeyword: '' });
-    this.loadCats();
-    this.loadCurrentUserPhotosCount();
+    await this.loadCats(true);
+    await this.loadCurrentUserPhotosCount();
+    await this.loadTotalStats();
     wx.showToast({
       title: '刷新成功',
       icon: 'success'
     });
+  },
+
+  // 加载更多猫猫数据
+  async loadMoreCats() {
+    if (this.data.loadingMore || !this.data.hasMore || this.data.loading) return;
+    await this.loadCats(false);
   },
 
   // 加载当前用户上传的照片数量
@@ -195,17 +212,76 @@ Page({
     }
   },
 
-  // 加载猫猫列表和位置信息
-  async loadCats() {
+  // 加载总的统计数据
+  async loadTotalStats() {
     try {
-      this.setData({ loading: true });
+      const result = await app.mpServerless.function.invoke('getCatStats');
+      console.log('获取统计数据:', result);
+      
+      if (result.success && result.data) {
+        const statsData = result.data;
+        
+        // 更新统计数据
+        this.setData({
+          stats: {
+            ...this.data.stats,
+            totalCats: statsData.basic.total,
+            totalPhotos: statsData.month.totalPhotos
+          },
+          // 使用云函数返回的校区数据
+          campuses: statsData.campus.map(item => ({
+            name: item.campus,
+            count: item.count
+          }))
+        });
+      }
+    } catch (error) {
+      console.error('获取统计数据失败:', error);
+    }
+  },
+
+  // 加载猫猫列表和位置信息
+  async loadCats(refresh = false) {
+    try {
+      // 如果是刷新，重置分页参数
+      if (refresh) {
+        this.setData({ 
+          pageNum: 1, 
+          cats: [], 
+          hasMore: true,
+          loading: true 
+        });
+      } else {
+        // 如果不是刷新且没有更多数据，则直接返回
+        if (!this.data.hasMore) return;
+        // 如果是加载更多，不显示全局loading
+        this.setData({ loadingMore: true });
+      }
+      
+      // 计算skip数量
+      const skip = (this.data.pageNum - 1) * this.data.pageSize;
+      
+      // 按popularity降序排序（photo_count_total作为popularity的替代）
       const { result } = await app.mpServerless.db.collection('cat')
         .find({}, { 
-          fields: ['_id', 'name', 'nickname', 'photo_count_best', 'photo_count_total', 'campus'],
-          sort: { name: 1 }
+          fields: ['_id', 'name', 'nickname', 'photo_count_best', 'photo_count_total', 'campus', 'popularity'],
+          sort: { popularity: -1 },
+          skip: skip,
+          limit: this.data.pageSize
         });
       
-      const catsWithAvatar = await Promise.all(
+      // 如果没有数据返回，说明已经没有更多数据了
+      if (result.length === 0) {
+        this.setData({ 
+          hasMore: false,
+          loading: false,
+          loadingMore: false 
+        });
+        return;
+      }
+      
+      // 获取头像信息
+      const newCatsWithAvatar = await Promise.all(
         result.map(async (cat) => {
           try {
             const avatar = await getAvatar(cat._id, cat.photo_count_best);
@@ -226,22 +302,29 @@ Page({
           }
         })
       );
+      
+      // 合并新数据到现有列表
+      const catsWithAvatar = refresh ? newCatsWithAvatar : [...this.data.cats, ...newCatsWithAvatar];
 
-      // 计算所有猫猫的照片总数
-      const totalPhotos = catsWithAvatar.reduce((sum, cat) => sum + (cat.photo_count_total || 0), 0);
+      // 更新页码和是否还有更多数据
+      const hasMore = result.length === this.data.pageSize;
+      const nextPageNum = this.data.pageNum + 1;
 
-      // 生成位置筛选列表
-      const campuses = this.generateCampuses(catsWithAvatar);
+      // 获取总猫数和照片数
+      const totalCats = await app.mpServerless.db.collection('cat').count();
+      const totalPhotos = await app.mpServerless.db.collection('photo').count();
 
       this.setData({ 
         cats: catsWithAvatar,
-        campuses: campuses,
         stats: { 
-          totalCats: catsWithAvatar.length,
-          totalPhotos: totalPhotos,
+          totalCats: totalCats.total,
+          totalPhotos: totalPhotos.total,
           currentUserPhotos: this.data.stats.currentUserPhotos
         },
-        loading: false 
+        pageNum: nextPageNum,
+        hasMore: hasMore,
+        loading: false,
+        loadingMore: false 
       }, () => {
         this.filterCats(); // 初始化筛选
       });

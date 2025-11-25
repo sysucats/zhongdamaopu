@@ -146,11 +146,6 @@ Page({
             path: "/pages/manage/imProcess/imProcess",
             num: "numImProcess",
             icon: "icon-todo-list-o"
-          },
-          {
-            name: "照片管理",
-            path: "/pages/manage/photoManagement/photoManagement",
-            icon: "icon-todo-list-o"
           }
         ]
       }

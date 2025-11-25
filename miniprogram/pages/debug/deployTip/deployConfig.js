@@ -171,7 +171,7 @@ module.exports = {
     "deleteCosFiles": "v2.0",
     "deleteFiles": "v2.0",
     "genBadgeCode": "v2.0",
-    "getAccessToken": "v2.0",
+    "getAccessToken": "v2.1",
     "getAllSci": "v2.0",
     "getBadge": "v2.0",
     "getBadgeRank": "v2.1",

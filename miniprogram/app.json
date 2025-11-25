@@ -41,8 +41,7 @@
     "pages/followFeed/followFeed",
     "pages/info/myFollowCats/myFollowCats",
     "pages/manage/catManage/catManage",
-    "pages/info/dashboard/dashboard",
-    "pages/manage/photoManagement/photoManagement"
+    "pages/info/dashboard/dashboard"
   ],
   "subPackages": [
     {

@@ -99,27 +99,48 @@
       <view class="content-area {{currentLevel === 'cats' ? 'cats-content' : ''}}">
         <!-- 猫猫列表 - 三列布局 -->
         <block wx:if="{{currentLevel === 'cats'}}">
-          <view class="cats-grid">
-            <block wx:for="{{filteredCats}}" wx:key="_id">
-              <view class="cat-item" bindtap="selectCat" data-cat-id="{{item._id}}">
-                <image class="cat-avatar" src="{{item.avatar}}" mode="aspectFill" />
-                <view class="cat-info">
-                  <view class="cat-name">{{item.displayName}}</view>
-                  <block wx:if="{{item.campus}}">
-                    <view class="cat-campus">
-                      <text class="campus-badge">{{item.campus}}</text>
-                    </view>
-                  </block>
-                  <view class="cat-stats">
-                    <text class="photo-count">{{item.photo_count_total || 0}}</text>
-                    <block wx:if="{{item.photo_count_best > 0}}">
-                      <text class="best-count">{{item.photo_count_best}}精选</text>
+          <scroll-view 
+            class="cats-scroll-view" 
+            scroll-y="true" 
+            bindscrolltolower="loadMoreCats"
+            lower-threshold="100"
+          >
+            <view class="cats-grid">
+              <block wx:for="{{filteredCats}}" wx:key="_id">
+                <view class="cat-item" bindtap="selectCat" data-cat-id="{{item._id}}">
+                  <image class="cat-avatar" src="{{item.avatar}}" mode="aspectFill" />
+                  <view class="cat-info">
+                    <view class="cat-name">{{item.displayName}}</view>
+                    <block wx:if="{{item.campus}}">
+                      <view class="cat-campus">
+                        <text class="campus-badge">{{item.campus}}</text>
+                      </view>
                     </block>
+                    <view class="cat-stats">
+                      <text class="photo-count">{{item.photo_count_total || 0}}</text>
+                      <block wx:if="{{item.photo_count_best > 0}}">
+                        <text class="best-count">{{item.photo_count_best}}精选</text>
+                      </block>
+                    </view>
                   </view>
                 </view>
+              </block>
+            </view>
+            
+            <!-- 加载更多提示 -->
+            <block wx:if="{{loadingMore}}">
+              <view class="loading-more">
+                <text>加载更多中...</text>
               </view>
             </block>
-          </view>
+            
+            <!-- 没有更多数据提示 -->
+            <block wx:if="{{!hasMore && cats.length > 0}}">
+              <view class="no-more">
+                <text>没有更多数据了</text>
+              </view>
+            </block>
+          </scroll-view>
 
           <!-- 空状态 -->
           <block wx:if="{{filteredCats.length === 0}}">
