@@ -43,10 +43,7 @@ Page({
   onLoad: async function () {
     if (await checkAuth(this, 99)) {
       await this.loadProcess();
-    } else {
-      wx.navigateBack({
-        delta: 1
-      });
+      // 前端显示鉴权组件提示权限不够，点击返回，而不是直接跳转
     }
   },
 

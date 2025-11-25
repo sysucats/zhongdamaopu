@@ -3,6 +3,7 @@ import { deepcopy } from "../../../utils/utils";
 import config from "../../../config";
 import api from "../../../utils/cloudApi";
 
+const app = getApp();
 const defaultAvatarUrl = "/pages/public/images/info/default_avatar.png"
 // 分享的标语
 const share_text = config.text.app_name + ' - ' + config.text.genealogy.share_tip;
@@ -85,11 +86,6 @@ Page({
       });
     }
   },
-  // 保存后触发更新 toDo 昵称更新了，头像403
-  onUserInfoUpdated(event) {
-    const { user } = event.detail;
-    this.setData({ user });
-  },
 
   onShareAppMessage: function () {
     return {
@@ -120,6 +116,15 @@ Page({
       numUserPhotos: result.numUserPhotos,
       numCats: result.numCats,
     });
+
+    // 监听用户信息更新事件
+    this.boundLoadUser = this.loadUser.bind(this);
+    app.globalData.eventBus.$on('userInfoUpdated', this.boundLoadUser);
+  },
+
+  onUnload() {
+    // 移除用户信息更新事件监听
+    app.globalData.eventBus.$off('userInfoUpdated', this.boundLoadUser);
   },
 
   async loadUser() {

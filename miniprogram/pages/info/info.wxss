@@ -52,7 +52,7 @@ page {
 
 .card.long {
   width: 100%;
-  height: 80rpx;
+  /* height: 80rpx; */
 }
 
 .icon {

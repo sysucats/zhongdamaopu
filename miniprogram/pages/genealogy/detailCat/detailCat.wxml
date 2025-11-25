@@ -11,13 +11,21 @@
   <view id='big-circle'></view>
 
   <swiper indicator-dots='{{false}}' bindchange='swiperLast' previous-margin='60rpx' next-margin='60rpx' circular="true">
-    <swiper-item class="best-photo" wx:for='{{cat.photo}}' wx:key="_id" bindtap='bindTapPhoto' data-index="{{item.index}}" data-kind='best'>
-      <image bindload='bindImageLoaded' mode='aspectFill' src='{{item.photo_compressed || item.photo_id}}'></image>
-      <item class="like-count" wx:if="{{item.like_count}}">
-        <image class="like-logo" mode='aspectFill' src="/pages/public/images/button/heart.png"></image>
-        <text>{{item.like_count}}</text>
-      </item>
-    </swiper-item>
+    <!-- 无精选照片时，展示默认图 -->
+    <block wx:if="{{cat.photo && cat.photo.length}}">
+      <swiper-item class="best-photo" wx:for='{{cat.photo}}' wx:key="_id" bindtap='bindTapPhoto' data-index="{{item.index}}" data-kind='best'>
+        <image bindload='bindImageLoaded' mode='aspectFill' src='{{item.photo_compressed || item.photo_id}}'></image>
+        <item class="like-count" wx:if="{{item.like_count}}">
+          <image class="like-logo" mode='aspectFill' src="/pages/public/images/button/heart.png"></image>
+          <text>{{item.like_count}}</text>
+        </item>
+      </swiper-item>
+    </block>
+    <block wx:else>
+      <swiper-item class="best-photo">
+        <view class="cover-default"></view>
+      </swiper-item>
+    </block>
   </swiper>
 
   <view class='info' id='info-box'>
