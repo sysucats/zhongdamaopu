@@ -41,7 +41,7 @@
       </view>
       <view class='label'>摄影师：</view>
       <view>
-        <input type='text' placeholder='（选填）默认为上传者' bindinput='setAllPher'>{{set_all.pher}}</input>
+        <input type='text' placeholder='（选填）默认为上传者' bindinput='setAllPher'></input>
       </view>
       <view class='tip'>* 在此填写会覆盖下面所有设置</view>
 

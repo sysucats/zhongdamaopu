@@ -187,7 +187,7 @@ module.exports = {
     "managePhoto": "v2.0",
     "sendMsgV2": "v2.1",
     "transferFromLaf": "v2.0",
-    "updateCat": "v2.1",
+    "updateCat": "v2.2",
     "updateCatRating": "v2.0",
     "updateFollowCats": "v2.0",
     "userOp": "v2.0",

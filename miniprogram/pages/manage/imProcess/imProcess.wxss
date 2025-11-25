@@ -67,3 +67,170 @@ button.long {
   font-size: 22rpx;
   word-wrap: break-word;
 }
+
+/* 1107 新增 lighthouse_1024*/
+/* 原有样式保持不变，新增以下样式 */
+
+.status-info {
+  padding: 20rpx;
+  background: var(--color-gray-light);
+  margin: 20rpx 0;
+  border-radius: 10rpx;
+}
+
+.photo-list {
+  margin-top: 40rpx;
+  border-top: 1rpx solid var(--color-gray-light);
+  padding-top: 20rpx;
+}
+
+.list-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20rpx;
+  background: var(--color-gray-light);
+  border-radius: 10rpx;
+  margin-bottom: 20rpx;
+}
+
+.select-all {
+  display: flex;
+  align-items: center;
+}
+
+.selected-count {
+  color: var(--color-gray-max);
+  font-size: 28rpx;
+}
+
+.photos-container {
+  max-height: 500rpx;
+  overflow-y: auto;
+}
+
+.photo-item {
+  display: flex;
+  align-items: center;
+  padding: 20rpx;
+  border-bottom: 1rpx solid var(--color-gray-light);
+  background: white;
+}
+
+.photo-checkbox {
+  margin-right: 20rpx;
+}
+
+.photo-preview {
+  width: 60rpx;
+  height: 120rpx;
+  margin-right: 20rpx;
+  border-radius: 10rpx;
+  border: 1rpx solid var(--color-gray-light);
+}
+
+.photo-preview image {
+  width: 100%;
+  height: 100%;
+}
+
+.photo-preview .not-show-img {
+  width: 100%;
+  height: 100%;
+  text-align: center;
+  font-size: 30rpx;
+  line-height: 40rpx;
+  color: var(--color-black-min);
+}
+
+.photo-info {
+  width: 400rpx;
+  font-size: 24rpx;
+  color: var(--color-gray-dark);
+}
+
+.photo-info view {
+  width: 100%;
+  margin-bottom: 4rpx;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.photo-actions {
+  display: flex;
+  flex-direction: column;
+}
+
+.btn-small {
+  width: 100rpx;
+  font-size: 20rpx;
+  padding: 8rpx 16rpx;
+  margin: 4rpx 0;
+}
+
+.btn-danger {
+  background: var(--color-red);
+  color: white;
+}
+
+.btn-primary {
+  background: var(--color-primary-dark);
+  color: white;
+}
+
+/* 原有样式 */
+.image-blocks {
+  display: flex;
+  justify-content: space-around;
+  margin: 20rpx 0;
+}
+
+.image-block {
+  text-align: center;
+  width: 30%;
+}
+
+.image-block .title {
+  font-weight: bold;
+  margin-bottom: 10rpx;
+}
+
+.image-block image {
+  width: 100%;
+  height: 200rpx;
+  border: 1rpx solid var(--color-gray-light);
+}
+
+.no-image {
+  width: 100%;
+  height: 200rpx;
+  border: 1rpx dashed var(--color-black-min);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-gray-dark);
+}
+
+.buttons {
+  display: flex;
+  justify-content: center;
+  margin: 20rpx 0;
+}
+
+.buttons button {
+  margin: 0 10rpx;
+}
+
+.info-block {
+  margin: 20rpx 0;
+  padding: 20rpx;
+  background: var(--color-gray-light);
+  border-radius: 10rpx;
+}
+
+.info-block view {
+  margin: 10rpx 0;
+  font-size: 28rpx;
+  line-height: 1.4;
+}

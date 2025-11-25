@@ -6,7 +6,7 @@
 
 module.exports = {
   // 版本号
-  app_version: "v1.17.1",
+  app_version: "v1.17.3",
   // 小程序appid
   app_id: "wx5bd705b2bc91c73b",
   // EMAS空间ID
@@ -18,6 +18,8 @@ module.exports = {
   use_private_tencent_cos: true,
   // 私有的腾讯云cos签名过期时间（秒）
   sign_expires_tencent_cos: 3600 * 2,
+  // 图片选择数量限制
+  chooseMediaCount: 20, 
 
   // 科普页图片
   science_imgs: [

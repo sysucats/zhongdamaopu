@@ -38,8 +38,8 @@
 
 <!-- 卡片布局 -->
 <view class="card-container">
-  <view class="card" wx:for="{{cards}}" wx:key="label" bindtap='clickbtn' data-to='{{item.path}}'>
-    <image class="icon" src="{{item.icon}}"></image>
+  <view class="card {{item.css}}" wx:for="{{cards}}" wx:key="label" bindtap='clickbtn' data-to='{{item.path}}'>
+    <image wx:if="{{item.icon}}" class="icon" src="{{item.icon}}"></image>
     <view class="card-text">{{item.label}}</view>
   </view>
 </view>

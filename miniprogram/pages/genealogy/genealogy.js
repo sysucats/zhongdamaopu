@@ -169,8 +169,7 @@ Page({
     const scene = this.jsData.pendingScene;
     if (scene.startsWith('toC=')) {
       const cat_No = scene.substr(4);
-      // 使用正确的字段名 'no' 而不是 '_no'
-      const { result: cat_res } = await app.mpServerless.db.collection('cat').find({ no: cat_No }, { projection: { _id: 1 } });
+      const { result: cat_res } = await app.mpServerless.db.collection('cat').find({ _no: cat_No }, { projection: { _id: 1 } });
       
       if (!cat_res.length) {
         wx.showToast({
