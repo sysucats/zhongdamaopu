@@ -12,7 +12,7 @@ async function generateMpCode(cat) {
         // 如果目前没有，那就先生成一个
         var res = await api.getMpCode({
             _id: cat._id,
-            scene: 'toC=' + cat.no,
+            scene: 'toC=' + cat._no,
             page: 'pages/genealogy/genealogy',
             width: 500,
         });

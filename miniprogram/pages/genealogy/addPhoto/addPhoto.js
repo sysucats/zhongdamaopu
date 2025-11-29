@@ -15,7 +15,9 @@ import {
 import config from "../../../config";
 import api from "../../../utils/cloudApi";
 import { uploadFile } from "../../../utils/common"
+
 const app = getApp();
+
 Page({
   /**
    * 页面的初始数据
@@ -37,18 +39,11 @@ Page({
    */
   onLoad: async function (options) {
     const cat_id = options.cat_id;
-    // var catRes = await db.collection('cat').doc(cat_id).field({
-    //   birthday: true,
-    //   name: true,
-    //   campus: true,
-    //   _id: true
-    // }).get();
     var catRes = (await app.mpServerless.db.collection('cat').findOne({ _id: cat_id }, { projection: { birthday: 1, name: 1, campus: 1 } })).result;
     this.setData({
       cat: catRes,
       birth_date: catRes.birthday || ''
     });
-    //this.checkUInfo();
 
     // 获取一下现在的日期，用在拍摄日前选择上
     const today = new Date();
@@ -66,6 +61,10 @@ Page({
     this.setData({
       isIOS: device.platform == 'ios'
     });
+
+    // 监听用户信息更新事件
+    this.boundOnUserInfoUpdated = this.onUserInfoUpdated.bind(this);
+    app.globalData.eventBus.$on('userInfoUpdated', this.boundOnUserInfoUpdated);
   },
 
   async onShow() {
@@ -73,7 +72,14 @@ Page({
   },
 
   onUnload: async function (options) {
-    await this.ifSendNotifyVeriftMsg()
+    await this.ifSendNotifyVeriftMsg();
+
+    // 移除用户信息更新事件监听
+    app.globalData.eventBus.$off('userInfoUpdated', this.boundOnUserInfoUpdated);
+  },
+
+  async onUserInfoUpdated() {
+    await getPageUserInfo(this);
   },
 
   /**
@@ -87,8 +93,17 @@ Page({
   },
 
   async chooseImg(e) {
+    // 如果正在上传，不允许选择新图片
+    if (this.data.uploading) {
+      wx.showToast({
+        title: '正在上传中，请稍后',
+        icon: 'none'
+      });
+      return;
+    }
+    
     var res = await wx.chooseMedia({
-      count: 20,
+      count: config.chooseMediaCount,
       mediaType: ['image'],
       sizeType: ["compressed"],
       sourceType: ['album', 'camera'],
@@ -116,48 +131,83 @@ Page({
   // 点击单个上传
   async uploadSingleClick(e) {
     if (this.data.uploading) {
-      console.log("uploading lock.");
+      wx.showToast({
+        title: '正在上传中，请稍后',
+        icon: 'none'
+      });
       return;
     }
+    
     this.setData({
       uploading: true
-    })
-    await requestNotice('verify');
-    wx.showLoading({
-      title: config.text.add_photo.success_tip_title,
-      mask: true,
     });
-    const currentIndex = e.currentTarget.dataset.index;
-    const photo = this.data.photos[currentIndex];
-    await this.uploadImg(photo);
-    this.data.photos = this.data.photos.filter((ph) => {
-      // 把已上传的图片从图片列表中去掉
-      return ph.file.path != photo.file.path;
-    });
-    this.setData({
-      uploading: false,
-      photos: this.data.photos,
-    });
-    wx.hideLoading();
-    wx.showModal({
-      title: config.text.add_photo.success_tip_title,
-      content: config.text.add_photo.success_tip_content,
-      showCancel: false
-    });
+    
+    try {
+      await requestNotice('verify');
+      wx.showLoading({
+        title: config.text.add_photo.success_tip_title,
+        mask: true,
+      });
+      
+      const currentIndex = e.currentTarget.dataset.index;
+      const photo = this.data.photos[currentIndex];
+      
+      // 检查照片是否已经上传过（防止重复点击）
+      if (photo.uploaded) {
+        console.log("照片已上传，跳过");
+        return;
+      }
+      
+      await this.uploadImg(photo);
+      
+      // 标记为已上传
+      photo.uploaded = true;
+      
+      // 过滤掉已上传的照片
+      this.data.photos = this.data.photos.filter((ph) => {
+        return !ph.uploaded;
+      });
+      
+      this.setData({
+        photos: this.data.photos,
+      });
+      
+      wx.hideLoading();
+      wx.showModal({
+        title: config.text.add_photo.success_tip_title,
+        content: config.text.add_photo.success_tip_content,
+        showCancel: false
+      });
+    } catch (error) {
+      console.error('上传失败:', error);
+      wx.showToast({
+        title: '上传失败，请重试',
+        icon: 'none'
+      });
+    } finally {
+      this.setData({
+        uploading: false
+      });
+    }
   },
 
   // 点击多个上传
   async uploadAllClick(e) {
     if (this.data.uploading) {
-      console.log("uploading lock.");
+      wx.showToast({
+        title: '正在上传中，请稍后',
+        icon: 'none'
+      });
       return;
     }
+    
     const photos = []; // 这里只会保存可以上传的照片
     for (const item of this.data.photos) {
-      if (item.shooting_date && item.file.path) {
+      if (item.shooting_date && item.file.path && !item.uploaded) {
         photos.push(item);
       }
     }
+    
     if (photos.length == 0) {
       wx.showModal({
         title: config.text.add_photo.unfinished_tip_title,
@@ -166,34 +216,62 @@ Page({
       });
       return;
     }
-    await requestNotice('verify');
-    for (let i = 0; i < photos.length; ++i) {
-      wx.showLoading({
-        title: '正在上传(' + (photos.length - i) + ')',
-        mask: true,
-      });
-      await this.uploadImg(photos[i]);
+    
+    this.setData({
+      uploading: true
+    });
+    
+    try {
+      await requestNotice('verify');
+      
+      // 使用 Promise 链确保顺序执行，避免并发问题
+      for (let i = 0; i < photos.length; ++i) {
+        if (photos[i].uploaded) {
+          continue; // 跳过已上传的
+        }
+        
+        wx.showLoading({
+          title: '正在上传(' + (i + 1) + '/' + photos.length + ')',
+          mask: true,
+        });
+        
+        await this.uploadImg(photos[i]);
+        
+        // 标记为已上传
+        photos[i].uploaded = true;
+      }
+      
+      // 过滤掉已上传的照片
       this.data.photos = this.data.photos.filter((ph) => {
-        // 把已上传的图片从图片列表中去掉
-        return ph.file.path != photos[i].file.path;
+        return !ph.uploaded;
+      });
+      
+      this.setData({
+        photos: this.data.photos,
+      });
+      
+      wx.hideLoading();
+      wx.showModal({
+        title: config.text.add_photo.success_tip_title,
+        content: `成功上传 ${photos.length} 张照片`,
+        showCancel: false
+      });
+    } catch (error) {
+      console.error('批量上传失败:', error);
+      wx.showToast({
+        title: '上传过程中出现错误',
+        icon: 'none'
+      });
+    } finally {
+      this.setData({
+        uploading: false
       });
     }
-    this.setData({
-      uploading: false,
-      photos: this.data.photos,
-    })
-    wx.hideLoading();
-    wx.showModal({
-      title: config.text.add_photo.success_tip_title,
-      content: config.text.add_photo.success_tip_content,
-      showCancel: false
-    });
   },
 
   async ifSendNotifyVeriftMsg() {
     const subMsgSetting = (await app.mpServerless.db.collection('setting').findOne({ _id: 'subscribeMsg' })).result;
     const triggerNum = subMsgSetting.verifyPhoto.triggerNum; //几条未审核才触发
-    // console.log("triggerN",triggerNum);
     var numUnchkPhotos = (await app.mpServerless.db.collection('photo').count({
       verified: false
     })).result;
@@ -205,12 +283,15 @@ Page({
   },
 
   async uploadImg(photo) {
-    // multiple 表示当前是否在批量上传，如果是就不显示上传成功的弹框
-    this.setData({
-      uploading: true,
-    });
+    // 再次检查是否已上传，防止重复
+    if (photo.uploaded) {
+      console.log("照片已上传，跳过");
+      return;
+    }
+    
     const cat = this.data.cat;
     const tempFilePath = photo.file.path;
+    
     //获取后缀
     const index = tempFilePath.lastIndexOf(".");
     const ext = tempFilePath.substr(index + 1);
@@ -220,8 +301,6 @@ Page({
       cloudPath: '/' + cat.campus + '/' + generateUUID() + '.' + ext,
     })
     console.log("上传图片:", upRes);
-    // 返回文件 ID
-    console.log(upRes.fileUrl);
 
     // 添加记录
     const params = {
@@ -240,6 +319,8 @@ Page({
       data: params
     })
     console.log("curdOp(add-photo) result:", dbAddRes);
+    
+    return dbAddRes;
   },
 
   pickDate(e) {
@@ -249,6 +330,7 @@ Page({
       ["photos[" + index + "].shooting_date"]: e.detail.value
     });
   },
+  
   inputPher(e) {
     const index = e.currentTarget.dataset.index;
     this.setData({
@@ -269,6 +351,7 @@ Page({
       photos: photos,
     });
   },
+  
   setAllPher(e) {
     const photographer = e.detail.value;
     var photos = this.data.photos;
@@ -283,10 +366,17 @@ Page({
 
   // 移除其中一个
   removeOne(e) {
+    if (this.data.uploading) {
+      wx.showToast({
+        title: '正在上传中，不能移除',
+        icon: 'none'
+      });
+      return;
+    }
+    
     const index = e.currentTarget.dataset.index;
     const photos = this.data.photos;
     const new_photos = photos.filter((ph, ind, arr) => {
-      // 这个photo是用户点击的photo，在上面定义的
       return index != ind;
     });
     this.setData({
@@ -305,6 +395,7 @@ Page({
       showEdit: true
     });
   },
+  
   closeEdit: function () {
     this.setData({
       showEdit: false

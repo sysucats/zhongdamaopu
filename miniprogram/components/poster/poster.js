@@ -28,7 +28,7 @@ Component({
             value: null,
             observer(newVal, oldVal) {
                 if (oldVal && oldVal !== newVal) {
-                    wx.removeStorageSync(`poster_${oldVal.id}_${this.data.coverImg?._id}`);
+                    wx.removeStorageSync(`poster_${oldVal._id}_${this.data.coverImg?._id}`);
                 }
             }
         },
@@ -37,8 +37,8 @@ Component({
             value: null,
             // 监听coverImg，换了一张图片就要清除之前的缓存
             observer(newVal, oldVal) {
-                if (oldVal && oldVal._id !== newVal._id) {
-                    wx.removeStorageSync(`poster_${this.data.cat?.id}_${oldVal._id}`);
+                if (oldVal && (!newVal || oldVal._id !== newVal._id)) {
+                    wx.removeStorageSync(`poster_${this.data.cat?._id}_${oldVal._id}`);
                 }
             }
         },
@@ -58,14 +58,24 @@ Component({
     data: {
         posterWidth: 650,       // 与poster.wxss中的canvas宽度一致
         posterHeight: 1000,     // 与poster.wxss中的canvas高度一致
-        primaryColor: '#ffd101', // 主色调, 可与app.wxss中的--color-primary保持一致
-        fontColor: '#fff'       // tag字体颜色 #222
+        primaryColor: '',       // 主色调, 可与app.wxss中的--color-primary保持一致
+        fontColor: ''           // tag字体颜色
     },
 
     lifetimes: {
         async attached() {
             // 在组件实例进入页面节点树时执行
             canvas.debugger = true // open debugger
+
+            // 颜色中介，如果需要自定义，请在 poster.wxml 中修改id为 color-thief 的view的color样式，建议保持与app.wxss中的--color-primary保持一致
+            // 如果需要进一步自定义，建议在app.wxss中新建颜色变量
+            const query = wx.createSelectorQuery().in(this);
+            query.select('#color-thief').fields({ computedStyle: ['color', 'backgroundColor'] }, res => {
+                this.setData({
+                    primaryColor: res.backgroundColor,
+                    fontColor: res.color
+                });
+            }).exec();
 
             // 加载自定义字体 wx-canvas-2d默认为'sans-serif'
             // wx.loadFontFace({
@@ -106,9 +116,9 @@ Component({
     methods: {
         // 开始生成海报
         async startDrawing() {
-            // 先检查平台, 似乎只支持安卓和ios，开发者工具也可以，其余平台未能正常绘制，没定位到原因
+            // 先检查平台, 其余平台个别会有问题，总体还ok随时删减支持设备
             const { platform } = await wx.getSystemInfo();
-            if (!['ios', 'devtools', 'android'].includes(platform)) {
+            if (!['ios', 'devtools', 'android', 'mac', 'ohos', 'windows'].includes(platform)) {
                 await wx.showModal({
                     title: '暂不支持此平台',
                     content: '请到手机端体验~(^・ω・^ )',
@@ -119,6 +129,13 @@ Component({
                 return false;
             }
             if (!this.properties.cat) return;
+            if (!this.properties.coverImg) {
+                wx.showToast({
+                  title: '缺少封面图片，可以在相册里点击照片生成哦',
+                  icon: 'none'
+                });
+                return;
+            }
 
             wx.showLoading({ title: '生成ing...', mask: true });
 
@@ -126,7 +143,8 @@ Component({
             console.log('Cat:', cat);
 
             // 检查缓存
-            if (this.checkCache(cat.id, coverImg._id)) {
+            // 使用正确的_id (确信)
+            if (this.checkCache(cat._id, coverImg._id)) {
                 wx.hideLoading();
                 return;
             }
@@ -137,7 +155,7 @@ Component({
 
             // 开始绘制
             this.executeDrawing(drawingConfig)
-                .then(() => this.saveAndShareImage(cat.id, coverImg._id))
+                .then(() => this.saveAndShareImage(cat._id, coverImg._id))
                 .catch(err => {
                     wx.showToast({ title: '生成失败(×﹏×)', icon: 'error' });
                     console.error(err);

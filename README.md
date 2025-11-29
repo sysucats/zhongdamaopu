@@ -58,19 +58,21 @@
 
 EMAS版暂时没有录制部署视频，部署流程请参考：[猫谱EMAS版文档](https://docs.qq.com/doc/DSE1vd0p3RERvWXJS)
 
-注：考虑到Laf平台不再维护，迁移到阿里云的EMAS Serverless平台，比较稳定。费用每个月：EMAS后端5元左右，腾讯云COS存照片约5元左右。代码迁移过程非常感谢[maopu-EMAS项目](https://github.com/Smileye-v/maopu-EMAS)。
+注：考虑到Laf平台不再维护，迁移到阿里云的EMAS Serverless平台，比较稳定。费用每个月：EMAS后端5元左右，腾讯云COS存照片约5元左右。
 
 # :dancers:开发团队
 
 本项目的开发工作100%用爱发电，特别感谢每一位为此付出的小伙伴。
 
-:computer:代码开发：[Zing22](https://github.com/Zing22)、[Jazon](https://github.com/jxzhn)、[Junius](https://github.com/JunDeer)、[yw](https://github.com/WondrousWisdomcard)、[Lauzeyu](https://github.com/parsifal486)、[Smileye-v](https://github.com/Smileye-v)
+:computer:代码开发：[Zing22](https://github.com/Zing22)、[Jazon](https://github.com/jxzhn)、[Junius](https://github.com/JunDeer)、[yw](https://github.com/WondrousWisdomcard)、[Lauzeyu](https://github.com/parsifal486)、[Smileye-v](https://github.com/Smileye-v)、[xuannfx](https://github.com/xuannfx)、[LightHouse-1024](https://github.com/LightHouse-1024)
 
-:black_nib:UI设计：蓝卷、[Junius](https://github.com/JunDeer)、[yw](https://github.com/WondrousWisdomcard)
+:black_nib:UI设计：蓝卷、[Junius](https://github.com/JunDeer)、[yw](https://github.com/WondrousWisdomcard)、[xuannfx](https://github.com/xuannfx)
 
 :notebook:资料整理：笃行志愿服务队及各校区小伙伴
 
 如果你有新的想法或建议，非常欢迎你在QQ群/issue板块发起讨论，或者提交代码PR。
+
+代码迁移过程非常感谢[maopu-EMAS项目](https://github.com/Smileye-v/maopu-EMAS)。
 
 # :ferris_wheel:开源协议
 

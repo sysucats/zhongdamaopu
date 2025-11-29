@@ -27,7 +27,7 @@ async function downloadFile(filePath) {
     wx.downloadFile({
       url: filePath,
       success(res) {
-        console.log('cloud.downloadFile(laf) success', res);
+        console.log('cloud.downloadFile success', res);
         resolve(res);
       },
       fail: res => reject(res)
@@ -61,7 +61,7 @@ async function uploadFile(options) {
       name: "file",
       formData: formData,
       success(res) {
-        console.log('cloud.uploadFile(laf) success', res);
+        console.log('cloud.uploadFile success', res);
         // wx.uploadFile 和 wx.cloud.uplaodFile 返回值不一样
         // TODO 生成 fileID 按wxcloud生成的是图片的地址
         const cleanKey = formData.key.startsWith("/") ? formData.key.slice(1) : formData.key;

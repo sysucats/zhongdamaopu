@@ -7,3 +7,6 @@
         disable-scroll="{{ true }}"
     />
 </view >
+
+<!-- 颜色中介 -->
+<view id="color-thief" style="color: var(--color-primary); background-color: var(--color-primary-light); display: none;"></view>

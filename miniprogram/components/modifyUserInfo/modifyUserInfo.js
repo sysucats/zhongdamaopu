@@ -1,7 +1,8 @@
 import { getUser } from "../../utils/user";
 import { deepcopy } from "../../utils/utils";
 import api from "../../utils/cloudApi";
-import { uploadFile } from "../../utils/common"
+import { uploadFile } from "../../utils/common";
+import { removeCacheItem } from '../../utils/cache';
 const app = getApp();
 
 Component({
@@ -95,7 +96,11 @@ Component({
       });
 
       wx.hideLoading();
-      await this.loadUser();
+
+      // 发布更新事件
+      removeCacheItem("current-user");
+      app.globalData.eventBus.$emit('userInfoUpdated');
+
       this.hide();
       wx.showToast({
         title: '保存成功',
@@ -103,15 +108,12 @@ Component({
       });
 
       this.triggerEvent('userInfoUpdated', { user: user });
-      // 重新加载当前页面，获取最新的数据（解决更新后的头像403
-      const currentPage = getCurrentPages().pop();
-      currentPage.onLoad(currentPage.options);
     },
 
     async uploadAvatar(tempFilePath) {
       const openid = this.data.user.openid;
       if (!tempFilePath.includes("://tmp")) {
-        return tempFilePath;
+        return { fileId: this.data.user.userInfo.avatarUrlId, fileUrl: tempFilePath };
       }
 
       //获取后缀

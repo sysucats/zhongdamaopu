@@ -3,6 +3,7 @@ import { app_version } from "./config";
 import MPServerless from '@alicloud/mpserverless-sdk';
 import { ensureCos } from './utils/common';
 import { app_id, space_id, space_secret, space_endpoint } from './config'
+import eventBus from './utils/eventBus';
 const mpServerless = new MPServerless({
   uploadFile: wx.uploadFile,
   request: wx.request,
@@ -31,6 +32,7 @@ App({
 
     this.globalData = {
       version: app_version,
+      eventBus: eventBus
     };
   },
 

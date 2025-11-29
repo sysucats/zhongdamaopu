@@ -1,0 +1,21 @@
+/*
+ * 需要使用的方法
+ */
+var indexOf = function indexOf(array, item) {
+
+  
+  // 2. 空数组直接返回-1（已有逻辑保留）
+  if (array.length === 0) {
+    return -1;
+  }
+  
+  // 3. 执行查找
+  return array.indexOf(item);
+}
+
+/*
+* 导出方法：左边的filter.wxs中的方法名，右边是页面引入的方法名
+*/
+module.exports = {
+  indexOf: indexOf
+}

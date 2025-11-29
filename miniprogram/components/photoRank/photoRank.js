@@ -22,6 +22,18 @@ Component({
     defaultAvatarUrl: defaultAvatarUrl,
   },
 
+  lifetimes: {
+    async attached() {
+      this.boundGetPageUserInfo = getPageUserInfo.bind(this, this);
+      // 监听用户信息更新事件
+      app.globalData.eventBus.$on('userInfoUpdated', this.boundGetPageUserInfo);
+    },
+    detached() {
+      // 移除用户信息更新事件监听
+      app.globalData.eventBus.$off('userInfoUpdated', this.boundGetPageUserInfo);
+    }
+  },
+
   /**
    * 组件的方法列表
    */
@@ -94,10 +106,6 @@ Component({
       this.setData({
         showEdit: true
       });
-    },
-    onUserInfoUpdated(event) {
-      const { user } = event.detail;
-      this.setData({ user });
     },
   }
 })

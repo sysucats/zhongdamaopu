@@ -21,6 +21,44 @@ module.exports = async (ctx) => {
   if (photo === undefined || opType === undefined) {
     return "empty photo or type";
   }
+  
+  // 重新计算精选照片数量的函数
+  async function recountBestPhotos(cat_id) {
+    try {
+      // 计算该猫的精选照片数量
+      const { result: count } = await ctx.mpserverless.db.collection('photo').count({
+        cat_id: cat_id,
+        verified: true,
+        best: true
+      });
+      
+      // 更新猫的数据
+      await ctx.mpserverless.db.collection('cat').updateOne({
+        _id: cat_id
+      }, {
+        $set: {
+          photo_count_best: count
+        }
+      });
+      return count;
+    } catch (error) {
+      console.error('重新计算精选照片数量失败:', error);
+      throw error;
+    }
+  }
+  
+  // 更新猫的最新照片时间
+  async function updateMphoto(cat_id) {
+    const today = new Date();
+    return await ctx.mpserverless.db.collection('cat').updateOne({
+      _id: cat_id
+    }, {
+      $set: {
+        mphoto: today
+      }
+    });
+  }
+
   if (opType == "check") {
     const best = ctx.args.best;
     await ctx.mpserverless.db.collection('photo').updateOne({
@@ -32,8 +70,16 @@ module.exports = async (ctx) => {
         manager: ctx.args.openid
       }
     });
-    updateMphoto(photo.cat_id);
+    
+    // 更新猫的最新照片时间
+    await updateMphoto(photo.cat_id);
+    
+    // 重新计算精选照片数量
+    await recountBestPhotos(photo.cat_id);
   } else if (opType == "delete") {
+    // 记录照片是否是精选
+    const wasBest = photo.best;
+    
     if (photo.photo_file_id) {
       var photoIDs = [photo.photo_file_id];
       if (photo.photo_compressed_id) {
@@ -56,16 +102,32 @@ module.exports = async (ctx) => {
     await ctx.mpserverless.db.collection('photo').deleteOne({
       _id: photo._id
     });
+    
+    // 如果删除的是精选照片，重新计算精选照片数量
+    if (wasBest) {
+      await recountBestPhotos(photo.cat_id);
+    }
   } else if (opType == "setBest") {
     const best = ctx.args.best;
-    // updateMphoto(photo.cat_id);
-    await ctx.mpserverless.db.collection('photo').updateOne({
+    
+    // 获取照片当前状态
+    const { result: currentPhoto } = await ctx.mpserverless.db.collection('photo').findOne({
       _id: photo._id
-    }, {
-      $set: {
-        best: best
-      }
     });
+    
+    // 只有状态发生变化时才更新
+    if (currentPhoto.best !== best) {
+      await ctx.mpserverless.db.collection('photo').updateOne({
+        _id: photo._id
+      }, {
+        $set: {
+          best: best
+        }
+      });
+      
+      // 重新计算精选照片数量
+      await recountBestPhotos(photo.cat_id);
+    }
   } else if (opType == 'setPher') {
     const photographer = ctx.args.photographer;
     if (photo.photographer == photographer) {
@@ -118,15 +180,4 @@ module.exports = async (ctx) => {
 
   // 所有照片改动之后，重新数一下猫图
   // return (await ctx.mpserverless.function.invoke("countPhoto")).result;
-
-  async function updateMphoto(cat_id) {
-    const today = new Date();
-    return await ctx.mpserverless.db.collection('cat').updateOne({
-      _id: cat_id
-    }, {
-      $set: {
-        mphoto: today
-      }
-    });
-  }
 }

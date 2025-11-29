@@ -84,6 +84,12 @@ scroll-view {
 
   font-weight: 600;
   letter-spacing: 2rpx;
+
+  /* 猫咪名字过长时，省略号处理 */
+  max-width: 250rpx;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .card .info image.gender {

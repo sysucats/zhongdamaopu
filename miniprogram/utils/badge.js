@@ -41,7 +41,9 @@ async function loadUserBadge(openid, badgeDefMap, options) {
     _openid: openid,
     catId: null
   })).result;
-  const res = await mergeAndSortBadges(userBadges, badgeDefMap, options);
+  // 过滤掉已被赠送出去的勋章
+  const filteredBadges = userBadges.filter(badge => !badge.givenTime);
+  const res = await mergeAndSortBadges(filteredBadges, badgeDefMap, options);
   return res;
 }
 

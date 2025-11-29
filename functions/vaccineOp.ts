@@ -247,6 +247,11 @@ export default async function (ctx: FunctionContext) {
         };
       });
       
+      // 按最近接种日期降序排序更为合理且方便查看
+      result.sort((a, b) => 
+        new Date(b.last_vaccine.vaccine_date).getTime() - new Date(a.last_vaccine.vaccine_date).getTime()
+      );
+      
       return { msg: '获取成功', result: true, data: result };
     } catch (error) {
       return { msg: '获取已接种猫咪列表失败', error, result: false };

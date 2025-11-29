@@ -167,6 +167,11 @@ async function updateCatRating(options) {
   return (await app.mpServerless.function.invoke('updateCatRating', options)).result
 }
 
+// 获取数据看板
+async function getCatStats(options) {
+  return (await app.mpServerless.function.invoke('getCatStats', options)).result
+}
+
 // 更新关注列表
 async function updateFollowCats(options) {
   const openid = await getCurrentUserOpenid();
@@ -200,6 +205,7 @@ module.exports = {
   loadBadgeCode,
   getUserStats,
   updateCatRating,
+  getCatStats,
   updateFollowCats,
   vaccineOp
 };

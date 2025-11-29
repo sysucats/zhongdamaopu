@@ -10,30 +10,74 @@ Page({
     text_cfg: text_cfg,
     github_link: "https://github.com/sysucats/zhongdamaopu",
     update_log: [{
+      version: "v1.17.4",
+      content: [
+        "修复已知BUG（感谢LightHouse-1024、xuannfx）",
+      ],
+      time: "2025/11/16"
+    }, {
+      version: "v1.17.3",
+      content: [
+        "数据看板入口公开给所有用户",
+        "修复已知BUG（感谢LightHouse-1024）",
+      ],
+      time: "2025/11/16"
+    }, {
+      version: "v1.17.2",
+      content: [
+        "修复已知BUG（感谢LightHouse-1024）",
+      ],
+      time: "2025/11/02"
+    }, {
+      version: "v1.17.1",
+      content: [
+        "修复已知BUG（感谢xuannfx）",
+      ],
+      time: "2025/10/07"
+    }, {
+      version: "v1.17.0",
+      content: [
+        "管理员数据看板重磅上线（感谢xuannfx）",
+      ],
+      time: "2025/10/03"
+    }, {
+      version: "v1.16.4",
+      content: [
+        "修复已知BUG（感谢LightHouse-1024、xuannfx）",
+      ],
+      time: "2025/9/29"
+    }, {
+      version: "v1.16.3",
+      content: [
+        "修复徽章BUG（LightHouse-1024大佬提供）",
+        "修复云函数已知问题",
+      ],
+      time: "2025/6/29"
+    }, {
       version: "v1.16.2",
       content: [
         "修复部分BUG",
         "修复部署指引，准备发布EMAS版",
       ],
-      time: "2024/6/29"
+      time: "2025/6/29"
     }, {
       version: "v1.16.1",
       content: [
         "修复部分BUG，修改后端为按量付费",
       ],
-      time: "2024/6/26"
+      time: "2025/6/26"
     }, {
       version: "v1.16.0",
       content: [
         "迁移到EMAS，感谢Smileye-v大佬",
       ],
-      time: "2024/6/23"
+      time: "2025/6/23"
     }, {
       version: "v1.15.1",
       content: [
         "统一主题色背景的文字颜色变量",
       ],
-      time: "2024/3/14"
+      time: "2025/3/14"
     }, {
       version: "v1.15.0",
       content: [
@@ -44,7 +88,7 @@ Page({
         "优化喵友圈页面性能和缓存策略",
         "统一管理页面权限提示样式",
       ],
-      time: "2024/3/14"
+      time: "2025/3/14"
     }, {
       version: "v1.14.4",
       content: [

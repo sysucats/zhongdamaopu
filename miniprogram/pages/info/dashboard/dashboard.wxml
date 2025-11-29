@@ -1,0 +1,403 @@
+<!--miniprogram/pages/manage/dashboard/dashboard.wxml-->
+<view class="container">
+
+  <!-- 数据Bento布局 -->
+  <view class="bento-grid">
+    <!-- 第一行：总览卡片 - 大卡片 -->
+    <view class="bento-card large">
+      <view class="card-title">概览</view>
+      <view class="card-content">
+        <view class="stat-row">
+          <view class="stat-item">
+            <view class="value large primary">{{stats.basic.total || 0}}</view>
+            <view class="label">总数量</view>
+          </view>
+          <view class="stat-item">
+            <view class="value large">{{stats.basic.current || 0}}</view>
+            <view class="label">现存</view>
+          </view>
+          <view class="stat-item">
+            <view class="value large">{{stats.basic.adopted || 0}}</view>
+            <view class="label">领养</view>
+          </view>
+          <view class="stat-item">
+            <view class="value large">{{stats.basic.missing || 0}}</view>
+            <view class="label">失踪</view>
+          </view>
+          <view class="stat-item">
+            <view class="value large">{{stats.basic.deceased || 0}}</view>
+            <view class="label">喵星</view>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 第二行：绝育情况 -->
+    <view class="bento-card medium sterilization-card">
+      <view class="card-title">绝育情况</view>
+      <view class="card-content">
+        <!-- 总体绝育情况 -->
+        <view class="progress-container total">
+          <view class="label">已绝育/全部猫猫</view>
+          <view class="progress-text">
+            <text class="value large">{{stats.basic.sterilized || 0}}</text>
+            <text class="progress-total">/{{stats.basic.total || 0}}</text>
+          </view>
+          <view class="progress-bar">
+            <view class="progress-fill" style="width: {{stats.rates.sterilization}}%;"></view>
+          </view>
+          <view class="rate right">绝育率 {{stats.rates.sterilization}}%</view>
+        </view>
+
+        <!-- 现存猫猫绝育情况 -->
+        <view class="progress-container">
+          <view class="label">已绝育/现存猫猫</view>
+          <view class="progress-text">
+            <text class="value large">{{stats.basic.currentSterilized || 0}}</text>
+            <text class="progress-total">/{{stats.basic.current || 0}}</text>
+          </view>
+          <view class="progress-bar current-bg">
+            <view class="progress-fill current" style="width: {{stats.rates.currentSterilization}}%;"></view>
+          </view>
+          <view class="rate right">绝育率 {{stats.rates.currentSterilization}}%</view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 第二行右侧容器: 本月数据 + 最新事件 -->
+    <view class="bento-column-container">
+      <!-- 本月数据 -->
+      <view class="bento-card normal">
+        <view class="card-title">本月数据</view>
+        <view class="card-content">
+          <view class="month-stats">
+            <view class="month-item">
+              <view class="label">新增</view>
+              <view class="value medium">{{stats.month.newCats || 0}}</view>
+            </view>
+            <view class="month-item">
+              <view class="label">领养</view>
+              <view class="value medium">{{stats.month.adopted || 0}}</view>
+            </view>
+            <view class="month-item">
+              <view class="label">绝育</view>
+              <view class="value medium">{{stats.month.sterilized || 0}}</view>
+            </view>
+            <view class="month-item">
+              <view class="label">失踪</view>
+              <view class="value medium">{{stats.month.missing || 0}}</view>
+            </view>
+            <view class="month-item">
+              <view class="label">喵星</view>
+              <view class="value medium">{{stats.month.deceased || 0}}</view>
+            </view>
+          </view>
+        </view>
+      </view>
+
+      <!-- 最新事件卡片 -->
+      <view class="bento-card small">
+        <view class="card-title-container">
+          <view class="card-title">最新事件</view>
+          <view class="more-button" bindtap="showEventsPopup" wx:if="{{stats.events && stats.events.length > 1}}">更多</view>
+        </view>
+        <view class="card-content">
+          <!-- 只显示最新的一条事件 -->
+          <view class="latest-events-list-summary">
+            <block wx:if="{{stats.events && stats.events.length > 0}}">
+              <view class="event-item">
+                <view class="event-type {{stats.events[0].className}}">{{stats.events[0].type}}</view>
+                <view class="event-cat-name">{{stats.events[0].name}}</view>
+                <view class="event-date">{{stats.events[0].date}}</view>
+              </view>
+              
+            </block>
+            <view wx:else class="empty-events">暂无事件记录</view>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 第三行：领养情况 -->
+    <view class="bento-card normal">
+      <view class="card-title">领养情况</view>
+      <view class="card-content">
+        <view class="progress-container">
+          <view class="progress-text">
+            <text class="value large">{{stats.basic.adopted || 0}}</text>
+            <text class="progress-total">/{{stats.basic.total || 0}}</text>
+          </view>
+          <view class="progress-bar adoption-bg">
+            <view class="progress-fill adoption" style="width: {{stats.rates.adoption}}%;"></view>
+          </view>
+          <view class="rate right">领养率 {{stats.rates.adoption}}%</view>
+        </view>
+      </view>
+    </view>
+  
+    <!-- 第三行：性别比例 -->
+    <view class="bento-card normal">
+      <view class="card-title">性别比例</view>
+      <view class="card-content">
+        <view class="gender-stats">
+          <view class="gender-item">
+            <image class="gender-icon" src="/pages/public/images/card/card/male.png" mode="aspectFit"></image>
+            <view class="value medium">{{stats.gender.male.count || 0}}</view>
+            <view class="rate">{{stats.gender.male.rate}}%</view>
+          </view>
+          <view class="gender-item">
+            <image class="gender-icon" src="/pages/public/images/card/card/female.png" mode="aspectFit"></image>
+            <view class="value medium">{{stats.gender.female.count || 0}}</view>
+            <view class="rate">{{stats.gender.female.rate}}%</view>
+          </view>
+          <view class="gender-item" wx:if="{{stats.gender.unknown.count > 0}}" bindtap="showUnknownCatsPopup">
+            <view class="gender-icon unknown">?</view>
+            <view class="value medium">{{stats.gender.unknown.count || 0}}</view>
+            <view class="rate">{{stats.gender.unknown.rate}}%</view>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 校区分布 -->
+    <view class="bento-card large">
+      <view class="card-title">校区分布</view>
+      <view class="card-content campus-stats">
+        <block wx:for="{{stats.campus}}" wx:key="campus">
+          <view class="campus-item">
+            <view class="campus-name">{{item.campus}}</view>
+            <view class="value medium primary">{{item.count}}只</view>
+            <view class="rate">绝育率 {{item.sterilizationRate}}%</view>
+          </view>
+        </block>
+      </view>
+    </view>
+
+    <!-- 区域分布详情 -->
+    <view class="bento-card large">
+      <view class="card-title">区域分布详情</view>
+      <view class="card-content">
+        <!-- 校区选择器和排序按钮 -->
+        <view class="distribution-header">
+          <scroll-view class="campus-scroll" scroll-x="true" enable-flex="true" show-scrollbar="false">
+            <view class="campus-selector">
+            <view 
+              wx:for="{{stats.campus}}" 
+              wx:key="campus" 
+              class="campus-tab {{selectedCampus === index ? 'active' : ''}}"
+              bindtap="selectCampus"
+              data-index="{{index}}">
+              {{item.campus}}
+            </view>
+            </view>
+          </scroll-view>
+          <view class="sort-button" bindtap="showSortPicker">
+            <image class="sort-icon" src="/pages/public/images/button/sort.png" mode="aspectFit"></image>
+          </view>
+        </view>
+        
+        <view class="legend-container">
+          <!-- 性别说明 -->
+          <view class="legend">
+            <view class="legend-title">性别</view>
+            <view class="legend-content">
+              <view class="legend-level">
+                <view class="legend-level-bar gender-male"></view>
+                <text class="legend-level-text">公</text>
+              </view>
+              <view class="legend-level">
+                <view class="legend-level-bar gender-female"></view>
+                <text class="legend-level-text">母</text>
+              </view>
+              <view class="legend-level">
+                <view class="legend-level-bar gender-unknown"></view>
+                <text class="legend-level-text">未知</text>
+              </view>
+            </view>
+          </view>
+          
+          <!-- TNR指数说明 -->
+          <view class="legend">
+            <view class="legend-title">TNR指数</view>
+            <view class="legend-content">
+              <view class="legend-level">
+                <view class="legend-level-bar tnr-good"></view>
+                <text class="legend-level-text">良好（≥60）</text>
+              </view>
+              <view class="legend-level">
+                <view class="legend-level-bar tnr-medium"></view>
+                <text class="legend-level-text">一般（40-60）</text>
+              </view>
+              <view class="legend-level">
+                <view class="legend-level-bar tnr-poor"></view>
+                <text class="legend-level-text">需改进（＜40）</text>
+              </view>
+            </view>
+          </view>
+        </view>
+        
+        <!-- 区域分布列表 -->
+        <view class="area-distribution-list">
+          <view class="area-header">
+            <text class="area-name-header">区域</text>
+            <text class="area-count-header">猫猫数量</text>
+            <text class="area-sterilization-header">总绝育率</text>
+            <text class="area-tnr-header">TNR指数</text>
+          </view>
+          <block wx:if="{{stats.campus[selectedCampus].areas.length > 0}}">
+            <view 
+              wx:for="{{sortedAreas}}" 
+              wx:key="area" 
+              class="area-item {{item.animation ? 'animated' : ''}}"
+              style="{{item.style}}">
+              <text class="area-name">{{item.area}}</text>
+              <view class="area-bar-container">
+                <view class="area-bar" style="width: {{(item.count / maxAreaCount) * 100}}%;">
+                  <view class="area-bar-gender gender-male" style="width: {{(item.gender.male / item.count) * 100}}%;"></view>
+                  <view class="area-bar-gender gender-female" style="width: {{(item.gender.female / item.count) * 100}}%;"></view>
+                  <view class="area-bar-gender gender-unknown" style="width: {{(item.gender.unknown / item.count) * 100}}%;"></view>
+                </view>
+                <text class="area-count">{{item.count}}</text>
+              </view>
+              <text class="area-sterilization">{{item.tnrDetail.sterilization_rate}}%</text>
+              <view class="area-tnr" bindtap="showAreaDetails" data-area="{{index}}">
+                <view class="tnr-bar {{item.tnrIndex >= 60 ? 'tnr-good' : (item.tnrIndex >= 40 ? 'tnr-medium' : 'tnr-poor')}}" style="width: {{(item.tnrIndex / 2)}}%;"></view>
+                <text class="tnr-value">{{item.tnrIndex || 0}}</text>
+              </view>
+            </view>
+          </block>
+          <view wx:else class="no-data">暂无数据</view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 花色分布 -->
+    <view class="bento-card large">
+      <view class="card-title">花色分布</view>
+      <view class="card-content colour-stats">
+        <block wx:for="{{stats.colour}}" wx:key="colour">
+          <view class="colour-item">
+            <view class="colour-name">{{item.colour}}</view>
+            <view class="value small primary">{{item.count}}只</view>
+          </view>
+        </block>
+      </view>
+    </view>
+    
+  </view>
+
+  <!-- 未知性别猫猫弹窗 -->
+  <popup show="{{showUnknownCatsPopup}}" bind:close="closeUnknownCatsPopup" position="center">
+    <view class="popup-content">
+      <view class="modal-header">
+        <text>未知性别</text>
+        <view class="modal-close" bindtap="closeUnknownCatsPopup">×</view>
+      </view>
+      <view class="unknown-cats-popup-content">
+        <view class="unknown-cats-list-popup">
+          <view wx:for="{{stats.gender.unknown.cats}}" wx:key="*this" class="unknown-cat-name-popup">{{item}}</view>
+        </view>
+      </view>
+    </view>
+  </popup>
+
+  <!-- 最新事件完整列表弹窗 -->
+  <popup show="{{showEventsPopup}}" bind:close="closeEventsPopup" position="center">
+    <view class="popup-content">
+      <view class="modal-header">
+        <text>本月事件记录</text>
+        <view class="modal-close" bindtap="closeEventsPopup">×</view>
+      </view>
+       <view class="details-content">
+          <view wx:for="{{stats.events}}" wx:key="index" class="event-item">
+            <view class="event-type {{item.className}}">{{item.type}}</view>
+            <view class="event-cat-name">{{item.name}}</view>
+            <view class="event-date">{{item.date}}</view>
+          </view>
+          <view wx:if="{{!stats.events || stats.events.length === 0}}" class="empty-events">暂无事件记录</view>
+        </view>
+    </view>
+  </popup>
+  
+  <!-- 区域tnr详情弹窗 -->
+  <popup show="{{showAreaDetailsPopup}}" bind:close="closeAreaDetailsPopup" position="center">
+    <view class="popup-content">
+      <view class="modal-header">
+        <text>{{currentAreaDetails.area}}区域详情</text>
+        <view class="modal-close" bindtap="closeAreaDetailsPopup">×</view>
+      </view>
+      <view class="details-content">
+        <!-- TNR指数详情 -->
+        <view class="section-title large {{currentAreaDetails.tnrIndex >= 60 ? 'status-good' : (currentAreaDetails.tnrIndex >= 40 ? 'status-medium' : 'status-poor')}}">TNR指数: {{currentAreaDetails.tnrIndex}}</view>
+        
+        <view class="info-panel default">
+          <view class="section-title medium">计算公式</view>
+          <view class="section-content">
+            <view>基础分 = NS × 0.4</view>
+            <view>质量分 = [0.4(1-G)+0.3A+0.2s+0.1R] × 0.6</view>
+            <view>TNR指数 = 基础分 + 质量分</view>
+          </view>
+        </view>
+        
+        <view class="info-panel highlight">
+          <view class="param-item">
+            <text class="param-label">NS (净绝育):</text>
+            <text wx:if="{{currentAreaDetails.tnrDetail.adoption_rate == 100}}" class="param-value">-%</text>
+            <text wx:else class="param-value">{{currentAreaDetails.tnrDetail.net_sterilization_rate}}%</text>
+            <text class="param-desc">现存绝育/现存</text>
+          </view>
+          
+          <view class="param-item">
+            <text class="param-label">G (增长率):</text>
+            <text class="param-value">{{currentAreaDetails.tnrDetail.growth_rate}}%</text>
+            <text class="param-desc">本月净增长/上月存活</text>
+          </view>
+          
+          <view class="param-item">
+            <text class="param-label">A (领养率):</text>
+            <text class="param-value">{{currentAreaDetails.tnrDetail.adoption_rate}}%</text>
+            <text class="param-desc">已领养数/总猫数</text>
+          </view>
+          
+          <view class="param-item">
+            <text class="param-label">s (生存率):</text>
+            <text class="param-value">{{currentAreaDetails.tnrDetail.survival_rate}}%</text>
+            <text class="param-desc">1-去世数/未领养数</text>
+          </view>
+          
+          <view class="param-item">
+            <text class="param-label">R (在册率):</text>
+            <text class="param-value">{{currentAreaDetails.tnrDetail.registration_rate}}%</text>
+            <text class="param-desc">1-失踪数/存活数</text>
+          </view>
+        </view>
+        
+        <view class="info-panel default">
+          <view class="section-title medium">计算过程</view>
+          <view class="section-content">
+            <view wx:if="{{currentAreaDetails.tnrDetail.adoption_rate == 100}}">基础分 = {{currentAreaDetails.tnrDetail.base_score}}</view>
+            <view wx:else>基础分 = {{currentAreaDetails.tnrDetail.net_sterilization_rate}} × 0.4 = {{currentAreaDetails.tnrDetail.base_score}}</view>
+            <view>质量分 = (0.4×(1-{{currentAreaDetails.tnrDetail.growth_rate}}) + 0.3×{{currentAreaDetails.tnrDetail.adoption_rate}} + 0.2×{{currentAreaDetails.tnrDetail.survival_rate}} + 0.1×{{currentAreaDetails.tnrDetail.registration_rate}}) × 60 = {{currentAreaDetails.tnrDetail.quality_score}}</view>
+            <view>TNR指数 = {{currentAreaDetails.tnrDetail.base_score}} + {{currentAreaDetails.tnrDetail.quality_score}} = {{currentAreaDetails.tnrIndex}}</view>
+          </view>
+        </view>
+        
+        <view class="tnr-explanation">
+          <view class="section-title medium">指标说明</view>
+          <view class="section-content">
+            <view class="list-item">· TNR指数满分为100分，分为基础分(40分)和质量分(60分)</view>
+            <view class="list-item">· 基础分由净绝育率决定，若当区域猫动态清零时，基础分赋满</view>
+            <view class="list-item">· 质量分由四个指标加权计算：增长率(40%)、领养率(30%)、生存率(20%)、在册率(10%)</view>
+            <view class="list-item">· 已领养的猫咪即使后续死亡或失踪，也不会计入死亡率或失踪率</view>
+            <view class="list-item">· 现存为总数减去失踪、死亡、领养；存活数为总数减去死亡、领养</view>
+          </view>
+        </view>
+      </view>
+    </view>
+  </popup>
+  
+  <!-- 更新时间提示 -->
+  <view class="update-time" wx:if="{{lastUpdateTime}}">
+    <text>数据更新时间：{{lastUpdateTime}}</text>
+  </view>
+</view>

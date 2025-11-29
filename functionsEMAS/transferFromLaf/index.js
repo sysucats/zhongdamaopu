@@ -4,7 +4,6 @@ module.exports = async (ctx) => {
     return "v2.0";
   }
 
-  // 本地密码设置，不能为“*”，修改成任意的其他字符，与laf端的云函数密码对应
   const {
     result: app_secret
   } = await ctx.mpserverless.db.collection('app_secret').findOne();

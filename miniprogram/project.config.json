@@ -1,7 +1,7 @@
 {
-  "appid": "wx7a768c809634ade7",
+  "appid": "wxda17b675d1cf6f46",
   "compileType": "miniprogram",
-  "libVersion": "3.8.0",
+  "libVersion": "3.10.1",
   "packOptions": {
     "ignore": [],
     "include": []
@@ -18,11 +18,25 @@
       "ignore": [],
       "disablePlugins": [],
       "outputPath": ""
-    }
+    },
+    "compileWorklet": false,
+    "uglifyFileName": false,
+    "uploadWithSourceMap": true,
+    "packNpmManually": false,
+    "minifyWXSS": true,
+    "minifyWXML": true,
+    "localPlugins": false,
+    "disableUseStrict": false,
+    "useCompilerPlugins": false,
+    "condition": false,
+    "swc": false,
+    "disableSWC": true
   },
   "condition": {},
   "editorSetting": {
     "tabIndent": "insertSpaces",
     "tabSize": 2
-  }
+  },
+  "projectname": "miniprogram",
+  "simulatorPluginLibVersion": {}
 }

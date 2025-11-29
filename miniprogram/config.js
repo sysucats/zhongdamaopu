@@ -6,7 +6,7 @@
 
 module.exports = {
   // 版本号
-  app_version: "v1.16.2",
+  app_version: "v1.17.4",
   // 小程序appid
   app_id: "wx5bd705b2bc91c73b",
   // EMAS空间ID
@@ -18,6 +18,8 @@ module.exports = {
   use_private_tencent_cos: true,
   // 私有的腾讯云cos签名过期时间（秒）
   sign_expires_tencent_cos: 3600 * 2,
+  // 图片选择数量限制
+  chooseMediaCount: 20, 
 
   // 科普页图片
   science_imgs: [
@@ -146,7 +148,7 @@ module.exports = {
     // 开发团队页，pages/info/devTeam/devTeam
     dev_team: {
       share_tip: "开发团队",
-      team: "程序开发：渔政、蓝卷、XD、zJ、ArcherJo、yw、lauzeyu\n资料维护：Lo\n初期资料整理：hehe、玥琪、大米\n以及各校区猫群的小伙伴~\n非常欢迎新朋友加入设计开发哇~！",
+      team: "程序开发：渔政、蓝卷、XD、zJ、ArcherJo、yw、lauzeyu、xuannfx、LightHouse-1024\n资料维护：Lo\n初期资料整理：hehe、玥琪、大米\n以及各校区猫群的小伙伴~\n非常欢迎新朋友加入设计开发哇~！",
     },
     // 识猫页，pages/recognize/recognize
     recognize: {
