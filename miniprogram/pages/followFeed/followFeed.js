@@ -262,8 +262,7 @@ Page({
     const latestComments = latestCommentsResult.result;
 
     // 并行获取所有猫咪的头像
-    const avatarPromises = followCatsList.map(cat => getAvatar(cat._id, cat.photo_count_best));
-    const avatars = await Promise.all(avatarPromises);
+    const avatars = await getAvatar(followCatsList.map(cat => cat._id));
 
     // 将头像信息添加到猫咪对象中
     followCatsList.forEach((cat, index) => {

@@ -123,7 +123,8 @@ async function signCosUrl(inputUrl) {
     return url;
   }
 
-  if (!_needResign(url)) {
+  // _needResign 是异步，await
+  if (!(await _needResign(url))) {
     return url;
   }
 

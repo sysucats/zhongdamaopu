@@ -4,52 +4,61 @@
 .relation-section {
   box-sizing: border-box;
   width: 100%;
-  display: flex;
-  flex-direction: column;
-  position: relative;
   padding: 0 30rpx;
 }
 
 /* 关系列表 */
 .relation-list {
   width: 100%;
-  box-sizing: border-box;
-  margin-bottom: calc(110rpx + env(safe-area-inset-bottom));
+  padding-bottom: calc(110rpx + env(safe-area-inset-bottom));
 }
 
 .relation-item {
-  margin-bottom: 30rpx;
+  margin-bottom: 24rpx;
   width: 100%;
   background-color: white;
-  border-radius: 15rpx;
+  border-radius: 16rpx;
   overflow: hidden;
   box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.05);
   position: relative;
+  display: flex;
 }
 
 /* 序号 */
 .relation-index {
   position: absolute;
-  top: 10rpx;
-  left: 10rpx;
-  font-size: 20rpx;
-  color: var(--color-gray-dark);
-  padding: 4rpx 10rpx;
-  border-radius: 10rpx;
-  z-index: 2;
+  top: 0;
+  left: 0;
+  font-size: 18rpx;
+  color: #fff;
+  background-color: var(--color-gray-dark);
+  opacity: 0.6;
+  padding: 2rpx 12rpx;
+  border-bottom-right-radius: 12rpx;
+  z-index: 5;
 }
 
 .relation-content {
-  padding: 30rpx 100rpx 30rpx 60rpx;
+  flex: 1;
+  padding: 20rpx 20rpx 20rpx 30rpx;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  flex-wrap: nowrap;
 }
 
-/* 关系类型 */
+/* 关系定义组 */
+.relation-meta {
+  width: 130rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin: 0 20rpx;
+}
+
 .relation-type {
-  width: 50rpx;
+  width: 80rpx;
   font-size: 24rpx;
   font-weight: 500;
   color: var(--color-primary);
@@ -60,6 +69,47 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.relation-alias {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  max-width: 100%;
+}
+
+.relation-alias .iconfont {
+  font-size: 32rpx;
+}
+
+.alias-text {
+  font-size: 22rpx;
+  color: #333;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100rpx;
+}
+
+.alias-icon {
+  font-size: 20rpx;
+  color: var(--color-gray);
+  margin-left: 4rpx;
+}
+
+/* 如果备注为空 */
+.relation-alias.empty .alias-text {
+  color: var(--color-gray-dark);
+  font-style: italic;
+  font-size: 20rpx;
+}
+
+/* 竖向分割线 */
+.v-line {
+  width: 2rpx;
+  height: 60rpx;
+  background-color: var(--color-gray-normal);
+  margin-right: 20rpx;
   flex-shrink: 0;
 }
 
@@ -68,28 +118,31 @@
   flex: 1;
   display: flex;
   align-items: center;
-  padding: 0 20rpx;
-  min-width: 0; /* 确保flex子项可以正确收缩 */
+  min-width: 0;
 }
 
 .relation-cat-avatar {
-  width: 70rpx;
-  height: 70rpx;
+  width: 80rpx;
+  height: 80rpx;
   border-radius: 50%;
-  background-color: var(--color-gray-light);
+  background-color: var(--color-gray-normal);
   flex-shrink: 0;
 }
 
 .relation-cat-info {
-  margin-left: 15rpx;
+  margin-left: 20rpx;
   flex: 1;
-  min-width: 0; /* 确保flex子项可以正确收缩 */
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .relation-cat-name {
-  font-size: 24rpx;
-  color: var(--color-black-min);
-  font-weight: 500;
+  font-size: 28rpx;
+  color: #333;
+  font-weight: bold;
+  margin-bottom: 4rpx;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -98,58 +151,56 @@
 .relation-cat-location {
   font-size: 22rpx;
   color: var(--color-gray-dark);
+  align-self: flex-start;
+  max-width: 100%;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-/* 上下移 */
-.move-action {
-  position: absolute;
-  right: 0;
-  width: 80rpx;
-  height: 50%; /* 卡片的一半高度 */
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 24rpx;
-  background-color: var(--color-gray);
-  color: var(--color-text-onPrimary);
-}
-
-.move-action .iconfont {
-  font-size: 36rpx;
-}
-
-.move-action.up {
-  top: 0;
-  border-radius: 0 15rpx 0 0;
-}
-
-.move-action.down {
-  bottom: 0;
-  border-radius: 0 0 15rpx 0;
-}
-
-.move-action.disabled {
-  opacity: 0.5;
-  color: var(--color-gray-dark);
-}
-
-/* 删除 */
+/* 删除按钮 */
 .relation-delete-btn {
-  width: 60rpx;
-  font-size: 24rpx;
-  color: #FF3B30;
-  background-color: rgba(255, 59, 48, 0.1);
-  padding: 10rpx 0;
-  border-radius: 8rpx;
-  text-align: center;
-  flex-shrink: 0;
+  padding: 20rpx; /* 增大点击区域 */
+  color: var(--color-gray-dark);
+  transition: all 0.2s;
 }
 
-.button-hover {
-  opacity: 0.8;
+.relation-delete-btn .iconfont {
+  font-size: 32rpx;
+}
+
+.relation-delete-btn:active {
+  color: #FF3B30;
+  transform: scale(1.1);
+}
+
+/* 移动操作 */
+.move-action-bar {
+  width: 70rpx;
+  display: flex;
+  flex-direction: column;
+}
+
+.move-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+}
+
+.move-btn .iconfont {
+  font-size: 28rpx;
+}
+
+.move-btn.up, .move-btn.down {
+  background-color: var(--color-gray);
+  border-bottom: 1rpx solid #eee;
+}
+
+.move-btn.disabled {
+  color: var(--color-gray);
+  background-color: var(--color-gray-light);
 }
 
 .iconfont {
@@ -161,7 +212,7 @@
 .empty-tip {
   text-align: center;
   padding: 60rpx 0;
-  color: #999;
+  color: var(--color-gray-max);
   font-size: 28rpx;
   display: flex;
   flex-direction: column;
@@ -202,12 +253,37 @@
   flex-direction: column;
 }
 
+/* 顶部Header */
 .popup-header {
   padding: 30rpx 20rpx;
   text-align: center;
   font-size: 30rpx;
-  font-weight: 500;
+  font-weight: bold;
   border-bottom: 1rpx solid var(--color-gray-light);
+}
+
+.popup-header-with-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 30rpx 20rpx;
+  border-bottom: 1rpx solid var(--color-gray-light);
+}
+.popup-header-with-actions .title {
+  font-size: 30rpx;
+  font-weight: bold;
+  color: var(--color-black-min);
+}
+.popup-header-with-actions .btn-cancel {
+  font-size: 28rpx;
+  color: var(--color-gray-dark);
+  padding: 10rpx;
+}
+.popup-header-with-actions .btn-save {
+  font-size: 28rpx;
+  color: var(--color-primary);
+  font-weight: bold;
+  padding: 10rpx;
 }
 
 .search-input {
@@ -236,49 +312,72 @@
   box-shadow: 0 2rpx 5rpx rgba(0, 0, 0, 0.05);
 }
 
-.placeholder {
-  color: var(--color-gray-dark);
-}
 
 .search-results {
   flex: 1;
   max-height: 600rpx;
 }
 
-/* 关系类型列表 */
-.relation-type-item {
+/* 关系卡片 */
+.relation-grid {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  flex-wrap: wrap;
+  gap: 16rpx;
   padding: 20rpx;
-  border-bottom: 1rpx solid var(--color-gray-light);
 }
 
-.relation-type-name {
-  font-size: 28rpx;
-  color: var(--color-black-min);
-}
-
-.relation-type-actions {
+.relation-card {
+  background-color: #fff;
+  border-radius: 16rpx;
+  box-shadow: 0 2rpx 8rpx rgba(0,0,0,0.06);
+  overflow: hidden;
   display: flex;
-  gap: 10rpx;
+  flex-direction: column;
+  box-sizing: border-box;
+  min-width: 140rpx;
+  width: auto;
+  flex: 0 0 auto; /* 自适应卡片宽，多列自动换行 */
+  border: 2rpx solid transparent; /* 统一边框厚度，避免高亮时高度抖动 */
 }
 
-.type-action {
-  font-size: 24rpx;
-  padding: 6rpx 16rpx;
-  border-radius: 10rpx;
-  text-align: center;
+.relation-card.highlight {
+  animation: flash 600ms ease-in-out;
+  border-color: var(--color-primary);
 }
 
-.type-action.select {
-  background-color: var(--color-primary-light);
-  color: var(--color-primary-dark);
+.relaCard-header {
+  padding: 16rpx 20rpx;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
-.type-action.delete {
-  background-color: rgba(255, 59, 48, 0.1);
-  color: #FF3B30;
+
+.relaCard-left .relaCard-label {
+  font-size: 28rpx;
+  display: flex;
+  align-items: baseline;
+  flex-wrap: nowrap;
+}
+
+.relaCard-left .label-inverse {
+  font-size: 22rpx;
+  color: var(--color-gray-dark);
+  font-weight: 400;
+  margin-left: 6rpx;
+}
+
+.relaCard-right .iconfont {
+  font-size: 26rpx;
+  color: var(--color-gray-dark);
+  display: inline-block;
+  transform: rotate(90deg);
+}
+
+@keyframes flash {
+  0% { box-shadow: 0 0 0 rgba(0,0,0,0); }
+  50% { box-shadow: 0 0 12rpx rgba(244, 188, 66, 0.35); }
+  100% { box-shadow: 0 0 0 rgba(0,0,0,0); }
 }
 
 .search-empty {
@@ -288,6 +387,209 @@
   font-size: 26rpx;
 }
 
-.item-hover {
-  background-color: #f5f5f5;
+
+/* 滚动区域 */
+.popup-body {
+  flex: 1;
+  background: var(--color-gray-light);
+  box-sizing: border-box;
+  overflow-y: auto;
+  padding: 20rpx;
+}
+
+.popup-body .card {
+  background: #fff;
+  border-radius: 24rpx;
+  padding: 20rpx;
+  margin-bottom: 30rpx;
+  box-shadow: 0 2rpx 10rpx rgba(0,0,0,0.02);
+}
+.popup-body .card .card-label {
+  font-size: 24rpx;
+  font-weight: bold;
+  color: var(--color-gray-max);
+  text-transform: uppercase;
+  margin-bottom: 20rpx;
+}
+.card-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* 输入框组 */
+.input-group {
+  position: relative;
+  margin-bottom: 40rpx;
+}
+.icon-tag {
+  position: absolute;
+  left: 24rpx;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #A855F7;
+  font-size: 28rpx;
+}
+.main-input {
+  background: transparent;
+  height: auto;
+  border-radius: 0;
+  padding: 15rpx 24rpx 15rpx 60rpx;
+  font-size: 30rpx;
+  font-weight: bold;
+  color: var(--color-black-min);
+  border: none;
+  border-bottom: 1rpx solid var(--color-gray-light);
+  line-height: 1.5;
+  vertical-align: middle;
+}
+.ph-color { 
+  color: var(--color-gray-dark);
+}
+
+/* 分段控制器 */
+.segment-group {
+  margin-top: 20rpx;
+}
+.segment-label {
+  font-size: 24rpx;
+  color: var(--color-gray-dark);
+  margin-bottom: 16rpx;
+}
+.segment-control {
+  display: flex;
+  background: var(--color-gray-light);
+  padding: 8rpx;
+  border-radius: 16rpx;
+  position: relative;
+}
+
+.segment-slider {
+  position: absolute;
+  top: 8rpx;
+  left: 8rpx;
+  width: calc((100% - 16rpx) / 3);
+  height: calc(100% - 16rpx);
+  background: #fff;
+  border-radius: 12rpx;
+  box-shadow: 0 2rpx 4rpx rgba(0,0,0,0.05);
+  transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.segment-item {
+  flex: 1;
+  height: 64rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26rpx;
+  color: var(--color-gray-max);
+  border-radius: 12rpx;
+  transition: all 0.2s;
+  z-index: 1;
+}
+
+.segment-item.active {
+  color: #333;
+  font-weight: bold;
+}
+.gender-icon {
+  width: 32rpx;
+  height: 32rpx;
+}
+.segment-item .gender-icon {
+  margin-right: 8rpx;
+}
+
+/* 切换开关 */
+.toggle-wrapper {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20rpx;
+  padding: 6rpx 10rpx;
+  border-radius: 30rpx;
+}
+.toggle-text {
+  font-size: 22rpx;
+  color: var(--color-gray-dark);
+  margin: 0 10rpx;
+  transition: color 0.2s;
+}
+.toggle-text.active { color: var(--color-black-min); font-weight: bold; }
+.toggle-text.active-pri { color: var(--color-primary); font-weight: bold; }
+.toggle-bg {
+  width: 70rpx;
+  height: 40rpx;
+  background: var(--color-gray-light);
+  border-radius: 20rpx;
+  position: relative;
+  transition: background 0.3s;
+}
+.toggle-bg.active { background: var(--color-primary); }
+.toggle-dot {
+  width: 32rpx;
+  height: 32rpx;
+  background: #fff;
+  border-radius: 50%;
+  position: absolute;
+  top: 4rpx;
+  left: 4rpx;
+  transition: transform 0.3s;
+  box-shadow: 0 2rpx 4rpx rgba(0,0,0,0.1);
+}
+.toggle-bg.active .toggle-dot {
+  transform: translateX(30rpx);
+}
+
+/* 反向映射列表 */
+.relation-inputs {
+  display: flex;
+  flex-direction: column;
+  gap: 30rpx;
+}
+.row-input {
+  display: flex;
+  align-items: flex-start;
+}
+.icon-box {
+  width: 64rpx;
+  height: 64rpx;
+  border-radius: 16rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32rpx;
+  margin-right: 24rpx;
+  flex-shrink: 0;
+}
+.icon-box.blue { background: #EFF6FF; color: #3B82F6; }
+.icon-box.pink { background: #FDF2F8; color: #EC4899; }
+.icon-box.gray { background: #F3F4F6; color: #9CA3AF; }
+.icon-box.purple { background: #F3E8FF; color: #A855F7; }
+
+.input-right {
+  flex: 1;
+  padding-bottom: 10rpx;
+}
+.sub-label {
+  display: block;
+  font-size: 20rpx;
+  color: var(--color-gray-dark);
+  margin-bottom: 4rpx;
+}
+.line-input {
+  font-size: 28rpx;
+  color: var(--color-black-min);
+  font-weight: 500;
+  width: 100%;
+  background: transparent;
+  border: none;
+  border-bottom: 1rpx solid var(--color-gray-light);
+  padding: 10rpx 0;
+}
+.hint-text {
+  font-size: 22rpx;
+  color: var(--color-gray-dark);
+  /* margin-top: 20rpx; */
+  text-align: center;
 }

@@ -145,7 +145,7 @@ Page({
     console.log(cat);
 
     // 获取头像
-    cat.avatar = await getAvatar(cat._id, cat.photo_count_best);
+    cat.avatar = await getAvatar(cat._id);
     console.log(cat.avatar);
 
     // 获取总数

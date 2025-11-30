@@ -11,12 +11,13 @@
       <input class='input-field' placeholder='{{text_cfg.genealogy.search_tip}}' placeholder-class='placeholder' focus="{{focusSearch}}" value='{{filters_input}}' maxlength='20' confirm-type='search' bindinput='fSearchInput' bindconfirm='doSearchCat'></input>
     </view>
     <scroll-view class="search-results" scroll-y="1">
-      <view class="search-cat-item" hover-class="item-hover" wx:for="{{searchCats}}" wx:key="_id" bindtap="searchSelectCat" data-index="{{index}}">
+      <view class="search-cat-item {{item._disabled ? 'disabled' : ''}}" hover-class="item-hover" wx:for="{{searchCats}}" wx:key="_id" bindtap="searchSelectCat" data-index="{{index}}">
         <image mode="aspectFill" class="search-cat-avatar" src="{{item.avatar ? item.avatar.photo_compressed || item.avatar.photo_id : ''}}"></image>
         <view class="search-cat-info">
           <view class="search-cat-name">{{item.name}}</view>
           <view class="search-cat-location">{{item.campus}} {{item.area}}</view>
         </view>
+        <view wx:if="{{item._disabled}}" class="search-cat-tag">已添加</view>
       </view>
       <view wx:if="{{!searchCats.length}}" class="search-empty">请搜索后进行选择</view>
     </scroll-view>

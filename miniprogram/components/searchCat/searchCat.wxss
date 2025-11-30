@@ -58,6 +58,10 @@
   border-bottom: 1rpx solid var(--color-gray-light);
 }
 
+.search-cat-item.disabled {
+  opacity: 0.6;
+}
+
 .search-cat-avatar {
   width: 60rpx;
   height: 60rpx;
@@ -78,6 +82,14 @@
 .search-cat-location {
   font-size: 22rpx;
   color: var(--color-gray-dark);
+}
+
+.search-cat-tag {
+  padding: 6rpx 14rpx;
+  border-radius: 12rpx;
+  background-color: var(--color-gray-light);
+  color: var(--color-gray-dark);
+  font-size: 22rpx;
 }
 
 .item-hover {

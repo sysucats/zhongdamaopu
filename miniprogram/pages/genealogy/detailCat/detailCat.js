@@ -18,7 +18,8 @@ import {
 import {
   setVisitedDate,
   getAvatar,
-  getCatItem
+  getCatItem,
+  getCatItemMulti
 } from "../../../utils/cat";
 import {
   getGlobalSettings
@@ -235,7 +236,9 @@ Page({
     if (cat.habit) {
       cat.characteristics_string += cat.habit;
     }
-    cat.avatar = await getAvatar(cat._id, cat.photo_count_best);
+    
+    const avatar = await getAvatar(cat._id);
+    cat.avatar = avatar || { photo_compressed: "/pages/public/images/info/default_avatar.png" };
 
     if (cat.rating) {
       cat.rating.catRatings = convertRatingList(cat.rating.scores);
@@ -273,9 +276,16 @@ Page({
       return false;
     }
 
-    for (var relation of relations) {
-      relation.cat = await getCatItem(relation.cat_id)
-      relation.cat.avatar = await getAvatar(relation.cat_id, relation.cat.photo_count_best);
+    const ids = relations.map(r => r.cat_id);
+    const [cats, avatars] = await Promise.all([
+      getCatItemMulti(ids),
+      getAvatar(ids)
+    ]);
+    for (let i = 0; i < relations.length; i++) {
+      relations[i].cat = cats[i];
+      if (relations[i].cat) {
+        relations[i].cat.avatar = avatars[i];
+      }
     }
 
     console.log("[loadRelations] - ", relations);

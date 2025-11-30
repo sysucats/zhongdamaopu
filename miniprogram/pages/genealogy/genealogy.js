@@ -211,7 +211,7 @@ Page({
   },
 
   loadCatPhoto: async function (cat, index) {
-    const photo = await getAvatar(cat._id, cat.photo_count_best);
+    const photo = await getAvatar(cat._id, { bestOnly: true });
     if (!photo) return;
     
     if (!photo.userInfo) {
@@ -471,7 +471,7 @@ Page({
     
     await Promise.all(cats.map(async cat => {
       if (cat.photo === default_png) {
-        const photo = await getAvatar(cat._id, cat.photo_count_best);
+        const photo = await getAvatar(cat._id, { bestOnly: true });
         if (photo) {
           if (!photo.userInfo) {
             try {

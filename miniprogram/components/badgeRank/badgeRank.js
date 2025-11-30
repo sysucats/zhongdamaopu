@@ -129,7 +129,7 @@ Component({
     },
 
     async _getOneAvatar(id, photo_count_best) {
-      const avatar = await getAvatar(id, photo_count_best);
+      const avatar = await getAvatar(id);
       if (!avatar || (!avatar.photo_compressed && !avatar.photo_id)) {
         return;
       }
