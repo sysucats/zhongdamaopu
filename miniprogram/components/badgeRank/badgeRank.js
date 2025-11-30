@@ -128,23 +128,23 @@ Component({
       await this.loadAvatarMap(catInfo);
     },
 
-    async _getOneAvatar(id, photo_count_best) {
-      const avatar = await getAvatar(id);
-      if (!avatar || (!avatar.photo_compressed && !avatar.photo_id)) {
-        return;
-      }
-      this.setData({
-        [`avatarMap.${id}`]: avatar.photo_compressed || avatar.photo_id,
-      });
-    },
-
     async loadAvatarMap(catInfo) {
-      let all_querys = [];
-      for (const ci of catInfo) {
-        all_querys.push(this._getOneAvatar(ci._id, ci.photo_count_best));
+      const ids = catInfo.map(ci => ci._id);
+      if (ids.length === 0) return;
+
+      // 批量获取头像，组装一次性 setData 的数据，减少多次 setData 调用
+      const avatars = await getAvatar(ids);
+      const dataPatch = {};
+      ids.forEach((id, idx) => {
+        const avatar = avatars[idx];
+        if (avatar && (avatar.photo_compressed || avatar.photo_id)) {
+          dataPatch[`avatarMap.${id}`] = avatar.photo_compressed || avatar.photo_id;
+        }
+      });
+
+      if (Object.keys(dataPatch).length > 0) {
+        this.setData(dataPatch);
       }
-      await Promise.all(all_querys);
-      return;
     },
 
     async _getRankInfo(key, badgeDefMap) {
