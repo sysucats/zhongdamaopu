@@ -4,10 +4,6 @@ const app = getApp();
 
 // 添加全局缓存
 const globalRelationsCache = {};
-const globalRelationRulesCache = {
-  rules: null,
-  ts: 0
-};
 
 Component({
   properties: {
@@ -27,19 +23,20 @@ Component({
     relation_types: [], // UI 展示用的候选名字
     relation_rules: [], // 规则原始结构
     relation_cards: [], // 关系卡片（对向关系预览）
-    existingRelationIds: [],
+    // 迁移相关
+    legacy_relation_types: [],
+    isMigrationMode: false, // 是否为迁移模式
+
+    // UI状态
     showSearchCat: false,
     showSearchType: false,
-    focusSearchCat: false,
-    focusSearchType: false,
-    relation_name: '',
+    
     selectRelationTypeIdx: undefined,
     editingRelationIndex: undefined, // 当前正在编辑的关系索引
     editingRuleName: null,
     editingOldTargetId: null,
     selectedCatForRelation: null,
     selectedRelationType: null,
-    searchKeyword: '',
     isAddingNewRelation: false,
     relationTitle: '', // 弹窗标题文案
     // 编辑关系别名
@@ -78,6 +75,29 @@ Component({
   },
 
   methods: {
+    // 通用关系操作封装：执行新增/删除并统一处理缓存与刷新
+    async applyRelationOp(op, sourceId, targetId, relationName, successTitle, failTitle) {
+      try {
+        const params = { op, source_id: sourceId, target_id: targetId };
+        if (relationName) params.relation_name = relationName;
+        const result = await api.catRelationOp(params);
+        if (result && result.result) {
+          // 清除双方缓存，确保再次打开两只猫均为最新
+          if (globalRelationsCache && sourceId) delete globalRelationsCache[sourceId];
+          if (globalRelationsCache && targetId) delete globalRelationsCache[targetId];
+          await this.loadRelations();
+          wx.showToast({ title: successTitle });
+          return true;
+        } else {
+          wx.showToast({ title: result?.msg || failTitle, icon: 'none' });
+          return false;
+        }
+      } catch (err) {
+        console.error(`${op}关系失败:`, err);
+        wx.showToast({ title: failTitle, icon: 'none' });
+        return false;
+      }
+    },
     // 统一展示关系类型弹窗
     showRelationTypeModal(targetCat, context) {
       const rules = this.data.relation_rules || [];
@@ -114,7 +134,6 @@ Component({
         activeTypeName,
         showSearchType: true,
         showSearchCat: false,
-        focusSearchType: true,
         // 进入时清空输入与高亮
         typeInputValue: '',
         scrollIntoView: '',
@@ -220,33 +239,39 @@ Component({
         }
       });
     },
-    // 加载 setting.relation 的 rules，并缓存
+    // 加载 setting.relation 的 rules/types，并缓存与计算迁移状态
     async loadRelationRules() {
       try {
-        // 先读本地缓存
-        const cache = wx.getStorageSync('RELATION_RULES');
-        if (cache && Array.isArray(cache.rules)) {
-          globalRelationRulesCache.rules = cache.rules;
-          globalRelationRulesCache.ts = Date.now();
-          this.setData({ relation_rules: cache.rules });
-          return;
-        }
+        // 本地缓存（rules/types）
+        const cacheRules = wx.getStorageSync('RELATION_RULES');
+        const cacheTypes = wx.getStorageSync('RELATION_TYPES');
+        let rules = (cacheRules && Array.isArray(cacheRules.rules)) ? cacheRules.rules : [];
+        let legacyTypes = (cacheTypes && Array.isArray(cacheTypes.types)) ? cacheTypes.types : [];
 
-        // 仅读取新模式下的 rules，不做旧数据兼容与默认初始化
+        // 读 rules 与 types
         const { result } = await app.mpServerless.db.collection('setting').find({ _id: 'relation' });
-        let rules = [];
         if (result && result.length > 0) {
           const doc = result[0];
           if (Array.isArray(doc.rules)) {
             rules = doc.rules;
           }
+          if (Array.isArray(doc.types)) {
+            legacyTypes = doc.types;
+          }
         }
 
         // 写入缓存与状态（允许为空，用户可从零新建）
         wx.setStorageSync('RELATION_RULES', { rules });
-        globalRelationRulesCache.rules = rules;
-        globalRelationRulesCache.ts = Date.now();
-        this.setData({ relation_rules: rules });
+        wx.setStorageSync('RELATION_TYPES', { types: legacyTypes });
+
+        // 计算待迁移类型：types 去掉已在 rules 中的 name
+        const ruleNames = (rules || []).map(r => r.name);
+        const pendingLegacy = (legacyTypes || []).filter(name => !ruleNames.includes(name));
+
+        this.setData({
+          relation_rules: rules,
+          legacy_relation_types: pendingLegacy
+        });
       } catch (error) {
         console.error('加载关系规则失败:', error);
         wx.showToast({ title: '加载关系规则失败', icon: 'none' });
@@ -339,6 +364,15 @@ Component({
                 if (globalRelationsCache && cat && cat._id) {
                   delete globalRelationsCache[cat._id];
                 }
+                // 同步清理目标猫缓存，避免另一只猫展示旧关系
+                if (globalRelationsCache) {
+                  if (newTargetId) {
+                    delete globalRelationsCache[newTargetId];
+                  }
+                  if (oldTargetId && String(oldTargetId) !== String(newTargetId)) {
+                    delete globalRelationsCache[oldTargetId];
+                  }
+                }
                 await this.loadRelations('编辑中...');
                 wx.showToast({ title: '编辑成功' });
               } else {
@@ -373,7 +407,7 @@ Component({
       // 判断是新增还是修改
       if (this.data.isAddingNewRelation) {
         // 新增关系模式：选择猫后生成可选关系
-        this.setData({ selectedCatForRelation: selectedCat, searchKeyword: '' });
+        this.setData({ selectedCatForRelation: selectedCat });
         this.showRelationTypeModal(selectedCat, 'add');
       } else {
         // 编辑现有，替换关系里的猫，同时更新候选关系
@@ -460,7 +494,6 @@ Component({
     addRelation() {
       this.setData({
         showSearchCat: true,
-        focusSearchCat: true,
         selectRelationCatIdx: null,
         selectRelationTypeIdx: null,
         // 设置为新增模式
@@ -617,27 +650,7 @@ Component({
       if (res.confirm) {
         // 调用catRelationOp进行双向删除
         const cat = this.data.cat;
-        try {
-          const result = await api.catRelationOp({
-            op: 'remove',
-            source_id: cat._id,
-            target_id: relation.cat_id
-          });
-          if (result && result.result) {
-            // 刷新数据
-            // 清除缓存避免读取旧数据
-            if (globalRelationsCache && cat && cat._id) {
-              delete globalRelationsCache[cat._id];
-            }
-            await this.loadRelations();
-            wx.showToast({ title: '删除成功' });
-          } else {
-            wx.showToast({ title: result?.msg || '删除失败', icon: 'none' });
-          }
-        } catch (err) {
-          console.error('删除关系失败:', err);
-          wx.showToast({ title: '删除失败', icon: 'none' });
-        }
+        await this.applyRelationOp('remove', cat._id, relation.cat_id, null, '删除成功', '删除失败');
       }
     },
 
@@ -665,28 +678,7 @@ Component({
       }
       // 后端事务新增关系
       (async () => {
-        try {
-          const result = await api.catRelationOp({
-            op: 'add',
-            source_id: cat._id,
-            target_id: relatedCat._id,
-            relation_name: relationType
-          });
-          if (result && result.result) {
-            // 刷新最新数据
-            // 清除缓存避免读取旧数据
-            if (globalRelationsCache && cat && cat._id) {
-              delete globalRelationsCache[cat._id];
-            }
-            await this.loadRelations();
-            wx.showToast({ title: '添加成功' });
-          } else {
-            wx.showToast({ title: result?.msg || '添加失败', icon: 'none' });
-          }
-        } catch (err) {
-          console.error('添加关系失败:', err);
-          wx.showToast({ title: '添加失败', icon: 'none' });
-        }
+        await this.applyRelationOp('add', cat._id, relatedCat._id, relationType, '添加成功', '添加失败');
       })();
 
       // 重置选择状态
@@ -701,7 +693,7 @@ Component({
     openCreateType() {
       this.setData({
         showCreateType: true,
-        editingRuleName: null,
+        isMigrationMode: false, // 是否为迁移模式
         createTypeForm: {
           name: '',
           strategy: 'mirror',
@@ -714,8 +706,9 @@ Component({
         activeGenderIndex: 2
       });
     },
+
     closeCreateType() {
-      this.setData({ showCreateType: false, editingRuleName: null });
+      this.setData({ showCreateType: false, editingRuleName: null, isMigrationMode: false });
     },
     setCreateTypeField(e) {
       const field = e.currentTarget.dataset.field;
@@ -783,28 +776,48 @@ Component({
         const op = this.data.editingRuleName ? 'update' : 'create';
         const oldName = this.data.editingRuleName || undefined;
 
-        const res = await api.manageRelationRules({
+        const params = {
           op,
           rule: newRule,
           oldName
-        });
+        };
+
+        // 如果是迁移，则添加标记
+        if (op === 'create' && (this.data.legacy_relation_types || []).includes(name)) {
+          params.isMigration = true;
+        }
+
+        const res = await api.manageRelationRules(params);
 
         if (!res.result) {
           throw new Error(res.msg || '操作失败');
         }
 
-        const rules = res.data.rules;
+        const { rules, types } = res.data;
 
-        // 更新本地缓存与状态
+        // 更新本地缓存
         wx.setStorageSync('RELATION_RULES', { rules });
-        this.setData({ relation_rules: rules, showCreateType: false, editingRuleName: null });
+        if (types) {
+          wx.setStorageSync('RELATION_TYPES', { types });
+        }
+
+        // 重新计算待迁移类型：types 去掉已在 rules 中的 name
+        const ruleNames = (rules || []).map(r => r.name);
+        const pendingLegacy = (types || this.data.legacy_relation_types || []).filter(name => !ruleNames.includes(name));
+
+        this.setData({
+          relation_rules: rules,
+          legacy_relation_types: pendingLegacy,
+          showCreateType: false,
+          editingRuleName: null
+        });
 
         // 刷新可选关系
         this.refreshAvailableRelations(rules);
 
         wx.showToast({ title: op === 'create' ? '新建成功' : '更新成功' });
       } catch (error) {
-        console.error('保存关系类型失败:', error);
+        console.error('保存失败:', error);
         wx.showToast({ title: error.message || '操作失败', icon: 'none' });
       }
     },
@@ -831,7 +844,7 @@ Component({
         inverse_any: rule.inverse_any || ''
       };
       const idx = form.target_gender === '公' ? 0 : (form.target_gender === '母' ? 1 : 2);
-      this.setData({ showCreateType: true, editingRuleName: rule.name, createTypeForm: form, activeGenderIndex: idx });
+      this.setData({ showCreateType: true, isMigrationMode: false, editingRuleName: rule.name, createTypeForm: form, activeGenderIndex: idx });
     },
 
     // 删除关系类型
@@ -901,6 +914,36 @@ Component({
       }));
 
       this.setData({ relation_types: names, relation_cards: cards });
+    },
+
+    // 迁移相关代码
+    openMigrationModal() {
+      if (!this.data.legacy_relation_types.length) return;
+      const typeName = this.data.legacy_relation_types[0];
+      this.setData({
+        showCreateType: true,
+        isMigrationMode: true,
+        editingRuleName: null,
+        createTypeForm: {
+          name: typeName,
+          strategy: 'mirror',
+          inverse: typeName,
+          target_gender: 'any',
+          inverse_male: '',
+          inverse_female: '',
+          inverse_any: ''
+        },
+        activeGenderIndex: 2
+      });
+    },
+
+    selectPendingType(e) {
+      const name = e.currentTarget.dataset.name;
+      if (!name) return;
+      const isMirror = this.data.createTypeForm.strategy === 'mirror';
+      const updates = { 'createTypeForm.name': name };
+      if (isMirror) updates['createTypeForm.inverse'] = name;
+      this.setData(updates);
     }
   }
-})
+});

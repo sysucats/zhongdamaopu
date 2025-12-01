@@ -76,6 +76,20 @@
     </view>
     <scroll-view class="search-results" scroll-y="1" scroll-into-view="{{scrollIntoView}}">
       <view class="relation-grid">
+        <!-- 若存在未迁移类型 -->
+        <view class="relation-card highlight" wx:if="{{legacy_relation_types.length > 0}}" bindtap="openMigrationModal">
+          <view class="relaCard-header">
+            <view class="relaCard-left">
+              <view class="relaCard-label">
+                <text class="label-main">{{legacy_relation_types.length}}个关系类型待完善</text>
+                <text class="label-inverse" wx:if="{{legacy_relation_types.length}}">从“{{legacy_relation_types[0]}}”开始</text>
+              </view>
+            </view>
+            <view class="relaCard-right">
+              <text class="iconfont icon-ellipsis"></text>
+            </view>
+          </view>
+        </view>
         <view id="type-{{index}}" class="relation-card {{(highlightTypeName==item.name || activeTypeName==item.name)? 'highlight': ''}}" wx:for="{{relation_cards}}" wx:key="name">
           <view class="relaCard-header">
             <view class="relaCard-left" bindtap='selectRelationType' data-index='{{index}}'>
@@ -108,6 +122,15 @@
 
       <!-- 滚动内容 -->
       <scroll-view scroll-y class="popup-body">
+        
+        <!-- 待完善类型列表 -->
+        <view class="card" wx:if="{{isMigrationMode && legacy_relation_types.length}}">
+          <view class="card-label">待完善类型</view>
+          <view class="chip-list">
+            <view class="chip {{createTypeForm.name == item ? 'active' : ''}}" wx:for="{{legacy_relation_types}}" wx:key="item" bindtap="selectPendingType" data-name="{{item}}">{{item}}</view>
+          </view>
+          <view class="hint-text">点击某个类型可快速切换编辑对象。</view>
+        </view>
         
         <!-- 基础信息 -->
         <view class="card">

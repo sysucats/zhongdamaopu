@@ -5,7 +5,7 @@ module.exports = async (ctx) => {
   }
 
   const db = ctx.mpserverless.db;
-  const { openid, op, rule, oldName } = ctx.args; // op: 'create' | 'update' | 'delete'
+  const { openid, op, rule, oldName, isMigration } = ctx.args; // op: 'create' | 'update' | 'delete'
 
   if (!openid) {
     return { result: false, msg: 'Missing openid' };
@@ -27,7 +27,8 @@ module.exports = async (ctx) => {
   // 处理关系规则
   try {
     const { result: setting } = await db.collection('setting').findOne({ _id: 'relation' });
-    const rules = (setting && Array.isArray(setting.rules)) ? setting.rules : [];
+    let rules = (setting && Array.isArray(setting.rules)) ? setting.rules : [];
+    let types = (setting && Array.isArray(setting.types)) ? setting.types : [];
 
     if (op === 'create') {
       if (!rule || !rule.name) {
@@ -139,10 +140,36 @@ module.exports = async (ctx) => {
       }
     }
 
-    // 写入数据库
-    await db.collection('setting').updateOne({ _id: 'relation' }, { $set: { rules: rules } }, { upsert: true });
+    // 迁移清理 types，将所有已被规则覆盖的名称移除
+    // 覆盖所有规则名 + mirror 的 inverse + mapped 的 inverse_male/inverse_female/inverse_any
+    if (isMigration) {
+      const covered = new Set();
+      for (const r of rules) {
+        const nm = (r.name || '').trim();
+        if (nm) covered.add(nm);
+        if (r.strategy === 'mirror') {
+          const inv = (r.inverse || '').trim();
+          if (inv) covered.add(inv);
+        } else if (r.strategy === 'mapped') {
+          const im = (r.inverse_male || '').trim();
+          const ife = (r.inverse_female || '').trim();
+          const ia = (r.inverse_any || '').trim();
+          if (im) covered.add(im);
+          if (ife) covered.add(ife);
+          if (ia) covered.add(ia);
+        }
+      }
+      types = (types || []).filter(t => !covered.has((t || '').trim()));
+    }
 
-    return { result: true, msg: `${op} 操作成功`, data: { rules } };
+    // 写入数据库
+    const updateData = { rules };
+    if (isMigration) {
+      updateData.types = types;
+    }
+    await db.collection('setting').updateOne({ _id: 'relation' }, { $set: updateData }, { upsert: true });
+
+    return { result: true, msg: `${op} 操作成功`, data: { rules, types } };
 
   } catch (error) {
     console.error('编辑关系失败：', error);
