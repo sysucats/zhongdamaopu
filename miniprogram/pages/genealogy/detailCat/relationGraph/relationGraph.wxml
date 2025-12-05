@@ -1,0 +1,72 @@
+<view class="viewport" bindtouchstart="onDragStart" catchtouchmove="onDragMove" bindtouchend="onDragEnd">
+  <!-- 固定背景，不随画布拖动 -->
+  <image class="bg-fixed" src="/pages/packageA/pages/images/recognize/background.svg" mode="aspectFill"></image>
+  <!-- 孤单提示 -->
+  <view class="lonely-tip" wx:if="{{isLonely}}">暂时只有孤单的Ta，正在等待朋友的到来……</view>
+  <!-- 画布层，平移 transition控制惯性 -->
+  <view class="board {{hasExpanded ? 'has-expanded' : ''}} {{hasFocusedChild ? 'has-focused-child' : ''}}" style="transform: translate({{boardX}}px, {{boardY}}px); transition: {{isDragging ? 'none' : 'transform 0.5s cubic-bezier(0.19, 1, 0.22, 1)'}}">
+
+    <!-- 连线层 (底层) -->
+    <block wx:for="{{lines}}" wx:key="id">
+      <!-- 动态样式，虚线/实线，激活状态 -->
+      <view class="line {{item.level === 1 ? 'level-1' : ''}} {{item.level === 2 ? 'level-2' : ''}} {{item.isDashed ? 'dashed' : ''}} {{item.classes}}" 
+            style="width:{{item.len}}px; left:{{item.x}}px; top:{{item.y}}px; transform:rotate({{item.angle}}deg)">
+        <!-- 反向旋转抵消线条角度，保证永远水平 -->
+        <view class="label-box" wx:if="{{item.text}}" 
+              style="transform: translate(-50%, -50%) rotate({{-item.angle}}deg)">
+          <view class="label">{{item.text}}</view>
+        </view>
+      </view>
+    </block>
+
+    <!-- 节点 -->
+    <block wx:for="{{nodes}}" wx:key="key">
+      <view class="node {{item.classes}}" 
+            style="left:{{item.x}}px; top:{{item.y}}px; --size:{{item.sizePx}}px; --gap:{{gapRpx}}rpx;"
+            catchtap="onNodeTap" 
+            data-item="{{item}}">
+        <!-- 呼吸光环 -->
+        <view wx:if="{{isLonely && item.isCenter}}" class="halo">
+          <view class="halo-ring ring1"></view>
+          <view class="halo-ring ring2"></view>
+          <view class="halo-ring ring3"></view>
+        </view>
+        <!-- 头像，使用 CSS 变量 --size 控制大小 -->
+        <view class="avatar-box">
+          <!-- 更多 -->
+          <view wx:if="{{item.isMore}}" class="more-icon"><text class="iconfont icon-ellipsis"></text></view>
+          <!-- 普通头像 -->
+          <block wx:else>
+            <image class="avatar {{item.gender}}" src="{{item.avatar}}" mode="aspectFill"></image>
+            <!-- 角标:显示子节点数 -->
+            <view wx:if="{{item.subCount > 0}}" class="badge">{{item.subCount}}</view>
+          </block>
+        </view>
+        <!-- 名字零点定位，基于 --size 变量计算偏移 -->
+        <view class="name">{{item.name}}</view>
+      </view>
+    </block>
+
+  </view>
+
+  <!-- 重置 -->
+  <view class="fab-reset" bindtap="onResetTap">重置</view>
+</view>
+
+<!-- 底部弹窗 -->
+<popup show="{{showMoreRelation}}" position="bottom" bind:close="closeMoreRelation">
+  <view class="popup-container">
+    <view class="popup-header">更多关系</view>
+    <scroll-view scroll-y class="popup-body">
+      <view class="sheet-grid">
+        <view wx:for="{{currentOverflowList}}" wx:key="key" class="sheet-card" bindtap="onOverflowCardTap" data-id="{{item.id}}">
+          <image class="sheet-card-avatar" src="{{item.avatar}}" mode="aspectFill"></image>
+          <view class="sheet-card-info">
+            <text class="sheet-card-name">{{item.name}}</text>
+            <view class="relation-tag">{{item.relation}}</view>
+          </view>
+        </view>
+      </view>
+    </scroll-view>
+  </view>
+</popup>

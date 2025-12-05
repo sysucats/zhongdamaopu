@@ -396,6 +396,18 @@ Page({
     });
   },
 
+  // 查看关系图谱
+  toRelationGraph() {
+    const cat_id = this.data.cat && this.data.cat._id;
+    if (!cat_id) {
+      wx.showToast({ title: '猫猫信息未加载', icon: 'none' });
+      return;
+    }
+    wx.navigateTo({
+      url: '/pages/genealogy/detailCat/relationGraph/relationGraph?cat_id=' + cat_id,
+    });
+  },
+
   bindRating() {
     wx.navigateTo({
       url: '/pages/genealogy/detailCat/ratingDetail/ratingDetail?cat_id=' + this.data.cat._id,

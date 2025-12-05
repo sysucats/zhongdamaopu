@@ -1,0 +1,6 @@
+{
+  "usingComponents": {
+    "popup": "/components/popup/popup"
+  },
+  "navigationBarTitleText": "关系图谱"
+}

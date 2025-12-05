@@ -198,7 +198,7 @@
             <view class="iconfont icon-relation"></view>
             猫际关系
           </view>
-          <!-- <view class="badge-all" bindtap="toRelationGraph">查看图谱</view> -->
+          <view class="badge-all" bindtap="toRelationGraph">查看图谱</view>
         </view>
         
         <scroll-view scroll-x="1" class="relations">
