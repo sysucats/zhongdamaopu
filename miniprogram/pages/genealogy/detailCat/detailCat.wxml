@@ -178,7 +178,7 @@
 
         <scroll-view class="badge-list" scroll-x="1">
           <view class="badge-item badge-level-{{item.level}}" wx:for="{{catBadges}}" wx:key="_id" hover-class="tap" bindtap="showBadgeModal" data-index="{{index}}">
-            <image class="badge-item-avatar" src="{{item.img}}" mode="aspectFill" />
+            <image class="badge-item-avatar" src="{{item.img}}" mode="aspectFill"/>
             <view class="badge-item-count">x{{item.count}}</view>
             <view class="badge-item-name">{{item.name}}</view>
           </view>
@@ -198,12 +198,13 @@
             <view class="iconfont icon-relation"></view>
             猫际关系
           </view>
+          <view class="badge-all" bindtap="toRelationGraph">查看图谱</view>
         </view>
         
         <scroll-view scroll-x="1" class="relations">
           <view class="relation-block" wx:for="{{cat.relations}}" wx:key="_id" bindtap="toRelationCat" data-cat_id="{{item.cat._id}}" hover-class="tap">
             <image class="relation-cat-avatar" src='{{item.cat.avatar.photo_compressed || item.cat.avatar.photo_id}}' mode="aspectFill"></image>
-            <view class="relation-name">{{item.type}}</view>
+            <view class="relation-name">{{item.alias || item.type}}</view>
             <view class="relation-cat-name">{{item.cat.name}}</view>
           </view>
           <view class="relation-block add" hover-class="tap" wx:if="{{is_manager}}" bindtap="toAddRelation">

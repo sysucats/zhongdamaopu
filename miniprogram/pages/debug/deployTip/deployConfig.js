@@ -192,7 +192,8 @@ module.exports = {
     "updateFollowCats": "v2.0",
     "userOp": "v2.0",
     "vaccineOp": "v2.0",
-
+    "catRelationOp": "v1.1",
+    "manageRelationRules": "v1.0",
   },
   collections: {
     // "app_secret": default_init_data,

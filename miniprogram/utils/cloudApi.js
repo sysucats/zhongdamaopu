@@ -189,6 +189,22 @@ async function vaccineOp(options) {
   })).result
 }
 
+async function catRelationOp(options) {
+  const openid = await getCurrentUserOpenid();
+  return (await app.mpServerless.function.invoke('catRelationOp', {
+    ...options,
+    openid: openid
+  })).result;
+}
+
+async function manageRelationRules(options) {
+  const openid = await getCurrentUserOpenid();
+  return (await app.mpServerless.function.invoke('manageRelationRules', {
+    ...options,
+    openid: openid
+  })).result;
+}
+
 module.exports = {
   curdOp,
   userOp,
@@ -207,5 +223,7 @@ module.exports = {
   updateCatRating,
   getCatStats,
   updateFollowCats,
-  vaccineOp
+  vaccineOp,
+  catRelationOp,
+  manageRelationRules
 };

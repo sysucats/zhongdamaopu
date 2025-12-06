@@ -134,7 +134,7 @@ Page({
       // 加载头像
       const cats = [];
       for (const cat of result) {
-        cat.avatar = await getAvatar(cat._id, cat.photo_count_best);
+        cat.avatar = await getAvatar(cat._id);
         cats.push(cat);
       }
 
@@ -190,7 +190,7 @@ Page({
 
       // 获取猫咪基本信息和头像
       const cat = await getCatItem(catId);
-      cat.avatar = await getAvatar(cat._id, cat.photo_count_best);
+      cat.avatar = await getAvatar(cat._id);
 
       console.log('获取到猫咪信息:', cat);
 

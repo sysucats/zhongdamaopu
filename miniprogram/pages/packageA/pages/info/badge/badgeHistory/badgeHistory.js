@@ -99,23 +99,22 @@ Page({
   },
 
     async loadAvatarMap(catInfo) {
-      let all_querys = [];
-      for (const ci of catInfo) {
-        all_querys.push(this._getOneAvatar(ci._id, ci.photo_count_best));
-      }
-      await Promise.all(all_querys);
-      return;
-    },
+      const ids = catInfo.map(ci => ci._id);
+      if (ids.length === 0) return;
 
-
-    async _getOneAvatar(id, photo_count_best) {
-      const avatar = await getAvatar(id, photo_count_best);
-      if (!avatar || (!avatar.photo_compressed && !avatar.photo_id)) {
-        return;
-      }
-      this.setData({
-        [`avatarMap.${id}`]: avatar.photo_compressed || avatar.photo_id,
+      // 批量获取头像，组装一次性 setData 的数据，减少多次 setData 调用
+      const avatars = await getAvatar(ids);
+      const dataPatch = {};
+      ids.forEach((id, idx) => {
+        const avatar = avatars[idx];
+        if (avatar && (avatar.photo_compressed || avatar.photo_id)) {
+          dataPatch[`avatarMap.${id}`] = avatar.photo_compressed || avatar.photo_id;
+        }
       });
+
+      if (Object.keys(dataPatch).length > 0) {
+        this.setData(dataPatch);
+      }
     },
   /**
    * 页面上拉触底事件的处理函数

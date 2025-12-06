@@ -721,7 +721,9 @@ Component({
     // 显示已接种疫苗的猫咪列表
     async showVaccinatedCats() {
       try {
-        this.setData({ isLoading: true });
+        // 先打开弹窗，再异步获取数据
+        this.setData({ showVaccinatedCatsModal: true, isLoading: true, vaccinatedCats: [] });
+        wx.showToast({ title: '加载中', icon: 'loading', mask: true, duration: 10000 });
 
         // 确保已加载疫苗类型
         await this.ensureVaccineTypes();
@@ -733,16 +735,15 @@ Component({
         });
 
         if (result?.result === true && Array.isArray(result.data)) {
-          // 处理猫咪头像
-          const catsWithAvatars = await Promise.all(result.data.map(async (cat) => {
-            // 直接使用猫咪自带的照片数量
-            cat.avatar = await getAvatar(cat._id, cat.photo_count_best);
-            return cat;
+          // 先展示基础列表，再异步填充头像
+          this.setData({ vaccinatedCats: result.data });
+          const ids = result.data.map(cat => cat._id);
+          const avatars = await getAvatar(ids);
+          const catsWithAvatars = result.data.map((cat, i) => ({
+            ...cat,
+            avatar: avatars[i]
           }));
-          this.setData({
-            vaccinatedCats: catsWithAvatars,
-            showVaccinatedCatsModal: true
-          });
+          this.setData({ vaccinatedCats: catsWithAvatars });
         } else {
           console.error('获取已接种猫咪列表失败', result);
           wx.showToast({
@@ -758,6 +759,7 @@ Component({
         });
       } finally {
         this.setData({ isLoading: false });
+        wx.hideToast();
       }
     },
     // 关闭已接种猫咪列表弹窗

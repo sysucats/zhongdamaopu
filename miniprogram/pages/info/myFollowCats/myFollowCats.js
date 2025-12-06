@@ -1,11 +1,11 @@
 import {
-  deepcopy
+  deepcopy,
 } from "../../../utils/utils";
 import {
   getUser
 } from "../../../utils/user";
 import {
-  getAvatar
+  getAvatar,
 } from "../../../utils/cat";
 import api from "../../../utils/cloudApi";
 const app = getApp();
@@ -103,10 +103,11 @@ Page({
     const { result: followCats } = await app.mpServerless.db.collection('cat').find({ _id: { $in: followCatIds } })
     console.log(followCats);
 
+    // 批量查询头像，减少数据库请求次数
+    const avatars = await getAvatar(followCats.map(c => c._id));
     for (let i = 0; i < followCats.length; i++) {
-      var p = followCats[i];
-      p.unfollowed = false;
-      p.avatar = await getAvatar(p._id, p.photo_count_best)
+      followCats[i].unfollowed = false;
+      followCats[i].avatar = avatars[i];
     }
     this.setData({
       followCats,

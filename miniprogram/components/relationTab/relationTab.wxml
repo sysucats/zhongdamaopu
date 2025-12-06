@@ -7,13 +7,23 @@
       <view class="relation-index">#{{index+1}}</view>
       
       <view class="relation-content">
-        <!-- 关系类型 -->
-        <view class="relation-type" hover-class="button-hover" bindtap="bindSearch" data-type="relation" data-index="{{index}}">
-          {{item.type || '选择关系'}}
+        <!-- 关系组 -->
+        <view class="relation-meta">
+          <view class="relation-type" hover-class="button-hover" bindtap="openRelationAction" data-type="relation" data-index="{{index}}">
+            {{item.type || '选择关系'}}
+          </view>
+          
+          <!-- 备注 -->
+          <view class="relation-alias {{!item.alias ? 'empty' : ''}}" hover-class="button-hover" bindtap="editAlias" data-index="{{index}}">
+            <text class="alias-text">{{item.alias || '添加备注'}}</text>
+            <text class="iconfont icon-edit alias-icon"></text>
+          </view>
         </view>
-        
-        <!-- 相关猫咪 -->
-        <view class="relation-cat" hover-class="button-hover" bindtap="bindSearch" data-type="cat" data-index="{{index}}">
+
+        <view class="v-line"></view>
+
+        <!-- 猫咪信息 -->
+        <view class="relation-cat" hover-class="button-hover" bindtap="openRelationAction" data-type="cat" data-index="{{index}}">
           <image mode="aspectFill" class="relation-cat-avatar" src="{{item.cat.avatar ? item.cat.avatar.photo_compressed || item.cat.avatar.photo_id : ''}}"></image>
           <view class="relation-cat-info">
             <view class="relation-cat-name">{{item.cat.name || '点击选择猫猫'}}</view>
@@ -21,12 +31,21 @@
           </view>
         </view>
       
-        <view class="relation-delete-btn" hover-class="button-hover" bindtap='bindRelationTap' data-index='{{index}}' data-type="delete">删除</view>
+        <!-- 删除按钮 -->
+        <view class="relation-delete-btn" hover-class="button-hover" bindtap='bindRelationTap' data-index='{{index}}' data-type="delete">
+          <text class="iconfont icon-delete"></text>
+        </view>
       </view>
       
       <!-- 上下移 -->
-      <view class="move-action up {{index <= 0? 'disabled': ''}}" hover-class="button-hover" bindtap='bindRelationTap' data-index='{{index}}' data-type="up"><text class="iconfont icon-arrow-up"></text></view>
-      <view class="move-action down {{index >= cat.relations.length-1? 'disabled': ''}}" hover-class="button-hover" bindtap='bindRelationTap' data-index='{{index}}' data-type="down"><text class="iconfont icon-arrow-down"></text></view>
+      <view class="move-action-bar">
+        <view class="move-btn up {{index <= 0? 'disabled': ''}}" hover-class="button-hover" bindtap='bindRelationTap' data-index='{{index}}' data-type="up">
+          <text class="iconfont icon-arrow-up"></text>
+        </view>
+        <view class="move-btn down {{index >= cat.relations.length-1? 'disabled': ''}}" hover-class="button-hover" bindtap='bindRelationTap' data-index='{{index}}' data-type="down">
+          <text class="iconfont icon-arrow-down"></text>
+        </view>
+      </view>
     </view>
   </view>
   
@@ -37,28 +56,198 @@
 </view>
 
 <!-- 搜索 -->
-<searchCat show="{{showSearchCat}}" bind:select="searchSelectCat" bind:close="hideSearch"></searchCat>
+<searchCat show="{{showSearchCat}}" disabledIds="{{existingRelationIds}}" selfId="{{cat._id}}" bind:select="searchSelectCat" bind:close="hideSearch"></searchCat>
 
 <popup id='search' show="{{showSearchType}}" bind:close="hideSearch">
   <view class="popup-container">
     <view class="popup-header">
-      <text>选择关系类型</text>
+      <text>{{relationTitle || '选择关系类型'}}</text>
     </view>
-    <view class='search-input'>
+    <!-- 输入栏 -->
+    <view class="search-input">
       <view class='input-icon'>
         <image class="search-icon" mode='aspectFit' src="/pages/public/images/card/card/cat.png"></image>
       </view>
-      <input class='input-field' placeholder='输入关系名，如不存在则自动新建' placeholder-class='placeholder' focus="{{focusSearchType}}" maxlength='10' confirm-type='done' bindconfirm='saveNewRelationType' value="{{relation_name}}"></input>
+      <input class="input-field" placeholder="输入关系名，如不存在则自动新建"
+             value="{{typeInputValue}}"
+             bindinput="onTypeInput"
+             bindconfirm="onTypeConfirm"
+             confirm-type="done" />
     </view>
-    <scroll-view class="search-results" scroll-y="1">
-      <view class="relation-type-item" wx:for="{{relation_types}}" wx:key="item">
-        <view class="relation-type-name">{{item}}</view>
-        <view class="relation-type-actions">
-          <view class="type-action select" hover-class="button-hover" bindtap='selectRelationType' data-index='{{index}}'>选择</view>
-          <view class="type-action delete" hover-class="button-hover" bindtap='deleteRelationType' data-index='{{index}}'>删除</view>
+    <scroll-view class="search-results" scroll-y="1" scroll-into-view="{{scrollIntoView}}">
+      <view class="relation-grid">
+        <!-- 若存在未迁移类型 -->
+        <view class="relation-card highlight" wx:if="{{legacy_relation_types.length > 0}}" bindtap="openMigrationModal">
+          <view class="relaCard-header">
+            <view class="relaCard-left">
+              <view class="relaCard-label">
+                <text class="label-main">{{legacy_relation_types.length}}个关系类型待完善</text>
+                <text class="label-inverse" wx:if="{{legacy_relation_types.length}}">从“{{legacy_relation_types[0]}}”开始</text>
+              </view>
+            </view>
+            <view class="relaCard-right">
+              <text class="iconfont icon-ellipsis"></text>
+            </view>
+          </view>
+        </view>
+        <view id="type-{{index}}" class="relation-card {{(highlightTypeName==item.name || activeTypeName==item.name)? 'highlight': ''}}" wx:for="{{relation_cards}}" wx:key="name">
+          <view class="relaCard-header">
+            <view class="relaCard-left" bindtap='selectRelationType' data-index='{{index}}'>
+              <view class="relaCard-label">
+                <text class="label-main">{{item.name}}</text>
+                <text class="label-inverse" wx:if="{{item.inverseLabel}}"> > {{item.inverseLabel}}</text>
+              </view>
+            </view>
+            <view class="relaCard-right" bindtap='openCardMenu' data-index='{{index}}'>
+              <text class="iconfont icon-ellipsis"></text>
+            </view>
+          </view>
         </view>
       </view>
-      <view wx:if="{{!relation_types.length}}" class="search-empty">暂无关系类型</view>
+      <view wx:if="{{!relation_cards.length}}" class="search-empty">暂无匹配关系</view>
     </scroll-view>
   </view>
 </popup> 
+
+<!-- 新建关系弹窗 -->
+<popup id='create-type' show="{{showCreateType}}" bind:close="closeCreateType">
+  <view class="popup-container">
+
+      <view class="popup-header-with-actions">
+          <view class="btn-cancel" bindtap="closeCreateType">取消</view>
+          <view class="title" wx:if="{{editingRuleName}}">编辑关系</view>
+          <view class="title" wx:else>新建关系</view>
+          <view class="btn-save" bindtap="saveCreateType">保存</view>
+        </view>
+
+      <!-- 滚动内容 -->
+      <scroll-view scroll-y class="popup-body">
+        
+        <!-- 待完善类型列表 -->
+        <view class="card" wx:if="{{isMigrationMode && legacy_relation_types.length}}">
+          <view class="card-label">待完善类型</view>
+          <view class="chip-list">
+            <view class="chip {{createTypeForm.name == item ? 'active' : ''}}" wx:for="{{legacy_relation_types}}" wx:key="item" bindtap="selectPendingType" data-name="{{item}}">{{item}}</view>
+          </view>
+          <view class="hint-text">点击某个类型可快速切换编辑对象。</view>
+        </view>
+        
+        <!-- 基础信息 -->
+        <view class="card">
+          <view class="card-label">关系定义（本喵 -> 对方）</view>
+          
+          <!-- 关系名称输入 -->
+          <view class="input-group">
+            <view class="icon-tag">#</view>
+            <input class="main-input" placeholder="输入称呼" placeholder-class="ph-color" value="{{createTypeForm.name}}" bindinput="setCreateTypeField" data-field="name"/>
+          </view>
+
+          <!-- 适用性别限制 -->
+          <view class="segment-group">
+            <view class="segment-label">对方必须是：</view>
+            <view class="segment-control">
+              <view class="segment-slider" style="transform: translateX({{activeGenderIndex * 100}}%)"></view>
+              <!-- 公猫选项 -->
+              <view class="segment-item {{createTypeForm.target_gender === '公' ? 'active' : ''}}" bindtap="setCreateTypeTargetGender" data-val="公" data-index="0">
+                <image class="gender-icon" src="../../pages/public/images/card/card/male.png" mode="aspectFit"></image> 公猫
+              </view>
+              <!-- 母猫选项 -->
+              <view class="segment-item {{createTypeForm.target_gender === '母' ? 'active' : ''}}" bindtap="setCreateTypeTargetGender" data-val="母" data-index="1">
+                <image class="gender-icon" src="../../pages/public/images/card/card/female.png" mode="aspectFit"></image> 母猫
+              </view>
+              <!-- 不限选项 -->
+              <view class="segment-item {{createTypeForm.target_gender === 'any' ? 'active' : ''}}" bindtap="setCreateTypeTargetGender" data-val="any" data-index="2">
+                不限
+              </view>
+            </view>
+          </view>
+        </view>
+
+        <!-- 反向映射 -->
+        <view class="card">
+          <view class="card-header-row">
+            <view class="card-label">反向称呼（对方 -> 本喵）</view>
+            
+            <!-- 切换开关 -->
+            <view class="toggle-wrapper" bindtap="setCreateTypeType">
+              <text class="toggle-text {{createTypeForm.strategy !== 'mapped' ? 'active' : ''}}">对称</text>
+              <view class="toggle-bg {{createTypeForm.strategy === 'mapped' ? 'active' : ''}}">
+                <view class="toggle-dot"></view>
+              </view>
+              <text class="toggle-text {{createTypeForm.strategy === 'mapped' ? 'active-pri' : ''}}">自定义</text>
+            </view>
+          </view>
+
+          <!-- 动态输入区域 -->
+          <view class="relation-inputs" wx:if="{{createTypeForm.strategy === 'mapped'}}">
+            <!-- 若A是公猫 -->
+            <view class="row-input">
+              <view class="icon-box blue">
+                <image class="gender-icon" src="../../pages/public/images/card/card/male.png" mode="aspectFit"></image>
+              </view>
+              <view class="input-right">
+                <text class="sub-label">若本喵是公猫</text>
+                <input class="line-input" placeholder="对方叫本喵..." placeholder-class="ph-color" value="{{createTypeForm.inverse_male}}" bindinput="setCreateTypeField" data-field="inverse_male"/>
+              </view>
+            </view>
+
+            <!-- 若A是母猫 -->
+            <view class="row-input">
+              <view class="icon-box pink">
+                <image class="gender-icon" src="../../pages/public/images/card/card/female.png" mode="aspectFit"></image>
+              </view>
+              <view class="input-right">
+                <text class="sub-label">若本喵是母猫</text>
+                <input class="line-input" placeholder="对方叫本喵..." placeholder-class="ph-color" value="{{createTypeForm.inverse_female}}" bindinput="setCreateTypeField" data-field="inverse_female"/>
+              </view>
+            </view>
+
+            <!-- 若A未知 -->
+            <view class="row-input">
+              <view class="icon-box gray">?</view>
+              <view class="input-right">
+                <text class="sub-label">若本喵不卡性别</text>
+                <input class="line-input" placeholder="都行..." placeholder-class="ph-color" value="{{createTypeForm.inverse_any}}" bindinput="setCreateTypeField" data-field="inverse_any"/>
+              </view>
+            </view>
+            <view class="hint-text">反向称呼全留空，则为单向关系。</view>
+          </view>
+
+          <!-- 对称输入区域 -->
+          <view class="relation-inputs" wx:else>
+             <view class="row-input">
+              <view class="icon-box purple">∞</view>
+              <view class="input-right">
+                <text class="sub-label">双方互称</text>
+                <input class="line-input" placeholder="..." placeholder-class="ph-color" value="{{createTypeForm.name}}" disabled/>
+              </view>
+            </view>
+            <view class="hint-text">对称关系意味着双方称呼一致，无需配置反向词。</view>
+          </view>
+
+        </view>
+      </scroll-view>
+    
+  </view>
+</popup>
+
+<!-- 添加备注 -->
+<popup id='edit-alias' show="{{showEditAlias}}" bind:close="closeEditAlias">
+  <view class="popup-container">
+    <view class="popup-header-with-actions">
+      <view class="btn-cancel" bindtap="closeEditAlias">取消</view>
+      <view class="title">添加备注</view>
+      <view class="btn-save" bindtap="saveAlias">保存</view>
+    </view>
+    <view class="popup-body">
+      <view class="card">
+        <view class="card-label">备注：</view>
+        <view class="input-group">
+          <view class="icon-tag">#</view>
+          <input class="main-input" placeholder="输入个性化称呼" placeholder-class="ph-color" value="{{editingAliasValue}}" bindinput="onEditingAliasInput"/>
+        </view>
+        <view class="hint-text">备注名将优先于默认关系名展示在猫猫的主页中。</view>
+      </view>
+    </view>
+  </view>
+</popup>
