@@ -10,6 +10,13 @@ Page({
     text_cfg: text_cfg,
     github_link: "https://github.com/sysucats/zhongdamaopu",
     update_log: [{
+      version: "v1.18.0",
+      content: [
+        "重构猫咪关系，实现猫际关系图（感谢xuannfx）",
+        "修复已知BUG（感谢Dusker233）",
+      ],
+      time: "2025/12/06"
+    }, {
       version: "v1.17.4",
       content: [
         "修复已知BUG（感谢LightHouse-1024、xuannfx）",

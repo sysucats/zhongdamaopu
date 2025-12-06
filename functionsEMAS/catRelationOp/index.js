@@ -1,7 +1,7 @@
 module.exports = async (ctx) => {
   // 部署检查
   if (ctx.args?.deploy_test === true) {
-    return "v1.1";
+    return "v1.2";
   }
 
   const db = ctx.mpserverless.db;
