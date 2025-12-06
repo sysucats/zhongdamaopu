@@ -230,5 +230,7 @@ export {
   getVisitedDate,
   setVisitedDate,
   getCatItem,
-  getCatItemMulti
+  getCatItemMulti,
+  getAllCats,
+  signPhotoUrls
 }

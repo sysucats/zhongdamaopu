@@ -12,6 +12,7 @@ import {
 } from "../../../../utils/page";
 
 import drawUtils from "../../../../utils/draw";
+import { signPhotoUrls } from  "../../../../utils/cat";
 
 const share_text = text_cfg.app_name + ' - ' + text_cfg.recognize.share_tip;
 const app = getApp();
@@ -374,11 +375,13 @@ Page({
 
   // 根据模型输出的得分（即每个对象的score属性）计算softmax概率，并将结果放到原对象的prob属性上
   calculateSoftmaxProb(catList) {
-    const scores = catList.map(item => item.score);
-    const maxScore = scores.reduce((prev, cur) => Math.max(prev, cur));
-    const expScoreSum = scores.reduce((prev, cur) => prev + Math.exp(cur - maxScore), 0);
+    // const scores = catList.map(item => item.score);
+    // const maxScore = scores.reduce((prev, cur) => Math.max(prev, cur));
+    // const expScoreSum = scores.reduce((prev, cur) => prev + Math.exp(cur - maxScore), 0);
     catList.forEach(item => {
-      item.prob = Math.exp(item.score - maxScore) / expScoreSum;
+      // 目前的 yolo 识猫模型，会直接输出概率，不需要再次 softmax
+      item.prob = item.score;
+      // item.prob = Math.exp(item.score - maxScore) / expScoreSum;
     });
   },
 
@@ -398,7 +401,8 @@ Page({
     var total = catInfo.photo_count_best;
     var index = randomInt(0, total);
     var { result: photoURL } = await app.mpServerless.db.collection('photo').findOne(query, { skip: index });
-    return photoURL;
+    const signedPhotoURL = await signPhotoUrls(photoURL);
+    return signedPhotoURL;
   },
 
   async choosePhoto() {
