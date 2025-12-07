@@ -1,6 +1,6 @@
 <view class="viewport" bindtouchstart="onDragStart" catchtouchmove="onDragMove" bindtouchend="onDragEnd">
   <!-- 固定背景，不随画布拖动 -->
-  <image class="bg-fixed" src="/pages/packageA/pages/images/recognize/background.svg" mode="aspectFill"></image>
+  <image class="bg-fixed" src="/pages/public/images/system/background.svg" mode="aspectFill"></image>
   <!-- 孤单提示 -->
   <view class="lonely-tip" wx:if="{{isLonely}}">暂时只有孤单的Ta，正在等待朋友的到来……</view>
   <!-- 画布层，平移 transition控制惯性 -->

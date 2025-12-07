@@ -29,17 +29,14 @@ Page({
     }
 
     // 获取现存数量
-    let getCountTask = [];
-    for (const b of badgeDefs) {
-      const { result: count } = await app.mpServerless.db.collection('badge').count({ badgeDef: b._id });
-      getCountTask.push(count);
-    }
-    let badgeCount = await Promise.all(getCountTask);
+    const countPromises = badgeDefs.map(b => app.mpServerless.db.collection('badge').count({ badgeDef: b._id }));
+    const countResList = await Promise.all(countPromises);
+    const badgeCount = countResList.map(r => r.result);
 
     // 签名 img 字段
     for (let i = 0; i < badgeDefs.length; i++) {
       // 记录数量
-      badgeDefs[i].count = badgeCount[i].total;
+      badgeDefs[i].count = badgeCount[i];
 
       // 签名 img
       if (badgeDefs[i].img) {
