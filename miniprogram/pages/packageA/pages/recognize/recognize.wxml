@@ -10,7 +10,7 @@
 <!-- 压缩图片用 -->
 <canvas style="width: 1000px; height: 1000px; border: 1px solid red; left: 100000px; position: fixed;" id="canvasForCompress" type="2d"></canvas>
 
-<image class="bgImg" src="/pages/packageA/pages/images/recognize/background.svg"></image>
+<image class="bgImg" src="/pages/public/images/system/background.svg"></image>
 
 <view id="positionWrapper" class="{{catList.length ? 'flowUp' : ''}}">
 

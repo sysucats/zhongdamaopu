@@ -12,16 +12,16 @@ const CONFIG = {
 
   // 布局半径（rpx）
   SUB_RADIUS: 250,            // rpx, 二级展开半径
-  SINGLE_RING_BASE: 280,      // rpx, 少节点布局基半径
+  SINGLE_RING_BASE: 260,      // rpx, 少节点布局基半径
   SINGLE_RING_JITTER: 30,     // rpx, 少节点半径抖动（±值）
   INNER_RING_BASE: 260,       // rpx, 多节点内环基半径
   INNER_RING_JITTER: 20,      // rpx, 多节点内环半径抖动（±值）
   OUTER_RING_BASE: 430,       // rpx, 多节点外环基半径
   OUTER_RING_JITTER: 30,      // rpx, 多节点外环半径抖动（±值）
   POP_OUT_RADIUS_RPX: 440,    // rpx, 呼吸弹射的安全展开半径（必须大于最外圈）
-  GRAVITY_INNER_RPX: 240,     // rpx, 引力布局内圈基半径
-  GRAVITY_MID_RPX: 300,       // rpx, 引力布局中圈基半径
-  GRAVITY_OUTER_RPX: 360,     // rpx, 引力布局外圈基半径
+  GRAVITY_INNER_RPX: 260,     // rpx, 引力布局内圈基半径
+  GRAVITY_MID_RPX: 360,       // rpx, 引力布局中圈基半径
+  GRAVITY_OUTER_RPX: 430,     // rpx, 引力布局外圈基半径
   GRAVITY_BREATH_JITTER: 30,  // rpx, 引力布局呼吸抖动（±值）
   GRAVITY_SIZE_STEP: 10,      // rpx, 引力布局下大小步进
   GRAVITY_SIZE_CAP: 120,      // rpx, 引力布局下大小上限
@@ -151,15 +151,15 @@ Page({
 
         let distRpx;
         let sizeRpx;
-        if (count <= 15) {
+        if (count <= 10) {
           // 引力布局：大小与轨道按权重分层
           sizeRpx = CONFIG.BASE_SIZE + (subCount * CONFIG.GRAVITY_SIZE_STEP);
           if (sizeRpx > CONFIG.GRAVITY_SIZE_CAP) sizeRpx = CONFIG.GRAVITY_SIZE_CAP;
 
-          if (subCount >= 4) {
+          if (subCount >= 6) {
             // [核心圈] 大家长：紧贴中心
             distRpx = CONFIG.GRAVITY_INNER_RPX;   
-          } else if (subCount >= 1) {
+          } else if (subCount >= 3) {
             // [中继圈] 有分支的普通关系
             distRpx = CONFIG.GRAVITY_MID_RPX;
           } else {
@@ -205,23 +205,44 @@ Page({
         segments = minSpans.map(ms => ms * scale);
       }
 
-      // 3) 顺序累计分配角度，并给每段中心点添加少量抖动（不超过半角-安全边距）
+      // 3) 预计算中心角与抖动，计算全局旋转，使最远节点趋向垂直方向
+      const normalize = (a) => ((a % 360) + 360) % 360;
       let acc = 0;
-      prepared.forEach((p, idx) => {
-        const segment = segments[idx];
+      const centerAngles = [];
+      const jitterOffsets = [];
+      segments.forEach((segment, idx) => {
         const centerAngle = acc + segment / 2;
         let maxJitter = (segment / 2) - safeMargin;
         if (maxJitter < CONFIG.MIN_JITTER) maxJitter = CONFIG.MIN_JITTER;
         const jitterLimit = segment * (CONFIG.ANGLE_JITTER_RATIO || 0.25);
         if (maxJitter > jitterLimit) maxJitter = jitterLimit;
         const randomOffset = (Math.random() * maxJitter * 2) - maxJitter;
-        const angleDeg = centerAngle + randomOffset;
+        centerAngles[idx] = centerAngle;
+        jitterOffsets[idx] = randomOffset;
+        acc += segment;
+      });
+
+      let rotateDeg = 0;
+      if (count <= 10 && prepared.length > 0) {
+        let farIdx = 0;
+        for (let i = 1; i < prepared.length; i++) {
+          if (prepared[i].distPx > prepared[farIdx].distPx) farIdx = i;
+        }
+        const farAngle = normalize(centerAngles[farIdx] + jitterOffsets[farIdx]);
+        const deltaTo90 = ((90 - farAngle + 540) % 360) - 180;   // [-180, 180]
+        const deltaTo270 = ((270 - farAngle + 540) % 360) - 180; // [-180, 180]
+        const candidate = Math.abs(deltaTo90) <= Math.abs(deltaTo270) ? deltaTo90 : deltaTo270;
+        if (Math.abs(candidate) > 1) rotateDeg = candidate; // 小旋转忽略，避免抖动
+      }
+
+      // 4) 生成节点与连线（已应用全局旋转），保存 _origin 备份
+      prepared.forEach((p, idx) => {
+        const angleDeg = normalize(centerAngles[idx] + jitterOffsets[idx] + rotateDeg);
         const angleRad = angleDeg * (Math.PI / 180);
 
         const x = Math.cos(angleRad) * p.distPx;
         const y = Math.sin(angleRad) * p.distPx;
 
-        // 生成节点与连线（保存 _origin 备份）
         nodes.push({
           id: p.cat._id,
           name: p.cat.name || "?",
@@ -251,8 +272,6 @@ Page({
           text: p.rel.alias || p.rel.type || "",
           level: 1
         });
-
-        acc += segment;
       });
 
       this.setData({ nodes, lines, isLonely: false });
