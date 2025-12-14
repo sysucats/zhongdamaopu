@@ -225,7 +225,8 @@ Page({
 
   async loadCat() {
     const { result: cat } = await app.mpServerless.db.collection('cat').findOne({
-      _id: this.jsData.cat_id
+      _id: this.jsData.cat_id,
+      deleted: { $ne: 1 }
     });
     cat.photo = [];
     if (cat.characteristics.length) {

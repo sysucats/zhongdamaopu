@@ -1,7 +1,7 @@
 module.exports = async (ctx) => {
   // 部署检查
   if (ctx.args?.deploy_test === true) {
-    return "v1.0";
+    return "v1.1";
   }
 
   const db = ctx.mpserverless.db;
@@ -61,8 +61,8 @@ module.exports = async (ctx) => {
       }
       const { name: ruleNameToDelete } = rule;
       
-      // 校验关系规则是否在使用
-      const { result: usedCats } = await db.collection('cat').find({ "relations.type": ruleNameToDelete }, { limit: 1 });
+      // 校验关系规则是否在使用（仅检查未删除的猫）
+      const { result: usedCats } = await db.collection('cat').find({ "relations.type": ruleNameToDelete, deleted: { $ne: 1 } }, { limit: 1 });
       if (Array.isArray(usedCats) && usedCats.length > 0) {
         return { result: false, msg: `关系 [${ruleNameToDelete}] 正在被使用，无法删除` };
       }

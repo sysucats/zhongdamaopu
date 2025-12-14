@@ -1,11 +1,11 @@
 module.exports = async (ctx) => {
   if (ctx.args?.deploy_test === true) {
-    return "v2.2";
+    return "v2.3";
   }
 
   var frontOneHour = new Date(new Date().getTime() - 1 * 60 * 60 * 1000);
 
-  // 查询条件：photo_count_best 不存在或 mphoto 在近1小时内更新
+  // 查询条件：photo_count_best 不存在或 mphoto 在近1小时内更新，且猫咪未被删除
   const query = {
     $or: [{
         photo_count_best: {
@@ -17,7 +17,8 @@ module.exports = async (ctx) => {
           $gte: frontOneHour
         }
       }
-    ]
+    ],
+    deleted: { $ne: 1 }
   };
 
   // 1. 计算符合条件的记录总数

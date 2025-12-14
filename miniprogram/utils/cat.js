@@ -180,7 +180,7 @@ async function getCatItem(cat_id, options) {
     return cacheItem;
   }
 
-  const { result } = await app.mpServerless.db.collection('cat').findOne({ _id: cat_id });
+  const { result } = await app.mpServerless.db.collection('cat').findOne({ _id: cat_id, deleted: { $ne: 1 } });
   cacheItem = result
   setCacheItem(cacheKey, cacheItem, cacheTime.catItem);
   return cacheItem;
@@ -207,7 +207,7 @@ async function getCatItemMulti(cat_ids, options) {
   if (not_found.length > 0) {
     let db_query = [];
     for (let i = 0; i < not_found.length; i += 100) {
-      const { result: db_res } = await app.mpServerless.db.collection('cat').find({ _id: { $in: not_found } }, { skip: i });
+      const { result: db_res } = await app.mpServerless.db.collection('cat').find({ _id: { $in: not_found }, deleted: { $ne: 1 } }, { skip: i });
       db_query.push(db_res)
     }
 

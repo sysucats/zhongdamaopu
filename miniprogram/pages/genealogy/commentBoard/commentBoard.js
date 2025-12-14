@@ -141,7 +141,7 @@ Page({
   },
 
   async loadCat() {
-    var cat = (await app.mpServerless.db.collection('cat').findOne({ _id: this.jsData.cat_id })).result;
+    var cat = (await app.mpServerless.db.collection('cat').findOne({ _id: this.jsData.cat_id, deleted: { $ne: 1 } })).result;
     console.log(cat);
 
     // 获取头像

@@ -10,6 +10,14 @@ Page({
     text_cfg: text_cfg,
     github_link: "https://github.com/sysucats/zhongdamaopu",
     update_log: [{
+      version: "v1.18.1",
+      content: [
+        "优化关系图布局算法和修复背景图（感谢xuannfx）",
+        "修复相册排序（感谢wloop98）",
+        "增加cat软删除",
+      ],
+      time: "2025/12/14"
+    }, {
       version: "v1.18.0",
       content: [
         "重构猫咪关系，实现猫际关系图（感谢xuannfx）",

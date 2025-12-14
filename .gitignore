@@ -19,3 +19,6 @@ miniprogram/appSecret.js
 .secret.yaml
 miniprogram/signKey.js
 .app.yaml
+
+# Others
+.trae

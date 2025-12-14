@@ -311,7 +311,7 @@ Page({
       const nextPageNum = this.data.pageNum + 1;
 
       // 获取总猫数和照片数
-      const totalCats = await app.mpServerless.db.collection('cat').count();
+      const totalCats = await app.mpServerless.db.collection('cat').count({ deleted: { $ne: 1 } });
       const totalPhotos = await app.mpServerless.db.collection('photo').count();
 
       this.setData({ 

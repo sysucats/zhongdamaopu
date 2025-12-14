@@ -444,7 +444,7 @@ Component({
         wx.showLoading({
           title: loadingTitle || '加载中...',
         });
-        const { result: cat } = await app.mpServerless.db.collection('cat').findOne({ _id: catId });
+        const { result: cat } = await app.mpServerless.db.collection('cat').findOne({ _id: catId, deleted: { $ne: 1 } });
         if (!cat) {
           throw new Error('未找到猫咪');
         }

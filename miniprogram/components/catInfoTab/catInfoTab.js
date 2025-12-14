@@ -1,5 +1,5 @@
 import { text as text_cfg, cat_status_adopt } from "../../config";
-import { checkAuth, fillUserInfo } from "../../utils/user";
+import { checkAuth, fillUserInfo, isManagerAsync } from "../../utils/user";
 import { loadFilter } from "../../utils/page";
 import { getCatItemMulti } from "../../utils/cat";
 import { signCosUrl } from "../../utils/common";
@@ -600,6 +600,92 @@ Component({
 
     async upload() {
       await this.saveCat();
+    },
+
+    // 删除猫猫
+    async deleteCat() {
+      try {
+        // 1. 权限检查
+        const authResult = await isManagerAsync(99);
+        if (!authResult) {
+          wx.showToast({
+            title: '权限不足，只有最高管理员可删除',
+            icon: 'none',
+            duration: 2000
+          });
+          return;
+        }
+
+        // 2. 二次确认对话框
+        const modalRes = await wx.showModal({
+          title: '删除确认',
+          content: '确定要删除这只猫猫吗？此操作不可逆，删除后猫猫数据将不再显示！',
+          confirmText: '确定删除',
+          confirmColor: '#ff3b30',
+          cancelText: '取消',
+          cancelColor: '#333333'
+        });
+
+        if (!modalRes.confirm) {
+          return;
+        }
+
+        // 3. 显示加载状态
+        wx.showLoading({
+          title: '删除中...',
+          mask: true
+        });
+
+        // 4. 调用云函数执行删除操作
+        const deleteRes = await api.updateCat({
+          action: 'delete',
+          cat_id: this.jsData.cat_id
+        });
+
+        // 5. 处理删除结果
+        if (deleteRes.result) {
+          wx.hideLoading();
+          wx.showToast({
+            title: '删除成功',
+            icon: 'success',
+            duration: 2000
+          });
+          
+          // 6. 触发删除成功事件，通知父组件
+          this.triggerEvent('catDeleted', {
+            catId: this.jsData.cat_id
+          });
+          
+          // 7. 根据页面栈情况执行导航
+          setTimeout(() => {
+            const pages = getCurrentPages();
+            if (pages.length > 1) {
+              // 存在上一级页面，返回上一页
+              wx.navigateBack();
+            } else {
+              // 不存在上一级页面，导航到首页
+              wx.switchTab({
+                url: '/pages/genealogy/genealogy'
+              });
+            }
+          }, 1500);
+        } else {
+          wx.hideLoading();
+          wx.showToast({
+            title: deleteRes.msg || '删除失败',
+            icon: 'none',
+            duration: 2000
+          });
+        }
+      } catch (error) {
+        wx.hideLoading();
+        console.error('删除猫猫失败:', error);
+        wx.showToast({
+          title: '删除失败，请重试',
+          icon: 'none',
+          duration: 2000
+        });
+      }
     }
   }
 })

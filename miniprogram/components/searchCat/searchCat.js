@@ -76,7 +76,7 @@ Component({
 
       // 准备搜索
       var query = filters.length ? {"$and" : (filters)} : {};
-      const { result: cats } = await app.mpServerless.db.collection('cat').find(query);
+      const { result: cats } = await app.mpServerless.db.collection('cat').find({ ...query, deleted: { $ne: 1 } });
       // 批量获取头像
       const ids = cats.map(cat => cat._id);
       const avatars = await getAvatar(ids);

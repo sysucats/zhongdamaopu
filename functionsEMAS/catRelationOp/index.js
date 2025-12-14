@@ -1,7 +1,7 @@
 module.exports = async (ctx) => {
   // 部署检查
   if (ctx.args?.deploy_test === true) {
-    return "v1.2";
+    return "v1.3";
   }
 
   const db = ctx.mpserverless.db;
@@ -87,8 +87,8 @@ module.exports = async (ctx) => {
   try {
 
 
-    const { result: sourceCat } = await db.collection('cat').findOne({ _id: sourceIdArg });
-    const { result: targetCat } = await db.collection('cat').findOne({ _id: targetIdArg });
+    const { result: sourceCat } = await db.collection('cat').findOne({ _id: sourceIdArg, deleted: { $ne: 1 } });
+    const { result: targetCat } = await db.collection('cat').findOne({ _id: targetIdArg, deleted: { $ne: 1 } });
 
     if (!sourceCat || !targetCat) {
       return { result: false, msg: '猫咪ID无效，未找到对应记录' };

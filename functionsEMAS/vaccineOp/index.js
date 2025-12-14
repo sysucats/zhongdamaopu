@@ -1,7 +1,7 @@
 module.exports = async (ctx) => {
   if (ctx.args?.deploy_test === true) {
     // 进行部署检查
-    return "v2.0";
+    return "v2.1";
   }
 
   const openid = ctx.args.openid
@@ -334,13 +334,14 @@ module.exports = async (ctx) => {
         };
       }
 
-      // 获取所有猫咪信息
+      // 获取所有猫咪信息（排除已删除的猫咪）
       const {
         result: cats
       } = await ctx.mpserverless.db.collection('cat').find({
         _id: {
           $in: catIds
-        }
+        },
+        deleted: { $ne: 1 }
       }, {
         projection: {
           name: 1,

@@ -266,8 +266,8 @@
 }
 
 .danger-button {
-  background-color: var(--color-gray-light);
-  color: var(--color-gray-max);
+  background-color: var(--color-red);
+  color: var(--color-gray-light);
 }
 
 /* 加载更多部分 */

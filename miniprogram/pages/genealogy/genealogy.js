@@ -169,7 +169,7 @@ Page({
     const scene = this.jsData.pendingScene;
     if (scene.startsWith('toC=')) {
       const cat_No = scene.substr(4);
-      const { result: cat_res } = await app.mpServerless.db.collection('cat').find({ _no: cat_No }, { projection: { _id: 1 } });
+      const { result: cat_res } = await app.mpServerless.db.collection('cat').find({ _no: cat_No, deleted: { $ne: 1 } }, { projection: { _id: 1 } });
       
       if (!cat_res.length) {
         wx.showToast({
@@ -201,7 +201,8 @@ Page({
     if (index === -1) return;
     
     const { result: [updatedCat] } = await app.mpServerless.db.collection('cat').find({ 
-      _id: catId 
+      _id: catId, 
+      deleted: { $ne: 1 } 
     });
     
     if (updatedCat) {
@@ -792,7 +793,9 @@ Page({
     }
     
     this.setData({ filters_active: conditions.length > 0 });
-    return conditions.length > 0 ? { $and: conditions } : {};
+    // 添加软删除过滤条件
+    conditions.push({ deleted: { $ne: 1 } });
+    return { $and: conditions };
   },
   
   fComfirm: function() {
@@ -870,7 +873,7 @@ Page({
   async countWaitingAdopt() {
     const target = config.cat_status_adopt_target;
     const value = config.cat_status_adopt.indexOf(target);
-    const { result: adopt_count } = await app.mpServerless.db.collection('cat').count({ adopt: value });
+    const { result: adopt_count } = await app.mpServerless.db.collection('cat').count({ adopt: value, deleted: { $ne: 1 } });
     this.setData({ adopt_count });
   },
 

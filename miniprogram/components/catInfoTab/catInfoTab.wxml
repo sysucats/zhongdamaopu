@@ -154,6 +154,19 @@
     <text>人气值: {{cat.popularity || 0}}</text>
   </view>
 
+  <view class="info-card">
+    <view class="card-header">
+      <view class="card-title">
+        <text>其他操作</text>
+      </view>
+    </view>
+    <view class="card-body">
+      <view class="action-buttons">
+        <button class="action-button danger-button" bindtap="deleteCat">删除猫猫（不可恢复，需要99管理员）</button>
+      </view>
+    </view>
+  </view>
+
   <!-- 照片 -->
   <view class="info-card photo-header-card" wx:if="{{cat._id && photo.length > 0}}">
     <view class="card-header">

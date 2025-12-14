@@ -1,7 +1,7 @@
 module.exports = async function (ctx) {
   if (ctx.args && ctx.args.deploy_test === true) {
     // 进行部署检查
-    return "v1.1";
+    return "v1.2";
   }
   const db = ctx.mpserverless.db;
 
@@ -27,7 +27,8 @@ module.exports = async function (ctx) {
   const currentCatsQf = { 
     adopt: { $ne: 1 }, 
     to_star: { $ne: true },
-    missing: { $ne: true }
+    missing: { $ne: true },
+    deleted: { $ne: 1 }
   };
   
   // 一次性查询所有【基础】数据
@@ -42,12 +43,12 @@ module.exports = async function (ctx) {
     genderStats,
     monthData
   ] = await Promise.all([
-    db.collection('cat').count({}),
-    db.collection('cat').count({ sterilized: true }),
-    db.collection('cat').count({ adopt: 1 }),
+    db.collection('cat').count({ deleted: { $ne: 1 } }),
+    db.collection('cat').count({ sterilized: true, deleted: { $ne: 1 } }),
+    db.collection('cat').count({ adopt: 1, deleted: { $ne: 1 } }),
     db.collection('cat').count(currentCatsQf),
-    db.collection('cat').count({ missing: true }),
-    db.collection('cat').count({ to_star: true }),
+    db.collection('cat').count({ missing: true, deleted: { $ne: 1 } }),
+    db.collection('cat').count({ to_star: true, deleted: { $ne: 1 } }),
     db.collection('cat').count({ ...currentCatsQf, sterilized: true }),
     getGenderStats(db),
     getMonthData(db, monthStart)
@@ -101,12 +102,12 @@ module.exports = async function (ctx) {
 // 获取性别分布数据
 async function getGenderStats(db) {
   const [numMaleRes, numFemaleRes, unknownCatsRes] = await Promise.all([
-    db.collection('cat').count({ gender: '公' }),
-    db.collection('cat').count({ gender: '母' }),
+    db.collection('cat').count({ gender: '公', deleted: { $ne: 1 } }),
+    db.collection('cat').count({ gender: '母', deleted: { $ne: 1 } }),
     db.collection('cat').find({ $or: [
       { gender: { $exists: false } },
       { gender: '未知' }
-    ] }, { field: { name: 1 } })
+    ], deleted: { $ne: 1 } }, { field: { name: 1 } })
   ]);
   
   const numMale = numMaleRes.result || 0;
@@ -140,8 +141,8 @@ async function getCampusStats(db, campuses, areas, monthStart) {
       
       // 获取该校区统计
       const [totalRes, sterilizedRes] = await Promise.all([
-        db.collection('cat').count({ campus }),
-        db.collection('cat').count({ campus, sterilized: true })
+        db.collection('cat').count({ campus, deleted: { $ne: 1 } }),
+        db.collection('cat').count({ campus, sterilized: true, deleted: { $ne: 1 } })
       ]);
       
       const total = totalRes.result || 0;
@@ -169,7 +170,7 @@ async function getAreaStats(db, area, monthStart) {
   const campus = area.campus;
   
   // 获取区域内所有猫的详细信息
-  const allCatsRes = await db.collection('cat').find({ campus, area: areaName }, {
+  const allCatsRes = await db.collection('cat').find({ campus, area: areaName, deleted: { $ne: 1 } }, {
     field: {
       sterilized: true,
       adopt: true,
@@ -213,7 +214,7 @@ async function getAreaStats(db, area, monthStart) {
 async function getColourStats(db, colours) {
   return Promise.all(
     colours.map(async colour => {
-      const totalRes = await db.collection('cat').count({ colour });
+      const totalRes = await db.collection('cat').count({ colour, deleted: { $ne: 1 } });
       return {
         colour,
         count: totalRes.result || 0
@@ -331,11 +332,11 @@ function calculateTNRIndex(allCats, sterilizedCats, monthStart) {
 async function getMonthData(db, monthStart) {
   // 定义事件类型和对应字段
   const eventTypes = [
-    { type: '新猫', time_field: 'create_time', condition: { create_time: { $gte: monthStart } } },
-    { type: '绝育', time_field: 'sterilized_time', condition: { sterilized: true, sterilized_time: { $gte: monthStart } } },
-    { type: '领养', time_field: 'adopt_time', condition: { adopt: 1, adopt_time: { $gte: monthStart } } },
-    { type: '失踪', time_field: 'missing_time', condition: { missing: true, missing_time: { $gte: monthStart } } },
-    { type: '喵星', time_field: 'deceased_time', condition: { to_star: true, deceased_time: { $gte: monthStart } } }
+    { type: '新猫', time_field: 'create_time', condition: { create_time: { $gte: monthStart }, deleted: { $ne: 1 } } },
+    { type: '绝育', time_field: 'sterilized_time', condition: { sterilized: true, sterilized_time: { $gte: monthStart }, deleted: { $ne: 1 } } },
+    { type: '领养', time_field: 'adopt_time', condition: { adopt: 1, adopt_time: { $gte: monthStart }, deleted: { $ne: 1 } } },
+    { type: '失踪', time_field: 'missing_time', condition: { missing: true, missing_time: { $gte: monthStart }, deleted: { $ne: 1 } } },
+    { type: '喵星', time_field: 'deceased_time', condition: { to_star: true, deceased_time: { $gte: monthStart }, deleted: { $ne: 1 } } }
   ];
   
   // 获取每种事件类型的统计和详细数据

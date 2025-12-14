@@ -1,14 +1,15 @@
 module.exports = async (ctx) => {
   if (ctx.args?.deploy_test === true) {
     // 进行部署检查
-    return "v2.2";
+    return "v2.3";
   }
 
+  // 检查是否为管理员，删除操作需要最高权限(99)
   const {
     result: is_manager
   } = await ctx.mpserverless.function.invoke('isManager', {
     openid: ctx.args.openid,
-    req: 2
+    req: ctx.args.action === 'delete' ? 99 : 2
   })
   if (!is_manager) {
     return {
@@ -21,9 +22,73 @@ module.exports = async (ctx) => {
   const cat_id = ctx.args.cat_id;
   const currentTime = new Date().toISOString();
   const db = ctx.mpserverless.db;
+  
+  // 非删除操作需要验证name字段
+  if (ctx.args.action !== 'delete') {
+    // 验证name字段不能为空
+    if (cat === null || cat === undefined || cat.name === null || cat.name === undefined) {
+      return {
+        msg: 'name字段不能为空',
+        result: false
+      };
+    }
+    
+    // 检查name是否仅包含空格字符（包括全角和半角）
+    const trimmedName = cat.name.replace(/[\s\u3000]/g, '');
+    if (trimmedName === '') {
+      return {
+        msg: 'name字段不能仅包含空格字符（包括全角空格和半角空格）',
+        result: false
+      };
+    }
+  }
 
   if (cat_id) {
-    // 是更新
+    // 是更新或删除操作
+    
+    // 处理删除操作
+    if (ctx.args.action === 'delete') {
+      try {
+        // 检查猫是否存在
+        const catRes = await db.collection('cat').find({
+          _id: cat_id
+        });
+        if (catRes.result && catRes.result.length > 0) {
+          // 执行软删除，将deleted字段设为1
+          const deleteResult = await db.collection('cat').updateOne({
+            _id: cat_id
+          }, {
+            $set: {
+              deleted: 1,
+              update_time: currentTime
+            }
+          });
+          
+          // 记录删除日志
+          console.log(`[删除操作] 用户 ${ctx.args.openid} 于 ${currentTime} 删除了猫 ${cat_id}`);
+          
+          return {
+            msg: 'delete success',
+            result: true,
+            deletedCatId: cat_id
+          };
+        } else {
+          return {
+            msg: 'cat not found',
+            result: false
+          };
+        }
+      } catch (error) {
+        console.error(`[删除操作失败] 猫ID: ${cat_id}, 错误: ${error.message}`);
+        return {
+          msg: 'delete failed',
+          result: false,
+          error: error.message
+        };
+      }
+    }
+    
+    // 正常更新操作
     try {
       const oldCatRes = await db.collection('cat').find({
         _id: cat_id
@@ -110,7 +175,7 @@ module.exports = async (ctx) => {
     // not for modifying.
     const copyKeys = ['area', 'campus', 'characteristics',
       'colour', 'father', 'gender', 'mother', 'name', 'nickname', 'popularity', 'sterilized', 'adopt',
-      'missing', 'birthday', 'habit', 'tutorial', 'relation', 'to_star',
+      'missing', 'birthday', 'habit', 'tutorial', 'relation', 'to_star', 'deleted',
       // 添加时间相关字段
       'create_time', 'update_time', 'sterilized_time', 'adopt_time', 'missing_time', 'deceased_time'
     ]

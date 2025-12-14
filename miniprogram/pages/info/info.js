@@ -193,20 +193,21 @@ Page({
 
     // 获取普通用户也能看的数据
     // 所有猫猫数量
-    const allCatQf = {};
+    const allCatQf = { deleted: { $ne: 1 } };
     // 所有照片数量
     const allPhotoQf = { verified: true };
     // 所有便利贴数量
     const allCommentQf = { deleted: { $ne: true }, needVerify: { $ne: true } };
     // 所有领养
-    const adoptQf = { adopt: 1 };
+    const adoptQf = { adopt: 1, deleted: { $ne: 1 } };
     // 所有绝育量
-    const sterilizedQf = { sterilized: true };
+    const sterilizedQf = { sterilized: true, deleted: { $ne: 1 } };
     // 去除已领养、失踪、去喵星的猫猫
     const currentCatsQf = {
       adopt: { $ne: 1 },
       to_star: { $ne: true },
-      missing: { $ne: true }
+      missing: { $ne: true },
+      deleted: { $ne: 1 }
     };
 
     const { result: numAllCats } = await app.mpServerless.db.collection('cat').count(allCatQf);

@@ -123,12 +123,13 @@ Page({
 
     try {
       wx.showLoading({ title: '搜索中...' });
-      // 搜索名称或昵称
+      // 搜索名称或昵称，排除已删除的猫咪
       const { result } = await app.mpServerless.db.collection('cat').find({
         $or: [
           { name: { $regex: keyword} },
           { nickname: { $regex: keyword} },
-        ]
+        ],
+        deleted: { $ne: 1 }
       }, { limit: 10 });
 
       // 加载头像
