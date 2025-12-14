@@ -1,4 +1,0 @@
-name: deleteFiles
-methods:
-  - POST
-tags: []

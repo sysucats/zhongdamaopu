@@ -1,4 +1,0 @@
-name: getCatStats
-methods:
-  - GET
-tags: [] 

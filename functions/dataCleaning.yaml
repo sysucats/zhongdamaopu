@@ -1,5 +1,0 @@
-name: dataCleaning
-methods:
-  - POST
-  - GET
-tags: []
