@@ -492,10 +492,29 @@ Page({
     const orderItem = photoOrder[this.data.photoOrderSelected];
 
     let res;
-    if (orderItem.name == "最早收录") {
-      res = (await app.mpServerless.db.collection('photo').find(qf, { skip: now, limit: step })).result;
+    // 使用聚合查询来排序(同一月份内按收录时间倒序)
+    if (orderItem.key === 'shooting_date') {
+      const sortOrder = orderItem.order === 'asc' ? 1 : -1;
+      res = (await app.mpServerless.db.collection('photo').aggregate([
+        { $match: qf },
+        // 提取月份 (YYYY-MM)
+        { $addFields: { month: { $substr: ["$shooting_date", 0, 7] } } },
+        // 先按月份排序，同月份内按收录时间倒序（最近收录在前）
+        { $sort: { month: sortOrder, mdate: -1 } },
+        { $skip: now },
+        { $limit: step }
+      ])).result;
     } else {
-      res = (await app.mpServerless.db.collection('photo').find(qf, { sort: { shooting_date: -1 }, skip: now, limit: step })).result;
+      // 按收录时间排序
+      const sortOrder = orderItem.order === 'asc' ? 1 : -1;
+      res = (await app.mpServerless.db.collection('photo').find(
+        qf, 
+        { 
+          sort: { mdate: sortOrder }, 
+          skip: now, 
+          limit: step 
+        }
+      )).result;
     }
 
     const offset = this.jsData.album_raw.length;
