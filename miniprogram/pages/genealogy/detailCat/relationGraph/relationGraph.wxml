@@ -24,6 +24,7 @@
       <view class="node {{item.classes}}" 
             style="left:{{item.x}}px; top:{{item.y}}px; --size:{{item.sizePx}}px; --gap:{{gapRpx}}rpx;"
             catchtap="onNodeTap" 
+            bindlongpress="onNodeLongPress"
             data-item="{{item}}">
         <!-- 呼吸光环 -->
         <view wx:if="{{isLonely && item.isCenter}}" class="halo">

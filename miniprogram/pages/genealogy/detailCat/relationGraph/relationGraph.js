@@ -317,6 +317,19 @@ Page({
     await this.expandNode(item);
   },
 
+  // 长按节点跳转到猫猫详情页
+  onNodeLongPress(e) {
+    const cat = e.currentTarget.dataset.item;
+    // 点击"更多"不跳转
+    if (cat.isMore) {
+      return;
+    }
+    // 跳转到猫猫详情页
+    wx.navigateTo({
+      url: `/pages/genealogy/detailCat/detailCat?cat_id=${cat.id}`,
+    });
+  },
+
   // 点击弹窗更多关系若该子节点已是主节点的一级直连，则聚焦并高亮；否则不处理
   onOverflowCardTap(e) {
     const id = e.currentTarget.dataset.id;
