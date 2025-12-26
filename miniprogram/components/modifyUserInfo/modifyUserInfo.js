@@ -2,13 +2,14 @@ import { getUser } from "../../utils/user";
 import { deepcopy } from "../../utils/utils";
 import api from "../../utils/cloudApi";
 import { uploadFile } from "../../utils/common";
-import { removeCacheItem } from '../../utils/cache';
+import config from "../../config";
 const app = getApp();
 
 Component({
   data: {
     defaultAvatarUrl: "/pages/public/images/info/default_avatar.png",
     user: null,
+    originalAvatarUrl: "",
   },
 
   properties: {
@@ -51,7 +52,8 @@ Component({
         user.userInfo = {};
       }
       this.setData({
-        user: user
+        user: user,
+        originalAvatarUrl: user.userInfo.avatarUrl
       });
     },
 
@@ -84,8 +86,12 @@ Component({
       }
 
       var fileInfo = await this.uploadAvatar(user.userInfo.avatarUrl);
-      user.userInfo.avatarUrl = fileInfo.fileUrl;
-      user.userInfo.avatarUrlId = fileInfo.fileId;
+      if (fileInfo.fileUrl) {
+        user.userInfo.avatarUrl = fileInfo.fileUrl;
+        user.userInfo.avatarUrlId = fileInfo.fileId;
+      } else if (typeof user.userInfo.avatarUrl === 'string' && user.userInfo.avatarUrl.includes('?')) {
+        user.userInfo.avatarUrl = user.userInfo.avatarUrl.split('?')[0];
+      }
 
       console.log(user);
 
@@ -94,13 +100,41 @@ Component({
         op: 'update',
         user: user
       });
+      
+      if (config.cdn_cos_domain) {
+        // 删除旧头像
+        if (this.data.originalAvatarUrl && this.data.originalAvatarUrl !== user.userInfo.avatarUrl) {
+            let deleteUrl = this.data.originalAvatarUrl;
 
+            // 如果新头像是COS地址，提取其域名用于构造旧头像的删除地址
+            const newAvatarUrl = user.userInfo.avatarUrl;
+            if (newAvatarUrl && newAvatarUrl.includes('.myqcloud.com')) {
+              const originMatch = newAvatarUrl.match(/^(https?:\/\/[^/]+)/);
+              if (originMatch) {
+                const cosOrigin = originMatch[1];
+                // 提取旧头像的路径部分
+                const oldPathMatch = this.data.originalAvatarUrl.match(/^https?:\/\/[^/]+(\/.*)$/);
+                if (oldPathMatch) {
+                  const oldPath = oldPathMatch[1];
+                  // 移除可能存在的 query 参数
+                  const cleanPath = oldPath.split('?')[0];
+                  deleteUrl = cosOrigin + cleanPath;
+                }
+              }
+            }
+
+            // 异步执行删除，不阻塞 UI
+            app.mpServerless.function.invoke('deleteCosFiles', {
+              photoUrls: [deleteUrl]
+            }).then(res => {
+              console.log('后台删除旧头像成功', res);
+            }).catch(err => {
+              console.error("后台删除旧头像失败", err);
+            });
+        }
+      }
       wx.hideLoading();
-
-      // 发布更新事件
-      removeCacheItem("current-user");
-      app.globalData.eventBus.$emit('userInfoUpdated');
-
+      await this.loadUser();
       this.hide();
       wx.showToast({
         title: '保存成功',
@@ -108,21 +142,35 @@ Component({
       });
 
       this.triggerEvent('userInfoUpdated', { user: user });
+      // 重新加载当前页面，获取最新的数据（解决更新后的头像403
+      const currentPage = getCurrentPages().pop();
+      currentPage.onLoad(currentPage.options);
     },
 
     async uploadAvatar(tempFilePath) {
       const openid = this.data.user.openid;
-      if (!tempFilePath.includes("://tmp")) {
-        return { fileId: this.data.user.userInfo.avatarUrlId, fileUrl: tempFilePath };
+      if (!tempFilePath || !tempFilePath.includes("://tmp")) {
+        return tempFilePath;
       }
 
       //获取后缀
+      let ext = 'png'; // 默认后缀
       const index = tempFilePath.lastIndexOf(".");
-      const ext = tempFilePath.substr(index + 1);
+      if (index !== -1) {
+        ext = tempFilePath.substr(index + 1);
+      }
+
+      let cloudPath = `/user/avatar/${openid}.${ext}`;
+      // 如果配置了CDN域名，文件名加入时间戳以避免CDN缓存问题
+      if (config.cdn_cos_domain) {
+        const timestamp = Date.now();
+        cloudPath = `/user/avatar/${openid}_${timestamp}.${ext}`;
+      }
+
       // 上传图片
       let upRes = await uploadFile({
         filePath: tempFilePath, // 小程序临时文件路径
-        cloudPath: `/user/avatar/${openid}.${ext}`, // 上传至云端的路径
+        cloudPath: cloudPath, // 上传至云端的路径
       })
 
       console.log('upRes', upRes);

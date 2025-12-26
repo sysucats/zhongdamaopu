@@ -1,5 +1,5 @@
 // 存放共享功能，避免循环引用
-import { use_private_tencent_cos, sign_expires_tencent_cos } from "../config";
+import { use_private_tencent_cos, sign_expires_tencent_cos, cdn_cos_domain } from "../config";
 import COS from '../packages/tencentcloud/cos';
 import { removeQueryParams, parseQueryParams, getDeltaHours } from './utils'
 import { getCacheItem, setCacheItem } from "./cache";
@@ -170,13 +170,17 @@ async function _doCosSign(url) {
   const app = getApp();
   const cosInfo = _getRegionBucketPath(url);
   return new Promise((resolve) => {
-    app.cos.getObjectUrl({
+    const options = {
       Bucket: cosInfo.bucket, /* 填入您自己的存储桶，必须字段 */
       Region: cosInfo.region, /* 存储桶所在地域，例如 ap-beijing，必须字段 */
       Key: cosInfo.filePath, /* 存储在桶里的对象键（例如1.jpg，a/b/test.txt），支持中文，必须字段 */
       Protocol: "https:",
       Expires: sign_expires_tencent_cos, // 单位秒
-    }, function (err, data) {
+    };
+    if (cdn_cos_domain) {
+      options.Domain = cdn_cos_domain;
+    }
+    app.cos.getObjectUrl(options, function (err, data) {
       if (err) {
         console.error(err);
         resolve(url)
