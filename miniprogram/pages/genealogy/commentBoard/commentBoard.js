@@ -210,7 +210,7 @@ Page({
       title: '发送中...',
     });
     // 实际发送
-    this.doSendComment();
+    await this.doSendComment();
     this.doSendCommentEnd();
   },
 
