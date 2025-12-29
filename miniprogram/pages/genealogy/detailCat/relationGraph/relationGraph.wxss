@@ -366,3 +366,18 @@ page {
   border-radius: 999rpx;
   box-shadow: 0 8rpx 20rpx rgba(0,0,0,0.15);
 }
+
+/* 操作提示 */
+.operation-tip {
+  position: absolute;
+  left: 50%;
+  bottom: calc(38rpx + env(safe-area-inset-bottom));
+  transform: translateX(-50%);
+  z-index: 50;
+  background: rgba(255,255,255,0.9);
+  color: var(--text-sub);
+  font-size: 26rpx;
+  padding: 12rpx 20rpx;
+  border-radius: 999rpx;
+  box-shadow: 0 4rpx 12rpx rgba(0,0,0,0.1);
+}

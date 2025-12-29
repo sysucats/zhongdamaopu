@@ -52,6 +52,9 @@
 
   <!-- 重置 -->
   <view class="fab-reset" bindtap="onResetTap">重置</view>
+  
+  <!-- 操作提示 -->
+  <view class="operation-tip" wx:if="{{showOperationTip}}" bindtap="hideOperationTip">长按头像可跳转猫猫详情页哦</view>
 </view>
 
 <!-- 底部弹窗 -->
