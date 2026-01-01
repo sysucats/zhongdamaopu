@@ -10,6 +10,13 @@ Page({
     text_cfg: text_cfg,
     github_link: "https://github.com/sysucats/zhongdamaopu",
     update_log: [{
+      version: "v1.18.2",
+      content: [
+        "猫际关系图谱可以长按跳转（感谢wloop98）",
+        "修复便利贴重复上传bug（感谢wloop98）"
+      ],
+      time: "2026/01/01"
+    }, {
       version: "v1.18.1",
       content: [
         "优化关系图布局算法和修复背景图（感谢xuannfx）",

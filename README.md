@@ -64,7 +64,7 @@ EMAS版暂时没有录制部署视频，部署流程请参考：[猫谱EMAS版�
 
 本项目的开发工作100%用爱发电，特别感谢每一位为此付出的小伙伴。
 
-:computer:代码开发：[Zing22](https://github.com/Zing22)、[Jazon](https://github.com/jxzhn)、[Junius](https://github.com/JunDeer)、[yw](https://github.com/WondrousWisdomcard)、[Lauzeyu](https://github.com/parsifal486)、[Smileye-v](https://github.com/Smileye-v)、[xuannfx](https://github.com/xuannfx)、[LightHouse-1024](https://github.com/LightHouse-1024)
+:computer:代码开发：[Zing22](https://github.com/Zing22)、[Jazon](https://github.com/jxzhn)、[Junius](https://github.com/JunDeer)、[yw](https://github.com/WondrousWisdomcard)、[Lauzeyu](https://github.com/parsifal486)、[Smileye-v](https://github.com/Smileye-v)、[xuannfx](https://github.com/xuannfx)、[LightHouse-1024](https://github.com/LightHouse-1024)、[wloop98](https://github.com/wloop98)
 
 :black_nib:UI设计：蓝卷、[Junius](https://github.com/JunDeer)、[yw](https://github.com/WondrousWisdomcard)、[xuannfx](https://github.com/xuannfx)
 
