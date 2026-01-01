@@ -49,7 +49,8 @@ Page({
     hasExpanded: false,
     expandedId: null,
     hasFocusedChild: false,
-    isLonely: false
+    isLonely: false,
+    showOperationTip: true 
   },
 
   jsData: {
@@ -76,7 +77,21 @@ Page({
     });
     // 将配置中的名字间距传入视图，作为CSS变量 --gap 的值
     this.setData({ gapRpx: CONFIG.NAME_GAP });
+    
+    // 检查用户是否已经看过操作提示
+    const hasSeenTip = wx.getStorageSync('relationGraphTipSeen');
+    if (hasSeenTip) {
+      this.setData({ showOperationTip: false });
+    }
+    
     await this.initGraph();
+  },
+  
+  // 隐藏操作提示
+  hideOperationTip() {
+    this.setData({ showOperationTip: false });
+    // 记录用户已看过提示
+    wx.setStorageSync('relationGraphTipSeen', true);
   },
 
   // 初始化算法
@@ -315,6 +330,19 @@ Page({
 
     // 点击普通节点 -> 展开
     await this.expandNode(item);
+  },
+
+  // 长按节点跳转到猫猫详情页
+  onNodeLongPress(e) {
+    const cat = e.currentTarget.dataset.item;
+    // 点击"更多"不跳转
+    if (cat.isMore) {
+      return;
+    }
+    // 跳转到猫猫详情页
+    wx.navigateTo({
+      url: `/pages/genealogy/detailCat/detailCat?cat_id=${cat.id}`,
+    });
   },
 
   // 点击弹窗更多关系若该子节点已是主节点的一级直连，则聚焦并高亮；否则不处理

@@ -24,6 +24,7 @@
       <view class="node {{item.classes}}" 
             style="left:{{item.x}}px; top:{{item.y}}px; --size:{{item.sizePx}}px; --gap:{{gapRpx}}rpx;"
             catchtap="onNodeTap" 
+            bindlongpress="onNodeLongPress"
             data-item="{{item}}">
         <!-- 呼吸光环 -->
         <view wx:if="{{isLonely && item.isCenter}}" class="halo">
@@ -51,6 +52,9 @@
 
   <!-- 重置 -->
   <view class="fab-reset" bindtap="onResetTap">重置</view>
+  
+  <!-- 操作提示 -->
+  <view class="operation-tip" wx:if="{{showOperationTip}}" bindtap="hideOperationTip">长按头像可跳转猫猫详情页哦</view>
 </view>
 
 <!-- 底部弹窗 -->

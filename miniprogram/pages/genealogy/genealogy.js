@@ -792,7 +792,13 @@ Page({
       });
     }
     
-    this.setData({ filters_active: conditions.length > 0 });
+    // 检查是否有用户定义的过滤条件
+    const hasUserFilters = conditions.length > 0;
+    this.setData({ 
+      filters_active: hasUserFilters,
+      filters_empty: !hasUserFilters
+    });
+    
     // 添加软删除过滤条件
     conditions.push({ deleted: { $ne: 1 } });
     return { $and: conditions };
