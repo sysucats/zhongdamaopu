@@ -10,6 +10,12 @@ Page({
     text_cfg: text_cfg,
     github_link: "https://github.com/sysucats/zhongdamaopu",
     update_log: [{
+      version: "v1.18.3",
+      content: [
+        "修复新增猫猫关系Bug（感谢LightHouse-1024）"
+      ],
+      time: "2026/01/07"
+    }, {
       version: "v1.18.2",
       content: [
         "猫际关系图谱可以长按跳转（感谢wloop98）",
