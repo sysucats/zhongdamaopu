@@ -434,6 +434,10 @@ Component({
         // 检查缓存
         if (globalRelationsCache[catId]) {
           const cached = globalRelationsCache[catId];
+          // 缓存数据补全relations
+          if (!cached.relations || !Array.isArray(cached.relations)) {
+            cached.relations = [];
+          }
           const relIds = (cached.relations || []).filter(r => !!r.cat_id).map(r => r.cat_id);
           this.setData({
             cat: cached,
@@ -447,6 +451,10 @@ Component({
         const { result: cat } = await app.mpServerless.db.collection('cat').findOne({ _id: catId, deleted: { $ne: 1 } });
         if (!cat) {
           throw new Error('未找到猫咪');
+        }
+        // 数据库数据补全relations
+        if (!cat.relations || !Array.isArray(cat.relations)) {
+          cat.relations = [];
         }
         const relations = cat.relations || [];
         const ids = relations.map(r => r.cat_id);
