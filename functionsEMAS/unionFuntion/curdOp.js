@@ -2,7 +2,7 @@ const { createInternalCtx } = require('./_helper.js')
 const isManagerHandler = require('./isManager.js')
 const deleteFilesHandler = require('./deleteFiles.js')
 const deleteCosFilesHandler = require('./deleteCosFiles.js')
-
+// 操作对应collection需要的等级
 const permissionNeed = {
     "add": {
         "badge_def": 2,
@@ -95,6 +95,7 @@ const permissionNeed = {
     }
 }
 
+// 允许创建者操作（user.openid == doc._openid）
 const permissionAuthor = {
     "add": {},
     "update": {
@@ -118,14 +119,15 @@ module.exports = async (ctx) => {
     if (!collection) {
         return "no collection name.";
     }
-    const operation = ctx.args?.operation;
-    const permissionLevel = permissionNeed[operation][collection];
+    const operation = ctx.args?.operation;  // DB 操作 ["add", "update", "remove", "set", "inc", "read"]
+    const permissionLevel = permissionNeed[operation][collection];  // 操作要求的最低权限
     if (permissionLevel === undefined) {
-        return { errMsg: 'unk req.', ok: false };
+        return { errMsg: 'unk req.', ok: false };;
     }
     const item_id = ctx.args?.item_id;
     var data = ctx.args?.data;
 
+    // 检查权限
     if (permissionLevel) {
         const allowAuthor = permissionAuthor[operation][collection];
         const permission = await check_permission(collection, item_id, openid, permissionLevel, allowAuthor);
@@ -134,7 +136,8 @@ module.exports = async (ctx) => {
         }
     }
 
-    if (operation == "add") {
+    if (operation == "add") {  // 添加记录
+        // 前端可能需要跟据 _openid 字段进行数据库搜索，故手动保存
         if (openid) {
             data._openid = openid;
         }
@@ -142,20 +145,20 @@ module.exports = async (ctx) => {
         data.mdate = data.mdate || new Date();
         return await ctx.mpserverless.db.collection(collection).insertOne(data);
     }
-    else if (operation == "update") {
+    else if (operation == "update") {  // 更新记录
         data.mdate = new Date();
         return await ctx.mpserverless.db.collection(collection).updateOne({ _id: item_id }, { $set: data })
     }
-    else if (operation == "remove") {
-        if (collection == "news") {
+    else if (operation == "remove") {  // 移除记录
+        if (collection == "news") {  // 删除公告关联的图片和封面
             await delete_photo_for_news(item_id);
         }
         return await ctx.mpserverless.db.collection(collection).deleteOne({ _id: item_id });
     }
-    else if (operation == "set") {
+    else if (operation == "set") {  // 创建记录
         return await ctx.mpserverless.db.collection(collection).findOneAndUpdate({ _id: item_id }, { $set: data })
     }
-    else if (operation == "inc") {
+    else if (operation == "inc") {  // +1 操作
         const type = ctx.args.type;
         if (type == "pop") {
             return await ctx.mpserverless.db.collection(collection).updateOne({ _id: item_id }, { $inc: { popularity: 1 } })
@@ -176,11 +179,14 @@ module.exports = async (ctx) => {
         return { errMsg: `unk operation ${operation}`, ok: false };
     }
 
+    // 权限检查
     async function check_permission(collection, item_id, openid, level, allowAuthor) {
+        // 是否满足管理员等级
         if (await isManagerHandler(createInternalCtx(ctx, { openid: openid, req: level }))) {
             return true
         }
 
+        // 是否允许创建者修改
         var res = false;
         if (allowAuthor) {
             const { result: item } = await ctx.mpserverless.db.collection(collection).findOne({ _id: item_id });
@@ -189,6 +195,7 @@ module.exports = async (ctx) => {
         return res;
     }
 
+    // 删除图片
     async function delete_photo_for_news(item_id) {
         let { result: item } = await ctx.mpserverless.db.collection('news').findOne({ _id: item_id });
         if (item.coverPathId) {

@@ -1,7 +1,8 @@
 module.exports = async (ctx) => {
+  // 读取缓存
   const {
     triggerName
-  } = ctx.args;
+  } = ctx.args; // 如果是触发器，则有这个参数
 
   const {
     result: record
@@ -10,9 +11,11 @@ module.exports = async (ctx) => {
   });
 
   if (!triggerName && (record && Math.floor(Date.now() / 1000) < record.expiredAt)) {
+    // 未超时，直接返回
     return record.tempCOSToken;
   }
 
+  // 正常获取流程
   const {
     result: app_secret
   } = await ctx.mpserverless.db.collection('app_secret').findOne()
@@ -25,6 +28,7 @@ module.exports = async (ctx) => {
     OSS_SECRET_ID,
     OSS_SECRET_KEY
   } = app_secret;
+  // 没有配置
   if (!(OSS_ENDPOINT && OSS_BUCKET && OSS_SECRET_ID && OSS_SECRET_KEY)) {
     return null;
   }
@@ -52,6 +56,7 @@ module.exports = async (ctx) => {
       },
     };
 
+    // 实例化要请求产品的client对象,clientProfile是可选的
     const client = new StsClient(clientConfig);
     const params = {
       "Name": "GetFederationToken",
@@ -61,6 +66,7 @@ module.exports = async (ctx) => {
 
     const tempCOSToken = await client.GetFederationToken(params);
 
+    // 更新数据库
     const data = {
       tempCOSToken,
       expiredAt: Math.floor(Date.now() / 1000) + 3600

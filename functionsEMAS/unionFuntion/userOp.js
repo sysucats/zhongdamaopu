@@ -3,6 +3,7 @@ module.exports = async (ctx) => {
   const op = ctx.args?.op
   switch (op) {
     case 'get': {
+      // 获取用户，如果没有就新建一个
       const {
         result: user
       } = await ctx.mpserverless.db.collection('user').findOne({
@@ -39,9 +40,9 @@ module.exports = async (ctx) => {
       }
       var user = ctx.args.user;
       const _id = user._id;
-      delete user._id;
-      delete user.openid;
-      delete user.manager;
+      delete user._id; // 因为数据库不能更新_id
+      delete user.openid; // 这个键唯一
+      delete user.manager; // 不能用这个函数更新
       await ctx.mpserverless.db.collection('user').updateOne({
         _id: _id
       }, {

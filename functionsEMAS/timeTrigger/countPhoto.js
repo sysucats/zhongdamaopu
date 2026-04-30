@@ -1,6 +1,7 @@
 module.exports = async (ctx) => {
   var frontOneHour = new Date(new Date().getTime() - 1 * 60 * 60 * 1000);
 
+  // 查询条件：photo_count_best 不存在或 mphoto 在近1小时内更新，且猫咪未被删除
   const query = {
     $or: [{
         photo_count_best: {
@@ -16,11 +17,13 @@ module.exports = async (ctx) => {
     deleted: { $ne: 1 }
   };
 
+  // 1. 计算符合条件的记录总数
   const {
     result: total
   } = await ctx.mpserverless.db.collection('cat').count(query);
   if (!total) return {};
 
+  // 2. 分批查询记录（只取 _id 字段）
   const MAX_LIMIT = 100;
   const batchTimes = Math.ceil(total / MAX_LIMIT);
   const tasks = [];
@@ -32,20 +35,23 @@ module.exports = async (ctx) => {
         limit: MAX_LIMIT,
         projection: {
           _id: 1
-        }
+        } // 关键优化：只返回 _id 字段
       }
     );
     tasks.push(promise);
   }
 
+  // 3. 合并查询结果（只包含 _id 的数组）
   const results = await Promise.all(tasks);
   const cats = {
     data: results.flatMap(r => r.result.map(cat => ({ _id: cat._id }))),
     errMsg: ''
   };
-
+  
+  // 4. 为每只猫更新精选图片统计
   const stats = [];
   for (const cat of cats.data) {
+    // 并行查询两个统计数量
     const [bestCountRes, totalCountRes] = await Promise.all([
       ctx.mpserverless.db.collection('photo').count({
         cat_id: cat._id,
@@ -58,6 +64,7 @@ module.exports = async (ctx) => {
       })
     ]);
 
+    // 更新猫的记录
     const updateRes = await ctx.mpserverless.db.collection('cat').updateOne({
       _id: cat._id
     }, {
@@ -74,7 +81,7 @@ module.exports = async (ctx) => {
   }
 
   return {
-    cats: cats.data,
+    cats: cats.data, // 只包含 _id 的数组
     stats
   };
 };

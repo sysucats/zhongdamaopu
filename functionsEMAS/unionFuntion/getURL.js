@@ -2,8 +2,9 @@ module.exports = async (ctx) => {
   const Minio = require('minio');
   const fileName = ctx.args.fileName;
   return await signUrl(fileName);
-
+  // 签名方法
   async function signUrl(fileName) {
+    // minIO 配置
     const {
       result: app_secret
     } = await ctx.mpserverless.db.collection('app_secret').findOne()
@@ -15,6 +16,7 @@ module.exports = async (ctx) => {
       OSS_SECRET_KEY
     } = app_secret;
 
+    // 报错"Invalid endPoint"请参考: https://blog.csdn.net/xinleicol/article/details/115698599
     const minioClient = {
       endPoint: OSS_ENDPOINT,
       port: OSS_PORT,
@@ -30,6 +32,7 @@ module.exports = async (ctx) => {
       policy.setBucket(OSS_BUCKET)
       policy.setKey(fileName)
       let expires = new Date()
+      // 10d
       expires.setSeconds(24 * 60 * 60 * 10);
       policy.setExpires(expires)
       client.presignedPostPolicy(policy, function (err, data) {
@@ -42,4 +45,5 @@ module.exports = async (ctx) => {
       })
     })
   }
+
 }

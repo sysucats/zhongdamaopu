@@ -1,14 +1,16 @@
 module.exports = async (ctx) => {
   const db = ctx.mpserverless.db;
-  const { openid, op, rule, oldName, isMigration } = ctx.args;
+  const { openid, op, rule, oldName, isMigration } = ctx.args; // op: 'create' | 'update' | 'delete'
 
   if (!openid) {
     return { result: false, msg: 'Missing openid' };
   }
 
+  // 鉴权
   try {
     const { result: user } = await db.collection('user').findOne({ openid });
     const mgrLevel = (user && user.manager) || 0;
+    // 校验管理员等级
     if (mgrLevel < 2) {
       return { result: false, msg: '需要管理员等级 ≥ 2' };
     }
@@ -17,6 +19,7 @@ module.exports = async (ctx) => {
     return { result: false, msg: '鉴权失败', error: String(err) };
   }
 
+  // 处理关系规则
   try {
     const { result: setting } = await db.collection('setting').findOne({ _id: 'relation' });
     let rules = (setting && Array.isArray(setting.rules)) ? setting.rules : [];
@@ -39,6 +42,7 @@ module.exports = async (ctx) => {
       if (idx === -1) {
         return { result: false, msg: `关系 [${oldName}] 不存在` };
       }
+      // 如果名称被改变，检查是否存在冲突
       if (oldName !== rule.name) {
         const exists = rules.some(r => r.name === rule.name);
         if (exists) {
@@ -51,7 +55,8 @@ module.exports = async (ctx) => {
         return { result: false, msg: '关系名称缺失' };
       }
       const { name: ruleNameToDelete } = rule;
-
+      
+      // 校验关系规则是否在使用（仅检查未删除的猫）
       const { result: usedCats } = await db.collection('cat').find({ "relations.type": ruleNameToDelete, deleted: { $ne: 1 } }, { limit: 1 });
       if (Array.isArray(usedCats) && usedCats.length > 0) {
         return { result: false, msg: `关系 [${ruleNameToDelete}] 正在被使用，无法删除` };
@@ -66,9 +71,10 @@ module.exports = async (ctx) => {
       return { result: false, msg: `未知操作: ${op}` };
     }
 
+    // 自动反向补全：当创建/更新的是 mapped 规则时，根据 inverse_* 关联子规则
     if ((op === 'create' || op === 'update') && rule && rule.strategy === 'mapped') {
       const parentName = rule.name;
-      const parentGender = rule.target_gender;
+      const parentGender = rule.target_gender; // '公' | '母' | 'any'
       const maleChild = (rule.inverse_male || '').trim();
       const femaleChild = (rule.inverse_female || '').trim();
 
@@ -76,6 +82,7 @@ module.exports = async (ctx) => {
         if (!childName) return;
         const idx = rules.findIndex(r => r.name === childName);
         const exist = idx !== -1 ? rules[idx] : null;
+        // 不自动传播 inverse_any：仅保留子规则原有的 inverse_any
         const childInverseAny = exist ? exist.inverse_any : undefined;
         const updated = {
           name: childName,
@@ -102,6 +109,7 @@ module.exports = async (ctx) => {
         if (femaleChild) upsertChild(femaleChild, '母');
       }
 
+      // 若当前规则填写了 inverse_any，则确保存在对应的 "any" 类型规则（采用 mapped，并补回父规则名到对应性别方向）
       const anyName = (rule.inverse_any || '').trim();
       if (anyName) {
         const anyIdx = rules.findIndex(r => r.name === anyName);
@@ -127,6 +135,8 @@ module.exports = async (ctx) => {
       }
     }
 
+    // 迁移清理 types，将所有已被规则覆盖的名称移除
+    // 覆盖所有规则名 + mirror 的 inverse + mapped 的 inverse_male/inverse_female/inverse_any
     if (isMigration) {
       const covered = new Set();
       for (const r of rules) {
@@ -147,6 +157,7 @@ module.exports = async (ctx) => {
       types = (types || []).filter(t => !covered.has((t || '').trim()));
     }
 
+    // 写入数据库
     const updateData = { rules };
     if (isMigration) {
       updateData.types = types;

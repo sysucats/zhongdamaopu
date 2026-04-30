@@ -15,11 +15,12 @@ module.exports = async (ctx) => {
   const batchTimes = Math.ceil(countResult / MAX_LIMIT);
   const photosPromises = [];
 
+  // 添加投影设置只返回_openid字段
   const queryOptions = {
     projection: {
       _openid: 1,
       _id: 0
-    }
+    } // 只获取_openid，禁止获取_id
   };
 
   for (let i = 0; i < batchTimes; i++) {

@@ -16,6 +16,7 @@ module.exports = async (ctx) => {
 
   const operation = ctx.args.operation;
 
+  // 添加疫苗记录
   if (operation === 'add') {
     const vaccineData = ctx.args.data;
     if (!vaccineData.cat_id || !vaccineData.vaccine_type || !vaccineData.vaccine_date) {
@@ -46,6 +47,7 @@ module.exports = async (ctx) => {
       };
     }
   } else if (operation === 'get') {
+    // 单条疫苗记录
     const vaccine_id = ctx.args.vaccine_id;
     if (!vaccine_id) {
       return {
@@ -73,6 +75,7 @@ module.exports = async (ctx) => {
       };
     }
   } else if (operation === 'list') {
+    // 指定猫的所有疫苗
     const cat_id = ctx.args.cat_id;
     if (!cat_id) {
       return {
@@ -103,6 +106,7 @@ module.exports = async (ctx) => {
       };
     }
   } else if (operation === 'update') {
+    // 更新疫苗
     const vaccine_id = ctx.args.vaccine_id;
     const vaccineData = ctx.args.data;
     if (!vaccine_id) {
@@ -112,6 +116,7 @@ module.exports = async (ctx) => {
       };
     }
 
+    // 添加更新时间
     vaccineData.updated_at = new Date();
 
     try {
@@ -135,6 +140,7 @@ module.exports = async (ctx) => {
       };
     }
   } else if (operation === 'remove') {
+    // 删除疫苗记录
     const vaccine_id = ctx.args.vaccine_id;
     if (!vaccine_id) {
       return {
@@ -162,6 +168,7 @@ module.exports = async (ctx) => {
       };
     }
   } else if (operation === 'getTypes') {
+    // 获取所有类型
     try {
       const {
         result: types
@@ -181,6 +188,7 @@ module.exports = async (ctx) => {
       };
     }
   } else if (operation === 'addType') {
+    // 添加新的类型
     const newType = ctx.args.type;
     if (!newType) {
       return {
@@ -195,12 +203,14 @@ module.exports = async (ctx) => {
         _id: 'vaccine_type'
       });
       const typeList = types.types || [];
+      // 检查是否已存在
       if (typeList.includes(newType)) {
         return {
           msg: '类型已存在',
           result: false
         };
       }
+      // 添加
       typeList.push(newType);
       await ctx.mpserverless.db.collection('setting').updateOne({
         _id: 'vaccine_type'
@@ -222,6 +232,7 @@ module.exports = async (ctx) => {
       };
     }
   } else if (operation === 'removeType') {
+    // 删除疫苗类型
     const typeToRemove = ctx.args.type;
     if (!typeToRemove) {
       return {
@@ -230,6 +241,7 @@ module.exports = async (ctx) => {
       };
     }
     try {
+      // 获取现有
       const {
         result: types
       } = await ctx.mpserverless.db.collection('setting').findOne({
@@ -237,6 +249,7 @@ module.exports = async (ctx) => {
       });
       const typeList = types.types || [];
 
+      // 检查是否存在
       if (!typeList.includes(typeToRemove)) {
         return {
           msg: '类型不存在',
@@ -244,6 +257,7 @@ module.exports = async (ctx) => {
         };
       }
 
+      // 检查是否在使用中
       const {
         result: inUseCount
       } = await ctx.mpserverless.db.collection('vaccine').count({
@@ -260,6 +274,7 @@ module.exports = async (ctx) => {
 
       const newTypeList = typeList.filter(type => type !== typeToRemove);
 
+      // 确保至少保留一种疫苗类型
       if (newTypeList.length === 0) {
         return {
           msg: '必须至少保留一种疫苗类型',
@@ -287,13 +302,15 @@ module.exports = async (ctx) => {
       };
     }
   } else if (operation === 'listVaccinatedCats') {
-    const vaccine_type = ctx.args.vaccine_type;
+    // 获取已接种疫苗的列表
+    const vaccine_type = ctx.args.vaccine_type; // 筛选特定疫苗类型
     const query = {};
     if (vaccine_type) {
       query.vaccine_type = vaccine_type;
     }
 
     try {
+      // 获取所有符合条件的疫苗记录
       const {
         result: vaccines
       } = await ctx.mpserverless.db.collection('vaccine').find(query, {
@@ -302,6 +319,7 @@ module.exports = async (ctx) => {
         }
       });
 
+      // 拿到所有猫咪ID并去重
       const catIds = [...new Set(vaccines.map(v => v.cat_id))];
 
       if (catIds.length === 0) {
@@ -312,6 +330,7 @@ module.exports = async (ctx) => {
         };
       }
 
+      // 获取所有猫咪信息（排除已删除的猫咪）
       const {
         result: cats
       } = await ctx.mpserverless.db.collection('cat').find({
@@ -329,8 +348,11 @@ module.exports = async (ctx) => {
         }
       });
 
+      // 为每只猫添加最近的疫苗接种信息
       const result = cats.map(cat => {
+        // 找出该猫的所有疫苗记录
         const catVaccines = vaccines.filter(v => v.cat_id === cat._id);
+        // 按日期排序，取最新的一条
         const lastVaccine = catVaccines.sort((a, b) =>
           new Date(b.vaccine_date).getTime() - new Date(a.vaccine_date).getTime()
         )[0];
@@ -345,7 +367,8 @@ module.exports = async (ctx) => {
         };
       });
 
-      result.sort((a, b) =>
+      // 按最近接种日期降序排序更为合理且方便查看
+      result.sort((a, b) => 
         new Date(b.last_vaccine.vaccine_date).getTime() - new Date(a.last_vaccine.vaccine_date).getTime()
       );
 
@@ -370,6 +393,7 @@ module.exports = async (ctx) => {
   }
 }
 
+// 日期格式化
 function formatDate(date) {
   if (!date) return '';
 

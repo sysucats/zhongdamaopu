@@ -61,6 +61,8 @@ module.exports = async (ctx) => {
     genCodes: genCodes
   }
 
+
+  // 判断只包含SABC四个字符，且只出现一次
   function isStringValid(str) {
     if (!str) {
       return false;
@@ -88,7 +90,7 @@ module.exports = async (ctx) => {
   }
 
   function generateCode(segmentLength, segmentCount, validTime) {
-    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // 不包含 I 和 O 的字符集
     const codeLength = segmentLength * segmentCount;
     let code = '';
     const segments = [];
@@ -113,6 +115,7 @@ module.exports = async (ctx) => {
 
   function getNthDayLastSecond(currentDate, n) {
     let targetDate = new Date(currentDate.getUTCFullYear(), currentDate.getUTCMonth(), currentDate.getUTCDate() + n + 1);
+    // UTC转+8区
     targetDate = new Date(targetDate.getTime() - 1 - 8 * 60 * 60 * 1000);
 
     return targetDate;

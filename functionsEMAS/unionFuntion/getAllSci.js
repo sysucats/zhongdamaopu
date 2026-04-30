@@ -1,10 +1,13 @@
 const MAX_LIMIT = 100
 
 module.exports = async (ctx) => {
+  // 先取出集合记录总数
   const {
     result: total
   } = await ctx.mpserverless.db.collection('science').count({});
-  const batchTimes = Math.ceil(total / 100);
+  // 计算需分几次取
+  const batchTimes = Math.ceil(total / MAX_LIMIT);
+  // 承载所有读操作的 promise 的数组
   const tasks = [];
   for (let i = 0; i < batchTimes; i++) {
     const {
@@ -15,6 +18,7 @@ module.exports = async (ctx) => {
     });
     tasks.push(promise);
   }
+  // 等待所有
   return (await Promise.all(tasks)).reduce((acc, cur) => ({
     data: acc.data.concat(cur.data),
     errMsg: acc.errMsg,

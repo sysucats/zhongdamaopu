@@ -13,6 +13,7 @@ module.exports = async (ctx) => {
       result: false
     };
   }
+  // 检查是否已存在疫苗类型
   const {
     result: settingExists
   } = await ctx.mpserverless.db.collection('setting').findOne({

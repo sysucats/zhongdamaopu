@@ -34,6 +34,7 @@ module.exports = async (ctx) => {
           error: null
         };
         try {
+          // 删除文件
           await new Promise((resolve, reject) => {
             cos.deleteObject({
                 Bucket: OSS_BUCKET,
@@ -68,6 +69,7 @@ module.exports = async (ctx) => {
   }
 
   function getFilePath(fullPath) {
+    // 假设 URL 格式为 `https://<bucket-name>.cos.<region>.myqcloud.com/<file-path>`
     const url = new URL(fullPath);
     return decodeURIComponent(url.pathname.slice(1));
   }

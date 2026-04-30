@@ -21,6 +21,8 @@ module.exports = async (ctx) => {
     width: width
   }
 
+
+  // 获取小程序码
   const rsp = await ctx.httpclient.request(`https://api.weixin.qq.com/wxa/getwxacodeunlimit?access_token=${access_token}`, {
     method: 'POST',
     data: requestData,
@@ -28,16 +30,20 @@ module.exports = async (ctx) => {
     responseType: 'arraybuffer'
   });
 
+  // 检查响应状态
   if (rsp.status !== 200) {
     throw new Error(`获取小程序码失败: ${rsp.status}`);
   }
 
+  // 判断返回内容类型
   const contentType = rsp.headers['content-type'];
   if (contentType && contentType.indexOf('application/json') !== -1) {
+    // 解析错误信息
     const errJson = JSON.parse(Buffer.from(rsp.data).toString());
     throw new Error(`微信接口错误: ${errJson.errmsg || '未知错误'} (errcode: ${errJson.errcode})`);
   }
 
+  // 将二进制数据写入临时文件
   const fs = require('fs');
   const tmp = require('tmp');
   const tmpFile = tmp.fileSync();
@@ -46,6 +52,7 @@ module.exports = async (ctx) => {
   const cat_id = _id;
 
   try {
+    // 使用临时文件路径上传
     if (use_private_tencent_cos) {
       const data = await getURLHandler(createInternalCtx(ctx, {
         fileName: `/mpcode/${cat_id}.jpg`
@@ -86,6 +93,7 @@ module.exports = async (ctx) => {
     }
 
   } catch (error) {
+    // 删除临时文件
     if (fs.existsSync(tmpFile.name)) {
       fs.unlinkSync(tmpFile.name);
     }

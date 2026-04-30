@@ -3,13 +3,16 @@ const getAccessTokenHandler = require('./getAccessToken.js')
 
 module.exports = async (ctx) => {
   try {
+    // 获取access_token
     const access_token = await getAccessTokenHandler(createInternalCtx(ctx, {}))
-
-    const maskedToken = access_token
-      ? `${access_token.substring(0, 4)}...${access_token.slice(-4)}`
+    
+    // 安全打印token（仅显示部分）
+    const maskedToken = access_token 
+      ? `${access_token.substring(0, 4)}...${access_token.slice(-4)}` 
       : 'null';
     console.log(`Access Token: ${maskedToken}`);
-
+    
+    // 构造请求参数
     const param = {
       touser: ctx.args.touser,
       data: ctx.args.data,
@@ -17,7 +20,8 @@ module.exports = async (ctx) => {
       page: ctx.args.page,
       access_token: access_token
     };
-
+    
+    // 发送订阅消息请求
     const result = await ctx.httpclient.request(
       `https://api.weixin.qq.com/cgi-bin/message/subscribe/send?access_token=${encodeURIComponent(access_token)}`,
       {
@@ -29,11 +33,12 @@ module.exports = async (ctx) => {
         dataType: 'json'
       }
     );
-
+    
+    // 返回token和API响应结果
     return {
       debug: {
-        token: maskedToken,
-        fullToken: access_token
+        token: maskedToken, // 返回部分token用于调试
+        fullToken: access_token // 返回完整token（仅限开发环境）
       },
       apiResponse: {
         errCode: result.data.errcode,
@@ -42,11 +47,16 @@ module.exports = async (ctx) => {
     };
 
   } catch (err) {
+    // 错误时也返回token
+    const maskedToken = access_token 
+      ? `${access_token.substring(0, 4)}...${access_token.slice(-4)}` 
+      : 'null';
+    
     return {
       error: err.message || JSON.stringify(err),
       debug: {
-        token: 'null',
-        fullToken: null
+        token: maskedToken,
+        fullToken: access_token
       }
     };
   }
