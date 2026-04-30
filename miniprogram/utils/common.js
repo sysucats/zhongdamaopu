@@ -3,24 +3,7 @@ import { use_private_tencent_cos, sign_expires_tencent_cos } from "../config";
 import COS from '../packages/tencentcloud/cos';
 import { removeQueryParams, parseQueryParams, getDeltaHours } from './utils'
 import { getCacheItem, setCacheItem } from "./cache";
-
-// 获取当前用户的openid
-async function getCurrentUserOpenid() {
-  try {
-    const app = getApp();
-    console.log("App instance:", app);
-    const res = await app.mpServerless.user.getInfo({
-      authProvider: 'wechat_openapi'
-    });
-    if (res.success) {
-      return res.result.user.oAuthUserId;
-    }
-    return null;
-  } catch (error) {
-    console.log("getCurrentUserOpenid error:", error);
-    return null;
-  }
-}
+import api from "./cloudApi";
 
 async function downloadFile(filePath) {
   return new Promise(function (resolve, reject) {
@@ -48,9 +31,9 @@ async function uploadFile(options) {
     })
   }
 
-  const data = (await app.mpServerless.function.invoke('getURL', {
+  const data = (await api.getURL({
     fileName: fileName
-  })).result
+  }))
 
   const formData = data.formData;
   const postURL = data.postURL;
@@ -90,7 +73,7 @@ async function ensureCos() {
       const app = getApp();
       if (!cosTemp || (new Date() > new Date(cosTemp.Expiration))) {
         console.log("开始获取 cosTemp");
-        cosTemp = (await app.mpServerless.function.invoke('getTempCOS')).result
+        cosTemp = (await api.getTempCOS());
         wx.setStorageSync('cosTemp', cosTemp);
       }
       if (!cosTemp || !cosTemp.Credentials) {
@@ -215,7 +198,6 @@ function _splitOnce(str, sep) {
 }
 
 module.exports = {
-  getCurrentUserOpenid,
   downloadFile,
   uploadFile,
   ensureCos,

@@ -2,8 +2,9 @@
 import { randomInt } from './utils';
 import { getGlobalSettings } from "./page";
 import { getCacheItem, setCacheItem } from "./cache";
-import { getCurrentUserOpenid, signCosUrl } from "./common";
+import { signCosUrl } from "./common";
 import config from "../config";
+import api from "./cloudApi";
 
 const app = getApp();
 
@@ -33,11 +34,11 @@ async function getUser(options) {
   }
 
   // 直接调用云函数，不再通过 api 对象
-  const openid = await getCurrentUserOpenid();
-  userRes = (await app.mpServerless.function.invoke('userOp', {
+  const openid = await api.getCurrentUserOpenid();
+  userRes = (await api.userOp({
     op: 'get',
     openid: openid
-  })).result;
+  }));
   if (userRes && userRes.userInfo) {
     userRes.userInfo.avatarUrl = await signCosUrl(userRes.userInfo.avatarUrl);
   }
@@ -215,16 +216,15 @@ function toSetUserInfo() {
 
 // 设置用户等级
 async function setUserRole(openid, role) {
-  // 直接调用云函数，不再通过 api 对象
-  const currentOpenid = await getCurrentUserOpenid();
-  return (await app.mpServerless.function.invoke('userOp', {
+  const currentOpenid = await api.getCurrentUserOpenid();
+  return (await api.userOp({
     "op": "updateRole",
     "user": {
       openid: openid,
       role: role
     },
     openid: currentOpenid
-  })).result;
+  }));
 }
 
 // 填充userInfo

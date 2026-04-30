@@ -1,17 +1,10 @@
-module.exports = async (ctx) => {
-  if (ctx.args?.deploy_test === true) {
-    // 进行部署检查
-    return "v2.0";
-  }
+const MAX_LIMIT = 100
 
-  const MAX_LIMIT = 100
-  // 先取出集合记录总数
+module.exports = async (ctx) => {
   const {
     result: total
   } = await ctx.mpserverless.db.collection('science').count({});
-  // 计算需分几次取
   const batchTimes = Math.ceil(total / 100);
-  // 承载所有读操作的 promise 的数组
   const tasks = [];
   for (let i = 0; i < batchTimes; i++) {
     const {
@@ -22,7 +15,6 @@ module.exports = async (ctx) => {
     });
     tasks.push(promise);
   }
-  // 等待所有
   return (await Promise.all(tasks)).reduce((acc, cur) => ({
     data: acc.data.concat(cur.data),
     errMsg: acc.errMsg,
