@@ -38,17 +38,21 @@ async function curdOp(options) {
 async function userOp(options) {
   const app = getApp();
   var openid = await getCurrentUserOpenid();
-  return (await app.mpServerless.function.invoke('userOp', {
+  return (await app.mpServerless.function.invoke('unionOp', {
     ...options,
     openid: openid,
-    op: options.op
+    op: options.op,
+    unionAction: "userOp",
   })).result;
 }
 // 发送消息
 
 async function sendMsgV2(options) {
   const app = getApp();
-  return (await app.mpServerless.function.invoke('sendMsgV2', options)).result;
+  return (await app.mpServerless.function.invoke('unionOp', {
+    ...options,
+    unionAction: "sendMsgV2",
+  })).result;
 }
 
 async function getMpCode(options) {
@@ -60,15 +64,19 @@ async function getMpCode(options) {
     width: 500,
     use_private_tencent_cos: config.use_private_tencent_cos
   }
-  return (await app.mpServerless.function.invoke('getMpCode', params)).result;
+  return (await app.mpServerless.function.invoke('unionOp', {
+    ...params,
+    unionAction: "getMpCode",
+  })).result;
 }
 
 async function managePhoto(options) {
   const app = getApp();
   const openid = await getCurrentUserOpenid();
-  return (await app.mpServerless.function.invoke('managePhoto', {
+  return (await app.mpServerless.function.invoke('unionOp', {
     ...options,
-    openid: openid
+    openid: openid,
+    unionAction: "managePhoto",
   })).result
 }
 
@@ -83,9 +91,10 @@ async function getAllSci(options) {
 async function updateCat(options) {
   const app = getApp();
   const openid = await getCurrentUserOpenid();
-  return (await app.mpServerless.function.invoke('updateCat', {
+  return (await app.mpServerless.function.invoke('unionOp', {
     ...options,
-    openid: openid
+    openid: openid,
+    unionAction: "updateCat",
   })).result
 }
 
@@ -106,7 +115,7 @@ async function contentSafeCheck(content, nickname) {
     21000: "其他",
   }
   // 违规检测并提交
-  var res = (await app.mpServerless.function.invoke('commentCheck', { openid: openid, content: content, nickname: nickname })).result;
+  var res = (await app.mpServerless.function.invoke('unionOp', { openid: openid, content: content, nickname: nickname, unionAction: "commentCheck" })).result;
   // 检测接口的返回
   console.log("contentSafeCheck", res);
   if (res.errCode != 0 && res.errcode != 0) {
@@ -132,36 +141,40 @@ async function contentSafeCheck(content, nickname) {
 async function getBadge(options) {
   const app = getApp();
   const openid = await getCurrentUserOpenid();
-  return (await app.mpServerless.function.invoke('getBadge', {
+  return (await app.mpServerless.function.invoke('unionOp', {
     ...options,
-    openid: openid
+    openid: openid,
+    unionAction: "getBadge",
   })).result
 }
 // 添加app实例获取
 async function giveBadge(options) {
   const app = getApp();
   const openid = await getCurrentUserOpenid();
-  return (await app.mpServerless.function.invoke('giveBadge', {
+  return (await app.mpServerless.function.invoke('unionOp', {
     ...options,
-    openid: openid
+    openid: openid,
+    unionAction: "giveBadge",
   })).result
 }
 // 生成徽章二维码
 async function genBadgeCode(options) {
   const app = getApp();
   const openid = await getCurrentUserOpenid();
-  return (await app.mpServerless.function.invoke('genBadgeCode', {
+  return (await app.mpServerless.function.invoke('unionOp', {
     ...options,
-    openid: openid
+    openid: openid,
+    unionAction: "genBadgeCode",
   })).result
 }
 // 加载徽章码
 async function loadBadgeCode(options) {
   const app = getApp();
   const openid = await getCurrentUserOpenid();
-  return (await app.mpServerless.function.invoke('curdOp', {
+  return (await app.mpServerless.function.invoke('unionOp', {
     ...options,
     openid: openid,
+    unionAction: "curdOp",
     operation: "read",
     collection: "badge_code",
     where: options.where,
@@ -176,22 +189,29 @@ async function getUserStats(options) {
   const app = getApp();
   const openid = await getCurrentUserOpenid();
   console.log("openid", openid);
-  return (await app.mpServerless.function.invoke('getUserStats', {
+  return (await app.mpServerless.function.invoke('unionOp', {
     ...options,
-    openid: openid
+    openid: openid,
+    unionAction: "getUserStats",
   })).result
 }
 
 // 更新一只猫的评分
 async function updateCatRating(options) {
   const app = getApp();
-  return (await app.mpServerless.function.invoke('updateCatRating', options)).result
+  return (await app.mpServerless.function.invoke('unionOp', {
+    ...options,
+    unionAction: "updateCatRating",
+  })).result
 }
 
 // 添加app实例获取
 async function getCatStats(options) {
   const app = getApp();
-  return (await app.mpServerless.function.invoke('getCatStats', options)).result
+  return (await app.mpServerless.function.invoke('unionOp', {
+    ...options,
+    unionAction: "getCatStats",
+  })).result
 }
 
 // 更新关注列表
@@ -199,9 +219,10 @@ async function getCatStats(options) {
 async function updateFollowCats(options) {
   const app = getApp();
   const openid = await getCurrentUserOpenid();
-  return (await app.mpServerless.function.invoke('updateFollowCats', {
+  return (await app.mpServerless.function.invoke('unionOp', {
     ...options,
-    openid: openid
+    openid: openid,
+    unionAction: "updateFollowCats",
   })).result
 }
 
@@ -209,9 +230,10 @@ async function updateFollowCats(options) {
 async function vaccineOp(options) {
   const app = getApp();
   const openid = await getCurrentUserOpenid();
-  return (await app.mpServerless.function.invoke('vaccineOp', {
+  return (await app.mpServerless.function.invoke('unionOp', {
     ...options,
-    openid: openid
+    openid: openid,
+    unionAction: "vaccineOp",
   })).result
 }
 
@@ -219,9 +241,10 @@ async function vaccineOp(options) {
 async function catRelationOp(options) {
   const app = getApp();
   const openid = await getCurrentUserOpenid();
-  return (await app.mpServerless.function.invoke('catRelationOp', {
+  return (await app.mpServerless.function.invoke('unionOp', {
     ...options,
-    openid: openid
+    openid: openid,
+    unionAction: "catRelationOp",
   })).result;
 }
 
@@ -229,9 +252,10 @@ async function catRelationOp(options) {
 async function manageRelationRules(options) {
   const app = getApp();
   const openid = await getCurrentUserOpenid();
-  return (await app.mpServerless.function.invoke('manageRelationRules', {
+  return (await app.mpServerless.function.invoke('unionOp', {
     ...options,
-    openid: openid
+    openid: openid,
+    unionAction: "manageRelationRules",
   })).result;
 }
 
@@ -239,9 +263,10 @@ async function manageRelationRules(options) {
 async function initVaccineTypes(options) {
   const app = getApp();
   const openid = await getCurrentUserOpenid();
-  return (await app.mpServerless.function.invoke('initVaccineTypes', {
+  return (await app.mpServerless.function.invoke('unionOp', {
     ...options,
-    openid: openid
+    openid: openid,
+    unionAction: "initVaccineTypes",
   })).result;
 }
 
@@ -249,16 +274,20 @@ async function initVaccineTypes(options) {
 async function getURL(options) {
   const app = getApp();
   const openid = await getCurrentUserOpenid();
-  return (await app.mpServerless.function.invoke('getURL', {
+  return (await app.mpServerless.function.invoke('unionOp', {
     ...options,
-    openid: openid
+    openid: openid,
+    unionAction: "getURL",
   })).result;
 }
 
 async function getTempCOS(options) {
   const app = getApp();
   console.log("getTempCOS", options, app);
-  return (await app.mpServerless.function.invoke('getTempCOS', options)).result;
+  return (await app.mpServerless.function.invoke('unionOp', {
+    ...options,
+    unionAction: "getTempCOS",
+  })).result;
 }
 
 
