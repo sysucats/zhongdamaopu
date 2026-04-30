@@ -10,6 +10,12 @@ Page({
     text_cfg: text_cfg,
     github_link: "https://github.com/sysucats/zhongdamaopu",
     update_log: [{
+      version: "v1.18.5",
+      content: [
+        "合并后端云函数",
+      ],
+      time: "2026/04/30"
+    }, {
       version: "v1.18.4",
       content: [
         "修复照片处理BUG",
