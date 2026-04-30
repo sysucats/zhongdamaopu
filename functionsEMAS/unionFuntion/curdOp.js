@@ -1,3 +1,8 @@
+const { createInternalCtx } = require('./_helper.js')
+const isManagerHandler = require('./isManager.js')
+const deleteFilesHandler = require('./deleteFiles.js')
+const deleteCosFilesHandler = require('./deleteCosFiles.js')
+
 const permissionNeed = {
     "add": {
         "badge_def": 2,
@@ -172,7 +177,7 @@ module.exports = async (ctx) => {
     }
 
     async function check_permission(collection, item_id, openid, level, allowAuthor) {
-        if (await ctx.mpserverless.function.invoke('isManager', { openid: openid, req: level })) {
+        if (await isManagerHandler(createInternalCtx(ctx, { openid: openid, req: level }))) {
             return true
         }
 
@@ -191,13 +196,13 @@ module.exports = async (ctx) => {
             if (item.photosPathId.length > 0) {
                 photoIDs.concat(item.photosPathId);
             }
-            await ctx.mpserverless.function.invoke("deleteFiles", { photoIDs: photoIDs });
+            await deleteFilesHandler(createInternalCtx(ctx, { photoIDs: photoIDs }));
         } else {
             var photoUrls = [item.coverPath];
             if (item.photosPath.length > 0) {
                 photoUrls.concat(item.photosPath);
             }
-            await ctx.mpserverless.function.invoke("deleteCosFiles", { photoUrls: photoUrls });
+            await deleteCosFilesHandler(createInternalCtx(ctx, { photoUrls: photoUrls }));
         }
     }
 }

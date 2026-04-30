@@ -1,6 +1,9 @@
+const { createInternalCtx } = require('./_helper.js')
+const getAccessTokenHandler = require('./getAccessToken.js')
+
 module.exports = async (ctx) => {
   try {
-    const { result: access_token } = await ctx.mpserverless.function.invoke('getAccessToken');
+    const access_token = await getAccessTokenHandler(createInternalCtx(ctx, {}))
 
     const maskedToken = access_token
       ? `${access_token.substring(0, 4)}...${access_token.slice(-4)}`

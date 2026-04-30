@@ -19,6 +19,10 @@ const manageRelationRulesHandler = require('./manageRelationRules.js')
 const initVaccineTypesHandler = require('./initVaccineTypes.js')
 const getURLHandler = require('./getURL.js')
 const getTempCOSHandler = require('./getTempCOS.js')
+const getAccessTokenHandler = require('./getAccessToken.js')
+const deleteFilesHandler = require('./deleteFiles.js')
+const deleteCosFilesHandler = require('./deleteCosFiles.js')
+const isManagerHandler = require('./isManager.js')
 
 const actionMap = {
     curdOp: curdOpHandler,
@@ -42,6 +46,10 @@ const actionMap = {
     initVaccineTypes: initVaccineTypesHandler,
     getURL: getURLHandler,
     getTempCOS: getTempCOSHandler,
+    getAccessToken: getAccessTokenHandler,
+    deleteFiles: deleteFilesHandler,
+    deleteCosFiles: deleteCosFilesHandler,
+    isManager: isManagerHandler,
 }
 
 module.exports = async (ctx) => {

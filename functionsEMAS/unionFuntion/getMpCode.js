@@ -1,3 +1,7 @@
+const { createInternalCtx } = require('./_helper.js')
+const getAccessTokenHandler = require('./getAccessToken.js')
+const getURLHandler = require('./getURL.js')
+
 module.exports = async (ctx) => {
   const axios = require('axios');
   const FormData = require('form-data');
@@ -8,7 +12,7 @@ module.exports = async (ctx) => {
     width,
     use_private_tencent_cos
   } = ctx.args
-  const access_token = await ctx.mpserverless.function.invoke('getAccessToken')
+  const access_token = await getAccessTokenHandler(createInternalCtx(ctx, {}))
 
   var requestData = {
     scene: scene,
@@ -17,7 +21,7 @@ module.exports = async (ctx) => {
     width: width
   }
 
-  const rsp = await ctx.httpclient.request(`https://api.weixin.qq.com/wxa/getwxacodeunlimit?access_token=${access_token.result}`, {
+  const rsp = await ctx.httpclient.request(`https://api.weixin.qq.com/wxa/getwxacodeunlimit?access_token=${access_token}`, {
     method: 'POST',
     data: requestData,
     contentType: 'json',
@@ -43,9 +47,9 @@ module.exports = async (ctx) => {
 
   try {
     if (use_private_tencent_cos) {
-      const data = (await ctx.mpserverless.function.invoke('getURL', {
+      const data = await getURLHandler(createInternalCtx(ctx, {
         fileName: `/mpcode/${cat_id}.jpg`
-      })).result;
+      }));
       const formData = new FormData();
       for (const key in data.formData) {
         formData.append(key, data.formData[key]);

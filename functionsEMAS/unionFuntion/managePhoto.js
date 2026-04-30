@@ -1,10 +1,13 @@
+const { createInternalCtx } = require('./_helper.js')
+const isManagerHandler = require('./isManager.js')
+const deleteFilesHandler = require('./deleteFiles.js')
+const deleteCosFilesHandler = require('./deleteCosFiles.js')
+
 module.exports = async (ctx) => {
-  const {
-    result: is_manager
-  } = await ctx.mpserverless.function.invoke('isManager', {
+  const is_manager = await isManagerHandler(createInternalCtx(ctx, {
     openid: ctx.args.openid,
     req: 1
-  })
+  }))
   if (!is_manager) {
     return {
       msg: 'not a manager',
@@ -74,18 +77,18 @@ module.exports = async (ctx) => {
         photoIDs.push(photo.photo_compressed_id);
         photoIDs.push(photo.photo_watermark_id);
       }
-      await ctx.mpserverless.function.invoke("deleteFiles", {
+      await deleteFilesHandler(createInternalCtx(ctx, {
         photoIDs: photoIDs
-      });
+      }));
     } else {
       var photoUrls = [photo.photo_id];
       if (photo.photo_compressed) {
         photoUrls.push(photo.photo_compressed);
         photoUrls.push(photo.photo_watermark);
       }
-      await ctx.mpserverless.function.invoke("deleteCosFiles", {
+      await deleteCosFilesHandler(createInternalCtx(ctx, {
         photoUrls: photoUrls
-      });
+      }));
     }
     await ctx.mpserverless.db.collection('photo').deleteOne({
       _id: photo._id
@@ -122,13 +125,13 @@ module.exports = async (ctx) => {
       if (photo.photo_compressed_id) {
         photoIDs.push(photo.photo_compressed_id);
         photoIDs.push(photo.photo_watermark_id);
-        await ctx.mpserverless.function.invoke("deleteFiles", {
+        await deleteFilesHandler(createInternalCtx(ctx, {
           photoIDs: photoIDs
-        });
+        }));
       } else {
-        await ctx.mpserverless.function.invoke("deleteCosFiles", {
+        await deleteCosFilesHandler(createInternalCtx(ctx, {
           photoUrls: photoIDs
-        });
+        }));
       }
     }
     await ctx.mpserverless.db.collection('photo').updateOne({

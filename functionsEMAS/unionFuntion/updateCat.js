@@ -1,10 +1,11 @@
+const { createInternalCtx } = require('./_helper.js')
+const isManagerHandler = require('./isManager.js')
+
 module.exports = async (ctx) => {
-  const {
-    result: is_manager
-  } = await ctx.mpserverless.function.invoke('isManager', {
+  const is_manager = await isManagerHandler(createInternalCtx(ctx, {
     openid: ctx.args.openid,
     req: ctx.args.action === 'delete' ? 99 : 2
-  })
+  }))
   if (!is_manager) {
     return {
       msg: 'not a manager',

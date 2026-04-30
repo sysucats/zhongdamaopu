@@ -1,7 +1,8 @@
+const { createInternalCtx } = require('./_helper.js')
+const getAccessTokenHandler = require('./getAccessToken.js')
+
 module.exports = async (ctx) => {
-  const {
-    result: access_token
-  } = await ctx.mpserverless.function.invoke('getAccessToken')
+  const access_token = await getAccessTokenHandler(createInternalCtx(ctx, {}))
 
   try {
     const result = await ctx.httpclient.request(`https://api.weixin.qq.com/wxa/msg_sec_check?access_token=${access_token}`, {
