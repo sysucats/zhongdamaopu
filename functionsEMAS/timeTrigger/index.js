@@ -4,7 +4,7 @@ const getPhotoRankHandler = require('./getPhotoRank.js')
 
 module.exports = async (ctx) => {
     if (ctx.args?.deploy_test === true) {
-        return "timeTrigger_v1.0"
+        return "v1.0"
     }
 
     return await Promise.all([
