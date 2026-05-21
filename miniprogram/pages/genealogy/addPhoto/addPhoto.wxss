@@ -144,3 +144,45 @@ picker, input {
   font-size: 24rpx;
   margin-bottom: 5rpx;
 }
+
+/* 位置信息 */
+.location-box {
+  box-shadow: 0 0 10rpx var(--color-gray-dark);
+  padding: 20rpx 30rpx;
+  margin: 20rpx 0;
+  border-radius: 20rpx;
+  background: var(--color-primary-light);
+}
+
+.location-header {
+  margin-bottom: 12rpx;
+}
+
+.location-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.location-tip {
+  font-size: 26rpx;
+  color: var(--color-gray-max);
+}
+
+.location-coords {
+  font-size: 24rpx;
+  color: var(--color-primary-text);
+  font-weight: 500;
+}
+
+.location-btn {
+  width: 160rpx;
+  font-size: 24rpx;
+  padding: 10rpx 20rpx;
+  margin: 0;
+  border-radius: 20rpx;
+  background: var(--color-primary);
+  color: var(--color-primary-text);
+  border: none;
+  line-height: 1.2;
+}

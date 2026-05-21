@@ -115,10 +115,8 @@ Page({
         content: '请重新进入小程序',
         showCancel: false,
         success() {
-          const pagesStack = getCurrentPages();
-          const path = getCurrentPath(pagesStack);
-          wx.restartMiniProgram({
-            path
+          wx.reLaunch({
+            url: '/pages/genealogy/genealogy'
           });
         }
       })
