@@ -42,7 +42,8 @@
     "pages/info/myFollowCats/myFollowCats",
     "pages/manage/catManage/catManage",
     "pages/info/dashboard/dashboard",
-    "pages/genealogy/detailCat/relationGraph/relationGraph"
+    "pages/genealogy/detailCat/relationGraph/relationGraph",
+    "pages/map/index/index"
   ],
   "subPackages": [
     {
@@ -74,6 +75,12 @@
       },
       {
         "pagePath": "pages/info/info"
+      },
+      {
+        "pagePath": "pages/map/index/index",
+        "text": "校园导览",
+        "iconPath": "images/map.png",
+        "selectedIconPath": "images/map-active.png"
       }
     ]
   },
@@ -94,6 +101,14 @@
   ],
   "sitemapLocation": "sitemap.json",
   "lazyCodeLoading": "requiredComponents",
+  "permission": {
+    "scope.userLocation": {
+      "desc": "用于记录猫咪照片的拍摄位置，在地图上展示猫咪分布"
+    }
+  },
+  "requiredPrivateInfos": [
+    "getLocation"
+  ],
   "embeddedAppIdList": [
     "wxebadf544ddae62cb",
     "wxd45c635d754dbf59"

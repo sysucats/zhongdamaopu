@@ -31,6 +31,21 @@
     
     <button bindtap='chooseImg' class='long primary'>选择照片</button>
 
+    <!-- 位置信息 -->
+    <view class='location-box'>
+      <view class='location-header'>
+        <text class='label'>拍摄位置（用于校园导览地图展示）</text>
+      </view>
+      <view class='location-row' wx:if="{{!location}}">
+        <text class='location-tip'>未获取位置</text>
+        <button class='location-btn' bindtap='getLocation' loading="{{locating}}">获取定位</button>
+      </view>
+      <view class='location-row' wx:else>
+        <text class='location-coords'>📍 {{location.latitude.toFixed(6)}}, {{location.longitude.toFixed(6)}}</text>
+        <button class='location-btn' bindtap='getLocation' loading="{{locating}}">重新定位</button>
+      </view>
+    </view>
+
     <view class='tip' hidden='{{photos && photos.length}}'>* 如果遇到闪退，清理后台应用再试试~</view>
 
     <view class='set-all' hidden='{{!photos || photos.length<2}}'>

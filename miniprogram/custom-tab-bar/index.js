@@ -32,21 +32,14 @@ Component({
       await sleep(100);
     }
     const settings = await this.getSettings();
-    if (settings == undefined) {
-      console.log("no settings, currentPath:", currentPath);
-      if (isTabPath(currentPath)) {
-        wx.showModal({
-          title: 'TabBar错误001',
-          content: `请重进小程序。当前页面：${currentPath}`,
-          showCancel: false
-        });
-        return;
-      }
-      
+    if (!settings) {
+      console.log("no settings (demo/offline mode), using default tabs");
+      const defaultList = getTabBarList();
       this.setData({
-        list: tab,
+        list: defaultList,
         showTabBar: true,
       });
+      wx.setStorageSync('tabBarOrder', Object.keys(tab));
       return;
     }
     const fullTab = settings.fullTab.split(',');
