@@ -1,0 +1,93 @@
+page {
+  width: 750rpx;
+  padding: 30rpx;
+  box-sizing: border-box;
+}
+
+.requirement-box {
+  background: var(--color-primary-light);
+  border-radius: 16rpx;
+  padding: 25rpx;
+  margin-bottom: 30rpx;
+}
+
+.req-title {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: var(--color-primary-text);
+  margin-bottom: 12rpx;
+}
+
+.req-desc {
+  font-size: 26rpx;
+  color: var(--color-black-min);
+  margin-bottom: 12rpx;
+}
+
+.req-stats {
+  font-size: 28rpx;
+  color: var(--color-primary);
+  font-weight: 500;
+  margin-bottom: 10rpx;
+}
+
+.req-status.unmet {
+  font-size: 24rpx;
+  color: var(--color-red, #e74c3c);
+  margin-top: 8rpx;
+}
+
+.req-status.met {
+  font-size: 24rpx;
+  color: var(--color-green, #27ae60);
+}
+
+.inputTitle {
+  margin-left: 15rpx;
+  font-size: 30rpx;
+}
+
+textarea {
+  width: 650rpx;
+  height: 10rem;
+  border-bottom: 2rpx var(--color-primary) solid;
+  background-color: var(--color-white-dark);
+  padding: 20rpx;
+  color: var(--color-black-light);
+  margin-top: 8rpx;
+  font-size: 28rpx;
+}
+
+.lengthTips {
+  font-size: 26rpx;
+  color: var(--color-gray-max);
+  float: right;
+  margin-right: 10rpx;
+  margin-top: 5rpx;
+}
+
+.submitButton {
+  margin-top: 30rpx;
+}
+
+button {
+  background-color: var(--color-primary);
+  color: var(--color-text-onPrimary);
+  width: 100%;
+  font-size: 35rpx;
+  padding: 20rpx 30rpx;
+  border-radius: 44rpx;
+  border: none;
+  line-height: 1.2;
+}
+
+button::after {
+  border: none;
+}
+
+.footnote {
+  margin-top: 20rpx;
+  font-size: 24rpx;
+  color: var(--color-gray-max);
+  text-align: center;
+}

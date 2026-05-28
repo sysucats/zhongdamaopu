@@ -215,7 +215,7 @@ Page({
   // 加载总的统计数据
   async loadTotalStats() {
     try {
-      const result = await api.getCatStats();
+      const result = await app.mpServerless.function.invoke('getCatStats');
       console.log('获取统计数据:', result);
       
       if (result.success && result.data) {
@@ -670,7 +670,7 @@ Page({
   async callPhotoManager(photo, type, extraParams = {}) {
     try {
       const openid = this.data.currentUser.openid;
-      const result = await api.managePhoto({
+      const result = await app.mpServerless.function.invoke('managePhoto', {
         openid: openid,
         photo: photo,
         type: type,

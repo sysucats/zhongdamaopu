@@ -1,8 +1,5 @@
 import dp_cfg from "./deployConfig";
-import { signCosUrl, downloadFile } from "../../../utils/common"
-import api from "../../../utils/cloudApi";
-
-
+import { getCurrentUserOpenid, signCosUrl, downloadFile } from "../../../utils/common"
 
 const app = getApp();
 
@@ -39,7 +36,7 @@ async function _checkFuncs() {
 
 // 检查云函数是否都部署了
 async function checkFunctions() {
-  const openid = await api.getCurrentUserOpenid();
+  const openid = await getCurrentUserOpenid();
   if (!openid) {
     return {
       status: STATUS_FAIL,

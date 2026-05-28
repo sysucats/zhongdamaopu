@@ -238,6 +238,7 @@ Page({
     } else {
       cat.photo = [];
     }
+    if (!cat.characteristics) cat.characteristics = '';
     if (cat.characteristics.length) {
       cat.characteristics_string = cat.characteristics + '\n';
     } else {

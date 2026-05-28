@@ -137,7 +137,7 @@ Page({
       for (const j in settings[i]) {
         const type = desc[i][j].type;
         var value = settings[i][j];
-        console.log(i, j, value, type);
+        // console.log(i, j, value, type);
         if (type == "number") {
           if (isNaN(value)) {
             wx.showModal({
@@ -148,17 +148,6 @@ Page({
             return false;
           }
           settings[i][j] = parseFloat(value);
-        }
-        // 不允许关闭info Tabbar，以防不能再调回去
-        if (i == "tabBarCtrl") {
-          if ((j == "ctrlTab" && value.includes("info")) || (j == "fullTab" && !value.includes("info"))) {
-            wx.showModal({
-              title: '提示',
-              content: `不可隐藏关于页`,
-              showCancel: false
-            });
-            return false;
-          }
         }
       }
     }

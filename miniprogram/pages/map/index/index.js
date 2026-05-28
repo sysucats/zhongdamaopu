@@ -1,12 +1,22 @@
 import { showTab } from "../../../utils/page";
 import config from "../../../config";
 import { isDemoMode, getDemoMapData } from "../../../utils/demo";
+import { checkCanUseMap } from "../../../utils/user";
 
 const app = getApp();
 
 const CAMPUS_CENTER = {
   latitude: 23.1026,
   longitude: 113.2996
+};
+
+const MARKER_ICONS = {
+  white: '/images/markers/white.jpg',
+  black: '/images/markers/black.jpg',
+  orange: '/images/markers/orange.jpg',
+  blue: '/images/markers/blue.jpg',
+  tabby: '/images/markers/tabby.jpg',
+  calico: '/images/markers/calico.jpg',
 };
 
 Page({
@@ -30,7 +40,24 @@ Page({
     catMap: {},
   },
 
-  onLoad() {
+  async onLoad() {
+    const canUse = await checkCanUseMap();
+    if (!canUse) {
+      wx.showModal({
+        title: '权限提示',
+        content: '请向管理员申请校园导览权限',
+        confirmText: '去申请',
+        cancelText: '返回',
+        success(res) {
+          if (res.confirm) {
+            wx.navigateTo({ url: '/pages/genealogy/applyMapAccess/applyMapAccess' });
+          } else {
+            wx.navigateBack({ delta: 1 });
+          }
+        }
+      });
+      return;
+    }
     this.setData({ demoMode: isDemoMode() });
     this.loadMapData();
   },
@@ -115,13 +142,15 @@ Page({
     const catMap = this.jsData.catMap || {};
     const markers = photos.map((p, index) => {
       const cat = catMap[p.cat_id] || {};
+      const icon = p.marker_type ? MARKER_ICONS[p.marker_type] : null;
       return {
         id: index,
         latitude: p.latitude,
         longitude: p.longitude,
         title: cat.name || '未知猫咪',
-        width: 32,
-        height: 32,
+        width: 36,
+        height: 36,
+        iconPath: icon || undefined,
         callout: {
           content: cat.name || '猫咪',
           color: '#92400E',

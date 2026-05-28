@@ -167,6 +167,14 @@ async function checkCanShowNews() {
   return tabBarOrder.includes("news");
 }
 
+// 能否使用校园导览地图（按用户权限，默认关闭）
+async function checkCanUseMap() {
+  const app = getApp();
+  if (app.globalData && app.globalData.demoMode) return true;
+  const user = await getUser({ nocache: true });
+  return !!user.mapAccess;
+}
+
 // 设置页面上的userInfo
 async function getPageUserInfo(page) {
   // 检查用户信息有没有拿到，如果有就更新this.data
@@ -269,6 +277,7 @@ module.exports = {
   checkCanFeedback,
   checkCanFullTabBar,
   checkCanShowNews,
+  checkCanUseMap,
   isManagerAsync,
   checkAuth,
   toSetUserInfo,

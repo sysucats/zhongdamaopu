@@ -10,20 +10,6 @@ Page({
     text_cfg: text_cfg,
     github_link: "https://github.com/sysucats/zhongdamaopu",
     update_log: [{
-      version: "v1.18.5",
-      content: [
-        "合并后端云函数",
-      ],
-      time: "2026/04/30"
-    }, {
-      version: "v1.18.4",
-      content: [
-        "修复照片处理BUG",
-        "取消照片处理数量100限制",
-        "页面管理禁止隐藏关于页",
-      ],
-      time: "2026/01/18"
-    }, {
       version: "v1.18.3",
       content: [
         "修复新增猫猫关系Bug（感谢LightHouse-1024）"

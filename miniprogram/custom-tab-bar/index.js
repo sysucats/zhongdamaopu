@@ -1,6 +1,6 @@
 import { getGlobalSettings, getCurrentPath } from "../utils/page";
 import { sleep } from "../utils/utils";
-import { checkCanFullTabBar } from "../utils/user";
+import { checkCanFullTabBar, checkCanUseMap } from "../utils/user";
 import tab from "./tab";
 
 function getTabBarList() {
@@ -87,10 +87,29 @@ Component({
     }).exec();
   },
   methods: {
-    switchTab(e) {
+    async switchTab(e) {
       const {path} = e.currentTarget.dataset;
       if (path == this.data.activePath) {
         return;
+      }
+
+      // 校园导览权限检查
+      if (path === 'pages/map/index/index') {
+        const canUse = await checkCanUseMap();
+        if (!canUse) {
+          wx.showModal({
+            title: '权限提示',
+            content: '请向管理员申请校园导览权限',
+            confirmText: '去申请',
+            cancelText: '取消',
+            success(res) {
+              if (res.confirm) {
+                wx.navigateTo({ url: '/pages/genealogy/applyMapAccess/applyMapAccess' });
+              }
+            }
+          });
+          return;
+        }
       }
 
       const url = `/${path}`;
