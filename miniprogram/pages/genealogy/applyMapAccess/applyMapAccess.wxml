@@ -1,0 +1,31 @@
+<view class="apply-page">
+  <!-- 检查 map_access 申请存在 -->
+  <view class="requirement-box">
+    <view class="req-title">申请条件</view>
+    <view class="req-desc">至少发布过 {{minRequired}} 条便利贴或照片（满足去重吗？实际提交时管理员会人工审核）</view>
+    <view class="req-stats">
+      <text>你已发布 {{photoCount}} 张照片，{{commentCount}} 条便利贴</text>
+    </view>
+    <view class="req-status {{meetRequirement ? 'met' : 'unmet'}}" wx:if="{{!meetRequirement}}">
+      <text>⚠ 你还未达到最低门槛，但仍可提交申请</text>
+    </view>
+  </view>
+
+  <form bindsubmit="bindSubmit">
+    <view class="inputColumns">
+      <view>
+        <text class="inputTitle">申请理由：</text>
+        <textarea name="reason" placeholder="请说明您需要使用校园导览的原因..." maxlength="{{maxlength}}" bindinput="bindInput"></textarea>
+        <text class="lengthTips">字数：{{reasonLength}}/{{maxlength}}</text>
+      </view>
+    </view>
+
+    <view class="submitButton">
+      <button form-type="submit" loading="{{submitting}}" disabled="{{submitting}}">提交申请</button>
+    </view>
+  </form>
+
+  <view class="footnote">
+    <text>管理员审核通过后，即可使用校园导览地图功能</text>
+  </view>
+</view>

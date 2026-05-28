@@ -31,6 +31,22 @@ try {
   demoMode = true;
 }
 
+// Demo 模式：全局拦截 wx.downloadFile / wx.saveFile / wx.getFileSystemManager 等
+// 避免任何代码路径产生 "downloadFile:fail url not in domain list" 错误
+if (demoMode) {
+  const _downloadFile = wx.downloadFile;
+  wx.downloadFile = function (options) {
+    const url = options.url || '';
+    if (url.startsWith('/') || !url.startsWith('http')) {
+      console.log('[Demo] skip downloadFile for local path:', url);
+      options.success && options.success({ tempFilePath: url, statusCode: 200 });
+      return;
+    }
+    console.log('[Demo] skip downloadFile for:', url);
+    options.success && options.success({ tempFilePath: url, statusCode: 200 });
+  };
+}
+
 App({
   async onLaunch() {
     if (!demoMode) {

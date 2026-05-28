@@ -1,22 +1,32 @@
 // wx-canvas-2d - 2.0 使用文档 https://kiccer.github.io/wx-canvas-2d/
-import {
-    WxCanvas2d,
-    Text,
-    Image,
-    Rect,
-    SaveToAlbum,
-    Debugger
-} from "wx-canvas-2d";
+let WxCanvas2d, Text, Image, Rect, SaveToAlbum, Debugger, canvas;
+try {
+  const wxCanvas2d = require('wx-canvas-2d');
+  WxCanvas2d = wxCanvas2d.WxCanvas2d;
+  Text = wxCanvas2d.Text;
+  Image = wxCanvas2d.Image;
+  Rect = wxCanvas2d.Rect;
+  SaveToAlbum = wxCanvas2d.SaveToAlbum;
+  Debugger = wxCanvas2d.Debugger;
+} catch (e) {
+  console.warn('wx-canvas-2d not available, poster feature disabled:', e.message);
+  WxCanvas2d = function () {};
+  WxCanvas2d.use = function () {};
+  Text = Image = Rect = SaveToAlbum = Debugger = function () {};
+  canvas = {};
+}
 import getTempFilePath from './extends/getTempFilePath';
 import config from "../../config";
 import { getUserInfo } from "../../utils/user";
 import { generateMpCode } from "../../utils/mpcode";
 import { signCosUrl } from "../../utils/common";
 
-WxCanvas2d.use(SaveToAlbum)
-WxCanvas2d.use(Debugger)
-WxCanvas2d.use(getTempFilePath)
-const canvas = new WxCanvas2d()
+if (WxCanvas2d.use) {
+  WxCanvas2d.use(SaveToAlbum)
+  WxCanvas2d.use(Debugger)
+  WxCanvas2d.use(getTempFilePath)
+}
+if (!canvas) canvas = new WxCanvas2d()
 
 Component({
     /**

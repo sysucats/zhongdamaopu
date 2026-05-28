@@ -32,7 +32,7 @@
   <!-- 底部详情卡片 -->
   <view class="detail-overlay {{showDetail ? 'show' : ''}}" wx:if="{{showDetail}}" catchtouchmove="preventTouchMove">
     <view class="detail-mask" bindtap="closeDetail"></view>
-    <view class="detail-card" style="padding-bottom: calc(40rpx + {{tabBarHeight}}px + env(safe-area-inset-bottom));">
+    <view class="detail-card" style="padding-bottom: calc(40rpx + {{tabBarHeight || 80}}px + env(safe-area-inset-bottom));">
       <!-- 拖动指示条 -->
       <view class="detail-handle">
         <view class="handle-bar"></view>

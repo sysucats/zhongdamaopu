@@ -43,7 +43,9 @@
     "pages/manage/catManage/catManage",
     "pages/info/dashboard/dashboard",
     "pages/genealogy/detailCat/relationGraph/relationGraph",
-    "pages/map/index/index"
+    "pages/genealogy/applyMapAccess/applyMapAccess",
+    "pages/map/index/index",
+    "pages/manage/mapAccess/mapAccess"
   ],
   "subPackages": [
     {
@@ -91,14 +93,6 @@
     "navigationBarTitleText": "笃行猫谱",
     "navigationBarTextStyle": "black"
   },
-  "supportedMaterials": [
-    {
-      "materialType": "image/*",
-      "name": "用${nickname}识别",
-      "desc": "根据图片识别校园中相似的猫咪",
-      "path": "pages/recognize/recognize"
-    }
-  ],
   "sitemapLocation": "sitemap.json",
   "lazyCodeLoading": "requiredComponents",
   "permission": {
