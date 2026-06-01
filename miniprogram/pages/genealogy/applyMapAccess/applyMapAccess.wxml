@@ -2,7 +2,7 @@
   <!-- 检查 map_access 申请存在 -->
   <view class="requirement-box">
     <view class="req-title">申请条件</view>
-    <view class="req-desc">至少发布过 {{minRequired}} 条便利贴或照片（满足去重吗？实际提交时管理员会人工审核）</view>
+    <view class="req-desc">至少发布过 {{minRequired}} 条便利贴或照片</view>
     <view class="req-stats">
       <text>你已发布 {{photoCount}} 张照片，{{commentCount}} 条便利贴</text>
     </view>

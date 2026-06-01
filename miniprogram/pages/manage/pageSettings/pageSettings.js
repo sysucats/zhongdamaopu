@@ -149,6 +149,17 @@ Page({
           }
           settings[i][j] = parseFloat(value);
         }
+        // 不允许关闭info Tabbar，以防不能再调回去
+        if (i == "tabBarCtrl") {
+          if ((j == "ctrlTab" && value.includes("info")) || (j == "fullTab" && !value.includes("info"))) {
+            wx.showModal({
+              title: '提示',
+              content: `不可隐藏关于页`,
+              showCancel: false
+            });
+            return false;
+          }
+        }
       }
     }
 
