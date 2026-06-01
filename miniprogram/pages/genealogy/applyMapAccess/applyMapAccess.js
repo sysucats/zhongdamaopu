@@ -35,10 +35,8 @@ Page({
     if (!user || !user.openid) return;
 
     try {
-      const { result: photos } = await app.mpServerless.db.collection('photo').where({ openid: user.openid }).get();
-      const { result: comments } = await app.mpServerless.db.collection('comment').where({ openid: user.openid }).get();
-      const photoCount = (photos || []).length;
-      const commentCount = (comments || []).length;
+      const { result: photoCount } = await app.mpServerless.db.collection('photo').count({ _openid: user.openid });
+      const { result: commentCount } = await app.mpServerless.db.collection('comment').count({ user_openid: user.openid });
       this.setData({
         photoCount,
         commentCount,
@@ -73,14 +71,14 @@ Page({
     try {
       if (isDemoMode()) {
         await new Promise(resolve => setTimeout(resolve, 500));
-        wx.showToast({ title: '申请已提交，请等待管理员审核', icon: 'success' });
+        wx.showToast({ title: '申请已提交', icon: 'success' });
       } else {
         const user = await getUser();
         await api.curdOp({
           operation: "add",
           collection: "map_access",
           data: {
-            openid: user.openid,
+            _openid: user.openid,
             reason: reason,
             status: "pending",
             createDate: api.getDate(),
@@ -88,7 +86,7 @@ Page({
             commentCount: this.data.commentCount,
           }
         });
-        wx.showToast({ title: '申请已提交，请等待管理员审核', icon: 'success' });
+        wx.showToast({ title: '申请已提交', icon: 'success' });
       }
       setTimeout(() => { wx.navigateBack(); }, 1500);
     } catch (e) {

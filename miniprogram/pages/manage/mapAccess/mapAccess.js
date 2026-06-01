@@ -40,14 +40,11 @@ Page({
     try {
       let query = {};
       if (this.data.searchValue) {
-        query = { 'userInfo.nickName': app.mpServerless.db.RegExp ? null : this.data.searchValue };
+        query = { 'userInfo.nickName': { $regex: this.data.searchValue } };
       }
 
       const { result: users } = await app.mpServerless.db.collection('user')
-        .where(query)
-        .skip(this.data.pageSkip)
-        .limit(this.data.pageLimit)
-        .get();
+        .find(query, { skip: this.data.pageSkip, limit: this.data.pageLimit });
 
       const newUsers = this.data.pageSkip === 0
         ? (users || [])
@@ -118,11 +115,8 @@ Page({
   async loadApplications() {
     this.setData({ appsLoading: true });
     try {
-      const query = { status: 'pending' };
       const { result: apps } = await app.mpServerless.db.collection('map_access')
-        .where(query)
-        .orderBy('createDate', 'desc')
-        .get();
+        .find({ status: 'pending' }, { sort: { createDate: -1 } });
       this.setData({ applications: apps || [], appsLoading: false });
     } catch (e) {
       console.error('加载申请列表失败:', e);
@@ -155,8 +149,7 @@ Page({
           // 2. 查找用户并开启 mapAccess
           if (!isDemoMode()) {
             const userRes = await app.mpServerless.db.collection('user')
-              .where({ openid: application.openid })
-              .get();
+              .find({ openid: application.openid });
             const user = (userRes.result || [])[0];
             if (user) {
               await api.curdOp({

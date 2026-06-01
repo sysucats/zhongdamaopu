@@ -129,7 +129,7 @@ Page({
           {
             name: "导览权限",
             path: "/pages/manage/mapAccess/mapAccess",
-            icon: "icon-map-o",
+            icon: "icon-location-o",
             num: "numMapAccessApps"
           },
           {
