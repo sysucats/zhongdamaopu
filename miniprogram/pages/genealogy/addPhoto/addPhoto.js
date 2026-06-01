@@ -15,13 +15,11 @@ import {
 import config from "../../../config";
 import api from "../../../utils/cloudApi";
 import { uploadFile } from "../../../utils/common"
+import { isDemoMode, getDemoCat } from "../../../utils/demo";
 
 const app = getApp();
 
 Page({
-  /**
-   * 页面的初始数据
-   */
   data: {
     isAuth: false,
     user: {},
@@ -32,59 +30,84 @@ Page({
     canUpload: false,
     text_cfg: config.text,
     showEdit: false,
+    location: null,
+    locating: false,
+    demoMode: false,
+    marker_type: '',
+    markerIcons: [],
   },
 
-  /**
-   * 生命周期函数--监听页面加载
-   */
   onLoad: async function (options) {
     const cat_id = options.cat_id;
-    var catRes = (await app.mpServerless.db.collection('cat').findOne({ _id: cat_id }, { projection: { birthday: 1, name: 1, campus: 1 } })).result;
-    this.setData({
-      cat: catRes,
-      birth_date: catRes.birthday || ''
-    });
+    const demoMode = isDemoMode();
+    this.setData({ demoMode });
 
-    // 获取一下现在的日期，用在拍摄日前选择上
+    if (demoMode) {
+      // Demo 模式：使用本地数据
+      const catRes = getDemoCat(cat_id);
+      this.setData({
+        cat: catRes,
+        birth_date: catRes.birthday || '',
+        canUpload: true,
+      });
+    } else {
+      var catRes = (await app.mpServerless.db.collection('cat').findOne({ _id: cat_id }, { projection: { birthday: 1, name: 1, campus: 1 } })).result;
+      this.setData({
+        cat: catRes,
+        birth_date: catRes.birthday || ''
+      });
+
+      this.setData({
+        canUpload: await checkCanUpload()
+      });
+    }
+
+    this.loadMarkerIcons();
+
     const today = new Date();
     var now_date = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
-    this.setData({
-      now_date: now_date
-    });
+    this.setData({ now_date });
 
-    this.setData({
-      canUpload: await checkCanUpload()
-    });
-
-    // 获取一下手机平台
     const device = await wx.getSystemInfoSync();
     this.setData({
       isIOS: device.platform == 'ios'
     });
 
-    // 监听用户信息更新事件
     this.boundOnUserInfoUpdated = this.onUserInfoUpdated.bind(this);
     app.globalData.eventBus.$on('userInfoUpdated', this.boundOnUserInfoUpdated);
   },
 
   async onShow() {
-    await getPageUserInfo(this);
+    if (isDemoMode()) {
+      // Demo 模式：提供 mock 用户信息
+      this.setData({
+        isAuth: true,
+        user: {
+          _id: 'demo-user',
+          userInfo: {
+            avatarUrl: '/pages/public/images/system/user.png',
+            nickName: 'Demo猫友'
+          }
+        }
+      });
+    } else {
+      await getPageUserInfo(this);
+    }
   },
 
   onUnload: async function (options) {
-    await this.ifSendNotifyVeriftMsg();
-
-    // 移除用户信息更新事件监听
+    if (!isDemoMode()) {
+      await this.ifSendNotifyVeriftMsg();
+    }
     app.globalData.eventBus.$off('userInfoUpdated', this.boundOnUserInfoUpdated);
   },
 
   async onUserInfoUpdated() {
-    await getPageUserInfo(this);
+    if (!isDemoMode()) {
+      await getPageUserInfo(this);
+    }
   },
 
-  /**
-   * 用户点击右上角分享
-   */
   onShareAppMessage: function () {
     const pagesStack = getCurrentPages();
     const path = getCurrentPath(pagesStack);
@@ -92,8 +115,67 @@ Page({
     return shareTo(share_text, path);
   },
 
+  async getLocation() {
+    if (this.data.locating) return;
+
+    this.setData({ locating: true });
+
+    try {
+      const res = await new Promise((resolve, reject) => {
+        wx.getLocation({
+          type: 'gcj02',
+          success: resolve,
+          fail: reject
+        });
+      });
+
+      this.setData({
+        location: {
+          latitude: res.latitude,
+          longitude: res.longitude
+        },
+        locating: false
+      });
+    } catch (err) {
+      console.log('获取位置失败:', err);
+      wx.showToast({
+        title: '获取位置失败，请检查定位权限',
+        icon: 'none'
+      });
+      this.setData({ locating: false });
+    }
+  },
+
+  async loadMarkerIcons() {
+    try {
+      const { result: icons } = await app.mpServerless.db.collection('marker_icon')
+        .find({ enabled: true });
+      const list = (icons || []).map(i => ({
+        type: i.name,
+        name: i.name,
+        img: i.img,
+      }));
+      this.setData({ markerIcons: list });
+    } catch (e) {
+      console.warn('加载标记图标失败:', e.message);
+      // Fallback: 本地默认图标
+      this.setData({ markerIcons: [
+        { type: 'white', name: '白猫', img: '/images/markers/white.jpg' },
+        { type: 'black', name: '黑猫', img: '/images/markers/black.jpg' },
+        { type: 'orange', name: '橘猫', img: '/images/markers/orange.jpg' },
+        { type: 'blue', name: '蓝猫', img: '/images/markers/blue.jpg' },
+        { type: 'tabby', name: '狸花', img: '/images/markers/tabby.jpg' },
+        { type: 'calico', name: '三花', img: '/images/markers/calico.jpg' },
+      ]});
+    }
+  },
+
+  selectMarker(e) {
+    const type = e.currentTarget.dataset.type;
+    this.setData({ marker_type: type === this.data.marker_type ? '' : type });
+  },
+
   async chooseImg(e) {
-    // 如果正在上传，不允许选择新图片
     if (this.data.uploading) {
       wx.showToast({
         title: '正在上传中，请稍后',
@@ -101,7 +183,7 @@ Page({
       });
       return;
     }
-    
+
     var res = await wx.chooseMedia({
       count: config.chooseMediaCount,
       mediaType: ['image'],
@@ -110,7 +192,6 @@ Page({
     })
     var photos = [];
     for (var file of res.tempFiles) {
-      // 需要压缩
       if (file.size > 512 * 1024) {
         file.path = await compressImage(file.tempFilePath, 30);
         console.log("compressed path:", file.path);
@@ -137,41 +218,36 @@ Page({
       });
       return;
     }
-    
-    this.setData({
-      uploading: true
-    });
-    
+
+    this.setData({ uploading: true });
+
     try {
-      await requestNotice('verify');
+      if (!isDemoMode()) {
+        await requestNotice('verify');
+      }
       wx.showLoading({
         title: config.text.add_photo.success_tip_title,
         mask: true,
       });
-      
+
       const currentIndex = e.currentTarget.dataset.index;
       const photo = this.data.photos[currentIndex];
-      
-      // 检查照片是否已经上传过（防止重复点击）
+
       if (photo.uploaded) {
         console.log("照片已上传，跳过");
         return;
       }
-      
+
       await this.uploadImg(photo);
-      
-      // 标记为已上传
+
       photo.uploaded = true;
-      
-      // 过滤掉已上传的照片
+
       this.data.photos = this.data.photos.filter((ph) => {
         return !ph.uploaded;
       });
-      
-      this.setData({
-        photos: this.data.photos,
-      });
-      
+
+      this.setData({ photos: this.data.photos });
+
       wx.hideLoading();
       wx.showModal({
         title: config.text.add_photo.success_tip_title,
@@ -185,9 +261,7 @@ Page({
         icon: 'none'
       });
     } finally {
-      this.setData({
-        uploading: false
-      });
+      this.setData({ uploading: false });
     }
   },
 
@@ -200,14 +274,14 @@ Page({
       });
       return;
     }
-    
-    const photos = []; // 这里只会保存可以上传的照片
+
+    const photos = [];
     for (const item of this.data.photos) {
       if (item.shooting_date && item.file.path && !item.uploaded) {
         photos.push(item);
       }
     }
-    
+
     if (photos.length == 0) {
       wx.showModal({
         title: config.text.add_photo.unfinished_tip_title,
@@ -216,40 +290,33 @@ Page({
       });
       return;
     }
-    
-    this.setData({
-      uploading: true
-    });
-    
+
+    this.setData({ uploading: true });
+
     try {
-      await requestNotice('verify');
-      
-      // 使用 Promise 链确保顺序执行，避免并发问题
+      if (!isDemoMode()) {
+        await requestNotice('verify');
+      }
+
       for (let i = 0; i < photos.length; ++i) {
-        if (photos[i].uploaded) {
-          continue; // 跳过已上传的
-        }
-        
+        if (photos[i].uploaded) continue;
+
         wx.showLoading({
           title: '正在上传(' + (i + 1) + '/' + photos.length + ')',
           mask: true,
         });
-        
+
         await this.uploadImg(photos[i]);
-        
-        // 标记为已上传
+
         photos[i].uploaded = true;
       }
-      
-      // 过滤掉已上传的照片
+
       this.data.photos = this.data.photos.filter((ph) => {
         return !ph.uploaded;
       });
-      
-      this.setData({
-        photos: this.data.photos,
-      });
-      
+
+      this.setData({ photos: this.data.photos });
+
       wx.hideLoading();
       wx.showModal({
         title: config.text.add_photo.success_tip_title,
@@ -263,46 +330,58 @@ Page({
         icon: 'none'
       });
     } finally {
-      this.setData({
-        uploading: false
-      });
+      this.setData({ uploading: false });
     }
   },
 
   async ifSendNotifyVeriftMsg() {
-    const subMsgSetting = (await app.mpServerless.db.collection('setting').findOne({ _id: 'subscribeMsg' })).result;
-    const triggerNum = subMsgSetting.verifyPhoto.triggerNum; //几条未审核才触发
-    var numUnchkPhotos = (await app.mpServerless.db.collection('photo').count({
-      verified: false
-    })).result;
+    try {
+      const subMsgSetting = (await app.mpServerless.db.collection('setting').findOne({ _id: 'subscribeMsg' })).result;
+      if (!subMsgSetting) return;
+      const triggerNum = subMsgSetting.verifyPhoto?.triggerNum;
+      if (!triggerNum) return;
+      var numUnchkPhotos = (await app.mpServerless.db.collection('photo').count({
+        verified: false
+      })).result;
 
-    if (numUnchkPhotos >= triggerNum) {
-      await sendNotifyVertifyNotice(numUnchkPhotos);
-      console.log("toSendNVMsg");
+      if (numUnchkPhotos >= triggerNum) {
+        await sendNotifyVertifyNotice(numUnchkPhotos);
+        console.log("toSendNVMsg");
+      }
+    } catch (e) {
+      console.log('通知检查跳过:', e.message);
     }
   },
 
   async uploadImg(photo) {
-    // 再次检查是否已上传，防止重复
     if (photo.uploaded) {
       console.log("照片已上传，跳过");
       return;
     }
-    
+
     const cat = this.data.cat;
     const tempFilePath = photo.file.path;
-    
-    //获取后缀
+
     const index = tempFilePath.lastIndexOf(".");
     const ext = tempFilePath.substr(index + 1);
 
-    let upRes = await uploadFile({
-      filePath: tempFilePath,
-      cloudPath: '/' + cat.campus + '/' + generateUUID() + '.' + ext,
-    })
-    console.log("上传图片:", upRes);
+    let upRes;
+    if (isDemoMode()) {
+      // Demo 模式：模拟上传延迟
+      await new Promise(resolve => setTimeout(resolve, 800));
+      upRes = {
+        fileUrl: tempFilePath,
+        fileId: 'demo-file-' + Date.now(),
+      };
+      console.log("Demo 上传模拟:", upRes);
+    } else {
+      upRes = await uploadFile({
+        filePath: tempFilePath,
+        cloudPath: '/' + cat.campus + '/' + generateUUID() + '.' + ext,
+      });
+      console.log("上传图片:", upRes);
+    }
 
-    // 添加记录
     const params = {
       cat_id: cat._id,
       photo_id: upRes.fileUrl,
@@ -313,13 +392,27 @@ Page({
       photographer: photo.pher
     };
 
+    if (this.data.location) {
+      params.latitude = this.data.location.latitude;
+      params.longitude = this.data.location.longitude;
+    }
+
+    if (this.data.marker_type) {
+      params.marker_type = this.data.marker_type;
+    }
+
+    if (isDemoMode()) {
+      console.log("Demo 模式 - 模拟保存记录:", params);
+      return { ok: true, id: 'demo-record-' + Date.now() };
+    }
+
     let dbAddRes = await api.curdOp({
       operation: "add",
       collection: "photo",
       data: params
     })
     console.log("curdOp(add-photo) result:", dbAddRes);
-    
+
     return dbAddRes;
   },
 
@@ -330,7 +423,7 @@ Page({
       ["photos[" + index + "].shooting_date"]: e.detail.value
     });
   },
-  
+
   inputPher(e) {
     const index = e.currentTarget.dataset.index;
     this.setData({
@@ -338,11 +431,9 @@ Page({
     })
   },
 
-  // 下面是统一设置
   setAllDate(e) {
     const value = e.detail.value;
     var photos = this.data.photos;
-    console.log(photos);
     for (var ph of photos) {
       ph.shooting_date = value;
     }
@@ -351,7 +442,7 @@ Page({
       photos: photos,
     });
   },
-  
+
   setAllPher(e) {
     const photographer = e.detail.value;
     var photos = this.data.photos;
@@ -364,7 +455,6 @@ Page({
     });
   },
 
-  // 移除其中一个
   removeOne(e) {
     if (this.data.uploading) {
       wx.showToast({
@@ -373,7 +463,7 @@ Page({
       });
       return;
     }
-    
+
     const index = e.currentTarget.dataset.index;
     const photos = this.data.photos;
     const new_photos = photos.filter((ph, ind, arr) => {
@@ -395,7 +485,7 @@ Page({
       showEdit: true
     });
   },
-  
+
   closeEdit: function () {
     this.setData({
       showEdit: false

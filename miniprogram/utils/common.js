@@ -3,9 +3,34 @@ import { use_private_tencent_cos, sign_expires_tencent_cos } from "../config";
 import COS from '../packages/tencentcloud/cos';
 import { removeQueryParams, parseQueryParams, getDeltaHours } from './utils'
 import { getCacheItem, setCacheItem } from "./cache";
-import api from "./cloudApi";
+
+// 获取当前用户的openid
+async function getCurrentUserOpenid() {
+  try {
+    const app = getApp();
+    console.log("App instance:", app);
+    const res = await app.mpServerless.user.getInfo({
+      authProvider: 'wechat_openapi'
+    });
+    if (res.success) {
+      return res.result.user.oAuthUserId;
+    }
+    return null;
+  } catch (error) {
+    console.log("getCurrentUserOpenid error:", error);
+    return null;
+  }
+}
 
 async function downloadFile(filePath) {
+  // Demo 模式或本地/相对路径：跳过网络下载，直接返回
+  if (!filePath || filePath.startsWith('/') || !filePath.startsWith('http')) {
+    return { tempFilePath: filePath, statusCode: 200 };
+  }
+  const app = getApp();
+  if (app && app.globalData && app.globalData.demoMode) {
+    return { tempFilePath: filePath, statusCode: 200 };
+  }
   return new Promise(function (resolve, reject) {
     wx.downloadFile({
       url: filePath,
@@ -31,9 +56,10 @@ async function uploadFile(options) {
     })
   }
 
-  const data = (await api.getURL({
-    fileName: fileName
-  }))
+  const data = (await app.mpServerless.function.invoke('unionOp', {
+    fileName: fileName,
+    unionAction: 'getURL'
+  })).result
 
   const formData = data.formData;
   const postURL = data.postURL;
@@ -73,7 +99,7 @@ async function ensureCos() {
       const app = getApp();
       if (!cosTemp || (new Date() > new Date(cosTemp.Expiration))) {
         console.log("开始获取 cosTemp");
-        cosTemp = (await api.getTempCOS());
+        cosTemp = (await app.mpServerless.function.invoke('unionOp', { unionAction: 'getTempCOS' })).result
         wx.setStorageSync('cosTemp', cosTemp);
       }
       if (!cosTemp || !cosTemp.Credentials) {
@@ -101,8 +127,15 @@ async function signCosUrl(inputUrl) {
   let url = inputUrl;
   // console.log("[signCosUrl]", url);
   const app = getApp();
+  // Demo 模式或无 COS SDK：返回本地占位图，避免 403 / downloadFile 报错
+  if (!app || (app.globalData && app.globalData.demoMode) || !app.cos || !use_private_tencent_cos) {
+    if (url && url.includes('myqcloud.com')) {
+      return '/pages/public/images/system/user.png';
+    }
+    return url;
+  }
   // 不是腾讯云COS的不加密
-  if (!url || !url.includes("myqcloud.com") || !app.cos || !use_private_tencent_cos) {
+  if (!url || !url.includes("myqcloud.com")) {
     return url;
   }
 
@@ -198,6 +231,7 @@ function _splitOnce(str, sep) {
 }
 
 module.exports = {
+  getCurrentUserOpenid,
   downloadFile,
   uploadFile,
   ensureCos,

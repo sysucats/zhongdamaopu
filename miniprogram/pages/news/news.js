@@ -220,6 +220,10 @@ Page({
   },
 
   async downloadFile(fileID) {
+    // Demo 模式或本地路径直接返回
+    if (!fileID || fileID.startsWith('/')) {
+      return { tempFilePath: fileID, statusCode: 200 };
+    }
     return new Promise(function (resolve, reject) {
       wx.downloadFile({
         url: fileID,
@@ -244,8 +248,13 @@ Page({
 
     console.log("[cacheCloudImg] -", res);
     for (let i = 0; i < res.length; i++) {
-      var savedFilePath = fileSystem.saveFileSync(res[i].tempFilePath);
-      cachePathList.push(savedFilePath);
+      const tempPath = res[i].tempFilePath;
+      // Demo 模式或已是本地路径：直接使用，跳过 saveFileSync
+      if (tempPath && tempPath.startsWith('/')) {
+        cachePathList.push(tempPath);
+      } else {
+        cachePathList.push(fileSystem.saveFileSync(tempPath));
+      }
     }
     wx.setStorage({
       key: cacheKey,

@@ -115,10 +115,8 @@ Page({
         content: '请重新进入小程序',
         showCancel: false,
         success() {
-          const pagesStack = getCurrentPages();
-          const path = getCurrentPath(pagesStack);
-          wx.restartMiniProgram({
-            path
+          wx.reLaunch({
+            url: '/pages/genealogy/genealogy'
           });
         }
       })
@@ -234,9 +232,8 @@ Page({
   loadRecognize: async function () {
     const env = __wxConfig.envVersion === 'release' ? 'recognize' : 'recognize_test';
     const settings = await getGlobalSettings(env);
-    this.setData({
-      showRecognize: settings.interfaceURL && !settings.interfaceURL.includes("https://your.domain.com")
-    });
+    const showRecognize = settings && settings.interfaceURL && !settings.interfaceURL.includes("https://your.domain.com");
+    this.setData({ showRecognize: !!showRecognize });
   },
 
   loadFilters: async function (fcampus) {

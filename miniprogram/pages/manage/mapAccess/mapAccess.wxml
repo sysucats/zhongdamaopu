@@ -1,0 +1,60 @@
+<view class="page">
+  <no-auth wx:if="{{!auth}}"></no-auth>
+
+  <block wx:else>
+    <!-- Tab 切换 -->
+    <view class="tab-bar">
+      <view class="tab-item {{currentTab === 'users' ? 'active' : ''}}" data-tab="users" bindtap="switchTab">
+        <text>用户权限</text>
+      </view>
+      <view class="tab-item {{currentTab === 'apps' ? 'active' : ''}}" data-tab="apps" bindtap="switchTab">
+        <text>待审申请</text>
+      </view>
+    </view>
+
+    <!-- 用户权限 Tab -->
+    <view wx:if="{{currentTab === 'users'}}" class="tab-content">
+      <view class="filter-block">
+        <input class="filter-input" placeholder="搜索昵称..." value="{{searchValue}}" bindinput="onSearchInput" bindconfirm="doSearch" />
+      </view>
+      <scroll-view scroll-y="true" style="height: calc(100vh - 260rpx);" bindscrolltolower="scrollToReload">
+        <view class="user-card" wx:for="{{users}}" wx:key="_id">
+          <view class="user-info">
+            <image class="avatar" src="{{item.userInfo.avatarUrl || '/pages/public/images/system/user.png'}}" mode="aspectFill" />
+            <view class="info-text">
+              <text class="nickname">{{item.userInfo.nickName || '未设置昵称'}}</text>
+              <text class="detail">角色: {{item.manager ? '管理员(Lv.'+item.manager+')' : (item.role == 1 ? '特邀用户' : '普通用户')}}</text>
+            </view>
+          </view>
+          <view class="toggle-row">
+            <text class="toggle-label">校园导览</text>
+            <switch checked="{{item.mapAccess}}" data-index="{{index}}" bindchange="toggleMapAccess" color="#ffd101" />
+          </view>
+        </view>
+        <view class="load-more" wx:if="{{loading}}">加载中...</view>
+      </scroll-view>
+    </view>
+
+    <!-- 待审申请 Tab -->
+    <view wx:if="{{currentTab === 'apps'}}" class="tab-content">
+      <view class="empty-hint" wx:if="{{!applications.length && !appsLoading}}">暂无待审申请</view>
+      <scroll-view scroll-y="true" style="height: calc(100vh - 260rpx);">
+        <view class="app-card" wx:for="{{applications}}" wx:key="_id">
+          <view class="app-header">
+            <text class="app-date">申请时间: {{item.createDate}}</text>
+            <text class="app-counts">照片: {{item.photoCount}} | 评论: {{item.commentCount}}</text>
+          </view>
+          <view class="app-reason">
+            <text class="reason-label">申请理由：</text>
+            <text class="reason-text">{{item.reason}}</text>
+          </view>
+          <view class="app-actions">
+            <button class="btn-approve" data-index="{{index}}" bindtap="approveApplication">通过</button>
+            <button class="btn-reject" data-index="{{index}}" bindtap="rejectApplication">拒绝</button>
+          </view>
+        </view>
+        <view class="load-more" wx:if="{{appsLoading}}">加载中...</view>
+      </scroll-view>
+    </view>
+  </block>
+</view>

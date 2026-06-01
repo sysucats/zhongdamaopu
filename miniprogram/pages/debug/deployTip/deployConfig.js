@@ -187,6 +187,7 @@ module.exports = {
     "setting": init_setting,
     "user": default_init_data,
     "vaccine": default_init_data,
+    "marker_icon": default_init_data,
   },
   images: {
     "science_imgs[0]": config.science_imgs[0],

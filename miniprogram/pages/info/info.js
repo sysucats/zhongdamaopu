@@ -127,6 +127,17 @@ Page({
             icon: "icon-star-o"
           },
           {
+            name: "导览权限",
+            path: "/pages/manage/mapAccess/mapAccess",
+            icon: "icon-map-o",
+            num: "numMapAccessApps"
+          },
+          {
+            name: "标记图标",
+            path: "/pages/manage/markerIcon/markerIcon",
+            icon: "icon-medel-o"
+          },
+          {
             name: "徽章管理",
             path: "/pages/manage/badgeDef/badgeDef",
             icon: "icon-medel-o"
@@ -239,11 +250,13 @@ Page({
     const { result: numChkComments } = await app.mpServerless.db.collection('comment').count({ needVerify: true });
     const { result: numFeedbacks } = await app.mpServerless.db.collection('feedback').count({ dealed: false });
     const { result: numImProcess } = await app.mpServerless.db.collection('photo').count(imProcessQf);
+    const { result: numMapAccessApps } = await app.mpServerless.db.collection('map_access').count({ status: 'pending' });
     this.setData({
       "nums.numChkPhotos": numChkPhotos,
       "nums.numChkComments": numChkComments,
       "nums.numFeedbacks": numFeedbacks,
       "nums.numImProcess": numImProcess,
+      "nums.numMapAccessApps": numMapAccessApps,
       "showCond.manager": true,
     });
   },

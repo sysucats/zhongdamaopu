@@ -1,0 +1,80 @@
+<view class="map-page">
+  <!-- Demo 模式标记 -->
+  <view class="demo-badge" wx:if="{{demoMode}}">Demo</view>
+
+  <!-- 地图容器 -->
+  <view class="map-container" style="height: calc(100vh - {{tabBarHeight}}px);">
+    <map
+      id="campusMap"
+      class="campus-map"
+      latitude="{{latitude}}"
+      longitude="{{longitude}}"
+      scale="{{scale}}"
+      markers="{{markers}}"
+      bindmarkertap="onMarkerTap"
+      bindregionchange="onRegionChange"
+      show-location="{{true}}"
+    />
+
+    <!-- 加载提示 -->
+    <view class="map-tip" wx:if="{{loading}}">
+      <text>正在加载猫咪位置...</text>
+    </view>
+
+    <!-- 空状态 -->
+    <view class="map-empty" wx:if="{{!loading && markers.length === 0}}">
+      <view class="empty-icon">🗺️</view>
+      <text class="empty-text">还没有猫咪位置记录</text>
+      <text class="empty-sub">上传喵照时会自动记录位置哦~</text>
+    </view>
+  </view>
+
+  <!-- 底部详情卡片 -->
+  <view class="detail-overlay {{showDetail ? 'show' : ''}}" wx:if="{{showDetail}}" catchtouchmove="preventTouchMove">
+    <view class="detail-mask" bindtap="closeDetail"></view>
+    <view class="detail-card" style="padding-bottom: calc(40rpx + {{tabBarHeight || 80}}px + env(safe-area-inset-bottom));">
+      <!-- 拖动指示条 -->
+      <view class="detail-handle">
+        <view class="handle-bar"></view>
+      </view>
+
+      <!-- 头部 -->
+      <view class="detail-header">
+        <text class="detail-name">{{currentCat.name || '未知猫咪'}}</text>
+        <view class="detail-close" bindtap="closeDetail">✕</view>
+      </view>
+
+      <!-- 照片预览 -->
+      <view class="detail-photo-wrap">
+        <image
+          class="detail-photo"
+          src="{{currentPhoto.photo_id}}"
+          mode="aspectFill"
+        />
+        <view class="detail-location" wx:if="{{currentCat.campus || currentCat.area}}">
+          <text class="location-icon">📍</text>
+          <text>{{currentCat.campus || ''}}{{currentCat.area ? ' · ' + currentCat.area : ''}}</text>
+        </view>
+      </view>
+
+      <!-- 拍摄信息 -->
+      <view class="detail-info">
+        <view class="info-row" wx:if="{{currentPhoto.photographer}}">
+          <text class="info-label">摄影师</text>
+          <text class="info-value">{{currentPhoto.photographer}}</text>
+        </view>
+        <view class="info-row" wx:if="{{currentPhoto.shooting_date}}">
+          <text class="info-label">拍摄日期</text>
+          <text class="info-value">{{currentPhoto.shooting_date}}</text>
+        </view>
+        <view class="info-row">
+          <text class="info-label">上传时间</text>
+          <text class="info-value">{{currentPhoto.create_date}}</text>
+        </view>
+      </view>
+
+      <!-- 查看详情按钮 -->
+      <button class="detail-btn primary" bindtap="goToDetail">查看详情</button>
+    </view>
+  </view>
+</view>

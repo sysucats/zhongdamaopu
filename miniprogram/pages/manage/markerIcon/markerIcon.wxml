@@ -1,0 +1,25 @@
+<view class="page">
+  <no-auth wx:if="{{!auth}}"></no-auth>
+
+  <block wx:else>
+    <view class="header-bar">
+      <text class="title">地图标记图标</text>
+      <button class="btn-add" bindtap="onEdit">新增图标</button>
+    </view>
+
+    <scroll-view scroll-y="true" style="height: calc(100vh - 180rpx);">
+      <view class="icon-card" wx:for="{{icons}}" wx:key="_id">
+        <image class="icon-img" src="{{item.img}}" mode="aspectFill" />
+        <view class="icon-info">
+          <text class="icon-name">{{item.name}}</text>
+          <view class="icon-toggle">
+            <text class="toggle-label">{{item.enabled ? '启用' : '禁用'}}</text>
+            <switch checked="{{item.enabled}}" data-index="{{index}}" bindchange="toggleEnabled" color="#ffd101" />
+          </view>
+        </view>
+        <button class="btn-edit" data-id="{{item._id}}" bindtap="onEdit">编辑</button>
+      </view>
+      <view class="empty-hint" wx:if="{{!icons.length}}">暂无标记图标，点击"新增图标"添加</view>
+    </scroll-view>
+  </block>
+</view>

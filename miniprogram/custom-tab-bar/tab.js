@@ -28,5 +28,11 @@ module.exports = {
     "iconPath": "/pages/public/images/tabs/default/info.png",
     "selectedIconPath": "/pages/public/images/tabs/active/info.png",
     "text": "关于"
+  },
+  map: {
+    "pagePath": "pages/map/index/index",
+    "iconPath": "/pages/public/images/tabs/default/map.png",
+    "selectedIconPath": "/pages/public/images/tabs/active/map.png",
+    "text": "校园导览"
   }
 }

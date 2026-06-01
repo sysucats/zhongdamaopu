@@ -28,6 +28,7 @@ import { convertRatingList, genDefaultRating } from "../../../utils/rating";
 import { showMpcode } from "../../../utils/mpcode";
 import { signCosUrl } from "../../../utils/common";
 import api from "../../../utils/cloudApi";
+import { isDemoMode, getDemoCat } from "../../../utils/demo";
 
 const app = getApp();
 
@@ -224,11 +225,20 @@ Page({
   },
 
   async loadCat() {
-    const { result: cat } = await app.mpServerless.db.collection('cat').findOne({
+    let { result: cat } = await app.mpServerless.db.collection('cat').findOne({
       _id: this.jsData.cat_id,
       deleted: { $ne: 1 }
     });
-    cat.photo = [];
+    if (!cat && isDemoMode()) {
+      cat = getDemoCat(this.jsData.cat_id);
+      cat.photo = [];
+      cat.characteristics = '';
+      cat.habit = '';
+      cat.rating = null;
+    } else {
+      cat.photo = [];
+    }
+    if (!cat.characteristics) cat.characteristics = '';
     if (cat.characteristics.length) {
       cat.characteristics_string = cat.characteristics + '\n';
     } else {

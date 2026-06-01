@@ -42,7 +42,12 @@
     "pages/info/myFollowCats/myFollowCats",
     "pages/manage/catManage/catManage",
     "pages/info/dashboard/dashboard",
-    "pages/genealogy/detailCat/relationGraph/relationGraph"
+    "pages/genealogy/detailCat/relationGraph/relationGraph",
+    "pages/genealogy/applyMapAccess/applyMapAccess",
+    "pages/map/index/index",
+    "pages/manage/mapAccess/mapAccess",
+    "pages/manage/markerIcon/markerIcon",
+    "pages/manage/markerIcon/editMarkerIcon/editMarkerIcon"
   ],
   "subPackages": [
     {
@@ -74,6 +79,12 @@
       },
       {
         "pagePath": "pages/info/info"
+      },
+      {
+        "pagePath": "pages/map/index/index",
+        "text": "校园导览",
+        "iconPath": "images/map.png",
+        "selectedIconPath": "images/map-active.png"
       }
     ]
   },
@@ -84,16 +95,16 @@
     "navigationBarTitleText": "笃行猫谱",
     "navigationBarTextStyle": "black"
   },
-  "supportedMaterials": [
-    {
-      "materialType": "image/*",
-      "name": "用${nickname}识别",
-      "desc": "根据图片识别校园中相似的猫咪",
-      "path": "pages/recognize/recognize"
-    }
-  ],
   "sitemapLocation": "sitemap.json",
   "lazyCodeLoading": "requiredComponents",
+  "permission": {
+    "scope.userLocation": {
+      "desc": "用于记录猫咪照片的拍摄位置，在地图上展示猫咪分布"
+    }
+  },
+  "requiredPrivateInfos": [
+    "getLocation"
+  ],
   "embeddedAppIdList": [
     "wxebadf544ddae62cb",
     "wxd45c635d754dbf59"

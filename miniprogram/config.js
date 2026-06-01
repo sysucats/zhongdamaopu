@@ -6,20 +6,23 @@
 
 module.exports = {
   // 版本号
-  app_version: "v1.18.5",
+  app_version: "v1.18.3",
   // 小程序appid
   app_id: "wx5bd705b2bc91c73b",
   // EMAS空间ID
   space_id: "mp-4bc42af8-4abd-490d-85dd-7cb5b9e58f5b",
   // 服务空间 secret key
-  space_secret: require('./appSecret').space_secret,
+  space_secret: (() => { try { return require('./appSecret').space_secret; } catch(e) { return ''; } })(),
   // 服务空间地址Api Endpoint
   space_endpoint: "https://api.next.bspapp.com",
   use_private_tencent_cos: true,
   // 私有的腾讯云cos签名过期时间（秒）
   sign_expires_tencent_cos: 3600 * 2,
   // 图片选择数量限制
-  chooseMediaCount: 20, 
+  chooseMediaCount: 20,
+  // 校园导览地图配置
+  map_center: { latitude: 23.1026, longitude: 113.2996 },
+  map_max_markers: 200, 
 
   // 科普页图片
   science_imgs: [

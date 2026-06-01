@@ -144,3 +144,94 @@ picker, input {
   font-size: 24rpx;
   margin-bottom: 5rpx;
 }
+
+/* 地图标记图标选择 */
+.marker-box {
+  box-shadow: 0 0 10rpx var(--color-gray-dark);
+  padding: 20rpx 30rpx;
+  margin: 20rpx 0;
+  border-radius: 20rpx;
+  background: var(--color-primary-light);
+}
+
+.marker-header {
+  margin-bottom: 12rpx;
+  font-size: 28rpx;
+  color: var(--color-black-min);
+}
+
+.marker-scroll {
+  white-space: nowrap;
+  width: 100%;
+}
+
+.marker-item {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  width: 120rpx;
+  padding: 12rpx 10rpx;
+  margin-right: 16rpx;
+  border-radius: 16rpx;
+  border: 3rpx solid transparent;
+  background: #fff;
+}
+
+.marker-item.selected {
+  border-color: var(--color-primary);
+  background: #fffdf0;
+}
+
+.marker-item image {
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 50%;
+}
+
+.marker-item text {
+  font-size: 22rpx;
+  color: var(--color-black-min);
+  margin-top: 6rpx;
+}
+
+/* 位置信息 */
+.location-box {
+  box-shadow: 0 0 10rpx var(--color-gray-dark);
+  padding: 20rpx 30rpx;
+  margin: 20rpx 0;
+  border-radius: 20rpx;
+  background: var(--color-primary-light);
+}
+
+.location-header {
+  margin-bottom: 12rpx;
+}
+
+.location-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.location-tip {
+  font-size: 26rpx;
+  color: var(--color-gray-max);
+}
+
+.location-coords {
+  font-size: 24rpx;
+  color: var(--color-primary-text);
+  font-weight: 500;
+}
+
+.location-btn {
+  width: 160rpx;
+  font-size: 24rpx;
+  padding: 10rpx 20rpx;
+  margin: 0;
+  border-radius: 20rpx;
+  background: var(--color-primary);
+  color: var(--color-primary-text);
+  border: none;
+  line-height: 1.2;
+}
