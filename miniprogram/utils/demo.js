@@ -65,8 +65,8 @@ const DEMO_MARKER_ICONS = [
   { _id: 'mi-6', name: '三花', img: '/images/markers/calico.jpg', enabled: true },
 ];
 
-const DEMO_MAP_ACCESS = [
-  { _id: 'demo-mapacc-1', openid: 'demo-openid-2', reason: '我想看看校园里猫猫的分布情况', status: 'pending', createDate: '2026-05-20', photoCount: 5, commentCount: 2 },
+const DEMO_PENDING_USERS = [
+  { _id: 'demo-user-2', openid: 'demo-openid-2', userInfo: { nickName: '测试用户2', avatarUrl: '' }, manager: 0, mapAccess: { status: 'pending', applyReason: '我想看看校园里猫猫的分布情况', applyDate: '2026-05-20' } },
 ];
 
 function getDemoMapData() {
@@ -200,11 +200,7 @@ function createMockMpServerless() {
             return { result: cat || null };
           }
           if (name === 'user') {
-            return { result: { _id: 'demo-user', openid: 'demo-openid', role: 'manager', manager: 99, mapAccess: true, followCats: DEMO_CATS.map(c => c._id) } };
-          }
-          if (name === 'map_access' && query && query._id) {
-            const app = DEMO_MAP_ACCESS.find(a => a._id === query._id);
-            return { result: app || null };
+            return { result: { _id: 'demo-user', openid: 'demo-openid', userInfo: { nickName: '管理员', avatarUrl: '' }, role: 'manager', manager: 99, mapAccess: { status: 'approved', applyReason: '管理员手动开通', applyDate: '2026-05-01' }, followCats: DEMO_CATS.map(c => c._id) } };
           }
           if (name === 'marker_icon' && query && query._id) {
             const icon = DEMO_MARKER_ICONS.find(i => i._id === query._id);
@@ -219,8 +215,10 @@ function createMockMpServerless() {
           let data = [];
           if (name === 'cat') data = DEMO_CATS;
           if (name === 'photo') data = DEMO_PHOTOS;
-          if (name === 'map_access') data = DEMO_MAP_ACCESS;
           if (name === 'marker_icon') data = DEMO_MARKER_ICONS;
+          if (name === 'user' && query && query['mapAccess.status'] === 'pending') {
+            data = DEMO_PENDING_USERS;
+          }
           // 简单筛选
           if (query && Object.keys(query).length) {
             data = data.filter(item => _matchFilter(item, query));
@@ -250,8 +248,8 @@ function createMockMpServerless() {
         count: async (query) => {
           if (name === 'photo') return { result: DEMO_PHOTOS.length };
           if (name === 'cat') return { result: DEMO_CATS.length };
-          if (name === 'map_access') return { result: DEMO_MAP_ACCESS.length };
           if (name === 'marker_icon') return { result: DEMO_MARKER_ICONS.length };
+          if (name === 'user' && query && query['mapAccess.status'] === 'pending') return { result: DEMO_PENDING_USERS.length };
           return { result: 0 };
         },
         insertOne: async (data) => ({ id: 'mock-' + Date.now() }),

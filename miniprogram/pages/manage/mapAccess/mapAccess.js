@@ -1,4 +1,5 @@
 import { checkAuth, getUserInfo } from "../../../utils/user";
+import { formatDate } from "../../../utils/utils";
 import api from "../../../utils/cloudApi";
 import { isDemoMode } from "../../../utils/demo";
 
@@ -80,9 +81,12 @@ Page({
     const user = this.data.users[index];
     if (!user) return;
 
-    const newVal = !user.mapAccess;
+    const currentApproved = user.mapAccess && user.mapAccess.status === 'approved';
+    const nextVal = currentApproved
+      ? null
+      : { status: 'approved', applyReason: '管理员手动开通', applyDate: api.getDate() };
     // 乐观更新 UI
-    this.setData({ [`users[${index}].mapAccess`]: newVal });
+    this.setData({ [`users[${index}].mapAccess`]: nextVal });
 
     try {
       if (isDemoMode()) {
@@ -92,15 +96,22 @@ Page({
         operation: "update",
         collection: "user",
         item_id: user._id,
-        data: { mapAccess: newVal }
+        data: { mapAccess: nextVal }
       });
       if (!res.ok) {
-        this.setData({ [`users[${index}].mapAccess`]: !newVal });
+        // 回滚
+        const rollback = currentApproved
+          ? { status: 'approved', applyReason: '管理员手动开通', applyDate: api.getDate() }
+          : null;
+        this.setData({ [`users[${index}].mapAccess`]: rollback });
         wx.showToast({ title: '操作失败', icon: 'none' });
       }
     } catch (e) {
       console.error('更新失败:', e);
-      this.setData({ [`users[${index}].mapAccess`]: !newVal });
+      const rollback = currentApproved
+        ? { status: 'approved', applyReason: '管理员手动开通', applyDate: api.getDate() }
+        : null;
+      this.setData({ [`users[${index}].mapAccess`]: rollback });
       wx.showToast({ title: '操作失败', icon: 'none' });
     }
   },
@@ -115,9 +126,18 @@ Page({
   async loadApplications() {
     this.setData({ appsLoading: true });
     try {
-      const { result: apps } = await app.mpServerless.db.collection('map_access')
-        .find({ status: 'pending' }, { sort: { createDate: -1 } });
-      this.setData({ applications: apps || [], appsLoading: false });
+      const { result: users } = await app.mpServerless.db.collection('user')
+        .find({ 'mapAccess.status': 'pending' }, { sort: { 'mapAccess.applyDate': -1 } });
+      const apps = (users || []).map(u => ({
+        _id: u._id,
+        openid: u.openid,
+        userInfo: u.userInfo,
+        mapAccess: {
+          ...u.mapAccess,
+          applyDate: formatDate(u.mapAccess.applyDate, 'yyyy-MM-dd hh:mm:ss')
+        },
+      }));
+      this.setData({ applications: apps, appsLoading: false });
     } catch (e) {
       console.error('加载申请列表失败:', e);
       this.setData({ appsLoading: false });
@@ -131,37 +151,28 @@ Page({
 
     wx.showModal({
       title: '确认通过',
-      content: `确定通过「${application.reason?.substring(0, 20)}...」的申请吗？`,
+      content: `确定通过「${application.mapAccess.applyReason?.substring(0, 20)}...」的申请吗？`,
       confirmText: '通过',
       cancelText: '取消',
       success: async (res) => {
         if (!res.confirm) return;
 
         try {
-          // 1. 更新申请状态
+          // 更新用户的 mapAccess 状态为已通过
           await api.curdOp({
             operation: "update",
-            collection: "map_access",
+            collection: "user",
             item_id: application._id,
-            data: { status: 'approved', reviewDate: api.getDate() }
+            data: {
+              mapAccess: {
+                status: 'approved',
+                applyReason: application.mapAccess.applyReason,
+                applyDate: application.mapAccess.applyDate,
+              }
+            }
           });
 
-          // 2. 查找用户并开启 mapAccess
-          if (!isDemoMode()) {
-            const userRes = await app.mpServerless.db.collection('user')
-              .find({ openid: application.openid });
-            const user = (userRes.result || [])[0];
-            if (user) {
-              await api.curdOp({
-                operation: "update",
-                collection: "user",
-                item_id: user._id,
-                data: { mapAccess: true }
-              });
-            }
-          }
-
-          // 3. 从列表移除
+          // 从列表移除
           const apps = [...this.data.applications];
           apps.splice(index, 1);
           this.setData({ applications: apps });
@@ -189,9 +200,9 @@ Page({
         try {
           await api.curdOp({
             operation: "update",
-            collection: "map_access",
+            collection: "user",
             item_id: application._id,
-            data: { status: 'rejected', reviewDate: api.getDate() }
+            data: { mapAccess: null }
           });
           const apps = [...this.data.applications];
           apps.splice(index, 1);

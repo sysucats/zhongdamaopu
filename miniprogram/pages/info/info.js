@@ -250,7 +250,7 @@ Page({
     const { result: numChkComments } = await app.mpServerless.db.collection('comment').count({ needVerify: true });
     const { result: numFeedbacks } = await app.mpServerless.db.collection('feedback').count({ dealed: false });
     const { result: numImProcess } = await app.mpServerless.db.collection('photo').count(imProcessQf);
-    const { result: numMapAccessApps } = await app.mpServerless.db.collection('map_access').count({ status: 'pending' });
+    const { result: numMapAccessApps } = await app.mpServerless.db.collection('user').count({ 'mapAccess.status': 'pending' });
     this.setData({
       "nums.numChkPhotos": numChkPhotos,
       "nums.numChkComments": numChkComments,
