@@ -5,19 +5,7 @@ import { checkCanUseMap } from "../../../utils/user";
 
 const app = getApp();
 
-const CAMPUS_CENTER = {
-  latitude: 23.1026,
-  longitude: 113.2996
-};
-
-const MARKER_ICONS = {
-  white: '/images/markers/white.jpg',
-  black: '/images/markers/black.jpg',
-  orange: '/images/markers/orange.jpg',
-  blue: '/images/markers/blue.jpg',
-  tabby: '/images/markers/tabby.jpg',
-  calico: '/images/markers/calico.jpg',
-};
+const CAMPUS_CENTER = config.map_center;
 
 Page({
   data: {
@@ -38,6 +26,7 @@ Page({
     allPhotos: [],
     markers: [],
     catMap: {},
+    markerIconMap: {},
   },
 
   async onLoad() {
@@ -59,6 +48,7 @@ Page({
       return;
     }
     this.setData({ demoMode: isDemoMode() });
+    this.loadMarkerIcons();
     this.loadMapData();
   },
 
@@ -87,8 +77,9 @@ Page({
           longitude: app.mpServerless.db.command.neq(null),
           verified: true
         })
+        .field({ cat_id: 1, latitude: 1, longitude: 1, photo_id: 1, marker_type: 1, create_date: 1, photographer: 1, shooting_date: 1 })
         .orderBy('create_date', 'desc')
-        .limit(200)
+        .limit(config.map_max_markers)
         .get();
 
       const photos = photoRes.result || [];
@@ -130,6 +121,18 @@ Page({
     }
   },
 
+  async loadMarkerIcons() {
+    try {
+      const { result: icons } = await app.mpServerless.db.collection('marker_icon')
+        .find({ enabled: true });
+      const map = {};
+      (icons || []).forEach(i => { map[i.name] = i.img; });
+      this.jsData.markerIconMap = map;
+    } catch (e) {
+      console.warn('加载标记图标失败:', e.message);
+    }
+  },
+
   loadDemoData() {
     const { allPhotos, catMap } = getDemoMapData();
     this.jsData.allPhotos = allPhotos;
@@ -142,7 +145,7 @@ Page({
     const catMap = this.jsData.catMap || {};
     const markers = photos.map((p, index) => {
       const cat = catMap[p.cat_id] || {};
-      const icon = p.marker_type ? MARKER_ICONS[p.marker_type] : null;
+      const icon = p.marker_type ? (this.jsData.markerIconMap[p.marker_type] || null) : null;
       return {
         id: index,
         latitude: p.latitude,

@@ -1,43 +1,62 @@
 // 存放所有需要调用云函数的接口
 import config from "../config";
-import { getCurrentUserOpenid } from "./common";
-const app = getApp();
 
 function getDate(date) {
   date = date ? new Date(date) : new Date();
   return new Date()
 }
 
+
+// 获取当前用户的openid
+async function getCurrentUserOpenid() {
+  try {
+    const app = getApp();
+    console.log("App instance:", app);
+    const res = await app.mpServerless.user.getInfo({
+      authProvider: 'wechat_openapi'
+    });
+    if (res.success) {
+      return res.result.user.oAuthUserId;
+    }
+    return null;
+  } catch (error) {
+    console.log("getCurrentUserOpenid error:", error);
+    return null;
+  }
+}
+
 async function curdOp(options) {
+  const app = getApp();
   const openid = await getCurrentUserOpenid();
-  return (await app.mpServerless.function.invoke('curdOp', {
+  return (await app.mpServerless.function.invoke('unionOp', {
     ...options,
     openid: openid,
+    unionAction: "curdOp",
   })).result;
 }
 
 async function userOp(options) {
-  var openid
-  const res = await app.mpServerless.user.getInfo({
-    authProvider: 'wechat_openapi'
-  });
-  if (res.success) {
-    openid = res.result.user.oAuthUserId;
-  } else {
-    return {};
-  }
-  return (await app.mpServerless.function.invoke('userOp', {
+  const app = getApp();
+  var openid = await getCurrentUserOpenid();
+  return (await app.mpServerless.function.invoke('unionOp', {
     ...options,
     openid: openid,
-    op: options.op
+    op: options.op,
+    unionAction: "userOp",
+  })).result;
+}
+// 发送消息
+
+async function sendMsgV2(options) {
+  const app = getApp();
+  return (await app.mpServerless.function.invoke('unionOp', {
+    ...options,
+    unionAction: "sendMsgV2",
   })).result;
 }
 
-async function sendMsgV2(options) {
-  return (await app.mpServerless.function.invoke('sendMsgV2', options)).result;
-}
-
 async function getMpCode(options) {
+  const app = getApp();
   const params = {
     _id: options._id,
     scene: options.scene,
@@ -45,39 +64,43 @@ async function getMpCode(options) {
     width: 500,
     use_private_tencent_cos: config.use_private_tencent_cos
   }
-  return (await app.mpServerless.function.invoke('getMpCode', params)).result;
+  return (await app.mpServerless.function.invoke('unionOp', {
+    ...params,
+    unionAction: "getMpCode",
+  })).result;
 }
 
 async function managePhoto(options) {
+  const app = getApp();
   const openid = await getCurrentUserOpenid();
-  return (await app.mpServerless.function.invoke('managePhoto', {
+  return (await app.mpServerless.function.invoke('unionOp', {
     ...options,
-    openid: openid
+    openid: openid,
+    unionAction: "managePhoto",
   })).result
 }
 
-// EMAS不支持该功能
-// async function globalLock(options) {
-//   return await cloud.callFunction({
-//     name: "globalLock",
-//     data: options
-//   });
-// }
-
 async function getAllSci(options) {
-  return (await app.mpServerless.function.invoke('getAllSci', options)).result;
+  const app = getApp();
+  return (await app.mpServerless.function.invoke('unionOp', {
+    ...options,
+    unionAction: "getAllSci",
+  })).result;
 }
 
 async function updateCat(options) {
+  const app = getApp();
   const openid = await getCurrentUserOpenid();
-  return (await app.mpServerless.function.invoke('updateCat', {
+  return (await app.mpServerless.function.invoke('unionOp', {
     ...options,
-    openid: openid
+    openid: openid,
+    unionAction: "updateCat",
   })).result
 }
 
 // 内容安全检查
 async function contentSafeCheck(content, nickname) {
+  const app = getApp();
   const openid = await getCurrentUserOpenid();
   const label_type = {
     100: "正常",
@@ -92,7 +115,7 @@ async function contentSafeCheck(content, nickname) {
     21000: "其他",
   }
   // 违规检测并提交
-  var res = (await app.mpServerless.function.invoke('commentCheck', { openid: openid, content: content, nickname: nickname })).result;
+  var res = (await app.mpServerless.function.invoke('unionOp', { openid: openid, content: content, nickname: nickname, unionAction: "commentCheck" })).result;
   // 检测接口的返回
   console.log("contentSafeCheck", res);
   if (res.errCode != 0 && res.errcode != 0) {
@@ -114,36 +137,44 @@ async function contentSafeCheck(content, nickname) {
   }
   return;
 }
-
+// 获取用户的徽章
 async function getBadge(options) {
+  const app = getApp();
   const openid = await getCurrentUserOpenid();
-  return (await app.mpServerless.function.invoke('getBadge', {
-    ...options,
-    openid: openid
-  })).result
-}
-
-async function giveBadge(options) {
-  const openid = await getCurrentUserOpenid();
-  return (await app.mpServerless.function.invoke('giveBadge', {
-    ...options,
-    openid: openid
-  })).result
-}
-
-async function genBadgeCode(options) {
-  const openid = await getCurrentUserOpenid();
-  return (await app.mpServerless.function.invoke('genBadgeCode', {
-    ...options,
-    openid: openid
-  })).result
-}
-
-async function loadBadgeCode(options) {
-  const openid = await getCurrentUserOpenid();
-  return (await app.mpServerless.function.invoke('curdOp', {
+  return (await app.mpServerless.function.invoke('unionOp', {
     ...options,
     openid: openid,
+    unionAction: "getBadge",
+  })).result
+}
+// 添加app实例获取
+async function giveBadge(options) {
+  const app = getApp();
+  const openid = await getCurrentUserOpenid();
+  return (await app.mpServerless.function.invoke('unionOp', {
+    ...options,
+    openid: openid,
+    unionAction: "giveBadge",
+  })).result
+}
+// 生成徽章二维码
+async function genBadgeCode(options) {
+  const app = getApp();
+  const openid = await getCurrentUserOpenid();
+  return (await app.mpServerless.function.invoke('unionOp', {
+    ...options,
+    openid: openid,
+    unionAction: "genBadgeCode",
+  })).result
+}
+// 加载徽章码
+async function loadBadgeCode(options) {
+  const app = getApp();
+  const openid = await getCurrentUserOpenid();
+  return (await app.mpServerless.function.invoke('unionOp', {
+    ...options,
+    openid: openid,
+    unionAction: "curdOp",
     operation: "read",
     collection: "badge_code",
     where: options.where,
@@ -152,58 +183,113 @@ async function loadBadgeCode(options) {
   })).result
 }
 
+// 添加app实例获取
 // 查询用户个人数据接口
 async function getUserStats(options) {
+  const app = getApp();
   const openid = await getCurrentUserOpenid();
   console.log("openid", openid);
-  return (await app.mpServerless.function.invoke('getUserStats', {
+  return (await app.mpServerless.function.invoke('unionOp', {
     ...options,
-    openid: openid
+    openid: openid,
+    unionAction: "getUserStats",
   })).result
 }
 
 // 更新一只猫的评分
 async function updateCatRating(options) {
-  return (await app.mpServerless.function.invoke('updateCatRating', options)).result
+  const app = getApp();
+  return (await app.mpServerless.function.invoke('unionOp', {
+    ...options,
+    unionAction: "updateCatRating",
+  })).result
 }
 
-// 获取数据看板
+// 添加app实例获取
 async function getCatStats(options) {
-  return (await app.mpServerless.function.invoke('getCatStats', options)).result
+  const app = getApp();
+  return (await app.mpServerless.function.invoke('unionOp', {
+    ...options,
+    unionAction: "getCatStats",
+  })).result
 }
 
 // 更新关注列表
+// 添加app实例获取
 async function updateFollowCats(options) {
+  const app = getApp();
   const openid = await getCurrentUserOpenid();
-  return (await app.mpServerless.function.invoke('updateFollowCats', {
+  return (await app.mpServerless.function.invoke('unionOp', {
     ...options,
-    openid: openid
+    openid: openid,
+    unionAction: "updateFollowCats",
   })).result
 }
 
+// 更新一只猫的疫苗接种记录
 async function vaccineOp(options) {
+  const app = getApp();
   const openid = await getCurrentUserOpenid();
-  return (await app.mpServerless.function.invoke('vaccineOp', {
+  return (await app.mpServerless.function.invoke('unionOp', {
     ...options,
-    openid: openid
+    openid: openid,
+    unionAction: "vaccineOp",
   })).result
 }
 
+// 更新猫的关系
 async function catRelationOp(options) {
+  const app = getApp();
   const openid = await getCurrentUserOpenid();
-  return (await app.mpServerless.function.invoke('catRelationOp', {
+  return (await app.mpServerless.function.invoke('unionOp', {
     ...options,
-    openid: openid
+    openid: openid,
+    unionAction: "catRelationOp",
   })).result;
 }
 
+// 管理关系规则
 async function manageRelationRules(options) {
+  const app = getApp();
   const openid = await getCurrentUserOpenid();
-  return (await app.mpServerless.function.invoke('manageRelationRules', {
+  return (await app.mpServerless.function.invoke('unionOp', {
     ...options,
-    openid: openid
+    openid: openid,
+    unionAction: "manageRelationRules",
   })).result;
 }
+
+// 初始化疫苗类型
+async function initVaccineTypes(options) {
+  const app = getApp();
+  const openid = await getCurrentUserOpenid();
+  return (await app.mpServerless.function.invoke('unionOp', {
+    ...options,
+    openid: openid,
+    unionAction: "initVaccineTypes",
+  })).result;
+}
+
+// 获取URL
+async function getURL(options) {
+  const app = getApp();
+  const openid = await getCurrentUserOpenid();
+  return (await app.mpServerless.function.invoke('unionOp', {
+    ...options,
+    openid: openid,
+    unionAction: "getURL",
+  })).result;
+}
+
+async function getTempCOS(options) {
+  const app = getApp();
+  console.log("getTempCOS", options, app);
+  return (await app.mpServerless.function.invoke('unionOp', {
+    ...options,
+    unionAction: "getTempCOS",
+  })).result;
+}
+
 
 module.exports = {
   curdOp,
@@ -225,5 +311,9 @@ module.exports = {
   updateFollowCats,
   vaccineOp,
   catRelationOp,
-  manageRelationRules
+  manageRelationRules,
+  initVaccineTypes,
+  getURL,
+  getTempCOS,
+  getCurrentUserOpenid
 };

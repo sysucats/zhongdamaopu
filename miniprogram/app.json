@@ -45,7 +45,9 @@
     "pages/genealogy/detailCat/relationGraph/relationGraph",
     "pages/genealogy/applyMapAccess/applyMapAccess",
     "pages/map/index/index",
-    "pages/manage/mapAccess/mapAccess"
+    "pages/manage/mapAccess/mapAccess",
+    "pages/manage/markerIcon/markerIcon",
+    "pages/manage/markerIcon/editMarkerIcon/editMarkerIcon"
   ],
   "subPackages": [
     {

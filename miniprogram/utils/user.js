@@ -34,9 +34,10 @@ async function getUser(options) {
 
   // 直接调用云函数，不再通过 api 对象
   const openid = await getCurrentUserOpenid();
-  userRes = (await app.mpServerless.function.invoke('userOp', {
+  userRes = (await app.mpServerless.function.invoke('unionOp', {
     op: 'get',
-    openid: openid
+    openid: openid,
+    unionAction: 'userOp'
   })).result;
   if (userRes && userRes.userInfo) {
     userRes.userInfo.avatarUrl = await signCosUrl(userRes.userInfo.avatarUrl);
@@ -226,13 +227,14 @@ function toSetUserInfo() {
 async function setUserRole(openid, role) {
   // 直接调用云函数，不再通过 api 对象
   const currentOpenid = await getCurrentUserOpenid();
-  return (await app.mpServerless.function.invoke('userOp', {
+  return (await app.mpServerless.function.invoke('unionOp', {
     "op": "updateRole",
     "user": {
       openid: openid,
       role: role
     },
-    openid: currentOpenid
+    openid: currentOpenid,
+    unionAction: "userOp"
   })).result;
 }
 

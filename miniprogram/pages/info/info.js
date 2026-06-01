@@ -133,6 +133,11 @@ Page({
             num: "numMapAccessApps"
           },
           {
+            name: "标记图标",
+            path: "/pages/manage/markerIcon/markerIcon",
+            icon: "icon-medel-o"
+          },
+          {
             name: "徽章管理",
             path: "/pages/manage/badgeDef/badgeDef",
             icon: "icon-medel-o"
