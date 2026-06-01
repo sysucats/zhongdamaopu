@@ -175,7 +175,7 @@ async function checkCanUseMap() {
   const app = getApp();
   if (app.globalData && app.globalData.demoMode) return true;
   const user = await getUser({ nocache: true });
-  return !!user.mapAccess;
+  return !!(user.mapAccess && user.mapAccess.status === 'approved');
 }
 
 // 设置页面上的userInfo

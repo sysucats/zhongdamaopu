@@ -28,7 +28,7 @@
           </view>
           <view class="toggle-row">
             <text class="toggle-label">校园导览</text>
-            <switch checked="{{item.mapAccess}}" data-index="{{index}}" bindchange="toggleMapAccess" color="#ffd101" />
+            <switch checked="{{item.mapAccess && item.mapAccess.status === 'approved'}}" data-index="{{index}}" bindchange="toggleMapAccess" color="#ffd101" />
           </view>
         </view>
         <view class="load-more" wx:if="{{loading}}">加载中...</view>
@@ -41,12 +41,12 @@
       <scroll-view scroll-y="true" style="height: calc(100vh - 260rpx);">
         <view class="app-card" wx:for="{{applications}}" wx:key="_id">
           <view class="app-header">
-            <text class="app-date">申请时间: {{item.createDate}}</text>
-            <text class="app-counts">照片: {{item.photoCount}} | 评论: {{item.commentCount}}</text>
+            <text class="app-user">申请人: {{item.userInfo.nickName || '未知用户'}}</text>
+            <text class="app-date">申请时间: {{item.mapAccess.applyDate}}</text>
           </view>
           <view class="app-reason">
             <text class="reason-label">申请理由：</text>
-            <text class="reason-text">{{item.reason}}</text>
+            <text class="reason-text">{{item.mapAccess.applyReason}}</text>
           </view>
           <view class="app-actions">
             <button class="btn-approve" data-index="{{index}}" bindtap="approveApplication">通过</button>

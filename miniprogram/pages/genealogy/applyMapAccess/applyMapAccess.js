@@ -75,15 +75,15 @@ Page({
       } else {
         const user = await getUser();
         await api.curdOp({
-          operation: "add",
-          collection: "map_access",
+          operation: "update",
+          collection: "user",
+          item_id: user._id,
           data: {
-            _openid: user.openid,
-            reason: reason,
-            status: "pending",
-            createDate: api.getDate(),
-            photoCount: this.data.photoCount,
-            commentCount: this.data.commentCount,
+            mapAccess: {
+              status: "pending",
+              applyReason: reason,
+              applyDate: api.getDate()
+            }
           }
         });
         wx.showToast({ title: '申请已提交', icon: 'success' });

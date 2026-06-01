@@ -72,15 +72,15 @@ Page({
 
     try {
       const photoRes = await app.mpServerless.db.collection('photo')
-        .where({
-          latitude: app.mpServerless.db.command.neq(null),
-          longitude: app.mpServerless.db.command.neq(null),
+        .find({
+          latitude: { $ne: null },
+          longitude: { $ne: null },
           verified: true
-        })
-        .field({ cat_id: 1, latitude: 1, longitude: 1, photo_id: 1, marker_type: 1, create_date: 1, photographer: 1, shooting_date: 1 })
-        .orderBy('create_date', 'desc')
-        .limit(config.map_max_markers)
-        .get();
+        }, {
+          projection: { cat_id: 1, latitude: 1, longitude: 1, photo_id: 1, marker_type: 1, create_date: 1, photographer: 1, shooting_date: 1 },
+          sort: { create_date: -1 },
+          limit: config.map_max_markers
+        });
 
       const photos = photoRes.result || [];
       if (photos.length === 0) {
@@ -93,9 +93,7 @@ Page({
       let catMap = {};
       if (catIds.length > 0) {
         const catRes = await app.mpServerless.db.collection('cat')
-          .where({ _id: app.mpServerless.db.command.in(catIds) })
-          .field({ name: 1, _id: 1, campus: 1, area: 1 })
-          .get();
+          .find({ _id: { $in: catIds } }, { projection: { name: 1, _id: 1, campus: 1, area: 1 } });
         (catRes.result || []).forEach(c => { catMap[c._id] = c; });
       }
 
