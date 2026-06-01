@@ -56,8 +56,9 @@ async function uploadFile(options) {
     })
   }
 
-  const data = (await app.mpServerless.function.invoke('getURL', {
-    fileName: fileName
+  const data = (await app.mpServerless.function.invoke('unionOp', {
+    fileName: fileName,
+    unionAction: 'getURL'
   })).result
 
   const formData = data.formData;
@@ -98,7 +99,7 @@ async function ensureCos() {
       const app = getApp();
       if (!cosTemp || (new Date() > new Date(cosTemp.Expiration))) {
         console.log("开始获取 cosTemp");
-        cosTemp = (await app.mpServerless.function.invoke('getTempCOS')).result
+        cosTemp = (await app.mpServerless.function.invoke('unionOp', { unionAction: 'getTempCOS' })).result
         wx.setStorageSync('cosTemp', cosTemp);
       }
       if (!cosTemp || !cosTemp.Credentials) {

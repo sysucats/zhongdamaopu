@@ -84,8 +84,6 @@ Page({
       const { result: photos } = await app.mpServerless.db.collection('photo').find({
         photo_compressed: { $in: [undefined, ''] },
         verified: true
-      }, {
-        limit: 100 // 限制一次加载100张，避免过多
       });
       
       // 填充用户信息
@@ -207,7 +205,9 @@ Page({
     }
     
     // 初始化canvas
+    console.log("begin");
     const initCanvas = await drawUtils.initCanvas('#bigPhoto');
+    console.log("passsss");
     this.jsData.gCtx = initCanvas.ctx;
     this.jsData.gCanvas = initCanvas.canvas;
     
@@ -355,8 +355,8 @@ Page({
     const origin = oriPhotoObj;
 
     const draw_rate = Math.max(origin.width, origin.height) / canvasMax;
-    const draw_width = origin.width / draw_rate;
-    const draw_height = origin.height / draw_rate;
+    const draw_width = Math.round(origin.width / draw_rate);
+    const draw_height = Math.round(origin.height / draw_rate);
 
     // 写上水印
     const { gCtx, gCanvas } = this.jsData;

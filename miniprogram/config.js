@@ -19,7 +19,10 @@ module.exports = {
   // 私有的腾讯云cos签名过期时间（秒）
   sign_expires_tencent_cos: 3600 * 2,
   // 图片选择数量限制
-  chooseMediaCount: 20, 
+  chooseMediaCount: 20,
+  // 校园导览地图配置
+  map_center: { latitude: 23.1026, longitude: 113.2996 },
+  map_max_markers: 200, 
 
   // 科普页图片
   science_imgs: [

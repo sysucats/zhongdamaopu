@@ -1,0 +1,23 @@
+<view class="page">
+  <view class="form-section">
+    <text class="label">图标图片</text>
+    <view class="image-picker" bindtap="chooseImage">
+      <image wx:if="{{icon.img}}" src="{{icon.img}}" mode="aspectFill" />
+      <text wx:else class="placeholder">点击选择图标</text>
+    </view>
+  </view>
+
+  <view class="form-section">
+    <text class="label">图标名称</text>
+    <input class="input" placeholder="如：橘猫、黑猫" value="{{icon.name}}" data-field="name" bindinput="onChangeText" maxlength="10" />
+  </view>
+
+  <view class="form-section toggle-row">
+    <text class="label">启用</text>
+    <switch checked="{{icon.enabled}}" data-field="enabled" color="#ffd101" />
+  </view>
+
+  <button class="btn-save primary" bindtap="onSave" loading="{{uploading}}" disabled="{{uploading}}">
+    {{isEdit ? '保存修改' : '创建图标'}}
+  </button>
+</view>

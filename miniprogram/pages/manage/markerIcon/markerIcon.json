@@ -1,0 +1,6 @@
+{
+  "usingComponents": {
+    "no-auth": "/components/noAuth/noAuth"
+  },
+  "navigationBarTitleText": "地图标记图标管理"
+}

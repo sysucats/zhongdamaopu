@@ -1,0 +1,10 @@
+page { padding: 30rpx; background: var(--color-white-dark); }
+.form-section { background: #fff; border-radius: 12rpx; padding: 25rpx; margin-bottom: 20rpx; }
+.label { font-size: 28rpx; color: var(--color-black-min); margin-bottom: 15rpx; display: block; }
+.image-picker { width: 140rpx; height: 140rpx; border-radius: 50%; border: 2rpx dashed var(--color-gray); display: flex; align-items: center; justify-content: center; overflow: hidden; }
+.image-picker image { width: 100%; height: 100%; }
+.placeholder { font-size: 24rpx; color: var(--color-gray-max); text-align: center; }
+.input { width: 100%; height: 80rpx; border-bottom: 2rpx solid var(--color-primary); font-size: 30rpx; padding: 0 10rpx; }
+.toggle-row { display: flex; justify-content: space-between; align-items: center; }
+.btn-save { margin-top: 40rpx; width: 100%; background: var(--color-primary); color: var(--color-primary-text); font-size: 34rpx; padding: 22rpx; border-radius: 44rpx; border: none; }
+.btn-save::after { border: none; }
