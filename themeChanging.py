@@ -16,7 +16,7 @@ def extract_colors_from_folder(png_files):
     color_counts = {}  # 用字典来存储颜色及其出现次数
     print("组件图片总数:", len(png_files))
     for png_file in tqdm(png_files, desc='提取颜色并验证', ncols=100):
-        img = Image.open(png_file)
+        img = Image.open(png_file).convert('RGBA')
         pixels = img.getdata()
 
         for pixel in pixels:
@@ -88,7 +88,7 @@ def color_distance(color1, color2):
 
 def replace_color_in_images(png_files, replace_dic , tolerance = 50):
     for png_file in tqdm(png_files, desc='置换中', ncols=100):
-        img = Image.open(png_file)
+        img = Image.open(png_file).convert('RGBA')
         pixels = img.load()
         width, height = img.size
         for color_origin in replace_dic:
@@ -96,22 +96,22 @@ def replace_color_in_images(png_files, replace_dic , tolerance = 50):
             colour_aim_rgb = hex_to_rgb(replace_dic[color_origin])
             for x in range(width):
                 for y in range(height):
-                    if color_distance(pixels[x, y], colour_origin_rgb) < tolerance:
-                        pixels[x, y] = colour_aim_rgb
-            img.save(png_file)
+                    current_pixel = pixels[x, y]
+                    if color_distance(current_pixel, colour_origin_rgb) < tolerance:
+                        pixels[x, y] = (*colour_aim_rgb, current_pixel[3])
+        img.save(png_file)
 
 
 def remove_file(file_names, paths):
     # 使用列表推导式筛选掉匹配的元素并构建新的列表
-    updated_addresses = [path for path in paths if
-                         not any(path.endswith("\\" + name) for name in file_names)]
+    updated_addresses = [path for path in paths if os.path.basename(path) not in file_names]
     return updated_addresses
 
 
 if __name__ == "__main__":
 
     if len(sys.argv) < 3:
-        print("参数不全,请输入待更换主题色号以及目标更换主题色号!")
+        raise ValueError("参数不全, 请输入待更换主题色号以及目标更换主题色号! 例如: python themeChanging.py '#ffd101' '#73A7DD'")
     else:
         print(sys.argv[1])
         print(sys.argv[2])
