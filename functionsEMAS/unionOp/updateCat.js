@@ -21,17 +21,15 @@ module.exports = async (ctx) => {
   const currentTime = new Date().toISOString();
   const db = ctx.mpserverless.db;
   
-  // 非删除操作需要验证name字段
-  if (ctx.args.action !== 'delete') {
-    // 验证name字段不能为空
+  // 新建猫时必须传 name，更新时 name 可选
+  const isNewCat = !cat_id;
+  if (isNewCat) {
     if (cat === null || cat === undefined || cat.name === null || cat.name === undefined) {
       return {
-        msg: 'name字段不能为空',
+        msg: '新建猫时name字段不能为空',
         result: false
       };
     }
-    
-    // 检查name是否仅包含空格字符（包括全角和半角）
     const trimmedName = cat.name.replace(/[\s\u3000]/g, '');
     if (trimmedName === '') {
       return {
@@ -174,6 +172,8 @@ module.exports = async (ctx) => {
     const copyKeys = ['area', 'campus', 'characteristics',
       'colour', 'father', 'gender', 'mother', 'name', 'nickname', 'popularity', 'sterilized', 'adopt',
       'missing', 'birthday', 'habit', 'tutorial', 'relation', 'to_star', 'deleted',
+      // 地理位置字段
+      'mapMarker',
       // 添加时间相关字段
       'create_time', 'update_time', 'sterilized_time', 'adopt_time', 'missing_time', 'deceased_time'
     ]

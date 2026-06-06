@@ -33,8 +33,6 @@ Page({
     location: null,
     locating: false,
     demoMode: false,
-    marker_type: '',
-    markerIcons: [],
   },
 
   onLoad: async function (options) {
@@ -61,8 +59,6 @@ Page({
         canUpload: await checkCanUpload()
       });
     }
-
-    this.loadMarkerIcons();
 
     const today = new Date();
     var now_date = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
@@ -144,35 +140,6 @@ Page({
       });
       this.setData({ locating: false });
     }
-  },
-
-  async loadMarkerIcons() {
-    try {
-      const { result: icons } = await app.mpServerless.db.collection('marker_icon')
-        .find({ enabled: true });
-      const list = (icons || []).map(i => ({
-        type: i.name,
-        name: i.name,
-        img: i.img,
-      }));
-      this.setData({ markerIcons: list });
-    } catch (e) {
-      console.warn('加载标记图标失败:', e.message);
-      // Fallback: 本地默认图标
-      this.setData({ markerIcons: [
-        { type: 'white', name: '白猫', img: '/images/markers/white.jpg' },
-        { type: 'black', name: '黑猫', img: '/images/markers/black.jpg' },
-        { type: 'orange', name: '橘猫', img: '/images/markers/orange.jpg' },
-        { type: 'blue', name: '蓝猫', img: '/images/markers/blue.jpg' },
-        { type: 'tabby', name: '狸花', img: '/images/markers/tabby.jpg' },
-        { type: 'calico', name: '三花', img: '/images/markers/calico.jpg' },
-      ]});
-    }
-  },
-
-  selectMarker(e) {
-    const type = e.currentTarget.dataset.type;
-    this.setData({ marker_type: type === this.data.marker_type ? '' : type });
   },
 
   async chooseImg(e) {
@@ -395,10 +362,6 @@ Page({
     if (this.data.location) {
       params.latitude = this.data.location.latitude;
       params.longitude = this.data.location.longitude;
-    }
-
-    if (this.data.marker_type) {
-      params.marker_type = this.data.marker_type;
     }
 
     if (isDemoMode()) {

@@ -44,11 +44,11 @@
         <view class="detail-close" bindtap="closeDetail">✕</view>
       </view>
 
-      <!-- 照片预览 -->
+      <!-- 猫头像预览 -->
       <view class="detail-photo-wrap">
         <image
           class="detail-photo"
-          src="{{currentPhoto.photo_id}}"
+          src="{{currentCat.avatarUrl || '/pages/public/images/info/default_avatar.png'}}"
           mode="aspectFill"
         />
         <view class="detail-location" wx:if="{{currentCat.campus || currentCat.area}}">
@@ -57,19 +57,23 @@
         </view>
       </view>
 
-      <!-- 拍摄信息 -->
+      <!-- 猫咪基本信息 -->
       <view class="detail-info">
-        <view class="info-row" wx:if="{{currentPhoto.photographer}}">
-          <text class="info-label">摄影师</text>
-          <text class="info-value">{{currentPhoto.photographer}}</text>
+        <view class="info-row" wx:if="{{currentCat.gender}}">
+          <text class="info-label">性别</text>
+          <view class="info-value">
+            <image wx:if="{{currentCat.gender === '公'}}" class="gender-icon" src="/pages/public/images/card/card/male.png" mode="aspectFill" />
+            <image wx:elif="{{currentCat.gender === '母'}}" class="gender-icon" src="/pages/public/images/card/card/female.png" mode="aspectFill" />
+            <text wx:else>{{currentCat.gender}}</text>
+          </view>
         </view>
-        <view class="info-row" wx:if="{{currentPhoto.shooting_date}}">
-          <text class="info-label">拍摄日期</text>
-          <text class="info-value">{{currentPhoto.shooting_date}}</text>
+        <view class="info-row" wx:if="{{currentCat.characteristics || currentCat.habit}}">
+          <text class="info-label">性格特点</text>
+          <text class="info-value">{{currentCat.characteristics}}{{currentCat.habit ? '，' + currentCat.habit : ''}}</text>
         </view>
-        <view class="info-row">
-          <text class="info-label">上传时间</text>
-          <text class="info-value">{{currentPhoto.create_date}}</text>
+        <view class="info-row" wx:if="{{currentCat.tutorial}}">
+          <text class="info-label">撸猫指南</text>
+          <text class="info-value">{{currentCat.tutorial}}</text>
         </view>
       </view>
 
