@@ -54,7 +54,7 @@ const actionMap = {
 
 module.exports = async (ctx) => {
     if (ctx.args?.deploy_test === true) {
-        return "v1.0"
+        return "v1.1"
     }
 
     const action = ctx.args?.unionAction

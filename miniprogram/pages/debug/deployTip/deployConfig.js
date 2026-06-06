@@ -166,7 +166,7 @@ module.exports = {
   // 云函数的名称
   functions: {
     "timeTrigger": "v1.0",
-    "unionOp": "v1.0",
+    "unionOp": "v1.1",
   },
   collections: {
     // "app_secret": default_init_data,
@@ -187,7 +187,6 @@ module.exports = {
     "setting": init_setting,
     "user": default_init_data,
     "vaccine": default_init_data,
-    "marker_icon": default_init_data,
   },
   images: {
     "science_imgs[0]": config.science_imgs[0],

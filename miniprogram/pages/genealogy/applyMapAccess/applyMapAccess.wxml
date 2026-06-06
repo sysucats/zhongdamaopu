@@ -15,7 +15,7 @@
     <view class="inputColumns">
       <view>
         <text class="inputTitle">申请理由：</text>
-        <textarea name="reason" placeholder="请说明您需要使用校园导览的原因..." maxlength="{{maxlength}}" bindinput="bindInput"></textarea>
+        <textarea name="reason" placeholder="请说明您需要使用喵地图的原因..." maxlength="{{maxlength}}" bindinput="bindInput"></textarea>
         <text class="lengthTips">字数：{{reasonLength}}/{{maxlength}}</text>
       </view>
     </view>
@@ -26,6 +26,6 @@
   </form>
 
   <view class="footnote">
-    <text>管理员审核通过后，即可使用校园导览地图功能</text>
+    <text>管理员审核通过后，即可使用喵地图地图功能</text>
   </view>
 </view>

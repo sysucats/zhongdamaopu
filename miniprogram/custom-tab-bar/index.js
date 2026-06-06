@@ -93,13 +93,13 @@ Component({
         return;
       }
 
-      // 校园导览权限检查
+      // 喵地图权限检查
       if (path === 'pages/map/index/index') {
         const canUse = await checkCanUseMap();
         if (!canUse) {
           wx.showModal({
             title: '权限提示',
-            content: '请向管理员申请校园导览权限',
+            content: '请向管理员申请喵地图权限',
             confirmText: '去申请',
             cancelText: '取消',
             success(res) {

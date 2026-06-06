@@ -34,7 +34,7 @@
     <!-- 位置信息 -->
     <view class='location-box'>
       <view class='location-header'>
-        <text class='label'>拍摄位置（用于校园导览地图展示）</text>
+        <text class='label'>拍摄位置（用于喵地图展示）</text>
       </view>
       <view class='location-row' wx:if="{{!location}}">
         <text class='location-tip'>未获取位置</text>

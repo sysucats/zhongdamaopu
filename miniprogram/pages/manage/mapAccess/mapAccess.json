@@ -2,5 +2,5 @@
   "usingComponents": {
     "no-auth": "/components/noAuth/noAuth"
   },
-  "navigationBarTitleText": "校园导览权限管理"
+  "navigationBarTitleText": "喵地图权限管理"
 }

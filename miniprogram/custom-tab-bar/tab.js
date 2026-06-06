@@ -33,6 +33,6 @@ module.exports = {
     "pagePath": "pages/map/index/index",
     "iconPath": "/pages/public/images/tabs/default/map.png",
     "selectedIconPath": "/pages/public/images/tabs/active/map.png",
-    "text": "校园导览"
+    "text": "喵地图"
   }
 }

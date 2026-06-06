@@ -127,7 +127,7 @@ Page({
             icon: "icon-star-o"
           },
           {
-            name: "导览权限",
+            name: "地图权限",
             path: "/pages/manage/mapAccess/mapAccess",
             icon: "icon-location-o",
             num: "numMapAccessApps"

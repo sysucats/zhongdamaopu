@@ -10,6 +10,14 @@ Page({
     text_cfg: text_cfg,
     github_link: "https://github.com/sysucats/zhongdamaopu",
     update_log: [{
+      version: "v1.19.0",
+      content: [
+        "新增喵地图功能（感谢NakanoYuhao）",
+        "修复个性化部署脚本（感谢A-n-k-a）",
+        "一些安全修复",
+      ],
+      time: "2026/06/06"
+    }, {
       version: "v1.18.5",
       content: [
         "合并后端云函数",

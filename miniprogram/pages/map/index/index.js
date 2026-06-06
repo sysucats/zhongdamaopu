@@ -35,7 +35,7 @@ Page({
     if (!canUse) {
       wx.showModal({
         title: '权限提示',
-        content: '请向管理员申请校园导览权限',
+        content: '请向管理员申请喵地图权限',
         confirmText: '去申请',
         cancelText: '返回',
         success(res) {

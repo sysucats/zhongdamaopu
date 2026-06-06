@@ -82,7 +82,7 @@
       },
       {
         "pagePath": "pages/map/index/index",
-        "text": "校园导览",
+        "text": "喵地图",
         "iconPath": "images/map.png",
         "selectedIconPath": "images/map-active.png"
       }

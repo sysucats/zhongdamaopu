@@ -170,7 +170,7 @@ async function checkCanShowNews() {
   return tabBarOrder.includes("news");
 }
 
-// 能否使用校园导览地图（按用户权限，默认关闭）
+// 能否使用喵地图（按用户权限，默认关闭）
 async function checkCanUseMap() {
   const app = getApp();
   if (app.globalData && app.globalData.demoMode) return true;

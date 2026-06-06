@@ -27,7 +27,7 @@
             </view>
           </view>
           <view class="toggle-row">
-            <text class="toggle-label">校园导览</text>
+            <text class="toggle-label">喵地图</text>
             <switch checked="{{item.mapAccess && item.mapAccess.status === 'approved'}}" data-index="{{index}}" bindchange="toggleMapAccess" color="#ffd101" />
           </view>
         </view>
