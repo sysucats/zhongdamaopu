@@ -13,12 +13,19 @@ Page({
    * 页面的初始数据
    */
   data: {
-    campus_list: [],
+    campus_list: {},
+    campus_counts: {},
+    campusLoading: false,
+    hasPhotos: false,
   },
 
   jsData: {
     // 准备发送通知的列表，姓名：审核详情
     notice_list: {},
+    // 原始照片数据（未签名、未填充userInfo），按校区分组
+    rawPhotos: {},
+    // 已加载完成的校区
+    loadedCampus: {},
   },
 
   /**
@@ -26,6 +33,8 @@ Page({
    */
   onLoad: async function (options) {
     this.jsData.notice_list = {};
+    this.jsData.rawPhotos = {};
+    this.jsData.loadedCampus = {};
 
     if (await checkAuth(this, 1)) {
       this.loadAllPhotos();
@@ -42,73 +51,129 @@ Page({
     sendVerifyNotice(this.jsData.notice_list);
   },
 
-  async loadPhotosAndFillUserInfo(skip_i) {
-    var { result } = await app.mpServerless.db.collection('photo').find({ verified: false }, { skip: skip_i, limit: 20 })
-    await fillUserInfo(result, "_openid", "userInfo");
-    return { data: result };
-  },
-
+  // 仅加载校区标签（不签名URL、不填充userInfo，快速展示标签）
   async loadAllPhotos() {
     wx.showLoading({
-      title: '加载中...',
+      title: '加载校区列表...',
     });
-    // 获取所有照片
-    var { result: total_count } = await app.mpServerless.db.collection('photo').count({ verified: false });
 
-    var pools = [];
-    for (var i = 0; i < total_count; i += 20) {
-      pools.push(this.loadPhotosAndFillUserInfo(i));
-    }
-    var photos = await Promise.all(pools);
+    try {
+      // 获取所有未审核照片
+      var { result: total_count } = await app.mpServerless.db.collection('photo').count({ verified: false });
 
-    // 拼接多个array
-    photos = photos.map(x => x.data);
-    photos = Array.prototype.concat.apply([], photos);
-    var campus_list = {};
-    var memory_cache = {};
-    for (var photo of photos) {
-      photo.photo_id = await signCosUrl(photo.photo_id)
-      if (memory_cache[photo.cat_id]) {
-        photo.cat = memory_cache[photo.cat_id];
-      } else {
-        photo.cat = await getCatItem(photo.cat_id);
-        memory_cache[photo.cat_id] = photo.cat;
+      var pools = [];
+      for (var i = 0; i < total_count; i += 100) {
+        pools.push(
+          app.mpServerless.db.collection('photo').find(
+            { verified: false },
+            { skip: i, limit: 100 }
+          )
+        );
+      }
+      var results = await Promise.all(pools);
+
+      // 拼接多个array
+      var photos = [];
+      for (var r of results) {
+        if (r.result) photos = photos.concat(r.result);
       }
 
-      // 分类记录到campus里
-      var campus = photo.cat.campus;
-      if (!campus_list[campus]) {
+      // 并行获取猫信息用于校区分类
+      var catIds = [...new Set(photos.map(p => p.cat_id).filter(Boolean))];
+      var catCache = {};
+      await Promise.all(catIds.map(async id => {
+        catCache[id] = await getCatItem(id);
+      }));
+
+      // 按校区分组，存入 jsData.rawPhotos
+      var campus_counts = {};
+      for (var photo of photos) {
+        var cat = catCache[photo.cat_id] || {};
+        photo.cat = cat;
+        var campus = cat.campus || '未知';
+        if (!this.jsData.rawPhotos[campus]) {
+          this.jsData.rawPhotos[campus] = [];
+        }
+        this.jsData.rawPhotos[campus].push(photo);
+        campus_counts[campus] = (campus_counts[campus] || 0) + 1;
+      }
+
+      // 初始化 campus_list 为空数组（点选后再加载）
+      var campus_list = {};
+      for (var campus in campus_counts) {
         campus_list[campus] = [];
       }
-      // console.log("[loadAllPhotos] - ", campus, photo);
-      campus_list[campus].push(photo);
+
+      // 恢复最后一次审批的校区
+      var cache_active_campus = cache.getCacheItem("checkPhotoCampus");
+      if (!cache_active_campus || !campus_list[cache_active_campus]) {
+        cache_active_campus = undefined;
+      }
+
+      this.setData({
+        campus_list,
+        campus_counts,
+        hasPhotos: Object.keys(campus_counts).length > 0,
+        active_campus: cache_active_campus,
+      });
+
+      wx.hideLoading();
+
+      // 如果有缓存的校区，自动加载
+      if (cache_active_campus) {
+        this.loadCampusPhotos(cache_active_campus);
+      }
+    } catch (err) {
+      console.error('[loadAllPhotos] - 加载失败:', err);
+      wx.hideLoading();
     }
-    // 恢复最后一次审批的校区
-    var cache_active_campus = cache.getCacheItem("checkPhotoCampus");
-    if (!cache_active_campus || !campus_list[cache_active_campus]) {
-      cache_active_campus = undefined
+  },
+
+  // 加载某个校区的照片（签名URL + 填充userInfo），已加载过则跳过
+  async loadCampusPhotos(campus) {
+    if (this.jsData.loadedCampus[campus]) return;
+
+    var photos = this.jsData.rawPhotos[campus];
+    if (!photos || photos.length === 0) {
+      this.jsData.loadedCampus[campus] = true;
+      return;
     }
 
-    console.log("[loadAllPhotos] - ", campus_list);
+    this.setData({ campusLoading: true });
 
-    this.setData({
-      campus_list: campus_list,
-      active_campus: cache_active_campus,
-    })
-    await wx.hideLoading();
+    try {
+      // 并行签名URL（原来逐张串行，现在并行大幅提速）
+      await Promise.all(photos.map(async p => {
+        p.photo_id = await signCosUrl(p.photo_id);
+      }));
+
+      // 填充上传者信息
+      await fillUserInfo(photos, "_openid", "userInfo");
+
+      this.jsData.loadedCampus[campus] = true;
+      this.setData({
+        [`campus_list.${campus}`]: photos,
+        campusLoading: false,
+      });
+    } catch (err) {
+      console.error('[loadCampusPhotos] - 加载校区照片失败:', err);
+      this.setData({ campusLoading: false });
+    }
   },
 
   bindClickCampus(e) {
     var campus = e.currentTarget.dataset.key;
-    var active_campus = this.data.active_campus;
-    // console.log(campus);
-
-    if (active_campus == campus) {
+    if (this.data.active_campus == campus) {
       return;
     }
     this.setData({
       active_campus: campus
     });
+
+    // 未加载过的校区才触发加载
+    if (!this.jsData.loadedCampus[campus]) {
+      this.loadCampusPhotos(campus);
+    }
   },
 
   async requestSubscribeMessage() {
@@ -249,8 +314,36 @@ Page({
     }
     // 阻塞一下
     await Promise.all(all_queries);
+
+    // 审核通过后，把坐标同步到对应的猫（通过云函数 updateCat，有权限更新）
+    const catCoordList = [];
+    for (const p of photos) {
+      if (!p.mark || p.mark == "" || p.mark == "delete") continue;
+      if (p.latitude && p.longitude && p.cat_id) {
+        catCoordList.push({ catId: p.cat_id, latitude: p.latitude, longitude: p.longitude });
+      }
+    }
+    // 同一只猫只保留最后一个坐标
+    const catCoordMap = {};
+    catCoordList.forEach(item => { catCoordMap[item.catId] = item; });
+    const catUpdatePromises = Object.values(catCoordMap).map(item =>
+      api.updateCat({
+        cat_id: item.catId,
+        cat: {
+          mapMarker: {
+            latitude: item.latitude,
+            longitude: item.longitude
+          }
+        }
+      })
+    );
+    await Promise.all(catUpdatePromises);
+
+    // 更新校区照片列表和计数
+    var newCount = new_photos.length;
     this.setData({
       [`campus_list.${active_campus}`]: new_photos,
+      [`campus_counts.${active_campus}`]: newCount,
     });
 
     wx.showToast({

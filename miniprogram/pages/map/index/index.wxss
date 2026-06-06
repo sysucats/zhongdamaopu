@@ -206,11 +206,24 @@
 .info-label {
   font-size: 26rpx;
   color: var(--color-gray-max);
+  flex-shrink: 0;
+  min-width: 150rpx;
 }
 
 .info-value {
   font-size: 26rpx;
   color: var(--color-black-min);
+  display: flex;
+  align-items: center;
+  flex: 1;
+  justify-content: flex-end;
+  word-break: break-all;
+  text-align: right;
+}
+
+.gender-icon {
+  width: 32rpx;
+  height: 32rpx;
 }
 
 .detail-btn {

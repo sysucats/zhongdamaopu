@@ -41,22 +41,9 @@
         <button class='location-btn' bindtap='getLocation' loading="{{locating}}">获取定位</button>
       </view>
       <view class='location-row' wx:else>
-        <text class='location-coords'>📍 {{location.latitude.toFixed(6)}}, {{location.longitude.toFixed(6)}}</text>
+        <text class='location-coords'>📍 {{location.latitude}}, {{location.longitude}}</text>
         <button class='location-btn' bindtap='getLocation' loading="{{locating}}">重新定位</button>
       </view>
-    </view>
-
-    <!-- 地图标记图标选择 -->
-    <view class='marker-box'>
-      <view class='marker-header'><text>地图标记图标（可选）</text></view>
-      <scroll-view scroll-x="true" class='marker-scroll'>
-        <view wx:for="{{markerIcons}}" wx:key="type"
-              class="marker-item {{marker_type === item.type ? 'selected' : ''}}"
-              bindtap="selectMarker" data-type="{{item.type}}">
-          <image src="{{item.img}}" mode="aspectFill" />
-          <text>{{item.name}}</text>
-        </view>
-      </scroll-view>
     </view>
 
     <view class='tip' hidden='{{photos && photos.length}}'>* 如果遇到闪退，清理后台应用再试试~</view>
