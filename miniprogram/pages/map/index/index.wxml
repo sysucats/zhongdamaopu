@@ -1,4 +1,7 @@
 <view class="map-page">
+  <!-- 隐藏的 Canvas，用于生成圆形头像 -->
+  <canvas type="2d" id="avatarCanvas" style="position:fixed;left:-9999px;top:-9999px;width:80px;height:80px;"></canvas>
+
   <!-- Demo 模式标记 -->
   <view class="demo-badge" wx:if="{{demoMode}}">Demo</view>
 

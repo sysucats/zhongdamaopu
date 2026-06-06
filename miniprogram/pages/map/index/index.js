@@ -70,8 +70,11 @@ Page({
   // 获取用户定位，成功则设置地图中心
   async locateUser() {
     try {
+      // 先请求隐私协议授权
+      await this._requestLocationPrivacy();
+
       const res = await new Promise((resolve, reject) => {
-        wx.getLocation({
+        wx.getFuzzyLocation({
           type: 'gcj02',
           success: resolve,
           fail: reject
@@ -90,6 +93,22 @@ Page({
       });
     }
     this.loadMapData();
+  },
+
+  _requestLocationPrivacy() {
+    return new Promise((resolve) => {
+      if (typeof wx.requirePrivacyAuthorize !== 'function') {
+        resolve();
+        return;
+      }
+      wx.requirePrivacyAuthorize({
+        success: resolve,
+        fail: () => {
+          console.log('用户未同意隐私协议');
+          resolve(); // 即使用户拒绝也继续，让 getFuzzyLocation 自己报错
+        }
+      });
+    });
   },
 
   // 直接查 cat 集合（cat 的 mapMarker 字段含坐标）
@@ -151,6 +170,90 @@ Page({
     this.setData({ loading: false });
   },
 
+  /**
+   * 用 Canvas 将头像图片裁剪为圆形 + 白色边框，返回临时文件路径
+   * 串行执行（Canvas 是单资源），带超时保护
+   */
+  drawCircleAvatar(canvas, imgUrl) {
+    return new Promise((resolve) => {
+      const timeout = setTimeout(() => {
+        console.warn('drawCircleAvatar 超时');
+        resolve(null);
+      }, 5000);
+
+      try {
+        const ctx = canvas.getContext('2d');
+        const dpr = wx.getWindowInfo().pixelRatio;
+        const size = 80;
+        canvas.width = size * dpr;
+        canvas.height = size * dpr;
+        ctx.scale(dpr, dpr);
+
+        const img = canvas.createImage();
+        img.onload = () => {
+          try {
+            const borderWidth = 4;
+            const innerSize = size - borderWidth * 2;
+            const cx = size / 2;
+            const cy = size / 2;
+            const radius = innerSize / 2;
+
+            // 白色圆形背景（边框）
+            ctx.beginPath();
+            ctx.arc(cx, cy, radius + borderWidth / 2, 0, Math.PI * 2);
+            ctx.fillStyle = '#FFFFFF';
+            ctx.fill();
+
+            // 裁剪为圆形画头像
+            ctx.save();
+            ctx.beginPath();
+            ctx.arc(cx, cy, radius, 0, Math.PI * 2);
+            ctx.clip();
+
+            // aspectFill：按短边缩放，居中裁剪
+            const imgW = img.width;
+            const imgH = img.height;
+            const scale = Math.max(innerSize / imgW, innerSize / imgH);
+            const drawW = imgW * scale;
+            const drawH = imgH * scale;
+            ctx.drawImage(img, cx - drawW / 2, cy - drawH / 2, drawW, drawH);
+            ctx.restore();
+
+            // 导出临时文件
+            wx.canvasToTempFilePath({
+              canvas,
+              destWidth: size * dpr,
+              destHeight: size * dpr,
+              success: (res) => {
+                clearTimeout(timeout);
+                resolve(res.tempFilePath);
+              },
+              fail: (err) => {
+                console.warn('canvasToTempFilePath 失败:', err);
+                clearTimeout(timeout);
+                resolve(null);
+              }
+            });
+          } catch (e) {
+            console.warn('绘制头像失败:', e.message);
+            clearTimeout(timeout);
+            resolve(null);
+          }
+        };
+        img.onerror = () => {
+          console.warn('加载头像图片失败:', imgUrl);
+          clearTimeout(timeout);
+          resolve(null);
+        };
+        img.src = imgUrl;
+      } catch (e) {
+        console.warn('drawCircleAvatar 异常:', e.message);
+        clearTimeout(timeout);
+        resolve(null);
+      }
+    });
+  },
+
   async generateMarkers(catList) {
     // 批量获取所有猫的头像
     const catIds = [...new Set(catList.map(c => c._id).filter(Boolean))];
@@ -159,6 +262,7 @@ Page({
     catIds.forEach((id, i) => { avatarMap[id] = avatars[i]; });
     this.jsData.avatarMap = avatarMap;
 
+    // 先用原图生成 markers，让地图尽快渲染
     const markers = catList.map((cat, index) => {
       const avatar = avatarMap[cat._id];
       const iconPath = avatar
@@ -189,6 +293,49 @@ Page({
 
     this.jsData.markers = markers;
     this.setData({ markers });
+
+    // 异步生成圆形头像（非阻塞，完成后替换 markers 的 iconPath）
+    this._renderCircleIcons(catList, avatarMap, markers);
+  },
+
+  async _renderCircleIcons(catList, avatarMap, markers) {
+    // 获取 Canvas 节点
+    const query = wx.createSelectorQuery();
+    let canvas = null;
+    try {
+      const canvasRes = await new Promise(resolve => {
+        query.select('#avatarCanvas').fields({ node: true, size: true }).exec(resolve);
+      });
+      canvas = canvasRes && canvasRes[0] && canvasRes[0].node;
+    } catch (e) {
+      console.warn('获取 Canvas 失败，跳过圆形头像');
+      return;
+    }
+    if (!canvas) return;
+
+    // 串行绘制（Canvas 单资源），有头像的猫才处理
+    const catIdsWithAvatar = catList
+      .map(c => c._id)
+      .filter(id => avatarMap[id] && (avatarMap[id].photo_compressed || avatarMap[id].photo_id));
+
+    let changed = false;
+    for (const id of catIdsWithAvatar) {
+      const avatar = avatarMap[id];
+      const url = avatar.photo_compressed || avatar.photo_id;
+      const circlePath = await this.drawCircleAvatar(canvas, url);
+      if (circlePath) {
+        const marker = markers.find(m => m.catId === id);
+        if (marker) {
+          marker.iconPath = circlePath;
+          changed = true;
+        }
+      }
+    }
+
+    // 只要有改动就更新
+    if (changed) {
+      this.setData({ markers: [...markers] });
+    }
   },
 
   onMarkerTap(e) {

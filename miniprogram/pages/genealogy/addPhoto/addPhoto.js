@@ -117,8 +117,11 @@ Page({
     this.setData({ locating: true });
 
     try {
+      // 先请求隐私协议授权（基础库 2.27.1+ 支持）
+      await this._requestLocationPrivacy();
+
       const res = await new Promise((resolve, reject) => {
-        wx.getLocation({
+        wx.getFuzzyLocation({
           type: 'gcj02',
           success: resolve,
           fail: reject
@@ -134,12 +137,31 @@ Page({
       });
     } catch (err) {
       console.log('获取位置失败:', err);
-      wx.showToast({
-        title: '获取位置失败，请检查定位权限',
-        icon: 'none'
-      });
+      const title = (err.errMsg || '').includes('privacy') ? '请先同意隐私协议' : '获取位置失败，请检查定位权限';
+      wx.showToast({ title, icon: 'none' });
       this.setData({ locating: false });
     }
+  },
+
+  _requestLocationPrivacy() {
+    return new Promise((resolve) => {
+      if (typeof wx.requirePrivacyAuthorize !== 'function') {
+        resolve();
+        return;
+      }
+      wx.requirePrivacyAuthorize({
+        success: resolve,
+        fail: () => {
+          wx.showModal({
+            title: '位置权限说明',
+            content: '需要获取您的位置用于记录猫咪照片的拍摄地点，请在隐私协议中同意位置信息授权。',
+            showCancel: false,
+            confirmText: '知道了'
+          });
+          resolve(); // 即使用户拒绝，也 resolve，让后续 getFuzzyLocation 自己报错
+        }
+      });
+    });
   },
 
   async chooseImg(e) {
