@@ -17,7 +17,6 @@ button.primary {
 
 button + button {
   margin-left: 10%;
-  /* float: right; */
 }
 
 button.long {
@@ -25,6 +24,51 @@ button.long {
   width: 100%;
 }
 
+/* ====== Tab 切换 ====== */
+.tab-bar {
+  display: flex;
+  background: #fff;
+  border-bottom: 1rpx solid var(--color-gray);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.tab-item {
+  flex: 1;
+  text-align: center;
+  padding: 25rpx 0;
+  font-size: 30rpx;
+  color: var(--color-gray-max);
+  border-bottom: 3rpx solid transparent;
+  position: relative;
+}
+
+.tab-item.active {
+  color: var(--color-primary);
+  border-bottom-color: var(--color-primary);
+  font-weight: 600;
+}
+
+.badge {
+  display: inline-block;
+  min-width: 36rpx;
+  height: 36rpx;
+  line-height: 36rpx;
+  background: #e74c3c;
+  color: #fff;
+  font-size: 22rpx;
+  border-radius: 18rpx;
+  padding: 0 8rpx;
+  margin-left: 6rpx;
+  vertical-align: middle;
+}
+
+.tab-content {
+  padding: 20rpx;
+}
+
+/* ====== 筛选区域 ====== */
 .filter-block {
   align-items: center;
   padding: 20rpx 35rpx;
@@ -43,7 +87,6 @@ button.long {
   background: var(--color-gray);
   margin: 15rpx 0rpx;
 }
-
 
 .filters checkbox .wx-checkbox-input {
   width: 30rpx;
@@ -73,7 +116,7 @@ button.long {
   flex-direction: row-reverse;
 }
 
-/* 下面开始用户管理的CSS */
+/* ====== 用户卡片 ====== */
 .user-box {
   box-sizing: border-box;
   padding: 15rpx 10rpx;
@@ -104,40 +147,89 @@ button.long {
   font-size: 32rpx;
 }
 
-.name-and-others .info {
+.name-and-others .user-detail {
   font-size: 26rpx;
   color: var(--color-gray-max);
 }
 
-.operation {
+/* ====== 操作区域 ====== */
+.operation-row {
   width: 100%;
   display: flex;
-  align-items: flex-end;
+  align-items: center;
+  margin-bottom: 15rpx;
 }
 
-picker.manager-level {
-  width: 400rpx;
+.operation-row-bottom {
+  margin-bottom: 0;
+  align-items: center;
+}
+
+/* picker 组 */
+.picker-group {
+  display: flex;
+  align-items: center;
+  flex: 1;
+}
+
+.picker-group + .picker-group {
+  margin-left: 20rpx;
+}
+
+.picker-label {
+  font-size: 26rpx;
+  color: var(--color-gray-max);
+  margin-right: 8rpx;
+  white-space: nowrap;
+}
+
+picker.manager-level,
+picker.role-level {
+  flex: 1;
   height: 60rpx;
   line-height: 60rpx;
   border-bottom: 2rpx var(--color-primary) solid;
   background-color: var(--color-white-dark);
-  padding: 10rpx;
-  color: var(--color-black-light);
+  padding: 0 10rpx;
   display: inline-block;
   overflow: hidden;
 }
 
+.picker-text {
+  font-size: 26rpx;
+  color: var(--color-black-light);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* 地图权限开关 */
+.map-toggle {
+  display: flex;
+  align-items: center;
+  flex: 1;
+}
+
+.toggle-label {
+  font-size: 26rpx;
+  color: var(--color-gray-max);
+  margin-right: 10rpx;
+}
+
 button.manager-update {
-  width: 200rpx;
-  font-size: 32rpx;
-  margin-left: 20rpx;
+  width: 160rpx;
+  height: 56rpx;
+  line-height: 56rpx;
+  font-size: 28rpx;
+  margin-left: 15rpx;
   display: inline-block;
+  padding: 0;
 }
 
 .index {
   font-size: 28rpx;
   color: var(--color-gray);
-  margin-left: auto;
+  margin-left: 10rpx;
   display: inline-block;
 }
 
@@ -146,4 +238,116 @@ button.manager-update {
   color: var(--color-gray-dark);
   text-align: center;
   text-decoration: underline dotted;
+  margin-bottom: 10rpx;
+}
+
+/* ====== 待审申请卡片 ====== */
+.app-card {
+  background: #fff;
+  border-radius: 12rpx;
+  padding: 25rpx 20rpx;
+  margin: 0 20rpx 15rpx 20rpx;
+  box-shadow: 0rpx 0rpx 10rpx var(--color-gray);
+}
+
+.app-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10rpx;
+}
+
+.app-stats {
+  display: flex;
+  gap: 30rpx;
+  margin-bottom: 12rpx;
+}
+
+.stat-item {
+  font-size: 26rpx;
+  color: var(--color-primary);
+}
+
+.app-stats.warn .stat-item {
+  color: #e74c3c;
+}
+
+.attention-tip {
+  font-size: 24rpx;
+  color: #e74c3c;
+  margin-left: auto;
+}
+
+.app-user {
+  font-size: 30rpx;
+  font-weight: 500;
+  color: var(--color-black-min);
+}
+
+.app-date {
+  font-size: 24rpx;
+  color: var(--color-gray-max);
+}
+
+.app-reason {
+  margin-bottom: 20rpx;
+}
+
+.reason-label {
+  font-size: 26rpx;
+  color: var(--color-gray-max);
+}
+
+.reason-text {
+  font-size: 28rpx;
+  color: var(--color-black-min);
+  line-height: 1.5;
+}
+
+.app-actions {
+  display: flex;
+  gap: 20rpx;
+}
+
+.btn-approve {
+  flex: 1;
+  background: var(--color-primary);
+  color: var(--color-text-onPrimary);
+  font-size: 28rpx;
+  padding: 15rpx 0;
+  border-radius: 8rpx;
+  border: none;
+  line-height: 1.2;
+}
+
+.btn-approve::after {
+  border: none;
+}
+
+.btn-reject {
+  flex: 1;
+  background: var(--color-white-dark);
+  color: var(--color-gray-max);
+  font-size: 28rpx;
+  padding: 15rpx 0;
+  border-radius: 8rpx;
+  border: 1rpx solid var(--color-gray);
+  line-height: 1.2;
+}
+
+.btn-reject::after {
+  border: none;
+}
+
+.empty-hint {
+  text-align: center;
+  padding: 60rpx 0;
+  font-size: 28rpx;
+  color: var(--color-gray-max);
+}
+
+.load-more {
+  text-align: center;
+  padding: 20rpx;
+  font-size: 26rpx;
+  color: var(--color-gray-max);
 }

@@ -1,31 +1,99 @@
 <view class="apply-page">
-  <!-- 检查 map_access 申请存在 -->
-  <view class="requirement-box">
-    <view class="req-title">申请条件</view>
-    <view class="req-desc">至少发布过 {{minRequired}} 条便利贴或照片</view>
-    <view class="req-stats">
-      <text>你已发布 {{photoCount}} 张照片，{{commentCount}} 条便利贴</text>
-    </view>
-    <view class="req-status {{meetRequirement ? 'met' : 'unmet'}}" wx:if="{{!meetRequirement}}">
-      <text>⚠ 你还未达到最低门槛，但仍可提交申请</text>
-    </view>
+  <!-- 加载中 -->
+  <view class="loading-box" wx:if="{{loading}}">
+    <text>加载中...</text>
   </view>
 
-  <form bindsubmit="bindSubmit">
-    <view class="inputColumns">
-      <view>
-        <text class="inputTitle">申请理由：</text>
-        <textarea name="reason" placeholder="请说明您需要使用喵地图的原因..." maxlength="{{maxlength}}" bindinput="bindInput"></textarea>
-        <text class="lengthTips">字数：{{reasonLength}}/{{maxlength}}</text>
+  <block wx:else>
+    <!-- 已通过权限 -->
+    <view class="status-card approved" wx:if="{{applyStatus === 'approved'}}">
+      <view class="status-icon">✅</view>
+      <view class="status-title">你已拥有喵地图权限</view>
+      <view class="status-detail" wx:if="{{statusInfo.autoPass}}">
+        <text>通过方式：自动通过（贡献 ≥ {{autoPassCount}} 条内容）</text>
+      </view>
+      <view class="status-detail" wx:elif="{{statusInfo.applyReason}}">
+        <text>开通原因：{{statusInfo.applyReason}}</text>
+      </view>
+      <view class="status-detail" wx:if="{{statusInfo.applyDate}}">
+        <text>开通时间：{{statusInfo.applyDate}}</text>
+      </view>
+      <view class="status-hint">你现在可以直接使用喵地图功能</view>
+    </view>
+
+    <!-- 待审核 -->
+    <view class="status-card pending" wx:elif="{{applyStatus === 'pending'}}">
+      <view class="status-icon">⏳</view>
+      <view class="status-title">申请审核中</view>
+      <view class="status-detail" wx:if="{{statusInfo.applyReason}}">
+        <text>申请理由：{{statusInfo.applyReason}}</text>
+      </view>
+      <view class="status-detail" wx:if="{{statusInfo.applyDate}}">
+        <text>提交时间：{{statusInfo.applyDate}}</text>
+      </view>
+      <view class="status-hint">管理员审核通过后，即可使用喵地图功能</view>
+    </view>
+
+    <!-- 被拒绝 -->
+    <view class="status-card rejected" wx:elif="{{applyStatus === 'rejected'}}">
+      <view class="status-icon">❌</view>
+      <view class="status-title">申请未通过</view>
+      <view class="status-hint">你之前的申请未通过审核，可以修改理由重新申请</view>
+      <view class="reapply-btn">
+        <button bindtap="onReapply">重新申请</button>
       </view>
     </view>
 
-    <view class="submitButton">
-      <button form-type="submit" loading="{{submitting}}" disabled="{{submitting}}">提交申请</button>
-    </view>
-  </form>
+    <!-- 未申请 / 重新申请 -->
+    <block wx:else>
+      <!-- 申请条件 -->
+      <view class="requirement-box">
+        <view class="req-title">申请条件</view>
+        <view class="req-desc">至少发布过 {{minRequired}} 条便利贴或照片</view>
+        <view class="req-stats">
+          <text>你已发布 {{photoCount}} 张照片，{{commentCount}} 条便利贴，共 {{photoCount + commentCount}} 条</text>
+        </view>
+        <view class="req-status unmet" wx:if="{{!meetRequirement}}">
+          <text>⚠ 你还未达到最低门槛，但仍可提交申请，请提供你的学号+姓名，以便核对在校身份，感谢理解</text>
+        </view>
+        <view class="req-status met" wx:elif="{{!autoPass}}">
+          <text>✓ 已达到最低申请门槛</text>
+        </view>
+      </view>
 
-  <view class="footnote">
-    <text>管理员审核通过后，即可使用喵地图地图功能</text>
-  </view>
+      <!-- 自动通过规则 -->
+      <view class="auto-pass-box {{autoPass ? 'active' : ''}}" wx:if="{{autoPass}}">
+        <view class="req-title">🎉 自动通过</view>
+        <view class="auto-pass-desc">
+          你已发布 {{photoCount + commentCount}} 条内容（≥ {{autoPassCount}} 条），提交申请后将自动通过，无需等待审核！
+        </view>
+      </view>
+      <view class="auto-pass-box" wx:elif="{{photoCount + commentCount > 0}}">
+        <view class="req-title">💡 快速通过提示</view>
+        <view class="auto-pass-desc">
+          再发布 {{autoPassCount - (photoCount + commentCount)}} 条内容即可自动获得喵地图权限，无需等待审核
+        </view>
+      </view>
+
+      <form bindsubmit="bindSubmit">
+        <view class="inputColumns">
+          <view>
+            <text class="inputTitle">申请理由：</text>
+            <textarea name="reason" placeholder="请说明您需要使用喵地图的原因..." maxlength="{{maxlength}}" bindinput="bindInput" value="{{reason}}"></textarea>
+            <text class="lengthTips">字数：{{reasonLength}}/{{maxlength}}</text>
+          </view>
+        </view>
+
+        <view class="submitButton">
+          <button form-type="submit" loading="{{submitting}}" disabled="{{submitting}}">
+            {{autoPass ? '提交并自动获取权限' : '提交申请'}}
+          </button>
+        </view>
+      </form>
+
+      <view class="footnote" wx:if="{{!autoPass}}">
+        <text>管理员审核通过后，即可使用喵地图功能</text>
+      </view>
+    </block>
+  </block>
 </view>

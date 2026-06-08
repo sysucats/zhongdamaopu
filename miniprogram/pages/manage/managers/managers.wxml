@@ -1,53 +1,113 @@
 <block wx:if="{{auth}}">
-  <view class='filter-block'>
-    <view class='search'>
-      <icon size='30rpx' type='search' style="transform: translateY(15%)"></icon>
-      <input style="font-size: 30rpx; margin-left: 25rpx; width: 100%;" placeholder='搜索用户'
-      value='{{userSearch}}' maxlength='20' confirm-type='search' bindinput='fSearchInput' bindconfirm='fSearch'>
-      </input>
+  <!-- Tab 切换 -->
+  <view class="tab-bar">
+    <view class="tab-item {{currentTab === 'users' ? 'active' : ''}}" data-tab="users" bindtap="switchTab">
+      用户管理
     </view>
-    <!--分割线--><view class="line"></view>
-    <view class='filters'>
-      <checkbox-group bindchange="filterChange">
-        <checkbox value="manager-only" style="font-size: 28rpx;  margin-right: 20rpx;">只看管理员</checkbox>
-        <checkbox value="role1-only" style="font-size: 28rpx;">只看特邀</checkbox>
-      </checkbox-group>
+    <view class="tab-item {{currentTab === 'apps' ? 'active' : ''}}" data-tab="apps" bindtap="switchTab">
+      地图待审
+      <text class="badge" wx:if="{{appCount > 0}}">{{appCount}}</text>
     </view>
   </view>
-  <navigator class="old-invite" url="/pages/tools/updateUserRole/updateUserRole">设置已传照片用户为特邀</navigator>
 
-  <scroll-view style="height: {{windowHeight}}px;" scroll-y="true" enable-back-to-top="true" bindscrolltolower="scrollToReload">
-    <view class="user-box" wx:for="{{users}}" wx:key="_id">
-      <view wx:if="{{item.userInfo}}" class="info">
-        <image class="avatar" src="{{item.userInfo.avatarUrl}}"></image>
-        <view class="name-and-others">
-          <view class="nickName">{{item.userInfo.nickName}}</view>
-          <view class="info">
-            [{{item.role == 1 ? "特邀用户": "游客"}}]
-            <block wx:if="{{item.userInfo.gender}}">  
-              {{item.userInfo.gender == 2? '女': '男'}}
-            </block>
-            {{item.userInfo.country || '-'}}, {{item.userInfo.province || '-'}}, {{item.userInfo.city || '-'}}
+  <!-- ========== Tab: 用户管理 ========== -->
+  <view wx:if="{{currentTab === 'users'}}">
+    <view class='filter-block'>
+      <view class='search'>
+        <icon size='30rpx' type='search' style="transform: translateY(15%)"></icon>
+        <input style="font-size: 30rpx; margin-left: 25rpx; width: 100%;" placeholder='搜索用户'
+        value='{{userSearch}}' maxlength='20' confirm-type='search' bindinput='fSearchInput' bindconfirm='fSearch'>
+        </input>
+      </view>
+      <!--分割线--><view class="line"></view>
+      <view class='filters'>
+        <checkbox-group bindchange="filterChange">
+          <checkbox value="manager-only" style="font-size: 28rpx;  margin-right: 20rpx;">只看管理员</checkbox>
+          <checkbox value="role1-only" style="font-size: 28rpx; margin-right: 20rpx;">只看特邀</checkbox>
+          <checkbox value="mapAccess-only" style="font-size: 28rpx;">只看地图</checkbox>
+        </checkbox-group>
+      </view>
+    </view>
+    <navigator class="old-invite" url="/pages/tools/inviteUser/inviteUser">特邀用户管理</navigator>
+
+    <scroll-view style="height: {{windowHeight}}px;" scroll-y="true" enable-back-to-top="true" bindscrolltolower="scrollToReload">
+      <view class="user-box" wx:for="{{users}}" wx:key="_id">
+        <view wx:if="{{item.userInfo}}" class="info">
+          <image class="avatar" src="{{item.userInfo.avatarUrl}}"></image>
+          <view class="name-and-others">
+            <view class="nickName">{{item.userInfo.nickName}}</view>
+            <view class="user-detail">
+              <block wx:if="{{item.userInfo.gender}}">
+                {{item.userInfo.gender == 2? '女': '男'}}
+              </block>
+              {{item.userInfo.country || '-'}}, {{item.userInfo.province || '-'}}, {{item.userInfo.city || '-'}}
+            </view>
           </view>
         </view>
-      </view>
-      <view wx:else class="unknow-info info">匿名用户</view>
+        <view wx:else class="unknow-info info">匿名用户</view>
 
-      <form bindsubmit="updateUserLevel">
-        <input style="display: none;" name="index" value="{{index}}"></input>
-        <input style="display: none;" name="_id" value="{{item._id}}"></input>
-        <view class="operation">
-              <picker mode="selector" range="{{manager_types}}" class="manager-level" name="level" value="{{item.manager == 99? (manager_types.length-1) : (item.manager || 0)}}" bindchange="changePickerValue" data-index="{{index}}">
-                {{manager_types[item.manager == 99? (manager_types.length-1) : (item.manager || 0)]}}
+        <form bindsubmit="updateUserSettings">
+          <input style="display: none;" name="index" value="{{index}}"></input>
+          <input style="display: none;" name="_id" value="{{item._id}}"></input>
+
+          <!-- 行1: 管理员等级 + 角色 -->
+          <view class="operation-row">
+            <view class="picker-group">
+              <text class="picker-label">管理员</text>
+              <picker mode="selector" range="{{manager_types}}" class="manager-level" name="level" value="{{item.manager == 99? (manager_types.length-1) : (item.manager || 0)}}" bindchange="onManagerChange" data-index="{{index}}">
+                <view class="picker-text">{{manager_types[item.manager == 99? (manager_types.length-1) : (item.manager || 0)]}}</view>
               </picker>
-          <button form-type="submit" class="manager-update primary">更新等级</button>
+            </view>
+            <view class="picker-group">
+              <text class="picker-label">角色</text>
+              <picker mode="selector" range="{{role_types}}" class="role-level" name="role" value="{{item.role || 0}}" bindchange="onRoleChange" data-index="{{index}}">
+                <view class="picker-text">{{role_types[item.role || 0]}}</view>
+              </picker>
+            </view>
+          </view>
 
-          <view class="index">#{{index}}</view>
+          <!-- 行2: 地图权限开关 + 更新按钮 -->
+          <view class="operation-row operation-row-bottom">
+            <view class="map-toggle">
+              <text class="toggle-label">喵地图</text>
+              <switch checked="{{item.mapAccess && item.mapAccess.status === 'approved'}}" data-index="{{index}}" bindchange="toggleMapAccess" color="#ffd101" />
+            </view>
+            <button form-type="submit" class="manager-update primary">更新</button>
+            <view class="index">#{{index}}</view>
+          </view>
+        </form>
+      </view>
+      <view style="height: 50rpx; opacity: 0;"></view> <!--加个透明块防止内容偏低按不到-->
+    </scroll-view>
+  </view>
+
+  <!-- ========== Tab: 地图待审申请 ========== -->
+  <view wx:if="{{currentTab === 'apps'}}" class="tab-content">
+    <view class="empty-hint" wx:if="{{!applications.length && !appsLoading}}">暂无待审申请</view>
+    <scroll-view scroll-y="true" style="height: {{windowHeight}}px;">
+      <view class="app-card" wx:for="{{applications}}" wx:key="_id">
+        <view class="app-header">
+          <text class="app-user">申请人: {{item.userInfo.nickName || '未知用户'}}</text>
+          <text class="app-date">申请时间: {{item.mapAccess.applyDate}}</text>
         </view>
-      </form>
-    </view>
-    <view style="height: 50rpx; opacity: 0;"></view> <!--加个透明块防止内容偏低按不到-->
-  </scroll-view>
+        <view class="app-stats {{item.photoCount + item.commentCount < 10 ? 'warn' : ''}}">
+          <text class="stat-item">照片: {{item.photoCount}}张</text>
+          <text class="stat-item">便利贴: {{item.commentCount}}条</text>
+          <text class="attention-tip" wx:if="{{item.photoCount + item.commentCount < 10}}">⚠ 注意甄别</text>
+        </view>
+        <view class="app-reason">
+          <text class="reason-label">申请理由：</text>
+          <text class="reason-text">{{item.mapAccess.applyReason}}</text>
+        </view>
+        <view class="app-actions">
+          <button class="btn-approve" data-index="{{index}}" bindtap="approveApplication">通过</button>
+          <button class="btn-reject" data-index="{{index}}" bindtap="rejectApplication">拒绝</button>
+        </view>
+      </view>
+      <view class="load-more" wx:if="{{appsLoading}}">加载中...</view>
+      <view style="height: 50rpx; opacity: 0;"></view>
+    </scroll-view>
+  </view>
 </block>
 
 <!-- 未授权提示 -->
