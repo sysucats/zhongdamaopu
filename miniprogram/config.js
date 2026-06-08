@@ -6,8 +6,7 @@
 
 module.exports = {
   // 版本号
-  app_version: "v1.19.0",
-  // v1.19.0 更新说明：新增喵地图功能（感谢NakanoYuhao）；修复个性化部署脚本（感谢A-n-k-a）；一些安全修复
+  app_version: "v1.19.1",
   // 小程序appid
   app_id: "wx5bd705b2bc91c73b",
   // EMAS空间ID
@@ -21,7 +20,7 @@ module.exports = {
   sign_expires_tencent_cos: 3600 * 2,
   // 图片选择数量限制
   chooseMediaCount: 20,
-  // 喵地图配置
+  // 喵地图配置的大本营坐标
   map_center: { latitude: 23.1026, longitude: 113.2996 },
   map_max_markers: 200, 
 
