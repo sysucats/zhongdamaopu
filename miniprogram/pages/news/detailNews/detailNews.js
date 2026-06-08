@@ -147,7 +147,7 @@ Page({
     }
     await sleep(1000);
     wx.navigateBack();
-    wx.startPullDownRefresh();
+    setTimeout(wx.startPullDownRefresh, 500);
   },
 
   async removeNews() {
