@@ -242,6 +242,27 @@ Page({
     this.setData({
       [`campus_list.${active_campus}[${index}].mark`]: mark_type
     });
+
+    // 标记后自动滚动到下一张照片
+    if (mark_type !== "") {
+      const nextIndex = index + 1;
+      if (nextIndex < photos.length) {
+        // 查询下一张照片的位置并滚动过去
+        const query = wx.createSelectorQuery();
+        query.select(`#photo-${nextIndex}`).boundingClientRect();
+        query.selectViewport().scrollOffset();
+        query.exec(res => {
+          if (res[0] && res[1] != null) {
+            const itemTop = res[0].top;       // 元素距离视口顶部的距离
+            const scrollTop = res[1].scrollTop; // 当前滚动位置
+            wx.pageScrollTo({
+              scrollTop: scrollTop + itemTop - 20, // 留20rpx上边距
+              duration: 300,
+            });
+          }
+        });
+      }
+    }
   },
 
   // 确定处理

@@ -4,6 +4,80 @@ page {
   box-sizing: border-box;
 }
 
+.loading-box {
+  text-align: center;
+  padding: 100rpx 0;
+  color: var(--color-gray-max, #999);
+  font-size: 28rpx;
+}
+
+/* 状态卡片 */
+.status-card {
+  border-radius: 16rpx;
+  padding: 40rpx 30rpx;
+  margin-bottom: 30rpx;
+  text-align: center;
+}
+
+.status-card.approved {
+  background: #e8f8e8;
+  border: 2rpx solid #27ae60;
+}
+
+.status-card.pending {
+  background: #fff8e1;
+  border: 2rpx solid #f5a623;
+}
+
+.status-card.rejected {
+  background: #fde8e8;
+  border: 2rpx solid #e74c3c;
+}
+
+.status-icon {
+  font-size: 64rpx;
+  margin-bottom: 16rpx;
+}
+
+.status-title {
+  font-size: 34rpx;
+  font-weight: 600;
+  margin-bottom: 16rpx;
+}
+
+.status-detail {
+  font-size: 26rpx;
+  color: var(--color-black-min, #666);
+  margin-top: 8rpx;
+  line-height: 1.6;
+}
+
+.status-hint {
+  font-size: 26rpx;
+  color: var(--color-black-min, #666);
+  margin-top: 20rpx;
+  line-height: 1.6;
+}
+
+.reapply-btn {
+  margin-top: 30rpx;
+}
+
+.reapply-btn button {
+  background-color: var(--color-primary);
+  color: var(--color-text-onPrimary);
+  font-size: 30rpx;
+  padding: 16rpx 40rpx;
+  border-radius: 44rpx;
+  border: none;
+  line-height: 1.2;
+}
+
+.reapply-btn button::after {
+  border: none;
+}
+
+/* 申请条件 */
 .requirement-box {
   background: var(--color-primary-light);
   border-radius: 16rpx;
@@ -40,8 +114,31 @@ page {
 .req-status.met {
   font-size: 24rpx;
   color: var(--color-green, #27ae60);
+  margin-top: 8rpx;
 }
 
+/* 自动通过规则 */
+.auto-pass-box {
+  background: #f0f4ff;
+  border-radius: 16rpx;
+  padding: 25rpx;
+  margin-bottom: 30rpx;
+  border: 2rpx solid #d0d9f0;
+}
+
+.auto-pass-box.active {
+  background: #e6f7e6;
+  border: 2rpx solid #27ae60;
+}
+
+.auto-pass-desc {
+  font-size: 26rpx;
+  color: var(--color-black-min, #666);
+  margin-top: 8rpx;
+  line-height: 1.6;
+}
+
+/* 输入区域 */
 .inputTitle {
   margin-left: 15rpx;
   font-size: 30rpx;
@@ -70,7 +167,7 @@ textarea {
   margin-top: 30rpx;
 }
 
-button {
+.submitButton button {
   background-color: var(--color-primary);
   color: var(--color-text-onPrimary);
   width: 100%;
@@ -81,7 +178,7 @@ button {
   line-height: 1.2;
 }
 
-button::after {
+.submitButton button::after {
   border: none;
 }
 

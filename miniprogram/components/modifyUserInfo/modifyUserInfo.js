@@ -9,6 +9,7 @@ Component({
   data: {
     defaultAvatarUrl: "/pages/public/images/info/default_avatar.png",
     user: null,
+    privacyAuthorized: false,  // 是否已通过隐私协议授权
   },
 
   properties: {
@@ -24,9 +25,52 @@ Component({
   },
 
   lifetimes: {
+    attached() {
+      this._checkPrivacyAuthorized();
+    }
   },
 
   methods: {
+    // 检查隐私协议是否已授权
+    _checkPrivacyAuthorized() {
+      if (typeof wx.getPrivacySetting !== 'function') {
+        // 低版本基础库不支持隐私 API，直接放行
+        this.setData({ privacyAuthorized: true });
+        return;
+      }
+      wx.getPrivacySetting({
+        success: (res) => {
+          // needAuthorization 为 false 表示已同意过，直接放行
+          this.setData({ privacyAuthorized: !res.needAuthorization });
+        },
+        fail: () => {
+          this.setData({ privacyAuthorized: true });
+        }
+      });
+    },
+
+    // 未授权时点击头像区域，先弹隐私授权弹窗
+    onTapAvatarBeforeAuth() {
+      if (typeof wx.requirePrivacyAuthorize !== 'function') {
+        this.setData({ privacyAuthorized: true });
+        return;
+      }
+      wx.requirePrivacyAuthorize({
+        success: () => {
+          this.setData({ privacyAuthorized: true });
+          // 授权完成后提示用户再次点击头像选取
+          wx.showToast({ title: '请再次点击头像选取', icon: 'none', duration: 1500 });
+        },
+        fail: () => {
+          wx.showModal({
+            title: '需要隐私授权',
+            content: '选取头像需要您同意隐私协议，请在弹窗中点击"同意"后再试。',
+            showCancel: false,
+            confirmText: '知道了',
+          });
+        }
+      });
+    },
     onChooseAvatar(e) {
       const { avatarUrl } = e.detail
       this.setData({

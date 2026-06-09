@@ -119,23 +119,8 @@ Page({
           {
             name: "人员管理",
             path: "/pages/manage/managers/managers",
+            num: "numMapAccessApps",
             icon: "icon-manager-o"
-          },
-          {
-            name: "特邀用户",
-            path: "/pages/tools/inviteUser/inviteUser",
-            icon: "icon-star-o"
-          },
-          {
-            name: "地图权限",
-            path: "/pages/manage/mapAccess/mapAccess",
-            icon: "icon-location-o",
-            num: "numMapAccessApps"
-          },
-          {
-            name: "标记图标",
-            path: "/pages/manage/markerIcon/markerIcon",
-            icon: "icon-medel-o"
           },
           {
             name: "徽章管理",

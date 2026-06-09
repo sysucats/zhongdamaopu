@@ -1,5 +1,6 @@
 {
   "usingComponents": {
     "no-auth": "/components/noAuth/noAuth"
-  }
+  },
+  "navigationBarTitleText": "人员管理"
 }

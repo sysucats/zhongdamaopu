@@ -32,6 +32,12 @@
     </view>
   </view>
 
+  <!-- 定位到校区按钮 -->
+  <view class="locate-btn" bindtap="locateCampus">
+    <text class="locate-icon">🎯</text>
+    <text class="locate-text">定位到大本营</text>
+  </view>
+
   <!-- 底部详情卡片 -->
   <view class="detail-overlay {{showDetail ? 'show' : ''}}" wx:if="{{showDetail}}" catchtouchmove="preventTouchMove">
     <view class="detail-mask" bindtap="closeDetail"></view>

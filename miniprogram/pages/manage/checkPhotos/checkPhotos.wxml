@@ -14,7 +14,7 @@
   <view class="tip" wx:elif="{{!active_campus}}">请在上方选择一个校区</view>
   <view class="tip" wx:elif="{{campusLoading}}">加载中...</view>
   <block wx:for="{{campus_list[active_campus]}}" wx:key="_id">
-    <view class='verify-box'>
+    <view class='verify-box' id="photo-{{index}}">
       <!-- <view class="imageShadowMask"></view> -->
       <image mode='aspectFill' src='{{item.photo_id}}' bindtap='openBigPhoto' data-pid='{{item.photo_id}}'></image>
       <view class="info">

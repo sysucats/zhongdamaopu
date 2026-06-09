@@ -71,6 +71,38 @@
   color: var(--color-gray-max);
 }
 
+/* 定位到校区按钮 */
+.locate-btn {
+  position: fixed;
+  right: 24rpx;
+  bottom: calc(15vh + 20rpx);
+  z-index: 99;
+  background: #fff;
+  border-radius: 44rpx;
+  padding: 14rpx 28rpx;
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.15);
+  transition: opacity 0.25s ease;
+}
+
+.locate-btn:active {
+  opacity: 0.75;
+  background: #f5f5f5;
+}
+
+.locate-icon {
+  font-size: 32rpx;
+}
+
+.locate-text {
+  font-size: 26rpx;
+  color: #333;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
 /* 底部详情卡片 */
 .detail-overlay {
   position: fixed;

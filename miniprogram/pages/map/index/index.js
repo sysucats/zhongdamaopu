@@ -12,7 +12,7 @@ Page({
   data: {
     latitude: CAMPUS_CENTER.latitude,
     longitude: CAMPUS_CENTER.longitude,
-    scale: 16,
+    scale: 12,
     markers: [],
     showDetail: false,
     currentCat: null,
@@ -281,10 +281,10 @@ Page({
         callout: {
           content: cat.name || '猫咪',
           color: '#92400E',
-          fontSize: 13,
-          borderRadius: 10,
+          fontSize: 11,
+          borderRadius: 6,
           bgColor: '#ffd101',
-          padding: 7,
+          padding: 4,
           display: 'ALWAYS',
           textAlign: 'center'
         }
@@ -362,13 +362,20 @@ Page({
   onRegionChange(e) {
     if (e.type === 'end' && e.causedBy === 'scale') {
       const currentScale = e.detail.scale;
+      const allMarkers = this.jsData.markers || [];
       if (currentScale < 14) {
-        const latest = this.jsData.catList.slice(0, 10);
-        this.generateMarkers(latest);
+        this.setData({ markers: allMarkers.slice(0, 10) });
       } else {
-        this.generateMarkers(this.jsData.catList);
+        this.setData({ markers: allMarkers });
       }
     }
+  },
+
+  locateCampus() {
+    this.setData({
+      latitude: CAMPUS_CENTER.latitude,
+      longitude: CAMPUS_CENTER.longitude,
+    });
   },
 
   goToDetail() {

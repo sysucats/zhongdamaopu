@@ -11,7 +11,6 @@ function getDate(date) {
 async function getCurrentUserOpenid() {
   try {
     const app = getApp();
-    console.log("App instance:", app);
     const res = await app.mpServerless.user.getInfo({
       authProvider: 'wechat_openapi'
     });
