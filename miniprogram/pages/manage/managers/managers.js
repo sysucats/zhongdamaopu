@@ -2,6 +2,7 @@
 import { checkAuth } from "../../../utils/user";
 import { formatDate } from "../../../utils/utils";
 import api from "../../../utils/cloudApi";
+import { signCosUrl } from "../../../utils/common";
 import { isDemoMode } from "../../../utils/demo";
 
 // 是否正在加载
@@ -94,6 +95,7 @@ Page({
     }
     console.log("query", query);
     var { result: userRes } = await app.mpServerless.db.collection('user').find(query, { skip: users.length, limit: 10 })
+    await this.signUserAvatars(userRes);
     console.log(userRes);
     wx.hideLoading();
     if (reload) {
@@ -113,6 +115,14 @@ Page({
       users: users
     });
     loading = false;
+  },
+
+  async signUserAvatars(users) {
+    for (let i = 0; i < users.length; i++) {
+      if (users[i].userInfo?.avatarUrl) {
+        users[i].userInfo.avatarUrl = await signCosUrl(users[i].userInfo.avatarUrl);
+      }
+    }
   },
 
   // 滑到底部来reload

@@ -138,9 +138,16 @@ Page({
         title: '删除失败',
       });
       return
+    } else if (res.ok) {
+      wx.showToast({
+        title: '删除成功',
+        icon: 'success',
+        duration: 1000
+      });
     }
     await sleep(1000);
     wx.navigateBack();
+    setTimeout(wx.startPullDownRefresh, 500);
   },
 
   async removeNews() {

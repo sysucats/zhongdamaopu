@@ -29,7 +29,7 @@
     </view>
     <view class="news row-container">
       <view wx:if="{{item.class}}" class='news tag'>{{item.class}}</view>
-      <view class='news user'>{{item.userNicknameLastModify?item.userNicknameLastModify:item.userInfoLastModify.nickName}} </view>
+      <view class='news user'>{{item.userNicknameLastModify?item.userNicknameLastModify:item.userNickname}} </view>
       <view class='news time'>{{item.ddate}}</view>
 
     </view>
