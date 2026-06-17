@@ -1,4 +1,4 @@
-import { showTab } from "../../../utils/page";
+import { showTab, loadFilter } from "../../../utils/page";
 import config from "../../../config";
 import { isDemoMode, getDemoMapData } from "../../../utils/demo";
 import { checkCanUseMap } from "../../../utils/user";
@@ -20,6 +20,8 @@ Page({
     text_cfg: config.text,
     loading: true,
     demoMode: false,
+    campusButtons: [],    // [{name, latitude, longitude, scale}] 有坐标的校区
+    campusBtnExpanded: false,  // 校区按钮是否展开
   },
 
   jsData: {
@@ -28,6 +30,7 @@ Page({
     avatarMap: {},     // cat_id -> avatar photo 对象
     userLocated: false, // 是否已获取用户定位
     loaded: false,      // 首次加载完成标记
+    campusCenters: {},  // { campusName: { latitude, longitude, scale } }
   },
 
   async onLoad() {
@@ -49,7 +52,33 @@ Page({
       return;
     }
     this.setData({ demoMode: isDemoMode() });
+    this.loadCampusCenters();
     this.locateUser();
+  },
+
+  // 加载校区中心坐标（从 setting.filter 的 campusCenters 字段）
+  async loadCampusCenters() {
+    try {
+      var filter = await loadFilter({ nocache: true });
+      var centers = filter && filter.campusCenters;
+      this.jsData.campusCenters = centers || {};
+      // 生成 WXML 用的按钮列表：仅包含有坐标的校区
+      var buttons = [];
+      for (var name in this.jsData.campusCenters) {
+        var c = this.jsData.campusCenters[name];
+        if (c && c.latitude != null && c.longitude != null) {
+          buttons.push({
+            name: name,
+            latitude: c.latitude,
+            longitude: c.longitude,
+            scale: c.scale || 14,
+          });
+        }
+      }
+      this.setData({ campusButtons: buttons });
+    } catch (e) {
+      console.log('加载校区中心坐标失败:', e.message);
+    }
   },
 
   onShow() {
@@ -57,6 +86,7 @@ Page({
     // 首次加载由 locateUser 触发，之后每次 onShow 刷新数据
     if (this.jsData.loaded) {
       this.loadMapData();
+      this.loadCampusCenters();
     }
   },
 
@@ -371,10 +401,28 @@ Page({
     }
   },
 
-  locateCampus() {
+  // 切换校区按钮展开/折叠
+  toggleCampusBtns() {
+    this.setData({ campusBtnExpanded: !this.data.campusBtnExpanded });
+  },
+
+  // 点击地图任意位置 → 折叠校区按钮
+  onMapTap() {
+    if (this.data.campusBtnExpanded) {
+      this.setData({ campusBtnExpanded: false });
+    }
+  },
+
+  locateToCampus(e) {
+    var campus = e.currentTarget.dataset.campus;
+    var centers = this.jsData.campusCenters;
+    var c = centers && centers[campus];
+    if (!c) return;
     this.setData({
-      latitude: CAMPUS_CENTER.latitude,
-      longitude: CAMPUS_CENTER.longitude,
+      latitude: c.latitude,
+      longitude: c.longitude,
+      scale: c.scale || 14,
+      campusBtnExpanded: false,  // 选中后折叠
     });
   },
 

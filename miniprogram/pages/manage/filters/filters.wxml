@@ -70,6 +70,7 @@ module.exports = {
     latitude="{{mapPickerInitLat}}"
     longitude="{{mapPickerInitLng}}"
     scale="{{mapPickerScale}}"
+    enable-zoom="{{false}}"
     enable-scroll="{{true}}"
     bindregionchange="onMapRegionChange"
     show-location="{{false}}"

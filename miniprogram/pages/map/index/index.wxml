@@ -16,6 +16,7 @@
       markers="{{markers}}"
       bindmarkertap="onMarkerTap"
       bindregionchange="onRegionChange"
+      bindtap="onMapTap"
       show-location="{{true}}"
     />
 
@@ -32,10 +33,16 @@
     </view>
   </view>
 
-  <!-- 定位到校区按钮 -->
-  <view class="locate-btn" bindtap="locateCampus">
-    <text class="locate-icon">🎯</text>
-    <text class="locate-text">定位到大本营</text>
+  <!-- 定位到校区按钮组（可折叠） -->
+  <view class="campus-btn-group" wx:if="{{campusButtons.length > 0}}">
+    <view class="campus-btns-panel {{campusBtnExpanded ? 'expanded' : ''}}">
+      <view class="campus-btn" wx:for="{{campusButtons}}" wx:key="name" bindtap="locateToCampus" data-campus="{{item.name}}">
+        <text class="campus-btn-text">{{item.name}}</text>
+      </view>
+    </view>
+    <view class="campus-toggle" bindtap="toggleCampusBtns">
+      <text>{{campusBtnExpanded ? '✕' : '📍'}}</text>
+    </view>
   </view>
 
   <!-- 底部详情卡片 -->
