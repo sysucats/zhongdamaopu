@@ -35,14 +35,18 @@
     <view class='location-box'>
       <view class='location-header'>
         <text class='label'>拍摄位置（用于喵地图展示）</text>
+        <text class='location-notice'>⚠️ 喵地图功能需要申请开通后才能访问</text>
       </view>
       <view class='location-row' wx:if="{{!location}}">
-        <text class='location-tip'>未获取位置</text>
-        <button class='location-btn' bindtap='getLocation' loading="{{locating}}">获取定位</button>
+        <text class='location-tip'>未选择位置</text>
+        <button class='location-btn' bindtap='chooseLocation' loading="{{locating}}">地图选点</button>
       </view>
       <view class='location-row' wx:else>
-        <text class='location-coords'>📍 {{location.latitude}}, {{location.longitude}}</text>
-        <button class='location-btn' bindtap='getLocation' loading="{{locating}}">重新定位</button>
+        <view class='location-detail'>
+          <text class='location-name' wx:if="{{location.name}}">📍 {{location.name}}</text>
+          <text class='location-coords'>{{location.latitude}}, {{location.longitude}}</text>
+        </view>
+        <button class='location-btn' bindtap='chooseLocation' loading="{{locating}}">重新选点</button>
       </view>
     </view>
 

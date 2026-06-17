@@ -1,14 +1,35 @@
+<!-- 禁用页面滚动（地图选点打开时） -->
+<page-meta page-style="{{pageMetaStyle}}"></page-meta>
+
+<!-- 格式化工具 WXS -->
+<wxs module="fmt">
+function fixed6(val) {
+  if (val === undefined || val === null) return '--';
+  return val.toFixed(6);
+}
+module.exports = {
+  fixed6: fixed6
+};
+</wxs>
+
 <block wx:if="{{auth}}">
+
   <!-- 校区管理 -->
   <view class='mainF-block'>
     <view class="campus-block">
       <view class="title">校区选项</view>
       <view class="container">
         <view class='category-box' wx:for="{{filters[0].category}}" wx:for-item="ctg" wx:for-index='cateindex' wx:key='name'>
-          <!-- <view class="category">{{ctg.name}}</view> -->
-          <view class='sub-option'>
-            <view class='content'>{{ctg.name}}</view>
-            <button class='short' bindtap='deleteCampus' data-cateindex='{{cateindex}}'>删</button>
+          <view class='sub-option campus-row'>
+            <view class='campus-info'>
+              <view class='content'>{{ctg.name}}</view>
+              <view class='coord-text' wx:if="{{campusCenterStrs[ctg.name]}}">{{campusCenterStrs[ctg.name]}}</view>
+              <view class='coord-text unset' wx:else>未设置中心坐标</view>
+            </view>
+            <view class='campus-actions'>
+              <button class='short' bindtap='openMapPicker' data-campus='{{ctg.name}}'>坐标</button>
+              <button class='short' bindtap='deleteCampus' data-cateindex='{{cateindex}}'>删</button>
+            </view>
           </view>
         </view>
 
@@ -41,6 +62,38 @@
       </view>
     </view>
   </view>
+  <!-- 地图选点浮层 -->
+  <map
+    wx:if="{{mapPickerVisible}}"
+    id="campusMapPicker"
+    class="picker-map"
+    latitude="{{mapPickerInitLat}}"
+    longitude="{{mapPickerInitLng}}"
+    scale="{{mapPickerScale}}"
+    enable-scroll="{{true}}"
+    bindregionchange="onMapRegionChange"
+    show-location="{{false}}"
+  >
+    <cover-view class="picker-crosshair">
+      <cover-view class="crosshair-v"></cover-view>
+      <cover-view class="crosshair-h"></cover-view>
+    </cover-view>
+    <!-- 缩放按钮 -->
+    <cover-view class="picker-zoom-bar">
+      <cover-view class="zoom-btn" bindtap="zoomMapIn">+</cover-view>
+      <cover-view class="zoom-divider"></cover-view>
+      <cover-view class="zoom-btn" bindtap="zoomMapOut">−</cover-view>
+    </cover-view>
+    <cover-view class="picker-top-bar">
+      <cover-view class="picker-campus-label">{{mapPickerCampus}}</cover-view>
+      <cover-view class="picker-coords-display">{{fmt.fixed6(mapPickerLat)}}, {{fmt.fixed6(mapPickerLng)}} | {{mapPickerScale}}级</cover-view>
+    </cover-view>
+    <cover-view class="picker-bottom-bar">
+      <cover-view class="picker-btn cancel" bindtap="cancelMapPicker">取消</cover-view>
+      <cover-view class="picker-btn confirm" bindtap="confirmMapPicker">确定</cover-view>
+    </cover-view>
+  </map>
+
   <view class='bottom-bar'>
     <button class='bottom' bindtap='uploadFilters'>确定上传</button>
   </view>

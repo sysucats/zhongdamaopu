@@ -118,3 +118,178 @@ button.bottom {
 form {
   width: 100%;
 }
+
+/* ========== 校区坐标 ========== */
+.campus-row {
+  flex-wrap: wrap;
+  padding: 16rpx 10rpx;
+}
+
+.campus-info {
+  width: 60%;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.campus-info .content {
+  width: 100%;
+  font-size: 30rpx;
+  font-weight: 500;
+}
+
+.campus-actions {
+  width: 40%;
+  display: inline-flex;
+  justify-content: flex-end;
+  vertical-align: middle;
+}
+
+.campus-actions button.short {
+  width: 30%;
+  margin: 0 2%;
+}
+
+.coord-text {
+  width: 100%;
+  font-size: 22rpx;
+  color: var(--color-primary);
+  margin-top: 6rpx;
+  word-break: break-all;
+}
+
+.coord-text.unset {
+  color: var(--color-gray, #999);
+}
+
+/* ========== 地图选点浮层 ========== */
+.picker-map {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1000;
+}
+
+/* 十字准星 */
+.picker-crosshair {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  margin-left: -30rpx;
+  margin-top: -30rpx;
+  width: 60rpx;
+  height: 60rpx;
+  pointer-events: none;
+}
+
+.crosshair-v {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  width: 4rpx;
+  height: 100%;
+  background: #E74C3C;
+  margin-left: -2rpx;
+  border-radius: 2rpx;
+}
+
+.crosshair-h {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  height: 4rpx;
+  width: 100%;
+  background: #E74C3C;
+  margin-top: -2rpx;
+  border-radius: 2rpx;
+}
+
+/* 顶部信息栏 */
+.picker-top-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  padding: 60rpx 30rpx 20rpx 30rpx;
+  background: linear-gradient(180deg, rgba(0,0,0,0.45) 0%, transparent 100%);
+  box-sizing: border-box;
+  pointer-events: none;
+}
+
+.picker-campus-label {
+  font-size: 36rpx;
+  font-weight: bold;
+  color: #FFFFFF;
+  text-shadow: 0 2rpx 8rpx rgba(0,0,0,0.5);
+}
+
+.picker-coords-display {
+  font-size: 24rpx;
+  color: #EEEEEE;
+  margin-top: 8rpx;
+  text-shadow: 0 1rpx 4rpx rgba(0,0,0,0.5);
+}
+
+/* 底部操作栏 */
+/* 缩放按钮 */
+.picker-zoom-bar {
+  position: fixed;
+  right: 24rpx;
+  top: 50%;
+  margin-top: -80rpx;
+  width: 72rpx;
+  background: rgba(255,255,255,0.92);
+  border-radius: 12rpx;
+  box-shadow: 0 2rpx 12rpx rgba(0,0,0,0.15);
+  overflow: hidden;
+}
+
+.zoom-btn {
+  width: 72rpx;
+  height: 72rpx;
+  line-height: 72rpx;
+  text-align: center;
+  font-size: 40rpx;
+  font-weight: 300;
+  color: #333333;
+  background: transparent;
+}
+
+.zoom-divider {
+  width: 52rpx;
+  height: 1rpx;
+  background: #E0E0E0;
+  margin: 0 auto;
+}
+
+.picker-bottom-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  padding: 24rpx 30rpx calc(24rpx + env(safe-area-inset-bottom)) 30rpx;
+  box-sizing: border-box;
+  display: flex;
+  justify-content: space-between;
+  background: linear-gradient(0deg, rgba(0,0,0,0.55) 0%, transparent 100%);
+}
+
+.picker-btn {
+  width: 44%;
+  text-align: center;
+  padding: 20rpx 0;
+  border-radius: 12rpx;
+  font-size: 30rpx;
+  font-weight: 500;
+}
+
+.picker-btn.cancel {
+  background: rgba(255,255,255,0.25);
+  color: #FFFFFF;
+}
+
+.picker-btn.confirm {
+  background: #07C160;
+  color: #FFFFFF;
+}

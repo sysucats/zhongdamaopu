@@ -207,6 +207,14 @@ picker, input {
   margin-bottom: 12rpx;
 }
 
+.location-notice {
+  display: block;
+  font-size: 22rpx;
+  color: #e67e22;
+  margin-top: 6rpx;
+  line-height: 1.5;
+}
+
 .location-row {
   display: flex;
   align-items: center;
@@ -218,10 +226,23 @@ picker, input {
   color: var(--color-gray-max);
 }
 
-.location-coords {
-  font-size: 24rpx;
-  color: var(--color-primary-text);
+.location-detail {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  margin-right: 16rpx;
+}
+
+.location-name {
+  font-size: 26rpx;
+  color: var(--color-black-light);
   font-weight: 500;
+  margin-bottom: 4rpx;
+}
+
+.location-coords {
+  font-size: 22rpx;
+  color: var(--color-gray-max);
 }
 
 .location-btn {
@@ -234,4 +255,5 @@ picker, input {
   color: var(--color-primary-text);
   border: none;
   line-height: 1.2;
+  flex-shrink: 0;
 }

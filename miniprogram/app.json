@@ -104,7 +104,8 @@
   },
   "__usePrivacyCheck__": true,
   "requiredPrivateInfos": [
-    "getFuzzyLocation"
+    "getFuzzyLocation",
+    "chooseLocation"
   ],
   "embeddedAppIdList": [
     "wxebadf544ddae62cb",

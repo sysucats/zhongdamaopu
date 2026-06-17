@@ -9,6 +9,18 @@ Page({
    */
   data: {
     filters: [],
+    campusCenters: {},
+    campusCenterStrs: {},
+    pageMetaStyle: '',       // 地图选点时锁定页面滚动
+    // 地图选点
+    mapPickerVisible: false,
+    mapPickerCampus: '',
+    mapPickerInitLat: 23.1026,  // 地图初始中心（绑定到 map 组件，创建后不变）
+    mapPickerInitLng: 113.2996,
+    mapPickerLat: 23.1026,      // 拖拽追踪坐标（用于显示与保存）
+    mapPickerLng: 113.2996,
+    mapPickerInitScale: 14,     // 地图初始缩放（绑定到 map 组件，只有按钮改变它）
+    mapPickerScale: 14,         // 追踪缩放（用于显示与保存）
   },
 
   /**
@@ -63,11 +75,148 @@ Page({
     }
     filters.push(colour_item);
     console.log("[reloadFilter] -", filters);
+    // 加载校区中心坐标
+    var centers = filterRes.campusCenters || {};
+    var centerStrs = {};
+    for (var i = 0; i < filterRes.campuses.length; i++) {
+      var c = centers[filterRes.campuses[i]];
+      if (c) {
+        centerStrs[filterRes.campuses[i]] = c.latitude.toFixed(6) + ', ' + c.longitude.toFixed(6) + ' | ' + c.scale + '级';
+      }
+    }
     this.setData({
-      filters: filters
+      filters: filters,
+      campusCenters: centers,
+      campusCenterStrs: centerStrs
     })
     wx.hideLoading();
   },
+
+  // ==================== 校区中心坐标地图选点 ====================
+
+  // 打开地图选点
+  openMapPicker(e) {
+    var campus = e.currentTarget.dataset.campus;
+    var centers = this.data.campusCenters;
+    var lat, lng, scale;
+    if (centers && centers[campus]) {
+      var c = centers[campus];
+      lat = c.latitude; lng = c.longitude; scale = c.scale;
+    } else {
+      // 默认广州中山大学东校园中心
+      lat = 23.1026; lng = 113.2996; scale = 14;
+    }
+    this.setData({
+      mapPickerVisible: true,
+      pageMetaStyle: 'overflow: hidden;',
+      mapPickerCampus: campus,
+      mapPickerInitLat: lat,    // 初始中心，创建 map 后不再变动
+      mapPickerInitLng: lng,
+      mapPickerInitScale: scale, // 初始缩放，仅按钮改变
+      mapPickerLat: lat,        // 追踪当前坐标
+      mapPickerLng: lng,
+      mapPickerScale: scale,
+    });
+  },
+
+  // 地图区域变化（拖拽/缩放结束）—— 仅更新追踪坐标，不触动 map 组件绑定值
+  onMapRegionChange(e) {
+    if (e.type === 'end') {
+      var lat, lng, scale;
+      if (e.detail && e.detail.centerLocation) {
+        lat = e.detail.centerLocation.latitude;
+        lng = e.detail.centerLocation.longitude;
+        // scale = this.data.mapPickerInitScale;
+        console.log(lat, lng);
+        this.setData({
+          mapPickerLat: lat,
+          mapPickerLng: lng,
+          // mapPickerScale: scale,
+        });
+      } else {
+        // 降级：通过 MapContext 获取
+        var that = this;
+        var mapCtx = wx.createMapContext('campusMapPicker');
+        mapCtx.getCenterLocation({
+          success: function (res) {
+            that.setData({
+              mapPickerLat: res.latitude,
+              mapPickerLng: res.longitude,
+            });
+          }
+        });
+        mapCtx.getScale({
+          success: function (res) {
+            that.setData({ mapPickerScale: res.scale });
+          }
+        });
+      }
+    }
+  },
+
+  // 确认选择坐标
+  async confirmMapPicker() {
+    var campusCenters = this.data.campusCenters || {};
+    campusCenters[this.data.mapPickerCampus] = {
+      latitude: this.data.mapPickerLat,
+      longitude: this.data.mapPickerLng,
+      scale: this.data.mapPickerScale,
+    };
+    var centerStrs = this.data.campusCenterStrs || {};
+    centerStrs[this.data.mapPickerCampus] =
+      this.data.mapPickerLat.toFixed(6) + ', ' + this.data.mapPickerLng.toFixed(6) + ' | ' + this.data.mapPickerScale + '级';
+
+    wx.showLoading({ title: '保存中...' });
+    await api.curdOp({
+      operation: "update",
+      collection: "setting",
+      item_id: "filter",
+      data: { campusCenters: campusCenters }
+    });
+    this.setData({
+      campusCenters: campusCenters,
+      campusCenterStrs: centerStrs,
+      mapPickerVisible: false,
+      pageMetaStyle: '',
+    });
+    wx.hideLoading();
+    wx.showToast({ title: '已保存', icon: 'success' });
+  },
+
+  // 取消选点
+  cancelMapPicker() {
+    this.setData({ mapPickerVisible: false, pageMetaStyle: '' });
+  },
+
+  // 地图缩放 +
+  zoomMapIn() {
+    var s = this.data.mapPickerInitScale;
+    console.log("S", s);
+    if (s < 18) {
+      var ns = s + 1;
+      console.log("NS", ns);
+      this.setData({
+        mapPickerInitScale: ns,
+        mapPickerScale: ns,
+      });
+    }
+  },
+
+  // 地图缩放 −
+  zoomMapOut() {
+    var s = this.data.mapPickerInitScale;
+    console.log("S", s);
+    if (s > 3) {
+      var ns = s - 1;
+      console.log("NS", ns);
+      this.setData({
+        mapPickerInitScale: ns,
+        mapPickerScale: ns,
+      });
+    }
+  },
+
+  // ==================== 校区管理 ====================
 
   async loadCampus() {
 
@@ -282,12 +431,22 @@ console.log("删除", cateindex);
       title: '更新中...',
     });
 
+    // 清理 campusCenters：只保留仍然存在的校区
+    var campusCenters = this.data.campusCenters || {};
+    var cleanCenters = {};
+    for (var k = 0; k < data.length; k++) {
+      if (campusCenters[data[k]]) {
+        cleanCenters[data[k]] = campusCenters[data[k]];
+      }
+    }
+
     await api.curdOp({
       operation: "update",
       collection: "setting",
       item_id: "filter",
       data: {
         campuses: data,
+        campusCenters: cleanCenters,
       }
     });
     await this.reloadFilter();
