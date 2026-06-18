@@ -11,7 +11,7 @@
     <block wx:else>
         <block wx:if="{{isAuth}}">
             <view class='label'>自定义昵称：（选填）</view>
-            <input name='name' type='text' placeholder="{{user.userInfo.nickName}}" bindinput='bindInputName' maxlength='{{namemaxlength}}'></input>
+            <input name='name' type='text' placeholder="{{user.userInfo.nickName}}" value='{{news.userNicknameLastModify?news.userNicknameLastModify:news.userNickname}}' bindinput='bindInputName' maxlength='{{namemaxlength}}'></input>
             <view class='lengthTips'>字数：{{namelength}}/{{namemaxlength}}</view>
 
             <view class='label'>标题：</view>
