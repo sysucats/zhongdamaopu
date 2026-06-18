@@ -101,6 +101,7 @@ const permissionAuthor = {
     "update": {
         "feedback": true,
         "rating": true,
+        "user": true,
     },
     "remove": {
         "comment": true
@@ -190,7 +191,9 @@ module.exports = async (ctx) => {
         var res = false;
         if (allowAuthor) {
             const { result: item } = await ctx.mpserverless.db.collection(collection).findOne({ _id: item_id });
-            return item._openid === openid;
+            // user 集合用 openid 字段，其他集合用 _openid 字段
+            const ownerField = collection === 'user' ? item?.openid : item?._openid;
+            return ownerField === openid;
         }
         return res;
     }
