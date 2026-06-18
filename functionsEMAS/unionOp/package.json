@@ -3,7 +3,7 @@
     "minio": "^7.0.32",
     "tencentcloud-sdk-nodejs": "^4.1.48",
     "axios": "^1.16.0",
-    "form-data": "^4.0.3",
+    "form-data": "^4.0.6",
     "tmp": "^0.2.6",
     "cos-nodejs-sdk-v5": "^2.12.6"
   }
