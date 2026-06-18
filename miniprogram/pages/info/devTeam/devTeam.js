@@ -10,6 +10,12 @@ Page({
     text_cfg: text_cfg,
     github_link: "https://github.com/sysucats/zhongdamaopu",
     update_log: [{
+      version: "v1.19.2",
+      content: [
+        "更新地图定位方式",
+      ],
+      time: "2026/06/18"
+    }, {
       version: "v1.19.1",
       content: [
         "喵地图审核及使用优化",
