@@ -21,6 +21,7 @@ Page({
     mapPickerLng: 113.2996,
     mapPickerInitScale: 14,     // 地图初始缩放（绑定到 map 组件，只有按钮改变它）
     mapPickerScale: 14,         // 追踪缩放（用于显示与保存）
+    mapPickerHasCenter: false,   // 当前校区是否已有中心坐标
   },
 
   /**
@@ -110,6 +111,7 @@ Page({
       mapPickerVisible: true,
       pageMetaStyle: 'overflow: hidden;',
       mapPickerCampus: campus,
+      mapPickerHasCenter: !!(centers && centers[campus]),
       mapPickerInitLat: lat,    // 初始中心，创建 map 后不再变动
       mapPickerInitLng: lng,
       mapPickerInitScale: scale, // 初始缩放，仅按钮改变
@@ -177,6 +179,7 @@ Page({
       campusCenters: campusCenters,
       campusCenterStrs: centerStrs,
       mapPickerVisible: false,
+      mapPickerHasCenter: true,
       pageMetaStyle: '',
     });
     wx.hideLoading();
@@ -185,7 +188,32 @@ Page({
 
   // 取消选点
   cancelMapPicker() {
-    this.setData({ mapPickerVisible: false, pageMetaStyle: '' });
+    this.setData({ mapPickerVisible: false, mapPickerHasCenter: false, pageMetaStyle: '' });
+  },
+
+  // 删除当前校区的中心坐标
+  async deleteCampusCenter() {
+    var campus = this.data.mapPickerCampus;
+    var campusCenters = this.data.campusCenters || {};
+    var campusCenterStrs = this.data.campusCenterStrs || {};
+    delete campusCenters[campus];
+    delete campusCenterStrs[campus];
+
+    wx.showLoading({ title: '删除中...' });
+    await api.curdOp({
+      operation: "update",
+      collection: "setting",
+      item_id: "filter",
+      data: { campusCenters: campusCenters }
+    });
+    this.setData({
+      campusCenters: campusCenters,
+      campusCenterStrs: campusCenterStrs,
+      mapPickerVisible: false,
+      pageMetaStyle: '',
+    });
+    wx.hideLoading();
+    wx.showToast({ title: '已删除坐标', icon: 'success' });
   },
 
   // 地图缩放 +

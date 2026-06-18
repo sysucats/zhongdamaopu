@@ -1,3 +1,17 @@
+<!-- 禁用页面滚动（地图选点打开时） -->
+<page-meta page-style="{{pageMetaStyle}}"></page-meta>
+
+<!-- 坐标格式化 WXS -->
+<wxs module="fmt">
+function fixed6(val) {
+  if (val === undefined || val === null) return '--';
+  return val.toFixed(6);
+}
+module.exports = {
+  fixed6: fixed6
+};
+</wxs>
+
 <view wx:if="{{!canUpload}}">
     <view class='userInfo'>
       <image src='/pages/public/images/system/user.png'></image>
@@ -28,25 +42,28 @@
       </view>
       <view class="update-userInfo" bindtap="getUInfo">[更新信息]</view>
     </view>
-    
+
     <button bindtap='chooseImg' class='long primary'>选择照片</button>
 
     <!-- 位置信息 -->
     <view class='location-box'>
       <view class='location-header'>
         <text class='label'>拍摄位置（用于喵地图展示）</text>
-        <text class='location-notice'>⚠️ 喵地图功能需要申请开通后才能访问</text>
+        <text class='location-notice'>⚠️ 喵地图功能需要申请开通，请放心定位</text>
       </view>
       <view class='location-row' wx:if="{{!location}}">
         <text class='location-tip'>未选择位置</text>
-        <button class='location-btn' bindtap='chooseLocation' loading="{{locating}}">地图选点</button>
+        <button class='location-btn' bindtap='openMapPicker'>地图选点</button>
       </view>
       <view class='location-row' wx:else>
         <view class='location-detail'>
-          <text class='location-name' wx:if="{{location.name}}">📍 {{location.name}}</text>
+          <text class='location-name'>📍 已选择</text>
           <text class='location-coords'>{{location.latitude}}, {{location.longitude}}</text>
         </view>
-        <button class='location-btn' bindtap='chooseLocation' loading="{{locating}}">重新选点</button>
+        <button class='location-btn' bindtap='openMapPicker'>重新选点</button>
+      </view>
+      <view wx:if="{{location}}" class='location-clear-row'>
+        <text class='location-clear' bindtap='clearLocation'>清除位置</text>
       </view>
     </view>
 
@@ -94,6 +111,38 @@
   </block>
 
 </block>
+
+<!-- 地图选点浮层 -->
+<map
+  wx:if="{{mapPickerVisible}}"
+  id="photoMapPicker"
+  class="picker-map"
+  latitude="{{mapPickerInitLat}}"
+  longitude="{{mapPickerInitLng}}"
+  scale="{{mapPickerScale}}"
+  enable-zoom="{{false}}"
+  enable-scroll="{{true}}"
+  bindregionchange="onMapRegionChange"
+  show-location="{{false}}"
+>
+  <cover-view class="picker-crosshair">
+    <cover-view class="crosshair-v"></cover-view>
+    <cover-view class="crosshair-h"></cover-view>
+  </cover-view>
+  <!-- 缩放按钮 -->
+  <cover-view class="picker-zoom-bar">
+    <cover-view class="zoom-btn" bindtap="zoomMapIn">+</cover-view>
+    <cover-view class="zoom-divider"></cover-view>
+    <cover-view class="zoom-btn" bindtap="zoomMapOut">−</cover-view>
+  </cover-view>
+  <cover-view class="picker-top-bar">
+    <cover-view class="picker-coords-display">{{fmt.fixed6(mapPickerLat)}}, {{fmt.fixed6(mapPickerLng)}} | {{mapPickerScale}}级</cover-view>
+  </cover-view>
+  <cover-view class="picker-bottom-bar">
+    <cover-view class="picker-btn cancel" bindtap="cancelMapPicker">取消</cover-view>
+    <cover-view class="picker-btn confirm" bindtap="confirmMapPicker">确定</cover-view>
+  </cover-view>
+</map>
 
 <!-- 个人信息修改组件 -->
 <modifyUserInfo show="{{showEdit}}" bind:close="closeEdit"></modifyUserInfo>

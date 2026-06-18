@@ -91,6 +91,7 @@ module.exports = {
     </cover-view>
     <cover-view class="picker-bottom-bar">
       <cover-view class="picker-btn cancel" bindtap="cancelMapPicker">取消</cover-view>
+      <cover-view wx:if="{{mapPickerHasCenter}}" class="picker-btn delete" bindtap="deleteCampusCenter">删除坐标</cover-view>
       <cover-view class="picker-btn confirm" bindtap="confirmMapPicker">确定</cover-view>
     </cover-view>
   </map>

@@ -276,7 +276,8 @@ form {
 }
 
 .picker-btn {
-  width: 44%;
+  flex: 1;
+  margin: 0 8rpx;
   text-align: center;
   padding: 20rpx 0;
   border-radius: 12rpx;
@@ -286,6 +287,11 @@ form {
 
 .picker-btn.cancel {
   background: rgba(255,255,255,0.25);
+  color: #FFFFFF;
+}
+
+.picker-btn.delete {
+  background: #E64340;
   color: #FFFFFF;
 }
 
