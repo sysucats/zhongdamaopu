@@ -314,3 +314,115 @@
 .detail-btn::after {
   border: none;
 }
+
+/* ===== 轨迹相关样式 ===== */
+
+/* 详情卡内按钮组：查看轨迹 + 查看详情 并排 */
+.detail-btn-group {
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+  padding: 0 30rpx;
+  margin-bottom: 25rpx;
+}
+
+/* 详情卡内「查看轨迹」按钮 */
+.detail-trajectory-btn {
+  flex: 1;
+  padding: 20rpx 0;
+  text-align: center;
+  font-size: 28rpx;
+  color: var(--color-primary, #4A90D9);
+  background: var(--color-primary-light, #e8f4fd);
+  border-radius: 44rpx;
+  letter-spacing: 2rpx;
+  min-width: 0;
+}
+
+.detail-trajectory-btn:active {
+  opacity: 0.75;
+  background: var(--color-primary, #4A90D9);
+  color: #fff;
+}
+
+/* 查看详情按钮 - 并排时等宽 */
+.detail-btn.primary.half {
+  flex: 1;
+  min-width: 0;
+}
+
+/* 地图右上角「还原」按钮 */
+.restore-btn {
+  position: fixed;
+  top: 100rpx;
+  right: 24rpx;
+  z-index: 999;
+  background: var(--color-primary);
+  color: #fff;
+  padding: 18rpx 32rpx;
+  border-radius: 44rpx;
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.18);
+  font-size: 28rpx;
+  font-weight: 600;
+  letter-spacing: 2rpx;
+}
+
+.restore-btn:active {
+  opacity: 0.8;
+  background: var(--color-primary-dark, #dfb600);
+}
+
+/* 轨迹时间线容器 */
+.trajectory-timeline {
+  max-height: 360rpx;
+  padding: 0 30rpx;
+  margin-bottom: 20rpx;
+}
+
+/* 时间线单项 */
+.tl-item {
+  display: flex;
+  align-items: flex-start;
+  padding: 16rpx 0;
+  border-bottom: 1rpx solid var(--color-gray-light, #f0f0f0);
+}
+
+.tl-item:last-child {
+  border-bottom: none;
+}
+
+.tl-item:active {
+  background: var(--color-primary-light, #e8f4fd);
+}
+
+/* 时间线圆点 */
+.tl-dot {
+  width: 16rpx;
+  height: 16rpx;
+  border-radius: 50%;
+  background: var(--color-primary, #4A90D9);
+  flex-shrink: 0;
+  margin-top: 8rpx;
+  margin-right: 16rpx;
+}
+
+/* 时间线信息区 */
+.tl-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6rpx;
+}
+
+/* 时间线日期文字 */
+.tl-date {
+  font-size: 26rpx;
+  color: var(--color-black-min, #333);
+  font-weight: 500;
+}
+
+/* 时间线坐标文字 */
+.tl-coord {
+  font-size: 22rpx;
+  color: var(--color-gray-max, #999);
+}

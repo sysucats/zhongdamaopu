@@ -230,10 +230,22 @@ function _splitOnce(str, sep) {
   return [str.slice(0, idx), str.slice(idx + 1)];
 }
 
+// 格式化时间为 "YYYY-MM-DD HH:mm:ss" 格式
+function formatTime(date) {
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, '0');
+  const d = String(date.getDate()).padStart(2, '0');
+  const h = String(date.getHours()).padStart(2, '0');
+  const min = String(date.getMinutes()).padStart(2, '0');
+  const s = String(date.getSeconds()).padStart(2, '0');
+  return `${y}-${m}-${d} ${h}:${min}:${s}`;
+}
+
 module.exports = {
   getCurrentUserOpenid,
   downloadFile,
   uploadFile,
   ensureCos,
-  signCosUrl
+  signCosUrl,
+  formatTime,
 }

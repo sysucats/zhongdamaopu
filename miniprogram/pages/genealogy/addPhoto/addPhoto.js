@@ -81,7 +81,9 @@ Page({
     }
 
     const today = new Date();
-    var now_date = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
+    var now_date = today.getFullYear() + '-' +
+      String(today.getMonth() + 1).padStart(2, '0') + '-' +
+      String(today.getDate()).padStart(2, '0');
     this.setData({ now_date });
 
     const device = await wx.getSystemInfoSync();
@@ -216,6 +218,8 @@ Page({
     if (s < 18) {
       var ns = s + 1;
       this.setData({
+        mapPickerInitLat: this.data.mapPickerLat,
+        mapPickerInitLng: this.data.mapPickerLng,
         mapPickerInitScale: ns,
         mapPickerScale: ns,
       });
@@ -227,6 +231,8 @@ Page({
     if (s > 3) {
       var ns = s - 1;
       this.setData({
+        mapPickerInitLat: this.data.mapPickerLat,
+        mapPickerInitLng: this.data.mapPickerLng,
         mapPickerInitScale: ns,
         mapPickerScale: ns,
       });

@@ -1,3 +1,14 @@
+<!-- 坐标格式化 WXS -->
+<wxs module="fmt">
+function fixed6(val) {
+  if (val === undefined || val === null) return '--';
+  return val.toFixed(6);
+}
+module.exports = {
+  fixed6: fixed6
+};
+</wxs>
+
 <view class="map-page">
   <!-- 隐藏的 Canvas，用于生成圆形头像 -->
   <canvas type="2d" id="avatarCanvas" style="position:fixed;left:-9999px;top:-9999px;width:80px;height:80px;"></canvas>
@@ -14,11 +25,17 @@
       longitude="{{longitude}}"
       scale="{{scale}}"
       markers="{{markers}}"
+      polyline="{{trajectoryPolyline}}"
       bindmarkertap="onMarkerTap"
       bindregionchange="onRegionChange"
       bindtap="onMapTap"
       show-location="{{true}}"
     />
+
+    <!-- 还原按钮 -->
+    <view class="restore-btn" wx:if="{{showTrajectory}}" bindtap="restoreMap">
+      ↩ 还原
+    </view>
 
     <!-- 加载提示 -->
     <view class="map-tip" wx:if="{{loading}}">
@@ -29,7 +46,7 @@
     <view class="map-empty" wx:if="{{!loading && markers.length === 0}}">
       <view class="empty-icon">🗺️</view>
       <text class="empty-text">还没有猫咪位置记录</text>
-      <text class="empty-sub">上传喵照时会自动记录位置哦~</text>
+      <text class="empty-sub">请在上传照片时记录</text>
     </view>
   </view>
 
@@ -66,15 +83,32 @@
           class="detail-photo"
           src="{{currentCat.avatarUrl || '/pages/public/images/info/default_avatar.png'}}"
           mode="aspectFill"
+          bindtap="previewPhoto"
         />
         <view class="detail-location" wx:if="{{currentCat.campus || currentCat.area}}">
           <text class="location-icon">📍</text>
-          <text>{{currentCat.campus || ''}}{{currentCat.area ? ' · ' + currentCat.area : ''}}</text>
+          <text>{{currentCat.campus || ''}}{{currentCat.area ? ' · ' + currentCat.area : ''}}<text wx:if="{{currentCat.adopt === 1}}"> · 已领养</text><text wx:if="{{currentCat.to_star}}"> · 返回喵星</text></text>
         </view>
       </view>
 
       <!-- 猫咪基本信息 -->
-      <view class="detail-info">
+      <!-- 轨迹点模式：显示拍摄时间和坐标 -->
+      <view class="detail-info" wx:if="{{currentCat.isTrajectoryPoint}}">
+        <view class="info-row">
+          <text class="info-label">拍摄时间</text>
+          <text class="info-value">{{currentCat.trajectoryPointDate || '未知'}}</text>
+        </view>
+        <view class="info-row" wx:if="{{currentCat.trajectoryPointUser}}">
+          <text class="info-label">拍摄者</text>
+          <text class="info-value">{{currentCat.trajectoryPointUser}}</text>
+        </view>
+        <view class="info-row">
+          <text class="info-label">坐标</text>
+          <text class="info-value">{{fmt.fixed6(currentCat.trajectoryPointLat)}}, {{fmt.fixed6(currentCat.trajectoryPointLng)}}</text>
+        </view>
+      </view>
+      <!-- 普通模式：显示猫基本信息 -->
+      <view class="detail-info" wx:else>
         <view class="info-row" wx:if="{{currentCat.gender}}">
           <text class="info-label">性别</text>
           <view class="info-value">
@@ -93,8 +127,13 @@
         </view>
       </view>
 
-      <!-- 查看详情按钮 -->
-      <button class="detail-btn primary" bindtap="goToDetail">查看详情</button>
+      <!-- 按钮组：查看轨迹 + 查看详情 并排（轨迹点模式隐藏查看轨迹） -->
+      <view class="detail-btn-group">
+        <view class="detail-trajectory-btn" wx:if="{{!currentCat.isTrajectoryPoint && currentCat.trajectory_count >= 2}}" bindtap="showTrajectory">
+          📍 查看轨迹
+        </view>
+        <button class="detail-btn primary {{!currentCat.isTrajectoryPoint && currentCat.trajectory_count >= 2 ? 'half' : ''}}" bindtap="goToDetail">猫猫详情</button>
+      </view>
     </view>
   </view>
 </view>

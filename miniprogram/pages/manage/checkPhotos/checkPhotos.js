@@ -5,6 +5,7 @@ import cache from "../../../utils/cache";
 import { signCosUrl } from "../../../utils/common";
 import { getCatItem } from "../../../utils/cat";
 import api from "../../../utils/cloudApi";
+import { addCatLocation } from "../../../utils/inter";
 const app = getApp();
 
 Page({
@@ -336,29 +337,27 @@ Page({
     // 阻塞一下
     await Promise.all(all_queries);
 
-    // 审核通过后，把坐标同步到对应的猫（通过云函数 updateCat，有权限更新）
-    const catCoordList = [];
+    // 审核通过后，把坐标同步到对应的猫
+    // 按照片顺序遍历，每只猫维护批内上一次写入的坐标（prevCoordMap），
+    // 与 addCatLocation 内的"数据库最新一条"共同去重，不同经纬度正常保留。
+
+    // 1. 向 inter 表写入猫咪位置记录（按顺序，带批内前一坐标，await 阻塞保证顺序）
+    const prevCoordMap = {}; // cat_id -> { latitude, longitude }
     for (const p of photos) {
       if (!p.mark || p.mark == "" || p.mark == "delete") continue;
-      if (p.latitude && p.longitude && p.cat_id) {
-        catCoordList.push({ catId: p.cat_id, latitude: p.latitude, longitude: p.longitude });
+      if (!p.latitude || !p.longitude || !p.cat_id) continue;
+
+      const prevCoord = prevCoordMap[p.cat_id] || null;
+      try {
+        const written = await addCatLocation(p.cat_id, p.latitude, p.longitude, p._openid, prevCoord);
+        // 只有实际写入才更新批内前一坐标
+        if (written) {
+          prevCoordMap[p.cat_id] = { latitude: p.latitude, longitude: p.longitude };
+        }
+      } catch (err) {
+        console.error('写入猫咪位置记录失败:', err);
       }
     }
-    // 同一只猫只保留最后一个坐标
-    const catCoordMap = {};
-    catCoordList.forEach(item => { catCoordMap[item.catId] = item; });
-    const catUpdatePromises = Object.values(catCoordMap).map(item =>
-      api.updateCat({
-        cat_id: item.catId,
-        cat: {
-          mapMarker: {
-            latitude: item.latitude,
-            longitude: item.longitude
-          }
-        }
-      })
-    );
-    await Promise.all(catUpdatePromises);
 
     // 更新校区照片列表和计数
     var newCount = new_photos.length;

@@ -23,6 +23,8 @@ const getAccessTokenHandler = require('./getAccessToken.js')
 const deleteFilesHandler = require('./deleteFiles.js')
 const deleteCosFilesHandler = require('./deleteCosFiles.js')
 const isManagerHandler = require('./isManager.js')
+const getCatLocationsHandler = require('./getCatLocations.js')
+const getCatTrajectoryHandler = require('./getCatTrajectory.js')
 
 const actionMap = {
     curdOp: curdOpHandler,
@@ -50,6 +52,8 @@ const actionMap = {
     deleteFiles: deleteFilesHandler,
     deleteCosFiles: deleteCosFilesHandler,
     isManager: isManagerHandler,
+    getCatLocations: getCatLocationsHandler,
+    getCatTrajectory: getCatTrajectoryHandler,
 }
 
 module.exports = async (ctx) => {

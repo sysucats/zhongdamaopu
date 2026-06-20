@@ -6,7 +6,7 @@
 
 module.exports = {
   // 版本号
-  app_version: "v1.19.2",
+  app_version: "v1.19.3",
   // 小程序appid
   app_id: "wx5bd705b2bc91c73b",
   // EMAS空间ID
@@ -20,9 +20,13 @@ module.exports = {
   sign_expires_tencent_cos: 3600 * 2,
   // 图片选择数量限制
   chooseMediaCount: 20,
-  // 喵地图配置的大本营坐标
+  // 喵地图配置的大本营坐标，默认地图中心
   map_center: { latitude: 23.1026, longitude: 113.2996 },
-  map_max_markers: 200, 
+  map_max_markers: 200,
+  // 喵地图申请——达到此数量即可申请（未达到的也可以提交，但是会有警示标识）
+  mapAccessMinRequired: 10,
+  // 喵地图申请——达到此数量自动通过
+  mapAccessAutoPassCount: 60, 
 
   // 科普页图片
   science_imgs: [

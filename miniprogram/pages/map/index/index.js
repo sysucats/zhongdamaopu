@@ -3,6 +3,7 @@ import config from "../../../config";
 import { isDemoMode, getDemoMapData } from "../../../utils/demo";
 import { checkCanUseMap } from "../../../utils/user";
 import { getAvatar } from "../../../utils/cat";
+import { signCosUrl } from "../../../utils/common";
 
 const app = getApp();
 
@@ -22,6 +23,10 @@ Page({
     demoMode: false,
     campusButtons: [],    // [{name, latitude, longitude, scale}] 有坐标的校区
     campusBtnExpanded: false,  // 校区按钮是否展开
+    showTrajectory: false,       // 是否正在展示轨迹
+    trajectoryPoints: [],        // 当前展示的轨迹点（来自 inter 表）
+    trajectoryMarkers: [],      // 轨迹点 marker（替代普通猫 marker）
+    trajectoryPolyline: [],     // 折线
   },
 
   jsData: {
@@ -84,7 +89,8 @@ Page({
   onShow() {
     showTab(this);
     // 首次加载由 locateUser 触发，之后每次 onShow 刷新数据
-    if (this.jsData.loaded) {
+    // 轨迹模式下不刷新数据（预览照片等操作会触发 onShow）
+    if (this.jsData.loaded && !this.data.showTrajectory) {
       this.loadMapData();
       this.loadCampusCenters();
     }
@@ -141,7 +147,7 @@ Page({
     });
   },
 
-  // 直接查 cat 集合（cat 的 mapMarker 字段含坐标）
+  // 调用云函数 getCatLocations，从 inter 表 aggregate 获取每只猫最新位置
   async loadMapData() {
     if (isDemoMode()) {
       this.loadDemoData();
@@ -149,23 +155,21 @@ Page({
     }
 
     try {
-      const catRes = await app.mpServerless.db.collection('cat')
-        .find({
-          mapMarker: { $ne: null },
-        }, {
-          projection: { name: 1, _id: 1, campus: 1, area: 1, gender: 1, characteristics: 1, habit: 1, tutorial: 1, mapMarker: 1 },
-          limit: config.map_max_markers
-        });
+      const { result: res } = await app.mpServerless.function.invoke('unionOp', {
+        unionAction: 'getCatLocations'
+      });
 
-      const catList = catRes.result || [];
+      const catList = (res && res.success && res.data) || [];
       if (catList.length === 0) {
         this.setData({ loading: false, markers: [] });
         return;
       }
 
+      // catList 中每条记录格式：
+      // { cat_id, name, latitude, longitude, location_time, trajectory_count, avatar, campus, area, gender, ... }
       this.jsData.catList = catList;
       this.jsData.catMap = {};
-      catList.forEach(c => { this.jsData.catMap[c._id] = c; });
+      catList.forEach(c => { this.jsData.catMap[c.cat_id] = c; });
       await this.generateMarkers(catList);
       this.jsData.loaded = true;
       this.setData({ loading: false });
@@ -285,25 +289,32 @@ Page({
   },
 
   async generateMarkers(catList) {
-    // 批量获取所有猫的头像
-    const catIds = [...new Set(catList.map(c => c._id).filter(Boolean))];
+    // 批量获取所有猫的头像（新格式下 catList 含 avatar 字段，但仍需确保可访问）
+    const catIds = [...new Set(catList.map(c => c.cat_id || c._id).filter(Boolean))];
     const avatars = catIds.length > 0 ? await getAvatar(catIds) : [];
     const avatarMap = {};
     catIds.forEach((id, i) => { avatarMap[id] = avatars[i]; });
+    // 若云函数已返回 avatar，直接覆盖（以云函数数据为准）
+    catList.forEach(c => {
+      const id = c.cat_id || c._id;
+      if (c.avatar) avatarMap[id] = c.avatar;
+    });
     this.jsData.avatarMap = avatarMap;
 
     // 先用原图生成 markers，让地图尽快渲染
     const markers = catList.map((cat, index) => {
-      const avatar = avatarMap[cat._id];
+      const catId = cat.cat_id || cat._id;
+      const avatar = avatarMap[catId];
       const iconPath = avatar
         ? (avatar.photo_compressed || avatar.photo_id || undefined)
         : undefined;
-      const marker = cat.mapMarker || {};
+      const lat = cat.latitude != null ? cat.latitude : undefined;
+      const lng = cat.longitude != null ? cat.longitude : undefined;
       return {
         id: index,
-        catId: cat._id,
-        latitude: marker.latitude,
-        longitude: marker.longitude,
+        catId: catId,
+        latitude: lat,
+        longitude: lng,
         title: cat.name || '未知猫咪',
         width: 40,
         height: 40,
@@ -345,7 +356,7 @@ Page({
 
     // 串行绘制（Canvas 单资源），有头像的猫才处理
     const catIdsWithAvatar = catList
-      .map(c => c._id)
+      .map(c => c.cat_id || c._id)
       .filter(id => avatarMap[id] && (avatarMap[id].photo_compressed || avatarMap[id].photo_id));
 
     let changed = false;
@@ -368,20 +379,63 @@ Page({
     }
   },
 
-  onMarkerTap(e) {
+  async onMarkerTap(e) {
     const markerId = e.detail.markerId;
+
+    // 轨迹模式：点击轨迹点 marker，展示该点的照片
+    if (this.data.showTrajectory) {
+      const point = this.data.trajectoryPoints[markerId];
+      if (!point) return;
+
+      const rawPhoto = point.photo_compressed || point.photo_id;
+      const signedUrl = await signCosUrl(rawPhoto || '');
+
+      this.setData({
+        showDetail: true,
+        currentCat: {
+          _id: this.jsData.trajectoryCatId,
+          name: this.jsData.trajectoryCatName,
+          avatarUrl: signedUrl || this.jsData.trajectoryCatAvatar,
+          campus: this.jsData.trajectoryCatCampus || '',
+          area: this.jsData.trajectoryCatArea || '',
+          adopt: this.jsData.trajectoryCatAdopt || '0',
+          to_star: this.jsData.trajectoryCatToStar || false,
+          isTrajectoryPoint: true,
+          trajectoryPointDate: point.location_time || '',
+          trajectoryPointLat: point.latitude,
+          trajectoryPointLng: point.longitude,
+          trajectoryPointUser: point.photographer || '',
+        }
+      });
+      return;
+    }
+
+    // 普通模式：点击猫 marker，展示猫信息卡
     const catInfo = this.jsData.catList[markerId];
     if (!catInfo) return;
 
-    const avatar = this.jsData.avatarMap[catInfo._id];
+    const catId = catInfo.cat_id || catInfo._id;
+    const avatar = catInfo.avatar || this.jsData.avatarMap[catId];
 
     // 组装详情数据：猫基本信息 + 头像
+    // 确保 _id 字段存在（供 goToDetail 使用）
     this.setData({
       showDetail: true,
       currentCat: {
         ...catInfo,
-        avatarUrl: avatar ? (avatar.photo_compressed || avatar.photo_id) : undefined
+        _id: catId,
+        avatarUrl: avatar ? (avatar.photo_compressed || avatar.photo_id) : undefined,
+        trajectory_count: catInfo.trajectory_count || 0,
       }
+    });
+  },
+
+  previewPhoto() {
+    const { currentCat } = this.data;
+    if (!currentCat?.avatarUrl) return;
+    wx.previewImage({
+      current: currentCat.avatarUrl,
+      urls: [currentCat.avatarUrl],
     });
   },
 
@@ -439,5 +493,224 @@ Page({
 
   preventTouchMove() {
     return false;
-  }
+  },
+
+  // 展示当前猫的轨迹（从 inter 表读取）
+  async showTrajectory() {
+    const catId = this.data.currentCat?._id;
+    if (!catId) return;
+
+    try {
+      const { result: res } = await app.mpServerless.function.invoke('unionOp', {
+        unionAction: 'getCatTrajectory',
+        cat_id: catId,
+      });
+
+      const points = (res && res.success && res.data) || [];
+      if (points.length < 2) {
+        wx.showToast({ title: '该猫咪还没有足够的轨迹数据', icon: 'none' });
+        return;
+      }
+
+      // 格式化时间：2x年x月x日
+      const formattedPoints = points.map((p, i) => ({
+        ...p,
+        formatted_time: this._formatTrajectoryDate(p.location_time, i),
+      }));
+
+      // 生成轨迹点 markers：主题色框 + 红色点
+      // 先用 Canvas 生成带序号和日期的自定义 marker 图片
+      const markers = await this._generateTrajectoryMarkers(formattedPoints);
+
+      // 生成 polyline：红线连接所有点
+      const polyline = [{
+        points: formattedPoints.map(p => ({ latitude: p.latitude, longitude: p.longitude })),
+        color: '#E74C3C',
+        width: 4,
+        dottedLine: false,
+        arrowLine: true,
+      }];
+
+      // 计算视野：包含所有点
+      const lats = formattedPoints.map(p => p.latitude);
+      const lngs = formattedPoints.map(p => p.longitude);
+      const centerLat = (Math.min(...lats) + Math.max(...lats)) / 2;
+      const centerLng = (Math.min(...lngs) + Math.max(...lngs)) / 2;
+
+      // 保存当前猫信息，供轨迹 marker 点击时使用
+      const curCat = this.data.currentCat;
+      this.jsData.trajectoryCatId = catId;
+      this.jsData.trajectoryCatName = curCat?.name || '';
+      this.jsData.trajectoryCatCampus = curCat?.campus || '';
+      this.jsData.trajectoryCatArea = curCat?.area || '';
+      this.jsData.trajectoryCatAdopt = curCat?.adopt || '0';
+      this.jsData.trajectoryCatToStar = curCat?.to_star || false;
+      this.jsData.trajectoryCatAvatar = curCat?.avatarUrl || '';
+
+      // 关闭详情卡，直接展示地图
+      this.setData({
+        showDetail: false,
+        showTrajectory: true,
+        markers: markers,
+        trajectoryPoints: formattedPoints,
+        trajectoryMarkers: markers,
+        trajectoryPolyline: polyline,
+        latitude: centerLat,
+        longitude: centerLng,
+      });
+    } catch (err) {
+      console.error('加载轨迹失败:', err);
+      wx.showToast({ title: '加载轨迹失败', icon: 'none' });
+    }
+  },
+
+  // 格式化轨迹日期："[序号] YY/M/D"
+  _formatTrajectoryDate(isoStr, index) {
+    if (!isoStr) return `[${index + 1}] 未知日期`;
+    const d = new Date(isoStr);
+    const year = String(d.getFullYear()).slice(-2);
+    const month = d.getMonth() + 1;
+    const day = d.getDate();
+    return `[${index + 1}] ${year}/${month}/${day}`;
+  },
+
+  // 用 Canvas 生成轨迹点自定义 marker 图片
+  // 每个 marker：主题色圆角框 + 文字"{序号}. {日期}" + 红色圆点
+  async _generateTrajectoryMarkers(points) {
+    const query = wx.createSelectorQuery();
+    let canvas = null;
+    try {
+      const canvasRes = await new Promise(resolve => {
+        query.select('#avatarCanvas').fields({ node: true, size: true }).exec(resolve);
+      });
+      canvas = canvasRes && canvasRes[0] && canvasRes[0].node;
+    } catch (e) {
+      console.warn('获取 Canvas 失败，使用默认 marker');
+    }
+
+    const markers = [];
+    for (let i = 0; i < points.length; i++) {
+      const p = points[i];
+      let iconPath = '/pages/public/images/map/marker_trajectory.png';
+
+      // 用 Canvas 生成自定义 marker 图片
+      if (canvas) {
+        const customPath = await this._drawTrajectoryMarker(canvas, p.formatted_time, i);
+        if (customPath) iconPath = customPath;
+      }
+
+      markers.push({
+        id: i,
+        latitude: p.latitude,
+        longitude: p.longitude,
+        width: 100,
+        height: 36,
+        iconPath: iconPath,
+        anchor: { x: 0.5, y: 1 },
+      });
+    }
+    return markers;
+  },
+
+  // 在 Canvas 上绘制单个轨迹点 marker：主题色圆角框 + 白色文字
+  async _drawTrajectoryMarker(canvas, text, index) {
+    return new Promise((resolve) => {
+      const timeout = setTimeout(() => {
+        resolve(null);
+      }, 3000);
+
+      try {
+        const ctx = canvas.getContext('2d');
+        const dpr = wx.getWindowInfo().pixelRatio;
+        const boxHeight = 36;
+        const fontSize = 12;
+        const borderRadius = 8;
+
+        // 测量文字宽度
+        ctx.font = `bold ${fontSize}px sans-serif`;
+        const textWidth = ctx.measureText(text).width;
+        const boxWidth = textWidth + 24; // 左右 padding
+        const canvasW = boxWidth;
+        const canvasH = boxHeight;
+
+        canvas.width = canvasW * dpr;
+        canvas.height = canvasH * dpr;
+        ctx.scale(dpr, dpr);
+
+        // 主题色圆角框（--color-primary: #ffd101）
+        const themeColor = '#ffd101';
+        ctx.fillStyle = themeColor;
+        ctx.beginPath();
+        ctx.moveTo(borderRadius, 0);
+        ctx.lineTo(canvasW - borderRadius, 0);
+        ctx.arcTo(canvasW, 0, canvasW, borderRadius, borderRadius);
+        ctx.lineTo(canvasW, boxHeight - borderRadius);
+        ctx.arcTo(canvasW, boxHeight, canvasW - borderRadius, boxHeight, borderRadius);
+        ctx.lineTo(borderRadius, boxHeight);
+        ctx.arcTo(0, boxHeight, 0, boxHeight - borderRadius, borderRadius);
+        ctx.lineTo(0, borderRadius);
+        ctx.arcTo(0, 0, borderRadius, 0, borderRadius);
+        ctx.closePath();
+        ctx.fill();
+
+        // 深色文字（在黄色背景上用深色，提高可读性）
+        ctx.fillStyle = '#92400E';
+        ctx.font = `bold ${fontSize}px sans-serif`;
+        ctx.textAlign = 'left';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(text, 12, boxHeight / 2);
+
+        // 导出临时文件
+        wx.canvasToTempFilePath({
+          canvas,
+          destWidth: canvasW * dpr,
+          destHeight: canvasH * dpr,
+          success: (res) => {
+            clearTimeout(timeout);
+            resolve(res.tempFilePath);
+          },
+          fail: () => {
+            clearTimeout(timeout);
+            resolve(null);
+          }
+        });
+      } catch (e) {
+        clearTimeout(timeout);
+        resolve(null);
+      }
+    });
+  },
+
+  // 格式化 location_time（ISO 字符串）为可读时间
+  _formatLocationTime(isoStr) {
+    if (!isoStr) return '';
+    const d = new Date(isoStr);
+    const pad = n => String(n).padStart(2, '0');
+    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+  },
+
+  // 还原：恢复所有猫 marker
+  restoreMap() {
+    this.setData({
+      showTrajectory: false,
+      trajectoryPoints: [],
+      trajectoryMarkers: [],
+      trajectoryPolyline: [],
+    });
+    // 重新加载所有猫 marker
+    this.loadMapData();
+  },
+
+  // 点击时间线某点，地图定位到该点
+  onTrajectoryPointTap(e) {
+    const idx = e.currentTarget.dataset.index;
+    const point = this.data.trajectoryPoints[idx];
+    if (!this.mapCtx) {
+      this.mapCtx = wx.createMapContext('campusMap', this);
+    }
+    this.mapCtx.moveToLocation({
+      latitude: point.latitude,
+      longitude: point.longitude,
+    });
+  },
 });

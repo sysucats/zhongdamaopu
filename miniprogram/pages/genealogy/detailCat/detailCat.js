@@ -555,7 +555,8 @@ Page({
     for (const pic of this.jsData.album_raw) {
       var date;
       if (orderKey == 'shooting_date') {
-        date = pic.shooting_date;
+        // 按年月分组（取前7字符），保持相册展示整洁，排序依赖完整年月日
+        date = pic.shooting_date ? pic.shooting_date.substring(0, 7) : null;
       } else if (orderKey == 'mdate') {
         date = formatDate(pic.mdate, 'yyyy-MM');
       }

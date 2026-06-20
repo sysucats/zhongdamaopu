@@ -73,7 +73,7 @@ module.exports = {
       <view class='title'>统一设置</view>
       <view class='label'>拍摄日期：</view>
       <view>
-        <picker mode='date' fields='month' bindchange='setAllDate' start='{{birth_date || "2008-01-01"}}' end='{{now_date}}'>{{set_all.shooting_date? set_all.shooting_date: '选择拍摄日期'}}</picker>
+        <picker mode='date' fields='day' bindchange='setAllDate' start='{{birth_date || "2008-01-01"}}' end='{{now_date}}'>{{set_all.shooting_date? set_all.shooting_date: '选择拍摄日期'}}</picker>
       </view>
       <view class='label'>摄影师：</view>
       <view>
@@ -99,7 +99,7 @@ module.exports = {
 
       <view class='label'>拍摄日期：</view>
       <view>
-        <picker mode='date' fields='month' bindchange='pickDate' start='{{birth_date || "2008-01-01"}}' end='{{now_date}}' data-index='{{index}}'>{{item.shooting_date? item.shooting_date: '选择拍摄日期'}}</picker>
+        <picker mode='date' fields='day' bindchange='pickDate' start='{{birth_date || "2008-01-01"}}' end='{{now_date}}' data-index='{{index}}'>{{item.shooting_date? item.shooting_date: '选择拍摄日期'}}</picker>
       </view>
       <view class='label'>摄影师：</view>
       <view>

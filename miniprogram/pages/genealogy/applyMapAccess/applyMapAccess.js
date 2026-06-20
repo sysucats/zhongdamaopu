@@ -2,6 +2,7 @@ import { getUser, getPageUserInfo } from "../../../utils/user";
 import api from "../../../utils/cloudApi";
 import { isDemoMode } from "../../../utils/demo";
 import { formatDate } from "../../../utils/utils";
+import config from "../../../config";
 
 const app = getApp();
 
@@ -14,8 +15,8 @@ Page({
     maxlength: 200,
     photoCount: 0,
     commentCount: 0,
-    minRequired: 10,
-    autoPassCount: 100,
+    minRequired: config.mapAccessMinRequired,
+    autoPassCount: config.mapAccessAutoPassCount,
     meetRequirement: false,
     autoPass: false,
     submitting: false,
