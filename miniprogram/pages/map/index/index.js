@@ -147,7 +147,7 @@ Page({
     });
   },
 
-  // 调用云函数 getCatLocations，从 inter 表 aggregate 获取每只猫最新位置
+  // 调用云函数 getCatLocations，从 photo 表 aggregate 获取每只猫最新位置
   async loadMapData() {
     if (isDemoMode()) {
       this.loadDemoData();

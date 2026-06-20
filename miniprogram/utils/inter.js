@@ -15,7 +15,6 @@ async function ensureUser() {
 
 // 定义数据库常量：
 const TYPE_LIKE = 10000;    // 点赞
-const TYPE_CAT_LOCATION = 20000; // 猫咪位置记录（轨迹点）
 
 // 获取缓存key
 function _getLikeCacheKey(item_id) {
@@ -121,61 +120,7 @@ async function likeAdd(item_id, item_type) {
   return true;
 }
 
-// 写入猫咪位置记录到 inter 表
-// 去重规则：
-//   1. 与数据库中该猫的最新一条记录比较（时间最近的那条）
-//   2. 与批内上一次写入的坐标比较（通过 prevCoord 参数传入）
-//   两处之一坐标相同即跳过写入；不同经纬度的正常保留
-// 参数 prevCoord: { latitude, longitude } —— 调用方维护的批内前一条坐标，可不传
-async function addCatLocation(cat_id, latitude, longitude, userOpenid, prevCoord) {
-  if (!cat_id || !latitude || !longitude) return;
-
-  // 先与批内上一条坐标比（避免同批内重复，不必查库）
-  if (prevCoord && prevCoord.latitude === latitude && prevCoord.longitude === longitude) {
-    console.log('cat location duplicate (in-batch), skip', cat_id, latitude, longitude);
-    return false;
-  }
-
-  // 再查数据库中该猫的最新一条记录
-  const { result: latestList } = await app.mpServerless.db.collection('inter').find({
-    type: TYPE_CAT_LOCATION,
-    item_id: cat_id,
-  }, {
-    sort: { location_time: -1 },
-    limit: 1,
-  });
-
-  // 与数据库最新一条坐标比
-  if (latestList && latestList.length > 0) {
-    const latest = latestList[0];
-    if (latest.latitude === latitude && latest.longitude === longitude) {
-      console.log('cat location duplicate (db latest), skip', cat_id, latitude, longitude);
-      return false;
-    }
-  }
-
-  const now = new Date().toISOString();
-
-  await api.curdOp({
-    operation: "add",
-    collection: "inter",
-    data: {
-      type: TYPE_CAT_LOCATION,
-      uid: userOpenid,
-      _openid: userOpenid,
-      count: 1,
-      item_id: cat_id,
-      latitude,
-      longitude,
-      location_time: now
-    }
-  });
-  return true;
-}
-
 module.exports = {
   likeCheck,
   likeAdd,
-  TYPE_CAT_LOCATION,
-  addCatLocation,
 }
