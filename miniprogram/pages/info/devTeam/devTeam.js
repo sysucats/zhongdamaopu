@@ -10,6 +10,12 @@ Page({
     text_cfg: text_cfg,
     github_link: "https://github.com/sysucats/zhongdamaopu",
     update_log: [{
+      version: "v1.19.4",
+      content: [
+        "迁移识猫到EMAS",
+      ],
+      time: "2026/06/21"
+    }, {
       version: "v1.19.3",
       content: [
         "重构地图定位数据结构",
