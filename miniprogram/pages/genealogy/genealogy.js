@@ -230,9 +230,8 @@ Page({
   },
 
   loadRecognize: async function () {
-    const env = __wxConfig.envVersion === 'release' ? 'recognize' : 'recognize_test';
-    const settings = await getGlobalSettings(env);
-    const showRecognize = settings && settings.interfaceURL && !settings.interfaceURL.includes("https://your.domain.com");
+    const settings = await getGlobalSettings('recognize');
+    const showRecognize = settings && settings.showRecognizeBtn === true;
     this.setData({ showRecognize: !!showRecognize });
   },
 

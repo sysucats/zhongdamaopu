@@ -13,6 +13,7 @@ import {
 
 import drawUtils from "../../../../utils/draw";
 import { signPhotoUrls } from  "../../../../utils/cat";
+import api from "../../../../utils/cloudApi";
 
 const share_text = text_cfg.app_name + ' - ' + text_cfg.recognize.share_tip;
 const app = getApp();
@@ -46,8 +47,7 @@ Page({
   },
 
   jsData: {
-    // 接口设置，onLoad中从数据库拉取。
-    interfaceURL: null,
+    // 接口秘钥，onShow中从数据库拉取。
     secretKey: null,
     canvasSideLen: 500,
     // 图片长宽比，在compresPhoto函数中记录。用于重新映射后端返回的catBox位置信息。
@@ -76,10 +76,8 @@ Page({
   },
 
   async onShow() {
-    if (!this.jsData.interfaceURL || !this.jsData.secretKey) {
-      console.log('__wxConfig.envVersion: ', __wxConfig.envVersion);
-      var settings = await getGlobalSettings(__wxConfig.envVersion === 'release' ? 'recognize' : 'recognize_test');
-      this.jsData.interfaceURL = settings.interfaceURL;
+    if (!this.jsData.secretKey) {
+      var settings = await getGlobalSettings('recognize');
       this.jsData.secretKey = settings.secretKey;
       await this.recognizeChatImage();
     } else { // 没杀后台回到聊天重新识别的情况
@@ -150,12 +148,12 @@ Page({
 
   async recognizePhoto() {
     // 检查接口设置
-    if (!this.jsData.interfaceURL || !this.jsData.secretKey) {
+    if (!this.jsData.secretKey) {
       wx.showToast({
         icon: 'error',
         title: '出错了'
       });
-      console.log("no interfaceURL || secretKey");
+      console.log("no secretKey");
       return;
     }
     wx.showLoading({
@@ -173,54 +171,35 @@ Page({
 
     // 计算签名
     const photoBase64 = wx.getFileSystemManager().readFileSync(compressPhotoPath, 'base64');
+    console.log(photoBase64);
     const timestamp = Math.round(new Date().getTime() / 1000);
     const signature = hex_sha256(photoBase64 + timestamp + this.jsData.secretKey);
-    // 调用服务端接口进行识别
-    const that = this;
-    const formData = {
-      timestamp: timestamp,
+    // 调用云函数 catFace 进行识别
+    const params = {
+      photoBase64: photoBase64,
       signature: signature,
+      timestamp: timestamp,
     };
     if (this.data.catIdx !== null) {
-      formData.catIdx = this.data.catIdx;
+      params.catIdx = this.data.catIdx; // 保留 tapCatBox 重新识别某只猫的能力
     }
-    wx.uploadFile({
-      filePath: compressPhotoPath,
-      name: 'photo',
-      url: this.jsData.interfaceURL,
-      formData: formData,
-      timeout: 10 * 1000, // 10s超时
-      async success(resp) {
-        try {
-          if (resp.statusCode != 200) {
-            throw resp.data;
-          }
-          const res = JSON.parse(resp.data); // 这里也可能抛出异常
-          if (res.ok === true) {
-            await that.loadRecognizeResult(res.data);
-          } else {
-            throw res;
-          }
-        } catch (err) {
-          console.log('get error from interface:', err);
-          wx.hideLoading();
-          wx.showToast({
-            icon: 'error',
-            title: '出错了'
-          });
-          wx.reportMonitor('recognizeCatPhotoError', 1);
-        }
-      },
-      fail(err) {
-        console.log(err);
-        wx.hideLoading();
-        wx.showToast({
-          icon: 'error',
-          title: '出错了'
-        });
-        wx.reportMonitor('recognizeCatPhotoError', 1);
+    console.log(params);
+    try {
+      const res = await api.catFace(params);
+      if (res && res.ok === true) {
+        await this.loadRecognizeResult(res.data);
+      } else {
+        throw res;
       }
-    });
+    } catch (err) {
+      console.log('get error from catFace:', err);
+      wx.hideLoading();
+      wx.showToast({
+        icon: 'error',
+        title: '出错了'
+      });
+      wx.reportMonitor('recognizeCatPhotoError', 1);
+    }
   },
 
   async compressPhoto() {

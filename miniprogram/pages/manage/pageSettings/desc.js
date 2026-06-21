@@ -238,27 +238,14 @@ module.exports = {
   },
   recognize: {
     tip: "识猫页设置",
-    interfaceURL: {
-      type: "text",
-      tip: "识猫接口地址链接",
-      default: "https://your.domain.com/recognizeCatPhoto_test"
+    showRecognizeBtn: {
+      type: "bool",
+      tip: "是否显示识猫按钮",
+      default: true
     },
     secretKey: {
       type: "text",
       tip: "识猫接口秘钥",
-      default: "key"
-    },
-  },
-  recognize_test: {
-    tip: "识猫页（开发接口）设置",
-    interfaceURL: {
-      type: "text",
-      tip: "识猫开发接口地址链接",
-      default: "https://your.domain.com/recognizeCatPhoto"
-    },
-    secretKey: {
-      type: "text",
-      tip: "识猫开发接口秘钥",
       default: "key"
     },
   }

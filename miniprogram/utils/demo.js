@@ -154,7 +154,6 @@ const MOCK_SETTINGS = {
     ads: null,
     detailCat: {},
     recognize: {},
-    recognize_test: {},
   },
   filter: { _id: 'filter', campuses: ['南校园'], area: [], colour: [] },
   friendLink: { _id: 'friendLink', apps: [] },

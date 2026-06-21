@@ -88,11 +88,7 @@ const init_setting = [{
       "photoPopWeight": 10
     },
     "recognize": {
-      "interfaceURL": "https://your.domain.com/recognizeCatPhoto",
-      "secretKey": "changeToYourKey"
-    },
-    "recognize_test": {
-      "interfaceURL": "https://your.domain.com/recognizeCatPhoto_test",
+      "showRecognizeBtn": true,
       "secretKey": "changeToYourKey"
     },
     "accessCtrl": {
