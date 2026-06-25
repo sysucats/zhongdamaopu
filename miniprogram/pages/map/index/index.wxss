@@ -232,13 +232,32 @@
 .detail-photo-wrap {
   position: relative;
   margin-bottom: 20rpx;
+  height: 360rpx;
+  overflow: hidden;
+  border-radius: 16rpx;
+  background: var(--color-gray-normal);
 }
 
 .detail-photo {
   width: 100%;
-  height: 360rpx;
-  border-radius: 16rpx;
-  background: var(--color-gray-normal);
+  /* widthFix 让图片按宽度等比缩放，高度自适应（竖屏照片会很高） */
+  /* 通过外层 overflow:hidden + animation 实现上下往返移动 */
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: block;
+  will-change: transform;
+}
+
+/* 竖屏照片自动上下往返：CSS animation infinite alternate 由渲染引擎驱动，
+   无需 JS transitionend 切换方向，避免到顶/底时因 setData 异步导致的闪烁 */
+.detail-photo.pan-animate {
+  animation: panVertical var(--pan-duration, 6s) ease-in-out infinite alternate;
+}
+
+@keyframes panVertical {
+  from { transform: translateY(0); }
+  to   { transform: translateY(calc(var(--pan-distance, 0px) * -1)); }
 }
 
 .detail-location {
@@ -370,6 +389,37 @@
 .restore-btn:active {
   opacity: 0.8;
   background: var(--color-primary-dark, #dfb600);
+}
+
+/* 左下角：喵地图总猫猫数量（浅色字，固定） */
+.total-cats-badge {
+  position: fixed;
+  left: 24rpx;
+  bottom: calc(15vh + 20rpx);
+  z-index: 99;
+  display: flex;
+  align-items: baseline;
+  gap: 6rpx;
+  padding: 12rpx 24rpx;
+  background: rgba(255, 255, 255, 0.82);
+  border-radius: 32rpx;
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.12);
+  backdrop-filter: blur(8rpx);
+  -webkit-backdrop-filter: blur(8rpx);
+  pointer-events: none;
+}
+
+.total-cats-num {
+  font-size: 34rpx;
+  font-weight: 700;
+  color: #FF6B35;
+  line-height: 1;
+}
+
+.total-cats-label {
+  font-size: 24rpx;
+  color: #8a8a8a;
+  line-height: 1;
 }
 
 /* 轨迹时间线容器 */

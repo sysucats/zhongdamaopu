@@ -68,7 +68,14 @@
     <view class='card' bindtap='clickCatCard' bindlongpress='bindManageCat' data-cat_id='{{item._id}}' data-index='{{index}}'>
       <view class='label' wx:if="{{item.mphoto_new}}">{{text_cfg.genealogy.new_photo_tip}}</view>
       <view class='image {{item.to_star? "to_star": ""}}'>
-        <image bindload="bindImageLoaded" mode='aspectFill' src='{{item.photo.photo_compressed || item.photo.photo_id}}' data-index="{{index}}"></image>
+        <image
+          bindload="bindImageLoaded"
+          mode='{{item.photoMode || "widthFix"}}'
+          src='{{item.photo.photo_compressed || item.photo.photo_id}}'
+          data-index="{{index}}"
+          class="{{item.panDistance > 0 ? 'pan-animate' : ''}} {{item.photoMode === 'aspectFill' ? 'mode-fill' : ''}}"
+          style="--pan-distance: {{item.panDistance || 0}}px; --pan-duration: {{item.panDuration || 6}}s;"
+        ></image>
         <view class='image-title' wx:if='{{!item.photo_count_best || item.photo_count_best === 0}}'>{{text_cfg.genealogy.no_photo_tip}}</view>
         <view class='image-title' wx:else>{{item.photo.photo_id? (text_cfg.genealogy.photo_by_tip + (item.photo.photographer ||(item.photo.userInfo? item.photo.userInfo.nickName: text_cfg.genealogy.photo_by_unknow_tip))): text_cfg.genealogy.photo_loading_tip}}</view>
       </view>

@@ -37,6 +37,12 @@ module.exports = {
       ↩ 还原
     </view>
 
+    <!-- 左下角：喵地图总猫猫数量（浅色字，固定） -->
+    <view class="total-cats-badge" wx:if="{{!showTrajectory && totalCats > 0}}">
+      <text class="total-cats-num">{{totalCats}}</text>
+      <text class="total-cats-label">只喵</text>
+    </view>
+
     <!-- 加载提示 -->
     <view class="map-tip" wx:if="{{loading}}">
       <text>正在加载猫咪位置...</text>
@@ -80,10 +86,12 @@ module.exports = {
       <!-- 猫头像预览 -->
       <view class="detail-photo-wrap">
         <image
-          class="detail-photo"
+          class="detail-photo {{photoPanDistance > 0 ? 'pan-animate' : ''}}"
           src="{{currentCat.avatarUrl || '/pages/public/images/info/default_avatar.png'}}"
-          mode="aspectFill"
+          mode="widthFix"
+          bindload="onPhotoLoad"
           bindtap="previewPhoto"
+          style="--pan-distance: {{photoPanDistance}}px; --pan-duration: {{photoPanDuration}}s;"
         />
         <view class="detail-location" wx:if="{{currentCat.campus || currentCat.area}}">
           <text class="location-icon">📍</text>

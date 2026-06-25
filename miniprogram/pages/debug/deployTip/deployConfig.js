@@ -162,7 +162,7 @@ module.exports = {
   // 云函数的名称
   functions: {
     "timeTrigger": "v1.0",
-    "unionOp": "v1.1",
+    "unionOp": "v1.5",
   },
   collections: {
     // "app_secret": default_init_data,

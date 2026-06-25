@@ -23,7 +23,7 @@ scroll-view {
   margin-bottom: 50rpx;
   font-size: 24rpx;
   line-height: 24rpx;
-  width: 635rpx;
+  width: 700rpx;
   border-radius: 15rpx;
 
   box-sizing: border-box;
@@ -35,10 +35,15 @@ scroll-view {
 }
 
 .card view.image {
-  height:590rpx;
+  height:500rpx;
   border-radius: 15rpx 15rpx 0 0;
   position: relative;
   overflow: hidden;
+  background-color: var(--color-gray-light);
+  background-image: var(--img-default);
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-size: 50% 50%;
 }
 
 .card view.image .image-title{
@@ -55,13 +60,28 @@ scroll-view {
 
 .card view.image image {
   width: 100%;
-  height: 590rpx;
-  background-color: var(--color-gray-light);
-	background-image: var(--img-default);
-  background-position: center center;
-  background-repeat: no-repeat;
-  background-size: 50% 50%;
+  /* widthFix 模式下高度按图片比例自适应，移除固定 height */
   position: absolute;
+  top: 0;
+  left: 0;
+  display: block;
+  will-change: transform;
+}
+
+/* aspectFill 模式（横屏照片填满容器）：需明确高度 100% 才能填满 */
+.card view.image image.mode-fill {
+  height: 100%;
+}
+
+/* 竖屏照片自动上下往返：CSS animation infinite alternate 由渲染引擎驱动，
+   无需 JS transitionend 切换方向，避免到顶/底时因 setData 异步导致的闪烁 */
+.card view.image image.pan-animate {
+  animation: cardPhotoPan var(--pan-duration, 6s) ease-in-out infinite alternate;
+}
+
+@keyframes cardPhotoPan {
+  from { transform: translateY(0); }
+  to   { transform: translateY(calc(var(--pan-distance, 0px) * -1)); }
 }
 
 .card view.image.to_star image {

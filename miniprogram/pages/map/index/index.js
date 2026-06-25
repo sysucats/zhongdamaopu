@@ -27,6 +27,10 @@ Page({
     trajectoryPoints: [],        // 当前展示的轨迹点（来自 inter 表）
     trajectoryMarkers: [],      // 轨迹点 marker（替代普通猫 marker）
     trajectoryPolyline: [],     // 折线
+    totalCats: 0,              // 喵地图上总的猫猫数量（左下角显示）
+    clusterThreshold: 15,      // 缩放小于该值时合并重合猫咪为数量圈
+    photoPanDistance: 0,       // 详情卡照片需上下移动的距离（px），0 表示无需移动
+    photoPanDuration: 6,       // 单程动画时长（秒）
   },
 
   jsData: {
@@ -36,6 +40,10 @@ Page({
     userLocated: false, // 是否已获取用户定位
     loaded: false,      // 首次加载完成标记
     campusCenters: {},  // { campusName: { latitude, longitude, scale } }
+    markerIconMap: {},  // cat_id -> 已绘制好的圆形头像临时文件路径（避免重绘闪动）
+    avatarDrawn: false, // 圆形头像是否已首次绘制完成（仅首次进入页面绘制）
+    clusterIconCache: {}, // { count: tempFilePath } 数量圈图标缓存（按猫数量复用）
+    currentScale: null,   // 当前地图缩放级别（onRegionChange 更新）
   },
 
   async onLoad() {
@@ -161,15 +169,41 @@ Page({
 
       const catList = (res && res.success && res.data) || [];
       if (catList.length === 0) {
-        this.setData({ loading: false, markers: [] });
+        this.jsData.catList = [];
+        this.jsData.catMap = {};
+        this.setData({ loading: false, markers: [], totalCats: 0 });
         return;
       }
 
       // catList 中每条记录格式：
       // { cat_id, name, latitude, longitude, location_time, trajectory_count, avatar, campus, area, gender, ... }
+
+      // 数据等价性检查：若 catList 关键字段（cat_id + 坐标 + trajectory_count）与之前一致，
+      // 跳过 generateMarkers，避免 map 组件重新渲染 markers 造成头像闪动
+      const oldList = this.jsData.catList || [];
+      const isSame = oldList.length === catList.length && oldList.every((old, i) => {
+        const cur = catList[i];
+        return old.cat_id === cur.cat_id
+          && old.latitude === cur.latitude
+          && old.longitude === cur.longitude
+          && (old.trajectory_count || 0) === (cur.trajectory_count || 0);
+      });
+
       this.jsData.catList = catList;
       this.jsData.catMap = {};
       catList.forEach(c => { this.jsData.catMap[c.cat_id] = c; });
+      this.setData({ totalCats: catList.length });
+
+      if (isSame && this.jsData.avatarDrawn) {
+        // 数据未变化且圆形头像已绘制：仅关闭 loading
+        // 但仍需恢复猫 markers（可能被轨迹模式覆盖），并按当前 scale 应用聚合
+        this.jsData.loaded = true;
+        this.setData({ loading: false });
+        const scale = this.jsData.currentScale != null ? this.jsData.currentScale : this.data.scale;
+        this._applyCluster(scale);
+        return;
+      }
+
       await this.generateMarkers(catList);
       this.jsData.loaded = true;
       this.setData({ loading: false });
@@ -200,8 +234,8 @@ Page({
     this.jsData.catList = catList;
     this.jsData.catMap = catMap;
     this.jsData.loaded = true;
+    this.setData({ loading: false, totalCats: catList.length });
     this.generateMarkers(catList);
-    this.setData({ loading: false });
   },
 
   /**
@@ -301,13 +335,16 @@ Page({
     });
     this.jsData.avatarMap = avatarMap;
 
-    // 先用原图生成 markers，让地图尽快渲染
+    // 生成 markers：
+    //   - 优先使用已缓存的圆形头像路径（markerIconMap），避免重绘闪动
+    //   - 没有缓存时回退到原图（后续 _renderCircleIcons 会异步生成圆形头像并替换）
     const markers = catList.map((cat, index) => {
       const catId = cat.cat_id || cat._id;
       const avatar = avatarMap[catId];
-      const iconPath = avatar
-        ? (avatar.photo_compressed || avatar.photo_id || undefined)
-        : undefined;
+      const cachedCircle = this.jsData.markerIconMap[catId];
+      const iconPath = cachedCircle
+        ? cachedCircle
+        : (avatar ? (avatar.photo_compressed || avatar.photo_id || undefined) : undefined);
       const lat = cat.latitude != null ? cat.latitude : undefined;
       const lng = cat.longitude != null ? cat.longitude : undefined;
       return {
@@ -335,8 +372,14 @@ Page({
     this.jsData.markers = markers;
     this.setData({ markers });
 
-    // 异步生成圆形头像（非阻塞，完成后替换 markers 的 iconPath）
-    this._renderCircleIcons(catList, avatarMap, markers);
+    // 圆形头像仅在首次进入页面时绘制；之后 onShow 刷新数据复用缓存，不再重绘
+    if (!this.jsData.avatarDrawn) {
+      this._renderCircleIcons(catList, avatarMap, markers);
+    } else {
+      // 已有圆形头像缓存：首屏按当前 scale 应用聚合
+      const scale = this.jsData.currentScale != null ? this.jsData.currentScale : this.data.scale;
+      this._applyCluster(scale);
+    }
   },
 
   async _renderCircleIcons(catList, avatarMap, markers) {
@@ -354,10 +397,11 @@ Page({
     }
     if (!canvas) return;
 
-    // 串行绘制（Canvas 单资源），有头像的猫才处理
+    // 串行绘制（Canvas 单资源），仅处理「有头像 + 尚未缓存」的猫
     const catIdsWithAvatar = catList
       .map(c => c.cat_id || c._id)
-      .filter(id => avatarMap[id] && (avatarMap[id].photo_compressed || avatarMap[id].photo_id));
+      .filter(id => avatarMap[id] && (avatarMap[id].photo_compressed || avatarMap[id].photo_id)
+                    && !this.jsData.markerIconMap[id]);
 
     let changed = false;
     for (const id of catIdsWithAvatar) {
@@ -365,6 +409,8 @@ Page({
       const url = avatar.photo_compressed || avatar.photo_id;
       const circlePath = await this.drawCircleAvatar(canvas, url);
       if (circlePath) {
+        // 写入缓存，后续 onShow 不再重绘这只猫
+        this.jsData.markerIconMap[id] = circlePath;
         const marker = markers.find(m => m.catId === id);
         if (marker) {
           marker.iconPath = circlePath;
@@ -373,10 +419,15 @@ Page({
       }
     }
 
-    // 只要有改动就更新
+    // 只要有改动就更新；并标记首次绘制完成
     if (changed) {
       this.setData({ markers: [...markers] });
     }
+    this.jsData.avatarDrawn = true;
+
+    // 首次绘制完成后，按当前 scale 应用聚合（处理首屏即低缩放的情况）
+    const scale = this.jsData.currentScale != null ? this.jsData.currentScale : this.data.scale;
+    this._applyCluster(scale);
   },
 
   async onMarkerTap(e) {
@@ -392,6 +443,7 @@ Page({
 
       this.setData({
         showDetail: true,
+        photoPanDistance: 0,
         currentCat: {
           _id: this.jsData.trajectoryCatId,
           name: this.jsData.trajectoryCatName,
@@ -410,6 +462,24 @@ Page({
       return;
     }
 
+    // 聚合 marker（id 从 100000 起）：放大地图到该聚合点，展示内部猫咪
+    if (markerId >= 100000) {
+      const marker = (this.data.markers || []).find(m => m.id === markerId);
+      if (marker) {
+        const newScale = Math.min(20, (this.jsData.currentScale || this.data.scale || 12) + 3);
+        // 主动更新 currentScale 并还原所有猫 markers
+        // （放大后必然 >= clusterThreshold，直接显示完整列表，无需等 regionchange）
+        this.jsData.currentScale = newScale;
+        this.setData({
+          latitude: marker.latitude,
+          longitude: marker.longitude,
+          scale: newScale,
+        });
+        this._applyCluster(newScale);
+      }
+      return;
+    }
+
     // 普通模式：点击猫 marker，展示猫信息卡
     const catInfo = this.jsData.catList[markerId];
     if (!catInfo) return;
@@ -421,6 +491,7 @@ Page({
     // 确保 _id 字段存在（供 goToDetail 使用）
     this.setData({
       showDetail: true,
+      photoPanDistance: 0,
       currentCat: {
         ...catInfo,
         _id: catId,
@@ -439,20 +510,234 @@ Page({
     });
   },
 
+  // 详情卡照片加载完成：计算竖屏照片需要上下移动的距离
+  // 图片按宽度等比缩放（widthFix），若缩放后高度 > 容器高度，则启用上下往返动画
+  // 动画用 CSS @keyframes + infinite alternate 驱动（不依赖 JS transitionend，避免到顶/底闪烁）
+  onPhotoLoad(e) {
+    const detail = e && e.detail;
+    if (!detail || !detail.width || !detail.height) {
+      this.setData({ photoPanDistance: 0 });
+      return;
+    }
+    try {
+      const sysInfo = wx.getWindowInfo();
+      const rpxToPx = sysInfo.windowWidth / 750;
+      // 详情卡左右 padding 30rpx，所以容器宽度 = 屏幕宽 - 60rpx
+      const containerWidthPx = sysInfo.windowWidth - 60 * rpxToPx;
+      const containerHeightPx = 360 * rpxToPx;
+      // widthFix 模式：图片宽度 = 容器宽度，高度按比例
+      const scaledHeight = detail.height * (containerWidthPx / detail.width);
+      const distance = Math.max(0, scaledHeight - containerHeightPx);
+      // 单程动画时长：按距离动态调整，约 30px/s，最少 3 秒，最多 12 秒
+      const duration = Math.min(12, Math.max(3, Math.round(distance / 30)));
+      this.setData({
+        photoPanDistance: Math.round(distance),
+        photoPanDuration: duration,
+      });
+    } catch (err) {
+      console.warn('计算照片移动距离失败:', err.message);
+      this.setData({ photoPanDistance: 0 });
+    }
+  },
+
   closeDetail() {
-    this.setData({ showDetail: false });
+    // 关闭详情卡时重置照片动画状态
+    this.setData({ showDetail: false, photoPanDistance: 0 });
   },
 
   onRegionChange(e) {
-    if (e.type === 'end' && e.causedBy === 'scale') {
-      const currentScale = e.detail.scale;
-      const allMarkers = this.jsData.markers || [];
-      if (currentScale < 14) {
-        this.setData({ markers: allMarkers.slice(0, 10) });
-      } else {
+    // 微信小程序 map 的 regionchange 在双指缩放时存在两个坑：
+    //   1. 双指缩放有时只触发 begin 不触发 end（或 end 延迟）
+    //   2. e.detail.scale 可能是缩放前的旧值，导致 oldScale===currentScale 误判
+    // 解决方案：begin 和 end 都监听，用防抖等手势稳定后，
+    //          通过 mapContext.getScale() 主动获取真实 scale 再决定是否聚合
+    if (this._scaleCheckTimer) {
+      clearTimeout(this._scaleCheckTimer);
+    }
+    this._scaleCheckTimer = setTimeout(() => {
+      this._scaleCheckTimer = null;
+      if (!this.mapCtx) {
+        this.mapCtx = wx.createMapContext('campusMap', this);
+      }
+      this.mapCtx.getScale({
+        success: (res) => {
+          if (!res || res.scale == null) return;
+          const currentScale = res.scale;
+          const oldScale = this.jsData.currentScale;
+          this.jsData.currentScale = currentScale;
+          // 仅当真实 scale 发生变化时才重新聚合（过滤纯平移）
+          if (oldScale !== currentScale) {
+            this._applyCluster(currentScale);
+          }
+        }
+      });
+    }, 250);
+  },
+
+  /**
+   * 根据 scale 计算聚合后的 markers 并 setData
+   * - scale >= clusterThreshold：显示全部原 markers（带圆形头像）
+   * - scale <  clusterThreshold：把距离接近的猫合并为数量圈 marker
+   */
+  async _applyCluster(scale) {
+    // 轨迹模式下不聚合
+    if (this.data.showTrajectory) return;
+
+    const allMarkers = this.jsData.markers || [];
+    if (allMarkers.length === 0) return;
+
+    // 高缩放级别：还原所有猫 marker
+    if (scale == null || scale >= this.data.clusterThreshold) {
+      // 当前显示的若已是完整列表（无聚合 marker），跳过，避免无谓刷新
+      const hasCluster = (this.data.markers || []).some(m => m._isCluster);
+      const isFullList = !hasCluster && this.data.markers.length === allMarkers.length;
+      if (!isFullList) {
         this.setData({ markers: allMarkers });
       }
+      return;
     }
+
+    // 低缩放级别：聚合
+    const clusters = this._clusterMarkers(allMarkers, scale);
+
+    // 收集需要生成图标的数量
+    const needGen = new Set();
+    clusters.forEach(c => {
+      if (c.members.length > 1 && !this.jsData.clusterIconCache[c.members.length]) {
+        needGen.add(c.members.length);
+      }
+    });
+
+    // 先异步生成缺失的数量圈图标
+    if (needGen.size > 0) {
+      const query = wx.createSelectorQuery();
+      const canvasRes = await new Promise(resolve => {
+        query.select('#avatarCanvas').fields({ node: true, size: true }).exec(resolve);
+      });
+      const canvas = canvasRes && canvasRes[0] && canvasRes[0].node;
+      if (canvas) {
+        for (const count of needGen) {
+          if (this.jsData.clusterIconCache[count]) continue;
+          const path = await this._drawClusterIcon(canvas, count);
+          if (path) this.jsData.clusterIconCache[count] = path;
+        }
+      }
+    }
+
+    // 生成聚合后的 markers
+    const clusteredMarkers = clusters.map((c, i) => {
+      if (c.members.length === 1) {
+        return c.members[0];
+      }
+      const lat = c.members.reduce((s, m) => s + (m.latitude || 0), 0) / c.members.length;
+      const lng = c.members.reduce((s, m) => s + (m.longitude || 0), 0) / c.members.length;
+      const count = c.members.length;
+      return {
+        id: 100000 + i,
+        latitude: lat,
+        longitude: lng,
+        width: 50,
+        height: 50,
+        iconPath: this.jsData.clusterIconCache[count],
+        anchor: { x: 0.5, y: 0.5 },
+        _isCluster: true,
+        _clusterCount: count,
+      };
+    });
+
+    this.setData({ markers: clusteredMarkers });
+  },
+
+  /**
+   * 简单距离阈值聚类
+   * @param {Array} markers  完整猫 markers
+   * @param {Number} scale   当前地图缩放
+   * @return {Array<{members: Array}>} 聚类结果
+   */
+  _clusterMarkers(markers, scale) {
+    // 根据 scale 计算聚合阈值（单位：度，约略）
+    // 经验值：scale 13 → 0.005°（~500m）；scale 11 → 0.02°（~2km）；scale 10 → 0.04°（~4km）
+    const threshold = 0.04 / Math.pow(2, scale - 10);
+
+    const clusters = [];
+    const used = new Array(markers.length).fill(false);
+
+    for (let i = 0; i < markers.length; i++) {
+      if (used[i] || markers[i].latitude == null || markers[i].longitude == null) continue;
+      const cluster = { members: [markers[i]] };
+      used[i] = true;
+      for (let j = i + 1; j < markers.length; j++) {
+        if (used[j] || markers[j].latitude == null || markers[j].longitude == null) continue;
+        if (this._geoDelta(markers[i].latitude, markers[i].longitude,
+                           markers[j].latitude, markers[j].longitude) < threshold) {
+          cluster.members.push(markers[j]);
+          used[j] = true;
+        }
+      }
+      clusters.push(cluster);
+    }
+    return clusters;
+  },
+
+  // 近似经纬度差（度），用于聚合判断；小范围内用欧氏距离 + 经度纬度修正
+  _geoDelta(lat1, lng1, lat2, lng2) {
+    const dLat = lat1 - lat2;
+    const dLng = (lng1 - lng2) * Math.cos((lat1 + lat2) * Math.PI / 360);
+    return Math.sqrt(dLat * dLat + dLng * dLng);
+  },
+
+  // 用 Canvas 生成数量圈图标：橙色圆形 + 白色数字
+  _drawClusterIcon(canvas, count) {
+    return new Promise((resolve) => {
+      const timeout = setTimeout(() => resolve(null), 3000);
+      try {
+        const ctx = canvas.getContext('2d');
+        const dpr = wx.getWindowInfo().pixelRatio;
+        const text = String(count);
+        const size = 50;  // 直径 px
+
+        canvas.width = size * dpr;
+        canvas.height = size * dpr;
+        ctx.scale(dpr, dpr);
+
+        // 白色外圈（边框）
+        ctx.beginPath();
+        ctx.arc(size / 2, size / 2, size / 2 - 1, 0, Math.PI * 2);
+        ctx.fillStyle = '#FFFFFF';
+        ctx.fill();
+
+        // 橙色内圈
+        ctx.beginPath();
+        ctx.arc(size / 2, size / 2, size / 2 - 4, 0, Math.PI * 2);
+        ctx.fillStyle = '#FF6B35';
+        ctx.fill();
+
+        // 白色数字（数字越多字号越小）
+        const fontSize = text.length >= 3 ? 18 : (text.length === 2 ? 20 : 22);
+        ctx.fillStyle = '#FFFFFF';
+        ctx.font = `bold ${fontSize}px sans-serif`;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(text, size / 2, size / 2 + 1);
+
+        wx.canvasToTempFilePath({
+          canvas,
+          destWidth: size * dpr,
+          destHeight: size * dpr,
+          success: (res) => {
+            clearTimeout(timeout);
+            resolve(res.tempFilePath);
+          },
+          fail: () => {
+            clearTimeout(timeout);
+            resolve(null);
+          }
+        });
+      } catch (e) {
+        clearTimeout(timeout);
+        resolve(null);
+      }
+    });
   },
 
   // 切换校区按钮展开/折叠
@@ -472,12 +757,16 @@ Page({
     var centers = this.jsData.campusCenters;
     var c = centers && centers[campus];
     if (!c) return;
+    var newScale = c.scale || 14;
+    // 主动更新 currentScale 并按目标 scale 应用聚合（编程式缩放不依赖 regionchange）
+    this.jsData.currentScale = newScale;
     this.setData({
       latitude: c.latitude,
       longitude: c.longitude,
-      scale: c.scale || 14,
+      scale: newScale,
       campusBtnExpanded: false,  // 选中后折叠
     });
+    this._applyCluster(newScale);
   },
 
   goToDetail() {
@@ -509,6 +798,12 @@ Page({
       const points = (res && res.success && res.data) || [];
       if (points.length < 2) {
         wx.showToast({ title: '该猫咪还没有足够的轨迹数据', icon: 'none' });
+        // 兜底：用实际去重后的点数修正 trajectory_count，
+        // 让"查看轨迹"按钮消失，并同步到 catList 避免下次再显示
+        const realCount = points.length;
+        this.setData({ 'currentCat.trajectory_count': realCount });
+        const cat = this.jsData.catList.find(c => (c.cat_id || c._id) === catId);
+        if (cat) cat.trajectory_count = realCount;
         return;
       }
 
@@ -697,7 +992,10 @@ Page({
       trajectoryMarkers: [],
       trajectoryPolyline: [],
     });
-    // 重新加载所有猫 marker
+    // 立即恢复猫 markers（按当前 scale 应用聚合），避免等待 loadMapData 期间仍显示轨迹点
+    const scale = this.jsData.currentScale != null ? this.jsData.currentScale : this.data.scale;
+    this._applyCluster(scale);
+    // 后台刷新数据（若有变化会更新）
     this.loadMapData();
   },
 

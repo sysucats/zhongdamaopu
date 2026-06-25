@@ -10,6 +10,13 @@ Page({
     text_cfg: text_cfg,
     github_link: "https://github.com/sysucats/zhongdamaopu",
     update_log: [{
+      version: "v1.19.5",
+      content: [
+        "首页更新",
+        "喵地图问题修复",
+      ],
+      time: "2026/06/25"
+    }, {
       version: "v1.19.4",
       content: [
         "迁移识猫到EMAS",

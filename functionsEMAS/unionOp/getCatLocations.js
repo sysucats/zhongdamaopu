@@ -22,8 +22,10 @@ module.exports = async (ctx) => {
     return { success: true, data: [] };
   }
 
-  // 2. 每只猫的去重后轨迹点数（相同日期+相同坐标合并）
-  const { result: countList } = await ctx.mpserverless.db.collection('photo')
+  // 2. 每只猫的去重后轨迹点数
+  //    去重规则：同一坐标点（5 位小数 ≈ 1 米精度）+ 同一日期（YYYY-MM-DD）视为同一个轨迹点
+  //    不在聚合管道里用 $trunc（EMAS mpserverless 不支持），改为取出原始数据后在 JS 里去重计数
+  const { result: allPhotos } = await ctx.mpserverless.db.collection('photo')
     .aggregate([
       { $match: {
         verified: true,
@@ -31,22 +33,28 @@ module.exports = async (ctx) => {
         latitude:  { $ne: null },
         longitude: { $ne: null }
       }},
-      { $group: {
-        _id: {
-          cat_id: '$cat_id',
-          date:    '$shooting_date',
-          lat:     '$latitude',
-          lng:     '$longitude'
-        },
-        dummy: { $first: '$cat_id' }
-      }},
-      { $group: {
-        _id:             '$_id.cat_id',
-        trajectory_count: { $sum: 1 }
+      { $project: {
+        _id: 0,
+        cat_id: 1,
+        shooting_date: 1,
+        latitude: 1,
+        longitude: 1
       }}
     ]);
   const countMap = {};
-  (countList || []).forEach(c => { countMap[c._id] = c.trajectory_count; });
+  (allPhotos || []).forEach(p => {
+    const cid = p.cat_id;
+    if (!cid) return;
+    const dateKey = (p.shooting_date || '').substring(0, 10);
+    const latKey  = Math.round((p.latitude  || 0) * 100000);
+    const lngKey  = Math.round((p.longitude || 0) * 100000);
+    const key = `${cid}|${dateKey}|${latKey}|${lngKey}`;
+    // 用对象记录每只猫的去重键集合
+    if (!countMap[cid]) countMap[cid] = new Set();
+    countMap[cid].add(key);
+  });
+  // Set → 数字
+  Object.keys(countMap).forEach(cid => { countMap[cid] = countMap[cid].size; });
 
   // 3. 查猫基本信息
   const catIds = latestList.map(r => r._id);

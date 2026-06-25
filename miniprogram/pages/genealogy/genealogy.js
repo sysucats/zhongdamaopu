@@ -204,6 +204,8 @@ Page({
     });
     
     if (updatedCat) {
+      // 清除该猫的图片尺寸缓存，使 bindImageLoaded 重新计算 panDistance
+      if (this.jsData.imageSizeMap) delete this.jsData.imageSizeMap[catId];
       this.setData({ [`cats[${index}]`]: updatedCat });
       this.loadCatPhoto(updatedCat, index);
     }
@@ -394,6 +396,9 @@ Page({
     
     if (this.jsData.loadingLock !== nowLoadingLock) return false;
     
+    // 重置图片尺寸缓存，避免同尺寸图片被防重入跳过导致 panDistance 不重新计算
+    this.jsData.imageSizeMap = {};
+    
     this.setData({
       cats: [],
       catsMax: cat_count,
@@ -486,23 +491,63 @@ Page({
     
     if (this.jsData.loadingLock !== nowLoadingLock) return false;
     
-    const updatedCats = cats.map(c => {
+    // 路径式更新：只更新有新照片的猫项，避免全量 setData 触发整个 wx:for 重 diff，
+    // 否则现有猫 image 的 class/style 会被重新应用，CSS animation 重启导致照片闪动
+    const updates = {};
+    let hasUpdate = false;
+    cats.forEach((c, i) => {
       if (cat2photos[c._id]) {
-        return {
-          ...c,
-          photo: cat2photos[c._id],
-          comment_count: cat2commentCount[c._id]
-        };
+        updates[`cats[${i}].photo`] = cat2photos[c._id];
+        updates[`cats[${i}].comment_count`] = cat2commentCount[c._id];
+        hasUpdate = true;
       }
-      return c;
     });
-    
-    this.setData({ cats: updatedCats });
+    if (hasUpdate) {
+      this.setData(updates);
+    }
   },
 
   bindImageLoaded(e) {
     const idx = e.currentTarget.dataset.index;
-    this.setData({ [`cats[${idx}].imageLoaded`]: true });
+    const detail = e && e.detail;
+    const cat = this.data.cats[idx];
+
+    // 防重入：同一只猫、同一尺寸的图片已处理过则跳过，
+    // 避免下拉加载时 image 重新触发 bindload 导致重复 setData，CSS animation 重启闪动
+    if (cat && detail && detail.width && detail.height) {
+      if (!this.jsData.imageSizeMap) this.jsData.imageSizeMap = {};
+      const last = this.jsData.imageSizeMap[cat._id];
+      if (last && last.w === detail.width && last.h === detail.height) {
+        return;
+      }
+      this.jsData.imageSizeMap[cat._id] = { w: detail.width, h: detail.height };
+    }
+
+    const update = { [`cats[${idx}].imageLoaded`]: true };
+    if (detail && detail.width && detail.height) {
+      try {
+        const sysInfo = wx.getWindowInfo();
+        const rpxToPx = sysInfo.windowWidth / 750;
+        // 卡片宽 700rpx、容器高 500rpx；widthFix 模式下图片缩放后高度按比例计算
+        const containerWidthPx = 700 * rpxToPx;
+        const containerHeightPx = 500 * rpxToPx;
+        const scaledHeight = detail.height * (containerWidthPx / detail.width);
+        if (scaledHeight >= containerHeightPx) {
+          // 竖屏：widthFix 完整展示 + 上下往返滚动
+          const distance = scaledHeight - containerHeightPx;
+          update[`cats[${idx}].photoMode`] = 'widthFix';
+          update[`cats[${idx}].panDistance`] = Math.round(distance);
+          update[`cats[${idx}].panDuration`] = Math.min(12, Math.max(3, Math.round(distance / 30)));
+        } else {
+          // 横屏：缩放后高度不足容器，改 aspectFill 等比放大填满（裁剪左右）
+          update[`cats[${idx}].photoMode`] = 'aspectFill';
+          update[`cats[${idx}].panDistance`] = 0;
+        }
+      } catch (err) {
+        console.warn('计算卡片照片移动距离失败:', err.message);
+      }
+    }
+    this.setData(update);
   },
 
   clickRecognize(e) {
