@@ -23,7 +23,7 @@ scroll-view {
   margin-bottom: 50rpx;
   font-size: 24rpx;
   line-height: 24rpx;
-  width: 700rpx;
+  width: 625rpx;
   border-radius: 15rpx;
 
   box-sizing: border-box;
@@ -32,10 +32,22 @@ scroll-view {
   box-shadow: 13rpx 13rpx 30rpx var(--color-gray);
   position: relative;
   /* TODO：重写为flex布局 */
+
+  /* 平滑过渡：宽度、阴影、上浮、圆角在展开/收起时动画 */
+  transition: width 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease, margin 0.3s ease;
+  z-index: 1;
+}
+
+.card.wide {
+  width: 700rpx;
+  /* 高级感：更强的投影 + 主题色高光 + 轻微上浮 */
+  box-shadow: 0 16rpx 48rpx rgba(0, 0, 0, 0.22), 0 4rpx 12rpx rgba(255, 209, 1, 0.25);
+  transform: translateY(-6rpx);
+  z-index: 100;
 }
 
 .card view.image {
-  height:500rpx;
+  height:590rpx;
   border-radius: 15rpx 15rpx 0 0;
   position: relative;
   overflow: hidden;
@@ -44,6 +56,10 @@ scroll-view {
   background-position: center center;
   background-repeat: no-repeat;
   background-size: 50% 50%;
+}
+
+.card.wide view.image {
+  height:500rpx;
 }
 
 .card view.image .image-title{
@@ -254,6 +270,53 @@ scroll-view {
     height: 0;
 }
 
+/* 展开卡片的动作按钮 */
+/* 右下角"查看详情"按钮：放大并完全贴合右下圆角 */
+.card-detail-btn {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  background: var(--color-primary);
+  color: var(--color-text-onPrimary);
+  font-size: 30rpx;
+  font-weight: 600;
+  letter-spacing: 2rpx;
+  padding: 22rpx 40rpx;
+  border-radius: 15rpx 0 15rpx 0;
+  box-shadow: -4rpx -4rpx 16rpx rgba(255, 209, 1, 0.35);
+  z-index: 5;
+  animation: cardBtnFadeIn 0.3s ease 0.1s both;
+}
+
+.card-detail-btn:active {
+  opacity: 0.85;
+  transform: scale(0.96);
+}
+
+/* 右上角"管理"按钮（仅管理员） */
+.card-manage-btn {
+  position: absolute;
+  top: 24rpx;
+  right: 24rpx;
+  background: rgba(0, 0, 0, 0.5);
+  color: #fff;
+  font-size: 22rpx;
+  padding: 8rpx 22rpx;
+  border-radius: 24rpx;
+  z-index: 5;
+  animation: cardBtnFadeIn 0.3s ease 0.1s both;
+}
+
+.card-manage-btn:active {
+  opacity: 0.8;
+  background: rgba(0, 0, 0, 0.7);
+}
+
+@keyframes cardBtnFadeIn {
+  from { opacity: 0; transform: translateY(10rpx); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
 /* 广告栏 */
 
 .card-ad {
@@ -447,6 +510,7 @@ scroll-view {
   position: fixed;
   bottom: 300rpx;
   right: 30rpx;
+  z-index: 50;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -461,6 +525,7 @@ scroll-view {
   position: fixed;
   bottom: 200rpx;
   right: 30rpx;
+  z-index: 50;
 
   filter: drop-shadow(0 0 5rpx var(--color-gray-dark));
   transform: translateZ(0);

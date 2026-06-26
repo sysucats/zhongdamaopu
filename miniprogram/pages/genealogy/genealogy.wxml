@@ -53,7 +53,7 @@
   </view>
 </view>
 
-<scroll-view enable-flex='1' class='cards' style='height: {{heights.windowHeight - heights.filters}}px;' scroll-y='true' enable-back-to-top='true' bindscrolltolower='onReachBottom' bindscroll='fScroll' lower-threshold='{{main_lower_threshold}}'>
+<scroll-view enable-flex='1' class='cards' style='height: {{heights.windowHeight - heights.filters}}px;' scroll-y='true' enable-back-to-top='true' bindscrolltolower='onReachBottom' bindscroll='fScroll' lower-threshold='{{main_lower_threshold}}' scroll-top='{{targetScrollTop}}' scroll-with-animation='true'>
   <!-- 校区外显筛选 -->
   <scroll-view class="h-filter-list" scroll-x="1" wx:if="{{filters[0].category.length > 1}}">
     <view class='h-filter-item {{item.all_active? "active": ""}}'  bindtap='fClickCampus' data-index='{{index}}' data-filters_sub="0"
@@ -65,15 +65,17 @@
   </scroll-view>
 
   <block wx:for='{{cats}}' wx:key="_id">
-    <view class='card' bindtap='clickCatCard' bindlongpress='bindManageCat' data-cat_id='{{item._id}}' data-index='{{index}}'>
+    <view class='card {{expandedCatIndex === index ? "wide" : ""}}' id="card-{{index}}" bindtap='clickCatCard' bindlongpress='bindManageCat' data-cat_id='{{item._id}}' data-index='{{index}}'>
       <view class='label' wx:if="{{item.mphoto_new}}">{{text_cfg.genealogy.new_photo_tip}}</view>
+      <!-- 展开时右上角"管理"按钮（仅管理员） -->
+      <view wx:if="{{expandedCatIndex === index && isManager}}" class="card-manage-btn" catchtap='clickManageBtn' data-cat_id='{{item._id}}'>管理</view>
       <view class='image {{item.to_star? "to_star": ""}}'>
         <image
           bindload="bindImageLoaded"
-          mode='{{item.photoMode || "widthFix"}}'
+          mode='{{expandedCatIndex === index && item.panDistance > 0 ? "widthFix" : "aspectFill"}}'
           src='{{item.photo.photo_compressed || item.photo.photo_id}}'
           data-index="{{index}}"
-          class="{{item.panDistance > 0 ? 'pan-animate' : ''}} {{item.photoMode === 'aspectFill' ? 'mode-fill' : ''}}"
+          class="{{expandedCatIndex === index && item.panDistance > 0 ? 'pan-animate' : 'mode-fill'}}"
           style="--pan-distance: {{item.panDistance || 0}}px; --pan-duration: {{item.panDuration || 6}}s;"
         ></image>
         <view class='image-title' wx:if='{{!item.photo_count_best || item.photo_count_best === 0}}'>{{text_cfg.genealogy.no_photo_tip}}</view>
@@ -125,6 +127,8 @@
           <view class='index'><text decode='true'>&lt; {{index+1}}/{{catsMax}} &gt;</text></view>
         </view>
 
+        <!-- 展开时右下角"查看详情"按钮 -->
+        <view wx:if="{{expandedCatIndex === index}}" class="card-detail-btn" catchtap='clickDetailBtn' data-cat_id='{{item._id}}'>查看详情</view>
       </view>
     </view>
     <view wx:if="{{adStep && (index+1)%adStep===0}}" class="card-ad {{ad_show['ad-'+(index+1)]? '': 'hidden'}}">

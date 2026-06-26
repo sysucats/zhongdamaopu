@@ -46,7 +46,13 @@ Page({
     newsImage: "",
     text_cfg: config.text,
     // 新增：数据加载完成标志
-    dataReady: false
+    dataReady: false,
+    // 卡片展开：当前展开的卡片索引，-1 表示无；展开后加 wide 样式、滚动到顶部、显示动作按钮
+    expandedCatIndex: -1,
+    // scroll-view 的 scroll-top，展开时计算带余量的目标值平滑滚动，避免顶部被遮挡
+    targetScrollTop: 0,
+    // 是否管理员（控制展开卡片右上角"管理"按钮显示）
+    isManager: false
   },
 
   jsData: {
@@ -152,7 +158,15 @@ Page({
 
     // 添加事件监听
     app.globalData.eventBus.$on('photoProcessed', this.handlePhotoProcessed);
-    
+
+    // 检查管理员身份（控制展开卡片"管理"按钮显示）
+    try {
+      const isManager = await isManagerAsync();
+      this.setData({ isManager: !!isManager });
+    } catch (e) {
+      console.warn('检查管理员身份失败:', e.message);
+    }
+
     // 标记数据加载完成
     this.setData({ dataReady: true });
     
@@ -398,9 +412,11 @@ Page({
     
     // 重置图片尺寸缓存，避免同尺寸图片被防重入跳过导致 panDistance 不重新计算
     this.jsData.imageSizeMap = {};
-    
+
     this.setData({
       cats: [],
+      expandedCatIndex: -1,
+      targetScrollTop: 0,
       catsMax: cat_count,
       loadnomore: false,
       filters_empty: Object.keys(query).length === 0,
@@ -460,7 +476,7 @@ Page({
       loading: false,
       loadnomore: updatedCats.length === this.data.catsMax
     });
-    
+
     await this.loadCatsPhoto();
   },
 
@@ -528,20 +544,15 @@ Page({
       try {
         const sysInfo = wx.getWindowInfo();
         const rpxToPx = sysInfo.windowWidth / 750;
-        // 卡片宽 700rpx、容器高 500rpx；widthFix 模式下图片缩放后高度按比例计算
+        // 滚动仅作用于展开（wide）卡片：宽 700rpx、图高 500rpx；
+        // widthFix 模式下图片按 700rpx 宽等比缩放，超出 500rpx 的部分即需移动距离
         const containerWidthPx = 700 * rpxToPx;
         const containerHeightPx = 500 * rpxToPx;
         const scaledHeight = detail.height * (containerWidthPx / detail.width);
-        if (scaledHeight >= containerHeightPx) {
-          // 竖屏：widthFix 完整展示 + 上下往返滚动
-          const distance = scaledHeight - containerHeightPx;
-          update[`cats[${idx}].photoMode`] = 'widthFix';
-          update[`cats[${idx}].panDistance`] = Math.round(distance);
+        const distance = Math.max(0, scaledHeight - containerHeightPx);
+        update[`cats[${idx}].panDistance`] = Math.round(distance);
+        if (distance > 0) {
           update[`cats[${idx}].panDuration`] = Math.min(12, Math.max(3, Math.round(distance / 30)));
-        } else {
-          // 横屏：缩放后高度不足容器，改 aspectFill 等比放大填满（裁剪左右）
-          update[`cats[${idx}].photoMode`] = 'aspectFill';
-          update[`cats[${idx}].panDistance`] = 0;
         }
       } catch (err) {
         console.warn('计算卡片照片移动距离失败:', err.message);
@@ -557,14 +568,71 @@ Page({
   clickCatCard(e, isCatId) {
     const cat_id = isCatId ? e : e.currentTarget.dataset.cat_id;
     const index = this.data.cats.findIndex(cat => cat._id == cat_id);
-    
-    if (index !== -1) {
-      this.setData({ [`cats[${index}].mphoto_new`]: false });
+
+    // scene 深链（isCatId=true）直接跳详情，不走展开
+    if (isCatId) {
+      wx.navigateTo({ url: `/pages/genealogy/detailCat/detailCat?cat_id=${cat_id}` });
+      return;
     }
-    
-    wx.navigateTo({
-      url: `/pages/genealogy/detailCat/detailCat?cat_id=${cat_id}`,
+
+    if (index === -1) return;
+    this.toggleExpand(index);
+  },
+
+  // 展开/收起卡片：展开时加 wide 样式 + 平滑滚动到顶部 + 显示动作按钮；再次点击收起
+  toggleExpand(index) {
+    if (this.data.expandedCatIndex === index) {
+      // 收起
+      this.setData({ expandedCatIndex: -1 });
+      return;
+    }
+    // 展开新卡片（自动收起旧的）
+    this.setData({ expandedCatIndex: index });
+
+    // 计算带余量的 scrollTop：用 selectorQuery 获取 card 相对 scroll-view 的位置，
+    // 减去顶部余量（40rpx），避免 card 顶部贴 scroll-view 顶部过近被上方 #search 阴影遮挡
+    wx.nextTick(() => {
+      const query = wx.createSelectorQuery();
+      query.select('#card-' + index).boundingClientRect();
+      query.select('.cards').scrollOffset();
+      query.select('.cards').boundingClientRect();
+      query.exec(res => {
+        if (!res || !res[0] || !res[1] || !res[2]) return;
+        const cardRect = res[0];        // card 相对视口的位置
+        const scrollInfo = res[1];      // scroll-view 当前 scrollTop
+        const svRect = res[2];          // scroll-view 相对视口的位置
+        // card 在 scroll-view 内容流中的偏移
+        const cardOffsetTop = cardRect.top - svRect.top + scrollInfo.scrollTop;
+        // 顶部余量 40rpx 转 px
+        const rpxToPx = wx.getWindowInfo().windowWidth / 750;
+        const offset = 40 * rpxToPx;
+        const targetScrollTop = Math.max(0, cardOffsetTop - offset);
+        this.setData({ targetScrollTop });
+      });
     });
+  },
+
+  // 展开卡片"查看详情"按钮
+  clickDetailBtn(e) {
+    const cat_id = e.currentTarget.dataset.cat_id;
+    if (!cat_id) return;
+    // 点击"查看详情"后才消除"新图"标签
+    const index = this.data.cats.findIndex(cat => cat._id == cat_id);
+    const update = { expandedCatIndex: -1 };
+    if (index !== -1) {
+      update[`cats[${index}].mphoto_new`] = false;
+    }
+    this.setData(update);
+    wx.navigateTo({ url: `/pages/genealogy/detailCat/detailCat?cat_id=${cat_id}` });
+  },
+
+  // 展开卡片"管理"按钮（右上角，仅管理员可见）
+  async clickManageBtn(e) {
+    const cat_id = e.currentTarget.dataset.cat_id;
+    if (!cat_id) return;
+    if (!(await isManagerAsync())) return;
+    this.setData({ expandedCatIndex: -1 });
+    wx.navigateTo({ url: `/pages/manage/catManage/catManage?cat_id=${cat_id}&activeTab=info` });
   },
 
   getHeights() {
