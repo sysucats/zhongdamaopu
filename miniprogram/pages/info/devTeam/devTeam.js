@@ -12,10 +12,10 @@ Page({
     update_log: [{
       version: "v1.19.5",
       content: [
-        "首页更新",
+        "首页样式更新",
         "喵地图问题修复",
       ],
-      time: "2026/06/25"
+      time: "2026/06/26"
     }, {
       version: "v1.19.4",
       content: [
