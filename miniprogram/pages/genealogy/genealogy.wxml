@@ -127,8 +127,12 @@
           <view class='index'><text decode='true'>&lt; {{index+1}}/{{catsMax}} &gt;</text></view>
         </view>
 
-        <!-- 展开时右下角"查看详情"按钮 -->
-        <view wx:if="{{expandedCatIndex === index}}" class="card-detail-btn" catchtap='clickDetailBtn' data-cat_id='{{item._id}}'>查看详情</view>
+        <!-- 展开时底部动作按钮：上传喵照（可选）/ 便利贴墙（可选）/ 详情相册（始终显示） -->
+        <view wx:if="{{expandedCatIndex === index}}" class="card-action-row">
+          <view wx:if="{{canUpload}}" class="card-action-btn btn-upload" catchtap='clickUploadBtn' data-cat_id='{{item._id}}'>上传喵照</view>
+          <view wx:if="{{canComment}}" class="card-action-btn btn-comment" catchtap='clickCommentBtn' data-cat_id='{{item._id}}'>便利贴墙</view>
+          <view class="card-action-btn btn-detail" catchtap='clickDetailBtn' data-cat_id='{{item._id}}'>详情相册</view>
+        </view>
       </view>
     </view>
     <view wx:if="{{adStep && (index+1)%adStep===0}}" class="card-ad {{ad_show['ad-'+(index+1)]? '': 'hidden'}}">

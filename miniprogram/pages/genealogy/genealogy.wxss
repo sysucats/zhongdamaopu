@@ -270,27 +270,47 @@ scroll-view {
     height: 0;
 }
 
-/* 展开卡片的动作按钮 */
-/* 右下角"查看详情"按钮：放大并完全贴合右下圆角 */
-.card-detail-btn {
-  position: absolute;
-  right: 0;
-  bottom: 0;
-  background: var(--color-primary);
-  color: var(--color-text-onPrimary);
-  font-size: 30rpx;
-  font-weight: 600;
-  letter-spacing: 2rpx;
-  padding: 22rpx 40rpx;
-  border-radius: 15rpx 0 15rpx 0;
-  box-shadow: -4rpx -4rpx 16rpx rgba(255, 209, 1, 0.35);
+/* 展开卡片的动作按钮组：底部三个按钮（上传喵照 / 便利贴墙 / 猫猫详情） */
+.card-action-row {
+  display: flex;
+  margin: 24rpx 0 8rpx;
+  gap: 16rpx;
   z-index: 5;
   animation: cardBtnFadeIn 0.3s ease 0.1s both;
 }
 
-.card-detail-btn:active {
+.card-action-btn {
+  flex: 1;
+  text-align: center;
+  font-size: 26rpx;
+  font-weight: 600;
+  letter-spacing: 2rpx;
+  padding: 20rpx 0;
+  border-radius: 14rpx;
+  color: #fff;
+}
+
+.card-action-btn:active {
   opacity: 0.85;
-  transform: scale(0.96);
+  transform: scale(0.97);
+}
+
+/* 上传喵照：柔和绿（鼠尾草绿） */
+.card-action-btn.btn-upload {
+  background: #6FB58A;
+  box-shadow: 0 4rpx 12rpx rgba(111, 181, 138, 0.35);
+}
+
+/* 便利贴墙：柔和橙（杏橙） */
+.card-action-btn.btn-comment {
+  background: #E89B6C;
+  box-shadow: 0 4rpx 12rpx rgba(232, 155, 108, 0.35);
+}
+
+/* 猫猫详情：主题色黄（柔化版，降低饱和度避免刺眼） */
+.card-action-btn.btn-detail {
+  background: #F0C04A;
+  box-shadow: 0 4rpx 12rpx rgba(240, 192, 74, 0.4);
 }
 
 /* 右上角"管理"按钮（仅管理员） */

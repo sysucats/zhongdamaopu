@@ -16,7 +16,7 @@ import { getUserInfo } from "../../utils/user";
 import cache from "../../utils/cache";
 import config from "../../config";
 import { loadFilter, getGlobalSettings, showTab } from "../../utils/page";
-import { isManagerAsync, checkCanShowNews } from "../../utils/user";
+import { isManagerAsync, checkCanShowNews, checkCanUpload, checkCanComment } from "../../utils/user";
 import { signCosUrl } from "../../utils/common";
 
 const default_png = undefined;
@@ -52,7 +52,10 @@ Page({
     // scroll-view 的 scroll-top，展开时计算带余量的目标值平滑滚动，避免顶部被遮挡
     targetScrollTop: 0,
     // 是否管理员（控制展开卡片右上角"管理"按钮显示）
-    isManager: false
+    isManager: false,
+    // 功能开关：是否可上传照片 / 是否可使用便利贴墙（由 pageSettings 决定）
+    canUpload: true,
+    canComment: true
   },
 
   jsData: {
@@ -160,11 +163,16 @@ Page({
     app.globalData.eventBus.$on('photoProcessed', this.handlePhotoProcessed);
 
     // 检查管理员身份（控制展开卡片"管理"按钮显示）
+    // 同时检查上传照片和便利贴墙功能是否对当前用户开放
     try {
-      const isManager = await isManagerAsync();
-      this.setData({ isManager: !!isManager });
+      const [isManager, canUpload, canComment] = await Promise.all([
+        isManagerAsync(),
+        checkCanUpload(),
+        checkCanComment(),
+      ]);
+      this.setData({ isManager: !!isManager, canUpload: !!canUpload, canComment: !!canComment });
     } catch (e) {
-      console.warn('检查管理员身份失败:', e.message);
+      console.warn('检查用户权限失败:', e.message);
     }
 
     // 标记数据加载完成
@@ -579,11 +587,14 @@ Page({
     this.toggleExpand(index);
   },
 
-  // 展开/收起卡片：展开时加 wide 样式 + 平滑滚动到顶部 + 显示动作按钮；再次点击收起
+  // 展开/收起卡片：展开时加 wide 样式 + 平滑滚动到顶部 + 显示动作按钮；再次点击进入详情相册
   toggleExpand(index) {
     if (this.data.expandedCatIndex === index) {
-      // 收起
-      this.setData({ expandedCatIndex: -1 });
+      // 再次点击同一张展开卡片 → 进入详情相册
+      const cat = this.data.cats[index];
+      if (cat) {
+        wx.navigateTo({ url: `/pages/genealogy/detailCat/detailCat?cat_id=${cat._id}` });
+      }
       return;
     }
     // 展开新卡片（自动收起旧的）
@@ -612,11 +623,11 @@ Page({
     });
   },
 
-  // 展开卡片"查看详情"按钮
+  // 展开卡片"猫猫详情"按钮
   clickDetailBtn(e) {
     const cat_id = e.currentTarget.dataset.cat_id;
     if (!cat_id) return;
-    // 点击"查看详情"后才消除"新图"标签
+    // 点击"猫猫详情"后才消除"新图"标签
     const index = this.data.cats.findIndex(cat => cat._id == cat_id);
     const update = { expandedCatIndex: -1 };
     if (index !== -1) {
@@ -624,6 +635,22 @@ Page({
     }
     this.setData(update);
     wx.navigateTo({ url: `/pages/genealogy/detailCat/detailCat?cat_id=${cat_id}` });
+  },
+
+  // 展开卡片"上传喵照"按钮
+  clickUploadBtn(e) {
+    const cat_id = e.currentTarget.dataset.cat_id;
+    if (!cat_id) return;
+    this.setData({ expandedCatIndex: -1 });
+    wx.navigateTo({ url: `/pages/genealogy/addPhoto/addPhoto?cat_id=${cat_id}` });
+  },
+
+  // 展开卡片"便利贴墙"按钮
+  clickCommentBtn(e) {
+    const cat_id = e.currentTarget.dataset.cat_id;
+    if (!cat_id) return;
+    this.setData({ expandedCatIndex: -1 });
+    wx.navigateTo({ url: `/pages/genealogy/commentBoard/commentBoard?cat_id=${cat_id}` });
   },
 
   // 展开卡片"管理"按钮（右上角，仅管理员可见）
