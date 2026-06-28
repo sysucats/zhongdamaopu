@@ -161,7 +161,7 @@ const init_setting = [{
 module.exports = {
   // 云函数的名称
   functions: {
-    "timeTrigger": "v1.0",
+    "timeTrigger": "v1.5",
     "unionOp": "v1.5",
   },
   collections: {
@@ -206,16 +206,22 @@ module.exports = {
       // 环境变量
       envVariables: {
         app_name: config.text.app_name
-      },
-      triggers: [{
-        name: "Trigger",
-        type: "timer",
-        config: "0 */10 * * * * *",
-      }],
+      }
+      // 注意：photoProcess 真实处理已迁到 timeTrigger，这里不再配 timer trigger
     },
     managePhoto: {
       memorySize: 256, // MB
       timeout: 59, // s
+    },
+    // timeTrigger 配置：内存 1024MB（jimp + 双字体 + cos 较吃内存），超时 60s（timeBudget 60s）
+    timeTrigger: {
+      memorySize: 1024, // MB
+      timeout: 60, // s
+      triggers: [{
+        name: "Trigger",
+        type: "timer",
+        config: "0 */5 * * * * *",  // 每 5 分钟一次
+      }],
     },
     countPhoto: {
       triggers: [{
