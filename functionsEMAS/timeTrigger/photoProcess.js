@@ -160,12 +160,12 @@ module.exports = async (ctx) => {
 
   if (!photos || photos.length === 0) {
     phaseLog('no pending photos');
-    return { processed: 0, manual: !!args.manual };
+    return { processed: 0 };
   }
 
   // 3) 补全水印所需 userInfo
   await fillUserInfo(ctx, photos);
-  phaseLog(`pending photos: ${photos.length}, remaining=${remaining()}ms, manual=${!!args.manual}`);
+  phaseLog(`pending photos: ${photos.length}, remaining=${remaining()}ms`);
 
   const results = [];
   const perPhotoTimings = [];
