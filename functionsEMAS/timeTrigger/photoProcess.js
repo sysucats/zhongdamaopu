@@ -11,12 +11,8 @@
 const path = require('path');
 const fs = require('fs');
 const crypto = require('crypto');
-const Jimp = require('jimp');
-const axios = require('axios');
-const FormData = require('form-data');
-const COS = require('cos-nodejs-sdk-v5');
-const opentype = require('opentype.js');
-const { createSvg2png: createSvg2pngWasm, initialize: svg2pngInit } = require('svg2png-wasm');
+// 重型依赖（jimp / opentype / svg2png-wasm / cos）延后到"有照片要处理时"再 require
+// 节省空闲时的常驻内存（timeTrigger 每 5 分钟触发一次，90% 时间是空闲）
 
 const CANVAS_MAX = 1200;            // 画布最长边（与前端一致）
 const COMPRESS_LENGTH = 500;        // 压缩图最长边（与前端一致）
@@ -40,29 +36,53 @@ const SVG2PNG_WASM_PATH = path.join(__dirname, 'node_modules', 'svg2png-wasm', '
 const EMOJI_RE = /[\u{1F000}-\u{1F2FF}\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}\u200D]/u;
 
 // ---- 单例：opentype font + svg2png-wasm + cos 客户端全局只初始化一次 ----
+let _Jimp = null;
+let _axios = null;
+let _FormData = null;
+let _COS = null;
+let _opentype = null;
+let _createSvg2pngWasm = null;
+let _svg2pngInit = null;
 let _font = null;
 let _svg2png = null;
 let _fontFamilyMain = null;
 let _fontFamilyEmoji = null;
 let _cos = null;
+let _heavyLoaded = false;
+
+// 首次处理照片时才加载重型依赖，节省空闲时内存
+function loadHeavyDeps() {
+  if (_heavyLoaded) return;
+  _Jimp = require('jimp');
+  _axios = require('axios');
+  _FormData = require('form-data');
+  _COS = require('cos-nodejs-sdk-v5');
+  _opentype = require('opentype.js');
+  const svg2pngMod = require('svg2png-wasm');
+  _createSvg2pngWasm = svg2pngMod.createSvg2png;
+  _svg2pngInit = svg2pngMod.initialize;
+  _heavyLoaded = true;
+  console.log('[photoProcess] heavy deps loaded');
+}
 
 async function ensureRenderReady() {
   if (_font && _svg2png) return;
+  loadHeavyDeps();
   if (!fs.existsSync(TTF_FONT_PATH)) {
     throw new Error('字体文件不存在: ' + TTF_FONT_PATH);
   }
   if (!fs.existsSync(SVG2PNG_WASM_PATH)) {
     throw new Error('svg2png-wasm 文件不存在: ' + SVG2PNG_WASM_PATH);
   }
-  _font = opentype.parse(fs.readFileSync(TTF_FONT_PATH));
-  await svg2pngInit(fs.readFileSync(SVG2PNG_WASM_PATH));
+  _font = _opentype.parse(fs.readFileSync(TTF_FONT_PATH));
+  await _svg2pngInit(fs.readFileSync(SVG2PNG_WASM_PATH));
   const fontBuffers = [fs.readFileSync(TTF_FONT_PATH)];
   if (fs.existsSync(EMOJI_TTF_FONT_PATH)) {
     fontBuffers.push(fs.readFileSync(EMOJI_TTF_FONT_PATH));
   } else {
     console.warn('[photoProcess] 未发现 emoji 字体，将全部走主字体:', EMOJI_TTF_FONT_PATH);
   }
-  _svg2png = createSvg2pngWasm({ fonts: fontBuffers });
+  _svg2png = _createSvg2pngWasm({ fonts: fontBuffers });
   const fams = _svg2png.getLoadedFontFamilies();
   _fontFamilyMain = fams[0];
   _fontFamilyEmoji = fams[1] || fams[0];
@@ -80,7 +100,7 @@ function escapeXml(s) {
 
 // 把字符串渲染成 Jimp 图像（白字透明背景），emoji 自动走 NotoEmoji 字体
 async function renderTextToJimp(text, fontSize) {
-  if (!text) return new Jimp(1, 1, 0x00000000);
+  if (!text) return new _Jimp(1, 1, 0x00000000);
 
   const fontSizeInt = Math.max(8, Math.round(fontSize));
   const yBaseline = Math.round(fontSizeInt * 0.8);
@@ -105,7 +125,7 @@ async function renderTextToJimp(text, fontSize) {
     + tspans
     + '</text></svg>';
   const tempPng = await _svg2png(tempSvg, { width: 4000, height: 200, backgroundColor: 'transparent' });
-  const tempImg = await Jimp.read(Buffer.from(tempPng));
+  const tempImg = await _Jimp.read(Buffer.from(tempPng));
 
   // alpha bbox 裁剪
   const w = tempImg.bitmap.width, h = tempImg.bitmap.height;
@@ -114,7 +134,7 @@ async function renderTextToJimp(text, fontSize) {
     const a = tempImg.bitmap.data[(y * w + x) * 4 + 3];
     if (a > 0) { if (x < minX) minX = x; if (x > maxX) maxX = x; if (y < minY) minY = y; if (y > maxY) maxY = y; }
   }
-  if (maxX < 0) return new Jimp(1, fontSizeInt, 0x00000000);
+  if (maxX < 0) return new _Jimp(1, fontSizeInt, 0x00000000);
   const pad = 2;
   return tempImg.clone().crop(
     Math.max(0, minX - pad),
@@ -134,9 +154,6 @@ module.exports = async (ctx) => {
     }
   };
   const remaining = () => TOTAL_BUDGET_MS - (Date.now() - baseTime);
-
-  // 0) 字体/wasm 初始化（首次 ~1s）
-  await ensureRenderReady();
 
   // 1) app_name（与前端 config.text.app_name 等价）
   const appName = await loadAppName(ctx);
@@ -158,12 +175,16 @@ module.exports = async (ctx) => {
     limit: BATCH_SIZE
   });
 
+  // 没有待处理照片 → 直接 return，**不加载任何重型依赖**（省内存）
   if (!photos || photos.length === 0) {
-    phaseLog('no pending photos');
+    phaseLog('no pending photos, skip heavy deps');
     return { processed: 0 };
   }
 
-  // 3) 补全水印所需 userInfo
+  // 3) 字体/wasm 初始化（首次 ~1s，懒加载 jimp/cos/opentype/svg2png-wasm）
+  await ensureRenderReady();
+
+  // 4) 补全水印所需 userInfo
   await fillUserInfo(ctx, photos);
   phaseLog(`pending photos: ${photos.length}, remaining=${remaining()}ms`);
 
@@ -267,19 +288,19 @@ async function processOne(ctx, photo, appName) {
 
   // 1) 下载原图（私有桶先签名）
   const readableUrl = await signCosUrlIfNeeded(ctx, photo.photo_id);
-  const original = await Jimp.read(readableUrl);
+  const original = await _Jimp.read(readableUrl);
   const width = original.bitmap.width;
   const height = original.bitmap.height;
 
   // 2) 压缩图
   const compressed = original.clone();
   if (width >= height) {
-    compressed.resize(COMPRESS_LENGTH, Jimp.AUTO);
+    compressed.resize(COMPRESS_LENGTH, _Jimp.AUTO);
   } else {
-    compressed.resize(Jimp.AUTO, COMPRESS_LENGTH);
+    compressed.resize(_Jimp.AUTO, COMPRESS_LENGTH);
   }
   compressed.quality(JPEG_QUALITY);
-  const compressedBuffer = await compressed.getBufferAsync(Jimp.MIME_JPEG);
+  const compressedBuffer = await compressed.getBufferAsync(_Jimp.MIME_JPEG);
 
   // 3) 水印图
   const watermarked = original.clone();
@@ -324,7 +345,7 @@ async function processOne(ctx, photo, appName) {
     console.warn('[photoProcess] watermark render failed, skip', e && e.message);
   }
   watermarked.quality(JPEG_QUALITY);
-  const watermarkBuffer = await watermarked.getBufferAsync(Jimp.MIME_JPEG);
+  const watermarkBuffer = await watermarked.getBufferAsync(_Jimp.MIME_JPEG);
 
   // 4) 上传
   const uuid = generateUUID();
@@ -358,11 +379,12 @@ async function signCosUrlIfNeeded(ctx, url) {
   if (!parsed) return url;
 
   if (!_cos) {
+    loadHeavyDeps(); // ensure cos SDK is loaded
     const { result: app_secret } = await ctx.mpserverless.db.collection('app_secret').findOne();
     if (!app_secret || !app_secret.OSS_SECRET_ID || !app_secret.OSS_SECRET_KEY) {
       throw new Error('app_secret 缺少 OSS_SECRET_ID / OSS_SECRET_KEY');
     }
-    _cos = new COS({
+    _cos = new _COS({
       SecretId: app_secret.OSS_SECRET_ID,
       SecretKey: app_secret.OSS_SECRET_KEY,
     });
@@ -395,6 +417,7 @@ function parseCosUrl(url) {
 
 // 走 unionOp 的 getURL 拿 minio 预签名 post 凭证，再上传 buffer
 async function uploadBuffer(ctx, buffer, cloudPath) {
+  loadHeavyDeps(); // ensure axios/form-data loaded
   const presign = await ctx.mpserverless.function.invoke('unionOp', {
     fileName: cloudPath,
     unionAction: 'getURL'
@@ -404,7 +427,7 @@ async function uploadBuffer(ctx, buffer, cloudPath) {
     throw new Error('getURL 返回结构异常: ' + JSON.stringify(data).slice(0, 200));
   }
 
-  const form = new FormData();
+  const form = new _FormData();
   for (const key of Object.keys(data.formData)) {
     form.append(key, data.formData[key]);
   }
@@ -413,7 +436,7 @@ async function uploadBuffer(ctx, buffer, cloudPath) {
     contentType: 'image/jpeg'
   });
 
-  const resp = await axios.post(data.postURL, form, {
+  const resp = await _axios.post(data.postURL, form, {
     headers: form.getHeaders(),
     maxBodyLength: Infinity,
     maxContentLength: Infinity,
