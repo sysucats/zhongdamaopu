@@ -25,6 +25,8 @@ const deleteCosFilesHandler = require('./deleteCosFiles.js')
 const isManagerHandler = require('./isManager.js')
 const getCatLocationsHandler = require('./getCatLocations.js')
 const getCatTrajectoryHandler = require('./getCatTrajectory.js')
+const adoptionOpHandler = require('./adoptionOp.js')
+const medicalOpHandler = require('./medicalOp.js')
 
 const actionMap = {
     curdOp: curdOpHandler,
@@ -54,6 +56,8 @@ const actionMap = {
     isManager: isManagerHandler,
     getCatLocations: getCatLocationsHandler,
     getCatTrajectory: getCatTrajectoryHandler,
+    adoptionOp: adoptionOpHandler,
+    medicalOp: medicalOpHandler,
 }
 
 module.exports = async (ctx) => {

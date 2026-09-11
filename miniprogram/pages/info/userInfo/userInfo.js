@@ -31,6 +31,16 @@ Page({
             action:"/pages/info/myFollowCats/myFollowCats",
             btnAble: false,
           }, {
+            label:"我的足迹",
+            img:"/pages/public/images/info/btn/paw_print.png",
+            action:"/pages/info/myFootprint/myFootprint",
+            btnAble: false,
+          }, {
+            label:"我的领养",
+            img:"/pages/public/images/info/btn/cat_head.png",
+            action:"/pages/info/myAdoption/myAdoption",
+            btnAble: false,
+          }, {
             label:"信息反馈",
             icon:"icon-chat-o",
             action:"/pages/info/feedback/feedback",

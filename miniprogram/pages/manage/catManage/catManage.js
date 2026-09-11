@@ -13,7 +13,6 @@ Page({
     showSearchResults: false, // 是否显示搜索结果
     searchKeyword: '', // 搜索关键词
     searchResults: [], // 搜索结果列表
-    showVaccineOptions: false, // 控制疫苗选项的显示/隐藏
     catInfoTab: null, // 信息编辑组件实例
     isNewMode: false, // 新增模式标志
     hasShownInfoModal: false, // 是否已显示过添加猫咪的提示框
@@ -51,7 +50,6 @@ Page({
     const tab = e.currentTarget.dataset.tab;
     this.setData({
       activeTab: tab,
-      showVaccineOptions: false,
       catInfoTab: this.selectComponent('#catInfoTab')
     });
 
@@ -253,47 +251,6 @@ Page({
     }
   },
 
-  // 疫苗类型管理按钮
-  handleVaccineTypeManager() {
-    const vaccineTab = this.selectComponent('#vaccineTab');
-    vaccineTab.showVaccineTypeManager();
-    this.setData({
-      showVaccineOptions: false
-    });
-  },
-
-  // 添加疫苗按钮
-  handleAddVaccine() {
-    const vaccineTab = this.selectComponent('#vaccineTab');
-    vaccineTab.addVaccine();
-    this.setData({
-      showVaccineOptions: false
-    });
-  },
-  // 查看已接种疫苗的猫
-  handleViewVaccinatedCats() {
-    const vaccineTab = this.selectComponent('#vaccineTab');
-    vaccineTab.showVaccinatedCats();
-    this.setData({
-      showVaccineOptions: false
-    });
-  },
-
-  // 在疫苗组件中选择猫猫
-  onVaccineTabSelectCat(e) {
-    const { catId } = e.detail;
-    if (catId) {
-      this.getCatById(catId);
-    }
-  },
-
-  // 切换疫苗选项的显示/隐藏
-  toggleVaccineOptions() {
-    this.setData({
-      showVaccineOptions: !this.data.showVaccineOptions
-    });
-  },
-
   // 新建猫咪
   handleCreateNewCat() {
     // 先设置新建模式状态
@@ -358,9 +315,7 @@ Page({
   // 按钮
   handleActionButtonClick() {
     const { activeTab } = this.data;
-    if (activeTab === 'vaccine') {
-      this.toggleVaccineOptions();
-    } else if (activeTab === 'relation') {
+    if (activeTab === 'relation') {
       this.handleAddRecord();
     } else if (activeTab === 'info') {
       if (this.data.selectedCat || this.data.isNewMode) {

@@ -18,10 +18,6 @@
       <text class="iconfont icon-relation"></text>
       <text class="tab-text">关系</text>
     </view>
-    <view class="tab {{activeTab === 'vaccine' ? 'active' : ''}}" bindtap="switchTab" data-tab="vaccine">
-      <text class="iconfont icon-vaccine"></text>
-      <text class="tab-text">疫苗</text>
-    </view>
   </view>
 
   <!-- 选中的猫咪信息 -->
@@ -34,12 +30,9 @@
   </view>
 
   <!-- 内容区域 -->
-  <view class="content" wx:if="{{selectedCat || activeTab === 'info' || activeTab === 'vaccine'}}">
+  <view class="content" wx:if="{{selectedCat || activeTab === 'info'}}">
     <!-- 关系组件 -->
     <relation-tab wx:if="{{activeTab === 'relation'}}" selected-cat="{{selectedCat}}" id="relationTab"></relation-tab>
-    
-    <!-- 疫苗组件 - 始终加载 -->
-    <vaccine-tab wx:if="{{activeTab === 'vaccine'}}" selected-cat="{{selectedCat}}" id="vaccineTab" bind:selectCat="onVaccineTabSelectCat"></vaccine-tab>
     
     <!-- 猫咪信息编辑组件 -->
     <cat-info-tab wx:if="{{activeTab === 'info'}}" 
@@ -54,24 +47,8 @@
     
     <!-- 浮动添加按钮 -->
     <view class="floating-actions">
-      <!-- 疫苗管理选项 (仅在疫苗选项卡显示) -->
-      <view class="vaccine-options {{showVaccineOptions ? 'show' : ''}}" wx:if="{{activeTab === 'vaccine'}}">
-        <view class="vaccine-option" bindtap="handleVaccineTypeManager" wx:if="{{selectedCat}}">
-          <text class="option-text">疫苗类型</text>
-          <view class="option-icon iconfont icon-setting-o"></view>
-        </view>
-        <view class="vaccine-option" bindtap="handleAddVaccine" wx:if="{{selectedCat}}">
-          <text class="option-text">添加记录</text>
-          <view class="option-icon iconfont icon-plus"></view>
-        </view>
-        <view class="vaccine-option" bindtap="handleViewVaccinatedCats">
-          <text class="option-text">已接种</text>
-          <view class="option-icon iconfont icon-success"></view>
-        </view>
-      </view>
-      
       <!-- 主按钮 -->
-      <view class="iconfont {{activeTab === 'info' && (selectedCat || isNewMode) ? 'icon-success' : 'icon-plus'}} action-button {{showVaccineOptions ? 'rotate' : ''}}" 
+      <view class="iconfont {{activeTab === 'info' && (selectedCat || isNewMode) ? 'icon-success' : 'icon-plus'}} action-button" 
             bindtap="handleActionButtonClick"></view>
     </view>
   </view>

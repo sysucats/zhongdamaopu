@@ -93,6 +93,14 @@ image {
   background-color: var(--color-primary);
   color: white;
 }
+.button.transfer {
+  color: #722ed1;
+}
+.button.transfer.marked {
+  border-color: #531dab;
+  background-color: #722ed1;
+  color: white;
+}
 
 .label {
   font-size: 24rpx;
@@ -159,4 +167,78 @@ image {
   font-size: 24rpx;
   color: var(--color-gray-dark);
   text-align: center;
+}
+
+/* 待审核 / 审核记录 切换 */
+.mode-tabs {
+  display: flex;
+  background: #fff;
+  border-radius: 20rpx;
+  box-shadow: 0rpx 0rpx 30rpx var(--color-gray);
+  padding: 8rpx;
+  margin-bottom: 30rpx;
+}
+
+.mode-tab {
+  flex: 1;
+  text-align: center;
+  font-size: 30rpx;
+  color: var(--color-gray-dark);
+  padding: 16rpx 0;
+  border-radius: 14rpx;
+}
+
+.mode-tab.active {
+  background: var(--color-primary);
+  color: var(--color-text-onPrimary);
+  font-weight: bold;
+}
+
+/* 审核记录 */
+.history-summary {
+  font-size: 24rpx;
+  color: var(--color-gray-dark);
+  margin-bottom: 20rpx;
+}
+
+.history-box image,
+.img-deleted {
+  width: 160rpx;
+  height: 160rpx;
+  flex-shrink: 0;
+}
+
+.img-deleted {
+  border-radius: 10rpx;
+  background-color: var(--color-gray-light);
+  color: var(--color-gray-dark);
+  font-size: 22rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 10rpx;
+}
+
+.history-badges {
+  display: flex;
+  align-items: center;
+  margin-top: 12rpx;
+}
+
+.action-badge {
+  font-size: 22rpx;
+  padding: 4rpx 20rpx;
+  border-radius: 20rpx;
+  color: #fff;
+}
+
+.action-badge.pass { background-color: var(--color-green); }
+.action-badge.best { background-color: var(--color-primary-dark); }
+.action-badge.delete { background-color: var(--color-red); }
+.action-badge.transfer { background-color: #722ed1; }
+
+.transfer-target {
+  font-size: 22rpx;
+  color: #722ed1;
+  margin-left: 12rpx;
 }

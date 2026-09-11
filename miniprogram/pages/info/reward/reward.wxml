@@ -23,7 +23,7 @@
 
 <view class='tip'>{{text_cfg.reward.reward_count_tip}}</view>
 
-<view class='block'>
+<view class='block' wx:if="{{hasReward}}">
   <view class='title'>投喂记录</view>
   <view class='desc' wx:for='{{reward}}' wx:key='mdate'>
     <view class='sub-title hl'>{{item.mdate}}{{text_cfg.reward.reward_title}}</view>
@@ -31,6 +31,9 @@
   </view>
 </view>
 
-
+<view class='block' wx:if="{{hasReward === false}}">
+  <view class='title'>投喂记录</view>
+  <view class='desc empty-tip'>暂无投喂记录，期待第一罐罐头~</view>
+</view>
 
 <view style='height: 20rpx;'></view>

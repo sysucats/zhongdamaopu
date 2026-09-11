@@ -1,0 +1,148 @@
+.page {
+  min-height: 100vh;
+  background: #f7f7f7;
+  padding-bottom: 30rpx;
+}
+
+.tabs {
+  display: flex;
+  background: #fff;
+  padding: 20rpx 30rpx;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.tab {
+  font-size: 28rpx;
+  color: #666;
+  padding: 12rpx 28rpx;
+  border-radius: 32rpx;
+  margin-right: 20rpx;
+  background: #f5f5f5;
+}
+
+.tab.active {
+  background: #ffd101;
+  color: #333;
+}
+
+.empty {
+  text-align: center;
+  color: #999;
+  font-size: 28rpx;
+  padding: 100rpx 0;
+}
+
+/* 照片网格 */
+.photo-grid {
+  display: flex;
+  flex-wrap: wrap;
+  padding: 20rpx 22rpx;
+}
+
+.photo-item {
+  width: 340rpx;
+  margin: 8rpx;
+  background: #fff;
+  border-radius: 16rpx;
+  overflow: hidden;
+}
+
+.photo-img {
+  width: 100%;
+  height: 340rpx;
+  background: #eee;
+}
+
+.photo-info {
+  padding: 16rpx;
+}
+
+.photo-cat {
+  font-size: 26rpx;
+  color: #576b95;
+  font-weight: 500;
+}
+
+.photo-meta {
+  font-size: 22rpx;
+  color: #999;
+  margin-top: 8rpx;
+}
+
+/* 猫咪卡片 */
+.cat-card {
+  display: flex;
+  align-items: center;
+  background: #fff;
+  border-radius: 16rpx;
+  padding: 24rpx;
+  margin: 20rpx 30rpx 0;
+}
+
+.cat-avatar {
+  width: 100rpx;
+  height: 100rpx;
+  border-radius: 50%;
+  background: #eee;
+  flex-shrink: 0;
+}
+
+.cat-info {
+  flex: 1;
+  margin-left: 24rpx;
+}
+
+.cat-name {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333;
+}
+
+.cat-desc {
+  font-size: 24rpx;
+  color: #999;
+  margin-top: 6rpx;
+}
+
+.cat-count {
+  font-size: 24rpx;
+  color: #fa8c16;
+  background: #fff7e6;
+  padding: 6rpx 20rpx;
+  border-radius: 24rpx;
+}
+
+/* 便利贴卡片 */
+.comment-card {
+  background: #fff;
+  border-radius: 16rpx;
+  padding: 24rpx;
+  margin: 20rpx 30rpx 0;
+}
+
+.comment-content {
+  font-size: 28rpx;
+  color: #333;
+  line-height: 1.6;
+}
+
+.comment-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 16rpx;
+  border-top: 1rpx solid #f5f5f5;
+  padding-top: 16rpx;
+}
+
+.comment-cat {
+  font-size: 24rpx;
+  color: #576b95;
+}
+
+.comment-time {
+  font-size: 22rpx;
+  color: #999;
+}

@@ -31,7 +31,8 @@ Page({
     const ads = await getGlobalSettings('ads') || {};
     // 在页面onLoad回调事件中创建激励视频广告实例
     var that = this;
-    if (wx.createRewardedVideoAd) {
+    // 未配置广告位ID时不创建广告实例（否则会报错）
+    if (ads.reward_video && wx.createRewardedVideoAd) {
       this.jsData.videoAd = wx.createRewardedVideoAd({
         adUnitId: ads.reward_video
       })
@@ -74,16 +75,28 @@ Page({
   },
 
   async loadReward() {
-    var { result: rewardRes } = await app.mpServerless.db.collection('reward').find({}, { sort: { mdate: -1 } })
+    try {
+      var { result: rewardRes } = await app.mpServerless.db.collection('reward').find({}, { sort: { mdate: -1 } })
+    } catch (err) {
+      console.error('[loadReward] - 加载投喂记录失败:', err);
+      this.setData({ reward: [], hasReward: false });
+      return;
+    }
 
-    console.log(rewardRes);
+    if (!rewardRes || !rewardRes.length) {
+      this.setData({ reward: [], hasReward: false });
+      return;
+    }
+
     for (var r of rewardRes) {
       const tmp = r.recordDate ? new Date(r.recordDate) : new Date(r.mdate);
       r.mdate = tmp.getFullYear() + '年' + (tmp.getMonth() + 1) + '月';
-      r.records = r.records.replace(/^\#+|\#+$/g, '').split('#');
+      // records 字段缺失时跳过，避免整个页面崩溃
+      r.records = (r.records || '').replace(/^\#+|\#+$/g, '').split('#').filter(x => x);
     }
     this.setData({
-      reward: rewardRes
+      reward: rewardRes,
+      hasReward: true,
     });
   },
 

@@ -1,49 +1,10 @@
 {
   "pages": [
     "pages/genealogy/genealogy",
-    "pages/genealogy/addPhoto/addPhoto",
-    "pages/genealogy/detailCat/detailCat",
     "pages/info/info",
-    "pages/info/reward/reward",
-    "pages/info/feedback/feedback",
-    "pages/info/feedback/myFeedback/myFeedback",
-    "pages/info/devTeam/devTeam",
-    "pages/manage/imProcess/imProcess",
-    "pages/manage/checkPhotos/checkPhotos",
-    "pages/manage/filters/filters",
-    "pages/debug/debug",
-    "pages/manage/managers/managers",
-    "pages/genealogy/feedbackDetail/feedbackDetail",
-    "pages/manage/checkFeedbacks/checkFeedbacks",
-    "pages/manage/replyFeedback/replyFeedback",
-    "pages/manage/rewards/rewards",
-    "pages/genealogy/commentBoard/commentBoard",
-    "pages/debug/deployTip/deployTip",
     "pages/news/news",
-    "pages/news/detailNews/detailNews",
-    "pages/news/modifyNews/modifyNews",
-    "pages/news/createNews/createNews",
-    "pages/news/sciDetail/sciDetail",
-    "pages/tools/updateUserRole/updateUserRole",
     "pages/leaderboard/leaderboard",
-    "pages/manage/pageSettings/pageSettings",
-    "pages/tools/inviteUser/inviteUser",
-    "pages/info/userInfo/userInfo",
-    "pages/info/agreement/agreement",
-    "pages/debug/genKeys/genKeys",
-    "pages/manage/badgeDef/badgeDef",
-    "pages/manage/badgeDef/addBadgeDef/addBadgeDef",
-    "pages/genealogy/detailCat/badgeDetail/badgeDetail",
-    "pages/manage/checkComment/checkComment",
-    "pages/manage/badgeCode/badgeCode",
-    "pages/manage/badgeCode/addBadgeCode/addBadgeCode",
-    "pages/genealogy/detailCat/ratingDetail/ratingDetail",
     "pages/followFeed/followFeed",
-    "pages/info/myFollowCats/myFollowCats",
-    "pages/manage/catManage/catManage",
-    "pages/info/dashboard/dashboard",
-    "pages/genealogy/detailCat/relationGraph/relationGraph",
-    "pages/genealogy/applyMapAccess/applyMapAccess",
     "pages/map/index/index"
   ],
   "subPackages": [
@@ -53,6 +14,160 @@
         "pages/recognize/recognize",
         "pages/info/badge/badge",
         "pages/info/badge/badgeHistory/badgeHistory"
+      ]
+    },
+    {
+      "root": "pages/manage",
+      "pages": [
+        "imProcess/imProcess",
+        "checkPhotos/checkPhotos",
+        "filters/filters",
+        "managers/managers",
+        "checkFeedbacks/checkFeedbacks",
+        "replyFeedback/replyFeedback",
+        "rewards/rewards",
+        "pageSettings/pageSettings",
+        "badgeDef/badgeDef",
+        "badgeDef/addBadgeDef/addBadgeDef",
+        "checkComment/checkComment",
+        "badgeCode/badgeCode",
+        "badgeCode/addBadgeCode/addBadgeCode",
+        "catManage/catManage",
+        "checkAdoption/checkAdoption",
+        "medicalManage/medicalManage"
+      ]
+    },
+    {
+      "root": "pages/debug",
+      "pages": [
+        "debug",
+        "deployTip/deployTip",
+        "genKeys/genKeys"
+      ]
+    },
+    {
+      "root": "pages/tools",
+      "pages": [
+        "updateUserRole/updateUserRole",
+        "inviteUser/inviteUser"
+      ]
+    },
+    {
+      "root": "pages/adoption",
+      "pages": [
+        "applyAdoption/applyAdoption"
+      ]
+    },
+    {
+      "root": "pages/genealogy/detailCat",
+      "pages": [
+        "detailCat",
+        "badgeDetail/badgeDetail",
+        "ratingDetail/ratingDetail",
+        "relationGraph/relationGraph"
+      ]
+    },
+    {
+      "root": "pages/genealogy/addPhoto",
+      "pages": [
+        "addPhoto"
+      ]
+    },
+    {
+      "root": "pages/genealogy/commentBoard",
+      "pages": [
+        "commentBoard"
+      ]
+    },
+    {
+      "root": "pages/genealogy/feedbackDetail",
+      "pages": [
+        "feedbackDetail"
+      ]
+    },
+    {
+      "root": "pages/genealogy/applyMapAccess",
+      "pages": [
+        "applyMapAccess"
+      ]
+    },
+    {
+      "root": "pages/info/reward",
+      "pages": [
+        "reward"
+      ]
+    },
+    {
+      "root": "pages/info/feedback",
+      "pages": [
+        "feedback",
+        "myFeedback/myFeedback"
+      ]
+    },
+    {
+      "root": "pages/info/devTeam",
+      "pages": [
+        "devTeam"
+      ]
+    },
+    {
+      "root": "pages/info/userInfo",
+      "pages": [
+        "userInfo"
+      ]
+    },
+    {
+      "root": "pages/info/agreement",
+      "pages": [
+        "agreement"
+      ]
+    },
+    {
+      "root": "pages/info/myFollowCats",
+      "pages": [
+        "myFollowCats"
+      ]
+    },
+    {
+      "root": "pages/info/dashboard",
+      "pages": [
+        "dashboard"
+      ]
+    },
+    {
+      "root": "pages/info/myAdoption",
+      "pages": [
+        "myAdoption"
+      ]
+    },
+    {
+      "root": "pages/info/myFootprint",
+      "pages": [
+        "myFootprint"
+      ]
+    },
+    {
+      "root": "pages/news/detailNews",
+      "pages": [
+        "detailNews"
+      ]
+    },
+    {
+      "root": "pages/news/modifyNews",
+      "pages": [
+        "modifyNews"
+      ]
+    },
+    {
+      "root": "pages/news/createNews",
+      "pages": [
+        "createNews"
+      ]
+    },
+    {
+      "root": "pages/news/sciDetail",
+      "pages": [
+        "sciDetail"
       ]
     }
   ],

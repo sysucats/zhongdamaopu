@@ -135,6 +135,36 @@ Page({
 
   // ==================== 地图选点（内嵌 map 组件） ====================
 
+  // 自动定位：获取当前位置后打开地图选点，供用户微调确认
+  autoLocate() {
+    var that = this;
+    wx.showLoading({ title: '定位中...' });
+    wx.getFuzzyLocation({
+      type: 'wgs84',
+      success(res) {
+        wx.hideLoading();
+        that.setData({
+          location: {
+            latitude: res.latitude,
+            longitude: res.longitude,
+          },
+        });
+        // 在自动定位的基础上打开地图，让用户微调后确认
+        that.openMapPicker();
+        wx.showToast({ title: '已定位，可微调后确认', icon: 'none' });
+      },
+      fail(err) {
+        wx.hideLoading();
+        console.log('[autoLocate] - 定位失败:', err);
+        wx.showModal({
+          title: '定位失败',
+          content: (err && err.errMsg) ? err.errMsg : '未知原因，请改用「地图选点」',
+          showCancel: false,
+        });
+      }
+    });
+  },
+
   openMapPicker() {
     var lat, lng, scale;
     // 已选过位置，地图中心定位到已选坐标

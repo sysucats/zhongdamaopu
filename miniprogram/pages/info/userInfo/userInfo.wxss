@@ -187,6 +187,12 @@ page {
   font-size: 60rpx;
   margin: 0 30rpx 0  40rpx;
 }
+.menu-icon-img {
+  width: 46rpx;
+  height: 46rpx;
+  padding: 18rpx 0;
+  margin: 0 37rpx 0 47rpx;
+}
 .label-small {
   font-size: 28rpx;
   flex: 1;

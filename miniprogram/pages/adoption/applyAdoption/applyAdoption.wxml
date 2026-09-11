@@ -1,0 +1,34 @@
+<!-- 领养申请表单 -->
+<view class="page">
+  <view class="cat-card" wx:if="{{cat.name}}">
+    <image class="cat-avatar" src="{{avatarUrl}}" mode="aspectFill" />
+    <view class="cat-info">
+      <view class="cat-name">{{cat.name}}</view>
+      <view class="cat-desc">{{cat.campus}} {{cat.area}}</view>
+    </view>
+  </view>
+
+  <view class="form-block">
+    <view class="form-item">
+      <view class="label">姓名/称呼 <text class="required">*</text></view>
+      <input class="input" placeholder="怎么称呼你" value="{{form.applicant_name}}" data-field="applicant_name" bindinput="onInput" />
+    </view>
+    <view class="form-item">
+      <view class="label">联系方式 <text class="required">*</text></view>
+      <input class="input" placeholder="微信号或手机号，供管理员联系你" value="{{form.contact}}" data-field="contact" bindinput="onInput" />
+    </view>
+    <view class="form-item">
+      <view class="label">申请理由 <text class="required">*</text></view>
+      <textarea class="textarea" placeholder="介绍一下你的养猫条件（住所、封窗、养猫经验等），以及为什么想领养它" value="{{form.reason}}" data-field="reason" bindinput="onInput" maxlength="500"></textarea>
+      <view class="char-count">{{form.reason.length}}/500</view>
+    </view>
+  </view>
+
+  <view class="tip">
+    提交后管理员会审核你的申请，审核结果可在「我的-我的领养」中查看。通过审核后请保持联系方式畅通。
+  </view>
+
+  <button class="submit-btn {{submitting ? 'disabled' : ''}}" bindtap="submit" disabled="{{submitting}}">
+    {{submitting ? '提交中...' : '提交申请'}}
+  </button>
+</view>
