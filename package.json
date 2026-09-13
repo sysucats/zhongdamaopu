@@ -10,7 +10,7 @@
     "@aws-sdk/s3-request-presigner": "^3.231.0",
     "@kubernetes/client-node": "^1.4.0",
     "@lafjs/cloud": "1.0.0-beta.7",
-    "axios": "^1.17.0",
+    "axios": "^1.18.1",
     "chatgpt": "^5.2.5",
     "crypto-js": "4.1.1",
     "database-proxy": "^0.8.2",
@@ -27,7 +27,7 @@
     "mongodb-uri": "^0.9.7",
     "multer": "^1.4.5-lts.1",
     "node-modules-utils": "^0.8.2",
-    "nodemailer": "^8.0.9",
+    "nodemailer": "^9.1.1",
     "tencentcloud-sdk-nodejs": "4.0.571",
     "validator": "^13.7.0",
     "ws": "^8.11.0"

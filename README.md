@@ -22,20 +22,20 @@
 ## 体验一下
 打开微信，扫码或搜索“笃行猫谱”（原名中大猫谱，23年底更名）。
 
-<img src="./readme/qrcode1.png" height = "150" alt="笃行猫谱菊花码" />
+<img src="./readme/maopu_duxing.png" height = "150" alt="笃行猫谱菊花码" />
 
 ### 朋友们的小程序
 
 |小程序|高校|二维码|小程序|高校|二维码|
 |:----:|:----:|:----:|:----:|:----:|:----:|
-|CQGCZY小猫之家|重庆工程职业技术学院|<img src="./readme/wx965de1cc7764cc8c.jpg" height = "100" />|莲峰猫谱|电子科技大学中山学院|<img src="./readme/wxe214252bcfc57eb1.png" height = "100" />|
-|昆院猫谱|昆明学院KMU|<img src="./readme/wx49ce23a5956ba016.jpg" height = "100" />|猫猫家谱|暨南大学|<img src="./readme/wxd78f5d698fc51b30.jpg" height = "100" />|
-|火大猫谱|火箭军工程大学|<img src="./readme/wx5d52c6c8f098ed5e.png" height = "100" />|CW猫咪图鉴|重庆外语外事学院|<img src="./readme/wxf5a6690aef6de08a.jpg" height = "100" />|
-|龙井是公猫|广东药科大学|<img src="./readme/wxa4ff57cbf8569fbd.png" height = "100" />|技大喵喵屋|深圳技术大学|<img src="./readme/wxc0e3f6edf308a23e.jpg" height = "100" />|
-|招财喵谱|上海财经大学|<img src="./readme/wxbcf1fbad0db85bb2.jpg" height = "100" />|崴喵猫谱|山东大学（威海）|<img src="./readme/wx13022ccaecca54cc.png" height = "100" />|
-|可每猫咪|河海大学|<img src="./readme/wxeb1cddee1c6c4a87.jpg" height = "100" />|喵汪图鉴|湖南大学|<img src="./readme/wxc91fb069737b7b84.jpeg" height = "100" />|
-|青猫图鉴|青岛大学|<img src="./readme/wx885e9b250c98afc0.png" height = "100" />|小理猫谱|广州理工学院|<img src="./readme/wx0118c66270fec861.jpg" height = "100" />|
-|一喵九鼎图鉴|河南科技大学|<img src="./readme/wx133d7943db9b04f5.jpg" height = "100" />|财猫之家|浙江财经大学|<img src="./readme/qrcodeCMZJ.png" height = "100" />|
+|CQGCZY小猫之家|重庆工程职业技术学院|<img src="./readme/maopu_cqgc.jpg" height = "100" />|莲峰猫谱|电子科技大学中山学院|<img src="./readme/maopu_lianfeng.png" height = "100" />|
+|昆院猫谱|昆明学院KMU|<img src="./readme/maopu_kunyuan.jpg" height = "100" />|猫猫家谱|暨南大学|<img src="./readme/maopu_jiapu.jpg" height = "100" />|
+|火大猫谱|火箭军工程大学|<img src="./readme/maopu_huoda.png" height = "100" />|CW猫咪图鉴|重庆外语外事学院|<img src="./readme/maopu_cw.jpg" height = "100" />|
+|龙井是公猫|广东药科大学|<img src="./readme/maopu_longjing.png" height = "100" />|技大喵喵屋|深圳技术大学|<img src="./readme/maopu_jida.jpg" height = "100" />|
+|招财喵谱|上海财经大学|<img src="./readme/maopu_zhaocai.jpg" height = "100" />|崴喵猫谱|山东大学（威海）|<img src="./readme/maopu_weimao.png" height = "100" />|
+|可每猫咪|河海大学|<img src="./readme/maopu_kemei.jpg" height = "100" />|喵汪图鉴|湖南大学|<img src="./readme/maopu_miaowang.jpeg" height = "100" />|
+|青猫图鉴|青岛大学|<img src="./readme/maopu_qingmao.png" height = "100" />|小理猫谱|广州理工学院|<img src="./readme/maopu_xiaoli.jpg" height = "100" />|
+|一喵九鼎图鉴|河南科技大学|<img src="./readme/maopu_jiuding.jpg" height = "100" />|财猫之家|浙江财经大学|<img src="./readme/maopu_caimao.png" height = "100" />|
 
 
 如果，你所在校园（/社团/小区...）的猫猫:smile_cat:也盼望拥有一份属于自己的猫猫档案，请你跟随下一章节的指引，为它们部署、发布一份独特的猫谱小程序。
