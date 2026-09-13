@@ -178,5 +178,6 @@
   },
   "appid": "wx5bd705b2bc91c73b",
   "projectname": "zhongdamaopu",
-  "libVersion": "2.24.7"
+  "libVersion": "2.24.7",
+  "isGameTourist": false
 }

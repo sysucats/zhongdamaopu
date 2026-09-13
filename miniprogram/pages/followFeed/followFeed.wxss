@@ -1462,6 +1462,7 @@ image{height:auto}
 
 .story-bar {
   padding-bottom: 10rpx;
+  min-height: 250rpx;
 }
 
 .story-container {
