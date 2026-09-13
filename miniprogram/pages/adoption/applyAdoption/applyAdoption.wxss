@@ -1,0 +1,107 @@
+.page {
+  padding: 30rpx;
+  min-height: 100vh;
+  background: #f7f7f7;
+  box-sizing: border-box;
+}
+
+.cat-card {
+  display: flex;
+  align-items: center;
+  background: #fff;
+  border-radius: 16rpx;
+  padding: 24rpx;
+  margin-bottom: 24rpx;
+}
+
+.cat-avatar {
+  width: 120rpx;
+  height: 120rpx;
+  border-radius: 50%;
+  background: #eee;
+}
+
+.cat-info {
+  margin-left: 24rpx;
+}
+
+.cat-name {
+  font-size: 36rpx;
+  font-weight: bold;
+  color: #333;
+}
+
+.cat-desc {
+  font-size: 26rpx;
+  color: #999;
+  margin-top: 8rpx;
+}
+
+.form-block {
+  background: #fff;
+  border-radius: 16rpx;
+  padding: 10rpx 24rpx;
+}
+
+.form-item {
+  padding: 24rpx 0;
+  border-bottom: 1rpx solid #f0f0f0;
+}
+
+.form-item:last-child {
+  border-bottom: none;
+}
+
+.label {
+  font-size: 28rpx;
+  color: #333;
+  margin-bottom: 16rpx;
+  font-weight: 500;
+}
+
+.required {
+  color: #e64340;
+}
+
+.input {
+  background: #f7f7f7;
+  border-radius: 12rpx;
+  padding: 20rpx 24rpx;
+  font-size: 28rpx;
+}
+
+.textarea {
+  background: #f7f7f7;
+  border-radius: 12rpx;
+  padding: 20rpx 24rpx;
+  font-size: 28rpx;
+  width: 100%;
+  height: 220rpx;
+  box-sizing: border-box;
+}
+
+.char-count {
+  text-align: right;
+  font-size: 22rpx;
+  color: #ccc;
+  margin-top: 8rpx;
+}
+
+.tip {
+  font-size: 24rpx;
+  color: #999;
+  line-height: 1.6;
+  margin: 24rpx 8rpx;
+}
+
+.submit-btn {
+  background: #07c160;
+  color: #fff;
+  border-radius: 44rpx;
+  font-size: 32rpx;
+  margin-top: 20rpx;
+}
+
+.submit-btn.disabled {
+  background: #a0e6bd;
+}

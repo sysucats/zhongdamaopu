@@ -994,3 +994,37 @@ swiper-item image {
   word-break: break-all;
   margin-bottom: 8rpx;
 }
+
+/* 领养横幅 */
+.adopt-banner {
+  display: flex;
+  align-items: center;
+  background: linear-gradient(90deg, #fff7e6, #ffe7ba);
+  border: 1rpx solid #ffd591;
+  border-radius: 16rpx;
+  padding: 20rpx 24rpx;
+  margin: 20rpx 30rpx 0;
+}
+
+.adopt-banner-icon {
+  font-size: 36rpx;
+  margin-right: 16rpx;
+}
+
+.adopt-banner-text {
+  flex: 1;
+  font-size: 28rpx;
+  color: #d46b08;
+  font-weight: 500;
+}
+
+.adopt-banner-arrow {
+  font-size: 32rpx;
+  color: #d46b08;
+}
+
+.adopt-banner-icon {
+  font-size: 36rpx;
+  margin-right: 16rpx;
+  color: #d46b08;
+}

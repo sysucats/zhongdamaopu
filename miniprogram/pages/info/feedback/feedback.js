@@ -26,14 +26,13 @@ Page({
     const src = await signCosUrl(feedback_wj_img);
     wx.previewImage({
       urls: [src],
-      success: (res) => {
-        console.log(res);
-      },
       fail: (res) => {
-        console.log(res);
-      },
-      complete: (res) => {
-        console.log(res);
+        console.log('[toNewCat] previewImage fail:', res);
+        wx.showModal({
+          title: '新猫问卷配置中',
+          content: '新猫问卷还没配置好，可先通过本页的「信息反馈」把猫猫信息发给我们，管理员会帮忙上户口~',
+          showCancel: false,
+        });
       },
     });
   },

@@ -33,6 +33,10 @@ Page({
     const { result: badgeDef } = await app.mpServerless.db.collection('badge_def').findOne({
       _id: id,
     });
+    if (!badgeDef) {
+      // id 无效（如以 ?id=undefined 打开）时直接返回，避免读取 img 崩溃
+      return;
+    }
     if (badgeDef.img) {
       badgeDef.img = await signCosUrl(badgeDef.img);
     }

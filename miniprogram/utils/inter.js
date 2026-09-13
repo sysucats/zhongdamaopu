@@ -1,5 +1,6 @@
 import { getUser, setUserRole } from "./user";
 import { getCacheItem, setCacheItem, cacheTime } from "./cache";
+import { trackLike } from "./achievement";
 import api from "./cloudApi";
 const app = getApp();
 
@@ -114,6 +115,9 @@ async function likeAdd(item_id, item_type) {
   await likeCheck([item_id], {
     nocache: true
   });
+
+  // 成就：点赞
+  trackLike();
 
   // 特邀用户
   likeToInvite();

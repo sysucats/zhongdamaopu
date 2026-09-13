@@ -31,7 +31,7 @@ Page({
     ],
     tempPics: [],
     loadnomore: false,
-    threads: ["徽章收集", "照片点赞", "拍照月榜"],
+    threads: ["徽章收集", "照片点赞", "拍照月榜", "成就榜"],
     threadsActive: 1,
     filters: [{
       name: "周精选",
@@ -320,6 +320,9 @@ Page({
     }
     if (index == 2) {
       this.selectComponent('#photo-rank').reloadData();
+    }
+    if (index == 3) {
+      this.selectComponent('#achievement-rank').reloadData();
     }
   },
 

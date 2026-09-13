@@ -1,6 +1,7 @@
 import { checkAuth } from "../../../utils/user";
 import { getAvatar, getCatItem } from "../../../utils/cat";
 import config from "../../../config";
+import api from "../../../utils/cloudApi";
 const app = getApp();
 Page({
   /**
@@ -13,7 +14,6 @@ Page({
     showSearchResults: false, // 是否显示搜索结果
     searchKeyword: '', // 搜索关键词
     searchResults: [], // 搜索结果列表
-    showVaccineOptions: false, // 控制疫苗选项的显示/隐藏
     catInfoTab: null, // 信息编辑组件实例
     isNewMode: false, // 新增模式标志
     hasShownInfoModal: false, // 是否已显示过添加猫咪的提示框
@@ -51,7 +51,6 @@ Page({
     const tab = e.currentTarget.dataset.tab;
     this.setData({
       activeTab: tab,
-      showVaccineOptions: false,
       catInfoTab: this.selectComponent('#catInfoTab')
     });
 
@@ -253,47 +252,6 @@ Page({
     }
   },
 
-  // 疫苗类型管理按钮
-  handleVaccineTypeManager() {
-    const vaccineTab = this.selectComponent('#vaccineTab');
-    vaccineTab.showVaccineTypeManager();
-    this.setData({
-      showVaccineOptions: false
-    });
-  },
-
-  // 添加疫苗按钮
-  handleAddVaccine() {
-    const vaccineTab = this.selectComponent('#vaccineTab');
-    vaccineTab.addVaccine();
-    this.setData({
-      showVaccineOptions: false
-    });
-  },
-  // 查看已接种疫苗的猫
-  handleViewVaccinatedCats() {
-    const vaccineTab = this.selectComponent('#vaccineTab');
-    vaccineTab.showVaccinatedCats();
-    this.setData({
-      showVaccineOptions: false
-    });
-  },
-
-  // 在疫苗组件中选择猫猫
-  onVaccineTabSelectCat(e) {
-    const { catId } = e.detail;
-    if (catId) {
-      this.getCatById(catId);
-    }
-  },
-
-  // 切换疫苗选项的显示/隐藏
-  toggleVaccineOptions() {
-    this.setData({
-      showVaccineOptions: !this.data.showVaccineOptions
-    });
-  },
-
   // 新建猫咪
   handleCreateNewCat() {
     // 先设置新建模式状态
@@ -358,10 +316,10 @@ Page({
   // 按钮
   handleActionButtonClick() {
     const { activeTab } = this.data;
-    if (activeTab === 'vaccine') {
-      this.toggleVaccineOptions();
-    } else if (activeTab === 'relation') {
+    if (activeTab === 'relation') {
       this.handleAddRecord();
+    } else if (activeTab === 'haunt') {
+      this.addHaunt();
     } else if (activeTab === 'info') {
       if (this.data.selectedCat || this.data.isNewMode) {
         this.handleSaveCat();
@@ -370,4 +328,76 @@ Page({
       }
     }
   },
-}) 
+
+  // 添加常出没地点：先选位置，再填名称
+  addHaunt() {
+    const cat = this.data.selectedCat;
+    if (!cat) {
+      wx.showToast({ title: '请先搜索选择猫猫', icon: 'none' });
+      return;
+    }
+    wx.chooseLocation({
+      success: (res) => {
+        wx.showModal({
+          title: '地点名称',
+          placeholderText: '如：三饭门口、图书馆西侧',
+          editable: true,
+          content: res.name || '',
+          success: (mres) => {
+            if (!mres.confirm) return;
+            const name = (mres.content || res.name || res.address || '常出没').trim() || '常出没';
+            const haunts = (cat.haunts || []).concat([{
+              name: name,
+              latitude: Number(res.latitude.toFixed(6)),
+              longitude: Number(res.longitude.toFixed(6)),
+            }]);
+            this.saveHaunts(haunts);
+          }
+        });
+      },
+      fail: (err) => {
+        console.log('选择位置取消或失败', err);
+      }
+    });
+  },
+
+  // 删除常出没地点
+  removeHaunt(e) {
+    const idx = e.currentTarget.dataset.index;
+    const cat = this.data.selectedCat;
+    if (!cat || !cat.haunts) return;
+    const haunts = cat.haunts.slice();
+    const removed = haunts.splice(idx, 1)[0];
+    wx.showModal({
+      title: '提示',
+      content: `确定删除地点「${removed.name}」？`,
+      success: (res) => {
+        if (res.confirm) {
+          this.saveHaunts(haunts);
+        }
+      }
+    });
+  },
+
+  // 保存常出没地点到 cat 记录
+  async saveHaunts(haunts) {
+    const cat = this.data.selectedCat;
+    if (!cat) return;
+    wx.showLoading({ title: '保存中...' });
+    try {
+      await api.curdOp({
+        operation: 'update',
+        collection: 'cat',
+        item_id: cat._id,
+        data: { haunts: haunts }
+      });
+      this.setData({ 'selectedCat.haunts': haunts });
+      wx.hideLoading();
+      wx.showToast({ title: '已保存', icon: 'success' });
+    } catch (err) {
+      console.error('保存常出没地点失败', err);
+      wx.hideLoading();
+      wx.showToast({ title: '保存失败，请重试', icon: 'none' });
+    }
+  },
+})

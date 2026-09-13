@@ -1,0 +1,163 @@
+/* pages/info/myAchievement/myAchievement.wxss — 金色主题 */
+.page {
+  min-height: 100vh;
+  background: #faf6ec;
+  padding-bottom: 60rpx;
+}
+
+.header {
+  background: linear-gradient(135deg, #7a5b12 0%, #b8901f 45%, #d9ac2b 100%);
+  padding: 60rpx 40rpx 50rpx;
+  color: #fff8e1;
+}
+
+.header-title {
+  font-size: 44rpx;
+  font-weight: bold;
+  text-shadow: 0 2rpx 8rpx rgba(90, 66, 8, 0.4);
+}
+
+.header-progress {
+  font-size: 26rpx;
+  opacity: 0.95;
+  margin-top: 12rpx;
+  color: #f9e7b2;
+}
+
+.progress-bar {
+  margin-top: 24rpx;
+  height: 14rpx;
+  border-radius: 7rpx;
+  background: rgba(255, 255, 255, 0.25);
+  overflow: hidden;
+}
+
+.progress-inner {
+  height: 100%;
+  border-radius: 7rpx;
+  background: linear-gradient(90deg, #ffe58a, #ffd101);
+  transition: width 0.5s;
+}
+
+.achv-list {
+  padding: 30rpx;
+}
+
+.achv-card {
+  background: #fffdf6;
+  border-radius: 20rpx;
+  padding: 28rpx;
+  margin-bottom: 20rpx;
+  box-shadow: 0 4rpx 16rpx rgba(140, 106, 20, 0.10);
+  border: 2rpx solid #f0e2b8;
+}
+
+/* 达到金牌的卡片高亮 */
+.achv-card.tier-3 {
+  border-color: #e6a823;
+  box-shadow: 0 4rpx 20rpx rgba(230, 168, 35, 0.28);
+}
+
+.achv-head {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20rpx;
+}
+
+.achv-icon {
+  width: 72rpx;
+  height: 72rpx;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #f7e9c3, #f0d68a);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 40rpx;
+  flex-shrink: 0;
+}
+
+.achv-name {
+  font-size: 34rpx;
+  font-weight: bold;
+  color: #6b4f0e;
+  margin-left: 20rpx;
+  flex: 1;
+}
+
+.achv-cur {
+  font-size: 22rpx;
+  color: #a0740a;
+  background: #f9ecc8;
+  border-radius: 20rpx;
+  padding: 6rpx 18rpx;
+}
+
+.tier-row {
+  display: flex;
+  justify-content: space-around;
+}
+
+.tier-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 33%;
+}
+
+.medal {
+  width: 96rpx;
+  height: 96rpx;
+  border-radius: 50%;
+  background: #e8e4da;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: inset 0 -6rpx 10rpx rgba(0, 0, 0, 0.12), 0 4rpx 8rpx rgba(0, 0, 0, 0.08);
+}
+
+.tier-cell.unlocked .medal {
+  box-shadow: inset 0 -6rpx 10rpx rgba(0, 0, 0, 0.18), 0 4rpx 12rpx rgba(230, 168, 35, 0.35);
+}
+
+.medal-text {
+  font-size: 38rpx;
+  font-weight: bold;
+  color: #fff;
+  text-shadow: 0 2rpx 4rpx rgba(0, 0, 0, 0.25);
+}
+
+.tier-cell:not(.unlocked) .medal-text {
+  color: #b9b4a6;
+  text-shadow: none;
+}
+
+.tier-threshold {
+  font-size: 24rpx;
+  color: #8a6d1f;
+  margin-top: 12rpx;
+  font-weight: bold;
+}
+
+.tier-time {
+  font-size: 20rpx;
+  color: #b5983f;
+  margin-top: 4rpx;
+}
+
+.tier-time.locked-text {
+  color: #c9c4b6;
+}
+
+.achv-desc {
+  font-size: 24rpx;
+  color: #a08b54;
+  margin-top: 20rpx;
+  text-align: center;
+}
+
+.footer-tip {
+  text-align: center;
+  font-size: 24rpx;
+  color: #bfa760;
+  margin-top: 30rpx;
+}

@@ -350,3 +350,54 @@
   color: var(--color-black-light);
   font-size: 36rpx;
 } 
+/* 常出没地点管理 */
+.haunt-panel {
+  padding: 30rpx;
+}
+
+.haunt-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 8rpx;
+}
+
+.haunt-tip {
+  font-size: 24rpx;
+  color: #999;
+  margin-bottom: 24rpx;
+}
+
+.haunt-empty {
+  font-size: 28rpx;
+  color: #999;
+  text-align: center;
+  padding: 60rpx 0;
+}
+
+.haunt-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #f7f9f7;
+  border-radius: 16rpx;
+  padding: 24rpx;
+  margin-bottom: 16rpx;
+}
+
+.haunt-name {
+  font-size: 30rpx;
+  color: #333;
+}
+
+.haunt-coord {
+  font-size: 22rpx;
+  color: #999;
+  margin-top: 6rpx;
+}
+
+.haunt-del {
+  font-size: 26rpx;
+  color: #e64545;
+  padding: 10rpx 20rpx;
+}

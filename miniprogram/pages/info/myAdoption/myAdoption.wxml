@@ -1,0 +1,34 @@
+<!-- 我的领养申请列表 -->
+<view class="page">
+  <view class="empty" wx:if="{{!loading && list.length === 0}}">
+    <view class="empty-text">还没有领养申请</view>
+    <view class="empty-tip">在「寻找领养中」的猫猫主页可以申请领养</view>
+  </view>
+
+  <view class="adoption-card" wx:for="{{list}}" wx:key="_id">
+    <view class="card-header" bindtap="toCatDetail" data-cat_id="{{item.cat_id}}">
+      <view class="cat-name">{{item.cat_name}}</view>
+      <view class="status {{statusClass[item.status]}}">{{statusDesc[item.status]}}</view>
+    </view>
+
+    <view class="apply-time">申请时间：{{item.apply_time_formatted}}</view>
+
+    <view class="review-note" wx:if="{{item.review_note}}">审核备注：{{item.review_note}}</view>
+
+    <!-- 状态跟踪时间线 -->
+    <view class="timeline" wx:if="{{item.timeline.length}}">
+      <view class="timeline-item" wx:for="{{item.timeline}}" wx:for-item="step" wx:key="time">
+        <view class="dot {{index === item.timeline.length - 1 ? 'dot-active' : ''}}"></view>
+        <view class="step-content">
+          <view class="step-status">{{step.status_desc}}</view>
+          <view class="step-note" wx:if="{{step.note}}">{{step.note}}</view>
+          <view class="step-time">{{step.time_formatted}}</view>
+        </view>
+      </view>
+    </view>
+
+    <view class="actions">
+      <button class="btn-cancel" size="mini" wx:if="{{item.status === 'pending' || item.status === 'reviewing'}}" bindtap="cancelApply" data-id="{{item._id}}" data-index="{{index}}">撤销申请</button>
+    </view>
+  </view>
+</view>
