@@ -142,10 +142,12 @@ Page({
   async loadComments() {
     this.setData({ loading: true });
     try {
-      const { result: comments } = await app.mpServerless.db.collection('comment').find(
+      let { result: comments } = await app.mpServerless.db.collection('comment').find(
         { user_openid: this.jsData.myOpenid, deleted: { $ne: true } },
         { sort: { create_date: -1 }, limit: 100 }
       );
+      // EMAS 客户端查询不认 $exists，客户端排除照片评论
+      comments = (comments || []).filter(c => !c.photo_id);
 
       const catIds = [...new Set((comments || []).map(c => c.cat_id).filter(Boolean))];
       const catMap = {};

@@ -16,6 +16,7 @@ import config from "../../../config";
 import api from "../../../utils/cloudApi";
 import { uploadFile } from "../../../utils/common"
 import { isDemoMode, getDemoCat } from "../../../utils/demo";
+import { trackAddPhoto } from "../../../utils/achievement";
 import { loadFilter } from "../../../utils/page";
 
 const app = getApp();
@@ -421,6 +422,9 @@ Page({
         content: `成功上传 ${photos.length} 张照片`,
         showCancel: false
       });
+
+      // 成就：上传照片
+      trackAddPhoto();
     } catch (error) {
       console.error('批量上传失败:', error);
       wx.showToast({

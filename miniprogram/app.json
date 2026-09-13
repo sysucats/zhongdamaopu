@@ -80,6 +80,12 @@
       ]
     },
     {
+      "root": "pages/genealogy/photoComment",
+      "pages": [
+        "photoComment"
+      ]
+    },
+    {
       "root": "pages/genealogy/feedbackDetail",
       "pages": [
         "feedbackDetail"
@@ -144,6 +150,12 @@
       "root": "pages/info/myFootprint",
       "pages": [
         "myFootprint"
+      ]
+    },
+    {
+      "root": "pages/info/myAchievement",
+      "pages": [
+        "myAchievement"
       ]
     },
     {

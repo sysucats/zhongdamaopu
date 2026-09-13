@@ -1,0 +1,67 @@
+<!--pages/genealogy/photoComment/photoComment.wxml-->
+<scroll-view id="comment-list" scroll-y="true" bindscrolltolower='loadMoreComment' enable-back-to-top="true" enable-flex="1">
+
+  <!-- 照片卡片 -->
+  <view class="photo-card" wx:if="{{photo._id}}">
+    <image class="photo-img" src="{{photo.pic}}" mode="aspectFill" lazy-load="true" bindtap="previewPhoto"></image>
+    <view class="photo-meta">
+      <view class="uploader">
+        <image wx:if="{{photo.userInfo}}" class="uploader-avatar" src="{{photo.userInfo.avatarUrl}}" mode="aspectFill" lazy-load="true"></image>
+        <image wx:else class="uploader-avatar" src="/pages/public/images/app_logo.png" mode="aspectFill" lazy-load="true"></image>
+        <text class="uploader-name">{{photo.userInfo ? photo.userInfo.nickName : '-'}}</text>
+        <text class="photo-datetime">{{photo.datetime}}</text>
+      </view>
+      <view class="to-cat" bindtap="toCat" wx:if="{{cat.name}}">
+        <text>{{cat.name}}主页</text>
+        <text class="iconfont icon-right"></text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 评论区 -->
+  <view class="comment-title">评论 {{comment_count || ''}}</view>
+
+  <view class="comment-item" wx:for="{{comments}}" wx:key="_id">
+    <image wx:if="{{item.userInfo}}" class="avatar" src="{{item.userInfo.avatarUrl}}" mode="aspectFill" lazy-load="true"></image>
+    <image wx:else class="avatar" src="/pages/public/images/app_logo.png" mode="aspectFill" lazy-load="true"></image>
+    <view class="comment-main">
+      <view class="nickname">{{item.userInfo.nickName || '-'}}</view>
+      <view class="content">
+        <text wx:if="{{item.needVerify}}">（内容审核中...）</text>
+        <text wx:else>{{item.content}}</text>
+      </view>
+      <view class="meta-line">
+        <text class="datetime">{{item.datetime}}</text>
+        <text wx:if="{{is_manager || item.user_openid === user.openid}}" class="delete" catchtap="deleteComment" data-item="{{item}}" data-index="{{index}}">删除</text>
+      </view>
+    </view>
+    <view class="like-btn {{item.liked ? 'liked' : ''}}" catchtap="likeComment" data-index="{{index}}" data-item-id="{{item._id}}">
+      <text class="iconfont {{item.liked ? 'icon-like' : 'icon-like-o'}}"></text>
+      <text class="like-num">{{item.like_count || ''}}</text>
+    </view>
+  </view>
+
+  <!-- 空状态 -->
+  <view class="empty" wx:if="{{loadNoMore && comments.length === 0}}">
+    <text>还没有评论，来抢沙发~</text>
+  </view>
+  <view class="loadnomore" wx:if="{{loadNoMore && comments.length > 0}}">
+    <text>没有更多评论了</text>
+  </view>
+
+  <!-- 输入框占位 -->
+  <view class="input-block-ph"></view>
+</scroll-view>
+
+<view id="input-block" style="margin-bottom: {{keyboard_height}}px;" class="{{keyboard_height>0 ? 'active': ''}}" wx:if="{{canComment}}">
+  <button wx:if="{{!isAuth}}" class='long primary' bindtap='getUInfo'>{{text_cfg.comment_board.auth_tip}}</button>
+  <block wx:else>
+    <textarea id="comment-input" value="{{comment_input}}" auto-height="{{true}}" show-confirm-bar="{{false}}" maxlength="300" placeholder="友善评论，温暖猫猫~" adjust-position="{{false}}" bindfocus="commentFocus" bindblur="commentBlur" bindinput="commentInput"></textarea>
+    <view class="bottom-line">
+      <view class="send-btn" bindtap="sendComment">发 送</view>
+    </view>
+  </block>
+  <!-- 解决iOS UI兼容性 -->
+  <view wx:if="{{keyboard_height == 0}}" id="input-block-bottom"></view>
+</view>
+<view wx:else class="comment-input-closed"><text>评论功能已被关闭... QAQ</text></view>

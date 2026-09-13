@@ -1,0 +1,33 @@
+<!--pages/info/myAchievement/myAchievement.wxml-->
+<view class="page">
+  <view class="header">
+    <view class="header-title">🏆 我的成就</view>
+    <view class="header-progress">已解锁 {{unlockedCount}} / {{totalCount}} · 金牌 {{goldCount}} 枚</view>
+    <view class="progress-bar">
+      <view class="progress-inner" style="width: {{totalCount ? (unlockedCount / totalCount * 100) : 0}}%;"></view>
+    </view>
+  </view>
+
+  <view class="achv-list">
+    <view class="achv-card tier-{{item.currentTier}}" wx:for="{{list}}" wx:key="id">
+      <view class="achv-head">
+        <view class="achv-icon">{{item.icon}}</view>
+        <view class="achv-name">{{item.name}}</view>
+        <view class="achv-cur" wx:if="{{item.currentTier > 0}}">{{item.tiers[item.currentTier - 1].tierName}}</view>
+      </view>
+      <view class="tier-row">
+        <view class="tier-cell {{t.unlocked ? 'unlocked' : ''}}" wx:for="{{item.tiers}}" wx:for-item="t" wx:key="key">
+          <view class="medal" style="{{t.unlocked ? 'background:' + t.tierColor + ';' : ''}}">
+            <text class="medal-text">{{t.tierName[0]}}</text>
+          </view>
+          <view class="tier-threshold">{{t.threshold}}{{item.unit}}</view>
+          <view class="tier-time" wx:if="{{t.unlocked}}">{{t.unlock_time_text}}</view>
+          <view class="tier-time locked-text" wx:else>未解锁</view>
+        </view>
+      </view>
+      <view class="achv-desc">{{item.tiers[2].desc}}</view>
+    </view>
+  </view>
+
+  <view class="footer-tip">多和猫猫互动，就能解锁更高级别的成就哦~</view>
+</view>

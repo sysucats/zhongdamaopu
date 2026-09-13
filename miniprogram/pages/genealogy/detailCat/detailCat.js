@@ -29,6 +29,7 @@ import { showMpcode } from "../../../utils/mpcode";
 import { signCosUrl } from "../../../utils/common";
 import api from "../../../utils/cloudApi";
 import { isDemoMode, getDemoCat } from "../../../utils/demo";
+import { trackViewCat, trackFollow } from "../../../utils/achievement";
 
 const app = getApp();
 
@@ -150,6 +151,9 @@ Page({
     // 记录访问时间，消除"有新相片"
     // TODO：用cache
     setVisitedDate(this.jsData.cat_id);
+
+    // 成就：浏览猫猫
+    trackViewCat(this.jsData.cat_id);
   },
 
   /**
@@ -939,6 +943,11 @@ Page({
       icon: res ? "success" : "error"
     });
     this.jsData.updatingFollowCats = false;
+
+    // 成就：关注猫猫
+    if (res && !followedCat) {
+      trackFollow((this.data.user.followCats || []).length);
+    }
   },
 
   // 获取最新疫苗记录（疫苗已并入医疗记录，从 medical 集合按 type=vaccine 读取）

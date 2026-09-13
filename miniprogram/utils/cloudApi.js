@@ -258,6 +258,24 @@ async function medicalOp(options) {
   })).result
 }
 
+// 成就数量排行榜
+async function getAchievementRank(options) {
+  const app = getApp();
+  return (await app.mpServerless.function.invoke('unionOp', {
+    ...options,
+    unionAction: "getAchievementRank",
+  })).result
+}
+
+// 成就数量排行榜
+async function getAchievementRank(options) {
+  const app = getApp();
+  return (await app.mpServerless.function.invoke('unionOp', {
+    ...options,
+    unionAction: "getAchievementRank",
+  })).result
+}
+
 // 更新猫的关系
 async function catRelationOp(options) {
   const app = getApp();
@@ -352,6 +370,7 @@ module.exports = {
   vaccineOp,
   adoptionOp,
   medicalOp,
+  getAchievementRank,
   catRelationOp,
   manageRelationRules,
   initVaccineTypes,

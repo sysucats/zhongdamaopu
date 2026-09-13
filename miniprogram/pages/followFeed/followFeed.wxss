@@ -1616,3 +1616,47 @@ image{height:auto}
     transform: rotate(90deg);
   }
 }
+
+/* 互动栏（点赞 / 留言） */
+.interact-bar {
+  display: flex;
+  align-items: center;
+  padding: 16rpx 20rpx 8rpx;
+}
+
+.interact-btn {
+  display: flex;
+  align-items: center;
+  color: #999;
+  font-size: 28rpx;
+  margin-right: 48rpx;
+}
+
+.interact-btn .iconfont {
+  font-size: 38rpx;
+  margin-right: 8rpx;
+}
+
+.interact-btn.liked {
+  color: #e64545;
+}
+
+.interact-btn.small .iconfont {
+  font-size: 32rpx;
+}
+
+.interact-num {
+  font-size: 26rpx;
+}
+
+.comment-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 8rpx;
+}
+
+.comment-footer .datetime {
+  width: auto;
+  text-align: left;
+}

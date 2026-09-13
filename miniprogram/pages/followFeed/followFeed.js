@@ -18,6 +18,8 @@ import {
 
 import api from "../../utils/cloudApi";
 import { signCosUrl } from "../../utils/common.js";
+import { likeCheck, likeAdd } from "../../utils/inter";
+import { trackFollow } from "../../utils/achievement";
 
 const app = getApp();
 
@@ -42,6 +44,7 @@ Page({
       comment: 0,
     },
     updatingFollowCats: false,
+    likingLock: false,
   },
   data: {
     feed: [],
@@ -247,6 +250,7 @@ Page({
     const latestCommentsQuery = await app.mpServerless.db.collection('comment').find({
       cat_id: { $in: followCats },
       deleted: { $ne: true },
+      photo_id: { $exists: false },
       create_date: { $gt: maxCreateDate },
     }, {
       sort: { create_date: -1 },
@@ -259,7 +263,8 @@ Page({
     ]);
 
     const latestPhotos = latestPhotosResult.result;
-    const latestComments = latestCommentsResult.result;
+    // 双保险：照片评论不作为便利贴动态展示（云端 $exists 过滤之外的客户端兜底）
+    const latestComments = (latestCommentsResult.result || []).filter(c => !c.photo_id);
 
     // 并行获取所有猫咪的头像
     const avatars = await getAvatar(followCatsList.map(cat => cat._id));
@@ -368,6 +373,14 @@ Page({
     // 等待用户信息填充完成
     await fillUserPromise;
 
+    // 批量查询点赞状态
+    try {
+      const likedArr = await likeCheck(res.map(x => x._id));
+      res.forEach((p, i) => { p.liked = likedArr[i]; });
+    } catch (e) {
+      console.log('查询点赞状态失败', e);
+    }
+
     return res;
   },
 
@@ -451,8 +464,9 @@ Page({
         loadedCount.photo += photoRes.length;
       }
       if (commentRes.length > 0) {
-        waitingList.comment.push(...commentRes);
-        loadedCount.comment += commentRes.length;
+        loadedCount.comment += commentRes.length;  // 分页计数按原始拉取数对齐
+        // 照片评论不进动态流（客户端过滤，EMAS 不认 $exists）
+        waitingList.comment.push(...commentRes.filter(c => !c.photo_id));
       }
 
       console.log(waitingList, loadnomore);
@@ -498,6 +512,7 @@ Page({
       // 如果照片队列已空，添加评论
       if (waitingList.photo.length <= keepCount) {
         const comment = waitingList.comment.shift();
+        if (comment.photo_id) { continue; }  // 兜底：照片评论不进动态流
         comment.dtype = 'comment';
 
         // 获取最新的feed项
@@ -583,6 +598,7 @@ Page({
         }
       } else {
         const comment = waitingList.comment.shift();
+        if (comment.photo_id) { continue; }  // 兜底：照片评论不进动态流
         comment.dtype = 'comment';
 
         // 获取最新的feed项
@@ -628,6 +644,59 @@ Page({
 
     // 关掉弹窗
     this.closeMenu();
+  },
+
+  // 点赞动态（照片或便利贴）
+  async likeFeedItem(e) {
+    const { feedIndex, itemId, itemType } = e.currentTarget.dataset;
+    const feedItem = this.data.feed[feedIndex];
+    if (!feedItem || this.jsData.likingLock) {
+      return;
+    }
+    this.jsData.likingLock = true;
+    try {
+      const ok = await likeAdd(itemId, itemType);
+      if (!ok) {
+        wx.showToast({ title: '已经赞过啦', icon: 'none' });
+        return;
+      }
+      const items = feedItem.items;
+      const idx = items.findIndex(x => x._id === itemId);
+      if (idx >= 0) {
+        const item = items[idx];
+        this.setData({
+          [`feed[${feedIndex}].items[${idx}].liked`]: true,
+          [`feed[${feedIndex}].items[${idx}].like_count`]: (item.like_count || 0) + 1,
+        });
+      }
+    } catch (err) {
+      console.error('点赞失败', err);
+      wx.showToast({ title: '点赞失败，稍后再试', icon: 'none' });
+    } finally {
+      this.jsData.likingLock = false;
+    }
+  },
+
+  // 跳转到照片评论区
+  toPhotoComment(e) {
+    const { photo_id, cat_id } = e.currentTarget.dataset;
+    if (!photo_id) {
+      return;
+    }
+    wx.navigateTo({
+      url: '/pages/genealogy/photoComment/photoComment?photo_id=' + photo_id + '&cat_id=' + (cat_id || ''),
+    });
+  },
+
+  // 跳转到猫猫的便利贴墙
+  toCommentBoard(e) {
+    const catId = e.currentTarget.dataset.cat_id;
+    if (!catId) {
+      return;
+    }
+    wx.navigateTo({
+      url: '/pages/genealogy/commentBoard/commentBoard?cat_id=' + catId,
+    });
   },
 
   // 打开大图
@@ -803,6 +872,12 @@ Page({
       icon: res ? "success" : "error"
     });
 
+    // 成就：关注猫猫（unfollowed=true 表示本次是重新关注）
+    if (res && unfollowed) {
+      const followCount = updatedCatsList.filter(c => !c.unfollowed).length;
+      trackFollow(followCount);
+    }
+
     // 如果当前是该猫动态，取关后关闭
     if (this.data.currentCatId === catid && !unfollowed) {
       this.closeThisCatFeed();
@@ -880,13 +955,13 @@ Page({
         photoQuery = app.mpServerless.db.collection('photo').find({ cat_id: currentCatId, verified: true, create_date: { $gt: latestDate } }, { sort: { create_date: -1 } });
 
         // 查询指定猫的最新评论
-        commentQuery = app.mpServerless.db.collection('comment').find({ cat_id: currentCatId, deleted: { $ne: true }, needVerify: false, create_date: { $gt: latestDate } }, { sort: { create_date: -1 } });
+        commentQuery = app.mpServerless.db.collection('comment').find({ cat_id: currentCatId, deleted: { $ne: true }, photo_id: { $exists: false }, needVerify: false, create_date: { $gt: latestDate } }, { sort: { create_date: -1 } });
       } else {
         // 查询所有关注猫的最新照片
         photoQuery = app.mpServerless.db.collection('photo').find({ cat_id: { $in: followCats }, verified: true, create_date: { $gt: latestDate } }, { sort: { create_date: -1 } });
 
         // 查询所有关注猫的最新评论
-        commentQuery = app.mpServerless.db.collection('comment').find({ cat_id: { $in: followCats }, deleted: { $ne: true }, needVerify: false, create_date: { $gt: latestDate } }, { sort: { create_date: -1 } });
+        commentQuery = app.mpServerless.db.collection('comment').find({ cat_id: { $in: followCats }, deleted: { $ne: true }, photo_id: { $exists: false }, needVerify: false, create_date: { $gt: latestDate } }, { sort: { create_date: -1 } });
       }
 
       // 并行执行查询
@@ -894,7 +969,8 @@ Page({
 
       // 处理新照片
       let newPhotos = photoRes.result || [];
-      let newComments = commentRes.result || [];
+      // 双保险：照片评论不作为便利贴动态展示
+      let newComments = (commentRes.result || []).filter(c => !c.photo_id);
 
       console.log(`发现${newPhotos.length}张新照片，${newComments.length}条新评论`);
 
@@ -907,6 +983,12 @@ Page({
       // 处理数据
       if (newPhotos.length > 0) {
         await fillUserInfo(newPhotos, '_openid', "userInfo");
+        try {
+          const likedArr = await likeCheck(newPhotos.map(x => x._id));
+          newPhotos.forEach((p, i) => { p.liked = likedArr[i]; });
+        } catch (e) {
+          console.log('查询点赞状态失败', e);
+        }
         newPhotos.forEach(async p => {
           p.cat = this.data.followCatsList.find(cat => cat._id === p.cat_id);
           p.datetime = this.formatDateTime(new Date(p.create_date));
@@ -918,6 +1000,12 @@ Page({
 
       if (newComments.length > 0) {
         await fillUserInfo(newComments, 'user_openid', "userInfo");
+        try {
+          const likedArr = await likeCheck(newComments.map(x => x._id));
+          newComments.forEach((p, i) => { p.liked = likedArr[i]; });
+        } catch (e) {
+          console.log('查询点赞状态失败', e);
+        }
         newComments.forEach(p => {
           p.cat = this.data.followCatsList.find(cat => cat._id === p.cat_id);
           p.datetime = this.formatDateTime(new Date(p.create_date));

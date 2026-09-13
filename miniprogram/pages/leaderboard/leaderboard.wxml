@@ -74,6 +74,13 @@
     </scroll-view>
   </swiper-item><!-- 拍照月榜 end -->
 
+  <!-- 成就榜 -->
+  <swiper-item>
+    <scroll-view scroll-y="1" style="height: 100%;">
+      <achievementRank id="achievement-rank"></achievementRank>
+    </scroll-view>
+  </swiper-item><!-- 成就榜 end -->
+
 </swiper>
 
 <!-- 底tab占位 -->

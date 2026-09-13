@@ -1,6 +1,7 @@
 import { checkAuth } from "../../../utils/user";
 import { getAvatar, getCatItem } from "../../../utils/cat";
 import config from "../../../config";
+import api from "../../../utils/cloudApi";
 const app = getApp();
 Page({
   /**
@@ -317,6 +318,8 @@ Page({
     const { activeTab } = this.data;
     if (activeTab === 'relation') {
       this.handleAddRecord();
+    } else if (activeTab === 'haunt') {
+      this.addHaunt();
     } else if (activeTab === 'info') {
       if (this.data.selectedCat || this.data.isNewMode) {
         this.handleSaveCat();
@@ -325,4 +328,76 @@ Page({
       }
     }
   },
-}) 
+
+  // 添加常出没地点：先选位置，再填名称
+  addHaunt() {
+    const cat = this.data.selectedCat;
+    if (!cat) {
+      wx.showToast({ title: '请先搜索选择猫猫', icon: 'none' });
+      return;
+    }
+    wx.chooseLocation({
+      success: (res) => {
+        wx.showModal({
+          title: '地点名称',
+          placeholderText: '如：三饭门口、图书馆西侧',
+          editable: true,
+          content: res.name || '',
+          success: (mres) => {
+            if (!mres.confirm) return;
+            const name = (mres.content || res.name || res.address || '常出没').trim() || '常出没';
+            const haunts = (cat.haunts || []).concat([{
+              name: name,
+              latitude: Number(res.latitude.toFixed(6)),
+              longitude: Number(res.longitude.toFixed(6)),
+            }]);
+            this.saveHaunts(haunts);
+          }
+        });
+      },
+      fail: (err) => {
+        console.log('选择位置取消或失败', err);
+      }
+    });
+  },
+
+  // 删除常出没地点
+  removeHaunt(e) {
+    const idx = e.currentTarget.dataset.index;
+    const cat = this.data.selectedCat;
+    if (!cat || !cat.haunts) return;
+    const haunts = cat.haunts.slice();
+    const removed = haunts.splice(idx, 1)[0];
+    wx.showModal({
+      title: '提示',
+      content: `确定删除地点「${removed.name}」？`,
+      success: (res) => {
+        if (res.confirm) {
+          this.saveHaunts(haunts);
+        }
+      }
+    });
+  },
+
+  // 保存常出没地点到 cat 记录
+  async saveHaunts(haunts) {
+    const cat = this.data.selectedCat;
+    if (!cat) return;
+    wx.showLoading({ title: '保存中...' });
+    try {
+      await api.curdOp({
+        operation: 'update',
+        collection: 'cat',
+        item_id: cat._id,
+        data: { haunts: haunts }
+      });
+      this.setData({ 'selectedCat.haunts': haunts });
+      wx.hideLoading();
+      wx.showToast({ title: '已保存', icon: 'success' });
+    } catch (err) {
+      console.error('保存常出没地点失败', err);
+      wx.hideLoading();
+      wx.showToast({ title: '保存失败，请重试', icon: 'none' });
+    }
+  },
+})

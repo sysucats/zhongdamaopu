@@ -63,7 +63,7 @@ module.exports = async (ctx) => {
     { projection: {
       name: 1, avatar: 1, mapMarker: 1, campus: 1,
       area: 1, gender: 1, characteristics: 1, habit: 1,
-      tutorial: 1, adopt: 1, to_star: 1
+      tutorial: 1, adopt: 1, to_star: 1, haunts: 1
     }}
   );
   const catMap = {};
@@ -87,7 +87,47 @@ module.exports = async (ctx) => {
     tutorial:         catMap[loc._id]?.tutorial || '',
     adopt:            catMap[loc._id]?.adopt || '0',
     to_star:          catMap[loc._id]?.to_star || false,
+    haunts:           catMap[loc._id]?.haunts || [],
   }));
+
+  // 5. 补充「有常出没地点、但没有定位照片」的猫，让它们也能显示在地图上
+  try {
+    const { result: hauntCats } = await ctx.mpserverless.db.collection('cat').find(
+      { deleted: { $ne: 1 }, haunts: { $exists: true, $ne: [] } },
+      { projection: {
+        name: 1, avatar: 1, campus: 1, area: 1, gender: 1,
+        characteristics: 1, habit: 1, tutorial: 1, adopt: 1, to_star: 1, haunts: 1
+      }}
+    );
+    const existed = new Set(result.map(r => r.cat_id));
+    (hauntCats || []).forEach(c => {
+      if (existed.has(c._id)) return;
+      const valid = (c.haunts || []).filter(h => h.latitude != null && h.longitude != null);
+      if (valid.length === 0) return;
+      // 主锚点取第一个常出没地点
+      result.push({
+        cat_id:           c._id,
+        latitude:         valid[0].latitude,
+        longitude:        valid[0].longitude,
+        location_time:    '',
+        uid:              '',
+        trajectory_count: 0,
+        name:             c.name || '',
+        avatar:           c.avatar || '',
+        campus:           c.campus || '',
+        area:             c.area || '',
+        gender:           c.gender || '',
+        characteristics:  c.characteristics || '',
+        habit:            c.habit || '',
+        tutorial:         c.tutorial || '',
+        adopt:            c.adopt || '0',
+        to_star:          c.to_star || false,
+        haunts:           c.haunts || [],
+      });
+    });
+  } catch (e) {
+    console.log('查询常出没地点猫失败（忽略，不影响主流程）:', e);
+  }
 
   return { success: true, data: result };
 };

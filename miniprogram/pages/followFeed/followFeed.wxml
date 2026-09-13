@@ -65,6 +65,18 @@
         <view class="datetime">{{feedItem.items[0].datetime}}</view>
       </view>
 
+      <!-- 互动栏：点赞 + 留言 -->
+      <view class="interact-bar">
+        <view class="interact-btn {{feedItem.items[0].liked ? 'liked' : ''}}" catchtap="likeFeedItem" data-feed-index="{{outerIndex}}" data-item-id="{{feedItem.items[0]._id}}" data-item-type="photo">
+          <text class="iconfont {{feedItem.items[0].liked ? 'icon-like' : 'icon-like-o'}}"></text>
+          <text class="interact-num">{{feedItem.items[0].like_count || ''}}</text>
+        </view>
+        <view class="interact-btn" catchtap="toPhotoComment" data-photo_id="{{feedItem.items[0]._id}}" data-cat_id="{{feedItem.cat._id}}">
+          <text class="iconfont icon-smile-comment-o"></text>
+          <text class="interact-num">留言</text>
+        </view>
+      </view>
+
     </view>
 
     <!-- 留言组 -->
@@ -98,7 +110,13 @@
           {{item.content}}
         </view>
 
-        <view class="datetime">{{item.datetime}}</view>
+        <view class="comment-footer">
+          <view class="datetime">{{item.datetime}}</view>
+          <view class="interact-btn small {{item.liked ? 'liked' : ''}}" catchtap="likeFeedItem" data-feed-index="{{outerIndex}}" data-item-id="{{item._id}}" data-item-type="comment">
+            <text class="iconfont {{item.liked ? 'icon-like' : 'icon-like-o'}}"></text>
+            <text class="interact-num">{{item.like_count || ''}}</text>
+          </view>
+        </view>
 
       </view>
 
@@ -107,7 +125,15 @@
         <view class="wavy-line bottom"></view>
       </view>
     </view>
-    
+
+    <!-- 去留言按钮 -->
+    <view class="interact-bar">
+      <view class="interact-btn" catchtap="toCommentBoard" data-cat_id="{{feedItem.cat._id}}">
+        <text class="iconfont icon-smile-comment-o"></text>
+        <text class="interact-num">去{{feedItem.cat.name || '猫猫'}}的便利贴墙</text>
+      </view>
+    </view>
+
   </view><!-- 留言 -->
   </block>
 
