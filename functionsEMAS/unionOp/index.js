@@ -1,3 +1,4 @@
+const { getCallerOpenid } = require('./_helper.js')
 const curdOpHandler = require('./curdOp.js')
 const getAllSciHandler = require('./getAllSci.js')
 const catRelationOpHandler = require('./catRelationOp.js')
@@ -67,9 +68,36 @@ module.exports = async (ctx) => {
         return "v1.5"
     }
 
+    // ===== 安全加固：身份只能来自平台，客户端传入的 openid 一律忽略 =====
+    // 背景：原实现中所有 handler 都直接用 ctx.args.openid 作为调用者身份，
+    //       而 args 完全由请求方构造 —— 任何人只要改这个字段就能冒充任意用户/管理员。
+    //       现改为：身份只从平台侧取（见 _helper.js#getCallerOpenid）。
+    const claimedOpenid = ctx.args && ctx.args.openid
+
+    const callerOpenid = await getCallerOpenid(ctx)
+    if (claimedOpenid && callerOpenid && String(claimedOpenid) !== String(callerOpenid)) {
+        // 正常客户端不会出现这种情况；一旦出现即代表有人在冒充，留痕便于排查
+        console.log('[SECURITY] identity mismatch: claimed=' + claimedOpenid + ' real=' + callerOpenid +
+            ' action=' + String(ctx.args && ctx.args.unionAction))
+    }
+    if (!ctx.args || typeof ctx.args !== 'object') {
+        ctx.args = {}
+    }
+    ctx.args.openid = callerOpenid
+
     const action = ctx.args?.unionAction
     if (!action) {
         return { errMsg: 'no action specified', ok: false }
+    }
+
+    // 仅服务端内部使用、不允许客户端直接调用的动作：
+    //   getAccessToken → 会把小程序 access_token 直接返回给调用方
+    //   deleteFiles / deleteCosFiles → 删除 COS 文件
+    // 这三个只被其它云函数通过 require() 内部调用，客户端从不直接调用 → 在路由层封死。
+    const SERVER_ONLY_ACTIONS = { getAccessToken: true, deleteFiles: true, deleteCosFiles: true }
+    if (SERVER_ONLY_ACTIONS[action]) {
+        console.log('[SECURITY] blocked server-only action from client: ' + action)
+        return { errMsg: 'forbidden: server-only action', ok: false }
     }
 
     const handler = actionMap[action]
