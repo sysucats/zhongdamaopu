@@ -1,12 +1,14 @@
 module.exports = async (ctx) => {
   // 读取缓存
+  // 2026-09-19 安全整改：原先存在 setting 集合（客户端可读）。现改为 server_cache
+  // （权限：仅管理员可读写）。缓存 1 小时即刷新，无需迁移旧数据。
   const {
     triggerName
   } = ctx.args; // 如果是触发器，则有这个参数
 
   const {
     result: record
-  } = await ctx.mpserverless.db.collection('setting').findOne({
+  } = await ctx.mpserverless.db.collection('server_cache').findOne({
     _id: "tempCOSToken"
   });
 
@@ -71,7 +73,7 @@ module.exports = async (ctx) => {
       tempCOSToken,
       expiredAt: Math.floor(Date.now() / 1000) + 3600
     };
-    await ctx.mpserverless.db.collection('setting').findOneAndUpdate({
+    await ctx.mpserverless.db.collection('server_cache').findOneAndUpdate({
       _id: "tempCOSToken"
     }, {
       $set: data

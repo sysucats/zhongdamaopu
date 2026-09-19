@@ -6,7 +6,9 @@ module.exports = async (ctx) => {
   }
 
   // 读取数据库中的 token
-  const { result: record } = await ctx.mpserverless.db.collection('setting').findOne({
+  // 2026-09-19 安全整改：原先存在 setting 集合（该集合客户端可读，等于把 access_token 公开）。
+  // 现改为存入 server_cache 集合（权限：仅管理员可读写，客户端读不到）。缓存过期会自动重建，无需迁移数据。
+  const { result: record } = await ctx.mpserverless.db.collection('server_cache').findOne({
     _id: "accessToken"
   });
 
@@ -53,7 +55,7 @@ module.exports = async (ctx) => {
       lastUpdate: new Date()
     };
 
-    await ctx.mpserverless.db.collection('setting').findOneAndUpdate({
+    await ctx.mpserverless.db.collection('server_cache').findOneAndUpdate({
       _id: "accessToken"
     }, {
       $set: data
