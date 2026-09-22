@@ -1,4 +1,8 @@
 module.exports = async (ctx) => {
+  // 2026-09-19 安全加固：需登录（身份由 index.js 路由层用平台可信身份覆盖，匿名/未登录调用者拿不到）
+  if (!ctx.args || !ctx.args.openid) {
+    return { success: false, errMsg: 'not logged in' };
+  }
   // 1. 每只猫最新带定位的过审照片（未删除：deleted !== 1）
   const { result: latestList } = await ctx.mpserverless.db.collection('photo')
     .aggregate([

@@ -1,5 +1,10 @@
 module.exports = async (ctx) => {
   const openid = ctx.args?.openid
+  // 2026-09-19 加固：身份取不到（未登录/匿名会话）时不得继续——
+  // 否则 op:'get' 会新建一条 openid 为空的脏记录。
+  if (!openid) {
+    return { errMsg: 'not logged in', ok: false }
+  }
   const op = ctx.args?.op
   switch (op) {
     case 'get': {
@@ -56,14 +61,34 @@ module.exports = async (ctx) => {
       return result;
     }
     case 'updateRole': {
-      var user = ctx.args.user;
+      // 2026-09-19 加固：此分支原本无任何权限校验，任何人可自封 manager 99。
+      // 现在：调用者必须已是最高管理员（>=99）；且任何人不得修改自己的 manager 等级。
+      if (!openid) {
+        return { errMsg: 'not logged in', ok: false };
+      }
+      const {
+        result: me
+      } = await ctx.mpserverless.db.collection('user').findOne({
+        openid: openid
+      });
+      const myLevel = (me && me.manager) ? me.manager : 0;
+      if (myLevel < 99) {
+        return { errMsg: 'not a manager', ok: false };
+      }
+      var user = Object.assign({}, ctx.args.user || {});
+      const targetOpenid = user.openid || openid;
+      delete user.openid; // 不允许改身份键，否则会挪走别人的账号
+      if (String(targetOpenid) === String(openid) && user.manager !== undefined) {
+        return { errMsg: 'cannot change your own manager level', ok: false };
+      }
       const {
         result
       } = await ctx.mpserverless.db.collection('user').updateOne({
-        openid: openid
+        openid: targetOpenid
       }, {
         $set: user
       });
+      console.log('[userOp] updateRole by ' + openid + ' -> ' + targetOpenid + ' fields=' + JSON.stringify(Object.keys(user)));
       return result;
     }
     default: {
