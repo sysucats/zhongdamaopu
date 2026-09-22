@@ -10,6 +10,13 @@ Page({
     text_cfg: text_cfg,
     github_link: "https://github.com/sysucats/zhongdamaopu",
     update_log: [{
+      version: "v1.19.7",
+      content: [
+        "修复UI小BUG",
+        "安全性增强（感谢2289088768）",
+      ],
+      time: "2026/06/27"
+    }, {
       version: "v1.19.6",
       content: [
         "首页卡片点击功能更新",
