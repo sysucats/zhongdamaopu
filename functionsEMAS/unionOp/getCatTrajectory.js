@@ -1,4 +1,8 @@
 module.exports = async (ctx) => {
+  // 2026-09-19 加固：需登录（身份由路由层用平台可信身份覆盖，匿名/未登录拿不到）
+  if (!ctx.args || !ctx.args.openid) {
+    return { success: false, errMsg: 'not logged in' };
+  }
   const { cat_id } = ctx.args || {};
   if (!cat_id) {
     return { success: false, errMsg: 'missing cat_id' };

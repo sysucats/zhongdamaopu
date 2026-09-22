@@ -1,27 +1,23 @@
 module.exports = async (ctx) => {
-  // 读取缓存
   const {
     triggerName
   } = ctx.args; // 如果是触发器，则有这个参数
 
-  const {
-    result: record
-  } = await ctx.mpserverless.db.collection('setting').findOne({
-    _id: "tempCOSToken"
-  });
-
-  if (!triggerName && (record && Math.floor(Date.now() / 1000) < record.expiredAt)) {
-    // 未超时，直接返回
-    return record.tempCOSToken;
-  }
-
-  // 正常获取流程
+  // 注意：app_secret 只保留这一个文档，缓存写进同一文档的 cache 字段。缓存 1 小时即刷新，无需迁移旧数据。
   const {
     result: app_secret
   } = await ctx.mpserverless.db.collection('app_secret').findOne()
   if (!app_secret) {
     return null;
   }
+
+  const record = app_secret.cache?.tempCOSToken;
+  if (!triggerName && (record && Math.floor(Date.now() / 1000) < record.expiredAt)) {
+    // 未超时，直接返回
+    return record.tempCOSToken;
+  }
+
+  // 正常获取流程
   const {
     OSS_ENDPOINT,
     OSS_BUCKET,
@@ -71,12 +67,12 @@ module.exports = async (ctx) => {
       tempCOSToken,
       expiredAt: Math.floor(Date.now() / 1000) + 3600
     };
-    await ctx.mpserverless.db.collection('setting').findOneAndUpdate({
-      _id: "tempCOSToken"
+    await ctx.mpserverless.db.collection('app_secret').findOneAndUpdate({
+      _id: app_secret._id
     }, {
-      $set: data
-    }, {
-      upsert: true
+      $set: {
+        'cache.tempCOSToken': data
+      }
     })
 
     return tempCOSToken;
