@@ -248,12 +248,8 @@ Page({
     }
     
     try {
-      const rawSrc = await signCosUrl(photoInfo.photo_id);
-      // EMAS 外链可能含中文目录（如“新校区”），getImageInfo/downloadFile 要求 URL 先编码
-      let safeSrc = rawSrc;
-      try { safeSrc = encodeURI(decodeURI(rawSrc)); } catch (e) { safeSrc = encodeURI(rawSrc); }
       var photoObj = await wx.getImageInfo({
-        src: safeSrc,
+        src: await signCosUrl(photoInfo.photo_id),
       });
     } catch (error) {
       console.error(error);

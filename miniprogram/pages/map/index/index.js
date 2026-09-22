@@ -186,8 +186,7 @@ Page({
         return old.cat_id === cur.cat_id
           && old.latitude === cur.latitude
           && old.longitude === cur.longitude
-          && (old.trajectory_count || 0) === (cur.trajectory_count || 0)
-          && (old.haunts || []).length === (cur.haunts || []).length;
+          && (old.trajectory_count || 0) === (cur.trajectory_count || 0);
       });
 
       this.jsData.catList = catList;
@@ -371,37 +370,6 @@ Page({
     });
 
     this.jsData.markers = markers;
-
-    // 常出没地点 markers（不参与聚合，id 从 500000 起）
-    const hauntMarkers = [];
-    catList.forEach((cat) => {
-      const catId = cat.cat_id || cat._id;
-      (cat.haunts || []).forEach((h) => {
-        if (h.latitude == null || h.longitude == null) return;
-        hauntMarkers.push({
-          id: 500000 + hauntMarkers.length,
-          catId: catId,
-          latitude: h.latitude,
-          longitude: h.longitude,
-          width: 26,
-          height: 26,
-          iconPath: '/pages/public/images/map/haunt_pin.png',
-          callout: {
-            content: `${cat.name || '猫咪'} · ${h.name || '常出没'}`,
-            color: '#ffffff',
-            fontSize: 11,
-            borderRadius: 6,
-            bgColor: '#ffd101',
-            padding: 4,
-            display: 'ALWAYS',
-            textAlign: 'center'
-          },
-          _isHaunt: true,
-        });
-      });
-    });
-    this.jsData.hauntMarkers = hauntMarkers;
-
     this.setData({ markers });
 
     // 圆形头像仅在首次进入页面时绘制；之后 onShow 刷新数据复用缓存，不再重绘
@@ -489,27 +457,6 @@ Page({
           trajectoryPointLat: point.latitude,
           trajectoryPointLng: point.longitude,
           trajectoryPointUser: point.photographer || '',
-        }
-      });
-      return;
-    }
-
-    // 常出没地点 marker（id 从 500000 起）：展示对应猫信息卡
-    if (markerId >= 500000) {
-      const hauntMarker = (this.data.markers || []).find(m => m.id === markerId);
-      if (!hauntMarker || !hauntMarker.catId) return;
-      const hauntCat = (this.jsData.catList || []).find(c => (c.cat_id || c._id) === hauntMarker.catId);
-      if (!hauntCat) return;
-      const hauntCatId = hauntCat.cat_id || hauntCat._id;
-      const hauntAvatar = hauntCat.avatar || this.jsData.avatarMap[hauntCatId];
-      this.setData({
-        showDetail: true,
-        photoPanDistance: 0,
-        currentCat: {
-          ...hauntCat,
-          _id: hauntCatId,
-          avatarUrl: hauntAvatar ? (hauntAvatar.photo_compressed || hauntAvatar.photo_id) : undefined,
-          trajectory_count: hauntCat.trajectory_count || 0,
         }
       });
       return;
@@ -639,16 +586,13 @@ Page({
     const allMarkers = this.jsData.markers || [];
     if (allMarkers.length === 0) return;
 
-    const hauntMarkers = this.jsData.hauntMarkers || [];
-
     // 高缩放级别：还原所有猫 marker
     if (scale == null || scale >= this.data.clusterThreshold) {
-      const fullList = allMarkers.concat(hauntMarkers);
       // 当前显示的若已是完整列表（无聚合 marker），跳过，避免无谓刷新
       const hasCluster = (this.data.markers || []).some(m => m._isCluster);
-      const isFullList = !hasCluster && this.data.markers.length === fullList.length;
+      const isFullList = !hasCluster && this.data.markers.length === allMarkers.length;
       if (!isFullList) {
-        this.setData({ markers: fullList });
+        this.setData({ markers: allMarkers });
       }
       return;
     }
@@ -701,7 +645,7 @@ Page({
       };
     });
 
-    this.setData({ markers: clusteredMarkers.concat(hauntMarkers) });
+    this.setData({ markers: clusteredMarkers });
   },
 
   /**

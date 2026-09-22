@@ -1,6 +1,0 @@
-{
-  "usingComponents": {
-    "no-auth": "/components/noAuth/noAuth"
-  },
-  "navigationBarTitleText": "领养审核"
-}

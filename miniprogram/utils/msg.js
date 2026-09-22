@@ -26,11 +26,7 @@ function getMsgTplId(template) {
 
 // 订阅请求
 async function requestNotice(template) {
-  const cfg = msgConfig && msgConfig[template];
-  if (!cfg || !cfg.ID) {
-    console.log('[requestNotice] 订阅模板未配置，跳过:', template);
-    return false;
-  }
+  const cfg = msgConfig[template];
   console.log(template, cfg);
 
   try {
@@ -65,12 +61,12 @@ async function requestNotice(template) {
       return false;
     }
 
-  } catch (error) { // 订阅消息错误处理（模板未配置/未生效期间静默降级，不弹窗打扰）
+  } catch (error) { // 订阅消息错误处理
     console.log("request SubMsg error:", error)
-    wx.showToast({
-      title: '消息提醒暂不可用',
-      icon: 'none',
-      duration: 1200,
+    await wx.showModal({
+      title: '提示',
+      content: '订阅消息出错（错误代码：' + error.errCode + '）\n请尝试通过 “关于页”-“信息反馈”内的邮箱 或 “笃行志愿服务队”公众号留言联系我们，感谢反馈！',
+      showCancel: false,
     });
     return false;
   }

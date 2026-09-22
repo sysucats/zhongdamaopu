@@ -33,18 +33,6 @@
   </view>
 </view>
 
-<!-- 成就展示位 -->
-<view class="showcase" bindtap="openAchvPicker">
-  <view class="showcase-title">🏅 成就展示 <text class="showcase-edit">点击更换</text></view>
-  <view class="showcase-row" wx:if="{{showcase.length > 0}}">
-    <view class="showcase-item" wx:for="{{showcase}}" wx:key="key">
-      <view class="showcase-medal" style="background: {{item.tierColor}};">{{item.tierName[0]}}</view>
-      <view class="showcase-name">{{item.name}}</view>
-    </view>
-  </view>
-  <view class="showcase-empty" wx:else>还没有展示成就，点这里选择（需先解锁成就）</view>
-</view>
-
 <view class="menu-container">
   <view wx:for="{{menu}}" wx:key="type" wx:for-index="typeIndex">
     <!-- 如果不是第一个type，则添加分割线 -->
@@ -52,8 +40,7 @@
       <view class="menu-item" wx:for="{{item.items}}" wx:key="label" bindtap="clickbtn" data-to="{{item.action}}">
         <button wx:if="{{item.btnAble}}" open-type="{{item.btnType}}" style="width: 100%; height: 100%; position: absolute; top: 0; left: 0; opacity: 0;" data-to="{{item.action}}"></button>
         <view class="icon-and-text">
-          <image wx:if="{{item.img}}" class="menu-icon-img" src="{{item.img}}" mode="aspectFit"></image>
-          <view wx:else class="iconfont {{item.icon}}"></view>
+          <view class="iconfont {{item.icon}}"></view>
           <text class="label-small">{{item.label}}</text>
         </view>
         <view class="right-arrow"><image mode='aspectFill' src="/pages/public/images/filter/right.png"></image></view>
@@ -62,24 +49,3 @@
 </view>
 
 <modifyUserInfo bind:userInfoUpdated="onUserInfoUpdated" show="{{showEdit}}" bind:close="closeEdit"></modifyUserInfo>
-
-<!-- 成就展示位选择器 -->
-<view class="achv-picker-mask" wx:if="{{showAchvPicker}}" bindtap="closeAchvPicker">
-  <view class="achv-picker" catchtap="noop">
-    <view class="achv-picker-title">选择要展示的成就（最多3个）</view>
-    <scroll-view scroll-y="1" class="achv-picker-list">
-      <view class="achv-pick-item {{item.selected ? 'selected' : ''}}" wx:for="{{unlockedAchv}}" wx:key="key" bindtap="toggleAchvPick" data-key="{{item.key}}">
-        <view class="showcase-medal small" style="background: {{item.tierColor}};">{{item.tierName[0]}}</view>
-        <view class="achv-pick-info">
-          <view class="achv-pick-name">{{item.name}}</view>
-          <view class="achv-pick-desc">{{item.desc}}</view>
-        </view>
-        <view class="achv-pick-check">{{item.selected ? '✓' : ''}}</view>
-      </view>
-    </scroll-view>
-    <view class="achv-picker-btns">
-      <view class="achv-picker-btn cancel" bindtap="closeAchvPicker">取消</view>
-      <view class="achv-picker-btn confirm" bindtap="saveAchvPicker">保存</view>
-    </view>
-  </view>
-</view>

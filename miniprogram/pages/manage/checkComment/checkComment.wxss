@@ -21,9 +21,3 @@
 .buttons {
   justify-content: flex-end;
 }
-
-/* 照片评论标记 */
-.photo-tag {
-  color: var(--color-primary, #ffd101);
-  font-weight: bold;
-}

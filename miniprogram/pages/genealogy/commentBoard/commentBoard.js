@@ -18,7 +18,6 @@ import {
 import {
   requestNotice,
 } from "../../../utils/msg";
-import { trackComment } from "../../../utils/achievement";
 import api from "../../../utils/cloudApi";
 const app = getApp();
 Page({
@@ -43,7 +42,6 @@ Page({
   jsData: {
     cat_id: null,
     sendLock: false,
-    fetchedCount: 0,
   },
 
   /**
@@ -217,7 +215,7 @@ Page({
   },
 
   async doSendComment() {
-    const content = this.data.comment_input || '';
+    const content = this.data.comment_input;
 
     // 判断是否可以发
     const user = this.data.user;
@@ -240,14 +238,15 @@ Page({
       needVerify: true,
     };
 
-    // 文本安全检测
     const checkRes = await api.contentSafeCheck(content, user.userInfo.nickName);
-    if (checkRes) {
-      wx.showModal(checkRes);
-      return false;
+    if (!checkRes) {
+      // 没有检测出问题
+      await this.addComment(item, user);
+      return
     }
 
-    await this.addComment(item, user);
+    wx.showModal(checkRes);
+    return false;
   },
 
   doSendCommentEnd() {
@@ -285,9 +284,6 @@ Page({
       wx.showToast({
         title: '张贴成功~',
       });
-
-      // 成就：发便利贴
-      trackComment();
     } catch {
       wx.showModal({
         title: "张贴失败",
@@ -311,10 +307,7 @@ Page({
       deleted: { $ne: true },
       cat_id: this.jsData.cat_id
     };
-    // EMAS 客户端查询不认 $exists，照片评论在客户端过滤；
-    // 分页偏移用原始拉取数（fetchedCount）对齐，避免漏拉
-    var res = (await app.mpServerless.db.collection('comment').find(qf, { skip: this.jsData.fetchedCount, sort: { create_date: -1 }, limit: 10 })).result;
-    this.jsData.fetchedCount += res.length;
+    var res = (await app.mpServerless.db.collection('comment').find(qf, { skip: comments.length, sort: { create_date: -1 }, limit: 10 })).result;
     console.log(res);
     if (res.length === 0) {
       this.setData({
@@ -322,7 +315,6 @@ Page({
       });
       return;
     }
-    res = res.filter(c => !c.photo_id);
 
     // 填充userInfo
     await fillUserInfo(res, "user_openid", "userInfo");

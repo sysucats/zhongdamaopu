@@ -16,52 +16,10 @@ module.exports = async (ctx) => {
   }
   const photo = ctx.args.photo;
   const opType = ctx.args.type;
-  if (opType === undefined) {
-    return "empty type";
+  if (photo === undefined || opType === undefined) {
+    return "empty photo or type";
   }
-
-  // 写入审核记录（回溯用，所有管理员可见）
-  async function writeCheckLog(photoDoc, action, extra) {
-    try {
-      await ctx.mpserverless.db.collection('photo_check_log').insertOne({
-        photo_id: photoDoc._id,
-        cat_id: photoDoc.cat_id || '',
-        uploader_openid: photoDoc._openid || '',
-        photographer: photoDoc.photographer || '',
-        action: action, // pass | best | delete | transfer
-        thumb: photoDoc.photo_compressed || photoDoc.photo_id || '',
-        manager_openid: ctx.args.openid,
-        check_time: new Date(),
-        ...(extra || {}),
-      });
-    } catch (e) {
-      // 写日志失败不阻断审核主流程
-      console.error('[managePhoto] - writeCheckLog fail:', e);
-    }
-  }
-
-  // 审核记录查询（管理员，分页）
-  if (opType === "history") {
-    const skip = ctx.args.skip || 0;
-    const limit = Math.min(ctx.args.limit || 20, 100);
-    try {
-      const { result: total } = await ctx.mpserverless.db.collection('photo_check_log').count({});
-      const { result: list } = await ctx.mpserverless.db.collection('photo_check_log').find({}, {
-        sort: { check_time: -1 },
-        skip: skip,
-        limit: limit,
-      });
-      return { msg: '获取成功', result: true, data: { list: list || [], total: total || 0 } };
-    } catch (error) {
-      // photo_check_log 集合可能尚未创建（没有任何审核记录时）
-      return { msg: '获取成功', result: true, data: { list: [], total: 0 } };
-    }
-  }
-
-  if (photo === undefined) {
-    return "empty photo";
-  }
-
+  
   // 重新计算精选照片数量的函数
   async function recountBestPhotos(cat_id) {
     try {
@@ -107,15 +65,13 @@ module.exports = async (ctx) => {
       $set: {
         verified: true,
         best: best,
-        manager: ctx.args.openid,
-        check_time: new Date()
+        manager: ctx.args.openid
       }
     });
-    await writeCheckLog(photo, best ? 'best' : 'pass');
-
+    
     // 更新猫的最新照片时间
     await updateMphoto(photo.cat_id);
-
+    
     // 重新计算精选照片数量
     await recountBestPhotos(photo.cat_id);
   } else if (opType == "delete") {
@@ -144,8 +100,7 @@ module.exports = async (ctx) => {
     await ctx.mpserverless.db.collection('photo').deleteOne({
       _id: photo._id
     });
-    await writeCheckLog(photo, 'delete');
-
+    
     // 如果删除的是精选照片，重新计算精选照片数量
     if (wasBest) {
       await recountBestPhotos(photo.cat_id);
@@ -201,41 +156,6 @@ module.exports = async (ctx) => {
         photo_watermark: ''
       }
     });
-  } else if (opType == 'transfer') {
-    // 转移照片到另一只猫
-    const target_cat_id = ctx.args.target_cat_id;
-    if (!target_cat_id) {
-      return "empty target_cat_id";
-    }
-    if (photo.cat_id === target_cat_id) {
-      return "same cat";
-    }
-
-    // 校验目标猫存在
-    const { result: targetCat } = await ctx.mpserverless.db.collection('cat').findOne({
-      _id: target_cat_id
-    });
-    if (!targetCat || targetCat.deleted === 1) {
-      return "target cat not found";
-    }
-
-    const source_cat_id = photo.cat_id;
-    await ctx.mpserverless.db.collection('photo').updateOne({
-      _id: photo._id
-    }, {
-      $set: {
-        cat_id: target_cat_id,
-        manager: ctx.args.openid
-      }
-    });
-    await writeCheckLog(photo, 'transfer', { target_cat_id: target_cat_id, target_cat_name: targetCat.name || '' });
-
-    // 重新计算两只猫的精选照片数量
-    await recountBestPhotos(source_cat_id);
-    await recountBestPhotos(target_cat_id);
-
-    // 更新目标猫的最新照片时间
-    await updateMphoto(target_cat_id);
   } else if (opType == 'setProcess') {
     // 修改数据库中记录的压缩图、水印图的URL
     const compressed = ctx.args.compressed;
