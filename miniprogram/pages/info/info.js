@@ -21,18 +21,21 @@ Page({
     // 卡片，不需要设计绘制卡片图，只需用放图标即可
     cards: [
       {
-        icon: "/pages/public/images/info/btn/dashboard.svg",
-        label: "详细数据看板",
-        path: "/pages/info/dashboard/dashboard",
-        css: "long"
-      }, {
         icon: "/pages/public/images/info/btn/user.svg",
         label: "个人主页",
         path: "/pages/info/userInfo/userInfo",
       }, {
+        icon: "/pages/public/images/info/btn/dashboard.svg",
+        label: "数据看板",
+        path: "/pages/info/dashboard/dashboard"
+      }, {
         icon: "/pages/public/images/info/btn/badge.svg",
         label: "徽章口袋",
         path: "/pages/packageA/pages/info/badge/badge",
+      }, {
+        icon: "/pages/public/images/info/btn/paw_print.png",
+        label: "我的成就",
+        path: "/pages/info/myAchievement/myAchievement",
       }, {
         icon: "/pages/public/images/info/btn/team.svg",
         label: "开发团队",
@@ -88,6 +91,17 @@ Page({
             path: "/pages/manage/checkPhotos/checkPhotos",
             num: "numChkPhotos",
             icon: "icon-photo-o"
+          },
+          {
+            name: "领养审核",
+            path: "/pages/manage/checkAdoption/checkAdoption",
+            num: "numChkAdoptions",
+            icon: "icon-friends-o"
+          },
+          {
+            name: "喂食设置",
+            path: "/pages/manage/feedSettings/feedSettings",
+            icon: "icon-balance-o"
           },
           {
             name: "便利贴审核",
@@ -236,12 +250,21 @@ Page({
     const { result: numFeedbacks } = await app.mpServerless.db.collection('feedback').count({ dealed: false });
     const { result: numImProcess } = await app.mpServerless.db.collection('photo').count(imProcessQf);
     const { result: numMapAccessApps } = await app.mpServerless.db.collection('user').count({ 'mapAccess.status': 'pending' });
+    // 待审核领养申请（集合可能尚未创建，容错处理）
+    let numChkAdoptions = 0;
+    try {
+      const { result } = await app.mpServerless.db.collection('adoption').count({ status: 'pending' });
+      numChkAdoptions = result;
+    } catch (err) {
+      console.log('[onShow] - adoption集合尚未创建');
+    }
     this.setData({
       "nums.numChkPhotos": numChkPhotos,
       "nums.numChkComments": numChkComments,
       "nums.numFeedbacks": numFeedbacks,
       "nums.numImProcess": numImProcess,
       "nums.numMapAccessApps": numMapAccessApps,
+      "nums.numChkAdoptions": numChkAdoptions,
       "showCond.manager": true,
     });
   },

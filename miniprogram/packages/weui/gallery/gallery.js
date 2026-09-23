@@ -137,10 +137,6 @@ Component({
             type: Boolean,
             value: ''
         },
-        cat: {
-            type: Object,
-            value: null
-        },
     },
     data: {
         canReverse: false,  // 是否可以取消点赞
@@ -244,14 +240,6 @@ Component({
                 },
             });
         },
-
-        // 展示分享海报
-        async showPoster() {
-            let posterComponent = this.selectComponent('#posterComponent');
-            if (posterComponent) {
-            posterComponent.startDrawing();
-            }
-        }
     }
 });
 

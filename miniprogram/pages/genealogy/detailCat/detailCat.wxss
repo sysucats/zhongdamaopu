@@ -143,7 +143,7 @@ swiper-item image {
 .tags {
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
 }
 
 .tags .tag {
@@ -161,12 +161,6 @@ swiper-item image {
 .tags .to_star {
   background-color: var(--color-gray-max);
   color: white;
-}
-
-.tags .mpcode {
-  font-size: 40rpx;
-  margin-left: auto;
-  color: var(--color-primary);
 }
 
 .fb-button, .badge-all {
@@ -993,4 +987,38 @@ swiper-item image {
 .timeline-info {
   word-break: break-all;
   margin-bottom: 8rpx;
+}
+
+/* 领养横幅 */
+.adopt-banner {
+  display: flex;
+  align-items: center;
+  background: linear-gradient(90deg, #fff7e6, #ffe7ba);
+  border: 1rpx solid #ffd591;
+  border-radius: 16rpx;
+  padding: 20rpx 24rpx;
+  margin: 20rpx 30rpx 0;
+}
+
+.adopt-banner-icon {
+  font-size: 36rpx;
+  margin-right: 16rpx;
+}
+
+.adopt-banner-text {
+  flex: 1;
+  font-size: 28rpx;
+  color: #d46b08;
+  font-weight: 500;
+}
+
+.adopt-banner-arrow {
+  font-size: 32rpx;
+  color: #d46b08;
+}
+
+.adopt-banner-icon {
+  font-size: 36rpx;
+  margin-right: 16rpx;
+  color: #d46b08;
 }

@@ -248,13 +248,17 @@ Page({
     }
     
     try {
+      const rawSrc = await signCosUrl(photoInfo.photo_id);
+      // EMAS 外链可能含中文目录，getImageInfo/downloadFile 要求 URL 先编码
+      let safeSrc = rawSrc;
+      try { safeSrc = encodeURI(decodeURI(rawSrc)); } catch (e) { safeSrc = encodeURI(rawSrc); }
       var photoObj = await wx.getImageInfo({
-        src: await signCosUrl(photoInfo.photo_id),
+        src: safeSrc,
       });
     } catch (error) {
       console.error(error);
-      const err = new Error(`error: ${JSON.stringify(error)}, photoInfo: ${JSON.stringify(photoInfo)}`);
-      err.name = "下载图片失败";
+      const err = new Error(`error: ${JSON.stringify(error)}, srcTried: ${encodeURI(String(photoInfo.photo_id))}, photoInfo: ${JSON.stringify(photoInfo)}`);
+      err.name = "下载图片失败(v2)";
       throw err;
     }
     

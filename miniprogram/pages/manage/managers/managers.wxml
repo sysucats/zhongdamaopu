@@ -70,7 +70,7 @@
           <view class="operation-row operation-row-bottom">
             <view class="map-toggle">
               <text class="toggle-label">喵地图</text>
-              <switch checked="{{item.mapAccess && item.mapAccess.status === 'approved'}}" data-index="{{index}}" bindchange="toggleMapAccess" color="#ffd101" />
+              <switch checked="{{item.mapAccess && item.mapAccess.status === 'approved'}}" data-index="{{index}}" bindchange="toggleMapAccess" color="#20642c" />
             </view>
             <button form-type="submit" class="manager-update primary">更新</button>
             <view class="index">#{{index}}</view>

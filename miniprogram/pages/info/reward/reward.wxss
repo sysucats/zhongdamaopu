@@ -66,3 +66,7 @@ button.primary {
   margin: 15rpx 40rpx;
   color: var(--color-gray-max);
 }
+.empty-tip {
+  color: #999;
+  font-size: 26rpx;
+}

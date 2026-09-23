@@ -11,7 +11,7 @@
   right: 20rpx;
   z-index: 100;
   background: rgba(0, 0, 0, 0.55);
-  color: #ffd101;
+  color: #20642c;
   font-size: 22rpx;
   padding: 6rpx 16rpx;
   border-radius: 20rpx;

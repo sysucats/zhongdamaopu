@@ -1,6 +1,4 @@
 // 存放所有需要调用云函数的接口
-import config from "../config";
-
 function getDate(date) {
   date = date ? new Date(date) : new Date();
   return new Date()
@@ -51,21 +49,6 @@ async function sendMsgV2(options) {
   return (await app.mpServerless.function.invoke('unionOp', {
     ...options,
     unionAction: "sendMsgV2",
-  })).result;
-}
-
-async function getMpCode(options) {
-  const app = getApp();
-  const params = {
-    _id: options._id,
-    scene: options.scene,
-    page: options.page,
-    width: 500,
-    use_private_tencent_cos: config.use_private_tencent_cos
-  }
-  return (await app.mpServerless.function.invoke('unionOp', {
-    ...params,
-    unionAction: "getMpCode",
   })).result;
 }
 
@@ -236,6 +219,48 @@ async function vaccineOp(options) {
   })).result
 }
 
+// 领养流程相关操作
+async function adoptionOp(options) {
+  const app = getApp();
+  const openid = await getCurrentUserOpenid();
+  return (await app.mpServerless.function.invoke('unionOp', {
+    ...options,
+    openid: openid,
+    unionAction: "adoptionOp",
+  })).result
+}
+
+// 医疗记录相关操作
+async function medicalOp(options) {
+  const app = getApp();
+  const openid = await getCurrentUserOpenid();
+  return (await app.mpServerless.function.invoke('unionOp', {
+    ...options,
+    openid: openid,
+    unionAction: "medicalOp",
+  })).result
+}
+
+// 喂食打卡相关操作
+async function feedOp(options) {
+  const app = getApp();
+  const openid = await getCurrentUserOpenid();
+  return (await app.mpServerless.function.invoke('unionOp', {
+    ...options,
+    openid: openid,
+    unionAction: "feedOp",
+  })).result
+}
+
+// 成就数量排行榜
+async function getAchievementRank(options) {
+  const app = getApp();
+  return (await app.mpServerless.function.invoke('unionOp', {
+    ...options,
+    unionAction: "getAchievementRank",
+  })).result
+}
+
 // 更新猫的关系
 async function catRelationOp(options) {
   const app = getApp();
@@ -313,7 +338,6 @@ module.exports = {
   curdOp,
   userOp,
   sendMsgV2,
-  getMpCode,
   managePhoto,
   getAllSci,
   contentSafeCheck,
@@ -328,6 +352,10 @@ module.exports = {
   getCatStats,
   updateFollowCats,
   vaccineOp,
+  adoptionOp,
+  medicalOp,
+  feedOp,
+  getAchievementRank,
   catRelationOp,
   manageRelationRules,
   initVaccineTypes,

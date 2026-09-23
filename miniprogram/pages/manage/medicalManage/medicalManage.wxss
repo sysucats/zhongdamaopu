@@ -1,0 +1,194 @@
+.page {
+  padding: 30rpx;
+  min-height: 100vh;
+  background: #f7f7f7;
+  box-sizing: border-box;
+}
+
+.add-bar {
+  margin-bottom: 24rpx;
+  display: flex;
+  align-items: center;
+}
+
+.add-btn {
+  flex: 1;
+}
+
+.import-btn {
+  margin-left: 20rpx;
+  background: #fff;
+  color: #07c160;
+  border: 1rpx solid #07c160;
+  font-size: 26rpx;
+}
+
+.add-btn {
+  background: #07c160;
+  color: #fff;
+  font-size: 30rpx;
+  border-radius: 44rpx;
+}
+
+.empty {
+  text-align: center;
+  color: #999;
+  font-size: 28rpx;
+  padding: 100rpx 0;
+}
+
+.record-card {
+  background: #fff;
+  border-radius: 16rpx;
+  padding: 24rpx;
+  margin-bottom: 24rpx;
+}
+
+.record-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.type-tag {
+  font-size: 22rpx;
+  padding: 4rpx 20rpx;
+  border-radius: 24rpx;
+  color: #fff;
+  background: #999;
+}
+
+.type-vaccine { background: #1890ff; }
+.type-sterilize { background: #722ed1; }
+.type-clinic { background: #f5222d; }
+.type-deworm { background: #13c2c2; }
+.type-injury { background: #fa8c16; }
+.type-other { background: #999; }
+
+.record-date {
+  font-size: 24rpx;
+  color: #999;
+}
+
+.record-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333;
+  margin-top: 16rpx;
+}
+
+.record-info {
+  font-size: 26rpx;
+  color: #666;
+  margin-top: 10rpx;
+  line-height: 1.5;
+}
+
+.record-actions {
+  display: flex;
+  justify-content: flex-end;
+  /* gap兼容处理：用margin代替 */
+  margin-top: 20rpx;
+}
+
+.btn-delete {
+  color: #f5222d;
+  border: 1rpx solid #f5222d;
+  background: #fff;
+}
+
+/* 编辑面板（内嵌，不用 fixed 弹窗，避免部分模拟器无法输入） */
+.edit-panel {
+  background: #fff;
+  border-radius: 16rpx;
+  padding: 32rpx;
+  margin-bottom: 24rpx;
+}
+
+.modal-mask {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+
+.modal {
+  width: 640rpx;
+  max-height: 80vh;
+  overflow-y: auto;
+  background: #fff;
+  border-radius: 16rpx;
+  padding: 32rpx;
+}
+
+.modal-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 20rpx;
+}
+
+.form-item {
+  margin-bottom: 20rpx;
+}
+
+.label {
+  font-size: 26rpx;
+  color: #666;
+  margin-bottom: 12rpx;
+}
+
+.input {
+  background: #f7f7f7;
+  border-radius: 12rpx;
+  padding: 18rpx 24rpx;
+  font-size: 28rpx;
+}
+
+.textarea {
+  background: #f7f7f7;
+  border-radius: 12rpx;
+  padding: 18rpx 24rpx;
+  font-size: 28rpx;
+  width: 100%;
+  height: 160rpx;
+  box-sizing: border-box;
+}
+
+.picker {
+  background: #f7f7f7;
+  border-radius: 12rpx;
+  padding: 18rpx 24rpx;
+  font-size: 28rpx;
+  color: #333;
+}
+
+.modal-buttons {
+  display: flex;
+  /* gap兼容处理：用margin代替 */
+  margin-top: 28rpx;
+}
+
+.modal-btn {
+  flex: 1;
+  font-size: 28rpx;
+}
+
+.modal-btn.cancel {
+  background: #f5f5f5;
+  color: #666;
+}
+
+.modal-btn.confirm {
+  background: #07c160;
+  color: #fff;
+}
+
+.record-actions button, .modal-buttons button { margin-left: 20rpx; }
+.record-actions button:first-child, .modal-buttons button:first-child { margin-left: 0; }

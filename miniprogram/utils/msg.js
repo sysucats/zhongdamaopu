@@ -65,7 +65,7 @@ async function requestNotice(template) {
     console.log("request SubMsg error:", error)
     await wx.showModal({
       title: '提示',
-      content: '订阅消息出错（错误代码：' + error.errCode + '）\n请尝试通过 “关于页”-“信息反馈”内的邮箱 或 “笃行志愿服务队”公众号留言联系我们，感谢反馈！',
+      content: '订阅消息出错（错误代码：' + error.errCode + '）\n请尝试通过 “关于页”-“信息反馈”内的邮箱 或 “深中校猫墙”小红书号私信联系我们，感谢反馈！',
       showCancel: false,
     });
     return false;

@@ -1,0 +1,46 @@
+<!-- 我的足迹 -->
+<view class="page">
+  <view class="tabs">
+    <view class="tab {{activeTab === item.key ? 'active' : ''}}" wx:for="{{tabs}}" wx:key="key" data-key="{{item.key}}" bindtap="switchTab">{{item.name}}</view>
+  </view>
+
+  <!-- 我拍的照片 -->
+  <block wx:if="{{activeTab === 'photos'}}">
+    <view class="empty" wx:if="{{!loading && photos.length === 0}}">还没有上传过照片</view>
+    <view class="photo-grid">
+      <view class="photo-item" wx:for="{{photos}}" wx:key="_id">
+        <image class="photo-img" src="{{item.url}}" mode="aspectFill" bindtap="previewPhoto" data-url="{{item.url}}" />
+        <view class="photo-info">
+          <view class="photo-cat" bindtap="toCatDetail" data-cat_id="{{item.cat_id}}">{{item.cat.name || '未知猫咪'}} →</view>
+          <view class="photo-meta">{{item.create_date_formatted}} · {{item.status_desc}}</view>
+        </view>
+      </view>
+    </view>
+  </block>
+
+  <!-- 拍过的猫咪 -->
+  <block wx:if="{{activeTab === 'cats'}}">
+    <view class="empty" wx:if="{{!loading && cats.length === 0}}">还没有拍过猫咪</view>
+    <view class="cat-card" wx:for="{{cats}}" wx:key="_id" bindtap="toCatDetail" data-cat_id="{{item._id}}">
+      <image class="cat-avatar" src="{{item.avatar.photo_compressed || item.avatar.photo_id}}" mode="aspectFill" wx:if="{{item.avatar}}" />
+      <view class="cat-avatar placeholder" wx:else></view>
+      <view class="cat-info">
+        <view class="cat-name">{{item.name}}</view>
+        <view class="cat-desc">{{item.campus}} {{item.area}}</view>
+      </view>
+      <view class="cat-count">{{item.my_photo_count}}张</view>
+    </view>
+  </block>
+
+  <!-- 我的便利贴 -->
+  <block wx:if="{{activeTab === 'comments'}}">
+    <view class="empty" wx:if="{{!loading && comments.length === 0}}">还没有写过便利贴</view>
+    <view class="comment-card" wx:for="{{comments}}" wx:key="_id" bindtap="toCommentBoard" data-cat_id="{{item.cat_id}}">
+      <view class="comment-content">{{item.content}}</view>
+      <view class="comment-footer">
+        <view class="comment-cat">{{item.cat.name || '未知猫咪'}}的便利贴墙 →</view>
+        <view class="comment-time">{{item.datetime}} {{item.status_desc}}</view>
+      </view>
+    </view>
+  </block>
+</view>

@@ -53,6 +53,7 @@ module.exports = {
       </view>
       <view class='location-row' wx:if="{{!location}}">
         <text class='location-tip'>未选择位置</text>
+        <button class='location-btn auto' bindtap='autoLocate'>自动定位</button>
         <button class='location-btn' bindtap='openMapPicker'>地图选点</button>
       </view>
       <view class='location-row' wx:else>
@@ -60,6 +61,7 @@ module.exports = {
           <text class='location-name'>📍 已选择</text>
           <text class='location-coords'>{{location.latitude}}, {{location.longitude}}</text>
         </view>
+        <button class='location-btn auto' bindtap='autoLocate'>自动定位</button>
         <button class='location-btn' bindtap='openMapPicker'>重新选点</button>
       </view>
       <view wx:if="{{location}}" class='location-clear-row'>

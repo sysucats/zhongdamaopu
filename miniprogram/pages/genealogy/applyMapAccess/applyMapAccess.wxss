@@ -26,7 +26,7 @@ page {
 
 .status-card.pending {
   background: #fff8e1;
-  border: 2rpx solid #f5a623;
+  border: 2rpx solid #20642c;
 }
 
 .status-card.rejected {

@@ -1,0 +1,245 @@
+/* pages/genealogy/photoComment/photoComment.wxss */
+page {
+  background-color: var(--color-white-dark, #f6f6f6);
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+#comment-list {
+  height: 100vh;
+  box-sizing: border-box;
+}
+
+/* 照片卡片 */
+.photo-card {
+  margin: 24rpx;
+  border-radius: 20rpx;
+  background: #fff;
+  overflow: hidden;
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
+}
+
+.photo-card .photo-img {
+  width: 100%;
+  height: 520rpx;
+  display: block;
+  background: #eee;
+}
+
+.photo-meta {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20rpx 24rpx;
+}
+
+.uploader {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  min-width: 0;
+}
+
+.uploader-avatar {
+  width: 56rpx;
+  height: 56rpx;
+  border-radius: 50%;
+  margin-right: 16rpx;
+  flex-shrink: 0;
+}
+
+.uploader-name {
+  font-size: 28rpx;
+  color: var(--color-black-light, #333);
+  font-weight: 500;
+}
+
+.photo-datetime {
+  font-size: 24rpx;
+  color: var(--color-gray-dark, #999);
+  margin-left: 16rpx;
+}
+
+.to-cat {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  font-size: 26rpx;
+  color: var(--color-primary, #20642c);
+  flex-shrink: 0;
+}
+
+.to-cat .iconfont {
+  font-size: 24rpx;
+}
+
+/* 评论区标题 */
+.comment-title {
+  font-size: 30rpx;
+  font-weight: bold;
+  color: var(--color-black-light, #333);
+  padding: 8rpx 32rpx 16rpx;
+}
+
+/* 评论项 */
+.comment-item {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  padding: 24rpx 32rpx;
+  background: #fff;
+  border-bottom: 1rpx solid var(--color-gray-light, #f0f0f0);
+}
+
+.comment-item .avatar {
+  width: 64rpx;
+  height: 64rpx;
+  border-radius: 50%;
+  margin-right: 20rpx;
+  flex-shrink: 0;
+}
+
+.comment-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.comment-main .nickname {
+  font-size: 26rpx;
+  color: var(--color-gray-dark, #999);
+}
+
+.comment-main .content {
+  font-size: 30rpx;
+  color: var(--color-black-light, #333);
+  margin-top: 8rpx;
+  word-break: break-all;
+}
+
+.meta-line {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-top: 10rpx;
+}
+
+.meta-line .datetime {
+  font-size: 24rpx;
+  color: var(--color-gray-dark, #999);
+}
+
+.meta-line .delete {
+  font-size: 24rpx;
+  color: var(--color-gray-dark, #999);
+  margin-left: 24rpx;
+}
+
+/* 点赞按钮 */
+.like-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-left: 20rpx;
+  flex-shrink: 0;
+  color: var(--color-gray-dark, #999);
+}
+
+.like-btn .iconfont {
+  font-size: 36rpx;
+}
+
+.like-btn .like-num {
+  font-size: 22rpx;
+  margin-top: 2rpx;
+}
+
+.like-btn.liked {
+  color: #e64545;
+}
+
+/* 空状态 */
+.empty,
+.loadnomore {
+  width: 100%;
+  text-align: center;
+  padding: 60rpx 0;
+  font-size: 26rpx;
+  color: var(--color-gray-dark, #999);
+}
+
+/* 输入区 */
+.input-block-ph {
+  width: 100%;
+  min-height: 160rpx;
+}
+
+#input-block,
+.comment-input-closed {
+  width: 750rpx;
+  position: absolute;
+  bottom: 0;
+  display: flex;
+  flex-wrap: wrap;
+  padding: 20rpx;
+  background-color: white;
+  box-sizing: border-box;
+  border-top: 1rpx solid var(--color-gray-light, #f0f0f0);
+}
+
+.comment-input-closed text {
+  width: 750rpx;
+  text-align: center;
+  color: var(--color-gray-dark, #999);
+}
+
+#input-block-bottom {
+  width: 750rpx;
+  height: constant(safe-area-inset-bottom);
+  height: env(safe-area-inset-bottom);
+}
+
+#input-block.active {
+  padding-bottom: 10rpx;
+}
+
+#input-block textarea {
+  width: 100%;
+  min-height: 30rpx;
+  background-color: var(--color-white-dark, #f6f6f6);
+  color: var(--color-black-light, #333);
+  padding: 18rpx 20rpx;
+  border-radius: 10rpx;
+  font-size: 30rpx;
+  line-height: 30rpx;
+}
+
+#input-block .bottom-line {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+#input-block .send-btn {
+  width: 120rpx;
+  margin-top: 10rpx;
+  padding: 8rpx;
+  text-align: center;
+  font-size: 28rpx;
+  font-weight: bold;
+  background-color: var(--color-primary, #20642c);
+  color: var(--color-text-onPrimary, #fff);
+  border-radius: 50rpx;
+}
+
+button.long {
+  width: 100%;
+}
+
+button.primary {
+  background-color: var(--color-primary, #20642c);
+  color: var(--color-text-onPrimary, #fff);
+}

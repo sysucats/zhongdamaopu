@@ -16,7 +16,7 @@
           <image mode='aspectFill' src='{{item.userInfo.avatarUrl}}' bindtap='openBigPhoto' data-pid='{{item.userInfo.avatarUrl}}' class="user-avatar"></image>
           <text>{{item.userInfo.nickName || '-'}}</text>
         </view>
-        <view class='label user content'>内容：{{item.content}}</view>
+        <view class='label user content'>内容：<text wx:if="{{item.photo_id}}" class="photo-tag">[照片评论] </text>{{item.content}}</view>
         <view class='label user shotTime'>时间：{{item.datetime}}</view>
         <view class="buttons">
           <view class="button delete {{item.mark == 'delete' ? 'marked' : ''}}" bindtap='bindMark' data-index='{{index}}' data-type="delete">删除</view>

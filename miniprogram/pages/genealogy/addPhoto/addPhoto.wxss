@@ -258,6 +258,13 @@ picker, input {
   flex-shrink: 0;
 }
 
+.location-btn.auto {
+  background: #fff;
+  color: var(--color-primary-text);
+  border: 2rpx solid var(--color-primary);
+  margin-right: 12rpx;
+}
+
 .location-clear-row {
   margin-top: 10rpx;
   text-align: right;

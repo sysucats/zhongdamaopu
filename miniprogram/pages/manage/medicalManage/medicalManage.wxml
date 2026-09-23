@@ -1,0 +1,80 @@
+<!-- 医疗记录管理：疫苗、绝育、就诊、驱虫、伤病等 -->
+<view class="page">
+  <view class="add-bar">
+    <button class="add-btn" bindtap="addRecord">+ 添加医疗记录</button>
+    <button class="import-btn" size="mini" bindtap="importVaccines">导入旧疫苗记录</button>
+  </view>
+
+  <!-- 编辑表单（内嵌面板，不用 fixed 弹窗，避免部分模拟器无法输入） -->
+  <view class="edit-panel" wx:if="{{showEditModal}}">
+    <view class="modal-title">{{editingId ? '编辑记录' : '添加记录'}}</view>
+
+    <view class="form-item">
+      <view class="label">类型</view>
+      <picker range="{{typeOptions}}" range-key="name" value="{{form.typeIndex}}" bindchange="onTypeChange">
+        <view class="picker">{{typeOptions[form.typeIndex].name}} ▾</view>
+      </picker>
+    </view>
+
+    <view class="form-item" wx:if="{{typeOptions[form.typeIndex].key !== 'sterilize'}}">
+      <view class="label">{{typeOptions[form.typeIndex].key === 'vaccine' ? '疫苗名称' : '标题'}}</view>
+      <input class="input" placeholder="{{typeOptions[form.typeIndex].key === 'vaccine' ? '如：猫三联、狂犬疫苗' : '如：猫瘟治疗、眼部发炎'}}" value="{{form.title}}" data-field="title" bindinput="onInput" />
+    </view>
+
+    <view class="form-item">
+      <view class="label">{{typeOptions[form.typeIndex].key === 'vaccine' ? '接种日期' : '日期'}}</view>
+      <picker mode="date" value="{{form.record_date}}" bindchange="onDateChange">
+        <view class="picker">{{form.record_date || '请选择日期'}} ▾</view>
+      </picker>
+    </view>
+
+    <block wx:if="{{typeOptions[form.typeIndex].key === 'vaccine'}}">
+      <view class="form-item">
+        <view class="label">有效期至（可选）</view>
+        <picker mode="date" value="{{form.expire_date}}" bindchange="onExpireDateChange">
+          <view class="picker">{{form.expire_date || '请选择有效期'}} ▾</view>
+        </picker>
+      </view>
+
+      <view class="form-item">
+        <view class="label">下次接种日期（可选）</view>
+        <picker mode="date" value="{{form.next_vaccine_date}}" bindchange="onNextDateChange">
+          <view class="picker">{{form.next_vaccine_date || '请选择下次接种日期'}} ▾</view>
+        </picker>
+      </view>
+    </block>
+
+    <view class="form-item">
+      <view class="label">{{typeOptions[form.typeIndex].key === 'vaccine' ? '接种地点（可选）' : '医院/地点（可选）'}}</view>
+      <input class="input" placeholder="{{typeOptions[form.typeIndex].key === 'vaccine' ? '接种的医院或地点' : '就诊医院或处理地点'}}" value="{{form.hospital}}" data-field="hospital" bindinput="onInput" />
+    </view>
+
+    <view class="form-item">
+      <view class="label">备注（可选）</view>
+      <textarea class="textarea" placeholder="{{typeOptions[form.typeIndex].key === 'vaccine' ? '疫苗品牌、剂量、注意事项等' : '病情、用药、恢复情况等'}}" value="{{form.description}}" data-field="description" bindinput="onInput" maxlength="300"></textarea>
+    </view>
+
+    <view class="modal-buttons">
+      <button class="modal-btn cancel" bindtap="closeEdit">取消</button>
+      <button class="modal-btn confirm" bindtap="saveRecord" disabled="{{submitting}}">保存</button>
+    </view>
+  </view>
+
+  <view class="empty" wx:if="{{!loading && records.length === 0}}">暂无医疗记录</view>
+
+  <view class="record-card" wx:for="{{records}}" wx:key="_id">
+    <view class="record-header">
+      <view class="type-tag type-{{item.type}}">{{typeNameMap[item.type]}}</view>
+      <view class="record-date">{{item.record_date_formatted}}</view>
+    </view>
+    <view class="record-title">{{item.title}}</view>
+    <view class="record-info" wx:if="{{item.hospital}}">{{item.type === 'vaccine' ? '接种地点' : '医院/地点'}}：{{item.hospital}}</view>
+    <view class="record-info" wx:if="{{item.expire_date_formatted}}">有效期至：{{item.expire_date_formatted}}</view>
+    <view class="record-info" wx:if="{{item.next_vaccine_date_formatted}}">下次接种：{{item.next_vaccine_date_formatted}}</view>
+    <view class="record-info" wx:if="{{item.description}}">{{item.description}}</view>
+    <view class="record-actions">
+      <button size="mini" bindtap="editRecord" data-index="{{index}}">编辑</button>
+      <button size="mini" class="btn-delete" bindtap="removeRecord" data-id="{{item._id}}" data-index="{{index}}">删除</button>
+    </view>
+  </view>
+</view>

@@ -1,0 +1,155 @@
+.page {
+  padding: 30rpx;
+  min-height: 100vh;
+  background: #f7f7f7;
+  box-sizing: border-box;
+}
+
+.empty {
+  text-align: center;
+  padding: 120rpx 0;
+}
+
+.empty-text {
+  font-size: 32rpx;
+  color: #666;
+}
+
+.empty-tip {
+  font-size: 24rpx;
+  color: #999;
+  margin-top: 16rpx;
+}
+
+.adoption-card {
+  background: #fff;
+  border-radius: 16rpx;
+  padding: 24rpx;
+  margin-bottom: 24rpx;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.cat-name {
+  font-size: 34rpx;
+  font-weight: bold;
+  color: #333;
+}
+
+.status {
+  font-size: 24rpx;
+  padding: 6rpx 20rpx;
+  border-radius: 24rpx;
+}
+
+.status-pending {
+  background: #fff7e6;
+  color: #fa8c16;
+}
+
+.status-approved {
+  background: #f6ffed;
+  color: #52c41a;
+}
+
+.status-rejected {
+  background: #fff1f0;
+  color: #f5222d;
+}
+
+.status-cancelled {
+  background: #f5f5f5;
+  color: #999;
+}
+
+.apply-time {
+  font-size: 24rpx;
+  color: #999;
+  margin-top: 12rpx;
+}
+
+.review-note {
+  font-size: 26rpx;
+  color: #666;
+  background: #f7f7f7;
+  border-radius: 12rpx;
+  padding: 16rpx;
+  margin-top: 16rpx;
+}
+
+.timeline {
+  margin-top: 24rpx;
+  border-top: 1rpx solid #f0f0f0;
+  padding-top: 24rpx;
+}
+
+.timeline-item {
+  display: flex;
+  position: relative;
+  padding-bottom: 28rpx;
+}
+
+.timeline-item::before {
+  content: '';
+  position: absolute;
+  left: 9rpx;
+  top: 24rpx;
+  bottom: 0;
+  width: 2rpx;
+  background: #eee;
+}
+
+.timeline-item:last-child::before {
+  display: none;
+}
+
+.dot {
+  width: 20rpx;
+  height: 20rpx;
+  border-radius: 50%;
+  background: #ddd;
+  margin-right: 24rpx;
+  flex-shrink: 0;
+}
+
+.dot-active {
+  background: #07c160;
+}
+
+.step-content {
+  flex: 1;
+}
+
+.step-status {
+  font-size: 28rpx;
+  color: #333;
+  font-weight: 500;
+}
+
+.step-note {
+  font-size: 24rpx;
+  color: #666;
+  margin-top: 6rpx;
+}
+
+.step-time {
+  font-size: 22rpx;
+  color: #999;
+  margin-top: 6rpx;
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 16rpx;
+}
+
+.btn-cancel {
+  color: #f5222d;
+  border: 1rpx solid #f5222d;
+  background: #fff;
+}

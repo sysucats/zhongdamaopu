@@ -25,10 +25,10 @@ import {
   getGlobalSettings
 } from "../../../utils/page";
 import { convertRatingList, genDefaultRating } from "../../../utils/rating";
-import { showMpcode } from "../../../utils/mpcode";
 import { signCosUrl } from "../../../utils/common";
 import api from "../../../utils/cloudApi";
 import { isDemoMode, getDemoCat } from "../../../utils/demo";
+import { trackViewCat, trackFollow } from "../../../utils/achievement";
 
 const app = getApp();
 
@@ -91,6 +91,21 @@ Page({
     // 疫苗记录相关
     showVaccineHistory: false,
     vaccineHistory: [],
+
+    // 医疗记录相关
+    showMedicalHistory: false,
+    medicalTimeline: [],
+    medicalTypeName: {
+      vaccine: '疫苗',
+      sterilize: '绝育',
+      clinic: '就诊',
+      deworm: '驱虫',
+      injury: '伤病',
+      other: '其他',
+    },
+
+    // 喂食统计
+    feedStats: null,
   },
 
   jsData: {
@@ -137,6 +152,9 @@ Page({
     // 记录访问时间，消除"有新相片"
     // TODO：用cache
     setVisitedDate(this.jsData.cat_id);
+
+    // 成就：浏览猫猫
+    trackViewCat(this.jsData.cat_id);
   },
 
   /**
@@ -265,6 +283,8 @@ Page({
       this.loadRelations(),
       this.reloadCatBadge(),
       this.getLatestVaccine(cat._id),
+      this.getMedicalTimeline(cat._id),
+      this.getFeedStats(cat._id),
     ]);
 
     var query = wx.createSelectorQuery();
@@ -636,11 +656,6 @@ Page({
     }
   },
 
-  // 展示mpcode
-  async bingMpTap() {
-    await showMpcode(this.data.cat);
-  },
-
   showPopTip(e) {
     let { tip } = e.currentTarget.dataset;
     wx.showToast({
@@ -882,16 +897,6 @@ Page({
     });
   },
 
-  // 展示分享海报
-  async showPoster() {
-    // 关掉弹窗
-    this.closeFunction();
-    let posterComponent = this.selectComponent('#posterComponent');
-    if (posterComponent) {
-      posterComponent.startDrawing();
-    }
-  },
-
   async followCat() {
     if (this.jsData.updatingFollowCats) {
       return;
@@ -925,19 +930,31 @@ Page({
       icon: res ? "success" : "error"
     });
     this.jsData.updatingFollowCats = false;
+
+    // 成就：关注猫猫
+    if (res && !followedCat) {
+      trackFollow((this.data.user.followCats || []).length);
+    }
   },
 
-  // 获取最新疫苗记录
+  // 获取最新疫苗记录（疫苗已并入医疗记录，从 medical 集合按 type=vaccine 读取）
   async getLatestVaccine(cat_id) {
     try {
-      const result = await api.vaccineOp({
+      const result = await api.medicalOp({
         operation: 'list',
-        cat_id: cat_id
+        cat_id: cat_id,
+        type: 'vaccine'
       });
 
       if (result?.result === true && Array.isArray(result.data) && result.data.length > 0) {
+        // 医疗记录字段映射回疫苗卡片需要的字段
+        const normalized = result.data.map(record => ({
+          ...record,
+          vaccine_type: record.title,
+          vaccine_date: record.record_date,
+        }));
         // 处理所有疫苗记录的日期格式
-        const vaccineHistory = result.data.map(vaccine => {
+        const vaccineHistory = normalized.map(vaccine => {
           // 判断疫苗是否过期
           const today = new Date();
           const expireDate = vaccine.expire_date ? new Date(vaccine.expire_date) : null;
@@ -986,6 +1003,91 @@ Page({
   hideVaccineHistory() {
     this.setData({
       showVaccineHistory: false
+    });
+  },
+
+  // 获取医疗记录时间线（绝育/就诊/驱虫等）
+  async getMedicalTimeline(cat_id) {
+    try {
+      const result = await api.medicalOp({
+        operation: 'list',
+        cat_id: cat_id
+      });
+
+      if (result?.result === true && Array.isArray(result.data)) {
+        const medicalTimeline = result.data.map(record => ({
+          ...record,
+          record_date_formatted: record.record_date ? formatDate(record.record_date, "yyyy-MM-dd") : '',
+          next_vaccine_date_formatted: record.next_vaccine_date ? formatDate(record.next_vaccine_date, "yyyy-MM-dd") : '',
+        }));
+        // 按日期降序
+        medicalTimeline.sort((a, b) => {
+          const dateA = a.record_date ? new Date(a.record_date).getTime() : 0;
+          const dateB = b.record_date ? new Date(b.record_date).getTime() : 0;
+          return dateB - dateA;
+        });
+        this.setData({ medicalTimeline });
+      }
+    } catch (error) {
+      console.error('获取医疗记录失败:', error);
+    }
+  },
+
+  // 显示医疗记录时间线
+  toMedicalDetail() {
+    this.setData({
+      showMedicalHistory: true
+    });
+  },
+
+  // 隐藏医疗记录时间线
+  hideMedicalHistory() {
+    this.setData({
+      showMedicalHistory: false
+    });
+  },
+
+  // 跳转医疗记录管理（管理员）
+  toMedicalManage() {
+    wx.navigateTo({
+      url: '/pages/manage/medicalManage/medicalManage?cat_id=' + this.jsData.cat_id,
+    });
+  },
+
+  // 获取喂食统计
+  async getFeedStats(cat_id) {
+    try {
+      const result = await api.feedOp({
+        operation: 'statsByCat',
+        cat_id: cat_id
+      });
+      if (result?.result === true && result.data) {
+        this.setData({ feedStats: result.data });
+      }
+    } catch (error) {
+      console.error('获取喂食统计失败:', error);
+    }
+  },
+
+  // 跳转喂食/零食打卡页
+  toFeedRecord(e) {
+    const category = (e && e.currentTarget && e.currentTarget.dataset.category) || 'meal';
+    wx.navigateTo({
+      url: '/pages/feed/feedRecord/feedRecord?cat_id=' + this.jsData.cat_id + '&category=' + category,
+    });
+  },
+
+  // 跳转分地区打卡主页
+  toFeedHub() {
+    wx.navigateTo({
+      url: '/pages/feed/feedHub/feedHub',
+    });
+  },
+
+  // 跳转领养申请页
+  toApplyAdoption() {
+    wx.navigateTo({
+      url: '/pages/adoption/applyAdoption/applyAdoption?cat_id=' + this.jsData.cat_id,
     });
   },
 })

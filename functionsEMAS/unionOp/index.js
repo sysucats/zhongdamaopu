@@ -6,7 +6,6 @@ const commentCheckHandler = require('./commentCheck.js')
 const genBadgeCodeHandler = require('./genBadgeCode.js')
 const userOpHandler = require('./userOp.js')
 const sendMsgV2Handler = require('./sendMsgV2.js')
-const getMpCodeHandler = require('./getMpCode.js')
 const managePhotoHandler = require('./managePhoto.js')
 const updateCatHandler = require('./updateCat.js')
 const getBadgeHandler = require('./getBadge.js')
@@ -26,6 +25,10 @@ const deleteCosFilesHandler = require('./deleteCosFiles.js')
 const isManagerHandler = require('./isManager.js')
 const getCatLocationsHandler = require('./getCatLocations.js')
 const getCatTrajectoryHandler = require('./getCatTrajectory.js')
+const adoptionOpHandler = require('./adoptionOp.js')
+const medicalOpHandler = require('./medicalOp.js')
+const feedOpHandler = require('./feedOp.js')
+const getAchievementRankHandler = require('./getAchievementRank.js')
 
 const actionMap = {
     curdOp: curdOpHandler,
@@ -35,7 +38,6 @@ const actionMap = {
     genBadgeCode: genBadgeCodeHandler,
     userOp: userOpHandler,
     sendMsgV2: sendMsgV2Handler,
-    getMpCode: getMpCodeHandler,
     managePhoto: managePhotoHandler,
     updateCat: updateCatHandler,
     getBadge: getBadgeHandler,
@@ -55,6 +57,10 @@ const actionMap = {
     isManager: isManagerHandler,
     getCatLocations: getCatLocationsHandler,
     getCatTrajectory: getCatTrajectoryHandler,
+    adoptionOp: adoptionOpHandler,
+    medicalOp: medicalOpHandler,
+    feedOp: feedOpHandler,
+    getAchievementRank: getAchievementRankHandler,
 }
 
 module.exports = async (ctx) => {
