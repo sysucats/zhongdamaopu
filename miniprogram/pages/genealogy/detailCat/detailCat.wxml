@@ -260,7 +260,7 @@
         <picker bindchange="bindphotoOrderChange" value="{{photoOrderSelected}}" range="{{photoOrderSelectorRange}}" range-key="{{photoOrderSelectorKey}}">
           <view class="picker">
             <text class='type'>{{photoOrderSelectorRange[photoOrderSelected][photoOrderSelectorKey]}}</text>
-            <image class="icon" mode='aspectFill' src='/pages/public/images/button/sort.png'></image>
+            <view class="iconfont icon-adjust-horizontal"></view>
           </view>
         </picker>
       </view>
@@ -296,7 +296,8 @@
   </view>
   <popup show="{{showFunc}}" bind:close="closeFunction">
     <view class="withdrawbtn" bindtap="closeFunction">
-          <image class="withdraw" src="/pages/public/images/button/withdraw.png"></image>
+      <!-- <image class="withdraw" src="/pages/public/images/button/withdraw.png"></image> -->
+      <view class="iconfont icon-arrow-down"></view>
     </view>
     <view class="buttons"> 
       <view class="button" bindtap='toComment'>

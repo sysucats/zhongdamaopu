@@ -2,20 +2,17 @@
 
 <view id='search' class='{{filters_show_shadow? "shadow": ""}}' style='height: {{heights.filters}}px'>
   <view class='input-block'>
-    <view class='input-icon'>
-      <image mode='aspectFit' src="/pages/public/images/filter/search.png"></image>
-    </view>
+    <view class='input-icon iconfont icon-search gray'></view>
     <input class='name' placeholder='{{text_cfg.genealogy.search_tip}}' placeholder-class='searchPlaceholderStyle' value='{{filters_input}}' maxlength='20' confirm-type='search' bindinput='fSearchInput' bindconfirm='fSearch'></input>
   </view>
 
   <view class='filter-btn' bind:tap='clickRecognize' wx:if="{{showRecognize}}">
-    <image mode='aspectFit' src="/pages/public/images/filter/recognize.svg"></image>
+    <view class='iconfont icon-camera gray'></view>
     <view>识别</view>
   </view>
   
   <view class='filter-btn' bind:tap='fToggle'>
-    <image wx:if='{{filters_active}}' mode='aspectFit' src="/pages/public/images/filter/filter_y.png"></image>
-    <image wx:else mode='aspectFit' src="/pages/public/images/filter/filter.png"></image>
+    <view class='iconfont icon-filtering {{filters_active? "primary": "gray"}}'></view>
     <view>筛选</view>
   </view>
 </view>
@@ -28,10 +25,7 @@
       <view class='padding-block'></view>
       <view class='item {{item.active? "active": ""}}' wx:for='{{filters}}' wx:key='name' bindtap='fClickMain' data-index='{{index}}'>
         <text>{{item.name}}</text>
-
-        <view class='right-arrow' wx:if='{{item.active}}'>
-          <image mode='aspectFill' src="/pages/public/images/filter/right.png"></image> 
-        </view>
+        <view class='right-arrow iconfont icon-chevrons-right' wx:if='{{item.active}}'></view>
       </view>
     </scroll-view>
     <scroll-view class='f-column f-column-3' scroll-y='1'>
@@ -91,17 +85,16 @@
           <view wx:if='{{item.adopt}}' class='adopt'>{{adopt_desc[item.adopt]}}</view>
           <view wx:if='{{item.to_star}}' class='to_star'>{{text_cfg.genealogy.to_star_tip}}</view>
           <view class='popularity'>
-            <view class='iconfont icon-fire'></view>
+            <view class='iconfont icon-fire primary'></view>
             <text> {{item.popularity + (item.photo_count_total? item.photo_count_total * photoPopWeight: 0) }}</text>
           </view>
           <view class='comment' wx:if="{{item.comment_count}}">
-            <view class='iconfont icon-chat'></view>
+            <view class='iconfont icon-chat primary'></view>
             <text> {{item.comment_count}}</text>
           </view>
         </view>
 
         <view class='line' wx:if="{{item.rating}}">
-          <image mode='aspectFit' class='icon' src='/pages/public/images/card/card/star.png'></image>
           <view class="stars">
             <view class="one-star {{item.rating.avgScore >= j+1 ? '' : 'gray'}}"  wx:for="*****" wx:key="*this" wx:for-item="y" wx:for-index="j">
               <image src="/pages/public/images/button/rating_star.svg" mode="aspectFill"/>
@@ -110,19 +103,19 @@
           </view>
         </view>
         <view class='line' wx:if="{{item.birthday}}">
-          <image mode='aspectFit' class='icon' src='/pages/public/images/card/card/birth.png'></image>
+          <view class='iconfont icon-clock gray'></view>
           <text>{{item.birthday}}</text>
         </view>
         <view class='line'>
-          <image mode='aspectFit' class='icon' src='/pages/public/images/card/card/cat.png'></image>
+          <view class='iconfont icon-relation gray'></view>
           <text class="characteristics">{{item.characteristics_string}}</text>
         </view>
         <view class='line' wx:if="{{item.habit}}">
-          <image mode='aspectFit' class='icon' src='/pages/public/images/card/card/heart.png'></image>
+          <view class='iconfont icon-heart gray'></view>
           <text class="habit">{{item.habit}}</text>
         </view>
         <view class='line'>
-          <image mode='aspectFit' class='icon' src='/pages/public/images/card/card/pos.png'></image>
+          <view class='iconfont icon-map-pin gray'></view>
           <text>{{(item.campus + item.area) || '-'}}</text>
           <view class='index'><text decode='true'>&lt; {{index+1}}/{{catsMax}} &gt;</text></view>
         </view>

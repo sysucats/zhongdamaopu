@@ -314,6 +314,11 @@ swiper-item image {
 .sort-button .picker {
   display: flex;
   align-items: center;
+  line-height: 28rpx;
+  font-size: 28rpx;
+}
+.sort-button .picker .iconfont {
+  margin: 0 5rpx;
 }
 
 /* 下面开始相册 */

@@ -34,7 +34,7 @@
         <view class="cat-name">
           <text>{{feedItem.cat.name || '-'}}</text>
           <view class='cat-campus'>
-            <image class="location-logo" src="/pages/public/images/filter/location_gray.png" mode="aspectFit" lazy-load="true"></image>
+            <view class="iconfont icon-map-pin"></view>
             {{feedItem.cat.campus || '-'}}
           </view>
         </view>
@@ -82,7 +82,7 @@
         <view class="cat-name">
           <text>{{feedItem.cat.name || '-'}}</text>
           <view class='cat-campus'>
-            <image class="location-logo" src="/pages/public/images/filter/location_gray.png" mode="aspectFit" lazy-load="true"></image>
+            <view class="iconfont icon-map-pin"></view>
             {{feedItem.cat.campus || '-'}}
           </view>
         </view>

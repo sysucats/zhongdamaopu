@@ -169,6 +169,11 @@ scroll-view {
 .iconfont {
   font-size: 25rpx;
   margin-right: 8rpx;
+}
+.iconfont.gray {
+  color: var(--color-gray-dark);
+}
+.iconfont.primary {
   color: var(--color-primary);
 }
 
@@ -382,21 +387,12 @@ scroll-view {
   display: flex;
   align-items: center;
   flex-wrap: nowrap;
+  background-color: white;
 }
 
 #search .input-icon {
-  width: 10%;
-  height: 2.2rem;
-  background-color: white;
-  border-top-left-radius: 10rpx;
-  border-bottom-left-radius: 10rpx;
-  display: inline-block;
-}
-
-#search .input-icon image {
-  width: 60%;
-  height: 100%;
-  margin: 0 20%;
+  font-size: 100%;
+  margin: 0 10rpx;
 }
 
 #search input.name {
@@ -413,20 +409,22 @@ scroll-view {
   font-size: 80%;
 }
 
-#search .filter-btn {
+.filter-btn {
   width: 7%;
   height: 55%;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  font-size: 16rpx;
+  font-size: 20rpx;
   text-align: center;
+  color: var(--color-black-min);
 }
 
-.filter-btn image {
-  width: 100%;
-  height: 100%;
+.filter-btn .iconfont {
+  font-size: 36rpx;
+  line-height: 36rpx;
+  margin: 0;
 }
 
 /* 过滤器点开的部分 */
@@ -488,9 +486,8 @@ scroll-view {
   display: inline-block;
 }
 
-.right-arrow image {
-  height: 20rpx;
-  width: 20rpx;
+.right-arrow.iconfont {
+  color: var(--color-black-min)
 }
 
 #filter-block .divider {

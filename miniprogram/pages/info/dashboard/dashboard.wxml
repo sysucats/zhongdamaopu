@@ -192,7 +192,7 @@
             </view>
           </scroll-view>
           <view class="sort-button" bindtap="showSortPicker">
-            <image class="sort-icon" src="/pages/public/images/button/sort.png" mode="aspectFit"></image>
+            <view class="iconfont icon-adjust-horizontal"></view>
           </view>
         </view>
         

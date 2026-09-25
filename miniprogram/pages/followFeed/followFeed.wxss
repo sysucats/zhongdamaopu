@@ -8,6 +8,12 @@ page {
   overflow: hidden;
   background-color: var(--color-gray-light);
 }
+
+.iconfont {
+  color: var(--color-gray-max);
+  animation: rotate 0.3s ease;
+}
+
 #bg-yellow {
   width: 750rpx;
   height: 1000rpx;
@@ -1329,10 +1335,8 @@ image{height:auto}
   align-items: center;
   display: flex;
 }
-.location-logo {
-  width: 24rpx;
-  height: 24rpx;
-  margin-right: 4rpx;
+.cat-info .cat-campus .iconfont {
+  font-size: 18rpx;
 }
 
 /* 照片卡 */
@@ -1560,10 +1564,6 @@ image{height:auto}
   display: inline-block;
   font-size: 28rpx;
   font-weight: 700;
-}
-.iconfont {
-  color: var(--color-gray-max);
-  animation: rotate 0.3s ease;
 }
 
 /* 菜单 */
