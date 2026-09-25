@@ -1,5 +1,4 @@
 <view class="content">
-  <view id='big-circle'></view>
   <view class="user-container">
     <view class="avatar-container">
       <image class="avatar" src="{{user.userInfo.avatarUrl || defaultAvatarUrl}}" mode="aspectFill"></image>

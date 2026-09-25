@@ -7,23 +7,19 @@ page {
   padding: 30rpx;
   background-color: var(--color-gray-light);
 }
-
-#big-circle {
-  width: 1250rpx;
-  height: 1150rpx;
-  background-color: var(--color-primary);
-  border-radius: 500rpx;
-  position: absolute;
-  left: -250rpx;
-  top: -850rpx;
-  z-index: -1;
+#container {
+  width: 750rpx;
+  overflow: hidden;
 }
 
 /* 头像名字和角色 */
 .user-container {
   display: flex;
   align-items: center;
-  padding: 30rpx 0rpx;
+  padding: 30rpx 30rpx;
+  margin-bottom: 20rpx;
+  background-color: var(--color-primary);
+  border-radius: 20rpx;
 }
 
 .avatar-container {
