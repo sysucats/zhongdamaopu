@@ -577,9 +577,9 @@ Page({
     const cat_id = isCatId ? e : e.currentTarget.dataset.cat_id;
     const index = this.data.cats.findIndex(cat => cat._id == cat_id);
 
-    // scene 深链（isCatId=true）直接跳详情，不走展开
+    // scene 深链（isCatId=true）直接跳详情，不走展开（无列表数据，不带首屏缓存）
     if (isCatId) {
-      wx.navigateTo({ url: `/pages/genealogy/detailCat/detailCat?cat_id=${cat_id}` });
+      this.toDetailPage(cat_id);
       return;
     }
 
@@ -590,10 +590,10 @@ Page({
   // 展开/收起卡片：展开时加 wide 样式 + 平滑滚动到顶部 + 显示动作按钮；再次点击进入详情相册
   toggleExpand(index) {
     if (this.data.expandedCatIndex === index) {
-      // 再次点击同一张展开卡片 → 进入详情相册
+      // 再次点击同一张展开卡片 → 进入详情相册（带列表数据做首屏秒开）
       const cat = this.data.cats[index];
       if (cat) {
-        wx.navigateTo({ url: `/pages/genealogy/detailCat/detailCat?cat_id=${cat._id}` });
+        this.toDetailPage(cat._id, cat);
       }
       return;
     }
@@ -623,42 +623,44 @@ Page({
     });
   },
 
+  // 跳转详情页：cat 存在时先写入 globalData，详情页 onLoad 同步读取、立即渲染首屏，
+  // 再由 loadCat 从数据库拉全量数据刷新；写操作很小，不影响跳转动画
+  toDetailPage(cat_id, cat) {
+    app.globalData.pendingCatDetail = cat ? { cat, ts: Date.now() } : null;
+    wx.navigateTo({ url: `/pages/genealogy/detailCat/detailCat?cat_id=${cat_id}` });
+  },
+
   // 展开卡片"猫猫详情"按钮
   clickDetailBtn(e) {
     const cat_id = e.currentTarget.dataset.cat_id;
     if (!cat_id) return;
-    // 点击"猫猫详情"后才消除"新图"标签
+    // 点击"猫猫详情"后才消除"新图"标签；卡片保持展开，返回时无需重新点开
     const index = this.data.cats.findIndex(cat => cat._id == cat_id);
-    const update = { expandedCatIndex: -1 };
     if (index !== -1) {
-      update[`cats[${index}].mphoto_new`] = false;
+      this.setData({ [`cats[${index}].mphoto_new`]: false });
     }
-    this.setData(update);
-    wx.navigateTo({ url: `/pages/genealogy/detailCat/detailCat?cat_id=${cat_id}` });
+    this.toDetailPage(cat_id, this.data.cats[index]);
   },
 
-  // 展开卡片"上传喵照"按钮
+  // 展开卡片"上传喵照"按钮（卡片保持展开）
   clickUploadBtn(e) {
     const cat_id = e.currentTarget.dataset.cat_id;
     if (!cat_id) return;
-    this.setData({ expandedCatIndex: -1 });
     wx.navigateTo({ url: `/pages/genealogy/addPhoto/addPhoto?cat_id=${cat_id}` });
   },
 
-  // 展开卡片"便利贴墙"按钮
+  // 展开卡片"便利贴墙"按钮（卡片保持展开）
   clickCommentBtn(e) {
     const cat_id = e.currentTarget.dataset.cat_id;
     if (!cat_id) return;
-    this.setData({ expandedCatIndex: -1 });
     wx.navigateTo({ url: `/pages/genealogy/commentBoard/commentBoard?cat_id=${cat_id}` });
   },
 
-  // 展开卡片"管理"按钮（右上角，仅管理员可见）
+  // 展开卡片"管理"按钮（右上角，仅管理员可见；卡片保持展开）
   async clickManageBtn(e) {
     const cat_id = e.currentTarget.dataset.cat_id;
     if (!cat_id) return;
     if (!(await isManagerAsync())) return;
-    this.setData({ expandedCatIndex: -1 });
     wx.navigateTo({ url: `/pages/manage/catManage/catManage?cat_id=${cat_id}&activeTab=info` });
   },
 

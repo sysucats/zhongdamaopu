@@ -125,7 +125,7 @@
     <!-- 去留言按钮 -->
     <view class="interact-bar">
       <view class="interact-btn" catchtap="toCommentBoard" data-cat_id="{{feedItem.cat._id}}">
-        <text class="iconfont icon-smile-comment-o"></text>
+        <text class="iconfont icon-checklist"></text>
         <text class="interact-num">去{{feedItem.cat.name || '猫猫'}}的便利贴墙</text>
       </view>
     </view>

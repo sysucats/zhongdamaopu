@@ -127,10 +127,19 @@ Page({
   onLoad: async function (options) {
     this.jsData.cat_id = options.cat_id;
 
-    // 判断是否为管理员
-    this.setData({
-      is_manager: (await isManagerAsync(3))
-    });
+    // 首屏加速：同步读取列表页塞进 globalData 的猫数据，立即渲染基础信息，
+    // 之后 loadCat 从数据库拉全量数据覆盖刷新
+    const init = app.globalData.pendingCatDetail;
+    app.globalData.pendingCatDetail = null;
+    if (init && init.cat && init.cat._id === this.jsData.cat_id
+      && Date.now() - (init.ts || 0) < 30000) {
+      this.setData({ cat: this.buildInitCat(init.cat) });
+    }
+
+    // 判断是否为管理员：不阻塞加载，结果回来再刷新视图
+    isManagerAsync(3).then(is_manager => {
+      this.setData({ is_manager });
+    }).catch(e => console.warn('isManagerAsync failed:', e));
 
     // 先判断一下这个用户在12小时之内有没有点击过这只猫
     if (!checkMultiClick(this.jsData.cat_id)) {
@@ -139,21 +148,60 @@ Page({
         key: this.jsData.cat_id,
         data: new Date(),
       });
-      // 增加click数
-      await api.curdOp({
+      // 增加click数：写操作，不阻塞页面加载
+      api.curdOp({
         operation: "inc",
         type: "pop",
         collection: "cat",
         item_id: this.jsData.cat_id
-      });
+      }).catch(e => console.warn('inc pop failed:', e));
     }
 
     // 记录访问时间，消除"有新相片"
-    // TODO：用cache
     setVisitedDate(this.jsData.cat_id);
 
     // 成就：浏览猫猫
     trackViewCat(this.jsData.cat_id);
+
+    // 页面设置（带缓存），与猫数据加载并行
+    this.jsData.settingsPromise = getGlobalSettings('detailCat').then(s => {
+      this.jsData.page_settings = s || {};
+      this.setData({
+        photoPopWeight: this.jsData.page_settings['photoPopWeight'] || 10
+      });
+    }).catch(() => {
+      this.jsData.page_settings = this.jsData.page_settings || {};
+    });
+
+    // 加载猫猫、是否开启上传、便利贴留言功能：全部并行，不再串行等待
+    Promise.all([
+      this.loadCat(),
+      checkCanUpload(),
+      checkCanComment(),
+      this.reloadUserBadge(),
+    ]).then(([_, canUpload, canComment]) => {
+      this.setData({
+        canUpload: !!canUpload,
+        canComment: !!canComment
+      });
+    });
+  },
+
+  // 用列表页传入的猫对象构造详情页首屏数据（结构与 loadCat 的处理保持一致）
+  buildInitCat(cat) {
+    const avatar = cat.photo || { photo_compressed: "/pages/public/images/info/default_avatar.png" };
+    const c = { ...cat };
+    c.photo = [];
+    c.avatar = avatar;
+    let chars = c.characteristics;
+    if (Array.isArray(chars)) chars = chars.join('，');
+    c.characteristics_string = chars ? (chars + '\n') : '';
+    if (c.habit) c.characteristics_string += c.habit;
+    if (c.rating) {
+      // 浅拷贝 rating，避免写 catRatings 污染列表页的数据
+      c.rating = { ...c.rating, catRatings: convertRatingList(c.rating.scores) };
+    }
+    return c;
   },
 
   /**
@@ -171,23 +219,6 @@ Page({
           "pixelRatio": res.pixelRatio
         }
       }
-    });
-
-    // 开始加载页面
-    this.jsData.page_settings = await getGlobalSettings('detailCat');
-    this.setData({
-      photoPopWeight: this.jsData.page_settings['photoPopWeight'] || 10
-    });
-    // 加载猫猫，是否开启上传、便利贴留言功能
-    var [_, canUpload, canComment, _] = await Promise.all([
-      this.loadCat(),
-      checkCanUpload(),
-      checkCanComment(),
-      this.reloadUserBadge(),
-    ]);
-    this.setData({
-      canUpload: canUpload,
-      canComment: canComment
     });
   },
 
@@ -325,6 +356,8 @@ Page({
   },
 
   async reloadPhotos() {
+    // photoStep/albumStep 依赖页面设置，先等设置（与 loadCat 并行加载，通常命中缓存）
+    if (this.jsData.settingsPromise) await this.jsData.settingsPromise;
     // 这些是精选照片
     const qf = {
       cat_id: this.jsData.cat_id,
@@ -394,19 +427,21 @@ Page({
     )
     console.log("[loadMorePhotos] -", res);
     const offset = cat.photo.length;
-    for (let i = 0; i < res.length; ++i) {
-      res[i].index = offset + i; // 把index加上，gallery预览要用到
-      // 签名处理
-      if (res[i].photo_id) {
-        res[i].photo_id = await signCosUrl(res[i].photo_id);
+    res.forEach((p, i) => {
+      p.index = offset + i; // 把index加上，gallery预览要用到
+    });
+    // 签名处理：并行签名，避免逐张 await 串行拖慢首屏
+    await Promise.all(res.map(async p => {
+      if (p.photo_id) {
+        p.photo_id = await signCosUrl(p.photo_id);
       }
-      if (res[i].photo_compressed) {
-        res[i].photo_compressed = await signCosUrl(res[i].photo_compressed);
+      if (p.photo_compressed) {
+        p.photo_compressed = await signCosUrl(p.photo_compressed);
       }
-      if (res[i].photo_watermark) {
-        res[i].photo_watermark = await signCosUrl(res[i].photo_watermark);
+      if (p.photo_watermark) {
+        p.photo_watermark = await signCosUrl(p.photo_watermark);
       }
-    }
+    }));
     cat.photo = cat.photo.concat(res);
     this.setData({
       cat: cat
@@ -547,19 +582,21 @@ Page({
     }
 
     const offset = this.jsData.album_raw.length;
-    for (let i = 0; i < res.length; ++i) {
-      res[i].index = offset + i; // 把index加上，gallery预览要用到
-      // 签名处理
-      if (res[i].photo_id) {
-        res[i].photo_id = await signCosUrl(res[i].photo_id);
+    res.forEach((p, i) => {
+      p.index = offset + i; // 把index加上，gallery预览要用到
+    });
+    // 签名处理：并行签名，避免逐张 await 串行拖慢相册展示
+    await Promise.all(res.map(async p => {
+      if (p.photo_id) {
+        p.photo_id = await signCosUrl(p.photo_id);
       }
-      if (res[i].photo_compressed) {
-        res[i].photo_compressed = await signCosUrl(res[i].photo_compressed);
+      if (p.photo_compressed) {
+        p.photo_compressed = await signCosUrl(p.photo_compressed);
       }
-      if (res[i].photo_watermark) {
-        res[i].photo_watermark = await signCosUrl(res[i].photo_watermark);
+      if (p.photo_watermark) {
+        p.photo_watermark = await signCosUrl(p.photo_watermark);
       }
-    }
+    }));
     this.jsData.album_raw = this.jsData.album_raw.concat(res);
     this.updateAlbum();
   },

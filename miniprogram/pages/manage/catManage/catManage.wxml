@@ -19,7 +19,7 @@
       <text class="tab-text">关系</text>
     </view>
     <view class="tab {{activeTab === 'haunt' ? 'active' : ''}}" bindtap="switchTab" data-tab="haunt">
-      <text class="iconfont icon-location-o"></text>
+      <text class="iconfont icon-current-location"></text>
       <text class="tab-text">地点</text>
     </view>
   </view>
@@ -66,7 +66,7 @@
     <!-- 浮动添加按钮 -->
     <view class="floating-actions">
       <!-- 主按钮 -->
-      <view class="iconfont {{activeTab === 'info' && (selectedCat || isNewMode) ? 'icon-success' : 'icon-plus'}} action-button" 
+      <view class="iconfont {{activeTab === 'info' && (selectedCat || isNewMode) ? 'icon-success' : 'icon-circle-plus'}} action-button" 
             bindtap="handleActionButtonClick"></view>
     </view>
   </view>

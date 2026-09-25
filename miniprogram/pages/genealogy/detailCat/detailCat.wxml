@@ -68,7 +68,7 @@
       <view class="card">
         <view class="card-header">
           <view class="card-title">
-            <view class="iconfont icon-newspaper-o"></view>
+            <view class="iconfont icon-id"></view>
             猫猫档案
           </view>
         </view>
@@ -149,7 +149,7 @@
       <view class="card" wx:if="{{cat.lastVaccine}}">
         <view class="card-header">
           <view class="card-title">
-            <view class="iconfont icon-vaccine"></view>
+            <view class="iconfont icon-report-medical"></view>
             疫苗记录
           </view>
           <view class="badge-all" bindtap="toVaccineDetail">查看详情</view>
@@ -196,7 +196,7 @@
       <view class="card" wx:if="{{showBadge}}">
         <view class="card-header">
           <view class="card-title">
-            <view class="iconfont icon-medel-o"></view>
+            <view class="iconfont icon-diamond"></view>
             徽章口袋
           </view>
           <view class="badge-btn">
@@ -354,7 +354,7 @@
     <scroll-view class="modal-body" scroll-y="1">
       <view class="vaccine-timeline" wx:if="{{vaccineHistory && vaccineHistory.length}}">
         <view class="timeline-item" wx:for="{{vaccineHistory}}" wx:key="_id">
-          <view class="timeline-icon {{index === 0 ? 'iconfont icon-success' : (item.is_expired ? 'iconfont icon-bulb-o' : 'timeline-dot')}}"></view>
+          <view class="timeline-icon {{index === 0 ? 'iconfont icon-success' : (item.is_expired ? 'iconfont icon-bulb' : 'timeline-dot')}}"></view>
           <view class="timeline-connector" wx:if="{{index !== vaccineHistory.length - 1}}"></view>
           <view class="timeline-content {{index === 0 ? 'first-card' : ''}} {{item.is_expired ? 'expired-card' : ''}}">
             <view class="timeline-header">

@@ -61,6 +61,15 @@ page {
   margin-right: 20rpx;
   flex-shrink: 0;
 }
+
+/* 卡片图标为 iconfont 时，与原图片图标对齐（复用 .icon 的盒子尺寸）
+   颜色由 wxml 内联 style 传入，这里只做兜底 */
+.card .iconfont {
+  font-size: 56rpx;
+  line-height: 56rpx;
+  text-align: center;
+  color: var(--color-primary-dark);
+}
 .card-text {
   font-size: 30rpx;
   text-align: center;

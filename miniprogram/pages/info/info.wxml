@@ -56,8 +56,8 @@
 
 <!-- 工具 -->
 <block wx:for="{{menuList}}" wx:key="title" wx:for-item="menu" wx:if="{{showCond[menu.show]}}">
-  <view wx:if="{{menu.title != '管理后台'}}" class='block-name'>{{menu.title}}</view>
-  <view wx:if="{{menu.title != '管理后台'}}" class='card-container'>
+  <view wx:if="{{menu.type != '管理后台'}}" class='block-name'>{{menu.title}}</view>
+  <view wx:if="{{menu.type != '管理后台'}}" class='card-container'>
     <view class="tool" wx:for="{{menu.items}}" wx:key="name" bindtap='clickbtn' data-to='{{item.path}}'>
       <view class="iconfont {{item.icon}}"></view>
       <view class="card-text" style="margin-left: 30rpx;">{{item.name}}</view>
@@ -67,8 +67,8 @@
 
 <!-- 宫格式布局，待处理数量右上角红点标记 -->
 <block wx:for="{{menuList}}" wx:key="title" wx:for-item="menu" wx:if="{{showCond[menu.show]}}">
-  <view wx:if="{{menu.title == '管理后台'}}" class='block-name'>{{menu.title}}</view>
-    <view wx:if="{{menu.title == '管理后台'}}" class="block">
+  <view wx:if="{{menu.type == '管理后台'}}" class='block-name'>{{menu.title}}</view>
+    <view wx:if="{{menu.type == '管理后台'}}" class="block">
       <view wx:for="{{menu.items}}" wx:key="name" class="grid-item" bindtap='clickbtn' data-to='{{item.path}}'>
           <view class="iconfont {{item.icon}}"></view>
           <text wx:if="{{nums[item.num]}}" class="badge">{{nums[item.num]}}</text>
