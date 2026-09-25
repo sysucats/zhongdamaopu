@@ -28,28 +28,28 @@ Page({
         items: [
           {
             label:"邀请好友",
-            icon:"icon-friends-o",
+            icon:"icon-users-plus",
             action:"shareApp",
             btnAble: true,
             btnType: "share",
           }, {
             label:"我关注的猫猫",
-            icon:"icon-star-o",
+            icon:"icon-heart",
             action:"/pages/info/myFollowCats/myFollowCats",
             btnAble: false,
           }, {
             label:"我的足迹",
-            img:"/pages/public/images/info/btn/history.svg",
+            icon:"icon-history",
             action:"/pages/info/myFootprint/myFootprint",
             btnAble: false,
           }, {
             label:"我的领养",
-            img:"/pages/public/images/info/btn/diamond.svg",
+            icon:"icon-user-share",
             action:"/pages/info/myAdoption/myAdoption",
             btnAble: false,
           }, {
             label:"信息反馈",
-            icon:"icon-chat-o",
+            icon:"icon-mail",
             action:"/pages/info/feedback/feedback",
             btnAble: false,
           },
@@ -59,7 +59,7 @@ Page({
         items: [
           {
             label:"清除缓存",
-            icon:"icon-cross",
+            icon:"icon-delete",
             action:"clearCache",
             btnAble: false,
           }

@@ -59,8 +59,9 @@ timeTrigger/
 
 - 本地 `node -c photoProcess.js` 通过
 - 本地 `node -c index.js` 通过
+- 本地端到端 `node photoProcess.smokeTest.js`（mock mpserverless + 本地 http 模拟 COS/上传）：2 张照片全链路通过，压缩 500 / 水印 1200，水印含中文+emoji 字形
 - 静态 smoke（mock DB）：3 张待处理 photo，710ms 全部处理成功
-- EMAS 部署后 deploy_test 返回 v1.5
+- EMAS 部署后 deploy_test 返回 v1.6
 
 ## 升级日志
 
@@ -71,3 +72,5 @@ timeTrigger/
 | v1.3 | photoProcess 引入 opentype.js + svg2png-wasm 双字体 + cos 签名 |
 | v1.4 | 加 runPhotoProcess 守门（手动测试模式） |
 | v1.5 | **移除守门，正式上线：photoProcess 始终跑，配套 EMAS 定时器** |
+| v1.6 | 徽章榜/拍照榜改为每日 0 点（北京时间）更新 |
+| v1.7 | **适配 jimp 1.6.1**（dependabot PR #110 把 jimp 0.22 升到 1.6.1 导致云上 `_Jimp.read is not a function`）：require('jimp') 改取命名导出 `.Jimp`/`.JimpMime`、resize 传对象、quality 走 getBuffer 选项、crop 传对象；原图改用 axios 下载 Buffer（jimp 内置 fetch 无超时）；字体族改按名字匹配（getLoadedFontFamilies 顺序不稳定，实测同进程内会变）。新增本地端到端验证脚本 photoProcess.smokeTest.js |

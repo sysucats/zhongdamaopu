@@ -66,7 +66,7 @@
     <!-- 浮动添加按钮 -->
     <view class="floating-actions">
       <!-- 主按钮 -->
-      <view class="iconfont {{activeTab === 'info' && (selectedCat || isNewMode) ? 'icon-success' : 'icon-circle-plus'}} action-button" 
+      <view class="iconfont {{activeTab === 'info' && (selectedCat || isNewMode) ? 'icon-check' : 'icon-circle-plus'}} action-button" 
             bindtap="handleActionButtonClick"></view>
     </view>
   </view>

@@ -353,7 +353,7 @@ swiper-item image {
   grid-column: 1 / -1; /* 让header横跨所有列 */
 }
 
-.album-block .header .icon-clock-o {
+.album-block .header .icon-clock {
   font-size: 35rpx;
   margin-right: 10rpx;
   color: var(--color-primary);
@@ -834,7 +834,7 @@ swiper-item image {
   align-items: center;
 }
 
-.latest-vaccine .icon-success {
+.latest-vaccine .icon-check {
   margin-right: 10rpx;
 }
 
@@ -912,7 +912,7 @@ swiper-item image {
   background-color: var(--color-gray);
 }
 
-.icon-success {
+.icon-check {
   font-size: 40rpx;
   color: var(--color-vaccine);
 }
@@ -1373,6 +1373,31 @@ image{height:auto}
   position: absolute;
 }
 
+/* 照片右下角的点赞按钮 */
+.photo-like {
+  position: absolute;
+  right: 12rpx;
+  bottom: 12rpx;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  padding: 2rpx 14rpx;
+  border-radius: 40rpx;
+  background-color: rgba(0, 0, 0, 0.42);
+  color: var(--color-white-dark);
+  line-height: 1.5;
+}
+
+.photo-like .iconfont {
+  color: var(--color-white-dark);
+  font-size: 32rpx;
+}
+
+.photo-like-num {
+  font-size: 24rpx;
+  margin-left: 6rpx;
+}
+
 .photo-by {
   width: 100%;
   display: flex;
@@ -1630,10 +1655,6 @@ image{height:auto}
 .interact-btn .iconfont {
   font-size: 38rpx;
   margin-right: 8rpx;
-}
-
-.interact-btn.liked {
-  color: #e64545;
 }
 
 .interact-btn.small .iconfont {

@@ -51,6 +51,11 @@
             data-url="{{item.pic_prev}}"
             bind:tap="clickPhoto">
             <image src="{{item.pic}}" mode='aspectFill' lazy-load="true" loading="eager" webp="true"></image>
+            <!-- 单张照片的点赞按钮（右下角） -->
+            <view class="photo-like {{item.liked ? 'liked' : ''}}" catchtap="likeFeedItem" data-feed-index="{{outerIndex}}" data-item-id="{{item._id}}" data-item-type="photo">
+              <text class="iconfont {{item.liked ? 'icon-heart-filled' : 'icon-heart'}}"></text>
+              <text class="photo-like-num" wx:if="{{item.like_count > 0}}">{{item.like_count}}</text>
+            </view>
           </view>
       </view>
       <view class="photo-by">
@@ -63,14 +68,6 @@
         </view>
         <view class="dot"></view>
         <view class="datetime">{{feedItem.items[0].datetime}}</view>
-      </view>
-
-      <!-- 互动栏：点赞 + 留言 -->
-      <view class="interact-bar">
-        <view class="interact-btn {{feedItem.items[0].liked ? 'liked' : ''}}" catchtap="likeFeedItem" data-feed-index="{{outerIndex}}" data-item-id="{{feedItem.items[0]._id}}" data-item-type="photo">
-          <text class="iconfont {{feedItem.items[0].liked ? 'icon-like' : 'icon-like-o'}}"></text>
-          <text class="interact-num">{{feedItem.items[0].like_count || ''}}</text>
-        </view>
       </view>
 
     </view>
@@ -109,7 +106,7 @@
         <view class="comment-footer">
           <view class="datetime">{{item.datetime}}</view>
           <view class="interact-btn small {{item.liked ? 'liked' : ''}}" catchtap="likeFeedItem" data-feed-index="{{outerIndex}}" data-item-id="{{item._id}}" data-item-type="comment">
-            <text class="iconfont {{item.liked ? 'icon-like' : 'icon-like-o'}}"></text>
+            <text class="iconfont {{item.liked ? 'icon-heart-filled' : 'icon-heart'}}"></text>
             <text class="interact-num">{{item.like_count || ''}}</text>
           </view>
         </view>

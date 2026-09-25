@@ -7,6 +7,13 @@
 // 60s 超时限制：剩余 < 10s 时不再启动新相片，等下一次定时触发继续。
 // 字符级字体路由：emoji 走 NotoEmoji-VariableFont_wght.ttf，文字走 font.ttf
 // （替代 jimp 0.22 的 .fnt bitmap 字体，open-sans 不含中文/emoji）
+//
+// ⚠️ jimp 已从 0.22 升到 1.6.1（dependabot PR #110），两版 API 不兼容，本文件按 1.x 写：
+//   - require('jimp') 返回命名空间对象，Jimp 类在 .Jimp 上（0.x 是 module.exports === Jimp）
+//   - MIME 常量在 .JimpMime（0.x 是 Jimp.MIME_JPEG）
+//   - resize 传对象 { w } / { h }（单边省略即按比例），0.x 的 Jimp.AUTO 已移除
+//   - 质量走 getBuffer(JimpMime.jpeg, { quality })，0.x 的 .quality() / .getBufferAsync() 已移除
+//   - crop 传对象 { x, y, w, h }，构造传 { width, height, color }
 
 const path = require('path');
 const fs = require('fs');
@@ -19,7 +26,7 @@ const COMPRESS_LENGTH = 500;        // 压缩图最长边（与前端一致）
 const JPEG_QUALITY = 80;            // 对应前端 compressImage(80)
 const WATERMARK_FONT_RATIO = 0.03;  // 水印字号 = 缩放后画布高 * 0.03
 const WATERMARK_MARGIN = 30;        // 水印左下偏移
-const BATCH_SIZE = 10;             // 单次最多处理的照片数，避免超时
+const BATCH_SIZE = 6;             // 单次最多处理的照片数，避免超时
 const HTTP_TIMEOUT_MS = 30000;      // 下载/上传超时
 const SIGN_EXPIRES_SECONDS = 2 * 60 * 60; // 与前端 sign_expires_tencent_cos 一致
 
@@ -36,7 +43,8 @@ const SVG2PNG_WASM_PATH = path.join(__dirname, 'node_modules', 'svg2png-wasm', '
 const EMOJI_RE = /[\u{1F000}-\u{1F2FF}\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}\u200D]/u;
 
 // ---- 单例：opentype font + svg2png-wasm + cos 客户端全局只初始化一次 ----
-let _Jimp = null;
+let _Jimp = null;          // jimp 1.x 的 Jimp 类（require('jimp').Jimp）
+let _JimpMime = null;      // jimp 1.x 的 MIME 常量（require('jimp').JimpMime）
 let _axios = null;
 let _FormData = null;
 let _COS = null;
@@ -53,7 +61,14 @@ let _heavyLoaded = false;
 // 首次处理照片时才加载重型依赖，节省空闲时内存
 function loadHeavyDeps() {
   if (_heavyLoaded) return;
-  _Jimp = require('jimp');
+  // jimp 1.x 是 ESM 命名导出，require 拿到的是命名空间对象而不是类本身，
+  // 必须取 .Jimp / .JimpMime（0.x 直接 require 就是 Jimp 类，已失效）
+  const jimpMod = require('jimp');
+  _Jimp = jimpMod.Jimp;
+  _JimpMime = jimpMod.JimpMime;
+  if (typeof _Jimp !== 'function' || typeof _Jimp.read !== 'function') {
+    throw new Error('jimp 1.x 加载异常: 期望存在 Jimp 类与 Jimp.read，实际 ' + typeof _Jimp);
+  }
   _axios = require('axios');
   _FormData = require('form-data');
   _COS = require('cos-nodejs-sdk-v5');
@@ -83,9 +98,20 @@ async function ensureRenderReady() {
     console.warn('[photoProcess] 未发现 emoji 字体，将全部走主字体:', EMOJI_TTF_FONT_PATH);
   }
   _svg2png = _createSvg2pngWasm({ fonts: fontBuffers });
+  // ⚠️ 不能按 fams[0]/fams[1] 取：svg2png-wasm 底层是 Go map，
+  // getLoadedFontFamilies() 的返回顺序不稳定（同一个进程内多次调用都可能换序），
+  // 一旦反了就会把 Noto Emoji 当主字体，中文水印渲染成空白。这里按字体名匹配。
   const fams = _svg2png.getLoadedFontFamilies();
-  _fontFamilyMain = fams[0];
-  _fontFamilyEmoji = fams[1] || fams[0];
+  const norm = (s) => String(s || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+  const mainName = norm(_font && _font.names && _font.names.fontFamily && _font.names.fontFamily.en);
+  let mainFam = mainName ? fams.find((f) => norm(f) === mainName) : null;
+  if (!mainFam) mainFam = fams.find((f) => !/emoji/i.test(f));   // 兜底：非 emoji 的那个
+  const emojiFam = fams.find((f) => f !== mainFam && /emoji/i.test(f));
+  _fontFamilyMain = mainFam || fams[0];
+  _fontFamilyEmoji = emojiFam || _fontFamilyMain;
+  if (_fontFamilyMain === _fontFamilyEmoji) {
+    console.warn('[photoProcess] 主字体与 emoji 字体同名，emoji 将走主字体:', _fontFamilyMain);
+  }
   console.log('[photoProcess] render ready, font families:', fams, 'main=', _fontFamilyMain, 'emoji=', _fontFamilyEmoji);
 }
 
@@ -100,7 +126,7 @@ function escapeXml(s) {
 
 // 把字符串渲染成 Jimp 图像（白字透明背景），emoji 自动走 NotoEmoji 字体
 async function renderTextToJimp(text, fontSize) {
-  if (!text) return new _Jimp(1, 1, 0x00000000);
+  if (!text) return new _Jimp({ width: 1, height: 1, color: 0x00000000 });
 
   const fontSizeInt = Math.max(8, Math.round(fontSize));
   const yBaseline = Math.round(fontSizeInt * 0.8);
@@ -134,14 +160,14 @@ async function renderTextToJimp(text, fontSize) {
     const a = tempImg.bitmap.data[(y * w + x) * 4 + 3];
     if (a > 0) { if (x < minX) minX = x; if (x > maxX) maxX = x; if (y < minY) minY = y; if (y > maxY) maxY = y; }
   }
-  if (maxX < 0) return new _Jimp(1, fontSizeInt, 0x00000000);
+  if (maxX < 0) return new _Jimp({ width: 1, height: fontSizeInt, color: 0x00000000 });
   const pad = 2;
-  return tempImg.clone().crop(
-    Math.max(0, minX - pad),
-    Math.max(0, minY - pad),
-    Math.min(w, maxX + 1 + pad) - Math.max(0, minX - pad),
-    Math.min(h, maxY + 1 + pad) - Math.max(0, minY - pad)
-  );
+  return tempImg.clone().crop({
+    x: Math.max(0, minX - pad),
+    y: Math.max(0, minY - pad),
+    w: Math.min(w, maxX + 1 + pad) - Math.max(0, minX - pad),
+    h: Math.min(h, maxY + 1 + pad) - Math.max(0, minY - pad)
+  });
 }
 
 module.exports = async (ctx) => {
@@ -286,21 +312,21 @@ async function processOne(ctx, photo, appName) {
     throw new Error('photo_id 缺失');
   }
 
-  // 1) 下载原图（私有桶先签名）
+  // 1) 下载原图（私有桶先签名，再自己 axios 拉 Buffer 交给 jimp）
+  //    不用 jimp 1.x 自带的 Jimp.read(url)：它内部走全局 fetch，没有超时控制，且依赖 Node>=18
   const readableUrl = await signCosUrlIfNeeded(ctx, photo.photo_id);
-  const original = await _Jimp.read(readableUrl);
+  const original = await _Jimp.read(await downloadImage(readableUrl));
   const width = original.bitmap.width;
   const height = original.bitmap.height;
 
-  // 2) 压缩图
+  // 2) 压缩图（jimp 1.x：resize 传对象，单边省略即等比缩放；quality 走 getBuffer 选项）
   const compressed = original.clone();
   if (width >= height) {
-    compressed.resize(COMPRESS_LENGTH, _Jimp.AUTO);
+    compressed.resize({ w: COMPRESS_LENGTH });
   } else {
-    compressed.resize(_Jimp.AUTO, COMPRESS_LENGTH);
+    compressed.resize({ h: COMPRESS_LENGTH });
   }
-  compressed.quality(JPEG_QUALITY);
-  const compressedBuffer = await compressed.getBufferAsync(_Jimp.MIME_JPEG);
+  const compressedBuffer = await compressed.getBuffer(_JimpMime.jpeg, { quality: JPEG_QUALITY });
 
   // 3) 水印图
   const watermarked = original.clone();
@@ -308,7 +334,7 @@ async function processOne(ctx, photo, appName) {
   const drawWidth = Math.max(1, Math.floor(width / Math.max(scale, 1)));
   const drawHeight = Math.max(1, Math.floor(height / Math.max(scale, 1)));
   if (scale > 1) {
-    watermarked.resize(drawWidth, drawHeight);
+    watermarked.resize({ w: drawWidth, h: drawHeight });
   }
 
   const photographer = (photo.photographer && photo.photographer.trim())
@@ -344,8 +370,7 @@ async function processOne(ctx, photo, appName) {
   } catch (e) {
     console.warn('[photoProcess] watermark render failed, skip', e && e.message);
   }
-  watermarked.quality(JPEG_QUALITY);
-  const watermarkBuffer = await watermarked.getBufferAsync(_Jimp.MIME_JPEG);
+  const watermarkBuffer = await watermarked.getBuffer(_JimpMime.jpeg, { quality: JPEG_QUALITY });
 
   // 4) 上传
   const uuid = generateUUID();
@@ -371,6 +396,26 @@ async function processOne(ctx, photo, appName) {
     watermark: watermarkUpload.fileUrl,
     cat_id: photo.cat_id || ''
   };
+}
+
+// 下载图片成 Buffer（自己控制超时 / 状态码，比 jimp 1.x 内置 fetch 更好排查）
+async function downloadImage(url) {
+  loadHeavyDeps(); // ensure axios loaded
+  const resp = await _axios.get(url, {
+    responseType: 'arraybuffer',
+    maxContentLength: Infinity,
+    maxBodyLength: Infinity,
+    timeout: HTTP_TIMEOUT_MS,
+    validateStatus: () => true
+  });
+  if (resp.status < 200 || resp.status >= 300) {
+    throw new Error(`download http ${resp.status}: ${url.slice(0, 160)}`);
+  }
+  const buf = Buffer.from(resp.data);
+  if (buf.length === 0) {
+    throw new Error('download empty body: ' + url.slice(0, 160));
+  }
+  return buf;
 }
 
 // COS 私有桶签名（与 photoProcessTest.js 等价）

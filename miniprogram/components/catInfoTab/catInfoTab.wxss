@@ -70,6 +70,12 @@
   background-color: var(--color-gray-light);
 }
 
+.form-item input {
+  height: 80rpx;
+  line-height: 80rpx;
+  padding: 0 20rpx;
+}
+
 .form-item textarea {
   min-height: 150rpx;
 }

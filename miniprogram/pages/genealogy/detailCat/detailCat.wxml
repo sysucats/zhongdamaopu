@@ -44,7 +44,7 @@
         <text> {{cat.comment_count || 0}}</text>
       </view>
       <view class='count comment' bindtap="showPopTip" data-tip="粉丝量">
-        <view class='iconfont icon-like'></view>
+        <view class='iconfont icon-heart'></view>
         <text> {{cat.follow_count || 0}}</text>
       </view>
     </view>
@@ -157,7 +157,7 @@
 
         <view class='item long' >
           <view class="latest-vaccine">  
-            <view class="iconfont icon-success"></view>
+            <view class="iconfont icon-check"></view>
             <view class='value vaccine-info'>
               <text>{{cat.lastVaccine.vaccine_type}}</text>
               <text>{{cat.lastVaccine.vaccine_date_formatted}}</text>
@@ -179,7 +179,7 @@
 
         <view class='item long' wx:if="{{medicalTimeline.length}}">
           <view class="latest-vaccine">
-            <view class="iconfont icon-success"></view>
+            <view class="iconfont icon-check"></view>
             <view class='value vaccine-info'>
               <text>{{medicalTypeName[medicalTimeline[0].type]}}·{{medicalTimeline[0].title}}</text>
               <text>{{medicalTimeline[0].record_date_formatted}}</text>
@@ -270,7 +270,7 @@
     <view class='album'>
       <view wx:for="{{album}}" class='album-block' wx:key='date' wx:for-item="albumBlock">
         <view class='header'>
-          <view class='icon-clock-o'></view>
+          <view class='iconfont icon-clock'></view>
           <view class='time'>{{albumBlock.date[0]}}年{{albumBlock.date[1]}}月</view>
           <view wx:if='{{albumBlock.age[0] >= 0 && albumBlock.age[1] >= 0}}' class='age'>{{albumBlock.age[0]}}岁{{albumBlock.age[1]}}个月</view>
         </view>
@@ -354,7 +354,7 @@
     <scroll-view class="modal-body" scroll-y="1">
       <view class="vaccine-timeline" wx:if="{{vaccineHistory && vaccineHistory.length}}">
         <view class="timeline-item" wx:for="{{vaccineHistory}}" wx:key="_id">
-          <view class="timeline-icon {{index === 0 ? 'iconfont icon-success' : (item.is_expired ? 'iconfont icon-bulb' : 'timeline-dot')}}"></view>
+          <view class="timeline-icon {{index === 0 ? 'iconfont icon-check' : (item.is_expired ? 'iconfont icon-bulb' : 'iconfont timeline-dot')}}"></view>
           <view class="timeline-connector" wx:if="{{index !== vaccineHistory.length - 1}}"></view>
           <view class="timeline-content {{index === 0 ? 'first-card' : ''}} {{item.is_expired ? 'expired-card' : ''}}">
             <view class="timeline-header">
@@ -385,7 +385,7 @@
     <scroll-view class="modal-body" scroll-y="1">
       <view class="vaccine-timeline" wx:if="{{medicalTimeline && medicalTimeline.length}}">
         <view class="timeline-item" wx:for="{{medicalTimeline}}" wx:key="_id">
-          <view class="timeline-icon {{index === 0 ? 'iconfont icon-success' : 'timeline-dot'}}"></view>
+          <view class="timeline-icon {{index === 0 ? 'iconfont icon-check' : 'timeline-dot'}}"></view>
           <view class="timeline-connector" wx:if="{{index !== medicalTimeline.length - 1}}"></view>
           <view class="timeline-content {{index === 0 ? 'first-card' : ''}}">
             <view class="timeline-header">

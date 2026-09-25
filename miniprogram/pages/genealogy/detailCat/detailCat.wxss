@@ -354,7 +354,7 @@ swiper-item image {
   grid-column: 1 / -1; /* 让header横跨所有列 */
 }
 
-.album-block .header .icon-clock-o {
+.album-block .header .icon-clock {
   font-size: 35rpx;
   margin-right: 10rpx;
   color: var(--color-primary);
@@ -835,7 +835,7 @@ swiper-item image {
   align-items: center;
 }
 
-.latest-vaccine .icon-success {
+.latest-vaccine .icon-check {
   margin-right: 10rpx;
 }
 
@@ -913,7 +913,7 @@ swiper-item image {
   background-color: var(--color-gray);
 }
 
-.icon-success {
+.icon-check {
   font-size: 40rpx;
   color: var(--color-vaccine);
 }

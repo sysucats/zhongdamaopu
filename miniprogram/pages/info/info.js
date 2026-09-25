@@ -116,7 +116,7 @@ Page({
           {
             name: "猫抓板公告",
             path: "/pages/news/createNews/createNews",
-            icon: "icon-edit"
+            icon: "icon-license"
           },
           {
             name: "校区/区域/花色",
@@ -127,6 +127,21 @@ Page({
             name: "猫猫管理",
             path: "/pages/manage/catManage/catManage",
             icon: "icon-sitemap"
+          },
+          {
+            name: "徽章管理",
+            path: "/pages/manage/badgeDef/badgeDef",
+            icon: "icon-diamond"
+          },
+          {
+            name: "页面配置",
+            path: "/pages/manage/pageSettings/pageSettings",
+            icon: "icon-adjust-horizontal"
+          },
+          {
+            name: "投喂记录",
+            path: "/pages/manage/rewards/rewards",
+            icon: "icon-redpacket"
           },
           {
             name: "照片处理",
