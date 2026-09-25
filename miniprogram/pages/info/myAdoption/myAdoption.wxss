@@ -117,7 +117,7 @@
 }
 
 .dot-active {
-  background: #07c160;
+  background: var(--color-primary);
 }
 
 .step-content {

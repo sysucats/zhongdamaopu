@@ -161,8 +161,8 @@ const init_setting = [{
 module.exports = {
   // 云函数的名称
   functions: {
-    "timeTrigger": "v1.5",
-    "unionOp": "v1.5",
+    "timeTrigger": "v1.6",
+    "unionOp": "v1.6",
   },
   collections: {
     // "app_secret": default_init_data,

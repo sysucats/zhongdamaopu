@@ -95,13 +95,13 @@
 }
 
 .submit-btn {
-  background: #07c160;
-  color: #fff;
+  background: var(--color-primary);
+  color: var(--color-text-onPrimary);
   border-radius: 44rpx;
   font-size: 32rpx;
   margin-top: 20rpx;
 }
 
 .submit-btn.disabled {
-  background: #a0e6bd;
+  background: var(--color-gray-dark);
 }

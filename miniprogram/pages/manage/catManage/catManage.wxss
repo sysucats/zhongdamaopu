@@ -379,7 +379,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: #f7f9f7;
+  background: var(--color-gray-light);
   border-radius: 16rpx;
   padding: 24rpx;
   margin-bottom: 16rpx;

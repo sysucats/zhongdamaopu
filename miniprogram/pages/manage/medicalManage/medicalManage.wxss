@@ -18,14 +18,14 @@
 .import-btn {
   margin-left: 20rpx;
   background: #fff;
-  color: #07c160;
-  border: 1rpx solid #07c160;
+  color: var(--color-primary);
+  border: 1rpx solid var(--color-primary);
   font-size: 26rpx;
 }
 
 .add-btn {
-  background: #07c160;
-  color: #fff;
+  background: var(--color-primary);
+  color: var(--color-text-onPrimary);
   font-size: 30rpx;
   border-radius: 44rpx;
 }
@@ -186,8 +186,8 @@
 }
 
 .modal-btn.confirm {
-  background: #07c160;
-  color: #fff;
+  background: var(--color-primary);
+  color: var(--color-text-onPrimary);
 }
 
 .record-actions button, .modal-buttons button { margin-left: 20rpx; }
