@@ -1,13 +1,37 @@
 // 提交领养申请
 import { getCatItem, getAvatar } from "../../../utils/cat";
 import { getUser } from "../../../utils/user";
+import { formatDate } from "../../../utils/utils";
 import api from "../../../utils/cloudApi";
 
 const app = getApp();
 
+// 与 myAdoption 页保持一致的状态文案
+const STATUS_DESC = {
+  pending: '待审核',
+  reviewing: '审核中',
+  approved: '已通过',
+  rejected: '未通过',
+  cancelled: '已撤销',
+};
+
+const STATUS_CLASS = {
+  pending: 'status-pending',
+  reviewing: 'status-reviewing',
+  approved: 'status-approved',
+  rejected: 'status-rejected',
+  cancelled: 'status-cancelled',
+};
+
+// 只有已拒绝（或自己已撤销）的申请可以重新提交，与后端防重复规则对齐
+function canResubmit(status) {
+  return status === 'rejected' || status === 'cancelled';
+}
+
 Page({
   data: {
     cat: {},
+    existing: null,
     form: {
       applicant_name: '',
       contact: '',
@@ -54,11 +78,46 @@ Page({
     });
     wx.setNavigationBarTitle({ title: `领养${cat.name}` });
 
-    // 预填昵称
-    const user = await getUser();
-    const nickname = user && user.userInfo && user.userInfo.nickName;
-    if (nickname) {
-      this.setData({ 'form.applicant_name': nickname });
+    // 查询本人对该猫的历史申请：进行中则只展示状态，被拒才允许重新提交
+    await this.loadMyApplication();
+
+    // 预填昵称（被拒重交时已预填上次的称呼，则不覆盖）
+    if (!this.data.form.applicant_name) {
+      const user = await getUser();
+      const nickname = user && user.userInfo && user.userInfo.nickName;
+      if (nickname) {
+        this.setData({ 'form.applicant_name': nickname });
+      }
+    }
+  },
+
+  async loadMyApplication() {
+    try {
+      const res = await api.adoptionOp({ operation: 'listMine' });
+      // 查询失败不阻断页面：后端 apply 仍有防重复校验兜底
+      if (!res.result) return;
+      const mine = (res.data || []).find(item => item.cat_id === this.jsData.cat_id);
+      if (!mine) return;
+
+      this.setData({
+        existing: {
+          ...mine,
+          statusDesc: STATUS_DESC[mine.status] || mine.status,
+          statusClass: STATUS_CLASS[mine.status] || '',
+          apply_time_formatted: formatDate(mine.apply_time, 'yyyy-MM-dd hh:mm'),
+          review_time_formatted: mine.review_time ? formatDate(mine.review_time, 'yyyy-MM-dd hh:mm') : '',
+        },
+      });
+
+      // 上次被拒：预填姓名和联系方式，方便修改后重新提交
+      if (canResubmit(mine.status) && mine.applicant_name) {
+        this.setData({ 'form.applicant_name': mine.applicant_name });
+        if (mine.contact) {
+          this.setData({ 'form.contact': mine.contact });
+        }
+      }
+    } catch (err) {
+      console.error('[loadMyApplication] - 查询历史申请失败:', err);
     }
   },
 

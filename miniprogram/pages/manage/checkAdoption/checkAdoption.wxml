@@ -2,7 +2,7 @@
 <block wx:if="{{auth}}">
   <!-- 顶部固定栏：说明 + 状态切换 -->
   <view id='tips'>
-    <text>先点「开始审核」受理，确认领养人后点「通过」。\n点击猫猫名字跳转详情，已通过/未通过可回溯审核记录。</text>
+    <text>先点「审核过程记录」受理，确认领养人后点「通过」。\n点击猫猫名字跳转详情，已通过/未通过可回溯审核记录。</text>
     <view class="tabs">
       <view class="tab {{activeTab === item.key ? 'active' : ''}}" wx:for="{{tabs}}" wx:key="key" data-key="{{item.key}}" bindtap="switchTab">{{item.name}}</view>
     </view>
@@ -10,12 +10,12 @@
 
   <!-- 审核面板（内嵌，不用 fixed 弹窗，避免部分模拟器无法输入） -->
   <view class="review-panel" wx:if="{{showReviewPanel && reviewTarget}}">
-    <view class="panel-title">{{reviewAction === 'approve' ? '通过申请' : (reviewAction === 'processing' ? '开始审核' : '拒绝申请')}}</view>
+    <view class="panel-title">{{reviewAction === 'approve' ? '通过申请' : (reviewAction === 'processing' ? '审核过程记录' : (reviewAction === 'note' ? '补充审核记录' : '拒绝申请'))}}</view>
     <view class="panel-desc">{{reviewTarget.applicant_name}} → 「{{reviewTarget.cat_name}}」</view>
-    <textarea class="panel-textarea" placeholder="审核备注（可选，申请人可见）" value="{{reviewNote}}" bindinput="onNoteInput" maxlength="200"></textarea>
+    <textarea class="panel-textarea" placeholder="{{reviewAction === 'note' ? '记录内容（必填，申请人可见），如：已电话沟通，待补充材料' : '审核备注（可选，申请人可见）'}}" value="{{reviewNote}}" bindinput="onNoteInput" maxlength="200"></textarea>
     <view class="panel-buttons">
-      <button class="long" bindtap="closeReview">取消</button>
-      <button class="long primary" bindtap="confirmReview">确认</button>
+      <button bindtap="closeReview">取消</button>
+      <button class="primary" bindtap="confirmReview">确认</button>
     </view>
   </view>
 
@@ -68,9 +68,12 @@
 
     <!-- 操作按钮 -->
     <block wx:if="{{item.status === 'pending' || item.status === 'reviewing'}}">
-      <button wx:if="{{item.status === 'pending'}}" bindtap="openReview" data-action="processing" data-index="{{index}}">开始审核</button>
-      <button class='primary' bindtap="openReview" data-action="approve" data-index="{{index}}">通过</button>
-      <button class='btn-reject {{item.status === "pending" ? "long" : ""}}' bindtap="openReview" data-action="reject" data-index="{{index}}">拒绝</button>
+      <button class="long" wx:if="{{item.status === 'pending'}}" bindtap="openReview" data-action="processing" data-index="{{index}}">审核过程记录</button>
+      <button class="long btn-note" wx:if="{{item.status === 'reviewing'}}" bindtap="openReview" data-action="note" data-index="{{index}}">补充审核记录</button>
+      <view class="action-row">
+        <button class='btn-reject' bindtap="openReview" data-action="reject" data-index="{{index}}">拒绝</button>
+        <button class='primary' bindtap="openReview" data-action="approve" data-index="{{index}}">通过</button>
+      </view>
     </block>
   </view>
 </block>

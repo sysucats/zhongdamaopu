@@ -995,36 +995,17 @@ swiper-item image {
   margin-bottom: 8rpx;
 }
 
-/* 领养横幅 */
+/* 领养提示：单行小字 */
 .adopt-banner {
-  display: flex;
-  align-items: center;
   background: linear-gradient(90deg, #fff7e6, #ffe7ba);
-  border: 1rpx solid #ffd591;
-  border-radius: 16rpx;
-  padding: 20rpx 24rpx;
-  margin: 20rpx 30rpx 0;
-}
-
-.adopt-banner-icon {
-  font-size: 36rpx;
-  margin-right: 16rpx;
-}
-
-.adopt-banner-text {
-  flex: 1;
-  font-size: 28rpx;
+  border-radius: 12rpx;
+  padding: 10rpx 24rpx;
+  margin: 16rpx 30rpx 0;
+  font-size: 24rpx;
+  line-height: 1.6;
   color: #d46b08;
-  font-weight: 500;
-}
-
-.adopt-banner-arrow {
-  font-size: 32rpx;
-  color: #d46b08;
-}
-
-.adopt-banner-icon {
-  font-size: 36rpx;
-  margin-right: 16rpx;
-  color: #d46b08;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }

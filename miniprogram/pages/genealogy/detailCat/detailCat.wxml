@@ -61,11 +61,7 @@
     </view>
 
     <!-- 领养横幅：寻找领养中时展示 -->
-    <view class="adopt-banner" wx:if="{{cat.adopt === 2}}" bindtap="toApplyAdoption">
-      <view class="adopt-banner-icon iconfont icon-friends-o"></view>
-      <view class="adopt-banner-text">我正在寻找一个新家，点击申请领养</view>
-      <view class="adopt-banner-arrow">→</view>
-    </view>
+    <view class="adopt-banner" wx:if="{{cat.adopt === 2}}" bindtap="toApplyAdoption">🐱 我在等一个家，点我申请领养 →</view>
     <view class='details'>
 
       <!-- 基本信息 -->

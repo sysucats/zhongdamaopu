@@ -8,27 +8,44 @@
     </view>
   </view>
 
-  <view class="form-block">
-    <view class="form-item">
-      <view class="label">姓名/称呼 <text class="required">*</text></view>
-      <input class="input" placeholder="怎么称呼你" value="{{form.applicant_name}}" data-field="applicant_name" bindinput="onInput" />
+  <!-- 已提交过申请：展示当前申请状态 -->
+  <view class="status-card" wx:if="{{existing}}">
+    <view class="status-row">
+      <text class="status-label">你的申请状态</text>
+      <view class="status-badge {{existing.statusClass}}">{{existing.statusDesc}}</view>
     </view>
-    <view class="form-item">
-      <view class="label">联系方式 <text class="required">*</text></view>
-      <input class="input" placeholder="微信号或手机号，供管理员联系你" value="{{form.contact}}" data-field="contact" bindinput="onInput" />
-    </view>
-    <view class="form-item">
-      <view class="label">申请理由 <text class="required">*</text></view>
-      <textarea class="textarea" placeholder="介绍一下你的养猫条件（住所、封窗、养猫经验等），以及为什么想领养它" value="{{form.reason}}" data-field="reason" bindinput="onInput" maxlength="500"></textarea>
-      <view class="char-count">{{form.reason.length}}/500</view>
-    </view>
+    <view class="status-line">申请时间：{{existing.apply_time_formatted}}</view>
+    <view class="status-line" wx:if="{{existing.review_time_formatted}}">处理时间：{{existing.review_time_formatted}}</view>
+    <view class="status-note" wx:if="{{existing.review_note}}">审核备注：{{existing.review_note}}</view>
+    <view class="status-tip" wx:if="{{existing.status === 'rejected'}}">上次申请未通过，修改后可重新提交</view>
+    <view class="status-tip" wx:elif="{{existing.status === 'cancelled'}}">上次申请已撤销，可重新提交</view>
+    <view class="status-tip" wx:else>请耐心等待，可在「个人主页-我的领养」中查看进度</view>
   </view>
 
-  <view class="tip">
-    提交后管理员会审核你的申请，审核结果可在「我的-我的领养」中查看。通过审核后请保持联系方式畅通。
-  </view>
+  <!-- 进行中的申请不可重复提交，隐藏表单 -->
+  <block wx:if="{{!existing || existing.status === 'rejected' || existing.status === 'cancelled'}}">
+    <view class="form-block">
+      <view class="form-item">
+        <view class="label">姓名/称呼 <text class="required">*</text></view>
+        <input class="input" placeholder="怎么称呼你" value="{{form.applicant_name}}" data-field="applicant_name" bindinput="onInput" />
+      </view>
+      <view class="form-item">
+        <view class="label">联系方式 <text class="required">*</text></view>
+        <input class="input" placeholder="微信号或手机号，供管理员联系你" value="{{form.contact}}" data-field="contact" bindinput="onInput" />
+      </view>
+      <view class="form-item">
+        <view class="label">申请理由 <text class="required">*</text></view>
+        <textarea class="textarea" placeholder="介绍一下你的养猫条件（住所、封窗、养猫经验等），以及为什么想领养它" value="{{form.reason}}" data-field="reason" bindinput="onInput" maxlength="500"></textarea>
+        <view class="char-count">{{form.reason.length}}/500</view>
+      </view>
+    </view>
 
-  <button class="submit-btn {{submitting ? 'disabled' : ''}}" bindtap="submit" disabled="{{submitting}}">
-    {{submitting ? '提交中...' : '提交申请'}}
-  </button>
+    <view class="tip">
+      提交后管理员会审核你的申请，审核结果可在「我的-我的领养」中查看。通过审核后请保持联系方式畅通。
+    </view>
+
+    <button class="submit-btn {{submitting ? 'disabled' : ''}}" bindtap="submit" disabled="{{submitting}}">
+      {{submitting ? '提交中...' : (existing ? '重新提交申请' : '提交申请')}}
+    </button>
+  </block>
 </view>

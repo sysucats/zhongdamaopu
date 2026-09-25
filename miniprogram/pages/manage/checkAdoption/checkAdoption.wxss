@@ -15,23 +15,47 @@ button {
 button.primary {
   background-color: var(--color-primary);
   color: var(--color-text-onPrimary);
-  margin-top: 8rpx;
 }
 
 button + button {
   margin-left: 5%;
 }
 
+/* 审核过程记录：独占一行 */
 button.long {
-  margin: 0;
+  margin: 16rpx 0 0;
   width: 100%;
+}
+
+button.btn-note {
+  color: #1890ff;
+  border: 1rpx solid #1890ff;
+  background: #fff;
 }
 
 button.btn-reject {
   color: #f5222d;
   border: 1rpx solid #f5222d;
   background: #fff;
-  margin-top: 8rpx;
+}
+
+/* 按钮行：拒绝/通过、取消/确认 —— 等宽铺满，两端对齐 */
+.action-row,
+.panel-buttons {
+  display: flex;
+  justify-content: space-between;
+  gap: 24rpx;
+}
+
+.action-row { margin-top: 16rpx; }
+.panel-buttons { margin-top: 24rpx; }
+
+/* 覆盖全局 button 的固定宽度与 + 号间距，改由 flex 均分 */
+.action-row button,
+.panel-buttons button {
+  flex: 1;
+  width: auto;
+  margin: 0;
 }
 
 /* 顶部固定栏 */
@@ -116,10 +140,6 @@ button.btn-reject {
   height: 160rpx;
   box-sizing: border-box;
   font-size: 26rpx;
-  margin-top: 24rpx;
-}
-
-.panel-buttons {
   margin-top: 24rpx;
 }
 

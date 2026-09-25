@@ -171,6 +171,48 @@ module.exports = async (ctx) => {
     }
   }
 
+  // 补充审核过程记录（管理员，仅审核中状态，不改变申请状态）
+  if (operation === 'addNote') {
+    const is_manager = await isManagerHandler(createInternalCtx(ctx, {
+      openid: openid,
+      req: 2
+    }))
+    if (!is_manager) {
+      return { msg: 'not a manager', result: false }
+    }
+
+    const { adoption_id, note } = ctx.args
+    if (!adoption_id || !note || !note.trim()) {
+      return { msg: '缺少申请ID或记录内容', result: false }
+    }
+
+    const { result: adoption } = await db.collection('adoption').findOne({ _id: adoption_id })
+    if (!adoption) {
+      return { msg: '申请不存在', result: false }
+    }
+    if (adoption.status !== 'reviewing') {
+      return { msg: '只有审核中的申请可以补充记录', result: false }
+    }
+
+    const now = new Date()
+    const timeline = adoption.timeline || []
+    timeline.push({
+      status: 'reviewing',
+      time: now,
+      note: note.trim(),
+      operator: openid
+    })
+
+    try {
+      await db.collection('adoption').updateOne({ _id: adoption_id }, {
+        $set: { timeline: timeline, updated_at: now }
+      })
+      return { msg: '记录已补充', result: true }
+    } catch (error) {
+      return { msg: '补充记录失败', error, result: false }
+    }
+  }
+
   // 审核申请（管理员）
   if (operation === 'review') {
     const is_manager = await isManagerHandler(createInternalCtx(ctx, {

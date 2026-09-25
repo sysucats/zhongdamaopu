@@ -144,6 +144,12 @@ Page({
     const { reviewAction, reviewNote, reviewTarget } = this.data;
     if (!reviewTarget) return;
 
+    // 补充记录：内容必填
+    if (reviewAction === 'note' && !reviewNote.trim()) {
+      wx.showToast({ title: '请填写记录内容', icon: 'none' });
+      return;
+    }
+
     if (reviewAction === 'approve') {
       const modalRes = await wx.showModal({
         title: '确认通过？',
@@ -154,12 +160,18 @@ Page({
 
     wx.showLoading({ title: '处理中...' });
     try {
-      const res = await api.adoptionOp({
-        operation: 'review',
-        adoption_id: reviewTarget._id,
-        action: reviewAction,
-        note: reviewNote.trim(),
-      });
+      const res = reviewAction === 'note'
+        ? await api.adoptionOp({
+            operation: 'addNote',
+            adoption_id: reviewTarget._id,
+            note: reviewNote.trim(),
+          })
+        : await api.adoptionOp({
+            operation: 'review',
+            adoption_id: reviewTarget._id,
+            action: reviewAction,
+            note: reviewNote.trim(),
+          });
       wx.hideLoading();
       wx.showToast({ title: res.msg || (res.result ? '操作成功' : '操作失败'), icon: 'none' });
       if (res.result) {
