@@ -215,9 +215,9 @@
   "window": {
     "backgroundColor": "#fff",
     "backgroundTextStyle": "light",
-    "navigationBarBackgroundColor": "#20642c",
-    "navigationBarTitleText": "深中猫谱",
-    "navigationBarTextStyle": "white"
+    "navigationBarBackgroundColor": "#ffd101",
+    "navigationBarTitleText": "笃行猫谱",
+    "navigationBarTextStyle": "black"
   },
   "sitemapLocation": "sitemap.json",
   "lazyCodeLoading": "requiredComponents",
