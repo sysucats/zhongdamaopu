@@ -1,4 +1,6 @@
 // 存放所有需要调用云函数的接口
+import config from "../config";
+
 function getDate(date) {
   date = date ? new Date(date) : new Date();
   return new Date()
@@ -49,6 +51,22 @@ async function sendMsgV2(options) {
   return (await app.mpServerless.function.invoke('unionOp', {
     ...options,
     unionAction: "sendMsgV2",
+  })).result;
+}
+
+// 生成小程序码
+async function getMpCode(options) {
+  const app = getApp();
+  const params = {
+    _id: options._id,
+    scene: options.scene,
+    page: options.page,
+    width: 500,
+    use_private_tencent_cos: config.use_private_tencent_cos
+  }
+  return (await app.mpServerless.function.invoke('unionOp', {
+    ...params,
+    unionAction: "getMpCode",
   })).result;
 }
 
@@ -327,6 +345,7 @@ module.exports = {
   curdOp,
   userOp,
   sendMsgV2,
+  getMpCode,
   managePhoto,
   getAllSci,
   contentSafeCheck,

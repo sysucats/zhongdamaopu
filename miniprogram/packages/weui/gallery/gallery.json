@@ -1,6 +1,7 @@
 {
     "component": true,
     "usingComponents": {
-        "heart": "/packages/heart-button/heart"
+        "heart": "/packages/heart-button/heart",
+        "poster": "/components/poster/poster"
     }
 }

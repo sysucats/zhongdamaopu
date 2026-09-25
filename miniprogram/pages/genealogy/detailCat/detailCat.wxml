@@ -54,6 +54,10 @@
       <text class='tag'>{{cat.sterilized? text_cfg.detail_cat.sterilized_true: text_cfg.detail_cat.sterilized_false}}</text>
       <text class='tag to_star' wx:if='{{cat.to_star}}'>{{text_cfg.genealogy.to_star_tip}}</text>
       <text class='tag to_star' wx:if='{{cat.missing}}'>{{text_cfg.genealogy.missing_tip}}</text>
+
+      <view class="mpcode" bindtap="bingMpTap">
+        <view class='iconfont icon-qrcode'></view>
+      </view>
     </view>
 
     <!-- 领养横幅：寻找领养中时展示 -->
@@ -319,11 +323,15 @@
         <image class="icon" src='/pages/public/images/button/flag.svg'></image>
         <view class="button-text">{{text_cfg.detail_cat.button_feedback}}</view>
       </view>
+      <view class="button" bindtap='showPoster' >
+        <image class="icon" src='/pages/public/images/button/shareMeowId.svg'></image>
+        <view class="button-text">分享喵ID</view>
+      </view>
     </view>
  </popup>
 </scroll-view>
 
-<mp-gallery show="{{showGallery}}" gallery-photos="{{galleryPhotos}}" img-compressed-urls="{{imgCompressedUrls}}" img-urls="{{imgUrls}}" current="{{currentImg}}" hide-on-click="{{true}}" bindchange="bindGalleryChange" bindlikecountchanged="likeCountChanged"></mp-gallery>
+<mp-gallery show="{{showGallery}}" gallery-photos="{{galleryPhotos}}" img-compressed-urls="{{imgCompressedUrls}}" img-urls="{{imgUrls}}" current="{{currentImg}}" hide-on-click="{{true}}" cat="{{cat}}" bindchange="bindGalleryChange" bindlikecountchanged="likeCountChanged"></mp-gallery>
 
 <!-- 赠予徽章弹出框 -->
 <popup show="{{showGiveBadge}}" bind:close="hideGiveBadge">
@@ -402,3 +410,6 @@
 </popup>
 
 <badgeModal zindex="2" show="{{modal.show}}" title="{{modal.title}}" name="{{modal.name}}" img="{{modal.img}}" desc="{{modal.desc}}" tip="{{modal.tip}}" level="{{modal.level}}" bind:close="hideBadgeModal"></badgeModal>
+
+<!-- 海报图弹窗组件 -->
+<poster id="posterComponent" cat="{{cat}}" coverImg="{{cat.avatar}}" zindex="3"></poster>
