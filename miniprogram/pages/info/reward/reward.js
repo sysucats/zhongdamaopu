@@ -1,8 +1,10 @@
 // miniprogram/pages/info/reward/reward.js
-// PATCH: 20260918-投喂页去收款码 —— 移除赞赏码与捐款记录，仅保留激励广告
-import { text as text_cfg } from "../../../config";
+import { text as text_cfg, reward_img } from "../../../config";
+import { checkCanReward } from "../../../utils/user";
 import { getGlobalSettings } from "../../../utils/page";
+import { signCosUrl } from "../../../utils/common";
 const share_text = text_cfg.app_name + ' - ' + text_cfg.reward.share_tip;
+const app = getApp();
 Page({
 
   /**
@@ -19,12 +21,17 @@ Page({
   },
 
   onLoad: async function (option) {
+    this.loadReward();
+    // 是否开启
+    this.setData({
+      canReward: await checkCanReward()
+    });
+
     // 设置广告ID
     const ads = await getGlobalSettings('ads') || {};
     // 在页面onLoad回调事件中创建激励视频广告实例
     var that = this;
-    // 未配置广告位ID时不创建广告实例（否则会报错）
-    if (ads.reward_video && wx.createRewardedVideoAd) {
+    if (wx.createRewardedVideoAd) {
       this.jsData.videoAd = wx.createRewardedVideoAd({
         adUnitId: ads.reward_video
       })
@@ -46,7 +53,7 @@ Page({
           // 正常播放结束
         } else {
           // 播放中途退出
-          toast = text_cfg.reward.ad_fail_tip;
+          toast = text_cfg.reward.ad_success_tip;
           icon = 'error';
         }
         wx.showToast({
@@ -64,6 +71,47 @@ Page({
     return {
       title: share_text
     }
+  },
+
+  async loadReward() {
+    var { result: rewardRes } = await app.mpServerless.db.collection('reward').find({}, { sort: { mdate: -1 } })
+
+    console.log(rewardRes);
+    for (var r of rewardRes) {
+      const tmp = r.recordDate ? new Date(r.recordDate) : new Date(r.mdate);
+      r.mdate = tmp.getFullYear() + '年' + (tmp.getMonth() + 1) + '月';
+      r.records = r.records.replace(/^\#+|\#+$/g, '').split('#');
+    }
+    this.setData({
+      reward: rewardRes
+    });
+  },
+
+  // 打开大图
+  async openImg(e) {
+    const src = await signCosUrl(reward_img);
+    wx.previewImage({
+      urls: [src],
+      success: (res) => {
+        console.log(res);
+      },
+      fail: (res) => {
+        console.log(res);
+      },
+      complete: (res) => {
+        console.log(res);
+      },
+    });
+  },
+
+  // 跳转到 给赞 小程序
+  openMina(e) {
+    const appid = e.currentTarget.dataset.appid;
+    const path = e.currentTarget.dataset.path;
+    wx.navigateToMiniProgram({
+      appId: appid,
+      path: path,
+    });
   },
 
   // 激励广告
