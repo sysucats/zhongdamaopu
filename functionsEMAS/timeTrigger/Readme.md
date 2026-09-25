@@ -5,8 +5,8 @@ EMAS 定时触发的统一入口，并行跑 5 个子 handler：
 | handler | 作用 | 来源 |
 |---|---|---|
 | `countPhoto.js` | 统计每只猫的精选/总照片数 | 历史 |
-| `getBadgeRank.js` | 徽章排行榜 | 历史 |
-| `getPhotoRank.js` | 照片排行榜 | 历史 |
+| `getBadgeRank.js` | 徽章排行榜（每日 0 点更新，北京时间） | 历史 |
+| `getPhotoRank.js` | 照片排行榜（每日 0 点更新，北京时间） | 历史 |
 | `getTempCOS.js` | 临时 COS 缓存 | 历史 |
 | `photoProcess.js` | **照片自动处理**（jimp 压缩+水印+上传+写库） | 本次新增 |
 

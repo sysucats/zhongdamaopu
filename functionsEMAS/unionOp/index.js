@@ -26,6 +26,9 @@ const deleteCosFilesHandler = require('./deleteCosFiles.js')
 const isManagerHandler = require('./isManager.js')
 const getCatLocationsHandler = require('./getCatLocations.js')
 const getCatTrajectoryHandler = require('./getCatTrajectory.js')
+const adoptionOpHandler = require('./adoptionOp.js')
+const medicalOpHandler = require('./medicalOp.js')
+const getAchievementRankHandler = require('./getAchievementRank.js')
 
 const actionMap = {
     curdOp: curdOpHandler,
@@ -55,11 +58,14 @@ const actionMap = {
     isManager: isManagerHandler,
     getCatLocations: getCatLocationsHandler,
     getCatTrajectory: getCatTrajectoryHandler,
+    adoptionOp: adoptionOpHandler,
+    medicalOp: medicalOpHandler,
+    getAchievementRank: getAchievementRankHandler,
 }
 
 module.exports = async (ctx) => {
     if (ctx.args?.deploy_test === true) {
-        return "v1.5"
+        return "v1.6"
     }
 
     // ===== 安全加固：身份只能来自平台，客户端传入的 openid 一律忽略 =====

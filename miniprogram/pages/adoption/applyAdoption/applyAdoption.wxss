@@ -1,0 +1,163 @@
+.page {
+  padding: 30rpx;
+  min-height: 100vh;
+  background: #f7f7f7;
+  box-sizing: border-box;
+}
+
+.cat-card {
+  display: flex;
+  align-items: center;
+  background: #fff;
+  border-radius: 16rpx;
+  padding: 24rpx;
+  margin-bottom: 24rpx;
+}
+
+.cat-avatar {
+  width: 120rpx;
+  height: 120rpx;
+  border-radius: 50%;
+  background: #eee;
+}
+
+.cat-info {
+  margin-left: 24rpx;
+}
+
+.cat-name {
+  font-size: 36rpx;
+  font-weight: bold;
+  color: #333;
+}
+
+.cat-desc {
+  font-size: 26rpx;
+  color: #999;
+  margin-top: 8rpx;
+}
+
+/* 历史申请状态卡片 */
+.status-card {
+  background: #fff;
+  border-radius: 16rpx;
+  padding: 24rpx;
+  margin-bottom: 24rpx;
+}
+
+.status-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16rpx;
+}
+
+.status-label {
+  font-size: 28rpx;
+  font-weight: 500;
+  color: #333;
+}
+
+.status-badge {
+  font-size: 24rpx;
+  padding: 6rpx 20rpx;
+  border-radius: 24rpx;
+}
+
+.status-pending { background: #fff7e6; color: #fa8c16; }
+.status-reviewing { background: #e6f7ff; color: #1890ff; }
+.status-approved { background: #f6ffed; color: #52c41a; }
+.status-rejected { background: #fff1f0; color: #f5222d; }
+.status-cancelled { background: #f5f5f5; color: #999; }
+
+.status-line {
+  font-size: 24rpx;
+  color: #999;
+  line-height: 1.8;
+}
+
+.status-note {
+  font-size: 26rpx;
+  color: #666;
+  background: #f7f7f7;
+  border-radius: 12rpx;
+  padding: 16rpx 20rpx;
+  margin-top: 12rpx;
+  line-height: 1.6;
+}
+
+.status-tip {
+  font-size: 24rpx;
+  color: var(--color-primary-text, #d46b08);
+  margin-top: 16rpx;
+  line-height: 1.6;
+}
+
+.form-block {
+  background: #fff;
+  border-radius: 16rpx;
+  padding: 10rpx 24rpx;
+}
+
+.form-item {
+  padding: 24rpx 0;
+  border-bottom: 1rpx solid #f0f0f0;
+}
+
+.form-item:last-child {
+  border-bottom: none;
+}
+
+.label {
+  font-size: 28rpx;
+  color: #333;
+  margin-bottom: 16rpx;
+  font-weight: 500;
+}
+
+.required {
+  color: #e64340;
+}
+
+.input {
+  background: #f7f7f7;
+  border-radius: 12rpx;
+  padding: 20rpx 24rpx;
+  font-size: 28rpx;
+}
+
+.textarea {
+  background: #f7f7f7;
+  border-radius: 12rpx;
+  padding: 20rpx 24rpx;
+  font-size: 28rpx;
+  width: 100%;
+  height: 220rpx;
+  box-sizing: border-box;
+}
+
+.char-count {
+  text-align: right;
+  font-size: 22rpx;
+  color: #ccc;
+  margin-top: 8rpx;
+}
+
+.tip {
+  font-size: 24rpx;
+  color: #999;
+  line-height: 1.6;
+  margin: 24rpx 8rpx;
+}
+
+.submit-btn {
+  background: var(--color-primary);
+  color: var(--color-text-onPrimary);
+  border-radius: 44rpx;
+  font-size: 32rpx;
+  margin-top: 20rpx;
+}
+
+.submit-btn.disabled {
+  background: var(--color-gray-dark);
+}

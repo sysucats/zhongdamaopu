@@ -26,11 +26,11 @@ page {
 .card {
   position: relative;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
   justify-content: center;
   width: calc(50% - 15rpx);
-  height: 180rpx;
+  height: 110rpx;
   border-top-right-radius: 15rpx;
   border-top-left-radius: 15rpx;
   border-bottom-right-radius: 10rpx;
@@ -56,10 +56,10 @@ page {
 }
 
 .icon {
-  align-items: center;
-  width: 80rpx;
-  height: 80rpx;
-  margin-bottom:0rpx;
+  width: 56rpx;
+  height: 56rpx;
+  margin-right: 20rpx;
+  flex-shrink: 0;
 }
 .card-text {
   font-size: 30rpx;
@@ -69,6 +69,12 @@ page {
   letter-spacing: 5rpx;
   color: var(--color-black-light);
   filter: drop-shadow(0px 5rpx 5rpx rgba(0, 0, 0, 0.15));
+}
+
+/* 卡片为左右布局时文字左对齐、缩小字距（不影响工具卡片） */
+.card .card-text {
+  text-align: left;
+  letter-spacing: 2rpx;
 }
 
 .tool {

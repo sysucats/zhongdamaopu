@@ -11,7 +11,7 @@
   right: 20rpx;
   z-index: 100;
   background: rgba(0, 0, 0, 0.55);
-  color: #ffd101;
+  color: var(--color-primary, #ffd101);
   font-size: 22rpx;
   padding: 6rpx 16rpx;
   border-radius: 20rpx;
@@ -114,7 +114,7 @@
 
 .campus-btn:active {
   opacity: 0.75;
-  background: #f5f5f5;
+  background: var(--color-gray-light, #f7f7f7);
 }
 
 .campus-btn-text {
@@ -141,7 +141,7 @@
 
 .campus-toggle:active {
   transform: scale(0.9);
-  background: #f5f5f5;
+  background: var(--color-gray-light, #f7f7f7);
 }
 
 /* 底部详情卡片 */
@@ -292,7 +292,7 @@
 }
 
 .info-row + .info-row {
-  border-top: 1rpx solid rgba(0, 0, 0, 0.05);
+  border-top: 1rpx solid var(--color-ltblack-transparent);
 }
 
 .info-label {
@@ -351,8 +351,8 @@
   padding: 20rpx 0;
   text-align: center;
   font-size: 28rpx;
-  color: var(--color-primary, #4A90D9);
-  background: var(--color-primary-light, #e8f4fd);
+  color: var(--color-primary, #ffd101);
+  background: var(--color-primary-light, #fffced);
   border-radius: 44rpx;
   letter-spacing: 2rpx;
   min-width: 0;
@@ -360,7 +360,7 @@
 
 .detail-trajectory-btn:active {
   opacity: 0.75;
-  background: var(--color-primary, #4A90D9);
+  background: var(--color-primary, #ffd101);
   color: #fff;
 }
 
@@ -418,7 +418,7 @@
 
 .total-cats-label {
   font-size: 24rpx;
-  color: #8a8a8a;
+  color: var(--color-gray-max, #888);
   line-height: 1;
 }
 
@@ -434,7 +434,7 @@
   display: flex;
   align-items: flex-start;
   padding: 16rpx 0;
-  border-bottom: 1rpx solid var(--color-gray-light, #f0f0f0);
+  border-bottom: 1rpx solid var(--color-gray-light, #f7f7f7);
 }
 
 .tl-item:last-child {
@@ -442,7 +442,7 @@
 }
 
 .tl-item:active {
-  background: var(--color-primary-light, #e8f4fd);
+  background: var(--color-primary-light, #fffced);
 }
 
 /* 时间线圆点 */
@@ -450,7 +450,7 @@
   width: 16rpx;
   height: 16rpx;
   border-radius: 50%;
-  background: var(--color-primary, #4A90D9);
+  background: var(--color-primary, #ffd101);
   flex-shrink: 0;
   margin-top: 8rpx;
   margin-right: 16rpx;
@@ -467,12 +467,12 @@
 /* 时间线日期文字 */
 .tl-date {
   font-size: 26rpx;
-  color: var(--color-black-min, #333);
+  color: var(--color-black-min, #414141);
   font-weight: 500;
 }
 
 /* 时间线坐标文字 */
 .tl-coord {
   font-size: 22rpx;
-  color: var(--color-gray-max, #999);
+  color: var(--color-gray-max, #888);
 }

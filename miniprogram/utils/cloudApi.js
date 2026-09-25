@@ -54,6 +54,7 @@ async function sendMsgV2(options) {
   })).result;
 }
 
+// 生成小程序码
 async function getMpCode(options) {
   const app = getApp();
   const params = {
@@ -236,6 +237,37 @@ async function vaccineOp(options) {
   })).result
 }
 
+// 领养流程相关操作
+async function adoptionOp(options) {
+  const app = getApp();
+  const openid = await getCurrentUserOpenid();
+  return (await app.mpServerless.function.invoke('unionOp', {
+    ...options,
+    openid: openid,
+    unionAction: "adoptionOp",
+  })).result
+}
+
+// 医疗记录相关操作
+async function medicalOp(options) {
+  const app = getApp();
+  const openid = await getCurrentUserOpenid();
+  return (await app.mpServerless.function.invoke('unionOp', {
+    ...options,
+    openid: openid,
+    unionAction: "medicalOp",
+  })).result
+}
+
+// 成就数量排行榜
+async function getAchievementRank(options) {
+  const app = getApp();
+  return (await app.mpServerless.function.invoke('unionOp', {
+    ...options,
+    unionAction: "getAchievementRank",
+  })).result
+}
+
 // 更新猫的关系
 async function catRelationOp(options) {
   const app = getApp();
@@ -328,6 +360,9 @@ module.exports = {
   getCatStats,
   updateFollowCats,
   vaccineOp,
+  adoptionOp,
+  medicalOp,
+  getAchievementRank,
   catRelationOp,
   manageRelationRules,
   initVaccineTypes,

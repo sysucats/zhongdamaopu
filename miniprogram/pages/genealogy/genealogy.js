@@ -937,7 +937,21 @@ Page({
     
     // 添加软删除过滤条件
     conditions.push({ deleted: { $ne: 1 } });
-    return { $and: conditions };
+    // EMAS 兼容：find 对 $and 包装的查询会返回空结果（count 正常），
+    // 单键条件直接拍平合并，尽量不产生 $and
+    const merged = {};
+    const rest = [];
+    for (const cond of conditions) {
+      const keys = Object.keys(cond);
+      if (keys.length === 1 && !keys[0].startsWith('$') && !(keys[0] in merged)) {
+        merged[keys[0]] = cond[keys[0]];
+      } else {
+        rest.push(cond);
+      }
+    }
+    if (rest.length === 0) return merged;
+    if (Object.keys(merged).length === 0 && rest.length === 1) return rest[0];
+    return { $and: rest.concat([merged]) };
   },
   
   fComfirm: function() {

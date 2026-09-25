@@ -23,3 +23,5 @@ miniprogram/signKey.js
 # Others
 .trae
 .workbuddy
+*.bak
+functionsEMAS/*.zip

@@ -5,6 +5,7 @@ const deleteCosFilesHandler = require('./deleteCosFiles.js')
 // 操作对应collection需要的等级
 const permissionNeed = {
     "add": {
+        "achievement": 0,
         "badge_def": 2,
         "cat": 2,
         "comment": 0,
@@ -22,6 +23,7 @@ const permissionNeed = {
         "vaccine": 2,
     },
     "update": {
+        "achievement": 99,
         "badge_def": 2,
         "cat": 2,
         "comment": 1,
@@ -39,6 +41,7 @@ const permissionNeed = {
         "vaccine": 2,
     },
     "remove": {
+        "achievement": 99,
         "badge_def": 2,
         "cat": 99,
         "comment": 1,
@@ -56,6 +59,7 @@ const permissionNeed = {
         "vaccine": 2,
     },
     "set": {
+        "achievement": 99,
         "badge_def": 2,
         "cat": 2,
         "comment": 1,
@@ -73,6 +77,7 @@ const permissionNeed = {
         "vaccine": 2,
     },
     "inc": {
+        "achievement": 99,
         "badge_def": 2,
         "cat": 0,
         "comment": 1,

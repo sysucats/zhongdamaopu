@@ -23,8 +23,12 @@ async function _doGetCatCommentCount(cat_id) {
   if (cat_id === undefined) {
     return 0;
   }
-  const { result } = await app.mpServerless.db.collection('comment').count({ cat_id: cat_id, deleted: { $ne: true } })
-  return result;
+  // EMAS 客户端查询不认 $exists，拉回后在客户端排除照片评论
+  const { result } = await app.mpServerless.db.collection('comment').find(
+    { cat_id: cat_id, deleted: { $ne: true } },
+    { projection: { photo_id: 1 }, limit: 1000 }
+  );
+  return (result || []).filter(c => !c.photo_id).length;
 }
 
 module.exports = {

@@ -1,0 +1,82 @@
+<!-- 领养申请审核（骨架复用反馈处理页的已验证结构） -->
+<block wx:if="{{auth}}">
+  <!-- 顶部固定栏：说明 + 状态切换 -->
+  <view id='tips'>
+    <text>先点「审核过程记录」受理，确认领养人后点「通过」。\n点击猫猫名字跳转详情，已通过/未通过可回溯审核记录。</text>
+    <view class="tabs">
+      <view class="tab {{activeTab === item.key ? 'active' : ''}}" wx:for="{{tabs}}" wx:key="key" data-key="{{item.key}}" bindtap="switchTab">{{item.name}}</view>
+    </view>
+  </view>
+
+  <!-- 审核面板（内嵌，不用 fixed 弹窗，避免部分模拟器无法输入） -->
+  <view class="review-panel" wx:if="{{showReviewPanel && reviewTarget}}">
+    <view class="panel-title">{{reviewAction === 'approve' ? '通过申请' : (reviewAction === 'processing' ? '审核过程记录' : (reviewAction === 'note' ? '补充审核记录' : '拒绝申请'))}}</view>
+    <view class="panel-desc">{{reviewTarget.applicant_name}} → 「{{reviewTarget.cat_name}}」</view>
+    <textarea class="panel-textarea" placeholder="{{reviewAction === 'note' ? '记录内容（必填，申请人可见），如：已电话沟通，待补充材料' : '审核备注（可选，申请人可见）'}}" value="{{reviewNote}}" bindinput="onNoteInput" maxlength="200"></textarea>
+    <view class="panel-buttons">
+      <button bindtap="closeReview">取消</button>
+      <button class="primary" bindtap="confirmReview">确认</button>
+    </view>
+  </view>
+
+  <view class='empty' wx:if="{{!loading && list.length === 0}}">暂无{{statusDesc[activeTab]}}的申请</view>
+
+  <!-- 申请卡片 -->
+  <view class='verify-box' wx:for="{{list}}" wx:key="_id">
+    <view class='line'>
+      <image mode='aspectFill' class='icon cat-avatar' src='{{item.cat_avatar}}' bindtap='toCatDetail' data-cat_id='{{item.cat_id}}'></image>
+      <text user-select='false' bindtap='toCatDetail' data-cat_id="{{item.cat_id}}">{{item.cat_name}}</text>
+      <view class='status-badge status-{{item.status}}'>{{statusDesc[item.status]}}</view>
+    </view>
+
+    <!-- 申请人信息气泡 -->
+    <view class='bubble1'>
+      <view class='date'><text user-select='true'>{{item.apply_time_formatted}}</text></view>
+      <view class='name'><text user-select='true'>申请人：{{item.applicant_name}}</text></view>
+      <view class='floating'>
+        <view class='content'><text user-select='true'>{{item.reason}}</text></view>
+        <view class='footer' bindtap='copyContact' data-contact='{{item.contact}}'><text user-select='true'>联系方式：{{item.contact}}（点击复制）</text></view>
+      </view>
+    </view>
+
+    <!-- 审核信息气泡（历史回溯：所有管理员可见） -->
+    <view wx:if="{{item.status !== 'pending'}}" class='bubble2'>
+      <view class='date' wx:if="{{item.review_time_formatted}}"><text user-select='true'>{{item.review_time_formatted}}</text></view>
+      <view class='name'><text user-select='true'>审核人：{{item.reviewerInfo.nickName || '未知'}}</text></view>
+      <view class='floating'>
+        <view class='content'><text user-select='true'>{{item.review_note || statusDesc[item.status]}}</text></view>
+      </view>
+    </view>
+
+    <!-- 流转记录 -->
+    <view class="timeline-toggle" wx:if="{{item.timeline && item.timeline.length}}" bindtap="toggleTimeline" data-index="{{index}}">
+      流转记录（{{item.timeline.length}}）{{item.showTimeline ? '▲' : '▼'}}
+    </view>
+    <view class="timeline" wx:if="{{item.showTimeline}}">
+      <view class="timeline-item" wx:for="{{item.timeline}}" wx:for-item="t" wx:key="index">
+        <view class="timeline-dot status-bg-{{t.status}}"></view>
+        <view class="timeline-content">
+          <view class="timeline-head">
+            <text class="timeline-status">{{t.status_desc}}</text>
+            <text class="timeline-time">{{t.time_formatted}}</text>
+          </view>
+          <view class="timeline-note">{{t.note}}</view>
+          <view class="timeline-operator" wx:if="{{t.operatorInfo}}">操作人：{{t.operatorInfo.nickName}}</view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 操作按钮 -->
+    <block wx:if="{{item.status === 'pending' || item.status === 'reviewing'}}">
+      <button class="long" wx:if="{{item.status === 'pending'}}" bindtap="openReview" data-action="processing" data-index="{{index}}">审核过程记录</button>
+      <button class="long btn-note" wx:if="{{item.status === 'reviewing'}}" bindtap="openReview" data-action="note" data-index="{{index}}">补充审核记录</button>
+      <view class="action-row">
+        <button class='btn-reject' bindtap="openReview" data-action="reject" data-index="{{index}}">拒绝</button>
+        <button class='primary' bindtap="openReview" data-action="approve" data-index="{{index}}">通过</button>
+      </view>
+    </block>
+  </view>
+</block>
+
+<!-- 未授权提示 -->
+<no-auth wx:else tip-text="{{tipText}}"></no-auth>

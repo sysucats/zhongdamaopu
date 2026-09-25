@@ -33,7 +33,7 @@
 
 /* 原图按钮 */
 .weui-gallery__opr {
-    width: 300rpx;
+    flex: 1;
     background-color: #0d0d0d;
     color: #FFFFFF;
     line-height: 60px;
@@ -42,10 +42,6 @@
     padding-bottom: max(20rpx, env(safe-area-inset-bottom));
     text-align: center;
     display: inline-block;
-}
-
-.weui-gallery__opr.origin_photo {
-    width: 300rpx;
 }
 
 .weui-gallery__opr.like_button {

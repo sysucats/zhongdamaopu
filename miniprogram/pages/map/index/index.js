@@ -7,6 +7,9 @@ import { signCosUrl } from "../../../utils/common";
 
 const app = getApp();
 
+// 无头像猫咪的默认 marker 图标（会被 drawCircleAvatar 裁成圆形）
+const DEFAULT_MARKER_ICON = '/pages/public/images/info/default_avatar.png';
+
 const CAMPUS_CENTER = config.map_center;
 
 Page({
@@ -40,7 +43,7 @@ Page({
     userLocated: false, // 是否已获取用户定位
     loaded: false,      // 首次加载完成标记
     campusCenters: {},  // { campusName: { latitude, longitude, scale } }
-    markerIconMap: {},  // cat_id -> 已绘制好的圆形头像临时文件路径（避免重绘闪动）
+    markerIconMap: {},  // cat_id -> 已绘制好的圆形头像临时文件路径（避免重绘闪动），__default__ 为无头像猫咪的默认图标
     avatarDrawn: false, // 圆形头像是否已首次绘制完成（仅首次进入页面绘制）
     clusterIconCache: {}, // { count: tempFilePath } 数量圈图标缓存（按猫数量复用）
     currentScale: null,   // 当前地图缩放级别（onRegionChange 更新）
@@ -186,7 +189,8 @@ Page({
         return old.cat_id === cur.cat_id
           && old.latitude === cur.latitude
           && old.longitude === cur.longitude
-          && (old.trajectory_count || 0) === (cur.trajectory_count || 0);
+          && (old.trajectory_count || 0) === (cur.trajectory_count || 0)
+          && (old.haunts || []).length === (cur.haunts || []).length;
       });
 
       this.jsData.catList = catList;
@@ -337,14 +341,17 @@ Page({
 
     // 生成 markers：
     //   - 优先使用已缓存的圆形头像路径（markerIconMap），避免重绘闪动
-    //   - 没有缓存时回退到原图（后续 _renderCircleIcons 会异步生成圆形头像并替换）
+    //   - 有头像但没缓存时回退到原图（后续 _renderCircleIcons 会异步生成圆形头像并替换）
+    //   - 无头像时回退到默认图标（同样会被 _renderCircleIcons 裁成圆形）
     const markers = catList.map((cat, index) => {
       const catId = cat.cat_id || cat._id;
       const avatar = avatarMap[catId];
       const cachedCircle = this.jsData.markerIconMap[catId];
+      const cachedDefault = this.jsData.markerIconMap['__default__'];
       const iconPath = cachedCircle
         ? cachedCircle
-        : (avatar ? (avatar.photo_compressed || avatar.photo_id || undefined) : undefined);
+        : (avatar ? (avatar.photo_compressed || avatar.photo_id || undefined)
+                  : (cachedDefault || DEFAULT_MARKER_ICON));
       const lat = cat.latitude != null ? cat.latitude : undefined;
       const lng = cat.longitude != null ? cat.longitude : undefined;
       return {
@@ -370,6 +377,37 @@ Page({
     });
 
     this.jsData.markers = markers;
+
+    // 常出没地点 markers（不参与聚合，id 从 500000 起）
+    const hauntMarkers = [];
+    catList.forEach((cat) => {
+      const catId = cat.cat_id || cat._id;
+      (cat.haunts || []).forEach((h) => {
+        if (h.latitude == null || h.longitude == null) return;
+        hauntMarkers.push({
+          id: 500000 + hauntMarkers.length,
+          catId: catId,
+          latitude: h.latitude,
+          longitude: h.longitude,
+          width: 26,
+          height: 26,
+          iconPath: '/pages/public/images/map/haunt_pin.png',
+          callout: {
+            content: `${cat.name || '猫咪'} · ${h.name || '常出没'}`,
+            color: '#92400E',
+            fontSize: 11,
+            borderRadius: 6,
+            bgColor: '#ffd101',
+            padding: 4,
+            display: 'ALWAYS',
+            textAlign: 'center'
+          },
+          _isHaunt: true,
+        });
+      });
+    });
+    this.jsData.hauntMarkers = hauntMarkers;
+
     this.setData({ markers });
 
     // 圆形头像仅在首次进入页面时绘制；之后 onShow 刷新数据复用缓存，不再重绘
@@ -397,7 +435,7 @@ Page({
     }
     if (!canvas) return;
 
-    // 串行绘制（Canvas 单资源），仅处理「有头像 + 尚未缓存」的猫
+    // 串行绘制（Canvas 单资源），处理「有头像 + 尚未缓存」的猫，以及无头像的默认圆形图标
     const catIdsWithAvatar = catList
       .map(c => c.cat_id || c._id)
       .filter(id => avatarMap[id] && (avatarMap[id].photo_compressed || avatarMap[id].photo_id)
@@ -417,6 +455,30 @@ Page({
           changed = true;
         }
       }
+    }
+
+    // 为没有头像的猫咪绘制统一的默认圆形图标
+    const hasAvatarless = markers.some(m => {
+      const avatar = avatarMap[m.catId];
+      return !avatar || (!avatar.photo_compressed && !avatar.photo_id);
+    });
+    if (hasAvatarless && !this.jsData.markerIconMap['__default__']) {
+      const defaultCircle = await this.drawCircleAvatar(canvas, DEFAULT_MARKER_ICON);
+      if (defaultCircle) {
+        this.jsData.markerIconMap['__default__'] = defaultCircle;
+      }
+    }
+    const defaultCircle = this.jsData.markerIconMap['__default__'];
+    if (defaultCircle) {
+      markers.forEach(m => {
+        const avatar = avatarMap[m.catId];
+        if (!avatar || (!avatar.photo_compressed && !avatar.photo_id)) {
+          if (m.iconPath !== defaultCircle) {
+            m.iconPath = defaultCircle;
+            changed = true;
+          }
+        }
+      });
     }
 
     // 只要有改动就更新；并标记首次绘制完成
@@ -457,6 +519,27 @@ Page({
           trajectoryPointLat: point.latitude,
           trajectoryPointLng: point.longitude,
           trajectoryPointUser: point.photographer || '',
+        }
+      });
+      return;
+    }
+
+    // 常出没地点 marker（id 从 500000 起）：展示对应猫信息卡
+    if (markerId >= 500000) {
+      const hauntMarker = (this.data.markers || []).find(m => m.id === markerId);
+      if (!hauntMarker || !hauntMarker.catId) return;
+      const hauntCat = (this.jsData.catList || []).find(c => (c.cat_id || c._id) === hauntMarker.catId);
+      if (!hauntCat) return;
+      const hauntCatId = hauntCat.cat_id || hauntCat._id;
+      const hauntAvatar = hauntCat.avatar || this.jsData.avatarMap[hauntCatId];
+      this.setData({
+        showDetail: true,
+        photoPanDistance: 0,
+        currentCat: {
+          ...hauntCat,
+          _id: hauntCatId,
+          avatarUrl: hauntAvatar ? (hauntAvatar.photo_compressed || hauntAvatar.photo_id) : undefined,
+          trajectory_count: hauntCat.trajectory_count || 0,
         }
       });
       return;
@@ -586,13 +669,16 @@ Page({
     const allMarkers = this.jsData.markers || [];
     if (allMarkers.length === 0) return;
 
+    const hauntMarkers = this.jsData.hauntMarkers || [];
+
     // 高缩放级别：还原所有猫 marker
     if (scale == null || scale >= this.data.clusterThreshold) {
+      const fullList = allMarkers.concat(hauntMarkers);
       // 当前显示的若已是完整列表（无聚合 marker），跳过，避免无谓刷新
       const hasCluster = (this.data.markers || []).some(m => m._isCluster);
-      const isFullList = !hasCluster && this.data.markers.length === allMarkers.length;
+      const isFullList = !hasCluster && this.data.markers.length === fullList.length;
       if (!isFullList) {
-        this.setData({ markers: allMarkers });
+        this.setData({ markers: fullList });
       }
       return;
     }
@@ -645,7 +731,7 @@ Page({
       };
     });
 
-    this.setData({ markers: clusteredMarkers });
+    this.setData({ markers: clusteredMarkers.concat(hauntMarkers) });
   },
 
   /**

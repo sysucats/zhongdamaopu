@@ -193,7 +193,7 @@ Page({
 
   async setSciImgs() {
     const sciImgList = await Promise.all(science_imgs.map(val => signCosUrl(val)));;
-    const cacheKey = 'sciImgStorage';
+    const cacheKey = 'sciImgStorage_v2';  // v2: 旧缓存为占位图，弃用
     const dataKey = 'images';
 
     const fileSystem = wx.getFileSystemManager();
@@ -237,23 +237,29 @@ Page({
 
   async cacheCloudImg(cacheKey, imgUrlList) { // 下载并缓存封面
     const fileSystem = wx.getFileSystemManager();
-    var promiseAll = [];
     var cachePathList = [];
 
     for (let i = 0; i < imgUrlList.length; i++) {
-      promiseAll.push(this.downloadFile(imgUrlList[i]));
-    }
-
-    var res = await Promise.all(promiseAll);
-
-    console.log("[cacheCloudImg] -", res);
-    for (let i = 0; i < res.length; i++) {
-      const tempPath = res[i].tempFilePath;
-      // Demo 模式或已是本地路径：直接使用，跳过 saveFileSync
-      if (tempPath && tempPath.startsWith('/')) {
-        cachePathList.push(tempPath);
-      } else {
-        cachePathList.push(fileSystem.saveFileSync(tempPath));
+      const url = imgUrlList[i];
+      // 本地包路径或空值：直接使用
+      if (!url || url.startsWith('/')) {
+        cachePathList.push(url);
+        continue;
+      }
+      // 远程地址：尝试下载转存本地缓存；任何异常都回退为直接用远程地址
+      // （<image> 可直接加载 https，缓存只是加速优化，没有也能正常显示）
+      try {
+        const res = await this.downloadFile(url);
+        const tempPath = res.tempFilePath;
+        // 只有真正的本地临时文件才能转存；http(s) 开头说明下载异常，直接用原地址
+        if (tempPath && !tempPath.startsWith('http')) {
+          cachePathList.push(fileSystem.saveFileSync(tempPath));
+        } else {
+          cachePathList.push(url);
+        }
+      } catch (e) {
+        console.warn('[cacheCloudImg] 缓存失败，改用远程地址:', url, e);
+        cachePathList.push(url);
       }
     }
     wx.setStorage({

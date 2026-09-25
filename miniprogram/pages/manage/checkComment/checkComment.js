@@ -129,7 +129,9 @@ Page({
   },
 
   openBigPhoto(e) {
-    const pid = e.currentTarget.dataset.pid;
+    let pid = e.currentTarget.dataset.pid;
+    // EMAS 外链可能含中文目录，previewImage 要求 URL 先编码
+    try { pid = encodeURI(decodeURI(pid)); } catch (err) { pid = encodeURI(pid); }
     wx.previewImage({
       urls: [pid]
     });
