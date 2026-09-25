@@ -26,7 +26,7 @@ page {
 
 .status-card.pending {
   background: #fff8e1;
-  border: 2rpx solid #20642c;
+  border: 2rpx solid var(--color-primary);
 }
 
 .status-card.rejected {
@@ -107,13 +107,13 @@ page {
 
 .req-status.unmet {
   font-size: 24rpx;
-  color: var(--color-red, #e74c3c);
+  color: var(--color-red, #dc3545);
   margin-top: 8rpx;
 }
 
 .req-status.met {
   font-size: 24rpx;
-  color: var(--color-green, #27ae60);
+  color: var(--color-green, #22ad6d);
   margin-top: 8rpx;
 }
 

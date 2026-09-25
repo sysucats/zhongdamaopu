@@ -25,12 +25,16 @@ async function _checkFuncs() {
       if (funcRes == funcs[name]) {
         res["ok"].push(name);
       } else {
-        res["ver_err"].push(name);
+        res["ver_err"].push({
+          name: name,
+          online: funcRes,
+          required: funcs[name],
+        });
       }
     } catch {
-        res["not_exist"].push(name);
+      res["not_exist"].push(name);
     }
-    
+
   }
   return res;
 }
@@ -57,7 +61,12 @@ async function checkFunctions() {
   }
 
   var addition = res["not_exist"].length ? `未部署函数：${res["not_exist"].join(", ")}。` : "";
-  addition += res["ver_err"].length ? `版本错误：${res["ver_err"].join(", ")}。` : "";
+  if (res["ver_err"].length) {
+    const verText = res["ver_err"].map(item =>
+      `${item.name}（线上: ${item.online ?? "无返回"}，需要: ${item.required}）`
+    ).join(", ");
+    addition += `版本错误：${verText}。`;
+  }
   return {
     status: STATUS_FAIL,
     addition: addition

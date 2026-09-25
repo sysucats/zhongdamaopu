@@ -388,10 +388,10 @@ Page({
           iconPath: '/pages/public/images/map/haunt_pin.png',
           callout: {
             content: `${cat.name || '猫咪'} · ${h.name || '常出没'}`,
-            color: '#ffffff',
+            color: '#92400E',
             fontSize: 11,
             borderRadius: 6,
-            bgColor: '#20642c',
+            bgColor: '#ffd101',
             padding: 4,
             display: 'ALWAYS',
             textAlign: 'center'

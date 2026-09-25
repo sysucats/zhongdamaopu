@@ -104,8 +104,6 @@ Page({
       other: '其他',
     },
 
-    // 喂食统计
-    feedStats: null,
   },
 
   jsData: {
@@ -284,7 +282,6 @@ Page({
       this.reloadCatBadge(),
       this.getLatestVaccine(cat._id),
       this.getMedicalTimeline(cat._id),
-      this.getFeedStats(cat._id),
     ]);
 
     var query = wx.createSelectorQuery();
@@ -1051,36 +1048,6 @@ Page({
   toMedicalManage() {
     wx.navigateTo({
       url: '/pages/manage/medicalManage/medicalManage?cat_id=' + this.jsData.cat_id,
-    });
-  },
-
-  // 获取喂食统计
-  async getFeedStats(cat_id) {
-    try {
-      const result = await api.feedOp({
-        operation: 'statsByCat',
-        cat_id: cat_id
-      });
-      if (result?.result === true && result.data) {
-        this.setData({ feedStats: result.data });
-      }
-    } catch (error) {
-      console.error('获取喂食统计失败:', error);
-    }
-  },
-
-  // 跳转喂食/零食打卡页
-  toFeedRecord(e) {
-    const category = (e && e.currentTarget && e.currentTarget.dataset.category) || 'meal';
-    wx.navigateTo({
-      url: '/pages/feed/feedRecord/feedRecord?cat_id=' + this.jsData.cat_id + '&category=' + category,
-    });
-  },
-
-  // 跳转分地区打卡主页
-  toFeedHub() {
-    wx.navigateTo({
-      url: '/pages/feed/feedHub/feedHub',
     });
   },
 
