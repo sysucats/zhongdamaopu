@@ -12,6 +12,8 @@ const TABS = [
   { key: 'comments', name: '我的便利贴' },
 ];
 
+const PHOTO_PAGE_SIZE = 8;
+
 Page({
   data: {
     tabs: TABS,
@@ -19,6 +21,9 @@ Page({
     loading: true,
     // 我拍的照片
     photos: [],
+    photosNoMore: false,
+    // 照片统计（单次 count，与分页加载无关）
+    photoStats: null,
     // 拍过的猫咪
     cats: [],
     // 我的便利贴
@@ -28,6 +33,8 @@ Page({
   jsData: {
     myOpenid: '',
     loaded: {}, // 各 tab 是否已加载
+    photoSkip: 0, // 照片分页游标
+    photosLoading: false, // 防止触底重复请求
   },
 
   async onLoad() {
@@ -38,6 +45,7 @@ Page({
       return;
     }
     await this.loadPhotos();
+    this.loadPhotoStats();
   },
 
   async onShow() {
@@ -48,6 +56,11 @@ Page({
     if (key === 'photos') await this.loadPhotos();
     else if (key === 'cats') await this.loadCats();
     else if (key === 'comments') await this.loadComments();
+  },
+
+  // 上拉触底：照片 tab 追加下一页
+  onReachBottom() {
+    if (this.data.activeTab === 'photos') this.loadMorePhotos();
   },
 
   switchTab(e) {
@@ -65,12 +78,29 @@ Page({
 
   // 我上传过的照片（含猫咪名、上传时间，可定位猫咪主页）
   async loadPhotos() {
-    this.setData({ loading: true });
+    // 重置分页游标，重新拉第一页
+    this.jsData.photoSkip = 0;
+    this.setData({ photos: [], photosNoMore: false });
+    await this.loadMorePhotos();
+  },
+
+  // 分页追加：每次拉 PHOTO_PAGE_SIZE 张，触底后由 onReachBottom 触发
+  async loadMorePhotos() {
+    if (this.jsData.photosLoading) return;
+    if (this.jsData.photoSkip > 0 && this.data.photosNoMore) return;
+    this.jsData.photosLoading = true;
+    const isFirstPage = this.jsData.photoSkip === 0;
+    if (isFirstPage) this.setData({ loading: true });
     try {
       const { result: photos } = await app.mpServerless.db.collection('photo').find(
         { _openid: this.jsData.myOpenid },
-        { sort: { create_date: -1 }, limit: 100 }
+        // create_date 旧数据可能缺失（老后端迁移），用 mdate 兜底排序
+        { sort: { create_date: -1, mdate: -1 }, skip: this.jsData.photoSkip, limit: PHOTO_PAGE_SIZE }
       );
+      // 诊断：核实各照片 create_date/mdate 的实际存值
+      console.log('[loadMorePhotos] 日期字段核查:', (photos || []).map(p => ({
+        _id: p._id, create_date: p.create_date, mdate: p.mdate,
+      })));
 
       // 猫名
       const catIds = [...new Set((photos || []).map(p => p.cat_id).filter(Boolean))];
@@ -83,20 +113,47 @@ Page({
       }
 
       // 签名URL（压缩图优先，省流量）
-      const list = await Promise.all((photos || []).map(async p => ({
-        ...p,
-        cat: catMap[p.cat_id] || {},
-        url: await signCosUrl(p.photo_compressed || p.photo_id),
-        create_date_formatted: p.create_date ? formatDate(p.create_date, 'yyyy-MM-dd hh:mm') : '',
-        status_desc: p.verified ? (p.best ? '精选' : '已通过') : '待审核',
-      })));
+      // 时间兜底：老后端迁移的照片缺 create_date，用 mdate 顶上
+      const list = await Promise.all((photos || []).map(async p => {
+        const rawDate = p.create_date || p.mdate;
+        const d = rawDate ? new Date(rawDate) : null;
+        return {
+          ...p,
+          cat: catMap[p.cat_id] || {},
+          url: await signCosUrl(p.photo_compressed || p.photo_id),
+          create_date_formatted: (d && !isNaN(d.getTime())) ? formatDate(d, 'yyyy-MM-dd hh:mm') : '',
+          status_desc: p.verified ? (p.best ? '精选' : '已通过') : '待审核',
+        };
+      }));
 
+      this.jsData.photoSkip += (photos || []).length;
+      const noMore = !photos || photos.length < PHOTO_PAGE_SIZE;
       this.jsData.loaded.photos = true;
-      this.setData({ photos: list, loading: false });
+      this.setData({
+        photos: isFirstPage ? list : this.data.photos.concat(list),
+        photosNoMore: noMore,
+        loading: false,
+      });
     } catch (err) {
-      console.error('[loadPhotos] - 加载我的照片失败:', err);
+      console.error('[loadMorePhotos] - 加载我的照片失败:', err);
       wx.showToast({ title: '加载失败', icon: 'none' });
       this.setData({ loading: false });
+    } finally {
+      this.jsData.photosLoading = false;
+    }
+  },
+
+  // 照片统计：总数 + 精选数（单次 count，与分页加载无关）
+  async loadPhotoStats() {
+    try {
+      const qf = { _openid: this.jsData.myOpenid };
+      const [total, best] = await Promise.all([
+        app.mpServerless.db.collection('photo').count(qf),
+        app.mpServerless.db.collection('photo').count({ ...qf, verified: true, best: true }),
+      ]);
+      this.setData({ photoStats: { total: total.result, best: best.result } });
+    } catch (err) {
+      console.error('[loadPhotoStats] - 统计照片数失败:', err);
     }
   },
 

@@ -33,7 +33,7 @@ Page({
         label: "徽章口袋",
         path: "/pages/packageA/pages/info/badge/badge",
       }, {
-        icon: "/pages/public/images/info/btn/paw_print.png",
+        icon: "/pages/public/images/info/btn/achievement.svg",
         label: "我的成就",
         path: "/pages/info/myAchievement/myAchievement",
       }, {

@@ -39,12 +39,12 @@ Page({
             btnAble: false,
           }, {
             label:"我的足迹",
-            img:"/pages/public/images/info/btn/paw_print.png",
+            img:"/pages/public/images/info/btn/history.svg",
             action:"/pages/info/myFootprint/myFootprint",
             btnAble: false,
           }, {
             label:"我的领养",
-            img:"/pages/public/images/info/btn/cat_head.png",
+            img:"/pages/public/images/info/btn/diamond.svg",
             action:"/pages/info/myAdoption/myAdoption",
             btnAble: false,
           }, {

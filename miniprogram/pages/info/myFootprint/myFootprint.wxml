@@ -6,6 +6,7 @@
 
   <!-- 我拍的照片 -->
   <block wx:if="{{activeTab === 'photos'}}">
+    <view class="stats-bar" wx:if="{{photoStats}}">已拍 {{photoStats.total}} 张照片 · 其中 {{photoStats.best}} 张获精选</view>
     <view class="empty" wx:if="{{!loading && photos.length === 0}}">还没有上传过照片</view>
     <view class="photo-grid">
       <view class="photo-item" wx:for="{{photos}}" wx:key="_id">
@@ -16,6 +17,7 @@
         </view>
       </view>
     </view>
+    <view class="load-more-tip" wx:if="{{!loading && photosNoMore && photos.length > 0}}">— 没有更多了 —</view>
   </block>
 
   <!-- 拍过的猫咪 -->
