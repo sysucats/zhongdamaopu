@@ -71,10 +71,6 @@
           <text class="iconfont {{feedItem.items[0].liked ? 'icon-like' : 'icon-like-o'}}"></text>
           <text class="interact-num">{{feedItem.items[0].like_count || ''}}</text>
         </view>
-        <view class="interact-btn" catchtap="toPhotoComment" data-photo_id="{{feedItem.items[0]._id}}" data-cat_id="{{feedItem.cat._id}}">
-          <text class="iconfont icon-smile-comment-o"></text>
-          <text class="interact-num">留言</text>
-        </view>
       </view>
 
     </view>

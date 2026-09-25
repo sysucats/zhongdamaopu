@@ -80,12 +80,6 @@
       ]
     },
     {
-      "root": "pages/genealogy/photoComment",
-      "pages": [
-        "photoComment"
-      ]
-    },
-    {
       "root": "pages/genealogy/feedbackDetail",
       "pages": [
         "feedbackDetail"

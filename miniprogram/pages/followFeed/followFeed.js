@@ -677,17 +677,6 @@ Page({
     }
   },
 
-  // 跳转到照片评论区
-  toPhotoComment(e) {
-    const { photo_id, cat_id } = e.currentTarget.dataset;
-    if (!photo_id) {
-      return;
-    }
-    wx.navigateTo({
-      url: '/pages/genealogy/photoComment/photoComment?photo_id=' + photo_id + '&cat_id=' + (cat_id || ''),
-    });
-  },
-
   // 跳转到猫猫的便利贴墙
   toCommentBoard(e) {
     const catId = e.currentTarget.dataset.cat_id;
