@@ -9,12 +9,10 @@ import api from "../../../utils/cloudApi";
 
 const app = getApp();
 
-// 审核记录的操作类型
+// 审核记录的操作类型（数据源为 photo 表 verified=true 的照片，best 区分精选/通过）
 const HISTORY_ACTIONS = {
   pass: { text: '通过', class: 'pass' },
   best: { text: '精选', class: 'best' },
-  delete: { text: '删除', class: 'delete' },
-  transfer: { text: '转移', class: 'transfer' },
 };
 
 Page({
@@ -31,11 +29,14 @@ Page({
     showTransferSelect: false,
     // 模式：pending 待审核 / history 审核记录（回溯，所有管理员的审核互相可见）
     mode: 'pending',
+    // 审核记录（不区分校区，统一按审核时间倒序）
     historyList: [],
     historyTotal: 0,
     historyLoading: false,
     historyNoMore: false,
     historyInited: false,
+    // 图片默认不加载，勾选后才批量签名；未勾选时可点击单张加载
+    showHistoryImages: false,
   },
 
   jsData: {
@@ -45,6 +46,8 @@ Page({
     rawPhotos: {},
     // 已加载完成的校区
     loadedCampus: {},
+    // 审核记录的分页状态
+    historyState: { list: [], total: 0, noMore: false, loading: false },
   },
 
   /**
@@ -54,6 +57,7 @@ Page({
     this.jsData.notice_list = {};
     this.jsData.rawPhotos = {};
     this.jsData.loadedCampus = {};
+    this.jsData.historyState = { list: [], total: 0, noMore: false, loading: false };
 
     if (await checkAuth(this, 1)) {
       this.loadAllPhotos();
@@ -201,75 +205,126 @@ Page({
     if (mode === this.data.mode) return;
     this.setData({ mode });
     if (mode === 'history' && !this.data.historyInited) {
+      this.setData({ historyInited: true });
       this.loadHistory(true);
     }
   },
 
-  // 触底加载更多审核记录
+  // 触底加载更多审核记录（下一批）
   onReachBottom() {
     if (this.data.mode === 'history') {
       this.loadHistory(false);
     }
   },
 
-  // 加载审核记录（回溯：所有管理员审核过的内容）
+  // 加载审核记录（直接读 photo 表：verified=true 即已审核，每批20条，check_time 倒序）
   async loadHistory(reset) {
-    if (this.data.historyLoading) return;
-    if (!reset && this.data.historyNoMore) return;
+    const state = this.jsData.historyState;
+    if (state.loading) return;
+    if (!reset && state.noMore) return;
 
+    state.loading = true;
     this.setData({ historyLoading: true });
     try {
-      const skip = reset ? 0 : this.data.historyList.length;
       const res = await api.managePhoto({
         type: 'history',
-        skip: skip,
+        skip: reset ? 0 : state.list.length,
         limit: 20,
       });
-
-      if (!res.result) {
-        wx.showToast({ title: res.msg || '加载失败', icon: 'none' });
+      if (!res || !res.result) {
+        wx.showToast({ title: (res && res.msg) || '加载失败', icon: 'none' });
+        state.loading = false;
         this.setData({ historyLoading: false });
         return;
       }
 
       const list = res.data.list || [];
+      await this.decorateHistoryItems(list);
 
-      // 并行获取猫信息（含转移目标猫）
-      const catIds = [...new Set(list.map(p => p.cat_id).filter(Boolean))];
-      const catCache = {};
-      await Promise.all(catIds.map(async id => {
-        catCache[id] = await getCatItem(id);
-      }));
+      state.list = reset ? list : state.list.concat(list);
+      state.total = res.data.total || 0;
+      state.noMore = state.list.length >= state.total;
+      state.loading = false;
 
-      // 签名缩略图
-      await Promise.all(list.map(async p => {
-        if (p.thumb) {
-          try { p.thumb = await signCosUrl(p.thumb); } catch (e) { /* 已删除的图片签名失败，显示占位 */ }
-        }
-        const cat = catCache[p.cat_id] || {};
-        p.cat_name = cat.name || '未知猫猫';
-        const act = HISTORY_ACTIONS[p.action] || { text: p.action, class: '' };
-        p.action_text = act.text;
-        p.action_class = act.class;
-        p.check_time_formatted = p.check_time ? formatDate(p.check_time, 'yyyy-MM-dd hh:mm') : '';
-      }));
-
-      // 填充审核人、上传者昵称
-      await fillUserInfo(list, 'manager_openid', 'managerInfo');
-      await fillUserInfo(list, 'uploader_openid', 'uploaderInfo');
-
-      const newList = reset ? list : this.data.historyList.concat(list);
       this.setData({
-        historyList: newList,
-        historyTotal: res.data.total || 0,
+        historyList: state.list,
+        historyTotal: state.total,
+        historyNoMore: state.noMore,
         historyLoading: false,
-        historyInited: true,
-        historyNoMore: newList.length >= (res.data.total || 0),
       });
     } catch (err) {
       console.error('[loadHistory] - 加载审核记录失败:', err);
+      state.loading = false;
       wx.showToast({ title: '网络错误', icon: 'none' });
       this.setData({ historyLoading: false });
+    }
+  },
+
+  // 装饰审核记录条目：猫名、操作、时间、上传者/审核人；勾选了显示图片才签名缩略图
+  async decorateHistoryItems(list) {
+    const catIds = [...new Set(list.map(p => p.cat_id).filter(Boolean))];
+    const catCache = {};
+    await Promise.all(catIds.map(async id => {
+      catCache[id] = await getCatItem(id);
+    }));
+    for (const p of list) {
+      const cat = catCache[p.cat_id] || {};
+      p.cat_name = cat.name || '未知猫猫';
+      const act = HISTORY_ACTIONS[p.action] || { text: p.action, class: '' };
+      p.action_text = act.text;
+      p.action_class = act.class;
+      p.check_time_formatted = p.check_time ? formatDate(p.check_time, 'yyyy-MM-dd hh:mm') : '';
+    }
+    if (this.data.showHistoryImages) {
+      await this.signHistoryThumbList(list);
+    }
+    await fillUserInfo(list, 'manager_openid', 'managerInfo');
+    await fillUserInfo(list, 'uploader_openid', 'uploaderInfo');
+  },
+
+  // 签名列表中未签名的缩略图（幂等，thumbSigned 标记）
+  async signHistoryThumbList(list) {
+    const pending = list.filter(p => p.thumb && !p.thumbSigned && !p.imgError);
+    await Promise.all(pending.map(async p => {
+      try {
+        p.thumb = await signCosUrl(p.thumb);
+        p.thumbSigned = true;
+      } catch (e) {
+        p.imgError = true; // 已删除的图片签名失败，显示占位
+      }
+    }));
+  },
+
+  // 勾选/取消"显示图片"（勾选后为已加载条目的缩略图批量签名）
+  async onToggleHistoryImages(e) {
+    const show = (e.detail.value || []).length > 0;
+    this.setData({ showHistoryImages: show });
+    if (!show) return;
+
+    const state = this.jsData.historyState;
+    if (state.list.length) {
+      await this.signHistoryThumbList(state.list);
+      this.setData({ historyList: state.list });
+    }
+  },
+
+  // 未勾选"显示图片"时，点击占位块单独加载这一张
+  async loadOneHistoryImage(e) {
+    const index = e.currentTarget.dataset.index;
+    const item = this.jsData.historyState.list[index];
+    if (!item || !item.thumb || item.thumbSigned || item.imgError) return;
+
+    try {
+      item.thumb = await signCosUrl(item.thumb);
+      item.thumbSigned = true;
+      this.setData({
+        [`historyList[${index}].thumb`]: item.thumb,
+        [`historyList[${index}].thumbSigned`]: true,
+      });
+    } catch (err) {
+      console.error('[loadOneHistoryImage] - 签名失败:', err);
+      item.imgError = true;
+      this.setData({ [`historyList[${index}].imgError`]: true });
     }
   },
 

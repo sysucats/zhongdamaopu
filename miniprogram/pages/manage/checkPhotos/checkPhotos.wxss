@@ -195,20 +195,38 @@ image {
 }
 
 /* 审核记录 */
+.history-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10rpx;
+}
+
 .history-summary {
   font-size: 24rpx;
   color: var(--color-gray-dark);
-  margin-bottom: 20rpx;
+}
+
+.img-toggle {
+  font-size: 24rpx;
+  color: var(--color-gray-dark);
+}
+
+.img-toggle checkbox-group {
+  display: inline-flex;
+  align-items: center;
 }
 
 .history-box image,
-.img-deleted {
+.img-deleted,
+.img-hidden {
   width: 160rpx;
   height: 160rpx;
   flex-shrink: 0;
 }
 
-.img-deleted {
+.img-deleted,
+.img-hidden {
   border-radius: 10rpx;
   background-color: var(--color-gray-light);
   color: var(--color-gray-dark);
@@ -217,6 +235,15 @@ image {
   align-items: center;
   justify-content: center;
   margin-top: 10rpx;
+}
+
+/* 可点击加载单张图片 */
+.img-hidden {
+  color: var(--color-primary-dark);
+}
+
+.img-hidden:active {
+  opacity: 0.7;
 }
 
 .history-badges {
@@ -234,11 +261,3 @@ image {
 
 .action-badge.pass { background-color: var(--color-green); }
 .action-badge.best { background-color: var(--color-primary-dark); }
-.action-badge.delete { background-color: var(--color-red); }
-.action-badge.transfer { background-color: #722ed1; }
-
-.transfer-target {
-  font-size: 22rpx;
-  color: #722ed1;
-  margin-left: 12rpx;
-}

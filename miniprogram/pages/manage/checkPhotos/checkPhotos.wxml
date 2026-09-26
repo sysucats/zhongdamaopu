@@ -50,11 +50,19 @@
 
   <!-- 审核记录（回溯：所有管理员的审核互相可见） -->
   <block wx:if="{{mode === 'history'}}">
-    <view class="history-summary" wx:if="{{historyTotal}}">共 {{historyTotal}} 条审核记录</view>
+    <view class="history-toolbar">
+      <view class="history-summary" wx:if="{{historyTotal}}">共 {{historyTotal}} 条审核记录</view>
+      <label class="img-toggle">
+        <checkbox-group bindchange="onToggleHistoryImages">
+          <checkbox value="show" checked="{{showHistoryImages}}" />显示全部图片
+        </checkbox-group>
+      </label>
+    </view>
     <view class="tip" wx:if="{{!historyLoading && !historyList.length}}">暂无审核记录</view>
     <view class='verify-box history-box' wx:for="{{historyList}}" wx:key="_id">
-      <image wx:if="{{!item.imgError && item.thumb}}" mode='aspectFill' src='{{item.thumb}}' bindtap='openBigPhoto' data-pid='{{item.thumb}}' binderror="onHistoryImgError" data-index="{{index}}"></image>
-      <view wx:else class="img-deleted">图片已删除</view>
+      <view wx:if="{{item.imgError}}" class="img-deleted">图片已删除</view>
+      <image wx:elif="{{item.thumbSigned}}" mode='aspectFill' src='{{item.thumb}}' bindtap='openBigPhoto' data-pid='{{item.thumb}}' binderror="onHistoryImgError" data-index="{{index}}"></image>
+      <view wx:else class="img-hidden" bindtap="loadOneHistoryImage" data-index="{{index}}">点击加载图片</view>
       <view class="info">
         <view class='label cat'><text bindtap="toCatDetail" data-cat_id="{{item.cat_id}}">{{item.cat_name}}</text></view>
         <view class='label user'>上传者：{{item.uploaderInfo.nickName || '未知'}}</view>
@@ -62,7 +70,6 @@
         <view class='label user'>{{item.check_time_formatted}}</view>
         <view class="history-badges">
           <view class="action-badge {{item.action_class}}">{{item.action_text}}</view>
-          <view class="transfer-target" wx:if="{{item.action === 'transfer' && item.target_cat_name}}">→ {{item.target_cat_name}}</view>
         </view>
       </view>
     </view>
