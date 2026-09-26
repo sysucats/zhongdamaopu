@@ -35,8 +35,14 @@ button.long {
   border-radius: 20rpx;
   background-color: #FFFFFF;
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   align-items: center;
+}
+
+.info-box {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
 }
 
 image {
@@ -53,6 +59,7 @@ image {
 
 /* 并排处理的按钮 */
 .buttons {
+  margin-top: 10rpx;
   display: flex;
   flex-direction: row;
 }
@@ -60,6 +67,7 @@ image {
 .buttons .button {
   border: 1rpx solid var(--color-gray-dark);
   padding: 10rpx 30rpx;
+  margin: 0 5rpx;
   font-size: 30rpx;
   background-color: #FFFFFF;
   transition: background-color 500ms ease,

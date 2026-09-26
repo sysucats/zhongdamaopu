@@ -23,19 +23,22 @@
   <block wx:for="{{campus_list[active_campus]}}" wx:key="_id">
     <view class='verify-box' id="photo-{{index}}">
       <!-- <view class="imageShadowMask"></view> -->
-      <image mode='aspectFill' src='{{item.photo_id}}' bindtap='openBigPhoto' data-pid='{{item.photo_id}}'></image>
-      <view class="info">
-        <view class='label cat'><text bindtap="toCatDetail" data-cat_id="{{item.cat._id}}">{{item.cat.name}}（{{item.cat.campus}}）</text></view>
-        <view class='label user'>上传者：{{item.userInfo.nickName}}</view>
-        <view class='label user'>摄影师：{{item.photographer || item.userInfo.nickName}}</view>
-        <view class='label user shotTime'>拍摄时间：{{item.shooting_date}}</view>
-        <view wx:if='{{isHEIC.isHEIC(item.photo_id)}}' class='label tip'>* 照片格式为.HEIC，可能会显示不出来</view>
-        <view class="buttons">
-          <view class="button delete {{item.mark == 'delete' ? 'marked' : ''}}" bindtap='bindMark' data-index='{{index}}' data-type="delete">删除</view>
-          <view class="button pass {{item.mark == 'pass' ? 'marked' : ''}}" bindtap='bindMark' data-index='{{index}}' data-type="pass">通过</view>
-          <view class="button best {{item.mark == 'best' ? 'marked' : ''}}" bindtap='bindMark' data-index='{{index}}' data-type="best">精选</view>
-          <view class="button transfer {{item.mark == 'transfer' ? 'marked' : ''}}" bindtap='bindMark' data-index='{{index}}' data-type="transfer">转移</view>
+      <view class="info-box">
+        <image mode='aspectFill' src='{{item.photo_id}}' bindtap='openBigPhoto' data-pid='{{item.photo_id}}'></image>
+        <view class="info">
+          <view class='label cat'><text bindtap="toCatDetail" data-cat_id="{{item.cat._id}}">{{item.cat.name}}（{{item.cat.campus}}）</text></view>
+          <view class='label user'>上传者：{{item.userInfo.nickName}}</view>
+          <view class='label user'>摄影师：{{item.photographer || item.userInfo.nickName}}</view>
+          <view class='label user shotTime'>拍摄时间：{{item.shooting_date}}</view>
+          <view wx:if='{{isHEIC.isHEIC(item.photo_id)}}' class='label tip'>* 照片格式为.HEIC，可能会显示不出来</view>
         </view>
+      </view>
+      
+      <view class="buttons">
+        <view class="button delete {{item.mark == 'delete' ? 'marked' : ''}}" bindtap='bindMark' data-index='{{index}}' data-type="delete">删除</view>
+        <view class="button transfer {{item.mark == 'transfer' ? 'marked' : ''}}" bindtap='bindMark' data-index='{{index}}' data-type="transfer">转移</view>
+        <view class="button pass {{item.mark == 'pass' ? 'marked' : ''}}" bindtap='bindMark' data-index='{{index}}' data-type="pass">通过</view>
+        <view class="button best {{item.mark == 'best' ? 'marked' : ''}}" bindtap='bindMark' data-index='{{index}}' data-type="best">精选</view>
       </view>
     </view>
   </block>
