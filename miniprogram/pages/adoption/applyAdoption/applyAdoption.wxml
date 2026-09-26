@@ -31,7 +31,7 @@
       </view>
       <view class="form-item">
         <view class="label">联系方式 <text class="required">*</text></view>
-        <input class="input" placeholder="微信号或手机号，供管理员联系你" value="{{form.contact}}" data-field="contact" bindinput="onInput" />
+        <input class="input" placeholder="供管理员联系你" value="{{form.contact}}" data-field="contact" bindinput="onInput" />
       </view>
       <view class="form-item">
         <view class="label">申请理由 <text class="required">*</text></view>
