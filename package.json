@@ -27,7 +27,7 @@
     "mongodb-uri": "^0.9.7",
     "multer": "^2.3.0",
     "node-modules-utils": "^0.8.2",
-    "nodemailer": "^9.1.1",
+    "nodemailer": "^10.0.9",
     "tencentcloud-sdk-nodejs": "4.0.571",
     "validator": "^13.7.0",
     "ws": "^8.11.0"
