@@ -54,6 +54,8 @@
 
 # :scroll:部署
 
+可选识猫后端：[MeowID 云端识猫参考方案](contrib-meowid-recognition/README.md)，包含 EMAS 云函数、接入指南与离线测试。采用时需要自行部署和适配前端；图片会发送到第三方服务并可能产生费用。
+
 :smirk_cat:*无需从零开始，只要一些耐心。*
 
 EMAS版暂时没有录制部署视频，部署流程请参考：[猫谱EMAS版文档](https://docs.qq.com/doc/DSE1vd0p3RERvWXJS)

@@ -1,0 +1,13 @@
+{
+  "name": "catface",
+  "version": "1.2.1",
+  "description": "猫谱小程序识猫云函数：对接喵ID MeowID（识别 + 建档绑定 + 每日额度），零第三方依赖",
+  "main": "index.js",
+  "scripts": {
+    "test": "node tests/regression.cjs"
+  },
+  "dependencies": {},
+  "engines": {
+    "node": ">=16"
+  }
+}
