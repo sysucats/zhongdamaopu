@@ -36,7 +36,11 @@ Page({
     colourIndex: 0,
     catList: [], // 展示的猫猫列表
     catBoxList: [], // 展示的猫猫框列表
-    catIdx: null, // 在有多只猫猫的图片中，识别的猫猫的编号
+    catIdx: null, // 在有多只猫猫的图片中，识别的猫猫的编号（UI 高亮用，= 数组位置）
+    catMeowIdx: null, // 传给后端的候选下标（取自 catBox.index），与数组位置可能不一致
+    quota: null, // 今日识别额度 { left, limit, used, adEnabled, adBonus, adLeft }，由云函数返回
+    unknownCat: false, // 检测到猫但身份未确认
+    videoAdLoaded: false, // 激励视频是否就绪
     showResultBox: false, // 用来配合动画延时展示resultBox
     showAdBox: true, // 展示banner广告
     ad: {},
@@ -73,6 +77,77 @@ Page({
         banner: ads.recognize_banner
       },
     })
+
+    this.loadRewardAd(ads);
+  },
+
+  // 激励视频：看广告领识别次数，用法与徽章模块一致。
+  // 注意：广告完成回调只是客户端事件，不构成服务端凭证；
+  // 是否真的发放由云函数的 RECOGNIZE_AD_ENABLED 决定，并有每日领取上限。
+  loadRewardAd(ads) {
+    if (!wx.createRewardedVideoAd) {
+      return;
+    }
+    // 优先用识猫页专属广告位，没配就回退到徽章页的激励视频位
+    const adUnitId = ads.recognize_video || ads.badge_video;
+    if (!adUnitId) {
+      console.log('未配置激励视频广告位');
+      return;
+    }
+    const videoAd = wx.createRewardedVideoAd({ adUnitId });
+    videoAd.onLoad(() => {
+      this.setData({ videoAdLoaded: true });
+    });
+    videoAd.onError((err) => {
+      console.log('reward ad error:', err);
+      this.setData({ videoAdLoaded: false });
+    });
+    videoAd.onClose(async (res) => {
+      // 没看完不给奖励
+      if (!res || !res.isEnded) {
+        return;
+      }
+      await this.grantBonus();
+    });
+    this.jsData.videoAd = videoAd;
+  },
+
+  async grantBonus() {
+    wx.showLoading({ title: '领取中...', mask: true });
+    try {
+      const res = await api.catFace({ action: 'grantBonus' });
+      wx.hideLoading();
+      if (res && res.ok === true && res.quota) {
+        this.setData({ quota: res.quota });
+        wx.showToast({
+          icon: 'none',
+          title: `已获得 ${res.bonus} 次识别机会`,
+          duration: 2000
+        });
+        return;
+      }
+      const code = res && res.code;
+      let title = '领取失败，请稍后再试';
+      if (code === 'bonus_not_supported') title = '暂未开启广告奖励';
+      else if (code === 'bonus_exhausted') title = '今日广告奖励已领完';
+      else if (res && res.msg) title = String(res.msg).slice(0, 30);
+      wx.showToast({ icon: 'none', title: title, duration: 2500 });
+    } catch (e) {
+      console.log('grantBonus error:', e);
+      wx.hideLoading();
+      wx.showToast({ icon: 'none', title: '网络或服务异常' });
+    }
+  },
+
+  tapRewardAd() {
+    const ad = this.jsData.videoAd;
+    if (!ad) {
+      wx.showToast({ icon: 'none', title: '广告未就绪' });
+      return;
+    }
+    ad.show().catch(() => {
+      wx.showToast({ icon: 'none', title: '广告拉取失败，请稍后重试' });
+    });
   },
 
   async onShow() {
@@ -137,6 +212,7 @@ Page({
     ctx.takePhoto({
       quality: 'high',
       success: (res) => {
+        that.reset(); // 清空上一张照片的识别状态
         that.setData({
           photoPath: res.tempImagePath,
           photoBase64: wx.getFileSystemManager().readFileSync(res.tempImagePath, 'base64')
@@ -147,14 +223,10 @@ Page({
   },
 
   async recognizePhoto() {
-    // 检查接口设置
+    // 检查接口设置：未配置 secretKey 时不上签名，云函数端同样会跳过校验
+    // （原逻辑是没密钥直接报错退出；MeowID 方案下签名是可选的）
     if (!this.jsData.secretKey) {
-      wx.showToast({
-        icon: 'error',
-        title: '出错了'
-      });
-      console.log("no secretKey");
-      return;
+      console.log("no secretKey，本次请求不带签名");
     }
     wx.showLoading({
       title: '翻阅猫谱中...',
@@ -177,26 +249,52 @@ Page({
     // 调用云函数 catFace 进行识别
     const params = {
       photoBase64: photoBase64,
-      signature: signature,
-      timestamp: timestamp,
     };
-    if (this.data.catIdx !== null) {
-      params.catIdx = this.data.catIdx; // 保留 tapCatBox 重新识别某只猫的能力
+    if (this.jsData.secretKey) {
+      params.signature = signature;
+      params.timestamp = timestamp;
+    }
+    // 传后端候选下标（catBox.index）而非数组位置，避免部分候选没有框时错位
+    if (this.data.catMeowIdx !== null && this.data.catMeowIdx !== undefined) {
+      params.catIdx = this.data.catMeowIdx;
     }
     console.log(params);
     try {
       const res = await api.catFace(params);
-      if (res && res.ok === true) {
-        await this.loadRecognizeResult(res.data);
-      } else {
-        throw res;
+      // 额度信息（云函数成功时一并返回 { left, limit, used }）
+      if (res && res.quota) {
+        this.setData({ quota: res.quota });
       }
+      if (!res || res.ok !== true) {
+        // 服务错误 / 额度不足：不能解释成"照片里没有猫"
+        const code = (res && res.code) || '';
+        let title = '识别失败，请稍后再试';
+        if (code === 'quota_exceeded') title = '今日识别次数用完啦~';
+        else if (code === 'expired') title = '请求已过期，请重试';
+        else if (code === 'bad_signature') title = '校验失败，请重试';
+        else if (code === 'not_configured') title = '识猫服务未配置';
+        else if (res && res.msg) title = String(res.msg).slice(0, 30);
+        wx.hideLoading();
+        wx.showToast({ icon: 'none', title: title, duration: 2500 });
+        wx.reportMonitor('recognizeCatPhotoError', 1);
+        return;
+      }
+      const data = res.data || {};
+      // 检测到猫但云端身份未确认（有候选也不能自动认定）
+      this.setData({ unknownCat: !!data.unknown });
+      if (!data.catCount) {
+        // 没检测到猫：后端此时不扣次数，用专门文案
+        wx.hideLoading();
+        wx.showToast({ icon: 'none', title: text_cfg.recognize.no_cat_tip, duration: 2000 });
+        return;
+      }
+      await this.loadRecognizeResult(data);
     } catch (err) {
       console.log('get error from catFace:', err);
       wx.hideLoading();
       wx.showToast({
-        icon: 'error',
-        title: '出错了'
+        icon: 'none',
+        title: '网络或服务异常'
       });
       wx.reportMonitor('recognizeCatPhotoError', 1);
     }
@@ -256,6 +354,8 @@ Page({
       const realDrawRate = compressSideLen / Math.max(compressPhotoInfo.width, compressPhotoInfo.height);
 
       catBoxList.push({
+        // 后端候选下标，点击框重新识别时回传（不能直接用数组位置）
+        meowIdx: catBox.index,
         x: catBox.xmin * realDrawRate * ratio + xOffset,
         y: catBox.ymin * realDrawRate * ratio + yOffset,
         width: (catBox.xmax - catBox.xmin) * realDrawRate * ratio,
@@ -266,8 +366,18 @@ Page({
     this.setData({
       catBoxList: catBoxList
     });
-    // 识别结果
-    this.jsData.recognizeResults = await Promise.all(result.recognizeResults.map(this.getCatInfo));
+    // 识别结果：MeowID 侧已登记但本地没绑定的猫会拿不到结果
+    const results = result.recognizeResults || [];
+    if (!results.length) {
+      wx.hideLoading();
+      wx.showToast({
+        icon: 'none',
+        title: '这只猫猫还没登记，暂时认不出来~',
+        duration: 2500
+      });
+      return;
+    }
+    this.jsData.recognizeResults = await Promise.all(results.map(this.getCatInfo));
     await this.pickCatList();
     wx.hideLoading();
     // 在布局完成上移后展示resultBox
@@ -393,6 +503,7 @@ Page({
     })
 
     const filePath = res.tempFiles[0].tempFilePath;
+    this.reset(); // 清空上一张照片的识别状态（含 catIdx / catMeowIdx）
     this.setData({
       photoPath: filePath,
       photoBase64: wx.getFileSystemManager().readFileSync(filePath, 'base64')
@@ -407,6 +518,8 @@ Page({
       catBoxList: [],
       catList: [],
       catIdx: null,
+      catMeowIdx: null,
+      unknownCat: false,
       showResultBox: false,
       campusIndex: 0,
       colourIndex: 0
@@ -458,12 +571,16 @@ Page({
 
   tapCatBox(e) {
     const index = e.currentTarget.dataset.index;
+    const box = this.data.catBoxList[index];
     const currentCatIdx = this.data.catIdx in this.data.catBoxList ? this.data.catIdx : 0;
     if (index !== currentCatIdx) {
       this.setData({
         catList: [],
         showResultBox: false,
         catIdx: index,
+        // 回传后端候选下标（没有就退回数组位置）
+        // 注意：切换猫会重新调用识别，并按后端规则再次计入次数
+        catMeowIdx: box && box.meowIdx !== undefined ? box.meowIdx : index,
       });
       this.recognizePhoto();
     }

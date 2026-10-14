@@ -146,6 +146,36 @@
 
 .filter-control {
   margin-bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12rpx;
+}
+
+/* 同步为 MeowID 注册图（仅 Level-99 可见）：写第三方平台 + 按量计费，用主题色强调 */
+.meowid-sync-btn {
+  margin: 0;
+  padding: 0 22rpx;
+  height: 60rpx;
+  line-height: 60rpx;
+  border-radius: 30rpx;
+  font-size: 24rpx;
+  font-weight: 600;
+  color: #ffffff;
+  background: var(--color-primary);
+}
+
+.meowid-sync-hint {
+  margin-top: 16rpx;
+  padding: 14rpx 18rpx;
+  border-radius: 10rpx;
+  background: rgba(255, 209, 1, 0.12);
+  color: var(--color-primary-text);
+  font-size: 23rpx;
+  line-height: 1.7;
+  white-space: pre-wrap;
+  word-break: break-all;
 }
 
 .switch-container {

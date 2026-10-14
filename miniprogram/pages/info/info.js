@@ -53,6 +53,10 @@ Page({
       tools: true,
       dev: false,
       manager: false,
+      // Level-99 专属入口（页面配置 / 校区花色 / 识猫服务）
+      level99: false,
+      // Level-3 专属入口（猫抓板公告）
+      level3: false,
     },
     // 菜单列表
     menuList: [
@@ -116,12 +120,14 @@ Page({
           {
             name: "猫抓板公告",
             path: "/pages/news/createNews/createNews",
-            icon: "icon-license"
+            icon: "icon-license",
+            show: "level3"
           },
           {
             name: "校区/区域/花色",
             path: "/pages/manage/filters/filters",
-            icon: "icon-current-location"
+            icon: "icon-current-location",
+            show: "level99"
           },
           {
             name: "猫猫管理",
@@ -136,7 +142,8 @@ Page({
           {
             name: "页面配置",
             path: "/pages/manage/pageSettings/pageSettings",
-            icon: "icon-adjust-horizontal"
+            icon: "icon-adjust-horizontal",
+            show: "level99"
           },
           {
             name: "投喂记录",
@@ -148,6 +155,12 @@ Page({
             path: "/pages/manage/imProcess/imProcess",
             num: "numImProcess",
             icon: "icon-file-zip"
+          },
+          {
+            name: "识猫服务",
+            path: "/pages/debug/meowid/meowid",
+            icon: "icon-camera",
+            show: "level99"
           }
         ]
       }
@@ -236,6 +249,10 @@ Page({
     if (!await isManagerAsync()) {
       return;
     }
+    // 「页面配置」「校区/区域/花色」「识猫服务」是 Level-99 专属，低等级管理员不显示入口
+    const isLevel99 = !!(await isManagerAsync(99));
+    // 「猫抓板公告」是 Level-3 专属（服务端 add.news 要求 3）
+    const isLevel3 = !!(await isManagerAsync(3));
     // 待处理照片
     const imProcessQf = { photo_compressed: { $in: [undefined, ''] }, verified: true };
     const { result: numChkPhotos } = await app.mpServerless.db.collection('photo').count({ verified: false });
@@ -259,6 +276,8 @@ Page({
       "nums.numMapAccessApps": numMapAccessApps,
       "nums.numChkAdoptions": numChkAdoptions,
       "showCond.manager": true,
+      "showCond.level99": isLevel99,
+      "showCond.level3": isLevel3,
     });
   },
 

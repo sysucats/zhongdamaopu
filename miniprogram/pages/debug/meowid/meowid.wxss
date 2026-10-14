@@ -1,0 +1,301 @@
+.page {
+  min-height: 100vh;
+  padding: 24rpx 24rpx 60rpx;
+  box-sizing: border-box;
+  background: #e8e3d0;
+}
+
+.tip {
+  padding: 20rpx 24rpx;
+  margin-bottom: 20rpx;
+  border-radius: 16rpx;
+  background: #fff3e6;
+  color: #92400E;
+  font-size: 28rpx;
+}
+
+.card {
+  padding: 28rpx 24rpx;
+  margin-bottom: 24rpx;
+  border-radius: 20rpx;
+  background: #ffffff;
+}
+
+.card-head {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8rpx;
+}
+
+.card-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #92400E;
+}
+
+.card-sub {
+  margin-bottom: 20rpx;
+  font-size: 24rpx;
+  color: #9a8f7a;
+  line-height: 1.5;
+}
+
+.badge {
+  margin-left: 16rpx;
+  padding: 4rpx 16rpx;
+  border-radius: 999rpx;
+  font-size: 22rpx;
+  font-weight: normal;
+}
+
+.badge-on {
+  background: #e8f5e0;
+  color: #3b6d11;
+}
+
+.badge-off {
+  background: #f3ede0;
+  color: #9a8f7a;
+}
+
+.field {
+  margin-bottom: 24rpx;
+}
+
+.field-half {
+  display: flex;
+}
+
+.field-half .field {
+  flex: 1;
+  margin-right: 20rpx;
+}
+
+.field-half .field:last-child {
+  margin-right: 0;
+}
+
+.field-name {
+  font-size: 26rpx;
+  font-weight: bold;
+  color: #92400E;
+  margin-bottom: 6rpx;
+}
+
+.field-desc {
+  font-size: 23rpx;
+  color: #9a8f7a;
+  line-height: 1.5;
+  margin-bottom: 12rpx;
+}
+
+.field-input {
+  width: 100%;
+  height: 72rpx;
+  padding: 0 20rpx;
+  box-sizing: border-box;
+  border: 1rpx solid #e0d9c6;
+  border-radius: 12rpx;
+  background: #faf7ef;
+  font-size: 27rpx;
+  color: #4a3b2a;
+}
+
+.field-input-sm {
+  width: 140rpx;
+  flex-shrink: 0;
+  margin-right: 16rpx;
+}
+
+.field-pair {
+  display: flex;
+}
+
+.field-pair .field-input {
+  flex: 1;
+  margin-right: 16rpx;
+}
+
+.field-pair .field-input:last-child {
+  margin-right: 0;
+}
+
+.field-inline {
+  display: flex;
+  align-items: center;
+  margin-bottom: 24rpx;
+}
+
+.field-inline-main {
+  flex: 1;
+  margin-right: 20rpx;
+}
+
+.field-inline .field-desc {
+  margin-bottom: 0;
+}
+
+.btn-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-top: 8rpx;
+}
+
+.btn {
+  height: 68rpx;
+  padding: 0 28rpx;
+  margin: 0 16rpx 16rpx 0;
+  line-height: 68rpx;
+  border-radius: 14rpx;
+  background: #f3ede0;
+  color: #92400E;
+  font-size: 26rpx;
+}
+
+.btn-primary {
+  background: #ffd101;
+  color: #ffffff;
+}
+
+.btn-danger {
+  background: #fdecea;
+  color: #d4380d;
+}
+
+.hint {
+  margin-top: 8rpx;
+  font-size: 23rpx;
+  color: #9a8f7a;
+  line-height: 1.6;
+}
+
+.link {
+  margin-left: 24rpx;
+  font-size: 26rpx;
+  font-weight: normal;
+  color: #ffd101;
+}
+
+.code {
+  padding: 0 6rpx;
+  border-radius: 6rpx;
+  background: #f3ede0;
+  color: #92400E;
+}
+
+/* ===== 建档参考图预览 ===== */
+.ref-wrap {
+  margin-top: 20rpx;
+}
+
+.ref-stat {
+  padding: 14rpx 16rpx;
+  border-radius: 12rpx;
+  background: #f7f4ea;
+  font-size: 24rpx;
+  color: #92400E;
+  line-height: 1.5;
+}
+
+.ref-grid {
+  display: flex;
+  flex-wrap: wrap;
+  margin-top: 16rpx;
+}
+
+.ref-item {
+  width: 210rpx;
+  margin: 0 16rpx 16rpx 0;
+}
+
+.ref-img {
+  width: 210rpx;
+  height: 210rpx;
+  border-radius: 14rpx;
+  background: #efe9dc;
+}
+
+.ref-meta {
+  display: flex;
+  align-items: center;
+  margin-top: 8rpx;
+}
+
+.ref-status {
+  padding: 2rpx 10rpx;
+  border-radius: 8rpx;
+  background: #efe9dc;
+  font-size: 20rpx;
+  color: #7a6a52;
+}
+
+/* 任务状态配色：成功绿、失败红、待选猫/进行中橙 */
+.ref-st-completed {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+
+.ref-st-failed {
+  background: #fdecea;
+  color: #d4380d;
+}
+
+.ref-st-waiting_user {
+  background: #fff4e5;
+  color: #d46b08;
+}
+
+.ref-st-queued,
+.ref-st-running {
+  background: #eef3fb;
+  color: #3a6ea5;
+}
+
+.ref-best {
+  margin-left: 10rpx;
+  font-size: 20rpx;
+  color: #ffd101;
+}
+
+/* ===== 建档结果摘要 ===== */
+.enroll-summary {
+  margin-top: 16rpx;
+  padding: 18rpx;
+  border-radius: 12rpx;
+  background: #f7f4ea;
+}
+
+.summary-text {
+  display: block;
+  margin-top: 10rpx;
+  font-size: 23rpx;
+  color: #4a3b2a;
+  line-height: 1.7;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+/* 需要换行展示的提示（补传预览结果等） */
+.hint-block {
+  margin-top: 12rpx;
+  padding: 14rpx 16rpx;
+  border-radius: 10rpx;
+  background: #f7f4ea;
+  color: #4a3b2a;
+  font-size: 23rpx;
+  line-height: 1.7;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+.result {
+  max-height: 600rpx;
+  padding: 16rpx;
+  border-radius: 12rpx;
+  background: #f7f4ea;
+  font-size: 22rpx;
+  color: #4a3b2a;
+  white-space: pre-wrap;
+  word-break: break-all;
+}

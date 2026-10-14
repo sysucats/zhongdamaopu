@@ -42,7 +42,8 @@
       "pages": [
         "debug",
         "deployTip/deployTip",
-        "genKeys/genKeys"
+        "genKeys/genKeys",
+        "meowid/meowid"
       ]
     },
     {

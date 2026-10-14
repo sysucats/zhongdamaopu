@@ -215,11 +215,6 @@ module.exports = {
       tip: "首页banner广告ID",
       default: "your_ad_id"
     },
-    "recognize_banner": {
-      type: "text",
-      tip: "识猫页banner广告ID",
-      default: "your_ad_id"
-    },
     "reward_video": {
       type: "text",
       tip: "打赏投喂页激励广告ID",
@@ -236,17 +231,7 @@ module.exports = {
       default: "your_ad_id"
     },
   },
-  recognize: {
-    tip: "识猫页设置",
-    showRecognizeBtn: {
-      type: "bool",
-      tip: "是否显示识猫按钮",
-      default: true
-    },
-    secretKey: {
-      type: "text",
-      tip: "识猫接口秘钥",
-      default: "key"
-    },
-  }
+  // 识猫相关设置（recognize 组、ads.recognize_banner / ads.recognize_video）
+  // 已集中到「识猫服务」页管理，这里刻意不写描述：页面配置不展示、不填默认值、
+  // 提交时原样保留数据库现值，防止两个入口互相覆盖（见 pageSettings.js 的 HIDDEN_RECOGNIZE）。
 }

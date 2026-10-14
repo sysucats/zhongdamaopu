@@ -51,6 +51,9 @@
 |:----:|:----:|:----:|
 |猫谱-部署文档|文档|https://docs.qq.com/doc/DSE1vd0p3RERvWXJS|
 |猫谱-管理员手册|文档|https://docs.qq.com/doc/DSEl0aENOSEx5cmtE|
+|可选的 MeowID 云端识猫方案|贡献|./contrib-meowid-recognition/README.md|
+
+> 可选扩展：需要托管识猫后端时，参考 [contrib-meowid-recognition](./contrib-meowid-recognition/README.md)，内含接入指南、API 速查与云函数实现。
 
 # :scroll:部署
 
