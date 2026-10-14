@@ -322,14 +322,22 @@ async function getTempCOS(options) {
 }
 
 // 识别猫脸
-// 图片识别是耗时操作，SDK transport 默认 timeout 仅 5s 不够用，
-// 这里临时调大到 30s，调用结束恢复原值，避免影响其他云函数调用。
+// 超时预算链（从外到内必须依次递减，否则会出现"后端还在跑、前端已超时"）：
+//   EMAS 平台客户端调用硬上限 60s（不可调，函数必须在此前自己返回）
+//   云函数 catFace 执行超时   120s（EMAS 控制台配置，>60s 即可）
+//   本客户端 SDK 超时         110s（下面 CATFACE_TIMEOUT_MS，>60s 即可）
+//   函数内识别 HTTP 超时       42s（catFace/index.js 的 RECOGNIZE_TIMEOUT_MS）
+// 函数内部预算已整体压到 60s 以内（识别 42s / 建档软 40s / 硬截止 52s），
+// 避免被平台以 FunctionTimeout 强杀；前端只需保证 SDK 超时 >60s 即可。
+// SDK transport 默认 5s 不够用，这里临时调大、调用结束后恢复，避免影响其他云函数调用。
+const CATFACE_TIMEOUT_MS = 110000;
+
 async function catFace(options) {
   const app = getApp();
   const openid = await getCurrentUserOpenid();
   const transport = app.mpServerless.transport;
   const oldTimeout = transport.timeoutOption;
-  transport.setTimeout(30000);
+  transport.setTimeout(CATFACE_TIMEOUT_MS);
   try {
     return (await app.mpServerless.function.invoke('catFace', {
       ...options,

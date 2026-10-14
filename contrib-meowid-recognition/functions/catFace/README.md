@@ -13,6 +13,7 @@ EMAS Serverless 的 MeowID 识猫参考实现。只使用 Node.js 内置 `https`
 | `quota` | 当前用户当天额度 | 无 | 登录用户 |
 | `grantBonus` | 保留接口名，默认拒绝奖励 | 无 | 返回 `bonus_not_supported` |
 | `enrollBatch` | 创建未绑定个体并上传已审核照片 | `limit`，默认 1，最多 10 | 管理员 |
+| `enrollCat` | 给指定的一只猫补传注册图（含已建档的猫）；`dry_run=true` 只预览差异不产生请求 | `cat_id`（必填）、`dry_run`、`only_best`、`per_cat` | 管理员 |
 | `syncTasks` | 同步最新 100 个任务到本地记录 | 无 | 管理员 |
 | `bind` | 绑定本地猫与远端个体 | `cat_id`、`meowid_id` | 管理员 |
 | `unbind` | 删除本地绑定和登记记录，保留远端个体 | `cat_id` | 管理员 |
@@ -44,7 +45,7 @@ const result = (await app.mpServerless.function.invoke('catFace', {
 })).result;
 ```
 
-现有 `cloudApi.catFace()` 的 SDK 超时为 30 秒，采用本后端时需要与 120 秒云函数预算协调，否则客户端可能先超时。共享签名只是旧接口兼容措施，不能替代平台登录身份或服务端限流。
+现有 `cloudApi.catFace()` 的 SDK 超时为 30 秒，采用本后端时需要与云函数预算协调：客户端超时应 ≥ 后端最坏耗时，且两者都要服从 **60s 平台上限**，否则客户端可能先超时。共享签名只是旧接口兼容措施，不能替代平台登录身份或服务端限流。
 
 前端需要适配 `ok`、`code`、`msg`、`data.catCount`、`data.unknown`、`data.recognizeResults` 和 `quota`。这个贡献目录没有自动修改原识猫页。
 
@@ -74,4 +75,4 @@ npm --prefix contrib-meowid-recognition/functions/catFace test
 
 ## 运行限制
 
-每日额度检查与扣减不在同一原子操作中，并发请求可能超过额度；奖励接口尚未实现可信广告核验。生产采用前应完善原子额度预留、请求限流和费用控制。`syncTasks` 只取最新 100 个任务和前 200 只猫；批量建档只选未绑定猫，已绑定但缺少参考图需人工补传。批量建档按保守的 42 秒预算安排新个体，正在进行的单次请求仍受 HTTP 超时控制。
+每日额度检查与扣减不在同一原子操作中，并发请求可能超过额度；奖励接口尚未实现可信广告核验。生产采用前应完善原子额度预留、请求限流和费用控制。`syncTasks` 只取最新 100 个任务和前 200 只猫；批量建档只选未绑定猫，**已绑定但缺少参考图的用 `enrollCat` 按猫补传**（支持 `dry_run` 先预览差异，已登记的照片自动跳过、不会重复建个体或重复计费）。批量建档受双重时间闸门约束：软预算 `MEOWID_ENROLL_DEADLINE_SEC`（默认 40 秒，上限 50）下沉到每张注册图之间检查，硬保护线 52 秒（`ENROLL_HARD_DEADLINE_MS`）则在每个网络步骤（建个体 / 下载 / 上传）开工前核验「最坏耗时塞不塞得进剩余时间」，塞不进就不开工——保证云函数永远在 **EMAS 客户端调用 60 秒硬上限**之前自行返回，不会被平台强杀成 `FunctionTimeout`。每张图处理完立即落库，避免超时丢记录或重复上传。注册图默认只取「精选」照片（`MEOWID_ENROLL_ONLY_BEST`，写 `'0'` 可关闭）。

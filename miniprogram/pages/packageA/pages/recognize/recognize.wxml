@@ -50,6 +50,11 @@
       <text>{{!catBoxList.length ? text_cfg.recognize.no_cat_tip : text_cfg.recognize.multi_cat_tip}}</text>
     </view>
     <view class="title">{{!catBoxList.length ? text_cfg.recognize.no_cat_rec_tip : (catBoxList.length == 1 ? text_cfg.recognize.single_cat_rec_tip : text_cfg.recognize.multi_cat_rec_tip)}}</view>
+    <!-- 检测到猫但云端未确认身份：只能给相似猫，不能自动认定 -->
+    <view class="tip" wx:if="{{unknownCat}}">
+      <image mode='aspectFit' class='icon' src='/pages/packageA/pages/images/recognize/tip.png'></image>
+      <text>相似度仅供参考，还不能确认是哪只猫猫~</text>
+    </view>
 
     <view class="filter">
       <picker bindchange="catFilter" data-type="campus" value="{{index}}" range="{{campusList}}">
@@ -94,6 +99,12 @@
         </view>
       </view>
       <view class="prob">{{m1.toFixed(100 * item.prob, 1) + '%'}}</view>
+    </view>
+    <view class="footnote" wx:if="{{quota}}">今日剩余识别次数：{{quota.left}} / {{quota.limit}}</view>
+    <view class="reward-wrap" wx:if="{{quota && quota.left === 0 && quota.adEnabled && quota.adLeft > 0}}">
+      <button class="reward-btn" wx:if="{{videoAdLoaded}}" bindtap="tapRewardAd">看个广告，领 {{quota.adBonus}} 次识别机会</button>
+      <view class="reward-tip" wx:else>广告加载中，请稍候...</view>
+      <view class="reward-tip">今日还可领 {{quota.adLeft}} 次</view>
     </view>
     <view class="footnote">{{text_cfg.recognize.bottom_tip}}</view>
   </view>

@@ -180,7 +180,10 @@
           <switch checked="{{only_best_photo}}" bindchange="switchOnlyBest" color="var(--color-primary)" />
           <text class="switch-label">只显示精选照片</text>
         </view>
+        <!-- 仅 Level-99：把精选照片同步为 MeowID 注册图（写第三方平台 + 按量计费） -->
+        <button class="meowid-sync-btn" wx:if="{{isLevel99 && !isNewMode}}" bindtap="syncToMeowid">同步为注册图</button>
       </view>
+      <view class="meowid-sync-hint" wx:if="{{meowidSyncHint}}">{{meowidSyncHint}}</view>
     </view>
   </view>
   

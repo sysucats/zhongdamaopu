@@ -1,0 +1,283 @@
+<!-- 与「页面配置」同一门槛：仅管理员 Level-99 -->
+<block wx:if="{{auth}}">
+<view class="page">
+
+  <!-- ======== ① MeowID 服务配置 ======== -->
+  <view class="card">
+    <view class="card-head">
+      <text class="card-title">① MeowID 服务配置</text>
+      <text class="badge {{cfgStatus.ready ? 'badge-on' : 'badge-off'}}" wx:if="{{cfgStatus}}">{{cfgStatus.ready ? '已开通' : '未配置'}}</text>
+    </view>
+    <view class="card-sub">识别能力的核心配置，填好保存即可开通识猫，无需发版</view>
+
+    <view class="field">
+      <view class="field-name">MEOWID_PROJECT_ID · 项目 ID</view>
+      <view class="field-desc">在 MeowID 控制台项目页复制（是「项目 ID」，不是猫咪个体 ID）</view>
+      <input class="field-input" value="{{cfgProjectId}}" data-field="cfgProjectId" bindinput="onInput" placeholder="粘贴项目 ID" />
+    </view>
+
+    <view class="field">
+      <view class="field-name">MEOWID_API_KEY · 接口密钥</view>
+      <view class="field-desc">MeowID 项目页创建，mk_live_ 开头，权限需覆盖建档与识别；只写不读，留空则不改动</view>
+      <input class="field-input" password="{{true}}" value="{{cfgApiKey}}" data-field="cfgApiKey" bindinput="onInput" placeholder="mk_live_…（留空则不修改）" />
+    </view>
+
+    <view class="field-half">
+      <view class="field">
+        <view class="field-name">MEOWID_TOP_K · 候选数</view>
+        <view class="field-desc">识别返回几个候选猫，1-100，一般 5 就够</view>
+        <input class="field-input" type="number" value="{{cfgTopK}}" data-field="cfgTopK" bindinput="onInput" />
+      </view>
+      <view class="field">
+        <view class="field-name">RECOGNIZE_FREE_PER_DAY · 每日免费</view>
+        <view class="field-desc">每人每天免费识别几次，超出后可看广告补充</view>
+        <input class="field-input" type="number" value="{{cfgFreePerDay}}" data-field="cfgFreePerDay" bindinput="onInput" />
+      </view>
+    </view>
+
+    <view class="field-inline">
+      <view class="field-inline-main">
+        <view class="field-name">MEOWID_ENROLL_ONLY_BEST · 只用精选照片建档</view>
+        <view class="field-desc">开启后只用「精选」照片作注册图（人工挑的最佳正脸，直接决定识别率）；关掉则其余过审照片也用来补足数量。某只猫没有精选时会明确报错，不静默跳过</view>
+      </view>
+      <switch checked="{{cfgEnrollOnlyBest}}" bindchange="onToggleEnrollOnlyBest" />
+    </view>
+
+    <view class="field-half">
+      <view class="field">
+        <view class="field-name">…IMAGES_PER_CAT · 每只几张</view>
+        <view class="field-desc">每只猫最多传几张注册图，默认 3。按张计费</view>
+        <input class="field-input" type="number" value="{{cfgEnrollImages}}" data-field="cfgEnrollImages" bindinput="onInput" />
+      </view>
+      <view class="field">
+        <view class="field-name">…DEADLINE_SEC · 批次预算(秒)</view>
+        <view class="field-desc">单次建档最多跑多久，默认 40、上限 50（受平台 60s 调用上限约束）。到点会停下，剩下的下一批继续</view>
+        <input class="field-input" type="number" value="{{cfgEnrollDeadline}}" data-field="cfgEnrollDeadline" bindinput="onInput" />
+      </view>
+    </view>
+
+    <view class="btn-row">
+      <button class="btn btn-primary" disabled="{{loading || !isManager}}" bindtap="onSaveConfig">保存到云端</button>
+      <button class="btn btn-danger" disabled="{{loading || !isManager}}" bindtap="onDisableConfig">停用识猫</button>
+    </view>
+    <view class="hint">保存即时生效、无需发版。密钥直写云端 app_secret，云函数只接受白名单字段，碰不到 COS 和小程序密钥。</view>
+  </view>
+
+  <!-- ======== ② 看广告领次数 ======== -->
+  <view class="card">
+    <view class="card-head">
+      <text class="card-title">② 看广告领次数</text>
+      <text class="badge {{cfgAdEnabled ? 'badge-on' : 'badge-off'}}">{{cfgAdEnabled ? '已开启' : '默认关闭'}}</text>
+    </view>
+    <view class="card-sub">每日免费次数用完后，用户可看广告补充识别机会</view>
+
+    <view class="field-inline">
+      <view class="field-inline-main">
+        <view class="field-name">RECOGNIZE_AD_ENABLED · 奖励开关</view>
+        <view class="field-desc">由客户端回调触发、可被绕过，故默认关闭；信任级别等同徽章模块的看广告领代币</view>
+      </view>
+      <switch checked="{{cfgAdEnabled}}" bindchange="onToggleAd" />
+    </view>
+    <view class="field-half">
+      <view class="field">
+        <view class="field-name">RECOGNIZE_AD_BONUS · 每次奖励</view>
+        <view class="field-desc">看完一次广告奖励几次</view>
+        <input class="field-input" type="number" value="{{cfgAdBonus}}" data-field="cfgAdBonus" bindinput="onInput" />
+      </view>
+      <view class="field">
+        <view class="field-name">…_MAX_PER_DAY · 每日上限</view>
+        <view class="field-desc">每人每天最多领几次，这是唯一防刷手段，别设太大</view>
+        <input class="field-input" type="number" value="{{cfgAdBonusMax}}" data-field="cfgAdBonusMax" bindinput="onInput" />
+      </view>
+    </view>
+    <view class="hint">视频广告位在「③ 识猫页设置」里配置，留空则回退用徽章页的广告位。</view>
+  </view>
+
+  <!-- ======== ③ 识猫页设置 ======== -->
+  <view class="card">
+    <view class="card-head">
+      <text class="card-title">③ 识猫页设置</text>
+    </view>
+    <view class="card-sub">原「页面配置」里的识猫项已集中到这里，改完立即生效</view>
+
+    <view class="field-inline">
+      <view class="field-inline-main">
+        <view class="field-name">showRecognizeBtn · 首页识猫按钮</view>
+        <view class="field-desc">控制首页是否显示「识猫」入口。MeowID 没弄好前可先关掉，弄好再打开</view>
+      </view>
+      <switch checked="{{pageCfg.showBtn}}" bindchange="onToggleShowBtn" />
+    </view>
+
+    <view class="field">
+      <view class="field-name">secretKey · 接口签名秘钥</view>
+      <view class="field-desc">可留空。留空则前后端都不做签名校验；要启用就填，前后端必须一致</view>
+      <input class="field-input" password="{{true}}" value="{{pageCfg.secretKey}}" data-field="secretKey" bindinput="pageCfgInput" placeholder="留空表示不做签名校验" />
+    </view>
+
+    <view class="field">
+      <view class="field-name">recognize_banner · Banner 广告位</view>
+      <view class="field-desc">识猫页结果底部的 banner 广告 ID，微信后台「流量主 → 广告位」里创建</view>
+      <input class="field-input" value="{{pageCfg.bannerAd}}" data-field="bannerAd" bindinput="pageCfgInput" placeholder="adunit-…（留空不显示广告）" />
+    </view>
+
+    <view class="field">
+      <view class="field-name">recognize_video · 激励视频广告位</view>
+      <view class="field-desc">「看广告领次数」用的视频广告 ID。留空则回退用徽章页的 badge_video</view>
+      <input class="field-input" value="{{pageCfg.videoAd}}" data-field="videoAd" bindinput="pageCfgInput" placeholder="adunit-…（留空用徽章页广告位）" />
+    </view>
+
+    <view class="btn-row">
+      <button class="btn btn-primary" disabled="{{loading || !isManager}}" bindtap="onSavePageCfg">保存识猫页设置</button>
+    </view>
+  </view>
+
+  <!-- ======== ④ 检查 ======== -->
+  <view class="card">
+    <view class="card-head">
+      <text class="card-title">④ 检查</text>
+    </view>
+    <view class="card-sub">部署和建档后先用这里确认链路是否就绪</view>
+    <view class="btn-row">
+      <button class="btn" disabled="{{loading || !isManager}}" bindtap="onStatus">状态检查（含远端连通）</button>
+      <button class="btn" disabled="{{loading || !isManager}}" bindtap="onQuota">我的额度</button>
+      <button class="btn" disabled="{{loading || !isManager}}" bindtap="onSyncTasks">同步建档任务</button>
+    </view>
+    <view class="hint">config.ready 为 true 才表示配置可用；个体数为 0 说明还没建档。上传返回 202 只是受理，等任务 completed 再识别。</view>
+  </view>
+
+  <!-- ======== ⑤ 建档与绑定 ======== -->
+  <view class="card">
+    <view class="card-head">
+      <text class="card-title">⑤ 建档与绑定</text>
+    </view>
+    <view class="card-sub">建档 = 把猫的参考图注册到 MeowID；不做这步识别永远「身份未确认」</view>
+
+    <view class="field">
+      <view class="field-name">批量建档数量</view>
+      <view class="field-desc">建个体 + 上传注册图，按量计费。单批次有总预算（见上方 DEADLINE_SEC），到点停下、剩下的下次继续</view>
+      <view class="btn-row">
+        <input class="field-input field-input-sm" type="number" value="{{enrollLimit}}" data-field="enrollLimit" bindinput="onInput" />
+        <button class="btn btn-primary" disabled="{{loading || !isManager}}" bindtap="onEnroll">开始建档</button>
+      </view>
+    </view>
+
+    <view wx:if="{{enrollSummary}}" class="enroll-summary">
+      <view class="field-name">上次建档结果</view>
+      <text class="summary-text">{{enrollSummary}}</text>
+    </view>
+
+    <view class="field">
+      <view class="field-name">补传注册图（已建档的猫）</view>
+      <view class="field-desc">给已建档或参考图不全的猫补传。已登记过的照片自动跳过（不重复计费），也不会重复建个体。建议先「预览」再执行；猫 ID 与下方⑥共用</view>
+      <view class="btn-row">
+        <input class="field-input" value="{{catId}}" data-field="catId" bindinput="onInput" placeholder="本地猫 ID（cat_id）" />
+        <input class="field-input field-input-sm" type="number" value="{{enrollPerCat}}" data-field="enrollPerCat" bindinput="onInput" placeholder="张数(可留空)" />
+      </view>
+      <view class="btn-row">
+        <button class="btn" disabled="{{loading || !isManager}}" bindtap="onEnrollCatPreview">预览要传几张</button>
+        <button class="btn btn-primary" disabled="{{loading || !isManager}}" bindtap="onEnrollCat">补传注册图</button>
+      </view>
+      <view class="hint hint-block" wx:if="{{enrollCatHint}}">{{enrollCatHint}}</view>
+    </view>
+
+    <view class="field">
+      <view class="field-name">手动绑定</view>
+      <view class="field-desc">在 MeowID 控制台建好个体后，把「猫谱猫 ID + MeowID 个体 ID」绑定到一起</view>
+      <view class="field-pair">
+        <input class="field-input" value="{{catId}}" data-field="catId" bindinput="onInput" placeholder="本地猫 ID（cat_id）" />
+        <input class="field-input" value="{{meowId}}" data-field="meowId" bindinput="onInput" placeholder="MeowID 个体 ID" />
+      </view>
+      <view class="btn-row">
+        <button class="btn btn-primary" disabled="{{loading || !isManager}}" bindtap="onBind">绑定</button>
+        <button class="btn btn-danger" disabled="{{loading || !isManager}}" bindtap="onUnbind">解绑</button>
+      </view>
+    </view>
+
+    <view class="field">
+      <view class="field-name">重试失败任务</view>
+      <view class="field-desc">只有 failed 且保留源数据的任务可重试。填任务 ID 只重试它；留空则按「本地猫 ID」重试该猫，猫 ID 也留空就重试全部</view>
+      <input class="field-input" value="{{retryTaskId}}" data-field="retryTaskId" bindinput="onInput" placeholder="任务 ID（可选，留空重试全部失败任务）" />
+      <view class="btn-row">
+        <input class="field-input field-input-sm" type="number" value="{{retryLimit}}" data-field="retryLimit" bindinput="onInput" />
+        <button class="btn" disabled="{{loading || !isManager}}" bindtap="onRetryTask">重试失败任务</button>
+      </view>
+    </view>
+  </view>
+
+  <!-- ======== ⑥ 查看建档参考图 ======== -->
+  <view class="card">
+    <view class="card-head">
+      <text class="card-title">⑥ 查看建档参考图</text>
+      <text class="badge {{refImages.counts.failed > 0 ? 'badge-off' : 'badge-on'}}" wx:if="{{refImages}}">
+        成功 {{refImages.counts.done}}/{{refImages.counts.total}}
+      </text>
+    </view>
+    <view class="card-sub">看某只猫到底用哪几张照片注册了特征，判断是不是照片质量拖累了识别率</view>
+
+    <view class="btn-row">
+      <input class="field-input" value="{{catId}}" data-field="catId" bindinput="onInput" placeholder="本地猫 ID（cat_id）" />
+      <button class="btn" disabled="{{loading || !isManager}}" bindtap="onViewImages">查看参考图</button>
+    </view>
+
+    <view wx:if="{{refImages}}" class="ref-wrap">
+      <view class="ref-stat">
+        照片池：过审 {{refImages.pool.verified}} 张 · 精选 {{refImages.pool.best}} 张（{{refImages.pool.onlyBest ? '当前只用精选' : '当前用全部过审'}}）<br/>
+        远端参考图 {{refImages.remoteCount}} 张 · 成功 {{refImages.counts.done}} · 失败 {{refImages.counts.failed}} · 待选猫 {{refImages.counts.waiting_user}}
+      </view>
+      <view class="hint" wx:if="{{refImages.remoteError}}">远端读取失败：{{refImages.remoteError.msg}}（下面只显示本地登记记录）</view>
+      <view class="hint" wx:if="{{refImages.hint}}">{{refImages.hint}}</view>
+
+      <view class="ref-grid" wx:if="{{refImages.local.length > 0}}">
+        <view class="ref-item" wx:for="{{refImages.local}}" wx:for-index="idx" wx:key="idx">
+          <image class="ref-img" src="{{item.url}}" mode="aspectFill" data-url="{{item.url}}" bindtap="onPreviewImage" />
+          <view class="ref-meta">
+            <text class="ref-status ref-st-{{item.status}}">{{item.status || '未知'}}</text>
+            <text class="ref-best" wx:if="{{item.best}}">精选</text>
+          </view>
+        </view>
+      </view>
+      <view class="hint" wx:else>这只猫还没有登记记录，先在上方建档。</view>
+      <view class="hint">点图可放大。某张不清晰就换更好的照片后解绑重建档；失败任务用上方「重试失败任务」重跑。</view>
+    </view>
+  </view>
+
+  <!-- ======== ⑦ 诊断与调试 ======== -->
+  <view class="card">
+    <view class="card-head">
+      <text class="card-title">⑦ 诊断与调试</text>
+    </view>
+    <view class="card-sub">识别总显示「身份未确认」时，用登记图验证链路到底卡在哪</view>
+
+    <view class="field">
+      <view class="field-name">跑诊断</view>
+      <view class="field-desc">用登记图发起真实识别请求，会消耗第三方用量（可能收费），建议先 1 张</view>
+      <view class="btn-row">
+        <input class="field-input field-input-sm" type="number" value="{{diagLimit}}" data-field="diagLimit" bindinput="onInput" />
+        <button class="btn" disabled="{{loading || !isManager}}" bindtap="onDiagnose">跑诊断</button>
+      </view>
+    </view>
+
+    <view class="field">
+      <view class="field-name">加测试额度</view>
+      <view class="field-desc">只给自己加「今日」测试次数，不占用免费额度，第二天自动归零</view>
+      <view class="btn-row">
+        <input class="field-input field-input-sm" type="number" value="{{testQuota}}" data-field="testQuota" bindinput="onInput" />
+        <button class="btn" disabled="{{loading || !isManager}}" bindtap="onGrantTestQuota">加测试额度</button>
+      </view>
+    </view>
+  </view>
+
+  <!-- ======== 返回结果 ======== -->
+  <view class="card" wx:if="{{result}}">
+    <view class="card-head">
+      <text class="card-title">返回结果</text>
+      <text class="link" bindtap="onCopyResult">复制</text>
+      <text class="link" bindtap="onClearResult">清空</text>
+    </view>
+    <scroll-view class="result" scroll-y>{{result}}</scroll-view>
+  </view>
+</view>
+</block>
+
+<!-- 未授权提示 -->
+<no-auth wx:else tip-text="{{tipText}}"></no-auth>

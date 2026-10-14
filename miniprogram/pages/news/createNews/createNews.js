@@ -61,7 +61,9 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: async function (options) {
-    await checkAuth(this, 2);
+    // 发布公告按设计是 Level-3（见人员管理的等级说明与 unionOp/curdOp.js 的 add.news=3），
+    // 原来写 2 会让 2 级管理员能打开表单但一提交就报 not a manager。
+    await checkAuth(this, 3);
   },
 
   onShow: async function () {

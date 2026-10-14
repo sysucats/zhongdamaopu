@@ -70,7 +70,11 @@ Component({
     bottomShow: false,
     text_cfg: text_cfg,
     only_best_photo: false,
-    isNewMode: false
+    isNewMode: false,
+    // 「同步为 MeowID 注册图」仅 Level-99 可用：它写第三方平台且按量计费。
+    // 本组件所在的「猫管理」页面门槛是 2 级，所以按钮靠 isLevel99 单独控制显隐。
+    isLevel99: false,
+    meowidSyncHint: ''
   },
 
   jsData: null,
@@ -92,6 +96,12 @@ Component({
         'pickers.adopt': cat_status_adopt
       });
       await this.loadPickers();
+
+      // MeowID 注册图同步按钮：只有 Level-99 才显示（写第三方平台 + 按量计费）
+      isManagerAsync(99)
+        .then((v) => this.setData({ isLevel99: !!v }))
+        .catch((e) => console.warn('isManagerAsync(99) failed:', e));
+
       if (this.properties.cat_id) {
         this.jsData.cat_id = this.properties.cat_id;
         await this.loadCat();
@@ -505,6 +515,61 @@ Component({
       await this.reloadPhotos();
     },
 
+    // 把当前猫的精选照片同步为 MeowID 注册图（仅 Level-99 可见/可用）。
+    // 先 dry_run 预览差异（不花钱、不发第三方请求），确认后再真正补传；
+    // 云端会自动跳过已登记的照片、不会重复建个体，所以可以放心重复点。
+    async syncToMeowid() {
+      const cat_id = (this.jsData && this.jsData.cat_id) || this.properties.cat_id;
+      if (!cat_id) {
+        wx.showToast({ icon: 'none', title: '请先保存这只猫' });
+        return;
+      }
+      wx.showLoading({ title: '计算差异...' });
+      let preview;
+      try {
+        preview = await api.catFace({ action: 'enrollCat', cat_id: cat_id, dry_run: true });
+      } catch (e) {
+        wx.hideLoading();
+        wx.showModal({ title: '无法预览', content: (e && e.message) || '云函数调用失败', showCancel: false });
+        return;
+      }
+      wx.hideLoading();
+      if (!preview || preview.ok !== true || !preview.preview) {
+        wx.showModal({ title: '无法同步', content: (preview && preview.msg) || '未知原因', showCancel: false });
+        return;
+      }
+      const p = preview.preview;
+      if (!p.pending || p.pending.length === 0) {
+        wx.showModal({
+          title: '无需同步',
+          content: `这只猫可用的 ${p.chosen} 张参考图都已登记过。\n${preview.hint || ''}`,
+          showCancel: false,
+        });
+        return;
+      }
+      wx.showModal({
+        title: '同步为注册图',
+        content: `${p.name || p.cat_id}：将上传 ${p.pending.length} 张（跳过已登记的 ${p.alreadyRegistered} 张）`
+          + `${p.bound ? '' : '，并会先创建 MeowID 个体'}。按量计费，继续？`,
+        success: (r) => {
+          if (!r.confirm) return;
+          wx.showLoading({ title: '同步中...', mask: true });
+          api.catFace({ action: 'enrollCat', cat_id: cat_id }).then((res) => {
+            wx.hideLoading();
+            const log = (res && res.log) || {};
+            const lines = [(log.ok ? '✅ 完成' : '❌ 未完成') + `：上传 ${(res && res.uploadedPhotos) || 0} 张，跳过 ${log.skipped || 0} 张`];
+            if (log.msg) lines.push(log.msg);
+            if (log.errors && log.errors.length) lines.push('失败原因：' + log.errors[0].msg);
+            this.setData({ meowidSyncHint: lines.join('\n') });
+            wx.showModal({ title: '同步结果', content: lines.join('\n'), showCancel: false });
+          }).catch((e) => {
+            wx.hideLoading();
+            wx.showModal({ title: '同步失败', content: (e && e.message) || '云函数调用失败', showCancel: false });
+          });
+        },
+      });
+    },
+
     // 设置 / 取消 照片精选
     async reverseBest(e) {
       const photo = e.currentTarget.dataset.photo;
@@ -525,6 +590,16 @@ Component({
       this.setData({
         ['photo[' + index + '].best']: set_best
       });
+
+      // 精选就是 MeowID 注册图的来源，所以设为精选后顺手问一句要不要同步（仅 99 级）
+      if (set_best && this.data.isLevel99) {
+        wx.showModal({
+          title: '要同步为注册图吗',
+          content: 'MeowID 建档默认只取「精选」照片。是否现在把这批精选照片同步为注册图？（按量计费）',
+          confirmText: '同步',
+          success: (r) => { if (r.confirm) this.syncToMeowid(); },
+        });
+      }
     },
     inputPher(e) {
       if (!this.jsData) {

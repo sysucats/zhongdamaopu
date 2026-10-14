@@ -182,6 +182,28 @@
   color: var(--color-gray-max);
 }
 
+#resultBox .reward-wrap {
+  margin-top: 20rpx;
+  text-align: center;
+}
+
+#resultBox .reward-btn {
+  display: inline-block;
+  padding: 0 40rpx;
+  height: 72rpx;
+  line-height: 72rpx;
+  border-radius: 36rpx;
+  background: var(--color-primary);
+  color: #ffffff;
+  font-size: 28rpx;
+}
+
+#resultBox .reward-tip {
+  margin-top: 8rpx;
+  font-size: 24rpx;
+  color: var(--color-gray-max);
+}
+
 
 .bgImg{
   width: 100%;
