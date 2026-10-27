@@ -92,6 +92,7 @@ Component({
         'pickers.adopt': cat_status_adopt
       });
       await this.loadPickers();
+
       if (this.properties.cat_id) {
         this.jsData.cat_id = this.properties.cat_id;
         await this.loadCat();
@@ -525,6 +526,7 @@ Component({
       this.setData({
         ['photo[' + index + '].best']: set_best
       });
+
     },
     inputPher(e) {
       if (!this.jsData) {

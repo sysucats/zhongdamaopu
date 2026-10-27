@@ -2,6 +2,7 @@ const { createInternalCtx } = require('./_helper.js')
 const isManagerHandler = require('./isManager.js')
 const deleteFilesHandler = require('./deleteFiles.js')
 const deleteCosFilesHandler = require('./deleteCosFiles.js')
+const { syncApprovedPhoto } = require('./meowid.js')
 
 module.exports = async (ctx) => {
   const is_manager = await isManagerHandler(createInternalCtx(ctx, {
@@ -120,6 +121,10 @@ module.exports = async (ctx) => {
 
     // 重新计算精选照片数量
     await recountBestPhotos(photo.cat_id);
+    const meowid = await syncApprovedPhoto(ctx, photo._id);
+    return { result: true, ok: true, meowid, msg: meowid.ok
+      ? (meowid.skipped ? '审核通过' : meowid.pending ? '审核通过，照片正在同步' : '审核通过，照片已提交 MeowID')
+      : '审核通过，MeowID 同步未完成，可使用全量同步补传' };
   } else if (opType == "delete") {
     // 记录照片是否是精选
     const wasBest = photo.best;

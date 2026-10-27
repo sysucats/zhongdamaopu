@@ -88,7 +88,8 @@ const init_setting = [{
       "photoPopWeight": 10
     },
     "recognize": {
-      "showRecognizeBtn": true,
+      "mode": "off",
+      "showRecognizeBtn": false,
       "secretKey": "changeToYourKey"
     },
     "accessCtrl": {

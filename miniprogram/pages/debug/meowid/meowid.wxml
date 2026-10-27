@@ -1,0 +1,72 @@
+<block wx:if="{{auth}}">
+  <view class="page">
+    <view class="card">
+      <view class="card-head"><text class="card-title">识猫模式</text></view>
+      <picker range="{{modeLabels}}" value="{{modeIndex}}" bindchange="onModeChange" disabled="{{syncing}}">
+        <view class="field-input">{{modeLabels[modeIndex]}} ▾</view>
+      </picker>
+      <view class="hint" wx:if="{{pageCfg.mode === 'off'}}">关闭识别和自动同步，保留已保存的服务配置。</view>
+      <view class="hint" wx:elif="{{pageCfg.mode === 'custom'}}">沿用原独立识猫服务。</view>
+      <view class="hint" wx:else>开启后使用 MeowID 识别，新增照片审核通过后自动上传。</view>
+      <view class="field" wx:if="{{pageCfg.mode === 'custom'}}">
+        <view class="field-name">接口签名密钥</view>
+        <input class="field-input" password="{{true}}" value="{{pageCfg.secretKey}}" bindinput="pageCfgInput" placeholder="与原识猫服务保持一致" />
+      </view>
+      <view class="btn-row">
+        <button class="btn" disabled="{{loading || syncing}}" bindtap="onSavePageCfg">保存识猫模式</button>
+        <button class="btn" bindtap="onCopyGuide">接入文档（复制链接）</button>
+      </view>
+    </view>
+
+    <block wx:if="{{pageCfg.mode === 'meowid'}}">
+      <view class="card">
+        <view class="card-head"><text class="card-title">服务配置</text>
+          <text class="badge {{cfgStatus.ready ? 'badge-on' : 'badge-off'}}" wx:if="{{cfgStatus}}">{{cfgStatus.ready ? '已配置' : '未配置'}}</text>
+        </view>
+        <view class="field">
+          <view class="field-name">项目编号</view>
+          <input class="field-input" value="{{cfgProjectId}}" data-field="cfgProjectId" bindinput="onInput" placeholder="留空保留当前项目" />
+        </view>
+        <view class="field">
+          <view class="field-name">接口密钥</view>
+          <input class="field-input" password="{{true}}" value="{{cfgApiKey}}" data-field="cfgApiKey" bindinput="onInput" placeholder="留空保留已保存的密钥" />
+          <view class="hint">需要识别、猫咪读写和任务读取权限，已保存的密钥不会回显。</view>
+        </view>
+        <view class="field">
+          <view class="field-name">接口地址</view>
+          <input class="field-input" value="{{cfgBaseUrl}}" data-field="cfgBaseUrl" bindinput="onInput" placeholder="平台提供的接口根地址，留空保留原配置" />
+        </view>
+        <view class="field">
+          <view class="field-name">识别候选数量</view>
+          <input class="field-input" type="number" value="{{cfgTopK}}" data-field="cfgTopK" bindinput="onInput" />
+        </view>
+        <view class="btn-row">
+          <button class="btn" disabled="{{loading || syncing}}" bindtap="onSaveConfig">保存配置</button>
+          <button class="btn" disabled="{{loading || syncing}}" bindtap="onCheckConnection">检查连接</button>
+        </view>
+      </view>
+
+      <view class="card">
+        <view class="card-head"><text class="card-title">数据同步</text></view>
+        <view class="field">
+          <view class="field-name">每猫图片上限（至少 5 张）</view>
+          <input class="field-input" type="number" value="{{cfgEnrollImages}}" data-field="cfgEnrollImages" bindinput="onInput" disabled="{{loading || syncing}}" />
+        </view>
+        <view class="btn-row">
+          <button class="btn" disabled="{{loading || syncing}}" bindtap="onSaveSyncConfig">保存同步上限</button>
+        </view>
+        <view wx:if="{{syncStatus}}">
+          <view class="field">猫咪：已同步 {{syncStatus.bound}} 只 · 剩余 {{syncStatus.remainingCats}} 只</view>
+          <view class="field">图片：已上传 {{syncStatus.accepted}} 张 · 剩余 {{syncStatus.remainingPhotos}} 张</view>
+        </view>
+        <view class="btn-row">
+          <button class="btn" disabled="{{loading || syncing}}" bindtap="onSyncLimited">{{syncing && syncMode === 'limited' ? '正在按上限同步…' : '按上限同步'}}</button>
+          <button class="btn" disabled="{{loading || syncing}}" bindtap="onSyncAll">{{syncing && syncMode === 'all' ? '正在同步全部…' : '全量 / 增量同步'}}</button>
+          <button class="btn" disabled="{{loading || syncing}}" bindtap="onStatus">刷新状态</button>
+        </view>
+      </view>
+    </block>
+    <view class="tip" wx:if="{{result}}">{{result}}</view>
+  </view>
+</block>
+<no-auth wx:else tip-text="{{tipText}}"></no-auth>

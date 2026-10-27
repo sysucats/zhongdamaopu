@@ -28,7 +28,9 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: async function (options) {
-    if (await checkAuth(this, 2)) {
+    // 本页写入的是 setting 集合的 update，服务端要求 Level-99（见 unionOp/curdOp.js 的 permissionNeed.update.setting）。
+    // 原来写成 2 会导致 2~98 级能打开页面但一点保存就报 not a manager，这里与后端对齐。
+    if (await checkAuth(this, 99)) {
       await this.reloadFilter();
     }
   },

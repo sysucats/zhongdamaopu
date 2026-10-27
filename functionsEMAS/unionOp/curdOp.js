@@ -72,7 +72,9 @@ const permissionNeed = {
         "rating": 99,
         "reward": 1,
         "science": 1,
-        "setting": 1,
+        // setting 用 set 是整文档覆盖，权限必须与 update 一致（99），
+        // 否则 Level-1 管理员可以绕过「页面配置」的 99 门槛直接覆盖设置
+        "setting": 99,
         "user": 1,
         "vaccine": 2,
     },

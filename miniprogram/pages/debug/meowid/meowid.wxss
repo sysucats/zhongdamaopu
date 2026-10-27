@@ -1,0 +1,122 @@
+.page {
+  min-height: 100vh;
+  padding: 24rpx 24rpx 60rpx;
+  box-sizing: border-box;
+  background: #e8e3d0;
+}
+
+.tip {
+  padding: 20rpx 24rpx;
+  margin-bottom: 20rpx;
+  border-radius: 16rpx;
+  background: #fff3e6;
+  color: #92400E;
+  font-size: 28rpx;
+}
+
+.card {
+  padding: 28rpx 24rpx;
+  margin-bottom: 24rpx;
+  border-radius: 20rpx;
+  background: #ffffff;
+}
+
+.card-head {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8rpx;
+}
+
+.card-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #92400E;
+}
+
+.badge {
+  margin-left: 16rpx;
+  padding: 4rpx 16rpx;
+  border-radius: 999rpx;
+  font-size: 22rpx;
+  font-weight: normal;
+}
+
+.badge-on {
+  background: #e8f5e0;
+  color: #3b6d11;
+}
+
+.badge-off {
+  background: #f3ede0;
+  color: #9a8f7a;
+}
+
+.field {
+  margin-bottom: 24rpx;
+}
+
+.field-half .field {
+  flex: 1;
+  margin-right: 20rpx;
+}
+
+.field-half .field:last-child {
+  margin-right: 0;
+}
+
+.field-name {
+  font-size: 26rpx;
+  font-weight: bold;
+  color: #92400E;
+  margin-bottom: 6rpx;
+}
+
+.field-input {
+  width: 100%;
+  height: 72rpx;
+  padding: 0 20rpx;
+  box-sizing: border-box;
+  border: 1rpx solid #e0d9c6;
+  border-radius: 12rpx;
+  background: #faf7ef;
+  font-size: 27rpx;
+  color: #4a3b2a;
+}
+
+.field-pair .field-input {
+  flex: 1;
+  margin-right: 16rpx;
+}
+
+.field-pair .field-input:last-child {
+  margin-right: 0;
+}
+
+.field-inline .field-desc {
+  margin-bottom: 0;
+}
+
+.btn-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-top: 8rpx;
+}
+
+.btn {
+  height: 68rpx;
+  padding: 0 28rpx;
+  margin: 0 16rpx 16rpx 0;
+  line-height: 68rpx;
+  border-radius: 14rpx;
+  background: #f3ede0;
+  color: #92400E;
+  font-size: 26rpx;
+}
+
+.hint {
+  margin-top: 8rpx;
+  font-size: 23rpx;
+  color: #9a8f7a;
+  line-height: 1.6;
+}

@@ -30,7 +30,8 @@ module.exports = async (ctx) => {
           'Content-Type': 'application/json',
         },
         data: param,
-        dataType: 'json'
+        dataType: 'json',
+        timeout: 10000
       }
     );
     

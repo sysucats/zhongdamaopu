@@ -1,0 +1,12 @@
+// Keep the entire client-triggered batch inside EMAS's 60-second request limit.
+module.exports = Object.freeze({
+  REQUEST_TIMEOUT_MS: 50000,
+  READ_TIMEOUT_MS: 40000,
+  DOWNLOAD_TIMEOUT_MS: 15000,
+  BATCH_TIMEOUT_MS: 55000,
+  LEASE_TIMEOUT_MS: 70000,
+  RESPONSE_RESERVE_MS: 2000,
+  WRITE_BUDGET_MS: 35000,
+  PHOTO_BUDGET_MS: 45000,
+  UPLOAD_RESERVE_MS: 32000,
+});

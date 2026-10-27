@@ -175,11 +175,9 @@
       </view>
     </view>
     <view class="card-body">
-      <view class="filter-control">
-        <view class="switch-container">
-          <switch checked="{{only_best_photo}}" bindchange="switchOnlyBest" color="var(--color-primary)" />
-          <text class="switch-label">只显示精选照片</text>
-        </view>
+      <view class="switch-container">
+        <switch checked="{{only_best_photo}}" bindchange="switchOnlyBest" color="var(--color-primary)" />
+        <text class="switch-label">只显示精选照片</text>
       </view>
     </view>
   </view>

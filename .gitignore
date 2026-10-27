@@ -17,6 +17,7 @@ cloudfunctions/package-lock.json
 project.private.config.json
 miniprogram/appSecret.js
 .secret.yaml
+.meowid-probe.env
 miniprogram/signKey.js
 .app.yaml
 

@@ -13,6 +13,7 @@ import {
   getCatCommentCount
 } from "../../utils/comment";
 import { getUserInfo } from "../../utils/user";
+import { getRecognizeMode } from "../../utils/recognize";
 import cache from "../../utils/cache";
 import config from "../../config";
 import { loadFilter, getGlobalSettings, showTab } from "../../utils/page";
@@ -251,11 +252,12 @@ Page({
 
   onShow: function () {
     showTab(this);
+    this.loadRecognize();
   },
 
   loadRecognize: async function () {
-    const settings = await getGlobalSettings('recognize');
-    const showRecognize = settings && settings.showRecognizeBtn === true;
+    const settings = await getGlobalSettings('recognize', { nocache: true });
+    const showRecognize = getRecognizeMode(settings) !== 'off';
     this.setData({ showRecognize: !!showRecognize });
   },
 
