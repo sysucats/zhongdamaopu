@@ -1,9 +1,9 @@
-import { showTab, loadFilter } from "../../../utils/page";
-import config from "../../../config";
-import { isDemoMode, getDemoMapData } from "../../../utils/demo";
-import { checkCanUseMap } from "../../../utils/user";
-import { getAvatar } from "../../../utils/cat";
-import { signCosUrl } from "../../../utils/common";
+import { showTab, loadFilter } from "../../utils/page";
+import config from "../../config";
+import { isDemoMode, getDemoMapData } from "../../utils/demo";
+import { checkCanUseMap } from "../../utils/user";
+import { getAvatar } from "../../utils/cat";
+import { signCosUrl } from "../../utils/common";
 
 const app = getApp();
 
@@ -110,7 +110,7 @@ Page({
   onShareAppMessage() {
     return {
       title: `来看看校园里的猫猫都在哪里~ - ${config.text.app_name}`,
-      path: '/pages/map/index/index'
+      path: '/pages/map/map'
     };
   },
 
