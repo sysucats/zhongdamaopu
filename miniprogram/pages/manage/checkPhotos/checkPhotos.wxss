@@ -1,3 +1,5 @@
+@import "../adminPage.wxss";
+
 page {
   width: 750rpx;
   padding: 35rpx 35rpx 160rpx 35rpx;
@@ -123,16 +125,6 @@ image {
   margin-bottom: 20rpx;
 }
 
-#total-count {
-  font-size: 30rpx;
-  font-weight: 300;
-  color: var(--color-gray-max);
-  box-shadow: 0rpx 0rpx 30rpx var(--color-gray);
-  padding: 40rpx;
-  margin-bottom: 30rpx;
-  border-radius: 10rpx;
-}
-
 .bottom-bar {
   position: fixed;
   bottom: 0;
@@ -177,32 +169,17 @@ image {
   text-align: center;
 }
 
-/* 待审核 / 审核记录 切换 */
-.mode-tabs {
-  display: flex;
-  background: #fff;
-  border-radius: 20rpx;
-  box-shadow: 0rpx 0rpx 30rpx var(--color-gray);
-  padding: 8rpx;
-  margin-bottom: 30rpx;
-}
-
-.mode-tab {
-  flex: 1;
-  text-align: center;
-  font-size: 30rpx;
-  color: var(--color-gray-dark);
-  padding: 16rpx 0;
-  border-radius: 14rpx;
-}
-
-.mode-tab.active {
-  background: var(--color-primary);
-  color: var(--color-text-onPrimary);
-  font-weight: bold;
-}
-
 /* 审核记录 */
+.history-box {
+  flex-direction: row;
+  align-items: flex-start;
+}
+
+.history-box .info {
+  flex: 1;
+  min-width: 0;
+}
+
 .history-toolbar {
   display: flex;
   align-items: center;

@@ -1,163 +1,255 @@
-/* pages/info/myAchievement/myAchievement.wxss — 金色主题 */
+page {
+  background-color: var(--color-gray-light);
+}
+
 .page {
   min-height: 100vh;
-  background: #faf6ec;
+  box-sizing: border-box;
   padding-bottom: 60rpx;
 }
 
-.header {
-  background: linear-gradient(135deg, #7a5b12 0%, #b8901f 45%, #d9ac2b 100%);
-  padding: 60rpx 40rpx 50rpx;
-  color: #fff8e1;
+/* 顶部概览 */
+.hero {
+  padding: 44rpx var(--space-lg) 0;
 }
 
-.header-title {
+.hero-title {
+  font-size: 42rpx;
+  font-weight: bold;
+  color: var(--color-black-light);
+}
+
+.hero-sub {
+  font-size: 25rpx;
+  margin-top: 10rpx;
+  color: var(--color-gray-max);
+}
+
+.stat-row {
+  display: flex;
+  align-items: center;
+  margin-top: var(--space-lg);
+}
+
+.stat-cell {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.stat-num {
   font-size: 44rpx;
   font-weight: bold;
-  text-shadow: 0 2rpx 8rpx rgba(90, 66, 8, 0.4);
+  color: var(--color-black-light);
+  line-height: 1.1;
 }
 
-.header-progress {
-  font-size: 26rpx;
-  opacity: 0.95;
-  margin-top: 12rpx;
-  color: #f9e7b2;
+.stat-num.gold {
+  color: var(--color-achievement-gold);
+}
+
+.stat-label {
+  font-size: 23rpx;
+  color: var(--color-gray-max);
+  margin-top: 8rpx;
+}
+
+.stat-divider {
+  width: 1rpx;
+  height: 56rpx;
+  background: var(--color-gray-normal);
 }
 
 .progress-bar {
-  margin-top: 24rpx;
-  height: 14rpx;
-  border-radius: 7rpx;
-  background: rgba(255, 255, 255, 0.25);
+  margin-top: var(--space-lg);
+  height: 16rpx;
+  border-radius: var(--radius-pill);
+  background: var(--color-gray-normal);
   overflow: hidden;
 }
 
 .progress-inner {
   height: 100%;
-  border-radius: 7rpx;
-  background: linear-gradient(90deg, #ffe58a, #ffd101);
-  transition: width 0.5s;
+  border-radius: var(--radius-pill);
+  background: linear-gradient(90deg, var(--color-primary-dark), var(--color-primary));
+  transition: width 0.6s ease;
 }
 
+.progress-text {
+  font-size: 23rpx;
+  color: var(--color-gray-max);
+  margin-top: 14rpx;
+  text-align: center;
+}
+
+/* 成就列表 */
 .achv-list {
-  padding: 30rpx;
+  padding: var(--space-lg) var(--space-lg) 0;
 }
 
 .achv-card {
-  background: #fffdf6;
-  border-radius: 20rpx;
-  padding: 28rpx;
-  margin-bottom: 20rpx;
-  box-shadow: 0 4rpx 16rpx rgba(140, 106, 20, 0.10);
-  border: 2rpx solid #f0e2b8;
-}
-
-/* 达到金牌的卡片高亮 */
-.achv-card.tier-3 {
-  border-color: #e6a823;
-  box-shadow: 0 4rpx 20rpx rgba(230, 168, 35, 0.28);
+  background: #fff;
+  border-radius: var(--radius-xl);
+  padding: var(--space-lg);
+  margin-bottom: var(--space-md);
+  box-shadow: var(--shadow-card);
 }
 
 .achv-head {
   display: flex;
   align-items: center;
-  margin-bottom: 20rpx;
+  margin-bottom: var(--space-lg);
 }
 
 .achv-icon {
-  width: 72rpx;
-  height: 72rpx;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #f7e9c3, #f0d68a);
+  width: 64rpx;
+  height: 64rpx;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 40rpx;
+  font-size: 44rpx;
   flex-shrink: 0;
 }
 
-.achv-name {
-  font-size: 34rpx;
-  font-weight: bold;
-  color: #6b4f0e;
-  margin-left: 20rpx;
+.achv-head-main {
   flex: 1;
+  min-width: 0;
+  margin-left: 20rpx;
+}
+
+.achv-name {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: var(--color-black-light);
+}
+
+.achv-desc {
+  font-size: 23rpx;
+  color: var(--color-gray-max);
+  margin-top: 6rpx;
+  line-height: 1.4;
 }
 
 .achv-cur {
   font-size: 22rpx;
-  color: #a0740a;
-  background: #f9ecc8;
-  border-radius: 20rpx;
-  padding: 6rpx 18rpx;
+  color: var(--color-gray-max);
+  background: var(--color-gray-light);
+  border-radius: var(--radius-pill);
+  padding: 7rpx 20rpx;
+  flex-shrink: 0;
+  margin-left: 12rpx;
+  font-weight: bold;
 }
 
+.achv-cur.tier-1 {
+  color: #fff;
+  background: var(--grad-achievement-bronze);
+}
+
+.achv-cur.tier-2 {
+  color: var(--color-black-light);
+  background: var(--grad-achievement-silver);
+}
+
+.achv-cur.tier-3 {
+  color: var(--color-black-light);
+  background: var(--grad-achievement-gold);
+}
+
+/* 三档奖牌 */
 .tier-row {
   display: flex;
-  justify-content: space-around;
+  justify-content: space-between;
 }
 
 .tier-cell {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: 33%;
+  width: 33.333%;
+  min-width: 0;
 }
 
 .medal {
+  position: relative;
+  z-index: 1;
   width: 96rpx;
   height: 96rpx;
   border-radius: 50%;
-  background: #e8e4da;
+  background: var(--grad-achievement-locked);
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: inset 0 -6rpx 10rpx rgba(0, 0, 0, 0.12), 0 4rpx 8rpx rgba(0, 0, 0, 0.08);
+  box-shadow: inset 0 2rpx 6rpx rgba(255, 255, 255, 0.5);
 }
 
-.tier-cell.unlocked .medal {
-  box-shadow: inset 0 -6rpx 10rpx rgba(0, 0, 0, 0.18), 0 4rpx 12rpx rgba(230, 168, 35, 0.35);
+.tier-cell.unlocked .medal.tier-1 {
+  background: var(--grad-achievement-bronze);
+  box-shadow: 0 4rpx 14rpx rgba(176, 111, 50, 0.35);
+}
+
+.tier-cell.unlocked .medal.tier-2 {
+  background: var(--grad-achievement-silver);
+  box-shadow: 0 4rpx 14rpx rgba(135, 149, 164, 0.35);
+}
+
+.tier-cell.unlocked .medal.tier-3 {
+  background: var(--grad-achievement-gold);
+  box-shadow: 0 4rpx 14rpx rgba(222, 159, 18, 0.4);
 }
 
 .medal-text {
-  font-size: 38rpx;
+  font-size: 40rpx;
   font-weight: bold;
   color: #fff;
-  text-shadow: 0 2rpx 4rpx rgba(0, 0, 0, 0.25);
 }
 
-.tier-cell:not(.unlocked) .medal-text {
-  color: #b9b4a6;
-  text-shadow: none;
+.tier-cell.unlocked .medal.tier-2 .medal-text,
+.tier-cell.unlocked .medal.tier-3 .medal-text {
+  color: var(--color-black-light);
+}
+
+.tier-cell.locked .medal-text {
+  color: var(--color-gray-dark);
+}
+
+/* 未解锁小锁标记 */
+.medal-lock {
+  position: absolute;
+  right: -8rpx;
+  bottom: -8rpx;
+  font-size: 26rpx;
+  line-height: 1;
 }
 
 .tier-threshold {
   font-size: 24rpx;
-  color: #8a6d1f;
-  margin-top: 12rpx;
+  color: var(--color-black-min);
+  margin-top: 16rpx;
   font-weight: bold;
+}
+
+.tier-cell.locked .tier-threshold {
+  color: var(--color-gray-max);
 }
 
 .tier-time {
   font-size: 20rpx;
-  color: #b5983f;
-  margin-top: 4rpx;
+  color: var(--color-primary);
+  margin-top: 6rpx;
+  text-align: center;
 }
 
 .tier-time.locked-text {
-  color: #c9c4b6;
-}
-
-.achv-desc {
-  font-size: 24rpx;
-  color: #a08b54;
-  margin-top: 20rpx;
-  text-align: center;
+  color: var(--color-gray-dark);
 }
 
 .footer-tip {
   text-align: center;
   font-size: 24rpx;
-  color: #bfa760;
-  margin-top: 30rpx;
+  color: var(--color-gray-max);
+  margin-top: var(--space-lg);
+  padding: 0 var(--space-lg);
 }

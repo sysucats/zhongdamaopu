@@ -1,18 +1,19 @@
 <view class="content">
-  <view class="user-container">
-    <view class="avatar-container">
-      <image class="avatar" src="{{user.userInfo.avatarUrl || defaultAvatarUrl}}" mode="aspectFill"></image>
+  <view class="profile-card">
+    <view class="user-container">
+      <view class="avatar-container">
+        <image class="avatar" src="{{user.userInfo.avatarUrl || defaultAvatarUrl}}" mode="aspectFill"></image>
+      </view>
+      <view class="userName-container">
+        <text class="user-name">{{user.userInfo.nickName}}</text>
+        <text class="badge {{badgeClass}}-badge">{{badgeName}}</text>
+      </view>
+      <view class="edit-container" bindtap="editProfile">
+        <view class="iconfont icon-edit"></view>
+      </view>
     </view>
-    <view class="userName-container">
-      <text class="user-name">{{user.userInfo.nickName}}</text>
-      <text class="badge {{badgeClass}}-badge">{{badgeName}}</text>
-    </view>
-    <view class="edit-container" bindtap="editProfile">
-      <view class="iconfont icon-edit"></view>
-    </view>
-  </view>
 
-  <view class="num-info"> 
+    <view class="num-info">
       <view class="num"> 
         <view class="num-title">{{numUserPhotos !== null && numUserPhotos !== undefined ? numUserPhotos : '0'}}</view>
         <text class='small-title'>照片</text>
@@ -29,19 +30,27 @@
         <view class="num-title">{{numUserComments !== null && numUserComments !== undefined ? numUserComments : '0'}}</view>
         <text class='small-title'>便利贴</text>
       </view>
+    </view>
   </view>
 </view>
 
 <!-- 成就展示位 -->
-<view class="showcase" bindtap="openAchvPicker">
-  <view class="showcase-title">🏅 成就展示 <text class="showcase-edit">点击更换</text></view>
+<view class="showcase">
+  <view class="showcase-header">
+    <view class="showcase-title">我的成就</view>
+    <view class="showcase-edit" bindtap="openAchvPicker" wx:if="{{showcase.length > 0}}">编辑展示</view>
+  </view>
   <view class="showcase-row" wx:if="{{showcase.length > 0}}">
-    <view class="showcase-item" wx:for="{{showcase}}" wx:key="key">
-      <view class="showcase-medal" style="background: {{item.tierColor}};">{{item.icon}}</view>
+    <view class="showcase-item" wx:for="{{showcase}}" wx:key="key" bindtap="openAchvDetail" data-key="{{item.key}}">
+      <view class="showcase-medal tier-{{item.tier}}">{{item.icon}}</view>
       <view class="showcase-name">{{item.name}}</view>
     </view>
   </view>
-  <view class="showcase-empty" wx:else>未设置展示成就，点这里选择</view>
+  <view class="showcase-empty" wx:else>
+    <view>{{hasUnlockedAchv ? '还没有展示成就' : '解锁成就后，可在这里展示'}}</view>
+    <view class="showcase-add" wx:if="{{hasUnlockedAchv}}" bindtap="openAchvPicker">选择成就</view>
+  </view>
+  <view class="showcase-all" bindtap="toMyAchievement">查看全部成就 ›</view>
 </view>
 
 <view class="menu-container">
@@ -63,12 +72,16 @@
 <modifyUserInfo bind:userInfoUpdated="onUserInfoUpdated" show="{{showEdit}}" bind:close="closeEdit"></modifyUserInfo>
 
 <!-- 成就展示位选择器 -->
-<view class="achv-picker-mask" wx:if="{{showAchvPicker}}" bindtap="closeAchvPicker">
-  <view class="achv-picker" catchtap="noop">
-    <view class="achv-picker-title">选择要展示的成就（最多3个，全部取消则不展示）</view>
-    <scroll-view scroll-y="1" class="achv-picker-list">
+<popup show="{{showAchvPicker}}" position="center" bind:close="closeAchvPicker">
+  <view class="achv-picker">
+    <view class="achv-picker-title">选择展示成就</view>
+    <view class="achv-picker-meta">
+      <view class="achv-picker-tip">已选 {{pickerSelected.length}}/3</view>
+      <view class="achv-picker-clear" wx:if="{{pickerSelected.length > 0}}" bindtap="clearAchvPick">清空</view>
+    </view>
+    <scroll-view scroll-y="1" class="achv-picker-list" style="height: {{pickerListHeight}}rpx;">
       <view class="achv-pick-item {{item.selected ? 'selected' : ''}}" wx:for="{{unlockedAchv}}" wx:key="key" bindtap="toggleAchvPick" data-key="{{item.key}}">
-        <view class="showcase-medal small" style="background: {{item.tierColor}};">{{item.icon}}</view>
+        <view class="showcase-medal small tier-{{item.tier}}">{{item.icon}}</view>
         <view class="achv-pick-info">
           <view class="achv-pick-name">{{item.name}}</view>
           <view class="achv-pick-desc">{{item.desc}}</view>
@@ -78,7 +91,17 @@
     </scroll-view>
     <view class="achv-picker-btns">
       <view class="achv-picker-btn cancel" bindtap="closeAchvPicker">取消</view>
-      <view class="achv-picker-btn confirm" bindtap="saveAchvPicker">保存</view>
+      <view class="achv-picker-btn confirm" bindtap="saveAchvPicker">{{pickerSelected.length ? '保存展示' : '隐藏展示'}}</view>
     </view>
   </view>
-</view>
+</popup>
+
+<popup show="{{showAchvDetail}}" position="center" bind:close="closeAchvDetail">
+  <view class="achv-detail" wx:if="{{selectedAchievement}}">
+    <view class="achv-detail-close" bindtap="closeAchvDetail" aria-label="关闭">×</view>
+    <view class="achv-detail-medal showcase-medal tier-{{selectedAchievement.tier}}">{{selectedAchievement.icon}}</view>
+    <view class="achv-detail-name">{{selectedAchievement.name}}</view>
+    <view class="achv-detail-desc">{{selectedAchievement.desc}}</view>
+    <view class="achv-detail-action" bindtap="toMyAchievement">查看全部成就</view>
+  </view>
+</popup>

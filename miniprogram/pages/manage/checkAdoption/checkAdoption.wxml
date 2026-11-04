@@ -1,12 +1,9 @@
 <!-- 领养申请审核（骨架复用反馈处理页的已验证结构） -->
 <block wx:if="{{auth}}">
-  <!-- 顶部固定栏：说明 + 状态切换 -->
-  <view id='tips'>
-    <text>先点「审核过程记录」受理，确认领养人后点「通过」。\n点击猫猫名字跳转详情，已通过/未通过可回溯审核记录。</text>
-    <view class="tabs">
-      <view class="tab {{activeTab === item.key ? 'active' : ''}}" wx:for="{{tabs}}" wx:key="key" data-key="{{item.key}}" bindtap="switchTab">{{item.name}}</view>
-    </view>
+  <view class="admin-segments">
+    <view class="admin-segment {{activeTab === item.key ? 'active' : ''}}" wx:for="{{tabs}}" wx:key="key" data-key="{{item.key}}" bindtap="switchTab">{{item.name}}</view>
   </view>
+  <view class="admin-page-hint">先记录审核过程，再通过或拒绝申请。</view>
 
   <!-- 审核面板（内嵌，不用 fixed 弹窗，避免部分模拟器无法输入） -->
   <view class="review-panel" wx:if="{{showReviewPanel && reviewTarget}}">

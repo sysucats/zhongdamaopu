@@ -2,6 +2,10 @@
 // 成就数量排行榜
 import api from "../../utils/cloudApi";
 import { getUser } from "../../utils/user";
+import { getMyAchievements } from "../../utils/achievement";
+import { signCosUrl } from "../../utils/common";
+
+const defaultAvatarUrl = '/pages/public/images/info/default_avatar.png';
 
 Component({
   data: {
@@ -10,6 +14,8 @@ Component({
     myOpenid: '',
     myCount: 0,
     myRank: 0,
+    myName: '',
+    myAvatarUrl: defaultAvatarUrl,
   },
 
   methods: {
@@ -19,28 +25,31 @@ Component({
       }
       this.setData({ loading: true });
       try {
-        const res = await api.getAchievementRank();
+        const [res, user, achievements] = await Promise.all([
+          api.getAchievementRank(),
+          getUser().catch(() => null),
+          getMyAchievements().catch(() => []),
+        ]);
         const list = (res && res.success && res.data) || [];
 
-        // 我的排名
-        let myOpenid = '';
-        let myCount = 0;
-        let myRank = 0;
-        try {
-          const user = await getUser();
-          myOpenid = user.openid || '';
-        } catch (e) { /* 忽略 */ }
+        const myOpenid = user?.openid || '';
+        await Promise.all(list.map(async item => {
+          item.avatarUrl = item.openid === myOpenid
+            ? user?.userInfo?.avatarUrl || defaultAvatarUrl
+            : (await signCosUrl(item.avatarUrl)) || defaultAvatarUrl;
+        }));
         const mine = list.find(x => x.openid === myOpenid);
-        if (mine) {
-          myCount = mine.count;
-          myRank = mine.rank;
-        }
+        const myCount = mine ? mine.count : achievements.reduce(
+          (sum, category) => sum + category.tiers.filter(tier => tier.unlocked).length, 0
+        );
 
         this.setData({
           list,
           myOpenid,
           myCount,
-          myRank,
+          myRank: mine ? mine.rank : 0,
+          myName: user?.userInfo?.nickName || '猫友',
+          myAvatarUrl: user?.userInfo?.avatarUrl || defaultAvatarUrl,
           loading: false,
         });
       } catch (e) {

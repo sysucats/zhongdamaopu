@@ -5,6 +5,7 @@ page {
   --color-primary-dark: #dfb600;
   --color-primary: #ffd101;
   --color-primary-light: #fffced;
+  --color-primary-bg: #fffef7;
 
   --color-white-dark: #fafafa;
 
@@ -29,6 +30,39 @@ page {
   --color-badge-A: #ffa601;
   --color-badge-B: #004ad3;
   --color-badge-C: #258100;
+
+  --color-achievement-bronze: #c88a4b;
+  --color-achievement-silver: #9aa5b1;
+  --color-achievement-gold: #e6a823;
+  --color-achievement-locked: #d9dde3;
+
+  /* 成就奖牌渐变（铜/银/金/未解锁） */
+  --grad-achievement-bronze: linear-gradient(135deg, #e3ad74 0%, #b06f32 100%);
+  --grad-achievement-silver: linear-gradient(135deg, #cdd6e0 0%, #8795a4 100%);
+  --grad-achievement-gold: linear-gradient(135deg, #f8d87c 0%, #de9f12 100%);
+  --grad-achievement-locked: linear-gradient(135deg, #eef0f3 0%, #d9dde3 100%);
+
+  /* 通用间距 / 圆角 / 阴影规范 */
+  --space-xxs: 4rpx;
+  --space-xs: 8rpx;
+  --space-sm: 16rpx;
+  --space-md: 24rpx;
+  --space-lg: 32rpx;
+  --space-xl: 40rpx;
+  --space-2xl: 48rpx;
+  --space-section: 64rpx;
+  --radius-xs: 4rpx;
+  --radius-sm: 8rpx;
+  --radius-md: 12rpx;
+  --radius-lg: 16rpx;
+  --radius-xl: 24rpx;
+  --radius-modal: 40rpx;
+  --radius-pill: 999rpx;
+  --shadow-hairline: 0 2rpx 8rpx rgba(0, 0, 0, 0.04);
+  --shadow-card: 0 4rpx 16rpx rgba(0, 0, 0, 0.08);
+  --shadow-card-strong: 0 8rpx 24rpx rgba(0, 0, 0, 0.12);
+  --shadow-float: 0 12rpx 24rpx rgba(0, 0, 0, 0.15);
+  --shadow-modal: 0 20rpx 60rpx rgba(0, 0, 0, 0.25);
 
   --color-comment-paper-white: #ffffff;
   --color-comment-paper-yellow: #fff7ee;

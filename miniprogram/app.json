@@ -33,8 +33,7 @@
         "badgeCode/badgeCode",
         "badgeCode/addBadgeCode/addBadgeCode",
         "catManage/catManage",
-        "checkAdoption/checkAdoption",
-        "medicalManage/medicalManage"
+        "checkAdoption/checkAdoption"
       ]
     },
     {
@@ -207,7 +206,7 @@
     ]
   },
   "window": {
-    "backgroundColor": "#fff",
+    "backgroundColor": "#f7f7f7",
     "backgroundTextStyle": "light",
     "navigationBarBackgroundColor": "#ffd101",
     "navigationBarTitleText": "笃行猫谱",

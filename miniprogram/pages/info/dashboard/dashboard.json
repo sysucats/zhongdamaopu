@@ -3,6 +3,6 @@
     "popup": "/components/popup/popup"
   },
   "navigationBarTitleText": "数据看板",
-  "backgroundColor": "#F7F7FA",
+  "backgroundColor": "#f7f7f7",
   "enablePullDownRefresh": true
 } 

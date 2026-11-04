@@ -44,7 +44,7 @@ Page({
     loaded: false,      // 首次加载完成标记
     campusCenters: {},  // { campusName: { latitude, longitude, scale } }
     markerIconMap: {},  // cat_id -> 已绘制好的圆形头像临时文件路径（避免重绘闪动），__default__ 为无头像猫咪的默认图标
-    avatarDrawn: false, // 圆形头像是否已首次绘制完成（仅首次进入页面绘制）
+    avatarDrawn: false, // 首轮圆形头像绘制是否完成
     clusterIconCache: {}, // { count: tempFilePath } 数量圈图标缓存（按猫数量复用）
     currentScale: null,   // 当前地图缩放级别（onRegionChange 更新）
   },
@@ -341,17 +341,12 @@ Page({
 
     // 生成 markers：
     //   - 优先使用已缓存的圆形头像路径（markerIconMap），避免重绘闪动
-    //   - 有头像但没缓存时回退到原图（后续 _renderCircleIcons 会异步生成圆形头像并替换）
-    //   - 无头像时回退到默认图标（同样会被 _renderCircleIcons 裁成圆形）
+    //   - 尚未生成圆形头像时使用本地默认图标，避免原图或加载失败的原生图钉闪现
     const markers = catList.map((cat, index) => {
       const catId = cat.cat_id || cat._id;
-      const avatar = avatarMap[catId];
       const cachedCircle = this.jsData.markerIconMap[catId];
       const cachedDefault = this.jsData.markerIconMap['__default__'];
-      const iconPath = cachedCircle
-        ? cachedCircle
-        : (avatar ? (avatar.photo_compressed || avatar.photo_id || undefined)
-                  : (cachedDefault || DEFAULT_MARKER_ICON));
+      const iconPath = cachedCircle || cachedDefault || DEFAULT_MARKER_ICON;
       const lat = cat.latitude != null ? cat.latitude : undefined;
       const lng = cat.longitude != null ? cat.longitude : undefined;
       return {
@@ -410,14 +405,8 @@ Page({
 
     this.setData({ markers });
 
-    // 圆形头像仅在首次进入页面时绘制；之后 onShow 刷新数据复用缓存，不再重绘
-    if (!this.jsData.avatarDrawn) {
-      this._renderCircleIcons(catList, avatarMap, markers);
-    } else {
-      // 已有圆形头像缓存：首屏按当前 scale 应用聚合
-      const scale = this.jsData.currentScale != null ? this.jsData.currentScale : this.data.scale;
-      this._applyCluster(scale);
-    }
+    // 复用已有缓存，同时为刷新后新出现的猫咪补绘头像。
+    await this._renderCircleIcons(catList, avatarMap, markers);
   },
 
   async _renderCircleIcons(catList, avatarMap, markers) {
@@ -445,7 +434,13 @@ Page({
     for (const id of catIdsWithAvatar) {
       const avatar = avatarMap[id];
       const url = avatar.photo_compressed || avatar.photo_id;
-      const circlePath = await this.drawCircleAvatar(canvas, url);
+      let circlePath = null;
+      try {
+        const signedUrl = await signCosUrl(url);
+        if (signedUrl) circlePath = await this.drawCircleAvatar(canvas, signedUrl);
+      } catch (error) {
+        console.warn('准备地图头像失败:', error.message);
+      }
       if (circlePath) {
         // 写入缓存，后续 onShow 不再重绘这只猫
         this.jsData.markerIconMap[id] = circlePath;
@@ -457,11 +452,8 @@ Page({
       }
     }
 
-    // 为没有头像的猫咪绘制统一的默认圆形图标
-    const hasAvatarless = markers.some(m => {
-      const avatar = avatarMap[m.catId];
-      return !avatar || (!avatar.photo_compressed && !avatar.photo_id);
-    });
+    // 为没有头像或头像绘制失败的猫咪准备统一的默认圆形图标
+    const hasAvatarless = markers.some(m => !this.jsData.markerIconMap[m.catId]);
     if (hasAvatarless && !this.jsData.markerIconMap['__default__']) {
       const defaultCircle = await this.drawCircleAvatar(canvas, DEFAULT_MARKER_ICON);
       if (defaultCircle) {
@@ -471,8 +463,7 @@ Page({
     const defaultCircle = this.jsData.markerIconMap['__default__'];
     if (defaultCircle) {
       markers.forEach(m => {
-        const avatar = avatarMap[m.catId];
-        if (!avatar || (!avatar.photo_compressed && !avatar.photo_id)) {
+        if (!this.jsData.markerIconMap[m.catId]) {
           if (m.iconPath !== defaultCircle) {
             m.iconPath = defaultCircle;
             changed = true;
@@ -489,7 +480,7 @@ Page({
 
     // 首次绘制完成后，按当前 scale 应用聚合（处理首屏即低缩放的情况）
     const scale = this.jsData.currentScale != null ? this.jsData.currentScale : this.data.scale;
-    this._applyCluster(scale);
+    await this._applyCluster(scale);
   },
 
   async onMarkerTap(e) {
@@ -864,10 +855,6 @@ Page({
     wx.navigateTo({
       url: `/pages/genealogy/detailCat/detailCat?cat_id=${catId}`
     });
-  },
-
-  preventTouchMove() {
-    return false;
   },
 
   // 展示当前猫的轨迹（从 inter 表读取）

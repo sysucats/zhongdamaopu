@@ -117,6 +117,11 @@
   background: var(--color-gray-light, #f7f7f7);
 }
 
+.campus-btn-icon {
+  width: 40rpx;
+  height: 40rpx;
+}
+
 .campus-btn-text {
   font-size: 26rpx;
   color: #333;
@@ -129,11 +134,14 @@
   width: 80rpx;
   height: 80rpx;
   border-radius: 50%;
-  background: #fff;
+  background: rgba(255, 255, 255, 0.9);
+  border: none;
   display: flex;
   align-items: center;
   justify-content: center;
   box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.15);
+  backdrop-filter: blur(8rpx);
+  -webkit-backdrop-filter: blur(8rpx);
   font-size: 36rpx;
   transition: transform 0.25s ease;
   flex-shrink: 0;
@@ -144,71 +152,53 @@
   background: var(--color-gray-light, #f7f7f7);
 }
 
-/* 底部详情卡片 */
-.detail-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 1000;
-  pointer-events: none;
-  opacity: 0;
-  transition: opacity 0.25s ease;
+.campus-toggle-icon {
+  width: 40rpx;
+  height: 40rpx;
 }
 
-.detail-overlay.show {
-  pointer-events: auto;
-  opacity: 1;
+.campus-toggle-close {
+  color: #333;
+  font-size: 40rpx;
+  line-height: 1;
 }
 
-.detail-mask {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.45);
+/* 底部详情面板：结构对齐猫咪详情页的 popup */
+.detail-withdraw-btn {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.detail-withdraw {
+  width: 72rpx;
+  height: 19.5rpx;
+  margin: 30rpx 0;
 }
 
 .detail-card {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  background: #fff;
-  border-radius: 30rpx 30rpx 0 0;
-  padding: 0 30rpx 40rpx;
-  padding-bottom: calc(40rpx + env(safe-area-inset-bottom));
+  padding: 0 10rpx 20rpx;
   max-height: 70vh;
   overflow-y: auto;
-  box-shadow: 0 -4rpx 20rpx rgba(0, 0, 0, 0.1);
-  animation: slideUp 0.3s ease;
-}
-
-@keyframes slideUp {
-  from { transform: translateY(100%); }
-  to { transform: translateY(0); }
-}
-
-.detail-handle {
-  display: flex;
-  justify-content: center;
-  padding: 16rpx 0 10rpx;
-}
-
-.handle-bar {
-  width: 60rpx;
-  height: 6rpx;
-  background: var(--color-gray);
-  border-radius: 3rpx;
+  box-sizing: border-box;
 }
 
 .detail-header {
+  padding: 4rpx 4rpx 22rpx;
+}
+
+.detail-title {
+  width: 100%;
+}
+
+.detail-title-main {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  padding: 10rpx 0 20rpx;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+  gap: 12rpx;
+  width: 100%;
+  text-align: left;
 }
 
 .detail-name {
@@ -217,16 +207,10 @@
   color: var(--color-primary-text);
 }
 
-.detail-close {
-  width: 50rpx;
-  height: 50rpx;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 36rpx;
-  color: var(--color-gray-max);
-  border-radius: 50%;
-  background: var(--color-gray-light);
+.title-gender-icon {
+  width: 30rpx;
+  height: 30rpx;
+  flex-shrink: 0;
 }
 
 .detail-photo-wrap {
@@ -260,62 +244,87 @@
   to   { transform: translateY(calc(var(--pan-distance, 0px) * -1)); }
 }
 
-.detail-location {
-  position: absolute;
-  bottom: 12rpx;
-  left: 12rpx;
-  background: rgba(0, 0, 0, 0.55);
-  color: #fff;
-  padding: 6rpx 16rpx;
-  border-radius: 20rpx;
-  font-size: 22rpx;
+.detail-location-inline {
   display: flex;
   align-items: center;
+  justify-content: flex-start;
+  color: var(--color-gray-max);
+  font-size: 22rpx;
+  line-height: 1.4;
 }
 
 .location-icon {
+  width: 22rpx;
+  height: 22rpx;
   margin-right: 6rpx;
-  font-size: 20rpx;
+  flex-shrink: 0;
 }
 
-.detail-info {
-  background: var(--color-primary-light);
-  border-radius: 12rpx;
-  padding: 15rpx 20rpx;
+.detail-profile {
+  overflow: hidden;
+  border-radius: 16rpx;
+  background: #fff;
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.08);
   margin-bottom: 25rpx;
 }
 
-.info-row {
-  display: flex;
-  justify-content: space-between;
-  padding: 8rpx 0;
-}
-
-.info-row + .info-row {
-  border-top: 1rpx solid var(--color-ltblack-transparent);
-}
-
-.info-label {
-  font-size: 26rpx;
-  color: var(--color-gray-max);
-  flex-shrink: 0;
-  min-width: 150rpx;
-}
-
-.info-value {
-  font-size: 26rpx;
-  color: var(--color-black-min);
+.profile-header {
   display: flex;
   align-items: center;
-  flex: 1;
-  justify-content: flex-end;
-  word-break: break-all;
-  text-align: right;
+  padding: 18rpx 24rpx;
+  border-bottom: 1rpx solid var(--color-gray-light);
+  color: var(--color-black-min);
+  font-size: 28rpx;
+  font-weight: 700;
 }
 
-.gender-icon {
-  width: 32rpx;
-  height: 32rpx;
+.profile-header-icon {
+  margin-right: 10rpx;
+  color: var(--color-primary);
+  font-size: 34rpx;
+}
+
+.profile-item {
+  position: relative;
+  padding: 20rpx 24rpx 22rpx;
+}
+
+.profile-item + .profile-item::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 24rpx;
+  right: 24rpx;
+  height: 1rpx;
+  background: rgba(0, 0, 0, 0.04);
+}
+
+.profile-label {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8rpx;
+  color: var(--color-gray-max);
+  font-size: 22rpx;
+}
+
+.profile-label-block {
+  width: 8rpx;
+  height: 24rpx;
+  margin-right: 10rpx;
+  border-radius: 4rpx;
+  background: var(--color-primary);
+}
+
+.profile-value {
+  display: block;
+  color: var(--color-black-min);
+  font-size: 26rpx;
+  line-height: 1.65;
+  word-break: break-word;
+}
+
+.profile-value.coordinate {
+  font-variant-numeric: tabular-nums;
 }
 
 .detail-btn {
@@ -370,25 +379,26 @@
   min-width: 0;
 }
 
-/* 地图右上角「还原」按钮 */
+/* 地图右上角「返回」按钮：对齐关系图谱重置按钮 */
 .restore-btn {
   position: fixed;
   top: 100rpx;
   right: 24rpx;
   z-index: 999;
-  background: var(--color-primary);
-  color: #fff;
-  padding: 18rpx 32rpx;
-  border-radius: 44rpx;
-  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.18);
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(8rpx);
+  -webkit-backdrop-filter: blur(8rpx);
+  color: var(--color-primary);
+  border: none;
   font-size: 28rpx;
   font-weight: 600;
-  letter-spacing: 2rpx;
+  padding: 16rpx 28rpx;
+  border-radius: 999rpx;
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.15);
 }
 
 .restore-btn:active {
-  opacity: 0.8;
-  background: var(--color-primary-dark, #dfb600);
+  opacity: 0.75;
 }
 
 /* 左下角：喵地图总猫猫数量（浅色字，固定） */
@@ -401,18 +411,19 @@
   align-items: baseline;
   gap: 6rpx;
   padding: 12rpx 24rpx;
-  background: rgba(255, 255, 255, 0.82);
+  background: rgba(255, 255, 255, 0.9);
+  border: none;
   border-radius: 32rpx;
-  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.12);
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.15);
   backdrop-filter: blur(8rpx);
   -webkit-backdrop-filter: blur(8rpx);
   pointer-events: none;
 }
 
 .total-cats-num {
-  font-size: 34rpx;
-  font-weight: 700;
-  color: #FF6B35;
+  font-size: 28rpx;
+  font-weight: 600;
+  color: var(--color-primary);
   line-height: 1;
 }
 

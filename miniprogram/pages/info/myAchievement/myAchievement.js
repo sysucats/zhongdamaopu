@@ -7,6 +7,7 @@ Page({
     unlockedCount: 0,
     totalCount: 0,
     goldCount: 0,
+    percent: 0,
   },
 
   async onLoad() {
@@ -28,11 +29,13 @@ Page({
         // 当前达到的级别（0=未解锁，1铜 2银 3金）
         cat.currentTier = cat.tiers.reduce((acc, t) => t.unlocked ? t.tier : acc, 0);
       });
+      const totalCount = list.reduce((s, c) => s + c.tiers.length, 0);
       this.setData({
         list: list,
         unlockedCount: unlockedCount,
-        totalCount: list.reduce((s, c) => s + c.tiers.length, 0),
+        totalCount: totalCount,
         goldCount: goldCount,
+        percent: totalCount ? Math.round(unlockedCount * 100 / totalCount) : 0,
       });
     } catch (e) {
       console.error('加载成就失败', e);

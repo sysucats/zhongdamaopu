@@ -34,7 +34,6 @@ Page({
     historyTotal: 0,
     historyLoading: false,
     historyNoMore: false,
-    historyInited: false,
     // 图片默认不加载，勾选后才批量签名；未勾选时可点击单张加载
     showHistoryImages: false,
   },
@@ -204,8 +203,7 @@ Page({
     const mode = e.currentTarget.dataset.mode;
     if (mode === this.data.mode) return;
     this.setData({ mode });
-    if (mode === 'history' && !this.data.historyInited) {
-      this.setData({ historyInited: true });
+    if (mode === 'history') {
       this.loadHistory(true);
     }
   },
@@ -312,14 +310,22 @@ Page({
   async loadOneHistoryImage(e) {
     const index = e.currentTarget.dataset.index;
     const item = this.jsData.historyState.list[index];
-    if (!item || !item.thumb || item.thumbSigned || item.imgError) return;
+    if (!item || !item.thumb || item.imgError) return;
+
+    if (item.thumbSigned) {
+      item.imageExpanded = true;
+      this.setData({ [`historyList[${index}].imageExpanded`]: true });
+      return;
+    }
 
     try {
       item.thumb = await signCosUrl(item.thumb);
       item.thumbSigned = true;
+      item.imageExpanded = true;
       this.setData({
         [`historyList[${index}].thumb`]: item.thumb,
         [`historyList[${index}].thumbSigned`]: true,
+        [`historyList[${index}].imageExpanded`]: true,
       });
     } catch (err) {
       console.error('[loadOneHistoryImage] - 签名失败:', err);
@@ -331,6 +337,8 @@ Page({
   // 审核记录中的图片加载失败（如已删除的照片）
   onHistoryImgError(e) {
     const index = e.currentTarget.dataset.index;
+    const item = this.jsData.historyState.list[index];
+    if (item) item.imgError = true;
     this.setData({
       [`historyList[${index}].imgError`]: true,
     });

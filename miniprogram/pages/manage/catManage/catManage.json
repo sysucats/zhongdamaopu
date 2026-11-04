@@ -2,7 +2,8 @@
   "navigationBarTitleText": "猫猫管理",
   "usingComponents": {
     "relation-tab": "/components/relationTab/relationTab",
+    "medical-records": "/components/medicalRecords/medicalRecords",
     "cat-info-tab": "/components/catInfoTab/catInfoTab",
     "no-auth": "/components/noAuth/noAuth"
   }
-} 
+}

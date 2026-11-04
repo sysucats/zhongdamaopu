@@ -1,0 +1,74 @@
+.record-list { padding: 0 30rpx; }
+.record-item {
+  position: relative;
+  margin-bottom: 24rpx;
+  border-radius: 16rpx;
+  overflow: hidden;
+  background: #fff;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.08);
+}
+.record-content {
+  position: relative;
+  z-index: 2;
+  padding: 22rpx 30rpx;
+  background: #fff;
+  transition: transform 0.2s ease;
+}
+.swipe-actions { position: absolute; top: 0; right: 0; bottom: 0; display: flex; z-index: 1; }
+.action-edit, .action-delete { display: flex; align-items: center; justify-content: center; width: 150rpx; color: #fff; font-size: 28rpx; }
+.action-edit { background: #787AFF; }
+.action-delete { background: #FF3B30; }
+.record-header { display: flex; align-items: center; justify-content: space-between; gap: 16rpx; }
+.record-type { flex: none; padding: 4rpx 14rpx; border-radius: 20rpx; background: var(--color-primary-light); font-size: 22rpx; color: var(--color-primary); }
+.record-date { font-size: 24rpx; color: var(--color-gray-max); white-space: nowrap; }
+.record-title { margin-top: 8rpx; font-size: 30rpx; font-weight: 500; color: var(--color-black-light); word-break: break-all; }
+.record-body { margin-top: 12rpx; font-size: 26rpx; line-height: 1.6; color: var(--color-gray-max); }
+.record-body view { margin-top: 6rpx; }
+.empty { padding: 100rpx 30rpx; text-align: center; color: var(--color-gray-max); }
+.editor {
+  box-sizing: border-box;
+  width: 100%;
+  height: 78vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border-radius: 28rpx 28rpx 12rpx 12rpx;
+  background: var(--color-gray-light);
+}
+.editor-header {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 30rpx 20rpx;
+  border-bottom: 1rpx solid var(--color-gray-normal);
+}
+.editor-title { flex: 1; text-align: center; font-size: 30rpx; font-weight: bold; color: var(--color-black-min); }
+.editor-action { box-sizing: border-box; width: 96rpx; padding: 10rpx 0; text-align: center; font-size: 28rpx; }
+.editor-cancel { color: var(--color-gray-dark); }
+.editor-save { color: var(--color-primary); font-weight: bold; }
+.editor-action.disabled { opacity: 0.5; }
+.editor-body {
+  flex: 1;
+  height: 0;
+}
+.editor-fields {
+  box-sizing: border-box;
+  padding: 20rpx 40rpx;
+}
+.form-item { margin-bottom: 30rpx; }
+.form-label { margin-bottom: 10rpx; font-size: 26rpx; color: var(--color-gray-max); }
+.picker, .form-input, .form-textarea {
+  box-sizing: border-box;
+  width: 100%;
+  border-radius: 12rpx;
+  background: #fff;
+  color: var(--color-black-light);
+  font-size: 28rpx;
+}
+.picker, .form-input {
+  height: 80rpx;
+  padding: 0 24rpx;
+}
+.picker { line-height: 80rpx; }
+.form-textarea { height: 160rpx; padding: 18rpx 24rpx; }

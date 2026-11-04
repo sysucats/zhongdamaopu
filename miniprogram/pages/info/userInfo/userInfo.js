@@ -9,6 +9,23 @@ const defaultAvatarUrl = "/pages/public/images/info/default_avatar.png"
 // 分享的标语
 const share_text = config.text.app_name + ' - ' + config.text.genealogy.share_tip;
 
+function categoryOf(achievement) {
+  return achievement.key.slice(0, achievement.key.lastIndexOf('_'));
+}
+
+function highestUnlockedByCategory(list) {
+  const result = [];
+  list.forEach(achievement => {
+    const index = result.findIndex(item => categoryOf(item) === categoryOf(achievement));
+    if (index < 0) {
+      result.push(achievement);
+    } else if (achievement.tier > result[index].tier) {
+      result[index] = achievement;
+    }
+  });
+  return result;
+}
+
 Page({
   data: {
     defaultAvatarUrl: defaultAvatarUrl,
@@ -17,9 +34,13 @@ Page({
 
     // 成就展示位
     showcase: [],
+    hasUnlockedAchv: false,
     showAchvPicker: false,
+    showAchvDetail: false,
+    selectedAchievement: null,
     unlockedAchv: [],
     pickerSelected: [],
+    pickerListHeight: 0,
 
     // 一些菜单选项
     menu: [
@@ -66,9 +87,6 @@ Page({
         ]
       }
     ],
-  },
-  handleContact (e) {
-    console.log(e)
   },
   clickbtn(e) {
     const to = e.currentTarget.dataset.to;
@@ -142,16 +160,19 @@ Page({
     this.loadShowcase();
   },
 
-  // 加载成就展示位：设置过就按自选（全不选=不展示）；从未设置过则默认推荐最新解锁的3个
+  // 每个成就类目只展示当前已解锁的最高等级
   async loadShowcase() {
     try {
       const openid = this.data.user.openid;
-      let showcase = await getShowcase(openid);
-      if (showcase === null) {
-        const unlocked = await getUnlockedList();
-        showcase = unlocked.slice(-3).reverse();
+      const unlocked = highestUnlockedByCategory(await getUnlockedList());
+      const saved = await getShowcase(openid);
+      let showcase = unlocked.slice(-3).reverse();
+      if (saved !== null) {
+        showcase = highestUnlockedByCategory(saved.map(item =>
+          unlocked.find(available => categoryOf(available) === categoryOf(item))
+        ).filter(Boolean)).slice(0, 3);
       }
-      this.setData({ showcase });
+      this.setData({ showcase, hasUnlockedAchv: unlocked.length > 0 });
     } catch (e) {
       console.log('加载成就展示位失败', e);
     }
@@ -159,7 +180,7 @@ Page({
 
   // 打开展示位选择器
   async openAchvPicker() {
-    const unlocked = await getUnlockedList();
+    const unlocked = highestUnlockedByCategory(await getUnlockedList());
     if (unlocked.length === 0) {
       wx.showToast({ title: '还没有解锁成就，先去互动吧~', icon: 'none' });
       return;
@@ -169,6 +190,7 @@ Page({
       showAchvPicker: true,
       unlockedAchv: unlocked,
       pickerSelected: curKeys,
+      pickerListHeight: Math.min(unlocked.length * 136, 520),
     });
     this._refreshPickerList();
   },
@@ -198,10 +220,29 @@ Page({
     this._refreshPickerList();
   },
 
-  noop() {},
+  clearAchvPick() {
+    this.setData({ pickerSelected: [] });
+    this._refreshPickerList();
+  },
 
   closeAchvPicker() {
     this.setData({ showAchvPicker: false });
+  },
+
+  openAchvDetail(e) {
+    const achievement = this.data.showcase.find(item => item.key === e.currentTarget.dataset.key);
+    if (achievement) {
+      this.setData({ selectedAchievement: achievement, showAchvDetail: true });
+    }
+  },
+
+  closeAchvDetail() {
+    this.setData({ showAchvDetail: false });
+  },
+
+  toMyAchievement() {
+    this.closeAchvDetail();
+    wx.navigateTo({ url: '/pages/info/myAchievement/myAchievement' });
   },
 
   // 保存展示位
