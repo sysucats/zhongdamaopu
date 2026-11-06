@@ -108,16 +108,6 @@
     </view>
     <view class="card-body">
       <view class="form-item">
-        <view class="form-label">绝育状态</view>
-        <picker mode="selector" range='{{pickers.sterilized}}' value='{{picker_selected.sterilized}}' bindchange='pickerChange' data-key='sterilized'>
-          <view class="picker-container">
-            <text class="picker-text">{{cat.sterilized !== undefined ? (cat.sterilized ? pickers.sterilized[1] : pickers.sterilized[0]) : '请选择'}}</text>
-            <text class="iconfont icon-arrow-down picker-icon"></text>
-          </view>
-        </picker>
-      </view>
-      
-      <view class="form-item">
         <view class="form-label">领养状态</view>
         <picker mode="selector" range='{{pickers.adopt}}' value='{{picker_selected.adopt}}' bindchange='pickerChange' data-key='adopt'>
           <view class="picker-container">
@@ -218,10 +208,9 @@
       </view>
     </view>
 
-    <view class="load-more-container">
-      <!-- <view class="bottom-hint" hidden="{{!bottomShow}}">{{bottomText}}</view> -->
-      <button class="load-more-button" bindtap="clickLoad">{{bottomText}}</button>
-      <!-- toDo: 用户继续上拉，加载更多猫图 -->
+    <view class="load-more-container" wx:if="{{bottomShow}}">
+      <image wx:if="{{loadingPhotos}}" class="loading-animation" src="/pages/public/images/system/loading.gif"></image>
+      <view wx:if="{{!loadingPhotos}}" class="bottom-hint">{{bottomText}}</view>
     </view>
   </block>
 

@@ -94,7 +94,7 @@ Component({
       }
 
       // 喵地图权限检查
-      if (path === 'pages/map/index/index') {
+      if (path === 'pages/map/map') {
         const canUse = await checkCanUseMap();
         if (!canUse) {
           wx.showModal({

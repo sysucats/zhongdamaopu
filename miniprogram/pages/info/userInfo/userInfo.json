@@ -1,6 +1,7 @@
 {
   "usingComponents": {
-    "modifyUserInfo": "/components/modifyUserInfo/modifyUserInfo"
+    "modifyUserInfo": "/components/modifyUserInfo/modifyUserInfo",
+    "popup": "/components/popup/popup"
   },
   "navigationBarTitleText": "个人主页",
   "disableScroll": false

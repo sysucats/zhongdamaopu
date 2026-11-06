@@ -60,7 +60,8 @@ page {
   width: 350rpx;
   background: #fff;
   margin: 0rpx auto 20rpx auto;
-  border-radius: 10rpx;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
   overflow: hidden;
 }
 

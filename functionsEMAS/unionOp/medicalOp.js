@@ -1,9 +1,27 @@
-// 医疗记录：疫苗、绝育、就诊、驱虫、伤病等（疫苗记录已并入医疗记录，旧 vaccine 集合数据可用 migrateVaccines 导入）
+// 医疗记录：疫苗、绝育、就诊、驱虫、伤病等
 const { createInternalCtx } = require('./_helper.js')
 const isManagerHandler = require('./isManager.js')
 
 // 记录类型：vaccine 疫苗 / sterilize 绝育 / clinic 就诊 / deworm 驱虫 / injury 伤病 / other 其他
 const MEDICAL_TYPES = ['vaccine', 'sterilize', 'clinic', 'deworm', 'injury', 'other']
+
+async function syncSterilization(db, catId) {
+  const { result: records } = await db.collection('medical').find({
+    cat_id: catId,
+    type: 'sterilize'
+  }, {
+    sort: { record_date: 1 },
+    limit: 1
+  })
+  const firstRecord = records && records[0]
+  const recordDate = firstRecord ? new Date(firstRecord.record_date) : null
+  const sterilizedTime = recordDate && !Number.isNaN(recordDate.getTime())
+    ? recordDate.toISOString()
+    : null
+  await db.collection('cat').updateOne({ _id: catId }, {
+    $set: { sterilized: !!firstRecord, sterilized_time: sterilizedTime }
+  })
+}
 
 module.exports = async (ctx) => {
   const openid = ctx.args.openid
@@ -57,11 +75,8 @@ module.exports = async (ctx) => {
     try {
       const { result } = await db.collection('medical').insertOne(recordData)
 
-      // 绝育记录联动更新猫咪的绝育标记
       if (recordData.type === 'sterilize') {
-        await db.collection('cat').updateOne({ _id: recordData.cat_id }, {
-          $set: { sterilized: true }
-        })
+        await syncSterilization(db, recordData.cat_id)
       }
 
       return { msg: '添加成功', result: true, data: result }
@@ -77,14 +92,27 @@ module.exports = async (ctx) => {
     if (!record_id || !recordData) {
       return { msg: '缺少记录ID或数据', result: false }
     }
+    if (recordData.type && !MEDICAL_TYPES.includes(recordData.type)) {
+      return { msg: '未知的记录类型', result: false }
+    }
+    if (recordData.cat_id !== undefined) {
+      return { msg: '不能修改记录所属猫咪', result: false }
+    }
     recordData.updated_at = new Date()
 
     try {
+      const { result: oldRecord } = await db.collection('medical').findOne({ _id: record_id })
+      if (!oldRecord) return { msg: '记录不存在', result: false }
+      const wasSterilization = oldRecord.type === 'sterilize'
+      const catId = oldRecord.cat_id
       const { result } = await db.collection('medical').updateOne({
         _id: record_id
       }, {
         $set: recordData
       })
+      if (wasSterilization || recordData.type === 'sterilize') {
+        await syncSterilization(db, catId)
+      }
       return { msg: '更新成功', result: true, data: result }
     } catch (error) {
       return { msg: '更新失败', error, result: false }
@@ -98,45 +126,17 @@ module.exports = async (ctx) => {
       return { msg: '缺少记录ID', result: false }
     }
     try {
+      const { result: oldRecord } = await db.collection('medical').findOne({ _id: record_id })
+      if (!oldRecord) return { msg: '记录不存在', result: false }
       const { result } = await db.collection('medical').deleteOne({
         _id: record_id
       })
+      if (oldRecord.type === 'sterilize') {
+        await syncSterilization(db, oldRecord.cat_id)
+      }
       return { msg: '删除成功', result: true, data: result }
     } catch (error) {
       return { msg: '删除失败', error, result: false }
-    }
-  }
-
-  // 导入旧版疫苗记录（vaccine 集合 → medical 集合，可重复执行，自动跳过已导入的）
-  if (operation === 'migrateVaccines') {
-    try {
-      const { result: vaccines } = await db.collection('vaccine').find({}, { limit: 1000 })
-      let migrated = 0, skipped = 0
-      for (const v of (vaccines || [])) {
-        const { result: exist } = await db.collection('medical').count({ vaccine_id: v._id })
-        if (exist > 0) {
-          skipped++
-          continue
-        }
-        await db.collection('medical').insertOne({
-          cat_id: v.cat_id,
-          type: 'vaccine',
-          title: v.vaccine_type || '疫苗',
-          record_date: v.vaccine_date || '',
-          hospital: v.location || '',
-          description: v.remarks || '',
-          expire_date: v.expire_date || '',
-          next_vaccine_date: v.next_vaccine_date || '',
-          vaccine_id: v._id,
-          created_by: openid,
-          created_at: new Date(),
-          updated_at: new Date()
-        })
-        migrated++
-      }
-      return { msg: `导入完成：新增 ${migrated} 条，跳过已导入的 ${skipped} 条`, result: true, data: { migrated, skipped } }
-    } catch (error) {
-      return { msg: '导入失败', error, result: false }
     }
   }
 

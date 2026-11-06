@@ -87,23 +87,6 @@
   transform: translateY(-2rpx);
 }
 
-.tab::before {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: var(--color-primary-light);
-  transform: translateY(100%);
-  transition: transform 0.3s ease;
-  z-index: -1;
-}
-
-.tab.active::before {
-  transform: translateY(0);
-}
-
 /* 添加点击反馈效果 */
 .tab:active {
   opacity: 0.8;
@@ -189,11 +172,6 @@
 .iconfont {
   font-family: 'iconfont';
   font-size: 55rpx;
-}
-
-/* 按钮旋转动画 */
-.rotate {
-  transform: rotate(45deg);
 }
 
 /* 搜索结果 */
@@ -303,53 +281,6 @@
   }
 }
 
-/* 疫苗选项弹出动画 */
-.vaccine-options {
-  position: absolute;
-  bottom: 120rpx;
-  right: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 20rpx;
-  opacity: 0;
-  transform: translateY(20rpx);
-  pointer-events: none;
-  transition: all 0.3s ease;
-}
-
-.vaccine-options.show {
-  opacity: 1;
-  transform: translateY(0);
-  pointer-events: auto;
-}
-
-.vaccine-option {
-  display: flex;
-  align-items: center;
-  background: white;
-  padding: 10rpx 20rpx;
-  border-radius: 50rpx;
-  box-shadow: 0 4rpx 15rpx rgba(0, 0, 0, 0.1);
-  transition: all 0.2s ease;
-}
-
-.vaccine-option:active {
-  transform: scale(0.95);
-  box-shadow: 0 2rpx 5rpx rgba(0, 0, 0, 0.1);
-}
-
-.option-text {
-  font-size: 26rpx;
-  color: var(--color-black-light);
-  margin-right: 10rpx;
-  white-space: nowrap;
-}
-
-.option-icon {
-  color: var(--color-black-light);
-  font-size: 36rpx;
-} 
 /* 常出没地点管理 */
 .haunt-panel {
   padding: 30rpx;
@@ -360,12 +291,6 @@
   font-weight: bold;
   color: #333;
   margin-bottom: 8rpx;
-}
-
-.haunt-tip {
-  font-size: 24rpx;
-  color: #999;
-  margin-bottom: 24rpx;
 }
 
 .haunt-empty {

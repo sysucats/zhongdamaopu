@@ -8,9 +8,9 @@ const app = getApp();
 
 // 级别定义
 const TIERS = [
-  { tier: 1, name: '铜牌', short: '铜', color: '#c88a4b' },
-  { tier: 2, name: '银牌', short: '银', color: '#9aa5b1' },
-  { tier: 3, name: '金牌', short: '金', color: '#e6a823' },
+  { tier: 1, name: '铜牌', short: '铜' },
+  { tier: 2, name: '银牌', short: '银' },
+  { tier: 3, name: '金牌', short: '金' },
 ];
 
 // 成就类目（顺序即展示顺序），tiers 为铜/银/金的数量门槛
@@ -49,7 +49,6 @@ function _defOfKey(key) {
     tier: tierIdx + 1,
     tierName: TIERS[tierIdx].name,
     tierShort: TIERS[tierIdx].short,
-    tierColor: TIERS[tierIdx].color,
     name: `${cat.name}·${TIERS[tierIdx].name}`,
     desc: cat.desc.replace('{}', threshold),
     icon: cat.icon,
@@ -213,7 +212,7 @@ async function trackFollow(followCount) {
 }
 
 // 获取全部成就及解锁状态（成就页用）
-// 返回：[{ id, name, icon, unit, desc, tiers: [{tier, tierName, tierColor, threshold, key, unlocked, unlock_time}] }]
+// 返回：[{ id, name, icon, unit, desc, tiers: [{tier, tierName, threshold, key, unlocked, unlock_time}] }]
 async function getMyAchievements() {
   const unlocked = await _getUnlocked();
   // 补充解锁时间
@@ -244,7 +243,6 @@ async function getMyAchievements() {
         tier: i + 1,
         tierName: TIERS[i].name,
         tierShort: TIERS[i].short,
-        tierColor: TIERS[i].color,
         threshold: threshold,
         desc: cat.desc.replace('{}', threshold),
         unlocked: unlocked.has(key),
@@ -265,7 +263,6 @@ async function getUnlockedList() {
           key: t.key,
           name: `${cat.name}·${t.tierName}`,
           tier: t.tier,
-          tierColor: t.tierColor,
           icon: cat.icon,
           desc: t.desc,
           unlock_time: t.unlock_time,

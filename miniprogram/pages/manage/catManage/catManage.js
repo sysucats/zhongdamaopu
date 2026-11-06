@@ -45,6 +45,15 @@ Page({
   },
 
   /**
+   * 触底加载
+   */
+  async onReachBottom() {
+    if (!this.data.auth || this.data.activeTab !== 'info') return;
+    const infoTab = this.selectComponent('#catInfoTab');
+    if (infoTab) await infoTab.loadMorePhotos();
+  },
+
+  /**
    * 切换选项卡
    */
   switchTab(e) {
@@ -181,7 +190,7 @@ Page({
   /**
    * 通过ID获取猫咪信息
    */
-  async getCatById(catId) {
+  async getCatById(catId, options) {
     if (!catId) return;
 
     try {
@@ -189,7 +198,7 @@ Page({
       console.log('正在获取猫咪信息, ID:', catId);
 
       // 获取猫咪基本信息和头像
-      const cat = await getCatItem(catId);
+      const cat = await getCatItem(catId, options);
       cat.avatar = await getAvatar(cat._id);
 
       console.log('获取到猫咪信息:', cat);
@@ -249,6 +258,9 @@ Page({
       if (relationTab) {
         relationTab.addRelation();
       }
+    } else if (this.data.activeTab === 'medical') {
+      const medicalRecords = this.selectComponent('#medicalRecords');
+      if (medicalRecords) medicalRecords.addRecord();
     }
   },
 
@@ -305,6 +317,12 @@ Page({
     }
   },
 
+  onMedicalRecordsChanged() {
+    if (this.data.selectedCat) {
+      this.getCatById(this.data.selectedCat._id, { nocache: true });
+    }
+  },
+
   // 信息选项卡模式变化
   onInfoTabModeChange(e) {
     const isNewCat = e.detail.isNewCat;
@@ -316,7 +334,7 @@ Page({
   // 按钮
   handleActionButtonClick() {
     const { activeTab } = this.data;
-    if (activeTab === 'relation') {
+    if (activeTab === 'relation' || activeTab === 'medical') {
       this.handleAddRecord();
     } else if (activeTab === 'haunt') {
       this.addHaunt();

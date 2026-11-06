@@ -1,0 +1,33 @@
+.admin-page-hint {
+  margin-bottom: 24rpx;
+  padding: 0 4rpx;
+  color: var(--color-gray-max);
+  font-size: 24rpx;
+  line-height: 1.5;
+}
+
+.admin-segments {
+  display: flex;
+  margin-bottom: 24rpx;
+  padding: 6rpx;
+  border-radius: 18rpx;
+  background: var(--color-gray-normal);
+}
+
+.admin-segment {
+  flex: 1;
+  min-width: 0;
+  height: 68rpx;
+  line-height: 68rpx;
+  border-radius: 14rpx;
+  color: var(--color-gray-max);
+  font-size: 26rpx;
+  text-align: center;
+}
+
+.admin-segment.active {
+  background: #fff;
+  color: var(--color-primary);
+  font-weight: 600;
+  box-shadow: 0 2rpx 6rpx rgba(0, 0, 0, 0.06);
+}

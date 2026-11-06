@@ -52,8 +52,10 @@
             bind:tap="clickPhoto">
             <image src="{{item.pic}}" mode='aspectFill' lazy-load="true" loading="eager" webp="true"></image>
             <!-- 单张照片的点赞按钮（右下角） -->
-            <view class="photo-like {{item.liked ? 'liked' : ''}}" catchtap="likeFeedItem" data-feed-index="{{outerIndex}}" data-item-id="{{item._id}}" data-item-type="photo">
-              <text class="iconfont {{item.liked ? 'icon-heart-filled' : 'icon-heart'}}"></text>
+            <view class="photo-like" catchtap="likeFeedItem" data-feed-index="{{outerIndex}}" data-item-id="{{item._id}}" data-item-type="photo">
+              <view class="feed-heart-viewport">
+                <view class="feed-heart-sprite"><heart size="80" liked="{{item.liked}}"></heart></view>
+              </view>
               <text class="photo-like-num" wx:if="{{item.like_count > 0}}">{{item.like_count}}</text>
             </view>
           </view>
@@ -105,8 +107,10 @@
 
         <view class="comment-footer">
           <view class="datetime">{{item.datetime}}</view>
-          <view class="interact-btn small {{item.liked ? 'liked' : ''}}" catchtap="likeFeedItem" data-feed-index="{{outerIndex}}" data-item-id="{{item._id}}" data-item-type="comment">
-            <text class="iconfont {{item.liked ? 'icon-heart-filled' : 'icon-heart'}}"></text>
+          <view class="interact-btn like-btn small" catchtap="likeFeedItem" data-feed-index="{{outerIndex}}" data-item-id="{{item._id}}" data-item-type="comment">
+            <view class="feed-heart-viewport">
+              <view class="feed-heart-sprite"><heart size="80" liked="{{item.liked}}"></heart></view>
+            </view>
             <text class="interact-num">{{item.like_count || ''}}</text>
           </view>
         </view>

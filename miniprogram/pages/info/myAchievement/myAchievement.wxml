@@ -1,31 +1,56 @@
 <!--pages/info/myAchievement/myAchievement.wxml-->
 <view class="page">
-  <view class="header">
-    <view class="header-title">🏆 我的成就</view>
-    <view class="header-progress">已解锁 {{unlockedCount}} / {{totalCount}} · 金牌 {{goldCount}} 枚</view>
+  <!-- 顶部概览 -->
+  <view class="hero">
+    <view class="hero-title">🏆 我的成就</view>
+    <view class="hero-sub">多和猫猫互动，点亮更高等级的奖牌</view>
+
+    <view class="stat-row">
+      <view class="stat-cell">
+        <view class="stat-num">{{unlockedCount}}</view>
+        <view class="stat-label">已解锁</view>
+      </view>
+      <view class="stat-divider"></view>
+      <view class="stat-cell">
+        <view class="stat-num gold">{{goldCount}}</view>
+        <view class="stat-label">金牌</view>
+      </view>
+      <view class="stat-divider"></view>
+      <view class="stat-cell">
+        <view class="stat-num">{{percent}}%</view>
+        <view class="stat-label">完成度</view>
+      </view>
+    </view>
+
     <view class="progress-bar">
       <view class="progress-inner" style="width: {{totalCount ? (unlockedCount / totalCount * 100) : 0}}%;"></view>
     </view>
+    <view class="progress-text">已解锁 {{unlockedCount}} / {{totalCount}} 枚奖牌</view>
   </view>
 
+  <!-- 成就列表 -->
   <view class="achv-list">
-    <view class="achv-card tier-{{item.currentTier}}" wx:for="{{list}}" wx:key="id">
+    <view class="achv-card" wx:for="{{list}}" wx:key="id">
       <view class="achv-head">
         <view class="achv-icon">{{item.icon}}</view>
-        <view class="achv-name">{{item.name}}</view>
-        <view class="achv-cur" wx:if="{{item.currentTier > 0}}">{{item.tiers[item.currentTier - 1].tierName}}</view>
+        <view class="achv-head-main">
+          <view class="achv-name">{{item.name}}</view>
+          <view class="achv-desc">{{item.tiers[2].desc}}</view>
+        </view>
+        <view class="achv-cur tier-{{item.currentTier}}" wx:if="{{item.currentTier > 0}}">{{item.tiers[item.currentTier - 1].tierName}}</view>
       </view>
+
       <view class="tier-row">
-        <view class="tier-cell {{t.unlocked ? 'unlocked' : ''}}" wx:for="{{item.tiers}}" wx:for-item="t" wx:key="key">
-          <view class="medal" style="{{t.unlocked ? 'background:' + t.tierColor + ';' : ''}}">
+        <view class="tier-cell {{t.unlocked ? 'unlocked' : 'locked'}}" wx:for="{{item.tiers}}" wx:for-item="t" wx:key="key">
+          <view class="medal tier-{{t.tier}}">
             <text class="medal-text">{{t.tierShort}}</text>
+            <text class="medal-lock" wx:if="{{!t.unlocked}}">🔒</text>
           </view>
           <view class="tier-threshold">{{t.threshold}}{{item.unit}}</view>
           <view class="tier-time" wx:if="{{t.unlocked}}">{{t.unlock_time_text}}</view>
           <view class="tier-time locked-text" wx:else>未解锁</view>
         </view>
       </view>
-      <view class="achv-desc">{{item.tiers[2].desc}}</view>
     </view>
   </view>
 

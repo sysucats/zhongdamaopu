@@ -1,25 +1,40 @@
 <!--components/achievementRank/achievementRank.wxml-->
-<view class="achv-rank">
-  <view class="rank-title">🏆 成就排行榜</view>
-  <view class="rank-sub">按解锁成就数量排名</view>
+<view class="leaderboard-section">
+  <view class="leaderboard-card leaderboard-summary" bindtap="toMyAchievement" wx:if="{{myOpenid}}">
+    <view class="leaderboard-summary-grid">
+      <view class="leaderboard-summary-cell">
+        <view class="leaderboard-summary-label">排名</view>
+        <view class="leaderboard-summary-number" wx:if="{{myRank > 0}}">{{myRank}}</view>
+        <view class="leaderboard-summary-status" wx:else>{{myCount > 0 ? '50名外' : '未上榜'}}</view>
+      </view>
+      <view class="leaderboard-summary-cell center">
+        <image class="leaderboard-summary-avatar" mode="aspectFill" src="{{myAvatarUrl}}"></image>
+        <view class="leaderboard-summary-name">{{myName}}</view>
+      </view>
+      <view class="leaderboard-summary-cell">
+        <view class="leaderboard-summary-label">成就</view>
+        <view class="leaderboard-summary-number">{{myCount || 0}}</view>
+      </view>
+    </view>
+    <view class="leaderboard-summary-action">查看我的成就</view>
+  </view>
 
-  <view class="rank-empty" wx:if="{{!loading && list.length === 0}}">
+  <view class="leaderboard-card leaderboard-list achievement-list" wx:if="{{list.length > 0}}">
+    <view class="leaderboard-row rank-{{item.rank <= 3 ? item.rank : 0}}" wx:for="{{list}}" wx:key="openid">
+      <view class="leaderboard-order">{{item.rank}}</view>
+      <view class="leaderboard-avatar-wrap">
+        <view class="leaderboard-avatar-inner">
+          <image class="leaderboard-avatar" src="{{item.avatarUrl}}" mode="aspectFill" lazy-load="true"></image>
+          <image wx:if="{{item.rank <= 3}}" class="leaderboard-medal" mode="aspectFit" src="/pages/public/images/info/rank/{{item.rank}}.png"></image>
+        </view>
+      </view>
+      <view class="leaderboard-name">{{item.nickName}}</view>
+      <view class="leaderboard-value">{{item.count}}<text class="leaderboard-unit"> 枚</text></view>
+    </view>
+  </view>
+
+  <view class="leaderboard-state" wx:if="{{!loading && list.length === 0}}">
     还没有人解锁成就，快去互动抢第一~
   </view>
-
-  <view class="rank-item {{item.openid === myOpenid ? 'mine' : ''}}" wx:for="{{list}}" wx:key="openid">
-    <view class="rank-no rank-{{item.rank}}" wx:if="{{item.rank <= 3}}">{{item.rank}}</view>
-    <view class="rank-no" wx:else>{{item.rank}}</view>
-    <image class="rank-avatar" src="{{item.avatarUrl || '/pages/public/images/app_logo.png'}}" mode="aspectFill" lazy-load="true"></image>
-    <view class="rank-name">{{item.nickName}}</view>
-    <view class="rank-count">{{item.count}}<text class="rank-count-unit"> 枚</text></view>
-  </view>
-
-  <!-- 我的排名（未上榜时提示） -->
-  <view class="my-rank" bindtap="toMyAchievement" wx:if="{{myOpenid}}">
-    <block wx:if="{{myRank > 0}}">我的排名：第 {{myRank}} 名（{{myCount}} 枚） →</block>
-    <block wx:else>我还没上榜，点我去解锁成就 →</block>
-  </view>
-
-  <view class="rank-loading" wx:if="{{loading}}">加载中...</view>
+  <view class="leaderboard-state" wx:if="{{loading}}">加载中...</view>
 </view>

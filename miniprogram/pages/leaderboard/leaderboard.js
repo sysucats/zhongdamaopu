@@ -31,7 +31,7 @@ Page({
     ],
     tempPics: [],
     loadnomore: false,
-    threads: ["徽章收集", "照片点赞", "拍照月榜", "成就榜"],
+    threads: ["徽章榜", "照片点赞", "拍照月榜", "成就榜"],
     threadsActive: 1,
     filters: [{
       name: "周精选",

@@ -1,7 +1,8 @@
-/* 领养审核页 - 骨架复用 checkFeedbacks（已验证可正常渲染），配色走主题变量 */
+@import "../adminPage.wxss";
+
 page {
   width: 750rpx;
-  padding: 250rpx 30rpx 150rpx 30rpx;
+  padding: 35rpx 35rpx 150rpx;
   box-sizing: border-box;
 }
 
@@ -56,49 +57,6 @@ button.btn-reject {
   flex: 1;
   width: auto;
   margin: 0;
-}
-
-/* 顶部固定栏 */
-#tips {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  box-sizing: border-box;
-  z-index: 1;
-  font-size: 28rpx;
-  color: var(--color-gray-max);
-  box-shadow: 0rpx 0rpx 30rpx var(--color-gray);
-  padding: 24rpx 30rpx;
-  background-color: #FFFFFF;
-}
-
-#tips text {
-  display: block;
-  width: 100%;
-  text-align: center;
-}
-
-/* 状态切换 */
-.tabs {
-  display: flex;
-  justify-content: center;
-  margin-top: 16rpx;
-}
-
-.tab {
-  font-size: 26rpx;
-  color: #666;
-  padding: 10rpx 28rpx;
-  border-radius: 32rpx;
-  margin-right: 16rpx;
-  background: #f5f5f5;
-}
-
-.tab.active {
-  background: var(--color-primary);
-  color: var(--color-text-onPrimary);
-  font-weight: bold;
 }
 
 .empty {

@@ -20,6 +20,9 @@ Component({
   data: {
     text_cfg: text_cfg,
     defaultAvatarUrl: defaultAvatarUrl,
+    ranks: [],
+    rankTime: '',
+    loading: false,
   },
 
   lifetimes: {
@@ -39,16 +42,21 @@ Component({
    */
   methods: {
     async reloadData() {
-      this.getRank();
-      await getPageUserInfo(this);
-      await this.getMyRank();
+      this.setData({ loading: true });
+      try {
+        await this.getRank();
+        await getPageUserInfo(this);
+        await this.getMyRank();
+      } finally {
+        this.setData({ loading: false });
+      }
     },
 
     async getRank() {
       var { result: rankRes } = await app.mpServerless.db.collection('photo_rank').find({}, { sort: { mdate: -1 }, limit: 1 })
 
       if (rankRes.length == 0) {
-        // 还没有月榜
+        this.setData({ ranks: [], rankTime: '' });
         return false;
       }
       const rankTime = formatDate(new Date(rankRes[0].mdate), "yyyy-MM-dd hh:mm");
@@ -81,7 +89,6 @@ Component({
         rankTime
       });
 
-      await this.getMyRank();
     },
 
     async getMyRank() {
@@ -90,7 +97,6 @@ Component({
       }
       const ranks = this.data.ranks;
       const openid = this.data.user.openid;
-      console.log(openid, ranks);
       for (const i in ranks) {
         if (ranks[i]._openid === openid) {
           this.setData({
@@ -100,12 +106,20 @@ Component({
           return;
         }
       }
+      this.setData({
+        'user.photo_rank': 0,
+        'user.photo_count': 0,
+      });
     },
 
     getUInfo: function () {
       this.setData({
         showEdit: true
       });
+    },
+
+    closeEdit() {
+      this.setData({ showEdit: false });
     },
   }
 })

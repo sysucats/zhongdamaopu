@@ -1,7 +1,7 @@
 <!--pages/manage/checkComment/checkComment.wxml-->
 
 <block wx:if="{{auth}}">
-  <view id='total-count'><text>先逐张标记处理方式，再点击“批量审核”。\n点击名字跳转猫猫详情。\n每次展示前20张，注意流量消耗哈。</text></view>
+  <view class="admin-page-hint">逐条标记处理方式后，批量提交审核。</view>
   <view class="campus-list">
     <view class="campus {{index == active_campus ? 'active': ''}}" bindtap="bindClickCampus" data-key="{{index}}" wx:for="{{campus_list}}" wx:key="key">{{index}}（{{item.length}}）</view>
   </view>

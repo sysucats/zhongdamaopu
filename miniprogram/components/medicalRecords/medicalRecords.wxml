@@ -1,0 +1,83 @@
+<view class="medical-manager">
+  <popup show="{{showEditor}}" position="bottom" bind:close="closeEditor">
+    <view class="editor">
+      <view class="editor-header">
+        <view class="editor-action editor-cancel" bindtap="closeEditor">取消</view>
+        <view class="editor-title">{{editingId ? '编辑记录' : '添加记录'}}</view>
+        <view class="editor-action editor-save {{submitting ? 'disabled' : ''}}" bindtap="saveRecord">保存</view>
+      </view>
+      <scroll-view class="editor-body" scroll-y="true">
+        <view class="editor-fields">
+          <view class="form-item">
+            <view class="form-label">类型</view>
+            <picker range="{{types}}" range-key="name" value="{{form.typeIndex}}" bindchange="onTypeChange">
+              <view class="picker">{{types[form.typeIndex].name}} ▾</view>
+            </picker>
+          </view>
+
+          <view class="form-item" wx:if="{{types[form.typeIndex].key !== 'sterilize'}}">
+            <view class="form-label">{{types[form.typeIndex].key === 'vaccine' ? '疫苗名称' : '标题'}}</view>
+            <input class="form-input" value="{{form.title}}" data-field="title" bindinput="onInput" placeholder="{{types[form.typeIndex].key === 'vaccine' ? '如：猫三联' : '请输入标题'}}" />
+          </view>
+
+          <view class="form-item">
+            <view class="form-label">{{types[form.typeIndex].key === 'vaccine' ? '接种日期' : '日期'}}</view>
+            <picker mode="date" value="{{form.record_date}}" data-field="record_date" bindchange="onDateChange">
+              <view class="picker">{{form.record_date || '请选择日期'}} ▾</view>
+            </picker>
+          </view>
+
+          <block wx:if="{{types[form.typeIndex].key === 'vaccine'}}">
+            <view class="form-item">
+              <view class="form-label">有效期至</view>
+              <picker mode="date" value="{{form.expire_date}}" data-field="expire_date" bindchange="onDateChange">
+                <view class="picker">{{form.expire_date || '请选择有效期'}} ▾</view>
+              </picker>
+            </view>
+            <view class="form-item">
+              <view class="form-label">下次接种日期</view>
+              <picker mode="date" value="{{form.next_vaccine_date}}" data-field="next_vaccine_date" bindchange="onDateChange">
+                <view class="picker">{{form.next_vaccine_date || '请选择日期'}} ▾</view>
+              </picker>
+            </view>
+          </block>
+
+          <view class="form-item">
+            <view class="form-label">{{types[form.typeIndex].key === 'vaccine' ? '接种地点' : '医院/地点'}}</view>
+            <input class="form-input" value="{{form.hospital}}" data-field="hospital" bindinput="onInput" placeholder="请输入地点" />
+          </view>
+          <view class="form-item">
+            <view class="form-label">备注</view>
+            <textarea class="form-textarea" value="{{form.description}}" data-field="description" bindinput="onInput" maxlength="300" placeholder="请输入相关信息"></textarea>
+          </view>
+        </view>
+      </scroll-view>
+    </view>
+  </popup>
+
+  <view class="empty" wx:if="{{!loading && records.length === 0}}">暂无医疗记录</view>
+
+  <view class="record-list">
+    <view class="record-item" wx:for="{{records}}" wx:key="_id">
+      <view class="swipe-actions">
+        <view class="action-edit" catchtap="editRecord" data-id="{{item._id}}">编辑</view>
+        <view class="action-delete" catchtap="deleteRecord" data-id="{{item._id}}">删除</view>
+      </view>
+      <view class="record-content" style="transform: translateX({{item.offsetX || 0}}rpx)"
+        bindtouchstart="touchStart" bindtouchmove="touchMove" bindtouchend="touchEnd" bindtouchcancel="touchEnd"
+        data-index="{{index}}">
+        <view class="record-header">
+          <view class="record-type">{{typeNames[item.type]}}</view>
+          <view class="record-date">{{item.record_date_formatted}}</view>
+        </view>
+        <view class="record-title">{{item.title}}</view>
+        <view class="record-body">
+          <view wx:if="{{item.hospital}}">{{item.type === 'vaccine' ? '接种地点' : '医院/地点'}}：{{item.hospital}}</view>
+          <view wx:if="{{item.expire_date_formatted}}">有效期至：{{item.expire_date_formatted}}</view>
+          <view wx:if="{{item.next_vaccine_date_formatted}}">下次接种：{{item.next_vaccine_date_formatted}}</view>
+          <view wx:if="{{item.description}}">{{item.description}}</view>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>

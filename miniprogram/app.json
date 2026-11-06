@@ -5,7 +5,7 @@
     "pages/news/news",
     "pages/leaderboard/leaderboard",
     "pages/followFeed/followFeed",
-    "pages/map/index/index"
+    "pages/map/map"
   ],
   "subPackages": [
     {
@@ -33,8 +33,7 @@
         "badgeCode/badgeCode",
         "badgeCode/addBadgeCode/addBadgeCode",
         "catManage/catManage",
-        "checkAdoption/checkAdoption",
-        "medicalManage/medicalManage"
+        "checkAdoption/checkAdoption"
       ]
     },
     {
@@ -199,7 +198,7 @@
         "pagePath": "pages/info/info"
       },
       {
-        "pagePath": "pages/map/index/index",
+        "pagePath": "pages/map/map",
         "text": "喵地图",
         "iconPath": "images/map.png",
         "selectedIconPath": "images/map-active.png"
@@ -207,7 +206,7 @@
     ]
   },
   "window": {
-    "backgroundColor": "#fff",
+    "backgroundColor": "#f7f7f7",
     "backgroundTextStyle": "light",
     "navigationBarBackgroundColor": "#ffd101",
     "navigationBarTitleText": "笃行猫谱",
