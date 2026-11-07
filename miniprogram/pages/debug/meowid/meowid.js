@@ -3,14 +3,17 @@ import { checkAuth } from "../../../utils/user";
 import { getGlobalSettings } from "../../../utils/page";
 import { getRecognizeMode } from "../../../utils/recognize";
 
+// 与云函数 functionsEMAS/unionOp/meowid.js#loadConfig 的默认值保持一致
+const DEFAULT_BASE_URL = 'https://platform.meowid.net';
+
 Page({
   data: {
     auth: false, isManager: false, loading: false, syncing: false, syncMode: 'all',
     modeLabels: ['关闭识猫', '独立部署识猫函数', 'MeowID'],
     modes: ['off', 'custom', 'meowid'], modeIndex: 0,
     pageCfg: { mode: 'off', secretKey: '' },
-    cfgProjectId: '', cfgApiKey: '', cfgBaseUrl: '', cfgTopK: 5, cfgEnrollImages: 5,
-    cfgStatus: null, syncStatus: null, savedImageLimit: null, syncLimitDirty: false, result: '',
+    cfgProjectId: '', cfgApiKey: '', cfgBaseUrl: DEFAULT_BASE_URL, cfgTopK: 5, cfgEnrollImages: 5,
+    baseUrlDirty: false, cfgStatus: null, syncStatus: null, savedImageLimit: null, syncLimitDirty: false, result: '',
   },
 
   async onShow() {
@@ -71,7 +74,9 @@ Page({
 
   onInput(event) {
     const field = event.currentTarget.dataset.field;
-    this.setData({ [field]: event.detail.value, ...(field === 'cfgEnrollImages' ? { syncLimitDirty: true } : {}) });
+    this.setData({ [field]: event.detail.value,
+      ...(field === 'cfgEnrollImages' ? { syncLimitDirty: true } : {}),
+      ...(field === 'cfgBaseUrl' ? { baseUrlDirty: true } : {}) });
   },
 
   async call(action, extra = {}) {
@@ -80,7 +85,10 @@ Page({
     try {
       const result = await api.meowid({ action, ...extra });
       this.setData({ result: result && (result.ok || result.code === 'timeout') ? '' : (result && result.msg) || '操作失败' });
-      if (result && result.config) this.setData({ cfgStatus: result.config, cfgTopK: result.config.topK || 5 });
+      if (result && result.config) {
+        this.setData({ cfgStatus: result.config, cfgTopK: result.config.topK || 5,
+          ...(result.config.baseUrl && !this.data.baseUrlDirty ? { cfgBaseUrl: result.config.baseUrl } : {}) });
+      }
       const limit = Number(result && ((result.sync && result.sync.imageLimit) || (result.config && result.config.enrollImagesPerCat)));
       if (Number.isSafeInteger(limit) && limit >= 5) {
         this.setData({ savedImageLimit: limit, ...(!this.data.syncLimitDirty ? { cfgEnrollImages: limit } : {}) });
@@ -91,6 +99,12 @@ Page({
         remainingPhotos: Math.max(0, result.sync.total - result.sync.accepted),
       } });
       if (result && result.meowid && !result.meowid.reachable) this.setData({ result: result.meowid.code === 'timeout' ? '' : result.meowid.msg || '连接服务失败' });
+      // 云端 unionOp 版本落后（路由层不认识 meowid）时给出明确处置方式，只弹一次
+      if (result && result.code === 'function_outdated' && !this.outdatedNotified) {
+        this.outdatedNotified = true;
+        wx.showModal({ title: '需要更新云函数', showCancel: false,
+          content: '线上 unionOp 还未包含 meowid 动作。请部署 functionsEMAS/unionOp 的最新代码，然后重新进入此页。' });
+      }
       return result;
     } catch (error) {
       this.setData({ result: ['FunctionTimeout', 'timeout'].includes(error.code)
@@ -106,7 +120,11 @@ Page({
     if (this.data.cfgBaseUrl.trim()) data.MEOWID_BASE_URL = this.data.cfgBaseUrl.trim();
     const result = await this.call('saveConfig', { data });
     this.setData({ cfgApiKey: '' });
-    if (result && result.ok) { wx.showToast({ title: '已保存' }); await this.call('syncStatus'); }
+    if (result && result.ok) {
+      wx.showToast({ title: '已保存' });
+      this.setData({ baseUrlDirty: false });
+      await this.call('syncStatus');
+    }
   },
 
   async onSaveSyncConfig() {

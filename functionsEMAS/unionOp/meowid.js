@@ -23,7 +23,8 @@ module.exports = async ctx => {
       }
       const progress = await sync.status(ctx, config);
       const out = { ok: true, config: { ready: !!(config.projectId && config.apiKey),
-        projectIdSet: !!config.projectId, apiKeySet: !!config.apiKey, topK: config.topK, enrollImagesPerCat: config.enrollImagesPerCat }, sync: progress };
+        projectIdSet: !!config.projectId, apiKeySet: !!config.apiKey, baseUrl: config.baseUrl,
+        topK: config.topK, enrollImagesPerCat: config.enrollImagesPerCat }, sync: progress };
       if (args.ping && config.projectId && config.apiKey) {
         try {
           await meowRequest(config, 'GET', projectPath(config) + '/cats?limit=1', { timeout: READ_TIMEOUT_MS });

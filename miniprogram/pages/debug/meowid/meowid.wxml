@@ -39,7 +39,8 @@
         </view>
         <view class="field">
           <view class="field-name">接口地址</view>
-          <input class="field-input" value="{{cfgBaseUrl}}" data-field="cfgBaseUrl" bindinput="onInput" placeholder="平台提供的接口根地址，留空保留原配置" />
+          <input class="field-input" value="{{cfgBaseUrl}}" data-field="cfgBaseUrl" bindinput="onInput" placeholder="https://platform.meowid.net" />
+          <view class="hint">默认 https://platform.meowid.net，留空则沿用原配置。</view>
         </view>
         <view class="field">
           <view class="field-name">识别候选数量</view>
