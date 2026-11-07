@@ -2,9 +2,14 @@
   <view class="page">
     <view class="card">
       <view class="card-head"><text class="card-title">识猫模式</text></view>
-      <picker range="{{modeLabels}}" value="{{modeIndex}}" bindchange="onModeChange" disabled="{{syncing}}">
-        <view class="field-input">{{modeLabels[modeIndex]}} ▾</view>
-      </picker>
+      <view class="field">
+        <picker range="{{modeLabels}}" value="{{modeIndex}}" bindchange="onModeChange" disabled="{{syncing}}">
+          <view class="field-input picker-input">
+            <text class="picker-value">{{modeLabels[modeIndex]}}</text>
+            <text class="picker-arrow">▾</text>
+          </view>
+        </picker>
+      </view>
       <view class="hint" wx:if="{{pageCfg.mode === 'off'}}">关闭识别和自动同步，保留已保存的服务配置。</view>
       <view class="hint" wx:elif="{{pageCfg.mode === 'custom'}}">沿用原独立识猫服务。</view>
       <view class="hint" wx:else>开启后使用 MeowID 识别，新增照片审核通过后自动上传。</view>
@@ -13,7 +18,7 @@
         <input class="field-input" password="{{true}}" value="{{pageCfg.secretKey}}" bindinput="pageCfgInput" placeholder="与原识猫服务保持一致" />
       </view>
       <view class="btn-row">
-        <button class="btn" disabled="{{loading || syncing}}" bindtap="onSavePageCfg">保存识猫模式</button>
+        <button class="btn btn-primary" disabled="{{loading || syncing}}" bindtap="onSavePageCfg">保存识猫模式</button>
         <button class="btn" bindtap="onCopyGuide">接入文档（复制链接）</button>
       </view>
     </view>
@@ -41,7 +46,7 @@
           <input class="field-input" type="number" value="{{cfgTopK}}" data-field="cfgTopK" bindinput="onInput" />
         </view>
         <view class="btn-row">
-          <button class="btn" disabled="{{loading || syncing}}" bindtap="onSaveConfig">保存配置</button>
+          <button class="btn btn-primary" disabled="{{loading || syncing}}" bindtap="onSaveConfig">保存配置</button>
           <button class="btn" disabled="{{loading || syncing}}" bindtap="onCheckConnection">检查连接</button>
         </view>
       </view>
@@ -53,7 +58,7 @@
           <input class="field-input" type="number" value="{{cfgEnrollImages}}" data-field="cfgEnrollImages" bindinput="onInput" disabled="{{loading || syncing}}" />
         </view>
         <view class="btn-row">
-          <button class="btn" disabled="{{loading || syncing}}" bindtap="onSaveSyncConfig">保存同步上限</button>
+          <button class="btn btn-primary" disabled="{{loading || syncing}}" bindtap="onSaveSyncConfig">保存同步上限</button>
         </view>
         <view wx:if="{{syncStatus}}">
           <view class="field">猫咪：已同步 {{syncStatus.bound}} 只 · 剩余 {{syncStatus.remainingCats}} 只</view>

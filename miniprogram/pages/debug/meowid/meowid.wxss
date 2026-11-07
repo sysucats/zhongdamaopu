@@ -1,24 +1,26 @@
+/* pages/debug/meowid/meowid.wxss */
+/* 配色统一取 app.wxss 的预定义变量，不新增色值 */
 .page {
   min-height: 100vh;
   padding: 24rpx 24rpx 60rpx;
   box-sizing: border-box;
-  background: #e8e3d0;
+  background: var(--color-gray-light);
 }
 
 .tip {
   padding: 20rpx 24rpx;
-  margin-bottom: 20rpx;
   border-radius: 16rpx;
-  background: #fff3e6;
-  color: #92400E;
+  background: var(--color-primary-light);
+  color: var(--color-primary-text);
   font-size: 28rpx;
+  line-height: 1.6;
 }
 
 .card {
   padding: 28rpx 24rpx;
   margin-bottom: 24rpx;
   border-radius: 20rpx;
-  background: #ffffff;
+  background: var(--color-comment-paper-white);
 }
 
 .card-head {
@@ -30,7 +32,7 @@
 .card-title {
   font-size: 32rpx;
   font-weight: bold;
-  color: #92400E;
+  color: var(--color-primary-text);
 }
 
 .badge {
@@ -39,84 +41,104 @@
   border-radius: 999rpx;
   font-size: 22rpx;
   font-weight: normal;
+  line-height: 1.6;
 }
 
 .badge-on {
-  background: #e8f5e0;
-  color: #3b6d11;
+  background: var(--color-comment-paper-green);
+  color: var(--color-green-dark);
 }
 
 .badge-off {
-  background: #f3ede0;
-  color: #9a8f7a;
+  background: var(--color-gray-normal);
+  color: var(--color-gray-max);
 }
 
 .field {
   margin-bottom: 24rpx;
 }
 
-.field-half .field {
-  flex: 1;
-  margin-right: 20rpx;
-}
-
-.field-half .field:last-child {
-  margin-right: 0;
-}
-
 .field-name {
+  margin-bottom: 8rpx;
   font-size: 26rpx;
   font-weight: bold;
-  color: #92400E;
-  margin-bottom: 6rpx;
+  color: var(--color-primary-text);
 }
 
+/* 输入框与 picker 展示框共用同一外框 */
 .field-input {
   width: 100%;
-  height: 72rpx;
+  height: 76rpx;
   padding: 0 20rpx;
   box-sizing: border-box;
-  border: 1rpx solid #e0d9c6;
+  border: 1rpx solid var(--color-gray);
   border-radius: 12rpx;
-  background: #faf7ef;
+  background: var(--color-white-dark);
   font-size: 27rpx;
-  color: #4a3b2a;
+  color: var(--color-black-min);
 }
 
-.field-pair .field-input {
+/* picker 里是普通 view，需显式垂直居中；原生 input 自带居中 */
+.picker-input {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.picker-value {
   flex: 1;
-  margin-right: 16rpx;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
-.field-pair .field-input:last-child {
-  margin-right: 0;
-}
-
-.field-inline .field-desc {
-  margin-bottom: 0;
+.picker-arrow {
+  margin-left: 12rpx;
+  font-size: 22rpx;
+  color: var(--color-gray-max);
 }
 
 .btn-row {
   display: flex;
-  align-items: center;
   flex-wrap: wrap;
+  gap: 16rpx;
   margin-top: 8rpx;
 }
 
 .btn {
-  height: 68rpx;
-  padding: 0 28rpx;
-  margin: 0 16rpx 16rpx 0;
-  line-height: 68rpx;
+  flex: 1 1 40%;
+  box-sizing: border-box;
+  height: 76rpx;
+  margin: 0;
+  padding: 0 16rpx;
+  line-height: 74rpx;
+  border: 1rpx solid var(--color-gray);
   border-radius: 14rpx;
-  background: #f3ede0;
-  color: #92400E;
+  background: var(--color-primary-light);
+  color: var(--color-primary-text);
   font-size: 26rpx;
+  font-weight: 500;
+}
+
+.btn::after {
+  border: 0;
+}
+
+.btn-primary {
+  border-color: var(--color-primary);
+  background: var(--color-primary);
+  color: var(--color-text-onPrimary);
+}
+
+.btn[disabled] {
+  border-color: var(--color-gray-normal);
+  background: var(--color-gray-normal);
+  color: var(--color-gray-max);
 }
 
 .hint {
   margin-top: 8rpx;
   font-size: 23rpx;
-  color: #9a8f7a;
+  color: var(--color-gray-max);
   line-height: 1.6;
 }
