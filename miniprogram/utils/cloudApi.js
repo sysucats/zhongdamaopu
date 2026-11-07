@@ -330,6 +330,15 @@ async function getTempCOS(options) {
 // 原 catFace 保持 30s；MeowID 与审核上传等待上限为 55s（EMAS 硬上限 60s，留 5s 余量让客户端先超时）。
 const MEOWID_TIMEOUT_MS = 55000;
 
+// 云函数网关失败时返回 { success: false, error: { code, message } }（例如 FunctionTimeout / 请求云函数超时），
+// 转成带 code 的 Error，避免 .result 为 undefined 时上层只能显示笼统的"操作失败"。
+function toInvokeError(response) {
+  const detail = (response && response.error) || {};
+  const error = new Error(detail.message || '调用云函数失败');
+  error.code = detail.code || 'FunctionError';
+  return error;
+}
+
 async function invokeRecognition(functionName, options, timeout) {
   const app = getApp();
   const openid = await getCurrentUserOpenid();
@@ -337,10 +346,12 @@ async function invokeRecognition(functionName, options, timeout) {
   const oldTimeout = transport.timeoutOption;
   transport.setTimeout(timeout);
   try {
-    return (await app.mpServerless.function.invoke(functionName, {
+    const response = await app.mpServerless.function.invoke(functionName, {
       ...options,
       openid: openid,
-    })).result;
+    });
+    if (response && response.success === false) throw toInvokeError(response);
+    return response ? response.result : response;
   } finally {
     transport.setTimeout(oldTimeout);
   }

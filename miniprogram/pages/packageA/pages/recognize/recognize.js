@@ -220,7 +220,9 @@ Page({
       await this.loadRecognizeResult(data);
     } catch (err) {
       console.log('get error from catFace:', err);
-      const message = stage === '读取识猫配置' ? '读取识猫配置失败，请稍后重试。'
+      const isTimeout = ['FunctionTimeout', 'timeout', 'ETIMEDOUT'].includes((err && err.code) || '');
+      const message = isTimeout ? '识别请求超时（超过 55 秒），请稍后重试。'
+        : stage === '读取识猫配置' ? '读取识猫配置失败，请稍后重试。'
         : stage === '处理图片' ? '图片处理失败，请重新选择照片后再试。'
         : stage === '加载猫咪档案' ? '识别已返回，但加载猫咪档案失败，请稍后重试。'
           : '识别请求失败，请检查网络后重试。';
@@ -228,7 +230,7 @@ Page({
       wx.hideLoading();
       wx.showToast({
         icon: 'none',
-        title: '网络或服务异常'
+        title: isTimeout ? '识别请求超时' : '网络或服务异常'
       });
       wx.reportMonitor('recognizeCatPhotoError', 1);
     } finally {

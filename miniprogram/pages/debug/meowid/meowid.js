@@ -6,6 +6,16 @@ import { getRecognizeMode } from "../../../utils/recognize";
 // 与云函数 functionsEMAS/unionOp/meowid.js#loadConfig 的默认值保持一致
 const DEFAULT_BASE_URL = 'https://platform.meowid.net';
 
+// 客户端侧 invoke 超时（55s，EMAS 硬上限 60s）：云端可能仍在执行，不能当成失败直接重试
+const CALL_TIMEOUT_MSG = '请求云函数超时（超过 55 秒）。云端可能仍在继续执行，请稍后点「刷新状态」查看结果。';
+const TIMEOUT_CODES = ['FunctionTimeout', 'timeout', 'ETIMEDOUT'];
+
+function describeCallError(error) {
+  if (TIMEOUT_CODES.includes((error && error.code) || '')) return CALL_TIMEOUT_MSG;
+  const detail = error && error.message ? '（' + error.message + '）' : '';
+  return '网络或服务异常，请检查云函数日志。' + detail;
+}
+
 Page({
   data: {
     auth: false, isManager: false, loading: false, syncing: false, syncMode: 'all',
@@ -107,9 +117,11 @@ Page({
       }
       return result;
     } catch (error) {
-      this.setData({ result: ['FunctionTimeout', 'timeout'].includes(error.code)
-        ? '' : '网络或服务异常，请检查云函数日志。' });
-      return { ok: false };
+      const code = (error && error.code) || 'invoke_error';
+      console.error('[meowid]', action, code, error);
+      this.setData({ result: describeCallError(error) });
+      if (TIMEOUT_CODES.includes(code)) wx.showToast({ icon: 'none', title: '请求云函数超时', duration: 2500 });
+      return { ok: false, code };
     } finally { this.setData({ loading: false }); }
   },
 
