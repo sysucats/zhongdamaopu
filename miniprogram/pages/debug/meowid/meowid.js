@@ -16,6 +16,13 @@ function describeCallError(error) {
   return '网络或服务异常，请检查云函数日志。' + detail;
 }
 
+// 进度条百分比：分母缺失或为 0 时按 0 处理，避免出现 NaN 宽度
+function percent(done, total) {
+  const d = Number(done) || 0;
+  const t = Number(total) || 0;
+  return t > 0 ? Math.max(0, Math.min(100, Math.round(d / t * 100))) : 0;
+}
+
 Page({
   data: {
     auth: false, isManager: false, loading: false, syncing: false, syncMode: 'all',
@@ -103,11 +110,18 @@ Page({
       if (Number.isSafeInteger(limit) && limit >= 5) {
         this.setData({ savedImageLimit: limit, ...(!this.data.syncLimitDirty ? { cfgEnrollImages: limit } : {}) });
       } else if (result && result.config) this.setData({ savedImageLimit: null });
-      if (result && result.sync) this.setData({ syncStatus: {
-        ...result.sync,
-        remainingCats: Math.max(0, result.sync.cats - result.sync.bound),
-        remainingPhotos: Math.max(0, result.sync.total - result.sync.accepted),
-      } });
+      if (result && result.sync) {
+        const s = result.sync;
+        const num = value => (Number.isFinite(Number(value)) ? Number(value) : 0);
+        this.setData({ syncStatus: {
+          ...s,
+          bound: num(s.bound), accepted: num(s.accepted),
+          remainingCats: Math.max(0, num(s.cats) - num(s.bound)),
+          remainingPhotos: Math.max(0, num(s.total) - num(s.accepted)),
+          catPercent: percent(s.bound, s.cats),
+          photoPercent: percent(s.accepted, s.total),
+        } });
+      }
       if (result && result.meowid && !result.meowid.reachable) this.setData({ result: result.meowid.code === 'timeout' ? '' : result.meowid.msg || '连接服务失败' });
       // 云端 unionOp 版本落后（路由层不认识 meowid）时给出明确处置方式，只弹一次
       if (result && result.code === 'function_outdated' && !this.outdatedNotified) {

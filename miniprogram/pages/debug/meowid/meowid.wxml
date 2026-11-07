@@ -51,6 +51,7 @@
           <button class="btn" disabled="{{loading || syncing}}" bindtap="onCheckConnection">检查连接</button>
         </view>
       </view>
+      <view class="tip" wx:if="{{result}}">{{result}}</view>
 
       <view class="card">
         <view class="card-head"><text class="card-title">数据同步</text></view>
@@ -61,9 +62,23 @@
         <view class="btn-row">
           <button class="btn btn-primary" disabled="{{loading || syncing}}" bindtap="onSaveSyncConfig">保存同步上限</button>
         </view>
-        <view wx:if="{{syncStatus}}">
-          <view class="field">猫咪：已同步 {{syncStatus.bound}} 只 · 剩余 {{syncStatus.remainingCats}} 只</view>
-          <view class="field">图片：已上传 {{syncStatus.accepted}} 张 · 剩余 {{syncStatus.remainingPhotos}} 张</view>
+        <view class="stats" wx:if="{{syncStatus}}">
+          <view class="stat">
+            <view class="stat-line">
+              <text class="stat-label">猫咪</text>
+              <text class="stat-main">已同步 <text class="stat-num">{{syncStatus.bound}}</text> 只</text>
+              <text class="stat-rest">剩余 {{syncStatus.remainingCats}} 只</text>
+            </view>
+            <view class="stat-bar"><view class="stat-bar-fill" style="width: {{syncStatus.catPercent}}%"></view></view>
+          </view>
+          <view class="stat">
+            <view class="stat-line">
+              <text class="stat-label">图片</text>
+              <text class="stat-main">已上传 <text class="stat-num">{{syncStatus.accepted}}</text> 张</text>
+              <text class="stat-rest">剩余 {{syncStatus.remainingPhotos}} 张</text>
+            </view>
+            <view class="stat-bar"><view class="stat-bar-fill" style="width: {{syncStatus.photoPercent}}%"></view></view>
+          </view>
         </view>
         <view class="btn-row">
           <button class="btn" disabled="{{loading || syncing}}" bindtap="onSyncLimited">{{syncing && syncMode === 'limited' ? '正在按上限同步…' : '按上限同步'}}</button>
@@ -72,7 +87,6 @@
         </view>
       </view>
     </block>
-    <view class="tip" wx:if="{{result}}">{{result}}</view>
   </view>
 </block>
 <no-auth wx:else tip-text="{{tipText}}"></no-auth>

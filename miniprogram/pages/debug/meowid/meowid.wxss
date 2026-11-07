@@ -98,6 +98,62 @@
   color: var(--color-gray-max);
 }
 
+/* 同步进度：灰底内嵌块，数值加粗、进度条复用主色 */
+.stats {
+  padding: 20rpx;
+  margin-bottom: 24rpx;
+  border-radius: 14rpx;
+  background: var(--color-gray-light);
+}
+
+.stat + .stat {
+  margin-top: 18rpx;
+}
+
+.stat-line {
+  display: flex;
+  align-items: baseline;
+  font-size: 25rpx;
+  color: var(--color-black-min);
+}
+
+.stat-label {
+  flex: none;
+  width: 64rpx;
+  font-size: 23rpx;
+  color: var(--color-gray-max);
+}
+
+.stat-main {
+  flex: 1;
+}
+
+.stat-num {
+  font-size: 30rpx;
+  font-weight: bold;
+  color: var(--color-primary-text);
+}
+
+.stat-rest {
+  font-size: 23rpx;
+  color: var(--color-gray-max);
+}
+
+.stat-bar {
+  height: 8rpx;
+  margin: 10rpx 0 0 64rpx;
+  border-radius: 999rpx;
+  background: var(--color-gray-normal);
+  overflow: hidden;
+}
+
+.stat-bar-fill {
+  height: 100%;
+  border-radius: 999rpx;
+  background: var(--color-primary);
+  transition: width 0.3s;
+}
+
 .btn-row {
   display: flex;
   flex-wrap: wrap;
