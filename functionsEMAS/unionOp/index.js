@@ -29,8 +29,10 @@ const getCatTrajectoryHandler = require('./getCatTrajectory.js')
 const adoptionOpHandler = require('./adoptionOp.js')
 const medicalOpHandler = require('./medicalOp.js')
 const getAchievementRankHandler = require('./getAchievementRank.js')
+const meowidHandler = require('./meowid.js')
 
 const actionMap = {
+    meowid: meowidHandler,
     curdOp: curdOpHandler,
     getAllSci: getAllSciHandler,
     catRelationOp: catRelationOpHandler,

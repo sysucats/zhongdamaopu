@@ -17,7 +17,8 @@ module.exports = async (ctx) => {
         content: ctx.args.content,
         nickname: ctx.args.nickname
       },
-      dataType: 'json'
+      dataType: 'json',
+      timeout: 10000
     });
     return result.data;
   } catch (err) {

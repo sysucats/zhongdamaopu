@@ -13,7 +13,7 @@
   transform: translateX(-50%);
 }
 
-#photoBox, #resultBox, #adBox {
+#photoBox, #resultBox, #adBox, #recognizeStatus {
   width: 675rpx;
   background-color: white;
   box-shadow: 13rpx 13rpx 30rpx var(--color-gray);
@@ -22,6 +22,22 @@
   overflow: hidden;
   box-sizing: border-box;
   margin-bottom: 50rpx;
+}
+
+#recognizeStatus {
+  padding: 24rpx 32rpx;
+}
+
+.status-title {
+  margin-bottom: 12rpx;
+  font-size: 30rpx;
+  font-weight: bold;
+}
+
+.status-message {
+  font-size: 27rpx;
+  line-height: 1.6;
+  word-break: break-all;
 }
 
 #previewArea {

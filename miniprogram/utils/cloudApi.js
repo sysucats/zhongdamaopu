@@ -1,5 +1,7 @@
 // 存放所有需要调用云函数的接口
 import config from "../config";
+import { getGlobalSettings } from "./page";
+import { getRecognizeMode, normalizeRecognizeResponse } from "./recognize";
 
 function getDate(date) {
   date = date ? new Date(date) : new Date();
@@ -71,6 +73,9 @@ async function getMpCode(options) {
 }
 
 async function managePhoto(options) {
+  if (options.type === 'check') {
+    return invokeRecognition('unionOp', { ...options, unionAction: 'managePhoto' }, MEOWID_TIMEOUT_MS);
+  }
   const app = getApp();
   const openid = await getCurrentUserOpenid();
   return (await app.mpServerless.function.invoke('unionOp', {
@@ -322,24 +327,67 @@ async function getTempCOS(options) {
 }
 
 // 识别猫脸
-// 图片识别是耗时操作，SDK transport 默认 timeout 仅 5s 不够用，
-// 这里临时调大到 30s，调用结束恢复原值，避免影响其他云函数调用。
-async function catFace(options) {
+// 原 catFace 保持 30s；MeowID 与审核上传等待上限为 55s（EMAS 硬上限 60s，留 5s 余量让客户端先超时）。
+const MEOWID_TIMEOUT_MS = 55000;
+
+// 云函数网关失败时返回 { success: false, error: { code, message } }（例如 FunctionTimeout / 请求云函数超时），
+// 转成带 code 的 Error，避免 .result 为 undefined 时上层只能显示笼统的"操作失败"。
+function toInvokeError(response) {
+  const detail = (response && response.error) || {};
+  const error = new Error(detail.message || '调用云函数失败');
+  error.code = detail.code || 'FunctionError';
+  return error;
+}
+
+async function invokeRecognition(functionName, options, timeout) {
   const app = getApp();
   const openid = await getCurrentUserOpenid();
   const transport = app.mpServerless.transport;
   const oldTimeout = transport.timeoutOption;
-  transport.setTimeout(30000);
+  transport.setTimeout(timeout);
   try {
-    return (await app.mpServerless.function.invoke('catFace', {
+    const response = await app.mpServerless.function.invoke(functionName, {
       ...options,
       openid: openid,
-    })).result;
+    });
+    if (response && response.success === false) throw toInvokeError(response);
+    return response ? response.result : response;
   } finally {
     transport.setTimeout(oldTimeout);
   }
 }
 
+// unionOp 的路由层在遇到未注册动作时返回 { errMsg: 'unknown action: xxx', ok: false }，
+// 这表示云端代码版本落后（未部署最新 unionOp），不是 MeowID 的业务错误，需要给出可操作的提示。
+const FUNCTION_OUTDATED_MSG = '云函数未更新，请重新部署 unionOp';
+
+function normalizeMeowidResult(result) {
+  if (!result || typeof result !== 'object') return result;
+  // 正常情况下拿到的是函数返回值；个别链路会包一层 { success, data }，这里一并拆开
+  const body = !('ok' in result) && result.data && typeof result.data === 'object' && 'ok' in result.data
+    ? result.data : result;
+  if (typeof body.errMsg !== 'string' || body.msg) return body;
+  if (/unknown action/i.test(body.errMsg)) return { ok: false, code: 'function_outdated', msg: FUNCTION_OUTDATED_MSG };
+  return { ok: false, code: 'function_error', msg: '识猫服务返回错误：' + body.errMsg };
+}
+
+async function meowid(options) {
+  const result = await invokeRecognition('unionOp', { ...options, unionAction: 'meowid' }, MEOWID_TIMEOUT_MS);
+  return normalizeMeowidResult(result);
+}
+
+async function catFace(options = {}) {
+  const settings = await getGlobalSettings('recognize', { nocache: true });
+  const mode = getRecognizeMode(settings);
+  if (mode === 'off') return { ok: false, code: 'recognition_disabled', msg: '识猫功能已关闭' };
+  if (mode === 'custom' && options.action && options.action !== 'search') {
+    return { ok: false, code: 'unsupported_action', msg: '原识猫服务不支持此操作' };
+  }
+  const response = mode === 'meowid'
+    ? await meowid(options)
+    : await invokeRecognition('catFace', options, 30000);
+  return normalizeRecognizeResponse(response, mode);
+}
 
 module.exports = {
   curdOp,
@@ -369,5 +417,6 @@ module.exports = {
   getURL,
   getTempCOS,
   catFace,
+  meowid,
   getCurrentUserOpenid
 };

@@ -144,18 +144,21 @@
   margin-bottom: 30rpx;
 }
 
-.filter-control {
-  margin-bottom: 0;
-}
-
 .switch-container {
   display: flex;
   align-items: center;
+  padding: 4rpx 0;
+}
+
+.switch-container switch {
+  transform: scale(0.82);
+  transform-origin: left center;
+  margin-right: 8rpx;
 }
 
 .switch-label {
-  margin-left: 16rpx;
-  font-size: 28rpx;
+  margin-left: 6rpx;
+  font-size: 26rpx;
   color: var(--color-black-light);
 }
 

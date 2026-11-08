@@ -14,6 +14,7 @@ import {
 import drawUtils from "../../../../utils/draw";
 import { signPhotoUrls } from  "../../../../utils/cat";
 import api from "../../../../utils/cloudApi";
+import { getRecognizeMode } from "../../../../utils/recognize";
 
 const share_text = text_cfg.app_name + ' - ' + text_cfg.recognize.share_tip;
 const app = getApp();
@@ -29,14 +30,17 @@ Page({
     photoBase64: null, // 用户选择的照片的base64编码，用于设置background-image
     campusList: ['所有校区'],
     campusIndex: 0,
-    campusIndexOld: 0,
     lastFilterType: '',
-    colourIndexOld: 0,
     colourList: ['所有花色'],
     colourIndex: 0,
     catList: [], // 展示的猫猫列表
     catBoxList: [], // 展示的猫猫框列表
-    catIdx: null, // 在有多只猫猫的图片中，识别的猫猫的编号
+    catIdx: null, // 在有多只猫猫的图片中，识别的猫猫的编号（UI 高亮用，= 数组位置）
+    catMeowIdx: null, // 传给后端的候选下标（取自 catBox.index），与数组位置可能不一致
+    unknownCat: false, // 检测到猫但身份未确认
+    recognizeMode: 'off',
+    recognitionMessage: '',
+    catCount: 0,
     showResultBox: false, // 用来配合动画延时展示resultBox
     showAdBox: true, // 展示banner广告
     ad: {},
@@ -46,17 +50,19 @@ Page({
     adopt_desc: cat_status_adopt,
   },
 
-  jsData: {
-    // 接口秘钥，onShow中从数据库拉取。
-    secretKey: null,
-    canvasSideLen: 500,
-    // 图片长宽比，在compresPhoto函数中记录。用于重新映射后端返回的catBox位置信息。
-    widthHeightRatio: null,
-    // 接口返回的识别结果。展示的结果为在此基础上筛选。
-    recognizeResults: [],
+  initJsData() {
+    if (this.jsData) return false;
+    this.jsData = {
+      secretKey: null,
+      canvasSideLen: 500,
+      widthHeightRatio: null,
+      recognizeResults: [],
+    };
+    return true;
   },
 
   async onLoad() {
+    this.initJsData();
     var res = await loadFilter();
     console.log('filterRes:', res);
     this.setData({
@@ -66,23 +72,23 @@ Page({
 
     this.checkAuth();
 
-    // 设置广告ID
-    const ads = await getGlobalSettings('ads') || {};
-    this.setData({
-      ad: {
-        banner: ads.recognize_banner
-      },
-    })
   },
 
   async onShow() {
-    if (!this.jsData.secretKey) {
-      var settings = await getGlobalSettings('recognize');
-      this.jsData.secretKey = settings.secretKey;
-      await this.recognizeChatImage();
-    } else { // 没杀后台回到聊天重新识别的情况
-      this.recognizeChatImage()
+    this.initJsData();
+    const settings = await getGlobalSettings('recognize', { nocache: true });
+    this.jsData.secretKey = settings && settings.secretKey;
+    const mode = getRecognizeMode(settings);
+    this.setData({ unknownCat: false, recognizeMode: mode });
+    if (mode === 'off') {
+      wx.showToast({ icon: 'none', title: '识猫功能已关闭' });
+      return;
     }
+    if (mode === 'custom') {
+      const ads = await getGlobalSettings('ads') || {};
+      this.setData({ ad: { banner: ads.recognize_banner } });
+    }
+    await this.recognizeChatImage();
   },
 
 
@@ -137,6 +143,7 @@ Page({
     ctx.takePhoto({
       quality: 'high',
       success: (res) => {
+        that.reset(); // 清空上一张照片的识别状态
         that.setData({
           photoPath: res.tempImagePath,
           photoBase64: wx.getFileSystemManager().readFileSync(res.tempImagePath, 'base64')
@@ -147,58 +154,87 @@ Page({
   },
 
   async recognizePhoto() {
-    // 检查接口设置
-    if (!this.jsData.secretKey) {
-      wx.showToast({
-        icon: 'error',
-        title: '出错了'
-      });
-      console.log("no secretKey");
-      return;
-    }
+    const stateInitialized = this.initJsData();
+    this.setData({ catList: [], catBoxList: [], showResultBox: false, unknownCat: false,
+      recognitionMessage: '正在处理图片并请求识猫服务，请稍候…' });
     wx.showLoading({
       title: '翻阅猫谱中...',
       mask: true
     });
-    // 压缩图片
-    const compressPhotoPath = await this.compressPhoto();
-
-    const compressPhotoInfo = await wx.getImageInfo({
-      src: compressPhotoPath,
-    });
-    this.jsData.compressPhotoInfo = compressPhotoInfo;
-    console.log("compressPhotoInfo", compressPhotoInfo);
-
-    // 计算签名
-    const photoBase64 = wx.getFileSystemManager().readFileSync(compressPhotoPath, 'base64');
-    console.log(photoBase64);
-    const timestamp = Math.round(new Date().getTime() / 1000);
-    const signature = hex_sha256(photoBase64 + timestamp + this.jsData.secretKey);
-    // 调用云函数 catFace 进行识别
-    const params = {
-      photoBase64: photoBase64,
-      signature: signature,
-      timestamp: timestamp,
-    };
-    if (this.data.catIdx !== null) {
-      params.catIdx = this.data.catIdx; // 保留 tapCatBox 重新识别某只猫的能力
-    }
-    console.log(params);
+    let stage = '读取识猫配置';
     try {
-      const res = await api.catFace(params);
-      if (res && res.ok === true) {
-        await this.loadRecognizeResult(res.data);
-      } else {
-        throw res;
+      if (stateInitialized) {
+        const settings = await getGlobalSettings('recognize', { nocache: true });
+        this.jsData.secretKey = settings && settings.secretKey;
+        this.setData({ recognizeMode: getRecognizeMode(settings) });
       }
+      stage = '处理图片';
+      const compressPhotoPath = await this.compressPhoto();
+      const compressPhotoInfo = await wx.getImageInfo({ src: compressPhotoPath });
+      this.jsData.compressPhotoInfo = compressPhotoInfo;
+      console.log("compressPhotoInfo", compressPhotoInfo);
+      const photoBase64 = wx.getFileSystemManager().readFileSync(compressPhotoPath, 'base64');
+      const params = { photoBase64 };
+      if (this.jsData.secretKey) {
+        params.timestamp = Math.round(new Date().getTime() / 1000);
+        params.signature = hex_sha256(photoBase64 + params.timestamp + this.jsData.secretKey);
+      }
+      if (this.data.catMeowIdx !== null && this.data.catMeowIdx !== undefined) {
+        params.catIdx = this.data.catMeowIdx;
+      }
+      stage = '请求识猫服务';
+      const res = await api.catFace(params);
+      console.log('[recognize response]', {
+        ok: res && res.ok, code: res && res.code, requestId: res && res.requestId,
+        provider: res && res.data && res.data.provider,
+        catCount: res && res.data && res.data.catCount,
+        matches: res && res.data && (res.data.recognizeResults || []).length,
+        unknown: res && res.data && res.data.unknown,
+      });
+      if (!res || res.ok !== true) {
+        // 服务错误 / 额度不足：不能解释成"照片里没有猫"
+        const code = (res && res.code) || '';
+        let title = '识别失败，请稍后再试';
+        if (code === 'expired') title = '请求已过期，请重试';
+        else if (code === 'bad_signature') title = '校验失败，请重试';
+        else if (code === 'not_configured') title = '识猫服务未配置';
+        else if (res && res.msg) title = String(res.msg).slice(0, 30);
+        this.setData({ recognitionMessage: (res && res.msg) || title });
+        wx.hideLoading();
+        wx.showToast({ icon: 'none', title: title, duration: 2500 });
+        wx.reportMonitor('recognizeCatPhotoError', 1);
+        return;
+      }
+      const data = res.data || {};
+      this.setData({ recognizeMode: data.provider || this.data.recognizeMode, catCount: data.catCount || 0 });
+      // 检测到猫但云端身份未确认（有候选也不能自动认定）
+      this.setData({ unknownCat: !!data.unknown });
+      if (!data.catCount) {
+        // 没检测到猫：后端此时不扣次数，用专门文案
+        wx.hideLoading();
+        this.setData({ recognitionMessage: text_cfg.recognize.no_cat_tip });
+        wx.showToast({ icon: 'none', title: text_cfg.recognize.no_cat_tip, duration: 2000 });
+        return;
+      }
+      stage = '加载猫咪档案';
+      await this.loadRecognizeResult(data);
     } catch (err) {
       console.log('get error from catFace:', err);
+      const isTimeout = ['FunctionTimeout', 'timeout', 'ETIMEDOUT'].includes((err && err.code) || '');
+      const message = isTimeout ? '识别请求超时（超过 55 秒），请稍后重试。'
+        : stage === '读取识猫配置' ? '读取识猫配置失败，请稍后重试。'
+        : stage === '处理图片' ? '图片处理失败，请重新选择照片后再试。'
+        : stage === '加载猫咪档案' ? '识别已返回，但加载猫咪档案失败，请稍后重试。'
+          : '识别请求失败，请检查网络后重试。';
+      this.setData({ recognitionMessage: message });
       wx.hideLoading();
       wx.showToast({
-        icon: 'error',
-        title: '出错了'
+        icon: 'none',
+        title: isTimeout ? '识别请求超时' : '网络或服务异常'
       });
       wx.reportMonitor('recognizeCatPhotoError', 1);
+    } finally {
+      wx.hideLoading();
     }
   },
 
@@ -256,6 +292,8 @@ Page({
       const realDrawRate = compressSideLen / Math.max(compressPhotoInfo.width, compressPhotoInfo.height);
 
       catBoxList.push({
+        // 后端候选下标，点击框重新识别时回传（不能直接用数组位置）
+        meowIdx: catBox.index,
         x: catBox.xmin * realDrawRate * ratio + xOffset,
         y: catBox.ymin * realDrawRate * ratio + yOffset,
         width: (catBox.xmax - catBox.xmin) * realDrawRate * ratio,
@@ -266,9 +304,25 @@ Page({
     this.setData({
       catBoxList: catBoxList
     });
-    // 识别结果
-    this.jsData.recognizeResults = await Promise.all(result.recognizeResults.map(this.getCatInfo));
+    // 识别结果：MeowID 侧已登记但本地没绑定的猫会拿不到结果
+    const results = result.recognizeResults || [];
+    if (!results.length) {
+      this.setData({ recognitionMessage: '识别到了猫咪，但没有匹配到猫谱中的档案。请确认该猫已同步并注册完成，或换一张清晰的照片。' });
+      wx.hideLoading();
+      wx.showToast({
+        icon: 'none',
+        title: '没有匹配到猫谱中的档案',
+        duration: 2500
+      });
+      return;
+    }
+    this.jsData.recognizeResults = await Promise.all(results.map(this.getCatInfo));
     await this.pickCatList();
+    if (!this.data.catList.length) {
+      this.setData({ recognitionMessage: '当前筛选条件下没有匹配的猫咪，请重新选图或调整筛选条件。' });
+      return;
+    }
+    this.setData({ recognitionMessage: '' });
     wx.hideLoading();
     // 在布局完成上移后展示resultBox
     const that = this;
@@ -393,6 +447,7 @@ Page({
     })
 
     const filePath = res.tempFiles[0].tempFilePath;
+    this.reset(); // 清空上一张照片的识别状态（含 catIdx / catMeowIdx）
     this.setData({
       photoPath: filePath,
       photoBase64: wx.getFileSystemManager().readFileSync(filePath, 'base64')
@@ -407,6 +462,9 @@ Page({
       catBoxList: [],
       catList: [],
       catIdx: null,
+      catMeowIdx: null,
+      unknownCat: false,
+      recognitionMessage: '',
       showResultBox: false,
       campusIndex: 0,
       colourIndex: 0
@@ -458,12 +516,16 @@ Page({
 
   tapCatBox(e) {
     const index = e.currentTarget.dataset.index;
+    const box = this.data.catBoxList[index];
     const currentCatIdx = this.data.catIdx in this.data.catBoxList ? this.data.catIdx : 0;
     if (index !== currentCatIdx) {
       this.setData({
         catList: [],
         showResultBox: false,
         catIdx: index,
+        // 回传后端候选下标（没有就退回数组位置）
+        // 注意：切换猫会重新调用识别，并按后端规则再次计入次数
+        catMeowIdx: box && box.meowIdx !== undefined ? box.meowIdx : index,
       });
       this.recognizePhoto();
     }

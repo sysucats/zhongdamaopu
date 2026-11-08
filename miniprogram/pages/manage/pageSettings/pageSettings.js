@@ -4,6 +4,36 @@ import { getGlobalSettings } from "../../../utils/page";
 import api from "../../../utils/cloudApi";
 import desc from "./desc";
 
+// 识猫相关设置已集中到「识猫服务」页（pages/debug/meowid）管理。
+// 本页对它们：不展示、不填默认值、提交时原样保留数据库现值——
+// 防止页面配置整树 $set 时用旧值覆盖识猫服务页刚保存的修改（这就是重复+错乱的根源）。
+// recognize_test 组和 recognize.interfaceURL 是数据库历史遗留，一并隐藏。
+const HIDDEN_RECOGNIZE_GROUPS = ["recognize", "recognize_test"];
+const HIDDEN_RECOGNIZE_ADS_FIELDS = ["recognize_banner", "recognize_video"];
+
+// 从 settings 树里摘出识猫相关字段（深拷贝），返回 { groups, adsFields }
+function pickHiddenRecognition(settings) {
+  const groups = {};
+  for (const g of HIDDEN_RECOGNIZE_GROUPS) {
+    if (settings[g] !== undefined) {
+      groups[g] = JSON.parse(JSON.stringify(settings[g]));
+      delete settings[g];
+    }
+  }
+  const adsFields = {};
+  if (settings.ads) {
+    for (const f of HIDDEN_RECOGNIZE_ADS_FIELDS) {
+      if (settings.ads[f] !== undefined) {
+        adsFields[f] = settings.ads[f];
+        // 摘出渲染树：页面配置不再显示这两个字段（desc.js 已无描述，否则渲染成"未知字段"）。
+        // 值保存在 adsFields，提交时由 uploadSetting 合并回 ads，不会丢失。
+        delete settings.ads[f];
+      }
+    }
+  }
+  return { groups, adsFields };
+}
+
 
 Page({
   /**
@@ -12,6 +42,11 @@ Page({
   data: {
     settings: {},
     desc,
+  },
+
+  jsData: {
+    // 页面配置不展示、但提交时需要原样写回的识猫字段（防止覆盖识猫服务页的修改）
+    hiddenRecognition: null,
   },
 
   /**
@@ -87,6 +122,8 @@ Page({
     delete settings._id;
     delete settings.openid;
     delete settings.mdate;
+    // 摘出识猫字段：不展示、不参与默认值填充；提交时原样合并回库
+    this.jsData.hiddenRecognition = pickHiddenRecognition(settings);
     this.setDefaultValues(settings);
     settings = this.sortMap(settings, desc);
     for (const i in settings) {
@@ -191,11 +228,24 @@ Page({
 
     const { settings } = this.data;
 
+    // 把识猫相关字段原样合并回去：这些字段由识猫服务页管理，
+    // 本页不展示也不修改，提交时保留数据库现值，避免整树 $set 覆盖
+    const merged = Object.assign({}, settings);
+    const hidden = this.jsData.hiddenRecognition;
+    if (hidden) {
+      for (const g of Object.keys(hidden.groups)) {
+        merged[g] = hidden.groups[g];
+      }
+      if (hidden.adsFields && Object.keys(hidden.adsFields).length) {
+        merged.ads = Object.assign({}, settings.ads, hidden.adsFields);
+      }
+    }
+
     const res = await api.curdOp({
       operation: "update",
       collection: "setting",
       item_id: "pages",
-      data: settings
+      data: merged
     })
     if (res.ok) {
       wx.showToast({

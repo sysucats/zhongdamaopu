@@ -22,12 +22,13 @@ module.exports = async (ctx) => {
   }
 
 
-  // 获取小程序码
+  // 获取小程序码（10s 超时：unionOp 由客户端调用，EMAS 客户端硬上限 60s，不允许无限等待）
   const rsp = await ctx.httpclient.request(`https://api.weixin.qq.com/wxa/getwxacodeunlimit?access_token=${access_token}`, {
     method: 'POST',
     data: requestData,
     contentType: 'json',
-    responseType: 'arraybuffer'
+    responseType: 'arraybuffer',
+    timeout: 10000
   });
 
   // 检查响应状态
@@ -62,8 +63,10 @@ module.exports = async (ctx) => {
         formData.append(key, data.formData[key]);
       }
       formData.append('file', fs.createReadStream(tmpFile.name));
+      // 30s 超时：axios 默认不超时，上传挂起会把客户端拖到 EMAS 60s 上限被掐断
       const uploadRsp = await axios.post(data.postURL, formData, {
-        headers: formData.getHeaders()
+        headers: formData.getHeaders(),
+        timeout: 30000
       });
       const cleanKey = data.formData.key.startsWith("/") ? data.formData.key.slice(1) : data.formData.key;
       const fileUrl = data.postURL + cleanKey;
