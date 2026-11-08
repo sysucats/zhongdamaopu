@@ -106,7 +106,8 @@ Page({
         this.setData({ cfgStatus: result.config, cfgTopK: result.config.topK || 5,
           ...(result.config.baseUrl && !this.data.baseUrlDirty ? { cfgBaseUrl: result.config.baseUrl } : {}) });
       }
-      const limit = Number(result && ((result.sync && result.sync.imageLimit) || (result.config && result.config.enrollImagesPerCat)));
+      const limit = Number(result && ((result.sync && result.sync.imageLimit) || result.imageLimit ||
+        (result.config && result.config.enrollImagesPerCat)));
       if (Number.isSafeInteger(limit) && limit >= 5) {
         this.setData({ savedImageLimit: limit, ...(!this.data.syncLimitDirty ? { cfgEnrollImages: limit } : {}) });
       } else if (result && result.config) this.setData({ savedImageLimit: null });
@@ -212,28 +213,51 @@ Page({
         if (!response.confirm || this.data.syncing || this.data.loading) return;
         this.stopSync = false;
         const syncMode = limited ? 'limited' : 'all';
-        this.setData({ syncing: true, syncMode });
+        this.setData({ syncing: true, syncMode, result: '正在开始同步…' });
+        let uploaded = 0;
+        let batches = 0;
+        let idle = 0;
         try {
-          await this.call('status');
+          // 只读统计，不做任务刷新：任务刷新可能占用几十秒，放在循环里会把首屏时间全吃掉
+          await this.call('syncStatus');
           let action = 'syncAll';
-          let batches = 0;
           while (!this.stopSync) {
             const result = await this.call(action, { syncMode });
-            if (!result || !result.ok) break;
+            if (!result) break;
+            if (!result.ok) {
+              // 超时说明云端这批还没跑完（批次锁约 70 秒），提示用户等一会再继续，而不是静默中断
+              if (TIMEOUT_CODES.includes(result.code)) {
+                this.setData({ result: '云端这一批还没跑完就被判超时，请等约 1 分钟后再点一次继续（已受理的照片不会重传）。' });
+              }
+              break;
+            }
             if (result.busy) {
               this.setData({ result: '另一批同步正在执行，请稍后点击继续。' });
               break;
             }
+            batches++;
+            const done = Number(result.processed) || 0;
+            uploaded += done;
+            const moved = done > 0 || Number(result.progress) > 0;
+            idle = moved ? 0 : idle + 1;
+            this.setData({ result: '已上传 ' + uploaded + ' 张 · 第 ' + batches + ' 批' +
+              (result.phase === 'cats' ? ' · 正在核对猫咪档案' : '') });
             if (!result.more) {
+              this.setData({ result: '本批上传结束，正在核对注册结果…' });
               await this.call('status');
-              const progress = this.data.syncStatus || result.sync;
+              const progress = this.data.syncStatus;
               this.setData({ result: progress && (progress.remainingCats || progress.remainingPhotos)
                 ? (limited ? '本轮按上限同步已结束；超出上限的照片可提高上限后补传，或选择全量 / 增量同步。' : '本轮同步已结束。') +
                   '仍有未同步记录，请查看剩余数量、失败及待核对提示。'
                 : '本轮上传已结束，可点击刷新状态查看注册结果。' });
               break;
             }
-            if (++batches % 5 === 0 && !this.stopSync) await this.call('status');
+            // 只在上传阶段做空转保护：猫咪阶段本来就可能整批跳过（已同步的猫不写库）
+            if (result.phase === 'photos' && idle >= 3) {
+              this.setData({ result: '连续几批都没有可上传的照片，已停止。请刷新状态查看失败与待核对的记录。' });
+              break;
+            }
+            if (batches % 5 === 0 && !this.stopSync) await this.call('syncStatus');
             action = 'syncNext';
           }
         } finally { this.setData({ syncing: false }); }

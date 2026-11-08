@@ -1,5 +1,11 @@
 const crypto = require('crypto');
-const { READ_TIMEOUT_MS, LEASE_TIMEOUT_MS, RESPONSE_RESERVE_MS, WRITE_BUDGET_MS, PHOTO_BUDGET_MS, UPLOAD_RESERVE_MS } = require('./meowidTiming');
+const { READ_TIMEOUT_MS, LEASE_TIMEOUT_MS, RESPONSE_RESERVE_MS,
+  CAT_COST_MS, PHOTO_COST_MS, TASK_COST_MS } = require('./meowidTiming');
+
+// 每批扫描的条数：只有真正需要写库的猫/照片才产生额外请求
+const CAT_PAGE = 100;
+const PHOTO_PAGE = 100;
+const TASK_PAGE = 200;
 
 function stateId(config) {
   return 'meowidSync-' + crypto.createHash('sha256').update(config.projectId).digest('hex').slice(0, 20);
@@ -30,6 +36,41 @@ function candidates(config, now, readyOnly = true, limited = false) {
     { 'meowid_sync.nextAttemptAt': { $lte: now } },
   ] });
   return query;
+}
+// 猫咪档案的远端载荷与指纹：建档、更新、以及"是否已经同步好"的判断必须用同一份算法
+// 上传载荷的字段适配层：本库的字段名/取值类型不统一，只在这里归一，
+// 不改数据库、不动其它代码，也不改变发给平台的字段名。
+const CAT_TEXT_FIELDS = ['gender', 'colour', 'campus', 'area', 'birthday', 'character'];
+const TRUTHY = [true, 1, '1', 'true', '是'];
+
+function catPayload(cat) {
+  const metadata = { local_id: cat._id };
+  for (const key of CAT_TEXT_FIELDS) {
+    if (cat[key] !== undefined && cat[key] !== null && cat[key] !== '') metadata[key] = cat[key];
+  }
+  // adopt：本库既有 0/1/2 也有 '0'/'1'，统一成整数，避免平台侧按数字过滤时漏掉字符串
+  const adopt = Number(cat.adopt);
+  if (cat.adopt !== undefined && cat.adopt !== null && cat.adopt !== '' && Number.isInteger(adopt)) {
+    metadata.adopt = adopt;
+  }
+  // 绝育状态：本库字段是 sterilized(布尔)，历史数据可能残留 neutered；对外仍用 neutered 这个键
+  const sterilized = cat.sterilized !== undefined ? cat.sterilized : cat.neutered;
+  if (sterilized !== undefined && sterilized !== null) metadata.neutered = TRUTHY.includes(sterilized);
+  const data = {
+    name: String(cat.name || cat._id).slice(0, 100),
+    metadata,
+    // 失踪 / 回喵星 的猫在平台侧不再标为活跃档案
+    active: !(TRUTHY.includes(cat.missing) || TRUTHY.includes(cat.to_star)),
+  };
+  const fingerprint = crypto.createHash('sha256').update(JSON.stringify(data)).digest('hex');
+  return { data, fingerprint };
+}
+// 已建档 + 属于本项目 + 上次同步成功 + 档案内容没变 → 不需要任何远端调用或写库
+function settled(cat, config) {
+  const state = cat.meowid_sync || {};
+  if (!cat.meowid_id || cat.meowid_project_id !== config.projectId) return false;
+  if (state.status !== 'synced') return false;
+  return state.fingerprint === catPayload(cat).fingerprint;
 }
 
 async function status(ctx, config) {
@@ -65,6 +106,10 @@ async function run(ctx, config, api, options = {}) {
   const id = stateId(config);
   const owner = crypto.randomBytes(16).toString('hex');
   const now = Date.now();
+  // 剩余可用时间 = 总预算 - 收尾预留。工作循环一律用"够不够再做一件"判断，
+  // 不再用"剩余时间够不够 45s"这种写法（那样每个批次只有几秒真正干活）。
+  const remaining = () => config.deadline - Date.now() - RESPONSE_RESERVE_MS;
+  const canAfford = cost => remaining() > cost;
   // Uncapped approval uploads claim their own photo below. They do not need the
   // project-wide batch lease used to enforce manual caps and advance cursors.
   const singleApproval = !!options.photoId && options.limited !== true;
@@ -78,7 +123,8 @@ async function run(ctx, config, api, options = {}) {
     await collection.updateOne({ _id: id, $or: [{ leaseUntil: { $lte: now } }, { leaseUntil: { $exists: false } }] },
       { $set: { leaseOwner: owner, leaseUntil: now + LEASE_TIMEOUT_MS } });
     state = (await collection.findOne({ _id: id })).result;
-    if (!state || state.leaseOwner !== owner) return options.photoId ? { ok: true, busy: true } : { ok: true, busy: true, sync: await status(ctx, config) };
+    // 另一个批次正在跑：直接告诉客户端，不要顺手做十几次统计
+    if (!state || state.leaseOwner !== owner) return { ok: true, busy: true };
   }
   const base = '/v1/projects/' + encodeURIComponent(config.projectId);
   // Only an explicitly limited batch uses the cap. Approval uploads and older
@@ -95,9 +141,17 @@ async function run(ctx, config, api, options = {}) {
   }
   let lastError = '';
   let processed = 0;
+  // 本批真正落库的动作次数：客户端用它判断"这批到底有没有推进"，避免空转死循环
+  let progress = 0;
   let more = false;
   let stage = '读取同步记录';
-  const timeLeft = cost => Date.now() + cost + RESPONSE_RESERVE_MS < config.deadline;
+  // 额度缓存：同一批里同一只猫只算一次，上传成功后本地 +1。
+  // 原来的实现每张候选照片都要 count + 逐条 findOne，超额照片越多越慢。
+  const slotCache = new Map();
+  const bumpSlot = catId => {
+    const key = String(catId);
+    if (slotCache.has(key)) slotCache.set(key, slotCache.get(key) + 1);
+  };
   // Every transition belongs to the worker that claimed this photo. An expired
   // downloader must not overwrite a newer worker's receipt or submit twice.
   const savePhoto = async (photo, value, expectedStatus = 'downloading') => {
@@ -112,6 +166,7 @@ async function run(ctx, config, api, options = {}) {
     if (!current || !current.meowid_sync || current.meowid_sync.owner !== owner ||
         current.meowid_sync.projectId !== config.projectId || current.meowid_sync.status !== next.status) return false;
     photo.meowid_sync = current.meowid_sync;
+    progress++;
     return true;
   };
   const message = error => {
@@ -129,23 +184,44 @@ async function run(ctx, config, api, options = {}) {
   const uncertain = error => !error.status || error.status >= 500;
 
   async function usedSlots(cat, remote) {
+    const key = String(cat._id);
+    if (slotCache.has(key)) return slotCache.get(key);
+    const limit = imageLimit(config);
     const counted = { 'meowid_sync.projectId': config.projectId, $and: [
       { $or: [{ cat_id: cat._id }, { 'meowid_sync.catId': cat._id }, { 'meowid_sync.remoteCatId': remote }] },
       { $or: [receiptQuery, { 'meowid_sync.status': { $in: ['queued', 'running', 'completed', 'waiting_user', 'submitting', 'uncertain'] } }] },
     ] };
     let used = (await db.collection('photo').count(counted)).result || 0;
-    const legacy = new Set();
-    if (!cat.meowid_project_id || cat.meowid_project_id === config.projectId) {
+    // 历史 meowid_images 里可能还有没迁移成 photo 记录的老条目。原来逐条 findOne 去重，
+    // 每张照片最多 20+ 次查询；改成一次 $in 查询取回已计入的 _id 集合。
+    if (used < limit && (!cat.meowid_project_id || cat.meowid_project_id === config.projectId)) {
+      const keys = [];
+      const unique = new Set();
       for (const item of cat.meowid_images || []) {
-        if (used >= imageLimit(config)) break;
-        const key = String(item.photo_id || item.image_id || item.task_id || 'unknown');
-        if (legacy.has(key)) continue;
-        legacy.add(key);
-        // Do not count a legacy entry twice after its receipt was migrated.
-        if (!(await db.collection('photo').findOne({ ...counted, _id: key })).result) used++;
+        const legacyKey = String(item.photo_id || item.image_id || item.task_id || 'unknown');
+        if (unique.has(legacyKey)) continue;
+        unique.add(legacyKey);
+        keys.push(legacyKey);
+        if (keys.length >= limit + 20) break;
+      }
+      if (keys.length) {
+        const { result: hits } = await db.collection('photo').find({ ...counted, _id: { $in: keys } },
+          { limit: keys.length, projection: { _id: 1 } });
+        const hit = new Set((hits || []).map(item => String(item._id)));
+        for (const legacyKey of keys) if (!hit.has(legacyKey)) used++;
       }
     }
+    slotCache.set(key, used);
     return used;
+  }
+
+  // 超额照片：只做一次轻量写（不打回读校验），单张 1 次请求即可离开候选集
+  async function markLimited(photo, remote) {
+    await db.collection('photo').updateOne({ _id: photo._id, verified: true }, { $set: { meowid_sync:
+      Object.assign({}, photo.meowid_sync || {}, { projectId: config.projectId, catId: photo.cat_id,
+        status: 'limited', imageLimit: imageLimit(config), remoteCatId: remote,
+        owner: '', leaseUntil: 0, updatedAt: new Date() }) } });
+    progress++;
   }
 
   async function ensureCat(cat) {
@@ -156,18 +232,13 @@ async function run(ctx, config, api, options = {}) {
     let remote = cat.meowid_id;
     const previous = cat.meowid_sync || {};
     if (cat.meowid_project_id && cat.meowid_project_id !== config.projectId) remote = '';
-    const metadata = { local_id: cat._id };
-    for (const key of ['gender', 'colour', 'campus', 'area', 'birthday', 'character', 'adopt', 'neutered']) {
-      if (cat[key] !== undefined) metadata[key] = cat[key];
-    }
-    const data = { name: String(cat.name || cat._id).slice(0, 100), metadata, active: true };
-    const fingerprint = crypto.createHash('sha256').update(JSON.stringify(data)).digest('hex');
+    const { data, fingerprint } = catPayload(cat);
     if (!remote && previous.projectId === config.projectId && previous.status === 'creating') return null;
     if (!remote && previous.projectId === config.projectId && previous.status === 'uncertain') {
       throw new Error('猫咪档案创建结果待核对');
     }
     if (remote && cat.meowid_project_id === config.projectId && previous.status === 'synced' && previous.fingerprint === fingerprint) return remote;
-    if (!timeLeft(WRITE_BUDGET_MS)) return null;
+    if (!canAfford(CAT_COST_MS)) return null;
     const syncState = { projectId: config.projectId, status: remote ? 'updating' : 'creating', fingerprint, owner };
     const claim = { _id: cat._id };
     if (!remote) claim.$or = [{ 'meowid_sync.projectId': { $ne: config.projectId } },
@@ -187,6 +258,7 @@ async function run(ctx, config, api, options = {}) {
         meowid_id: remote, meowid_project_id: config.projectId,
         meowid_sync: { ...syncState, status: 'synced' },
       } });
+      progress++;
       return remote;
     } catch (error) {
       await db.collection('cat').updateOne({ _id: cat._id }, { $set: {
@@ -197,32 +269,40 @@ async function run(ctx, config, api, options = {}) {
     }
   }
 
+  // 已同步好的猫不再回读、不再调用远端：一次列表查询可以扫掉上百只
+  async function syncCats(cats) {
+    let visited = 0;
+    for (const cat of cats || []) {
+      if (!canAfford(CAT_COST_MS)) break;
+      if (!settled(cat, config)) {
+        try { await ensureCat(cat); }
+        catch (error) { lastError = message(error); }
+      }
+      cursor = cat._id;
+      visited++;
+    }
+    return visited;
+  }
+
   try {
     const catBatch = !options.photoId && !options.tasksOnly && phase === 'cats';
     if (catBatch) {
       stage = '遍历猫咪档案';
       const query = { deleted: { $ne: 1 } };
       if (cursor) query._id = { $gt: cursor };
-      const { result: cats } = await db.collection('cat').find(query, { sort: { _id: 1 }, limit: 30 });
-      let visited = 0;
-      for (const cat of cats || []) {
-        if (!timeLeft(WRITE_BUDGET_MS)) break;
-        try { await ensureCat(cat); }
-        catch (error) { lastError = message(error); }
-        cursor = cat._id;
-        visited++;
-      }
-      if (visited === (cats || []).length && visited < 30) { cursor = ''; phase = 'photos'; }
+      const { result: cats } = await db.collection('cat').find(query, { sort: { _id: 1 }, limit: CAT_PAGE });
+      const visited = await syncCats(cats);
+      if (visited === (cats || []).length && visited < CAT_PAGE) { cursor = ''; phase = 'photos'; }
       more = true;
     }
 
-    if (!options.tasksOnly && !catBatch && timeLeft(PHOTO_BUDGET_MS)) {
+    if (!options.tasksOnly && !catBatch && canAfford(PHOTO_COST_MS)) {
       stage = '读取待上传照片';
       const photoQuery = candidates(config, now, true, limited);
       if (options.photoId) photoQuery._id = options.photoId;
-      const { result: photos } = await db.collection('photo').find(photoQuery, { sort: { _id: 1 }, limit: 100 });
+      const { result: photos } = await db.collection('photo').find(photoQuery, { sort: { _id: 1 }, limit: PHOTO_PAGE });
       for (const photo of photos || []) {
-        if (!timeLeft(PHOTO_BUDGET_MS)) break;
+        if (!canAfford(PHOTO_COST_MS)) break;
         // Claim before cat lookup or downloading, using the same guarded query
         // as selection. Merely reading an eligible snapshot is not ownership.
         await db.collection('photo').updateOne({ ...candidates(config, Date.now(), true, limited), _id: photo._id,
@@ -244,7 +324,7 @@ async function run(ctx, config, api, options = {}) {
             continue;
           }
           // Cat creation has already finished; reserve the remaining download/upload budget.
-          if (!timeLeft(UPLOAD_RESERVE_MS)) {
+          if (!canAfford(PHOTO_COST_MS)) {
             await savePhoto(latest, { status: 'retry', error: '本批次时间不足，下一批继续上传' });
             break;
           }
@@ -258,7 +338,8 @@ async function run(ctx, config, api, options = {}) {
             continue;
           }
           if (limited && await usedSlots(cat, remote) >= imageLimit(config)) {
-            await savePhoto(latest, { status: 'limited', imageLimit: imageLimit(config), remoteCatId: remote });
+            // 额度已满：不再为这张照片下载/上传，也不再重复算额度
+            await markLimited(latest, remote);
             continue;
           }
           stage = '下载审核照片';
@@ -286,15 +367,21 @@ async function run(ctx, config, api, options = {}) {
             const taskId = response.body && response.body.task_id;
             if (!taskId) throw new Error('注册图片未返回任务编号');
             if (await savePhoto(latest, { status: 'queued', taskId,
-              imageId: response.body.id || null, remoteCatId: remote }, 'submitting')) processed++;
+              imageId: response.body.id || null, remoteCatId: remote }, 'submitting')) { processed++; bumpSlot(cat._id); }
           } catch (error) {
-            const status = uncertain(error) ? 'uncertain' : [400, 413, 415, 422].includes(error.status) ? 'failed' : 'retry';
-            await savePhoto(latest, { status, remoteCatId: remote,
-              error: message(error), requestId: error.requestId || '', nextAttemptAt: Date.now() + 300000 }, 'submitting');
+            // 预算用尽（请求没发出去）可以安全重试，不能记成 uncertain —— 那会让照片彻底停在候选集外
+            const status = error.retryable ? 'retry'
+              : uncertain(error) ? 'uncertain' : [400, 413, 415, 422].includes(error.status) ? 'failed' : 'retry';
+            const patch = { status, remoteCatId: remote, error: message(error), requestId: error.requestId || '' };
+            if (!error.retryable) patch.nextAttemptAt = Date.now() + 300000;
+            await savePhoto(latest, patch, 'submitting');
             lastError = report(error);
           }
         } catch (error) {
-          await savePhoto(latest, { status: attemptedUpload ? 'uncertain' : 'retry', error: message(error), requestId: error.requestId || '', nextAttemptAt: Date.now() + 300000 }, attemptedUpload ? 'submitting' : 'downloading');
+          const patch = { status: error.retryable ? 'retry' : attemptedUpload ? 'uncertain' : 'retry',
+            error: message(error), requestId: error.requestId || '' };
+          if (!error.retryable) patch.nextAttemptAt = Date.now() + 300000;
+          await savePhoto(latest, patch, attemptedUpload ? 'submitting' : 'downloading');
           lastError = report(error);
         }
       }
@@ -302,18 +389,18 @@ async function run(ctx, config, api, options = {}) {
     }
 
     if (!options.photoId && !options.tasksOnly && !catBatch) {
-      if (!timeLeft(PHOTO_BUDGET_MS) && phase !== 'idle') more = true;
+      if (!canAfford(PHOTO_COST_MS) && phase !== 'idle') more = true;
       phase = more ? 'photos' : 'idle';
     }
 
-    if (!options.photoId && (options.tasksOnly || !more) && timeLeft(READ_TIMEOUT_MS)) {
+    if (!options.photoId && (options.tasksOnly || !more) && canAfford(TASK_COST_MS)) {
       stage = '刷新 MeowID 注册任务';
       const offset = state.taskOffset || 0;
-      const response = await api.request(config, 'GET', base + '/tasks?limit=200&offset=' + offset, { timeout: READ_TIMEOUT_MS });
+      const response = await api.request(config, 'GET', base + '/tasks?limit=' + TASK_PAGE + '&offset=' + offset, { timeout: READ_TIMEOUT_MS });
       const tasks = Array.isArray(response.body) ? response.body : (response.body && response.body.items) || [];
       let checked = 0;
       for (const task of tasks) {
-        if (!timeLeft(1000)) break;
+        if (!canAfford(TASK_COST_MS)) break;
         if (!task.id || !['queued', 'running', 'completed', 'waiting_user', 'failed', 'cancelled'].includes(task.status)) { checked++; continue; }
         let photo = (await db.collection('photo').findOne({
           'meowid_sync.projectId': config.projectId, 'meowid_sync.taskId': task.id,
@@ -341,8 +428,13 @@ async function run(ctx, config, api, options = {}) {
         }
         checked++;
       }
-      if (checked === tasks.length) await collection.updateOne({ _id: id, leaseOwner: owner }, {
-        $set: { taskOffset: tasks.length < 200 ? 0 : offset + tasks.length },
+      // 走到哪记到哪：整页核完就翻页/回卷，核了一部分也把游标推过去，
+      // 避免"总也核不完前 N 条、后面永远轮不到"。
+      const nextOffset = checked === tasks.length
+        ? (tasks.length < TASK_PAGE ? 0 : offset + tasks.length)
+        : (checked > 0 ? offset + checked : offset);
+      if (nextOffset !== offset) await collection.updateOne({ _id: id, leaseOwner: owner }, {
+        $set: { taskOffset: nextOffset },
       });
     }
   } catch (error) {
@@ -356,10 +448,9 @@ async function run(ctx, config, api, options = {}) {
       await collection.updateOne({ _id: id, leaseOwner: owner }, { $set: patch });
     }
   }
-  // Approval callers read their own photo receipt; avoid twelve unrelated project counts.
-  if (options.photoId) return { ok: true, processed, more, error: lastError };
-  const progress = await status(ctx, config);
-  return { ok: true, processed, sync: progress, more };
+  // 批次调用只回轻量进度：完整统计（十余次 count）留给 syncStatus，避免每批都多花 1-3 秒
+  if (options.photoId) return { ok: true, processed, more, progress, error: lastError };
+  return { ok: true, processed, more, progress, phase, imageLimit: imageLimit(config), error: lastError };
 }
 
-module.exports = { run, status };
+module.exports = { run, status, catPayload };

@@ -3,17 +3,19 @@ const crypto = require('crypto');
 const { URL } = require('url');
 const sync = require('./meowidSync');
 
-const { REQUEST_TIMEOUT_MS, READ_TIMEOUT_MS, DOWNLOAD_TIMEOUT_MS, BATCH_TIMEOUT_MS,
-  RESPONSE_RESERVE_MS, UPLOAD_RESERVE_MS } = require('./meowidTiming');
+const { REQUEST_TIMEOUT_MS, SEARCH_TIMEOUT_MS, READ_TIMEOUT_MS, DOWNLOAD_TIMEOUT_MS, BATCH_TIMEOUT_MS,
+  RESPONSE_RESERVE_MS } = require('./meowidTiming');
 const TIMESTAMP_TOLERANCE_SEC = 900;
 
 module.exports = async ctx => {
+  const startedAt = Date.now();
   const args = Object.assign({}, ctx.args || {});
   const action = args.action || 'search';
   try {
     const openid = await getCallerOpenid(ctx);
     if (!openid) return { ok: false, code: 'unauthenticated', msg: '请先微信登录后再使用识猫服务' };
-    const config = await loadConfig(ctx);
+    // 预算从进入 handler 开始算：身份校验、读配置都在预算内，不能等它们跑完再起 55 秒的表
+    const config = await loadConfig(ctx, startedAt);
     if (action === 'search') return await search(ctx, config, args);
     if (!(await isManager(ctx, openid))) return { ok: false, code: 'forbidden', msg: '仅管理员可操作' };
     if (action === 'saveConfig') return await saveConfig(ctx, args);
@@ -78,7 +80,7 @@ async function search(ctx, config, args) {
     recognizeResults: result.results, unknown: node.unknown, route: parsed.route, catIdx: node.index } };
 }
 
-async function loadConfig(ctx) {
+async function loadConfig(ctx, startedAt) {
   const { result } = await ctx.mpserverless.db.collection('app_secret').findOne();
   const record = result || {};
   return { baseUrl: String(record.MEOWID_BASE_URL || 'https://platform.meowid.net').replace(/\/+$/, ''),
@@ -86,7 +88,7 @@ async function loadConfig(ctx) {
     topK: Math.max(1, Math.min(100, parseInt(record.MEOWID_TOP_K, 10) || 5)),
     enrollImagesPerCat: Math.max(5, Number.isSafeInteger(Number(record.MEOWID_ENROLL_IMAGES_PER_CAT)) ? Number(record.MEOWID_ENROLL_IMAGES_PER_CAT) : 5),
     threshold: record.MEOWID_THRESHOLD !== undefined && record.MEOWID_THRESHOLD !== '' ? Number(record.MEOWID_THRESHOLD) : null,
-    deadline: Date.now() + BATCH_TIMEOUT_MS };
+    deadline: (Number(startedAt) || Date.now()) + BATCH_TIMEOUT_MS };
 }
 
 async function saveConfig(ctx, args) {
@@ -115,7 +117,13 @@ function projectPath(config) {
 
 async function meowRequest(config, method, path, options = {}) {
   const remaining = config.deadline - Date.now() - RESPONSE_RESERVE_MS;
-  if (remaining <= 0) throw new Error('本次同步时间已用尽，下次继续');
+  if (remaining <= 0) {
+    // 明确区分"没发出去"和"发出去但没回音"：前者可以安全重试，后者不能自动重传
+    const error = new Error('本次同步时间已用尽，下次继续');
+    error.code = 'deadline_exhausted';
+    error.retryable = true;
+    throw error;
+  }
   const headers = { Authorization: 'Bearer ' + config.apiKey, Accept: 'application/json' };
   let body;
   if (options.image) {
@@ -131,8 +139,10 @@ async function meowRequest(config, method, path, options = {}) {
     headers['Content-Type'] = 'application/json';
   }
   headers['Content-Length'] = body ? body.length : 0;
-  const response = await httpsSend(new URL(config.baseUrl + path), method, headers, body,
-    Math.min(options.timeout || (method === 'GET' ? READ_TIMEOUT_MS : REQUEST_TIMEOUT_MS), remaining));
+  // 单个请求的时间上限必须独立收紧：否则一次卡住的上传就能吃掉整批预算，
+  // 云端拖到 60s 被 EMAS 杀掉，客户端那边只能看到超时。
+  const cap = options.timeout || (method === 'GET' ? READ_TIMEOUT_MS : REQUEST_TIMEOUT_MS);
+  const response = await httpsSend(new URL(config.baseUrl + path), method, headers, body, Math.min(cap, remaining));
   if (response.status < 200 || response.status >= 300) {
     const error = new Error('MeowID HTTP ' + response.status);
     Object.assign(error, { status: response.status, body: response.body, requestId: response.headers['x-request-id'] });
@@ -188,7 +198,7 @@ async function downloadPhoto(ctx, config, photo) {
   const signed = cosSignIfNeeded(url, await loadCosConfig(ctx), 600);
   let headers = signed.headers;
   url = new URL(signed.url);
-  const deadline = Math.min(config.deadline - UPLOAD_RESERVE_MS, Date.now() + DOWNLOAD_TIMEOUT_MS);
+  const deadline = Math.min(config.deadline - RESPONSE_RESERVE_MS, Date.now() + DOWNLOAD_TIMEOUT_MS);
   for (let hop = 0; hop < 4; hop++) {
     const remaining = deadline - Date.now();
     if (remaining <= 0) throw new Error('下载图片超时');
@@ -207,7 +217,7 @@ async function downloadPhoto(ctx, config, photo) {
 module.exports.syncApprovedPhoto = async (ctx, photoId) => {
   try {
     if (!(await enabled(ctx))) return { ok: true, skipped: true };
-    const config = await loadConfig(ctx);
+    const config = await loadConfig(ctx, Date.now());
     if (!config.projectId || !config.apiKey) return { ok: false, msg: 'MeowID 尚未配置' };
     const result = await sync.run(ctx, config, { request: meowRequest, download: downloadPhoto }, { photoId });
     const { result: photo } = await ctx.mpserverless.db.collection('photo').findOne({ _id: photoId });
@@ -446,7 +456,7 @@ async function meowSearch(config, imageBuffer) {
   }
 
 
-  const response = await meowRequest(config, 'POST', path, { image: imageBuffer, timeout: REQUEST_TIMEOUT_MS, retry: 0 });
+  const response = await meowRequest(config, 'POST', path, { image: imageBuffer, timeout: SEARCH_TIMEOUT_MS, retry: 0 });
 
 
   const body = response.body;
