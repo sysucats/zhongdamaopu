@@ -1,0 +1,116 @@
+@import "./card.wxss";
+
+/* 审核卡片的信息层级。 */
+.review-card {
+  width: 100%;
+}
+.review-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-md);
+}
+.review-object {
+  min-width: 0;
+  color: var(--color-black-light);
+  font-size: 28rpx;
+  font-weight: 500;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+.review-state {
+  flex-shrink: 0;
+  margin-left: auto;
+  font-size: var(--font-size-tag);
+}
+.review-state:not(.status-tag) { color: var(--color-gray-max); }
+
+/* 猫猫来源行：头像可选，状态始终靠右。 */
+.review-subject {
+  display: flex;
+  flex: 0 1 auto;
+  min-width: 0;
+  align-items: center;
+  gap: var(--space-xs);
+  min-height: 64rpx;
+}
+.review-avatar {
+  width: calc((var(--font-size-body) + var(--font-size-caption)) * 1.5);
+  height: calc((var(--font-size-body) + var(--font-size-caption)) * 1.5);
+  flex-shrink: 0;
+  margin: 0;
+  border-radius: var(--radius-pill);
+  background: var(--color-gray-light);
+}
+.review-subject-copy { flex: 0 1 auto; min-width: 0; }
+.review-name {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  color: var(--color-black-light);
+  font-size: var(--font-size-body);
+  font-weight: 500;
+  line-height: 1.5;
+}
+.review-location {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  color: var(--color-gray-max);
+  font-size: var(--font-size-caption);
+  line-height: 1.5;
+}
+.review-chevron { flex-shrink: 0; color: var(--color-gray-max); font-size: 24rpx; }
+
+.review-meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-xs) var(--space-sm);
+  color: var(--color-gray-max);
+  font-size: 24rpx;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+.review-content {
+  display: block;
+  margin-top: var(--space-md);
+  color: var(--color-black-light);
+  font-size: 28rpx;
+  line-height: 1.7;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+/* 审核信息气泡，与反馈处理共用。 */
+.review-bubble {
+  position: relative;
+  box-sizing: border-box;
+  width: fit-content;
+  max-width: 90%;
+  margin-top: var(--space-sm);
+  padding: 12rpx 20rpx;
+  border-radius: var(--radius-md);
+}
+.user-bubble {
+  margin-left: auto;
+  background: var(--color-gray-normal);
+}
+.admin-bubble {
+  background: var(--color-primary);
+  color: var(--color-text-onPrimary);
+}
+.review-bubble::after {
+  content: "";
+  position: absolute;
+  top: 18rpx;
+  width: 0;
+  height: 0;
+  border-top: 8rpx solid transparent;
+  border-bottom: 8rpx solid transparent;
+}
+.user-bubble::after { right: -8rpx; border-left: 8rpx solid var(--color-gray-normal); }
+.admin-bubble::after { left: -8rpx; border-right: 8rpx solid var(--color-primary); }
+
+.review-bubble .review-content { margin-top: 0; }

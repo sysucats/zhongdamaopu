@@ -1,3 +1,4 @@
+import { getAvatar } from "../../../utils/cat";
 // 处理反馈
 import { formatDate } from "../../../utils/utils";
 import { requestNotice, getMsgTplId } from "../../../utils/msg";
@@ -15,6 +16,9 @@ Page({
   data: {
     feedbacks: [],
     total: 0,
+    pendingCount: 0,
+    loading: false,
+    loadError: '',
     checkHistory: false,
   },
 
@@ -60,9 +64,15 @@ Page({
     for (let i = 0; i < feedbacks.length; ++i) {
       if (feedbacks[i].cat_id != undefined) {
         const { result: cat } = await app.mpServerless.db.collection('cat').findOne({ _id: feedbacks[i].cat_id }, {
-          projection: { name: 1, campus: 1 }
+          projection: { name: 1, campus: 1, area: 1 }
         })
         feedbacks[i].cat = cat;
+        try {
+          const avatar = cat ? await getAvatar(feedbacks[i].cat_id) : null;
+          feedbacks[i].cat_avatar = avatar?.photo_compressed || avatar?.photo_id || '/pages/public/images/info/default_avatar.png';
+        } catch (error) {
+          feedbacks[i].cat_avatar = '/pages/public/images/info/default_avatar.png';
+        }
       }
       feedbacks[i].openDateStr = formatDate(feedbacks[i].openDate, "yyyy-MM-dd hh:mm:ss");
       feedbacks[i].replied = feedbacks[i].hasOwnProperty('replyDate');
@@ -82,20 +92,20 @@ Page({
   },
 
   async reload() {
-    wx.showLoading({
-      title: '加载中...',
-    });
-    var { result: fbRes } = await app.mpServerless.db.collection('feedback').count({
-      dealed: this.data.checkHistory
-    });
-
-    console.log("[reload] - feedbacks: ", fbRes);
-    this.setData({
-      total: fbRes.total,
-    });
-    this.data.feedbacks = []; // 清空，loadFeedbacks再填充
-    await this.loadFeedbacks();
-    wx.hideLoading();
+    this.setData({ loading: true, loadError: '' });
+    try {
+      const [pending, processed] = await Promise.all([
+        app.mpServerless.db.collection('feedback').count({ dealed: false }),
+        app.mpServerless.db.collection('feedback').count({ dealed: true }),
+      ]);
+      const count = value => typeof value === 'number' ? value : (value?.total ?? value?.count ?? 0);
+      this.setData({ pendingCount: count(pending.result), total: count(this.data.checkHistory ? processed.result : pending.result), feedbacks: [] });
+      await this.loadFeedbacks();
+    } catch (error) {
+      this.setData({ loadError: '反馈加载失败，请点击下方刷新重试。' });
+    } finally {
+      this.setData({ loading: false });
+    }
   },
 
   async requestSubscribeMessage() {
@@ -125,7 +135,8 @@ Page({
   },
 
   async onReachBottom() {
-    if (this.data.feedbacks.length == this.data.total) {
+    if (this.data.loading || this.data.loadError) return;
+    if (this.data.feedbacks.length >= this.data.total) {
       wx.showToast({
         title: '已无更多反馈',
         icon: 'none',
@@ -137,15 +148,18 @@ Page({
       title: '加载更多反馈..',
       mask: true
     });
-    await this.loadFeedbacks();
-    wx.hideLoading();
+    this.setData({ loading: true });
+    try { await this.loadFeedbacks(); }
+    catch (error) { this.setData({ loadError: '反馈加载失败，请点击下方刷新重试。' }); }
+    finally { this.setData({ loading: false }); wx.hideLoading(); }
   },
 
   async bindCheck(e) {
     const feedback = e.currentTarget.dataset.feedback;
     const modalRes = await wx.showModal({
-      title: '提示',
-      content: '确定已完成该反馈处理？',
+      title: '标为已处理？',
+      content: '确认这条反馈已处理完成？确认后将移入“已处理”列表。',
+      confirmText: '确认标记',
     })
     if (!modalRes.confirm) {
       return;
@@ -171,7 +185,8 @@ Page({
     });
     this.setData({
       feedbacks: new_feedbacks,
-      total: this.data.total - 1
+      total: this.data.total - 1,
+      pendingCount: Math.max(0, this.data.pendingCount - 1)
     });
     wx.showToast({
       title: '反馈已处理',
@@ -209,10 +224,9 @@ Page({
   },
 
   switchHistory(event) {
-    this.data.checkHistory = !this.data.checkHistory;
-    this.reload();
-    this.setData({
-      checkHistory: this.data.checkHistory
-    });
-  }
+    const next = event.currentTarget.dataset.history;
+    if (this.data.loading || next === this.data.checkHistory) return;
+    this.setData({ checkHistory: next });
+    return this.reload();
+  },
 })

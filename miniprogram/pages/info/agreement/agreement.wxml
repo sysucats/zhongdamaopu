@@ -1,3 +1,6 @@
-<view class="title">用户与隐私协议</view>
-
-<text class="agreement" user-select="1">{{agreement}}</text>
+<view class="content-page">
+  <view class="content-card">
+    <view class="content-title">用户与隐私协议</view>
+    <text class="agreement content-text" user-select="1">{{agreement}}</text>
+  </view>
+</view>

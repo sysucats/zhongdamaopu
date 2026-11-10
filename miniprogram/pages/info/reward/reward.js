@@ -5,6 +5,18 @@ import { getGlobalSettings } from "../../../utils/page";
 import { signCosUrl } from "../../../utils/common";
 const share_text = text_cfg.app_name + ' - ' + text_cfg.reward.share_tip;
 const app = getApp();
+
+// 仅按月份和现有分隔符展示，不解释自由文本内容。
+function buildRewardMonth(record) {
+  const date = new Date(record.recordDate || record.mdate);
+  const timestamp = Number.isNaN(date.getTime()) ? 0 : date.getTime();
+  const monthLabel = timestamp ? `${date.getFullYear()}年${date.getMonth() + 1}月` : '未标注月份';
+  const paragraphs = (Array.isArray(record.records) ? record.records : String(record.records || '').split('#'))
+    .map((text, key) => ({ key, text: String(text) }))
+    .filter(paragraph => paragraph.text.trim());
+  return { ...record, monthLabel, timestamp, paragraphs, expanded: false };
+}
+
 Page({
 
   /**
@@ -13,6 +25,9 @@ Page({
   data: {
     showAdBlock: false,
     text_cfg: text_cfg,
+    reward: [],
+    rewardLoading: true,
+    rewardLoadError: '',
   },
 
   jsData: {
@@ -74,17 +89,24 @@ Page({
   },
 
   async loadReward() {
-    var { result: rewardRes } = await app.mpServerless.db.collection('reward').find({}, { sort: { mdate: -1 } })
-
-    console.log(rewardRes);
-    for (var r of rewardRes) {
-      const tmp = r.recordDate ? new Date(r.recordDate) : new Date(r.mdate);
-      r.mdate = tmp.getFullYear() + '年' + (tmp.getMonth() + 1) + '月';
-      r.records = r.records.replace(/^\#+|\#+$/g, '').split('#');
+    this.setData({ rewardLoading: true, rewardLoadError: '' });
+    try {
+      const { result: rewardRes } = await app.mpServerless.db.collection('reward').find({}, { sort: { mdate: -1 } });
+      const reward = rewardRes.map(buildRewardMonth).sort((a, b) => b.timestamp - a.timestamp);
+      if (reward.length) reward[0].expanded = true;
+      this.setData({ reward });
+    } catch (error) {
+      console.error('加载投喂记录失败', error);
+      this.setData({ rewardLoadError: '投喂记录加载失败，请重试。' });
+    } finally {
+      this.setData({ rewardLoading: false });
     }
-    this.setData({
-      reward: rewardRes
-    });
+  },
+
+  toggleMonth(e) {
+    const index = Number(e.currentTarget.dataset.index);
+    if (!this.data.reward[index]) return;
+    this.setData({ [`reward[${index}].expanded`]: !this.data.reward[index].expanded });
   },
 
   // 打开大图

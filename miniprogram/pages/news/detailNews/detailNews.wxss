@@ -1,136 +1,113 @@
-/* pages/news/detailNews/detailNews.wxss */
+@import "/pages/public/wxss/tag.wxss";
+@import "/pages/public/wxss/button.wxss";
+@import "/pages/public/wxss/card.wxss";
 
-.news-box {
-  box-sizing: border-box;
-  padding: 30rpx 40rpx;
-  /* margin: 20rpx; */
-  box-shadow: 0rpx 0rpx 30rpx var(--color-gray);
-  border-radius: 20rpx;
-  background-color: #FFFFFF;
-}
-
-button {
-  width: 47%;
-  display: inline-block;
-  font-size: 30rpx;
-  box-sizing: border-box;
-  background-color: var(--color-primary);
-  color: var(--color-text-onPrimary);
-}
-
-button+button {
-  margin-left: 6%;
-}
-
-
-.news {
-  font-weight: 300;
-  /* margin: 10rpx 0; */
+page,
+.news-page {
+  background: var(--color-surface);
 }
 
 .news.title {
-  font-size: 38rpx;
+  margin-bottom: var(--space-sm);
+  color: var(--color-black-light);
+  font-size: var(--font-size-page);
   font-weight: 600;
-  margin-bottom: 8rpx;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
 }
 
-.news.row-container{
+.news.row-container {
   display: flex;
-  flex-direction: row;
   align-items: center;
-  margin-bottom: 18rpx;
+  flex-wrap: wrap;
+  gap: var(--space-xs);
+  margin-bottom: var(--space-md);
 }
 
+.news.tag {
+  margin: 0;
+}
+
+.news.user,
+.news.time {
+  min-width: 0;
+  font-size: var(--font-size-caption);
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
 
 .news.user {
-  font-size: 26rpx;
+  flex: 1;
   color: var(--color-gray-max);
-  font-weight: 400;
 }
 
 .news.time {
-  font-size: 26rpx;
   color: var(--color-gray-dark);
-  flex-grow: 1;
   text-align: right;
 }
 
 .news.content {
-  font-size: 32rpx;
-  margin-bottom: 20rpx;
-  white-space: pre-wrap;
+  margin-bottom: var(--space-md);
+  color: var(--color-black-min);
+  font-size: var(--font-size-body);
   font-weight: 400;
-  color: var(--color-gray-max);
-
+  line-height: 1.75;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
 }
 
 .news.editTime {
-  font-size: 26rpx;
+  margin-top: var(--space-md);
   color: var(--color-gray-dark);
-  padding-bottom: 20rpx;
-  margin-bottom: 5rpx;
-
-  border-bottom:1rpx solid var(--color-gray-normal);
-
-  /* border-bottom: dotted black; */
-  /* border-color:var(--color-black-light) */
-  /* flex-grow: 1; */
-  /* text-align: right; */
+  font-size: var(--font-size-caption);
+  line-height: 1.6;
 }
 
-.news.err {
-  font-size: 40rpx;
-  font-weight: bold;
+.news-management-actions .form-button {
+  flex: 1;
+  min-width: 0;
 }
-
 
 .loading image {
+  display: block;
   width: 165.9rpx;
   height: 90.3rpx;
-  margin: 10rpx 292rpx;
-  margin-top: 40rpx;
-}
-
-.news.tag {
-  width: 80rpx;
-  height: 38rpx;
-  border-radius: 15rpx;
-  margin: 0 15rpx 0 0;
-  
-  font-size: 24rpx;
-  font-weight: 500;
-  text-align: center;
-  line-height: 38rpx;
-
-  background-color: var(--color-primary-light);
-  color: var(--color-primary);
+  margin: 40rpx auto var(--space-sm);
 }
 
 .album {
-  width: 100%;
-  text-align: center;
-  background-color: var(--color-gray-light);
-  color: var(--color-gray);
-  font-size: 28rpx;
-  padding: 5rpx 0;
-  margin-bottom: 40rpx;
+  margin-bottom: var(--space-md);
 }
 
 .album-block {
-  display: flex;
-  flex-wrap: wrap;
-  background-color: var(--color-gray-light);
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-xs);
+}
+
+.album-item {
+  position: relative;
+  padding-bottom: 100%;
+  overflow: hidden;
+  border-radius: var(--radius-sm);
+  background: var(--color-gray-light);
 }
 
 .alb-image {
-  width: 207rpx;
-  height: 207rpx;
-  box-sizing: border-box;
-  margin: 5rpx 5rpx;
-  background-color: white;
+  position: absolute;
+  width: 100%;
+  height: 100%;
 }
 
 .single-image {
-  /* width: 100%; */
-  height: 200rpx;
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.verify-box {
+  padding: var(--space-lg) 0;
+  color: var(--color-gray-max);
+  font-size: var(--font-size-section);
+  text-align: center;
 }

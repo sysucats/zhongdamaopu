@@ -12,107 +12,73 @@ module.exports = {
 };
 </wxs>
 
-<view wx:if="{{!canUpload}}">
-    <view class='userInfo'>
-      <image src='/pages/public/images/system/user.png'></image>
-      <view>
-        <text>暂时无法上传，请联系管理员 TAT...\n</text>
-      </view>
-    </view>
-  <button class='long primary' bindtap="goBackIndex">返回首页</button>
-</view>
-
-<block wx:else>
-  <view wx:if="{{!isAuth}}" class='unAuth'>
-    <!-- <text>请授权后进行操作</text> -->
-    <view class='userInfo'>
-      <image src='/pages/public/images/system/user.png' mode="aspectFill"></image>
-      <view>
-        <text>[等待授权]\n--- 准备为「<text style="font-weight:600;">{{cat.name}}</text>」添加照片</text>
-      </view>
-    </view>
-    <button class='long primary' bindtap='getUInfo'>{{text_cfg.add_photo.auth_tip}}</button>
+<view class="form-page">
+  <view class="form-section" wx:if="{{!canUpload}}">
+    <view class="form-state">暂时无法上传，请联系管理员 TAT...</view>
+    <button class="form-button primary" bindtap="goBackIndex">返回首页</button>
   </view>
   <block wx:else>
-    <!-- <view>--已经授权--</view> -->
-    <view class='userInfo'>
-      <image src='{{user.userInfo.avatarUrl}}' mode="aspectFill"></image>
-      <view class="userInfo-cat">
-        <text>{{user.userInfo.nickName}}\n--- 正在为「<text style="font-weight:600;">{{cat.name}}</text>」添加照片</text>
-      </view>
-      <view class="update-userInfo" bindtap="getUInfo">[更新信息]</view>
+    <view class="form-section" wx:if="{{!isAuth}}">
+      <profile-prompt context="为「{{cat.name}}」添加照片" bind:edit="getUInfo" />
     </view>
-
-    <button bindtap='chooseImg' class='long primary'>选择照片</button>
-
-    <!-- 位置信息 -->
-    <view class='location-box'>
-      <view class='location-header'>
-        <text class='label'>拍摄位置（用于喵地图展示）</text>
-        <text class='location-notice'>⚠️ 喵地图功能需要申请开通，请放心定位</text>
-      </view>
-      <view class='location-row' wx:if="{{!location}}">
-        <text class='location-tip'>未选择位置</text>
-        <button class='location-btn auto' bindtap='autoLocate'>自动定位</button>
-        <button class='location-btn' bindtap='openMapPicker'>地图选点</button>
-      </view>
-      <view class='location-row' wx:else>
-        <view class='location-detail'>
-          <text class='location-name'>📍 已选择</text>
-          <text class='location-coords'>{{location.latitude}}, {{location.longitude}}</text>
+    <block wx:else>
+      <view class="form-section form-context">
+        <image class="context-avatar" src="{{user.userInfo.avatarUrl || '/pages/public/images/system/user.png'}}" mode="aspectFill" />
+        <view class="context-copy">
+          <view>{{user.userInfo.nickName}}</view>
+          <view class="field-hint">正在为「{{cat.name}}」添加照片</view>
         </view>
-        <button class='location-btn auto' bindtap='autoLocate'>自动定位</button>
-        <button class='location-btn' bindtap='openMapPicker'>重新选点</button>
+        <button class="profile-edit-button" bindtap="getUInfo" aria-label="修改个人信息"><text class="iconfont icon-edit"></text></button>
       </view>
-      <view wx:if="{{location}}" class='location-clear-row'>
-        <text class='location-clear' bindtap='clearLocation'>清除位置</text>
+      <view class="form-section" wx:if="{{!photos.length}}">
+        <view class="image-upload" bindtap="chooseImg" aria-role="button" aria-label="选择照片">
+          <text class="iconfont icon-photo-up upload-icon"></text>
+          <view class="upload-label">选择照片</view>
+        </view>
       </view>
-    </view>
-
-    <view class='tip' hidden='{{photos && photos.length}}'>* 如果遇到闪退，清理后台应用再试试~</view>
-
-    <view class='set-all' hidden='{{!photos || photos.length<2}}'>
-      <view class='title'>统一设置</view>
-      <view class='label'>拍摄日期：</view>
-      <view>
-        <picker mode='date' fields='day' bindchange='setAllDate' start='{{birth_date || "2008-01-01"}}' end='{{now_date}}'>{{set_all.shooting_date? set_all.shooting_date: '选择拍摄日期'}}</picker>
+      <view class="form-section">
+        <view class="section-heading">
+          <view class="section-title">拍摄位置</view>
+          <button class="location-clear" wx:if="{{location}}" bindtap="clearLocation">清除</button>
+        </view>
+        <view class="form-actions">
+          <button class="form-button compact location-button" bindtap="openMapPicker"><text class="iconfont icon-map-pin location-action-icon"></text><text>{{location ? '修改拍摄位置' : '选择拍摄位置'}}</text></button>
+          <button class="form-button compact location-button" bindtap="autoLocate"><text class="iconfont icon-current-location location-action-icon"></text><text>自动定位</text></button>
+        </view>
+        <view class="field-hint" wx:if="{{location}}">已选位置：{{fmt.fixed6(location.latitude)}}, {{fmt.fixed6(location.longitude)}}</view>
       </view>
-      <view class='label'>摄影师：</view>
-      <view>
-        <input type='text' placeholder='（选填）默认为上传者' bindinput='setAllPher'></input>
+      <view class="form-section" hidden="{{!photos || photos.length < 2}}">
+        <view class="section-title">统一设置</view>
+        <view class="field-label">拍摄日期</view>
+        <picker mode="date" fields="day" bindchange="setAllDate" start="{{birth_date || '2008-01-01'}}" end="{{now_date}}"><view class="field-picker">{{set_all.shooting_date || '选择拍摄日期'}}<view class="picker-arrow"></view></view></picker>
+        <view class="field-label spaced-label">拍摄者（选填）</view>
+        <input class="field-input" type="text" placeholder="默认为上传者" bindinput="setAllPher" value="{{set_all.pher}}" />
+        <view class="field-hint">应用到所有照片</view>
       </view>
-      <view class='tip'>* 在此填写会覆盖下面所有设置</view>
-
-
-      <button class='long primary' bindtap='uploadAllClick' disabled="{{!uploading ? false: true}}">全部上传</button>
-      
-    </view>
-    
-    <wxs module="isHEIC">
-      module.exports.isHEIC = function (str) {
-        return str.indexOf(".HEIC") != -1
-      }
-    </wxs>
-
-    <view class='card' wx:for="{{photos}}" wx:key="path">
-      <image class='selected-image' mode='aspectFit' src='{{item.file.path}}'	show-menu-by-longpress="1"></image>
-
-      <view wx:if='{{isHEIC.isHEIC(item.file.path)}}' class='tip'>* 照片格式为.HEIC，可能会显示不出来</view>
-
-      <view class='label'>拍摄日期：</view>
-      <view>
-        <picker mode='date' fields='day' bindchange='pickDate' start='{{birth_date || "2008-01-01"}}' end='{{now_date}}' data-index='{{index}}'>{{item.shooting_date? item.shooting_date: '选择拍摄日期'}}</picker>
+      <wxs module="isHEIC">
+        module.exports.isHEIC = function (str) {
+          return str.indexOf(".HEIC") != -1
+        }
+      </wxs>
+      <view class="form-section" wx:for="{{photos}}" wx:key="path">
+        <image class="image-preview photo-preview" src="{{item.file.path}}" mode="aspectFit" show-menu-by-longpress="1" />
+        <view class="field-hint" wx:if="{{isHEIC.isHEIC(item.file.path)}}">* 照片格式为.HEIC，可能会显示不出来</view>
+        <view class="field-label field-required">拍摄日期</view>
+        <picker mode="date" fields="day" bindchange="pickDate" start="{{birth_date || '2008-01-01'}}" end="{{now_date}}" data-index="{{index}}"><view class="field-picker">{{item.shooting_date || '选择拍摄日期'}}<view class="picker-arrow"></view></view></picker>
+        <view class="field-label spaced-label">拍摄者（选填）</view>
+        <input class="field-input" type="text" placeholder="默认为上传者" bindinput="inputPher" data-index="{{index}}" value="{{item.pher}}" />
+        <view class="form-actions photo-actions">
+          <button class="form-button" bindtap="removeOne" data-index="{{index}}" disabled="{{uploading}}">移除</button>
+          <button class="form-button primary" bindtap="uploadSingleClick" data-index="{{index}}" disabled="{{!item.shooting_date || !item.file.path || uploading}}">确定上传</button>
+        </view>
       </view>
-      <view class='label'>摄影师：</view>
-      <view>
-        <input type='text' placeholder='（选填）默认为上传者' bindinput='inputPher' data-index='{{index}}' value='{{item.pher}}'></input>
+      <view class="save-bar" wx:if="{{photos.length && !mapPickerVisible}}">
+        <button class="form-button photo-add-button" bindtap="chooseImg" disabled="{{uploading}}" aria-label="添加照片"><text class="iconfont icon-photo-plus"></text></button>
+        <button class="form-button primary save-button" bindtap="uploadAllClick" disabled="{{uploading}}" loading="{{uploading}}">全部上传</button>
       </view>
-        <button bindtap='removeOne' data-index='{{index}}'>移除</button>
-        <button class='primary' disabled='{{item.shooting_date && item.file.path && !uploading? false: true}}' data-index='{{index}}' bindtap='uploadSingleClick'>确定上传</button>
-    </view>
+    </block>
   </block>
-
-</block>
+</view>
 
 <!-- 地图选点浮层 -->
 <map
@@ -122,7 +88,9 @@ module.exports = {
   latitude="{{mapPickerInitLat}}"
   longitude="{{mapPickerInitLng}}"
   scale="{{mapPickerScale}}"
-  enable-zoom="{{false}}"
+  min-scale="3"
+  max-scale="20"
+  enable-zoom="{{true}}"
   enable-scroll="{{true}}"
   bindregionchange="onMapRegionChange"
   show-location="{{false}}"
@@ -137,12 +105,13 @@ module.exports = {
     <cover-view class="zoom-divider"></cover-view>
     <cover-view class="zoom-btn" bindtap="zoomMapOut">−</cover-view>
   </cover-view>
-  <cover-view class="picker-top-bar">
-    <cover-view class="picker-coords-display">{{fmt.fixed6(mapPickerLat)}}, {{fmt.fixed6(mapPickerLng)}} | {{mapPickerScale}}级</cover-view>
-  </cover-view>
   <cover-view class="picker-bottom-bar">
-    <cover-view class="picker-btn cancel" bindtap="cancelMapPicker">取消</cover-view>
-    <cover-view class="picker-btn confirm" bindtap="confirmMapPicker">确定</cover-view>
+    <cover-view class="picker-title">选择拍摄位置</cover-view>
+    <cover-view class="picker-hint">拖动地图，将准星对准拍摄位置</cover-view>
+    <cover-view class="picker-actions">
+      <cover-view class="picker-btn" bindtap="cancelMapPicker">取消</cover-view>
+      <cover-view class="picker-btn primary" bindtap="confirmMapPicker">{{mapPickerConfirming ? '确认中…' : '确定位置'}}</cover-view>
+    </cover-view>
   </cover-view>
 </map>
 

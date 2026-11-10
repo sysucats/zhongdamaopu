@@ -1,60 +1,51 @@
-<!--pages/manage/manageNews/createNews/createNews.wxml-->
-
-<form wx:if="{{auth}}" bindsubmit="bindSubmit">
-    <view class='label'>自定义昵称：（选填）</view>
-    <input name='name' type='text' placeholder="{{user.userInfo.nickName}}" bindinput='bindInputName' maxlength='{{namemaxlength}}'></input>
-    <view class='lengthTips'>字数：{{namelength}}/{{namemaxlength}}</view>
-
-    <view class='label'>标题：（必填）</view>
-    <input name='title' type='text' bindinput='bindInputTitle' maxlength='{{titlemaxlength}}'></input>
-    <view class='lengthTips'>字数：{{titlelength}}/{{titlemaxlength}}</view>
-
-    <view class='label'>公告分类：（必选）</view>
-    <view class='button_container'>
-        <block wx:for="{{buttons}}" wx:key="buttons">
-            <button class='{{item.checked?"checked_button":"normal_button"}}' data-id='{{item.id}}' bindtap='radioButtonTap'>{{item.name}}</button>
-        </block>
+<view class="form-page" wx:if="{{auth}}">
+  <form bindsubmit="bindSubmit">
+    <view class="form-section">
+      <view class="section-title">基本信息</view>
+      <view class="field-label">自定义昵称（选填）</view>
+      <input class="field-input" name="name" type="text" placeholder="{{appName}}" bindinput="bindInputName" maxlength="{{namemaxlength}}" />
+      <view class="field-counter">字数：{{namelength}}/{{namemaxlength}}</view>
+      <view class="field-label spaced-label field-required">标题</view>
+      <input class="field-input" name="title" type="text" bindinput="bindInputTitle" maxlength="{{titlemaxlength}}" />
+      <view class="field-counter">字数：{{titlelength}}/{{titlemaxlength}}</view>
+      <view class="field-label spaced-label field-required">公告分类</view>
+      <view class="chip-row news-choices">
+        <button class="chip news-choice {{item.checked ? 'active' : ''}}" wx:for="{{buttons}}" wx:key="id" data-id="{{item.id}}" bindtap="radioButtonTap">{{item.name}}</button>
+      </view>
+      <view class="field-label spaced-label">正文（选填）</view>
+      <textarea class="description-input long-input" name="mainContent" placeholder="喵喵 喵喵喵" maxlength="{{maxlength}}" bindinput="bindInput"></textarea>
+      <view class="field-counter">字数：{{length}}/{{maxlength}}</view>
     </view>
-
-    <view class='label'>正文：（选填）</view>
-    <textarea placeholder="喵喵 喵喵喵" name='mainContent' maxlength='{{maxlength}}' bindinput='bindInput'></textarea>
-    <view class='lengthTips'>字数：{{length}}/{{maxlength}}</view>
-
-    <view class='label'>封面图：封面图会在公告栏界面显示（长按删除）</view>
-    <view class='album'>
-        <view class='album-block' wx:if="{{cover != 0}}">
-            <image mode='aspectFill' class='alb-image' src='{{cover.path}}' bindtap='previewImg' data-url='{{cover.path}}' bindlongpress="deleteCover"></image>
+    <view class="form-section">
+      <view class="section-title">图片配置</view>
+      <view class="field-label">封面图</view>
+      <view class="field-hint news-media-hint">封面图会在公告栏界面显示（长按删除）</view>
+      <image wx:if="{{cover != 0}}" class="image-preview" src="{{cover.path}}" mode="aspectFill" bindtap="previewImg" data-url="{{cover.path}}" bindlongpress="deleteCover" />
+      <view class="image-upload" wx:else bindtap="chooseCover" aria-role="button" aria-label="添加封面">
+        <text class="iconfont icon-photo-up upload-icon"></text>
+        <view class="upload-label">添加封面</view>
+      </view>
+      <view class="field-label spaced-label">图片</view>
+      <view class="field-hint news-media-hint">长按删除图片</view>
+      <view class="image-grid">
+        <image class="image-thumb" wx:for="{{photos}}" wx:key="_id" src="{{item.file.path}}" mode="aspectFill" bindtap="previewImg" data-url="{{item.file.path}}" bindlongpress="deleteImg" data-index="{{index}}" />
+        <view class="image-upload image-upload-tile" wx:if="{{photos.length < 9}}" bindtap="chooseImg" aria-role="button" aria-label="添加图片">
+          <text class="iconfont icon-photo-up upload-icon"></text>
+          <view class="upload-label">添加图片</view>
         </view>
+      </view>
+      <view class="field-counter">图片数目：{{photos.length}}/9</view>
     </view>
-
-    <view class='uploadImageButton'>
-        <button bindtap="chooseCover">添加封面</button>
-    </view>
-
-    <view class='label'>图片：（长按删除图片）</view>
-    <view class='album'>
-        <view class='album-block'>
-            <block wx:for="{{photos}}" wx:key="_id">
-                <image mode='aspectFill' class='alb-image' src='{{item.file.path}}' bindtap='previewImg' data-url='{{item.file.path}}' bindlongpress="deleteImg" data-index="{{index}}"></image>
-            </block>
+    <view class="form-section">
+      <view class="status-row">
+        <view class="status-copy">
+          <view class="status-title">公告弹窗</view>
+          <view class="field-hint">设置公告弹窗将会在小程序首页弹出此公告</view>
         </view>
+        <switch checked="{{modalButtons[1].checked}}" color="var(--color-green)" bindchange="onModalSwitchChange" aria-label="公告弹窗" />
+      </view>
     </view>
-    <view class='lengthTips'>图片数目：{{photos.length}}/9</view>
-
-
-    <view class='uploadImageButton'>
-        <button bindtap="chooseImg">添加图片</button>
-    </view>
-
-    <view class='label'>公告弹窗：设置公告弹窗将会在小程序首页弹出此公告</view>
-    <view class='button_container'>
-        <block wx:for="{{modalButtons}}" wx:key="modalButtons">
-            <button class='{{item.checked?"checked_button":"normal_button"}}' data-id='{{item.id}}' bindtap='radioModalButtonTap'>{{item.name}}</button>
-        </block>
-    </view>
-
-    <view class="line"></view>
-
-    <button class='submitButton' form-type='submit'>发布公告</button>
-</form>
+    <view class="save-bar"><button class="form-button primary save-button" form-type="submit">发布公告</button></view>
+  </form>
+</view>
 <no-auth wx:else tip-text="{{tipText}}" tip-btn="{{tipBtn}}"></no-auth>

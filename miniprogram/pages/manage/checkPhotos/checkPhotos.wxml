@@ -7,26 +7,32 @@
 <block wx:if="{{auth}}">
   <!-- 待审核 / 审核记录 切换 -->
   <view class="admin-segments">
-    <view class="admin-segment {{mode === 'pending' ? 'active' : ''}}" data-mode="pending" bindtap="switchMode">待审核</view>
+    <view class="admin-segment {{mode === 'pending' ? 'active' : ''}}" data-mode="pending" bindtap="switchMode">待审核<text class="segment-count" wx:if="{{pendingCount}}">{{pendingCount}}</text></view>
     <view class="admin-segment {{mode === 'history' ? 'active' : ''}}" data-mode="history" bindtap="switchMode">审核记录</view>
   </view>
 
   <block wx:if="{{mode === 'pending'}}">
   <view class="admin-page-hint">逐张标记处理方式后，批量提交审核。转移的照片可一起选择目标猫猫。</view>
-  <view class="campus-list">
-    <view class="campus {{index == active_campus ? 'active': ''}}" bindtap="bindClickCampus" data-key="{{index}}"
+  <scroll-view class="h-filter-list campus-list" scroll-x="true">
+    <view class="h-filter-item {{index == active_campus ? 'active': ''}}" bindtap="bindClickCampus" data-key="{{index}}"
       wx:for="{{campus_list}}" wx:key="key">{{index}}（{{campus_counts[index] || 0}}）</view>
-  </view>
+  </scroll-view>
   <view class="tip" wx:if="{{!hasPhotos}}">没有待审核的照片啦~</view>
   <view class="tip" wx:elif="{{!active_campus}}">请在上方选择一个校区</view>
   <view class="tip" wx:elif="{{campusLoading}}">加载中...</view>
   <block wx:for="{{campus_list[active_campus]}}" wx:key="_id">
-    <view class='verify-box' id="photo-{{index}}">
+    <view class='review-card' id="photo-{{index}}">
+      <view class="review-heading">
+        <view class="review-subject" bindtap="toCatDetail" data-cat_id="{{item.cat._id}}">
+          <view class="review-subject-copy"><view class="review-name">{{item.cat.name}}</view><view class="review-location">{{item.cat.campus}} {{item.cat.area}}</view></view>
+          <text class="iconfont icon-chevron-right review-chevron"></text>
+        </view>
+        <text class="status-tag review-state {{item.mark === 'delete' ? 'status-rejected' : item.mark === 'transfer' ? 'status-reviewing' : item.mark === 'pass' || item.mark === 'best' ? 'status-approved' : 'status-pending'}}">{{item.mark === 'delete' ? '已标记删除' : item.mark === 'transfer' ? '已标记转移' : item.mark === 'pass' ? '已标记通过' : item.mark === 'best' ? '已标记精选' : '待标记'}}</text>
+      </view>
       <!-- <view class="imageShadowMask"></view> -->
       <view class="info-box">
         <image mode='aspectFill' src='{{item.photo_id}}' bindtap='openBigPhoto' data-pid='{{item.photo_id}}'></image>
         <view class="info">
-          <view class='label cat'><text bindtap="toCatDetail" data-cat_id="{{item.cat._id}}">{{item.cat.name}}（{{item.cat.campus}}）</text></view>
           <view class='label user'>上传者：{{item.userInfo.nickName}}</view>
           <view class='label user'>摄影师：{{item.photographer || item.userInfo.nickName}}</view>
           <view class='label user shotTime'>拍摄时间：{{item.shooting_date}}</view>
@@ -34,17 +40,17 @@
         </view>
       </view>
       
-      <view class="buttons">
-        <view class="button delete {{item.mark == 'delete' ? 'marked' : ''}}" bindtap='bindMark' data-index='{{index}}' data-type="delete">删除</view>
-        <view class="button transfer {{item.mark == 'transfer' ? 'marked' : ''}}" bindtap='bindMark' data-index='{{index}}' data-type="transfer">转移</view>
-        <view class="button pass {{item.mark == 'pass' ? 'marked' : ''}}" bindtap='bindMark' data-index='{{index}}' data-type="pass">通过</view>
-        <view class="button best {{item.mark == 'best' ? 'marked' : ''}}" bindtap='bindMark' data-index='{{index}}' data-type="best">精选</view>
+      <view class="card-actions">
+        <button class="form-button compact with-icon review-option danger {{item.mark == 'delete' ? 'marked' : ''}}" bindtap='bindMark' data-index='{{index}}' data-type="delete" aria-label="删除{{item.mark === 'delete' ? '，已选中' : ''}}"><text class="iconfont icon-clean"></text><text>删除</text></button>
+        <button class="form-button compact with-icon review-option  {{item.mark == 'transfer' ? 'marked' : ''}}" bindtap='bindMark' data-index='{{index}}' data-type="transfer" aria-label="转移{{item.mark === 'transfer' ? '，已选中' : ''}}"><text class="iconfont icon-switch-horizontal"></text><text>转移</text></button>
+        <button class="form-button compact with-icon review-option  {{item.mark == 'pass' ? 'marked' : ''}}" bindtap='bindMark' data-index='{{index}}' data-type="pass" aria-label="通过{{item.mark === 'pass' ? '，已选中' : ''}}"><text class="iconfont icon-check"></text><text>通过</text></button>
+        <button class="form-button compact with-icon review-option  {{item.mark == 'best' ? 'marked' : ''}}" bindtap='bindMark' data-index='{{index}}' data-type="best" aria-label="精选{{item.mark === 'best' ? '，已选中' : ''}}"><text class="iconfont icon-star"></text><text>精选</text></button>
       </view>
     </view>
   </block>
-  <view class='bottom-bar'>
-    <button class='' bindtap="requestSubscribeMessage">订阅通知</button>
-    <button class='primary' bindtap="bindCheckMulti">批量审核</button>
+  <view class='fixed-action-bar'>
+    <button class='form-button' bindtap="requestSubscribeMessage">订阅通知</button>
+    <button class='form-button primary' bindtap="bindCheckMulti">批量审核</button>
   </view>
 
   <!-- 转移目标猫选择 -->
@@ -62,18 +68,22 @@
       </label>
     </view>
     <view class="tip" wx:if="{{!historyLoading && !historyList.length}}">暂无审核记录</view>
-    <view class='verify-box history-box' wx:for="{{historyList}}" wx:key="_id">
+    <view class='review-card history-box' wx:for="{{historyList}}" wx:key="_id">
       <view wx:if="{{item.imgError}}" class="img-deleted">图片已删除</view>
       <image wx:elif="{{item.thumbSigned && (showHistoryImages || item.imageExpanded)}}" mode='aspectFill' src='{{item.thumb}}' bindtap='openBigPhoto' data-pid='{{item.thumb}}' binderror="onHistoryImgError" data-index="{{index}}"></image>
       <view wx:else class="img-hidden" bindtap="loadOneHistoryImage" data-index="{{index}}">点击加载图片</view>
       <view class="info">
-        <view class='label cat'><text bindtap="toCatDetail" data-cat_id="{{item.cat_id}}">{{item.cat_name}}</text></view>
+        <view class="review-heading">
+          <view class="review-subject" bindtap="toCatDetail" data-cat_id="{{item.cat_id}}">
+            <view class="review-subject-copy"><view class="review-name">{{item.cat_name}}</view><view class="review-location">{{item.cat_campus}} {{item.cat_area}}</view></view>
+            <text class="iconfont icon-chevron-right review-chevron"></text>
+          </view>
+          <text class="status-tag review-state status-approved">{{item.action_text}}</text>
+        </view>
         <view class='label user'>上传者：{{item.uploaderInfo.nickName || '未知'}}</view>
         <view class='label user'>审核人：{{item.managerInfo.nickName || '未知'}}</view>
         <view class='label user'>{{item.check_time_formatted}}</view>
-        <view class="history-badges">
-          <view class="action-badge {{item.action_class}}">{{item.action_text}}</view>
-        </view>
+
       </view>
     </view>
     <view class="tip" wx:if="{{historyLoading}}">加载中...</view>

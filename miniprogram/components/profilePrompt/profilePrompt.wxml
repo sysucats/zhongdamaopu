@@ -1,0 +1,8 @@
+<view class="form-context">
+  <view class="profile-prompt-icon"><text class="iconfont icon-id"></text></view>
+  <view class="context-copy">
+    <view>{{context}}</view>
+    <view class="field-hint">请先设置头像和昵称</view>
+  </view>
+</view>
+<button class="form-button primary profile-prompt-action" bindtap="edit">完善个人信息</button>

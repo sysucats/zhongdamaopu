@@ -1,78 +1,48 @@
-/* pages/info/myFollowCats/myFollowCats.wxss */
+@import "/pages/public/wxss/button.wxss";
+@import "../../public/wxss/cat-list.wxss";
+
 page {
   background-color: var(--color-gray-light);
 }
 
+.follow-page {
+  box-sizing: border-box;
+  padding: var(--space-md) var(--space-lg) calc(var(--space-lg) + env(safe-area-inset-bottom));
+}
+
 .follow-count {
-  width: 100%;
-  text-align: center;
-  color: var(--color-black-light);
-  margin-top: 30rpx;
-}
-
-.cat-info {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  justify-content: space-between;
-  /* margin: 20rpx 0; */
-  padding: 20rpx 30rpx;
-  border-bottom: 1rpx solid var(--color-gray);
-}
-
-.cat-info-container .cat-info:last-child {
-  border-bottom: none;
-}
-
-.cat-avatar {
-  width: 100rpx;
-  height: 100rpx;
-  border-radius: 50%;
-  overflow: hidden;
-}
-
-.cat-avatar image {
-  width: 100%;
-  height: 100%;
-  background-color: var(--color-gray);
-}
-
-.cat-name {
-  font-size: 28rpx;
-  color: var(--color-black-light);
-  margin-left: 15rpx;
-  display: flex;
-  flex-direction: column;
-}
-.cat-campus {
+  color: var(--color-gray-max);
   font-size: 24rpx;
-  color: var(--color-gray-dark);
-  align-items: center;
-  display: flex;
 }
-.location-logo {
-  width: 24rpx;
-  height: 24rpx;
-  margin-right: 4rpx;
+
+.follow-count-number {
+  color: var(--color-black-light);
+  font-size: 30rpx;
+  font-weight: 600;
+}
+
+.follow-list {
+  margin-top: var(--space-lg);
 }
 
 .follow-btn {
-  border-radius: 25rpx;
-  height: 50rpx;
-  font-size: 24rpx;
-  padding: 0rpx 20rpx;
-  margin-left: auto;
+  flex-shrink: 0;
   display: flex;
-  text-align: center;
   align-items: center;
+  justify-content: center;
+
+  box-sizing: border-box;
+  margin-left: var(--space-sm);
+
+
+
+
 }
 
-.followed {
-  border: 3rpx solid var(--color-gray-dark);
-  color: var(--color-gray-dark);
+.follow-btn.followed {
+  color: var(--color-gray-max);
 }
 
-.unfollowed {
-  border: 2rpx solid var(--color-primary);
-  color: var(--color-primary);
+.follow-btn.unfollowed {
+  color: var(--color-primary-text);
 }

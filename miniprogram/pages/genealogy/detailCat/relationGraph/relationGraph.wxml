@@ -60,7 +60,7 @@
 <!-- 底部弹窗 -->
 <popup show="{{showMoreRelation}}" position="bottom" bind:close="closeMoreRelation">
   <view class="popup-container">
-    <view class="popup-header">更多关系</view>
+    <popup-header title="更多关系" close-position="none" />
     <scroll-view scroll-y class="popup-body">
       <view class="sheet-grid">
         <view wx:for="{{currentOverflowList}}" wx:key="key" class="sheet-card" bindtap="onOverflowCardTap" data-id="{{item.id}}">

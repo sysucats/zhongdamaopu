@@ -1,3 +1,5 @@
+@import "/pages/public/wxss/iconfont.wxss";
+
 .map-page {
   width: 100%;
   height: 100vh;
@@ -92,7 +94,10 @@
   overflow: hidden;
   opacity: 0;
   margin-bottom: 0;
-  transition: max-height 0.3s ease, opacity 0.25s ease, margin-bottom 0.3s ease;
+  transition:
+    max-height 0.3s ease,
+    opacity 0.25s ease,
+    margin-bottom 0.3s ease;
 }
 
 .campus-btns-panel.expanded {
@@ -115,11 +120,6 @@
 .campus-btn:active {
   opacity: 0.75;
   background: var(--color-gray-light, #f7f7f7);
-}
-
-.campus-btn-icon {
-  width: 40rpx;
-  height: 40rpx;
 }
 
 .campus-btn-text {
@@ -152,30 +152,7 @@
   background: var(--color-gray-light, #f7f7f7);
 }
 
-.campus-toggle-icon {
-  width: 40rpx;
-  height: 40rpx;
-}
-
-.campus-toggle-close {
-  color: #333;
-  font-size: 40rpx;
-  line-height: 1;
-}
-
 /* 底部详情面板：结构对齐猫咪详情页的 popup */
-.detail-withdraw-btn {
-  width: 100%;
-  display: flex;
-  justify-content: center;
-}
-
-.detail-withdraw {
-  width: 72rpx;
-  height: 19.5rpx;
-  margin: 30rpx 0;
-}
-
 .detail-card {
   padding: 0 10rpx 20rpx;
   max-height: 70vh;
@@ -199,12 +176,6 @@
   gap: 12rpx;
   width: 100%;
   text-align: left;
-}
-
-.detail-name {
-  font-size: 38rpx;
-  font-weight: 700;
-  color: var(--color-primary-text);
 }
 
 .title-gender-icon {
@@ -240,8 +211,12 @@
 }
 
 @keyframes panVertical {
-  from { transform: translateY(0); }
-  to   { transform: translateY(calc(var(--pan-distance, 0px) * -1)); }
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(calc(var(--pan-distance, 0px) * -1));
+  }
 }
 
 .detail-location-inline {
@@ -290,7 +265,7 @@
 }
 
 .profile-item + .profile-item::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: 24rpx;
@@ -330,7 +305,7 @@
 .detail-btn {
   width: 100%;
   background: var(--color-primary);
-  color: var(--color-primary-text);
+  color: var(--color-text-onPrimary);
   font-size: 32rpx;
   font-weight: 600;
   border-radius: 44rpx;
@@ -360,7 +335,7 @@
   padding: 20rpx 0;
   text-align: center;
   font-size: 28rpx;
-  color: var(--color-primary, #ffd101);
+  color: var(--color-primary-text);
   background: var(--color-primary-light, #fffced);
   border-radius: 44rpx;
   letter-spacing: 2rpx;
@@ -370,7 +345,7 @@
 .detail-trajectory-btn:active {
   opacity: 0.75;
   background: var(--color-primary, #ffd101);
-  color: #fff;
+  color: var(--color-text-onPrimary);
 }
 
 /* 查看详情按钮 - 并排时等宽 */
@@ -388,7 +363,7 @@
   background: rgba(255, 255, 255, 0.9);
   backdrop-filter: blur(8rpx);
   -webkit-backdrop-filter: blur(8rpx);
-  color: var(--color-primary);
+  color: var(--color-primary-text);
   border: none;
   font-size: 28rpx;
   font-weight: 600;
@@ -431,59 +406,4 @@
   font-size: 24rpx;
   color: var(--color-gray-max, #888);
   line-height: 1;
-}
-
-/* 轨迹时间线容器 */
-.trajectory-timeline {
-  max-height: 360rpx;
-  padding: 0 30rpx;
-  margin-bottom: 20rpx;
-}
-
-/* 时间线单项 */
-.tl-item {
-  display: flex;
-  align-items: flex-start;
-  padding: 16rpx 0;
-  border-bottom: 1rpx solid var(--color-gray-light, #f7f7f7);
-}
-
-.tl-item:last-child {
-  border-bottom: none;
-}
-
-.tl-item:active {
-  background: var(--color-primary-light, #fffced);
-}
-
-/* 时间线圆点 */
-.tl-dot {
-  width: 16rpx;
-  height: 16rpx;
-  border-radius: 50%;
-  background: var(--color-primary, #ffd101);
-  flex-shrink: 0;
-  margin-top: 8rpx;
-  margin-right: 16rpx;
-}
-
-/* 时间线信息区 */
-.tl-info {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 6rpx;
-}
-
-/* 时间线日期文字 */
-.tl-date {
-  font-size: 26rpx;
-  color: var(--color-black-min, #414141);
-  font-weight: 500;
-}
-
-/* 时间线坐标文字 */
-.tl-coord {
-  font-size: 22rpx;
-  color: var(--color-gray-max, #888);
 }

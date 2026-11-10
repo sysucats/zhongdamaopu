@@ -1,0 +1,206 @@
+:host {
+  display: block;
+}
+
+.note-header {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  min-height: 40rpx;
+}
+
+.note-author {
+  display: flex;
+  align-items: center;
+  gap: 10rpx;
+  flex: 1;
+  min-width: 0;
+}
+
+.note-avatar {
+  width: 40rpx;
+  height: 40rpx;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: #fff;
+}
+
+.note-username {
+  overflow: hidden;
+  color: var(--color-black-light);
+  font-size: 28rpx;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.note-cat {
+  display: flex;
+  align-items: center;
+  gap: 10rpx;
+  flex: 1;
+  min-width: 0;
+}
+
+.note-cat-name {
+  overflow: hidden;
+  color: var(--color-primary-text);
+  font-size: 25rpx;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.note-delete {
+  margin-left: auto;
+  padding: 10rpx 0 10rpx 10rpx;
+  flex-shrink: 0;
+  color: var(--color-black-min);
+  font-size: 22rpx;
+}
+
+
+.note-status {
+  margin-left: 10rpx;
+  font-size: var(--font-size-tag);
+}
+
+.comment-paper {
+  width: 100%;
+  box-sizing: border-box;
+  position: relative;
+  background: -webkit-linear-gradient(
+    top,
+    var(--color-comment-paper-white) 38rpx,
+    var(--color-gray) 40rpx
+  );
+  background-size: 100% 40rpx;
+  filter: drop-shadow(0rpx 12rpx 10rpx var(--color-ltblack-transparent));
+}
+
+.comment-paper.yellow {
+  background: -webkit-linear-gradient(
+    top,
+    var(--color-comment-paper-yellow) 38rpx,
+    var(--color-gray) 40rpx
+  );
+  background-size: 100% 40rpx;
+}
+
+.comment-paper.green {
+  background: -webkit-linear-gradient(
+    top,
+    var(--color-comment-paper-green) 38rpx,
+    var(--color-gray) 40rpx
+  );
+  background-size: 100% 40rpx;
+}
+
+.comment-paper.pink {
+  background: -webkit-linear-gradient(
+    top,
+    var(--color-comment-paper-pink) 38rpx,
+    var(--color-gray) 40rpx
+  );
+  background-size: 100% 40rpx;
+}
+
+.comment-paper .paper {
+  background-color: transparent;
+  padding: 34rpx 30rpx 20rpx;
+}
+
+.comment-paper .tape {
+  position: absolute;
+  top: -70rpx;
+  left: 20rpx;
+  width: 70rpx;
+  height: 200rpx;
+  background-color: var(--color-comment-tape);
+  opacity: 0.3;
+  transform: rotate(45deg);
+}
+
+.comment-paper .wavy-line::before {
+  content: "";
+  position: absolute;
+  display: block;
+  width: 100%;
+  height: 20rpx;
+  background:
+    linear-gradient(
+      -45deg,
+      transparent 33.33%,
+      var(--color-gray-light) 33.33%,
+      var(--color-gray-light) 66.66%,
+      transparent 66.66%
+    ),
+    linear-gradient(
+      45deg,
+      transparent 33.33%,
+      var(--color-gray-light) 33.33%,
+      var(--color-gray-light) 66.66%,
+      transparent 66.66%
+    );
+  background-size: 20rpx 40rpx;
+  transform: rotateX(180deg);
+}
+
+.comment-paper .wavy-line.bottom::before {
+  bottom: 0;
+  transform: rotateY(180deg);
+}
+
+/* All note entry points share the same timestamp and like placement. */
+.note-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16rpx;
+  margin-top: 8rpx;
+  min-height: 44rpx;
+}
+
+.note-time {
+  flex: 1;
+  min-width: 0;
+  color: var(--color-gray-max);
+  font-size: 21rpx;
+  line-height: 1.5;
+  text-align: left;
+}
+
+.note-like {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  min-height: 44rpx;
+  gap: 6rpx;
+  color: var(--color-gray-max);
+}
+
+.note-heart-viewport {
+  position: relative;
+  width: 44rpx;
+  height: 44rpx;
+  flex-shrink: 0;
+}
+
+.note-heart-sprite {
+  position: absolute;
+  left: -18rpx;
+  top: -18rpx;
+  width: 80rpx;
+  height: 80rpx;
+}
+
+.note-like-count {
+  font-size: 26rpx;
+}
+
+.comment-paper .note-content {
+  margin-top: 24rpx;
+  color: var(--color-black-light);
+  font-size: 28rpx;
+  line-height: 1.6;
+  overflow-wrap: break-word;
+}

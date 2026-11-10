@@ -1,5 +1,6 @@
 /* components/badgeRank/badgeRank.wxss */
 @import "/pages/public/wxss/hFilter.wxss";
+@import "/pages/public/wxss/card.wxss";
 
 .h-filter-list {
   display: flex;
@@ -16,17 +17,16 @@
   font-size: 22rpx;
 }
 
-.badge-block {
-  width: 750rpx;
-  padding: 0 30rpx 30rpx 30rpx;
-  box-sizing: border-box;
+.badge-sections {
+  padding: 0 var(--space-lg);
 }
 
 .badge-header {
+  position: relative;
+  z-index: 1;
+  padding: 0 calc(60rpx - var(--space-lg));
   display: flex;
   flex-direction: row;
-  padding: 0 30rpx;
-  /* align-items: flex-end; */
   align-items: center;
 }
 
@@ -34,15 +34,17 @@
   width: 120rpx;
   height: 120rpx;
   border-radius: 20rpx;
-  /* background-color: white; */
+  flex-shrink: 0;
 }
 
 .badge-info {
-  width: 400rpx;
-  margin-left: 20rpx;
+  flex: 1;
+  min-width: 0;
+  margin-left: var(--space-sm);
 }
 
 .badge-name {
+  overflow-wrap: anywhere;
   font-size: 28rpx;
 }
 
@@ -53,29 +55,16 @@
 
 .badge-to-detail {
   font-size: 22rpx;
-  align-self: flex-end;
+  flex-shrink: 0;
+  white-space: nowrap;
   text-decoration: underline;
   color: var(--color-gray-dark);
 }
 
-/* 榜单的标题背景 */
-.badge-header-bg {
-  margin-top: -110rpx;
-  width: 100%;
-  height: 120rpx;
-  background-color: aqua;
-  border-top-left-radius: 50rpx;
-  border-top-right-radius: 50rpx;
-
-  background: white;
-  background: linear-gradient(to bottom, var(--color-primary-light) 0%, rgba(255,255,255,1) 100%);
-}
-
+/* 卡片从徽章下方开始，保留原来左上角图标的位置。 */
 .badge-list {
-  border-bottom-left-radius: 50rpx;
-  border-bottom-right-radius: 50rpx;
-  padding-bottom: 10rpx ;
-  background-color: white;
+  margin-top: -110rpx;
+  padding-top: 120rpx;
 }
 
 .badge-cat {
@@ -83,7 +72,7 @@
   flex-direction: row;
   margin-bottom: 20rpx;
   align-items: center;
-  padding: 0 50rpx;
+  padding: 0;
 }
 
 .badge-cat.hover {
@@ -93,6 +82,7 @@
 .badge-cat-img {
   width: 80rpx;
   height: 80rpx;
+  flex-shrink: 0;
   border-radius: 100%;
   margin-left: 20rpx;
   background-position: center center;
@@ -103,23 +93,26 @@
 
 .badge-cat-order {
   width: 30rpx;
+  flex-shrink: 0;
   font-size: 28rpx;
   color: var(--color-gray-dark);
 }
 
 .badge-cat-order.highlight {
-  color: var(--color-primary);
+  color: var(--color-primary-text);
 }
 
 .badge-cat-info {
-  width: 380rpx;
-  margin-left: 20rpx;
+  flex: 1;
+  min-width: 0;
+  margin-left: var(--space-sm);
 }
 .badge-to-detail, .badge-cat-count {
   margin-left: auto;
 }
 
 .badge-cat-name {
+  overflow-wrap: anywhere;
   font-size: 30rpx;
 }
 
@@ -128,7 +121,6 @@
   color: var(--color-gray-dark);
 }
 .badge-cat-habit {
-  width: 380rpx;
   font-size: 22rpx;
   color: var(--color-gray-max);
   overflow: hidden;
@@ -139,13 +131,14 @@
 .badge-cat-count {
   text-align: right;
   width: 40rpx;
+  flex-shrink: 0;
   font-size: 28rpx;
   font-weight: bold;
 }
 
 .badge-cat-count.highlight {
   font-size: 28rpx;
-  color: var(--color-primary);
+  color: var(--color-primary-text);
   font-weight: bold;
 }
 
@@ -181,5 +174,6 @@
 .loading image {
   width: 165.9rpx;
   height: 90.3rpx;
-  margin: 10rpx 292rpx;
+  display: block;
+  margin: 10rpx auto;
 }

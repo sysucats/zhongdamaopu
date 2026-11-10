@@ -29,6 +29,8 @@ const getCatTrajectoryHandler = require('./getCatTrajectory.js')
 const adoptionOpHandler = require('./adoptionOp.js')
 const medicalOpHandler = require('./medicalOp.js')
 const getAchievementRankHandler = require('./getAchievementRank.js')
+const manageAchievementCatalogHandler = require('./manageAchievementCatalog.js')
+const achievementHandler = require('./achievement.js')
 
 const actionMap = {
     curdOp: curdOpHandler,
@@ -61,6 +63,8 @@ const actionMap = {
     adoptionOp: adoptionOpHandler,
     medicalOp: medicalOpHandler,
     getAchievementRank: getAchievementRankHandler,
+    manageAchievementCatalog: manageAchievementCatalogHandler,
+    achievement: achievementHandler,
 }
 
 module.exports = async (ctx) => {

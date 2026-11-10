@@ -1,0 +1,57 @@
+<view class="page overview">
+  <view class="footprint-section">
+    <view class="section-head">
+      <view class="section-title">我拍的照片</view>
+      <button class="view-all" bindtap="openList" data-type="photos">查看全部</button>
+    </view>
+    <view class="stats-bar" wx:if="{{photoStats}}">已拍 <text class="stats-number">{{photoStats.total}}</text> 张照片 <text class="stats-separator">·</text> 精选 <text class="stats-number">{{photoStats.best}}</text> 张</view>
+    <view class="page-state" wx:if="{{photosLoading && displayPhotos.length === 0}}">加载中...</view>
+    <view class="page-state" wx:if="{{!photosLoading && photosError}}">加载失败，请清除缓存或重启小程序～</view>
+    <view class="page-state" wx:if="{{!photosLoading && !photosError && displayPhotos.length === 0}}">还没有上传过照片</view>
+    <view class="photo-mosaic count-{{displayPhotos.length}}" wx:if="{{displayPhotos.length > 0}}">
+      <view class="mosaic-item {{index === 0 ? 'featured' : ''}}" wx:for="{{displayPhotos}}" wx:key="_id" bindtap="previewPhoto" data-url="{{item.url}}">
+        <image class="mosaic-photo" src="{{item.url}}" mode="aspectFill" />
+        <view class="mosaic-likes" catchtap="likePhoto" data-item-id="{{item._id}}" aria-role="button" aria-label="{{item.liked ? '已点赞' : '点赞照片'}}">
+          <view class="overview-heart-viewport">
+            <view class="overview-heart-sprite"><heart size="80" liked="{{item.liked}}"></heart></view>
+          </view>
+          <text>{{item.like_count || 0}}</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <view class="footprint-section">
+    <view class="section-head">
+      <view class="section-title">我的便利贴</view>
+      <button class="view-all" bindtap="openList" data-type="comments">查看全部</button>
+    </view>
+    <view class="page-state" wx:if="{{commentsLoading && displayComments.length === 0}}">加载中...</view>
+    <view class="page-state" wx:if="{{!commentsLoading && commentsError}}">加载失败，请清除缓存或重启小程序～</view>
+    <view class="page-state" wx:if="{{!commentsLoading && !commentsError && displayComments.length === 0}}">还没有写过便利贴</view>
+    <view class="footprint-list notes" wx:if="{{displayComments.length > 0}}">
+      <comment-paper class="comment-card" wx:for="{{displayComments}}" wx:key="_id" item="{{item}}" header-mode="cat" bind:open="toCommentBoard" data-cat_id="{{item.cat_id}}" bind:like="likeComment" data-item-id="{{item._id}}" />
+    </view>
+  </view>
+
+  <view class="footprint-section">
+    <view class="section-head">
+      <view class="section-title">拍过的猫咪</view>
+      <button class="view-all" bindtap="openList" data-type="cats">查看全部</button>
+    </view>
+    <view class="page-state" wx:if="{{catsLoading && displayCats.length === 0}}">加载中...</view>
+    <view class="page-state" wx:if="{{!catsLoading && catsError}}">加载失败，请清除缓存或重启小程序～</view>
+    <view class="page-state" wx:if="{{!catsLoading && !catsError && displayCats.length === 0}}">还没有拍过猫咪</view>
+    <view class="footprint-list" wx:if="{{displayCats.length > 0}}">
+      <view class="cat-card" wx:for="{{displayCats}}" wx:key="_id" bindtap="toCatDetail" data-cat_id="{{item._id}}">
+        <image class="cat-avatar" src="{{item.avatar.photo_compressed || item.avatar.photo_id}}" mode="aspectFill" wx:if="{{item.avatar}}" />
+        <image class="cat-avatar placeholder" src="/pages/public/images/info/btn/cat_head.png" mode="aspectFit" wx:else />
+        <view class="cat-info">
+          <view class="cat-name">{{item.name}}</view>
+          <view class="cat-desc">{{item.campus}} {{item.area}}</view>
+        </view>
+        <view class="cat-count">{{item.my_photo_count}}张</view>
+      </view>
+    </view>
+  </view>
+</view>

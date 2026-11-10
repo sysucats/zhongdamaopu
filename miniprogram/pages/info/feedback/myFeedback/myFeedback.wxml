@@ -1,31 +1,21 @@
-<!--pages/info/feedback/myFeedback/myFeedback.wxml-->
-<view id='tips'>
-  <text>你已经提供了 {{total}} 条反馈，\n点击所属猫猫名字可以跳转到该猫猫详情。\n</text>
-</view>
-<block wx:for="{{feedbacks}}" wx:key="_id">
-<view class='verify-box'>
-  <view wx:if="{{item.cat}}" class='line'>
-    <image mode='aspectFit' class='icon' src='/pages/public/images/card/card/cat.png'></image>
-    <text user-select='false' bindtap='toCatDetail' data-cat_id="{{item.cat_id}}">{{item.cat.name}}（{{item.cat.campus}}）</text>
+<view class="content-page">
+  <view class="content-card">
+    <view class="content-title">我的反馈</view>
+    <view class="content-note">已提交 {{total}} 条反馈，点击猫猫名称可查看详情。</view>
   </view>
-  <view wx:else class='line'>
-    <text user-select='true'>信息反馈</text>
-  </view>
-  <view class='bubble1'>
-    <view class='date'><text user-select='true'>{{item.openDateStr}}</text></view>
-    <view class='name'><text user-select='true'>我</text></view>
-    <view class='floating'>
-      <view class='content'><text user-select='true'>{{item.feedbackInfo}}</text></view>
-      <view wx:if="{{item.contactInfo}}" class='footer'><text user-select='true'>联系方式：{{item.contactInfo}}</text></view>
+  <view class="content-card" wx:for="{{feedbacks}}" wx:key="_id">
+    <view class="message-heading">
+      <view class="message-title" wx:if="{{item.cat}}" bindtap="toCatDetail" data-cat_id="{{item.cat_id}}">{{item.cat.name}}{{item.cat.campus ? '（' + item.cat.campus + '）' : ''}}</view>
+      <view class="message-title" wx:else>信息反馈</view>
+      <text class="content-note">{{item.replied ? '已回复' : !item.repliable ? '未订阅通知' : '待回复'}}</text>
     </view>
-  </view>
-  <view wx:if="{{!item.repliable}}" class='noReplyLabel'>你没有订阅回复通知，我们无法回复哦~</view>
-  <view wx:elif="{{item.replied}}" class='bubble2'>
-    <view class='date'><text user-select='true'>{{item.replyDateStr}}</text></view>
-    <view class='name'><text user-select='true'>管理员的回复</text></view>
-    <view class='floating'>
-      <view class='content'><text user-select='true'>{{item.replyInfo}}</text></view>
-    </view>
+    <view class="message-meta content-note"><text>我</text><text>{{item.openDateStr}}</text></view>
+    <view class="message-bubble user"><text selectable="{{true}}">{{item.feedbackInfo}}</text></view>
+    <view class="message-contact content-note" wx:if="{{item.contactInfo}}"><text selectable="{{true}}">联系方式：{{item.contactInfo}}</text></view>
+    <block wx:if="{{item.replied}}">
+      <view class="message-meta admin content-note"><text>管理员回复</text><text>{{item.replyDateStr}}</text></view>
+      <view class="message-bubble admin"><text selectable="{{true}}">{{item.replyInfo}}</text></view>
+    </block>
+    <view class="message-notice content-note" wx:elif="{{!item.repliable}}">你未订阅回复通知，管理员暂时无法回复。</view>
   </view>
 </view>
-</block>

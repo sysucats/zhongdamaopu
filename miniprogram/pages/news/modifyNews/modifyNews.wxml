@@ -1,62 +1,46 @@
-<!--pages/news/modifyNews/modifyNews.wxml-->
-
-<form bindsubmit="bindSubmit">
-    <block wx:if="{{!isAuth}}" class='unAuth'>
-        <view class='userInfo'>
-            <image src='/pages/public/images/system/user.png'></image>
-            <view>等待授权</view>
-        </view>
-        <button class="authButton" bindtap='getUInfo'>点击授权</button>
-    </block>
+<view class="form-page">
+  <form bindsubmit="bindSubmit">
+    <view class="form-section" wx:if="{{!isAuth}}">
+      <view class="form-context"><image class="context-avatar" src="/pages/public/images/system/user.png" mode="aspectFill" /><view class="context-copy">等待授权</view></view>
+      <button class="form-button primary news-auth" bindtap="getUInfo">点击授权</button>
+    </view>
     <block wx:else>
-        <block wx:if="{{isAuth}}">
-            <view class='label'>自定义昵称：（选填）</view>
-            <input name='name' type='text' placeholder="{{user.userInfo.nickName}}" value='{{news.userNicknameLastModify?news.userNicknameLastModify:news.userNickname}}' bindinput='bindInputName' maxlength='{{namemaxlength}}'></input>
-            <view class='lengthTips'>字数：{{namelength}}/{{namemaxlength}}</view>
-
-            <view class='label'>标题：</view>
-            <input name='title' type='text' bindinput='bindInputTitle' maxlength='{{titlemaxlength}}' value='{{news.title}}'></input>
-            <view class='lengthTips'>字数：{{titlelength}}/{{titlemaxlength}}</view>
-
-            <view class='label'>公告分类：（必选）</view>
-            <view class='button_container'>
-                <block wx:for="{{buttons}}" wx:key="buttons">
-                    <button class='{{item.checked?"checked_button":"normal_button"}}' data-id='{{item.id}}' bindtap='radioButtonTap'>{{item.name}}</button>
-                </block>
-            </view>
-
-            <view class='label'>正文：</view>
-            <textarea name='mainContent' maxlength='{{maxlength}}' bindinput='bindInput' value='{{news.mainContent}}'></textarea>
-            <view class='lengthTips'>字数：{{length}}/{{maxlength}}</view>
-
-            <view class='label'>封面图：（目前不支持修改图片）</view>
-            <view class='album'>
-                <view class='album-block' wx:if="{{cover != 0}}">
-                    <image mode='aspectFill' class='alb-image' src='{{news.coverPath}}' bindtap='previewCover'  data-url='{{news.coverPath}}'></image>
-                </view>
-            </view>
-
-            <view class='label'>图片：（目前不支持增删图片）</view>
-            <view class='album'>
-                <view class='album-block'>
-                    <block wx:for="{{photos_path}}" wx:key="_id" wx:for-index="idx">
-                        <image mode='aspectFill' class='alb-image' src='{{item}}' bindtap='previewImg' data-index="{{idx}}"></image>
-                    </block>
-                </view>
-            </view>
-            <view class='lengthTips'>图片数目：{{photos_path.length}}/9</view>
-
-            <view class='label'>公告弹窗：设置公告弹窗将会在小程序首页弹出此公告</view>
-            <view class='button_container'>
-                <block wx:for="{{modalButtons}}" wx:key="modalButtons">
-                    <button class='{{item.checked?"checked_button":"normal_button"}}' data-id='{{item.id}}' bindtap='radioModalButtonTap'>{{item.name}}</button>
-                </block>
-            </view>
-
-            <view class="line"></view>
-
-            <button class='submitButton' form-type='submit' bindtap="toSubmit">提交修改</button>
-
-        </block>
+      <view class="form-section">
+        <view class="field-label">自定义昵称（选填）</view>
+        <input class="field-input" name="name" type="text" placeholder="{{user.userInfo.nickName}}" value="{{news.userNicknameLastModify ? news.userNicknameLastModify : news.userNickname}}" bindinput="bindInputName" maxlength="{{namemaxlength}}" />
+        <view class="field-counter">字数：{{namelength}}/{{namemaxlength}}</view>
+        <view class="field-label spaced-label field-required">标题</view>
+        <input class="field-input" name="title" type="text" value="{{news.title}}" bindinput="bindInputTitle" maxlength="{{titlemaxlength}}" />
+        <view class="field-counter">字数：{{titlelength}}/{{titlemaxlength}}</view>
+        <view class="field-label spaced-label field-required">公告分类</view>
+        <view class="chip-row news-choices">
+          <button class="chip news-choice {{item.checked ? 'active' : ''}}" wx:for="{{buttons}}" wx:key="id" data-id="{{item.id}}" bindtap="radioButtonTap">{{item.name}}</button>
+        </view>
+        <view class="field-label spaced-label">正文（选填）</view>
+        <textarea class="description-input long-input" name="mainContent" value="{{news.mainContent}}" maxlength="{{maxlength}}" bindinput="bindInput"></textarea>
+        <view class="field-counter">字数：{{length}}/{{maxlength}}</view>
+      </view>
+      <view class="form-section">
+        <view class="field-label">封面图</view>
+        <view class="field-hint news-media-hint">目前不支持修改图片</view>
+        <image wx:if="{{news.coverPath}}" class="image-preview" mode="aspectFill" src="{{news.coverPath}}" bindtap="previewCover" data-url="{{news.coverPath}}" />
+        <view class="field-label spaced-label">图片</view>
+        <view class="field-hint news-media-hint">目前不支持增删图片</view>
+        <view class="image-grid">
+          <image class="image-thumb" wx:for="{{photos_path}}" wx:key="*this" wx:for-index="idx" src="{{item}}" mode="aspectFill" bindtap="previewImg" data-index="{{idx}}" />
+        </view>
+        <view class="field-counter">图片数目：{{photos_path.length}}/9</view>
+      </view>
+      <view class="form-section">
+        <view class="status-row">
+          <view class="status-copy">
+            <view class="status-title">公告弹窗</view>
+            <view class="field-hint">设置公告弹窗将会在小程序首页弹出此公告</view>
+          </view>
+          <switch checked="{{modalButtons[1].checked}}" color="var(--color-green)" bindchange="onModalSwitchChange" aria-label="公告弹窗" />
+        </view>
+      </view>
+      <view class="save-bar"><button class="form-button primary save-button" form-type="submit">提交修改</button></view>
     </block>
-</form>
+  </form>
+</view>

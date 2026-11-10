@@ -1,3 +1,4 @@
+import { confirmDiscard } from "../../utils/popup";
 import api from "../../utils/cloudApi";
 import { formatDate } from "../../utils/utils";
 
@@ -53,6 +54,18 @@ Component({
     showEditor: false,
     form: emptyForm(),
     submitting: false,
+    canSaveRecord: false,
+  },
+
+  observers: {
+    'form.**': function () {
+      const form = this.data.form;
+      const type = TYPES[form.typeIndex]?.key;
+      this.setData({ canSaveRecord: !!(type && form.record_date && (type === 'sterilize' || form.title.trim())) });
+    },
+    showEditor(show) {
+      if (show) this._initialForm = JSON.parse(JSON.stringify(this.data.form));
+    },
   },
 
   lifetimes: {
@@ -90,6 +103,11 @@ Component({
       this.setData({ editingId: '', form: emptyForm(), showEditor: true });
     },
 
+    tapRecord(e) {
+      if (this._suppressRecordTap) return;
+      this.editRecord(e);
+    },
+
     editRecord(e) {
       const record = this.data.records.find(item => item._id === e.currentTarget.dataset.id);
       if (!record) return;
@@ -109,8 +127,9 @@ Component({
       });
     },
 
-    closeEditor() {
-      if (!this.data.submitting) this.setData({ showEditor: false });
+    async closeEditor() {
+      if (this.data.submitting) return;
+      if (await confirmDiscard(this, this._initialForm, this.data.form)) this.setData({ showEditor: false });
     },
 
     onTypeChange(e) {
@@ -202,6 +221,7 @@ Component({
     },
 
     touchStart(e) {
+      this._suppressRecordTap = false;
       if (this.data.loading || !e.touches.length) return;
       const index = Number(e.currentTarget.dataset.index);
       const record = this.data.records[index];
@@ -238,6 +258,7 @@ Component({
     touchEnd(e) {
       const swipe = this._swipe;
       if (!swipe) return;
+      this._suppressRecordTap = swipe.moved || swipe.vertical || e.type === 'touchcancel';
       if (swipe.moved) {
         const dx = (e.changedTouches?.[0]?.clientX ?? swipe.startX) - swipe.startX;
         const deltaRpx = dx * 750 / swipe.windowWidth;

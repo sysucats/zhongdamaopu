@@ -29,6 +29,7 @@
         "pageSettings/pageSettings",
         "badgeDef/badgeDef",
         "badgeDef/addBadgeDef/addBadgeDef",
+        "badgeDef/achievementEditor/achievementEditor",
         "checkComment/checkComment",
         "badgeCode/badgeCode",
         "badgeCode/addBadgeCode/addBadgeCode",

@@ -2,8 +2,8 @@
 <view class="page">
   <!-- 顶部概览 -->
   <view class="hero">
-    <view class="hero-title">🏆 我的成就</view>
-    <view class="hero-sub">多和猫猫互动，点亮更高等级的奖牌</view>
+    <view class="hero-title">我的成就</view>
+    <view class="hero-sub">多和猫猫互动，点亮更多徽章</view>
 
     <view class="stat-row">
       <view class="stat-cell">
@@ -13,7 +13,7 @@
       <view class="stat-divider"></view>
       <view class="stat-cell">
         <view class="stat-num gold">{{goldCount}}</view>
-        <view class="stat-label">金牌</view>
+        <view class="stat-label">最高级</view>
       </view>
       <view class="stat-divider"></view>
       <view class="stat-cell">
@@ -25,34 +25,43 @@
     <view class="progress-bar">
       <view class="progress-inner" style="width: {{totalCount ? (unlockedCount / totalCount * 100) : 0}}%;"></view>
     </view>
-    <view class="progress-text">已解锁 {{unlockedCount}} / {{totalCount}} 枚奖牌</view>
+    <view class="progress-text">已解锁 {{unlockedCount}} / {{totalCount}} 枚徽章</view>
   </view>
 
   <!-- 成就列表 -->
   <view class="achv-list">
-    <view class="achv-card" wx:for="{{list}}" wx:key="id">
+    <block wx:for="{{list}}" wx:key="id">
+    <view class="series-title" wx:if="{{item.showSeries}}">{{item.series}}</view>
+    <view class="achv-card content-card">
       <view class="achv-head">
-        <view class="achv-icon">{{item.icon}}</view>
         <view class="achv-head-main">
           <view class="achv-name">{{item.name}}</view>
-          <view class="achv-desc">{{item.tiers[2].desc}}</view>
+          <view class="achv-desc">{{item.nextCondition}}</view>
         </view>
-        <view class="achv-cur tier-{{item.currentTier}}" wx:if="{{item.currentTier > 0}}">{{item.tiers[item.currentTier - 1].tierName}}</view>
+        <view class="achv-cur material-{{item.currentMaterial}}" wx:if="{{item.currentTier > 0}}">{{item.tiers[item.currentTier - 1].tierName}}</view>
       </view>
 
       <view class="tier-row">
-        <view class="tier-cell {{t.unlocked ? 'unlocked' : 'locked'}}" wx:for="{{item.tiers}}" wx:for-item="t" wx:key="key">
-          <view class="medal tier-{{t.tier}}">
-            <text class="medal-text">{{t.tierShort}}</text>
-            <text class="medal-lock" wx:if="{{!t.unlocked}}">🔒</text>
+        <view class="tier-cell {{t.unlocked ? 'unlocked' : 'locked'}}" wx:for="{{item.tiers}}" wx:for-item="t" wx:key="key" bindtap="openBadge" data-key="{{t.key}}">
+          <view class="medal">
+            <image class="medal-image" src="{{t.frontImage}}" mode="aspectFit" />
           </view>
+          <view class="tier-name">{{t.tierName}}</view>
           <view class="tier-threshold">{{t.threshold}}{{item.unit}}</view>
           <view class="tier-time" wx:if="{{t.unlocked}}">{{t.unlock_time_text}}</view>
-          <view class="tier-time locked-text" wx:else>未解锁</view>
+          <view class="tier-time locked-text" wx:else>{{t.currentCount !== null && t.currentCount >= t.threshold ? '已达条件' : '未解锁'}}</view>
         </view>
       </view>
     </view>
+    </block>
   </view>
 
   <view class="footer-tip">多和猫猫互动，就能解锁更高级别的成就哦~</view>
 </view>
+
+<popup id="achievement-detail-popup" show="{{showBadgeDetail}}" position="center" bind:close="closeBadge">
+  <popup-header title="成就详情" bind:close="closeBadge" />
+  <achievementDetail wx:if="{{selectedBadge}}" achievement="{{selectedBadge}}" />
+</popup>
+
+<achievement-unlock id="achievement-unlock" />

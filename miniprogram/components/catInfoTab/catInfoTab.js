@@ -504,23 +504,12 @@ Component({
       }
     },
     async deletePhoto(e) {
-      console.log("[deletePhoto] -", e);
       const photo = e.currentTarget.dataset.photo;
-      const ActionRes = await wx.showActionSheet({
-        itemList: ['删除照片', '移动到其他猫猫']
-      });
+      await this.doDelectPhoto(photo);
+    },
 
-      // 删除
-      if (ActionRes.tapIndex === 0) {
-        await this.doDelectPhoto(photo);
-        return;
-      }
-
-      // 移动照片
-      if (ActionRes.tapIndex === 1) {
-        await this.showMovePhoto(photo);
-        return;
-      }
+    async transferPhoto(e) {
+      await this.showMovePhoto(e.currentTarget.dataset.photo);
     },
 
     async doDelectPhoto(photo) {

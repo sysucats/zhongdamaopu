@@ -19,7 +19,11 @@ module.exports = async (ctx) => {
     { projection: { openid: 1, userInfo: 1 } }
   );
   const userMap = {};
-  (users || []).forEach(u => { userMap[u.openid] = u.userInfo || {}; });
+  const score = info => Number(Boolean(info?.nickName)) * 2 + Number(Boolean(info?.avatarUrl));
+  (users || []).forEach(u => {
+    const info = u.userInfo || {};
+    if (!userMap[u.openid] || score(info) > score(userMap[u.openid])) userMap[u.openid] = info;
+  });
 
   // 3. 合并结果
   const data = grouped.map((g, i) => ({

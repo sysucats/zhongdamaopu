@@ -1,5 +1,8 @@
 {
   "usingComponents": {
-    "heart": "/packages/heart-button/heart"
+    "achievement-unlock": "/components/achievementUnlock/achievementUnlock",
+    "comment-paper": "/components/commentPaper/commentPaper",
+    "modifyUserInfo": "/components/modifyUserInfo/modifyUserInfo",
+    "profile-prompt": "/components/profilePrompt/profilePrompt"
   }
 }

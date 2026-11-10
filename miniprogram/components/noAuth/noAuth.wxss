@@ -24,15 +24,12 @@
   white-space: nowrap;
 }
 
-button {
+.no-auth-btn {
   width: 45%;
-  display: inline-block;
   font-size: 30rpx;
   box-sizing: border-box;
-}
-.no-auth-btn {
-  background-color: var(--color-gray);
-  color: white;
+  background-color: var(--color-gray-normal);
+  color: var(--color-black-light);
   margin-top: 20rpx;
   justify-content: center;
   align-items: center;

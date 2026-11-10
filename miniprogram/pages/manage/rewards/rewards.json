@@ -1,4 +1,5 @@
 {
+  "navigationBarTitleText": "投喂记录管理",
   "usingComponents": {
     "no-auth": "/components/noAuth/noAuth"
   }

@@ -1,0 +1,29 @@
+.badge-scene {
+  perspective: 900rpx;
+}
+
+.badge-body {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  transition: transform 560ms ease-in-out;
+}
+
+.badge-body.flipped {
+  transform: rotateY(180deg);
+}
+
+.badge-face {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+.badge-back {
+  transform: rotateY(180deg);
+}

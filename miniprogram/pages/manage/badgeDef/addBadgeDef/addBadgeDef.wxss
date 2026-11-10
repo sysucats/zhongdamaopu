@@ -1,2 +1,9 @@
-/* pages/manage/badgeDef/addBadgeDef/addBadgeDef.wxss */
-@import "../../../../components/modifyUserInfo/modifyUserInfo.wxss";
+@import "/pages/public/wxss/form.wxss";
+.cat-image-upload {
+  min-height: 260rpx;
+}
+.cat-editor-image {
+  display: block;
+  width: 240rpx;
+  height: 240rpx;
+}

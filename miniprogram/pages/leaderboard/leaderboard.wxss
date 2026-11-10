@@ -1,4 +1,5 @@
 @import "/pages/public/wxss/hFilter.wxss";
+@import "/pages/public/wxss/card.wxss";
 
 page {
   height: 100%;
@@ -10,7 +11,7 @@ page {
   justify-content: space-around;
   padding: 10rpx 100rpx 0 100rpx;
   overflow: hidden;
-  background-color: white;
+  background-color: var(--color-surface);
   box-sizing: border-box;
   box-shadow: 0rpx 0rpx 10rpx var(--color-gray);
 }
@@ -49,19 +50,18 @@ page {
 .main {
   display: flex;
   align-items: flex-start;
-  padding: 0 8rpx;
+  gap: var(--space-md);
+  padding: 0 var(--space-lg);
 }
 
 .column {
-  width: 50%;
+  flex: 1;
+  min-width: 0;
 }
 
 .column_item {
-  width: 350rpx;
-  background: #fff;
-  margin: 0rpx auto 20rpx auto;
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-card);
+  width: 100%;
+  padding: 0;
   overflow: hidden;
 }
 
@@ -70,26 +70,26 @@ page {
   /* width: 100%; */
   overflow: hidden;
 }
-.column_pic image{
+.column_pic image {
   width: 100%;
   margin: 0;
   padding: 0;
   vertical-align: bottom;
 }
-.location{
+.location {
   position: absolute;
   top: 18rpx;
   right: 15rpx;
   color: var(--color-gray);
-  text-align:end;
+  text-align: end;
   font-size: 18rpx;
-  background-color:var(--color-black-transparent);
-  padding:5rpx 10rpx;
+  background-color: var(--color-black-transparent);
+  padding: 5rpx 10rpx;
   border-radius: 10rpx;
 }
 
 .info {
-  width: 350rpx;
+  width: 100%;
   display: flex;
   padding: 18rpx 0rpx 18rpx 24rpx;
   align-items: center;
@@ -99,8 +99,8 @@ page {
 
 .names {
   display: inline-block;
-  width: 300rpx;
-  max-width: 300rpx;
+  flex: 1;
+  min-width: 0;
   box-sizing: border-box;
 }
 
@@ -116,12 +116,12 @@ page {
   font-weight: lighter;
 }
 
-.photo-info{
+.photo-info {
   display: flex;
   flex-direction: row;
   flex-wrap: nowrap;
 }
-.pher-name{
+.pher-name {
   font-size: 22rpx;
   color: var(--color-gray-max);
   margin-right: 16rpx;
@@ -131,7 +131,6 @@ page {
   color: var(--color-gray-max);
   flex-shrink: 0;
 }
-
 
 .like-button {
   /* width: 100rpx; */
@@ -155,12 +154,10 @@ heart {
   display: none;
 }
 
-
 .loading image {
   width: 165.9rpx;
   height: 90.3rpx;
   margin: 10rpx 292rpx;
-
 }
 .loadnomore image {
   width: 750rpx;
@@ -180,4 +177,111 @@ heart {
 }
 .h-filter-item.long {
   margin: 20rpx 20rpx 20rpx 20rpx;
+}
+
+.achievement-showcase-dialog {
+  box-sizing: border-box;
+  width: 660rpx;
+  max-width: calc(100vw - 48rpx);
+  max-height: 78vh;
+  overflow-y: auto;
+  padding: 0 var(--space-md) 12rpx;
+  border-radius: var(--radius-modal);
+  background: #fff;
+}
+
+.achievement-showcase-state {
+  padding: 96rpx 0;
+  text-align: center;
+  color: var(--color-gray-max);
+  font-size: 26rpx;
+}
+
+.achievement-showcase-board {
+  position: relative;
+  height: 660rpx;
+  margin-top: 8rpx;
+  background: radial-gradient(ellipse at center, #fbf7f0 0%, #fff 72%);
+}
+
+.achievement-showcase-board.count-1 {
+  height: 460rpx;
+}
+
+.achievement-showcase-board.count-2 {
+  height: 570rpx;
+}
+
+.achievement-showcase-placement {
+  position: absolute;
+  transform: translate(-50%, -50%);
+}
+
+.achievement-showcase-entry {
+  transform-origin: center;
+  animation: showcase-badge-arrive 620ms cubic-bezier(0.2, 0.8, 0.25, 1) both;
+}
+
+.achievement-showcase-art {
+  position: relative;
+  animation: showcase-badge-turn 620ms cubic-bezier(0.2, 0.8, 0.25, 1) both;
+  animation-delay: inherit;
+}
+
+.achievement-showcase-badge {
+  position: relative;
+  display: block;
+}
+
+.achievement-showcase-shadow {
+  position: absolute;
+  left: 20%;
+  right: 20%;
+  bottom: 12rpx;
+  height: 26rpx;
+  border-radius: 50%;
+  background: rgba(88, 61, 34, 0.1);
+  filter: blur(12rpx);
+  pointer-events: none;
+}
+
+.achievement-showcase-name {
+  margin-top: 10rpx;
+  color: var(--color-black-min);
+  font-size: 24rpx;
+  line-height: 1.5;
+  text-align: center;
+}
+
+.achievement-showcase-name.material-bronze {
+  color: var(--color-achievement-bronze);
+}
+
+.achievement-showcase-name.material-silver {
+  color: var(--color-achievement-silver);
+}
+
+.achievement-showcase-name.material-gold {
+  color: var(--color-achievement-gold);
+}
+
+@keyframes showcase-badge-arrive {
+  from {
+    opacity: 0;
+    transform: translate(var(--badge-x), calc(var(--badge-y) + 28rpx))
+      scale(0.78);
+  }
+  to {
+    opacity: 1;
+    transform: translate(var(--badge-x), var(--badge-y)) scale(1);
+  }
+}
+
+@keyframes showcase-badge-turn {
+  from {
+    transform: rotate(var(--badge-start-angle));
+  }
+  to {
+    transform: rotate(var(--badge-angle));
+  }
 }

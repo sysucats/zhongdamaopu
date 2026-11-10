@@ -9,6 +9,7 @@ Page({
    * 页面的初始数据
    */
   data: {
+    showEdit: false,
     isAuth: false,
     user: {},
     feedbackLength: 0,
@@ -53,6 +54,10 @@ Page({
       showEdit: true
     });
   },
+  async onUserInfoUpdated() {
+    await getPageUserInfo(this);
+  },
+
   closeEdit: function () {
     this.setData({
       showEdit: false

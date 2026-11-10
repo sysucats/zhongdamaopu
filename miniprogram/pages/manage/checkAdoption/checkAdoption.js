@@ -1,6 +1,7 @@
+import { confirmDiscard } from "../../../utils/popup";
 // 领养申请审核（管理员）
 import { checkAuth, fillUserInfo } from "../../../utils/user";
-import { getAvatar } from "../../../utils/cat";
+import { getAvatar, getCatItemMulti } from "../../../utils/cat";
 import api from "../../../utils/cloudApi";
 import { formatDate } from "../../../utils/utils";
 
@@ -26,8 +27,12 @@ Page({
     activeTab: 'pending',
     list: [],
     loading: false,
+    loadError: '',
+    submitting: false,
+    canConfirm: true,
+    statusIcon: { pending: 'icon-clock', reviewing: 'icon-edit', approved: 'icon-check', rejected: 'icon-close', cancelled: 'icon-clean' },
     statusDesc: STATUS_DESC,
-    // 审核面板（内嵌，不用 fixed 弹窗，避免部分模拟器无法输入）
+    // 审核说明编辑弹层
     showReviewPanel: false,
     reviewAction: '',
     reviewNote: '',
@@ -46,15 +51,17 @@ Page({
     }
   },
 
-  switchTab(e) {
+  async switchTab(e) {
     const key = e.currentTarget.dataset.key;
-    if (key === this.data.activeTab) return;
-    this.setData({ activeTab: key, showReviewPanel: false });
-    this.loadList();
+    if (key === this.data.activeTab || this.data.submitting) return;
+    if (this.data.showReviewPanel && !await this.closeReview()) return;
+    this.setData({ activeTab: key });
+    await this.loadList();
   },
 
   async loadList() {
-    this.setData({ loading: true });
+    const requestId = this._listRequest = (this._listRequest || 0) + 1;
+    this.setData({ loading: true, loadError: '' });
     try {
       const res = await api.adoptionOp({
         operation: 'list',
@@ -68,11 +75,16 @@ Page({
           showTimeline: false,
         }));
 
+        const cats = await getCatItemMulti([...new Set(list.map(item => item.cat_id).filter(Boolean))]);
+        const catMap = new Map(cats.filter(Boolean).map(cat => [cat._id, cat]));
         // 填充猫咪封面头像（getAvatar 内部已签名并缓存）
         for (const item of list) {
+          const cat = catMap.get(item.cat_id);
+          item.cat_campus = cat?.campus || '';
+          item.cat_area = cat?.area || '';
           try {
             const avatar = await getAvatar(item.cat_id);
-            item.cat_avatar = (avatar && avatar.photo_compressed) || '/pages/public/images/info/default_avatar.png';
+            item.cat_avatar = (avatar && (avatar.photo_compressed || avatar.photo_id)) || '/pages/public/images/info/default_avatar.png';
           } catch (e) {
             item.cat_avatar = '/pages/public/images/info/default_avatar.png';
           }
@@ -92,15 +104,15 @@ Page({
         }
         await fillUserInfo(timelineEntries, 'operator', 'operatorInfo');
 
-        this.setData({ list, loading: false });
+        if (requestId !== this._listRequest) return;
+        this.setData({ list });
       } else {
-        wx.showToast({ title: res.msg || '加载失败', icon: 'none' });
-        this.setData({ loading: false });
+        throw new Error(res.msg || '加载失败');
       }
     } catch (err) {
-      console.error('[loadList] - 加载领养申请失败:', err);
-      wx.showToast({ title: '网络错误', icon: 'none' });
-      this.setData({ loading: false });
+      if (requestId === this._listRequest) this.setData({ loadError: '申请加载失败，请重试。' });
+    } finally {
+      if (requestId === this._listRequest) this.setData({ loading: false });
     }
   },
 
@@ -121,26 +133,31 @@ Page({
 
   // 打开审核面板
   openReview(e) {
+    if (this.data.submitting) return;
     const { action, index } = e.currentTarget.dataset;
     this.setData({
       showReviewPanel: true,
       reviewAction: action,
       reviewNote: '',
+      canConfirm: action !== 'note',
       reviewTarget: this.data.list[index],
     });
-    // 滚动到顶部面板位置
-    wx.pageScrollTo({ scrollTop: 0, duration: 200 });
   },
 
-  closeReview() {
+  async closeReview() {
+    if (this.data.submitting) return false;
+    if (!await confirmDiscard(this, '', this.data.reviewNote)) return false;
     this.setData({ showReviewPanel: false, reviewTarget: null });
+    return true;
   },
 
   onNoteInput(e) {
-    this.setData({ reviewNote: e.detail.value });
+    if (this.data.submitting) return;
+    this.setData({ reviewNote: e.detail.value, canConfirm: this.data.reviewAction !== 'note' || !!e.detail.value.trim() });
   },
 
   async confirmReview() {
+    if (this.data.submitting) return;
     const { reviewAction, reviewNote, reviewTarget } = this.data;
     if (!reviewTarget) return;
 
@@ -150,38 +167,40 @@ Page({
       return;
     }
 
-    if (reviewAction === 'approve') {
-      const modalRes = await wx.showModal({
-        title: '确认通过？',
-        content: `通过后「${reviewTarget.cat_name}」将被标记为已领养，同猫的其他申请会自动拒绝。`,
-      });
-      if (!modalRes.confirm) return;
-    }
-
-    wx.showLoading({ title: '处理中...' });
+    this.setData({ submitting: true });
     try {
-      const res = reviewAction === 'note'
-        ? await api.adoptionOp({
+      if (reviewAction === 'approve') {
+        const modalRes = await wx.showModal({
+          title: '确认通过？',
+          content: `通过后「${reviewTarget.cat_name}」将被标记为已领养，同猫的其他申请会自动拒绝。`,
+        });
+        if (!modalRes.confirm) return;
+      }
+      wx.showLoading({ title: '处理中...', mask: true });
+      const request = reviewAction === 'note'
+        ? {
             operation: 'addNote',
             adoption_id: reviewTarget._id,
             note: reviewNote.trim(),
-          })
-        : await api.adoptionOp({
+          }
+        : {
             operation: 'review',
             adoption_id: reviewTarget._id,
             action: reviewAction,
             note: reviewNote.trim(),
-          });
-      wx.hideLoading();
+          };
+      const res = await api.adoptionOp(request);
       wx.showToast({ title: res.msg || (res.result ? '操作成功' : '操作失败'), icon: 'none' });
       if (res.result) {
-        this.closeReview();
+        this.setData({ showReviewPanel: false, reviewTarget: null });
         await this.loadList();
       }
     } catch (err) {
-      wx.hideLoading();
       console.error('[confirmReview] - 审核失败:', err);
       wx.showToast({ title: '网络错误', icon: 'none' });
+    } finally {
+      wx.hideLoading();
+      this.setData({ submitting: false });
     }
   },
 

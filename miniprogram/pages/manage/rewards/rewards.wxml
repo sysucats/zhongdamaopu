@@ -1,29 +1,42 @@
-<block wx:if="{{auth}}">
-  <view id='top-box'><text>这是投喂记录管理页面！\n修改时，同一月份的投喂记录用'#'分隔哦~</text></view>
-  <block wx:for="{{rewards}}" wx:key="mdateStr">
-    <view wx:if='{{item.mdate}}' class='reward-box'>
-      <view class='label reward'>{{item.mdateStr}}</view>
-      <block wx:if='{{!item.changing}}'>
-        <block wx:for="{{item.records}}" wx:for-item="record" wx:for-index="rindex" wx:key="record">
-          <view class='label record'>- {{record}}</view>
-        </block>
-      </block>
-      <block wx:else>
-        <form bindsubmit="changeConfirm" data-index='{{index}}'>
-          <textarea class='changecolumn' value='{{item.records_raw}}' name='records_raw' maxlength='-1' />
-          <button class='long primary' form-type="submit">提交修改</button>
-        </form>
-      </block>
-      <button class='long' wx:if="{{!item.changing}}" bindtap='clickChange' data-index='{{index}}'>编辑{{item.mdateStr}}投喂记录</button>
+<template name="record-editor">
+  <form bindsubmit="changeConfirm">
+    <block wx:if="{{isNew}}">
+      <view class="field-label">月份</view>
+      <picker mode="date" fields="month" end="{{today}}" value="{{draftMonth}}" bindchange="onMonthChange" disabled="{{saving}}">
+        <view class="field-picker"><text>{{draftMonth}}</text><view class="picker-arrow"></view></view>
+      </picker>
+    </block>
+    <view class="field-label {{isNew ? 'spaced-label' : ''}}">记录内容</view>
+    <view class="field-hint editor-hint">内容可自由编辑，使用 # 分隔段落，支持换行。</view>
+    <textarea class="description-input long-input reward-editor" name="records_raw" value="{{draftText}}" bindinput="onDraftInput" maxlength="-1" disabled="{{saving}}" placeholder="输入本月投喂记录" cursor-spacing="100" />
+    <view class="form-error" wx:if="{{editorError}}">{{editorError}}</view>
+    <view class="card-actions">
+      <button class="form-button compact" bindtap="cancelEdit" disabled="{{saving}}">取消</button>
+      <button class="form-button compact primary with-icon" form-type="submit" loading="{{saving}}" disabled="{{saving}}"><text class="iconfont icon-check"></text><text>保存</text></button>
     </view>
-    <view wx:else class='reward-box'>
-      <picker mode='date' fields='month' end='{{today}}' value='{{today}}' bindchange='addMonthConfirm'>请选择月份</picker>
-    </view>
-  </block>
-  <view class='bottom-bar'>
-    <button class='bottom' bindtap='addMonth' disabled="{{adding}}">增加一个月份</button>
-  </view>
-</block>
+  </form>
+</template>
 
-<!-- 未授权提示 -->
+<view class="content-page rewards-page" wx:if="{{auth}}">
+  <view class="admin-page-hint">按月份管理投喂记录，内容保留自由文本格式。</view>
+  <view class="content-card" wx:if="{{editingIndex === -2}}">
+    <view class="content-title">新增月份</view>
+    <template is="record-editor" data="{{isNew:true, today, draftMonth, draftText, editorError, saving}}" />
+  </view>
+  <view class="content-card" wx:if="{{loading}}"><view class="content-note">正在加载投喂记录…</view></view>
+  <view class="content-card" wx:elif="{{loadError}}"><view class="content-text">{{loadError}}</view><view class="card-actions"><button class="form-button compact" bindtap="loadRewards">重新加载</button></view></view>
+  <view class="content-card" wx:elif="{{!rewards.length && editingIndex !== -2}}"><view class="content-note">暂无投喂记录，可在下方新增月份。</view></view>
+  <view class="content-card" wx:for="{{rewards}}" wx:key="_id">
+    <view class="section-heading"><view class="section-title">{{item.mdateStr}}</view><text class="content-note" wx:if="{{editingIndex === index}}">编辑中</text></view>
+    <template is="record-editor" wx:if="{{editingIndex === index}}" data="{{isNew:false, draftMonth, draftText, editorError, saving}}" />
+    <block wx:else>
+      <view class="content-text record-preview {{item.canExpand && !item.expanded ? 'collapsed' : ''}}"><text selectable="{{true}}">{{item.preview || '暂无内容'}}</text></view>
+      <view class="card-actions">
+        <button class="form-button compact preview-toggle" wx:if="{{item.canExpand}}" bindtap="togglePreview" data-index="{{index}}">{{item.expanded ? '收起全文' : '展开全文'}}</button>
+        <button class="form-button compact with-icon" bindtap="clickChange" data-index="{{index}}" disabled="{{editingIndex !== -1 || saving}}"><text class="iconfont icon-edit"></text><text>编辑</text></button>
+      </view>
+    </block>
+  </view>
+  <view class="fixed-action-bar"><button class="form-button primary with-icon" bindtap="addMonth" disabled="{{editingIndex !== -1 || loading || loadError || saving}}"><text class="iconfont icon-circle-plus"></text><text>新增月份</text></button></view>
+</view>
 <no-auth wx:else tip-text="{{tipText}}"></no-auth>

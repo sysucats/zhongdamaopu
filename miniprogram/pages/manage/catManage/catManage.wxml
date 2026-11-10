@@ -46,7 +46,7 @@
 
     <!-- 常出没地点管理 -->
     <view class="haunt-panel" wx:if="{{activeTab === 'haunt' && selectedCat}}">
-      <view class="haunt-title">「{{selectedCat.name}}」的常出没地点</view>
+      <view class="section-title">常出没地点</view>
       <view class="haunt-empty" wx:if="{{!selectedCat.haunts || selectedCat.haunts.length === 0}}">暂无常出没地点</view>
       <view class="haunt-item" wx:for="{{selectedCat.haunts}}" wx:key="index">
         <view class="haunt-info">
@@ -58,20 +58,20 @@
     </view>
 
     <!-- 猫咪信息编辑组件 -->
-    <cat-info-tab wx:if="{{activeTab === 'info'}}" 
-                 selected-cat="{{selectedCat}}" 
-                 cat_id="{{selectedCat._id || ''}}" 
-                 auth="{{auth}}" 
+    <cat-info-tab wx:if="{{activeTab === 'info'}}"
+                 selected-cat="{{selectedCat}}"
+                 cat_id="{{selectedCat._id || ''}}"
+                 auth="{{auth}}"
                  id="catInfoTab"
                  is-new-cat="{{isNewMode && !selectedCat}}"
-                 bind:catCreated="onCatCreated" 
-                 bind:catUpdated="onCatUpdated" 
+                 bind:catCreated="onCatCreated"
+                 bind:catUpdated="onCatUpdated"
                  bind:modeChange="onInfoTabModeChange"></cat-info-tab>
-    
+
     <!-- 浮动添加按钮 -->
     <view class="floating-actions">
       <!-- 主按钮 -->
-      <view class="iconfont {{activeTab === 'info' && (selectedCat || isNewMode) ? 'icon-check' : 'icon-circle-plus'}} action-button" 
+      <view class="iconfont {{activeTab === 'info' && (selectedCat || isNewMode) ? 'icon-check' : 'icon-circle-plus'}} cat-manage-action"
             bindtap="handleActionButtonClick"></view>
     </view>
   </view>

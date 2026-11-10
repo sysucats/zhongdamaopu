@@ -25,25 +25,10 @@ page {
   width: 430rpx;
 }
 
-.badge-desc, .badge-count {
+.badge-desc,
+.badge-count {
   font-size: 22rpx;
   color: var(--color-gray-dark);
-}
-
-
-.modify-btn {
-  height: 30rpx;
-  width: 50rpx;
-  border: 1rpx solid var(--color-primary-dark);
-  background-color: var(--color-primary);
-  color: var(--color-text-onPrimary);
-  border-radius: 10rpx;
-  padding: 10rpx 30rpx;
-  margin-left: auto;
-  line-break: strict;
-  text-align: center;
-  font-size: 24rpx;
-  line-height: 30rpx;
 }
 
 .buttons {
@@ -74,24 +59,10 @@ button.primary {
 
 .modal {
   width: 500rpx;
-  padding: 20rpx;
+  padding: 0 20rpx 20rpx;
   display: flex;
   flex-direction: column;
   align-items: center;
-}
-
-.title {
-  width: 100%;
-  text-align: center;
-  font-size: 24rpx;
-  font-weight: bold;
-}
-
-.close-btn {
-  position: absolute;
-  top: 10rpx;
-  right: 30rpx;
-  color: var(--color-gray);
 }
 
 .badge-img {
@@ -162,7 +133,6 @@ button.primary {
   left: 0;
 }
 
-
 .badge-level-A .arrow-left,
 .badge-level-A .arrow-right {
   border-right-color: var(--color-badge-A);
@@ -189,19 +159,6 @@ button.primary {
   padding: 0 10rpx;
   white-space: nowrap;
   overflow: visible;
-}
-
-
-.badge-level-A .badge-name {
-  color: var(--color-badge-A);
-}
-
-.badge-level-B .badge-name {
-  color: var(--color-badge-B);
-}
-
-.badge-level-C .badge-name {
-  color: var(--color-badge-C);
 }
 
 .desc {

@@ -1,0 +1,95 @@
+/* 胶囊外观；交互状态仅用于可点击选项。 */
+.chip,
+.tag-pill,
+.h-filter-item {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  min-height: 64rpx;
+  margin: 0;
+  padding: 8rpx 18rpx;
+  border-radius: var(--radius-pill);
+  background: var(--color-gray-light);
+  color: var(--color-black-min);
+  font-size: var(--font-size-chip);
+  font-weight: 400;
+  line-height: 1.5;
+}
+.chip::after { border: none; }
+.tag-pill {
+  flex-shrink: 0;
+  max-width: 100%;
+  white-space: nowrap;
+  background: var(--color-primary-light);
+  color: var(--color-primary-text);
+  font-weight: 400;
+}
+.chip.active,
+.h-filter-item.active {
+  background: var(--color-primary-light);
+  color: var(--color-primary-text);
+  font-weight: 500;
+}
+.chip:active:not([disabled]),
+.h-filter-item:active:not([disabled]) { background: var(--color-gray-normal); }
+.chip.active:active:not([disabled]),
+.h-filter-item.active:active:not([disabled]) { background: var(--color-primary); color: var(--color-text-onPrimary); }
+.chip[disabled],
+.h-filter-item[disabled] { background: var(--color-gray-normal); color: var(--color-gray-max); }
+
+/* 静态分类标签：文字撑宽，不承担点击状态。 */
+.relation-tag,
+.record-type,
+.medical-type-tag,
+.tags .tag {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  flex-shrink: 0;
+  max-width: 100%;
+  padding: 6rpx 14rpx;
+  border-radius: var(--radius-pill);
+  background: var(--color-primary-light);
+  color: var(--color-primary-text);
+  font-size: var(--font-size-tag);
+  font-weight: 400;
+  line-height: 1.5;
+  white-space: nowrap;
+}
+
+/* 领养状态：三个入口共用。 */
+.status-tag {
+  display: inline-flex;
+  align-items: center;
+  box-sizing: border-box;
+  padding: 6rpx 14rpx;
+  border-radius: var(--radius-pill);
+  font-size: var(--font-size-tag);
+  font-weight: 400;
+  line-height: 1.5;
+  white-space: nowrap;
+}
+.status-pending { background: var(--color-status-pending-bg); color: var(--color-status-pending-text); }
+.status-reviewing { background: var(--color-status-reviewing-bg); color: var(--color-status-reviewing-text); }
+.status-approved { background: var(--color-status-success-bg); color: var(--color-green-dark); }
+.status-rejected { background: var(--color-status-error-bg); color: var(--color-red-dark); }
+.status-cancelled { background: var(--color-gray-normal); color: var(--color-black-min); }
+
+/* 猫猫状态：各入口共用尺寸和排列。 */
+.cat-status-list {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  gap: var(--space-xs);
+}
+.cat-status-tag {
+  flex-shrink: 0;
+  min-height: 0;
+  padding: 6rpx 14rpx;
+  font-size: 22rpx;
+  line-height: 1.4;
+}

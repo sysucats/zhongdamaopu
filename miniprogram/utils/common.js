@@ -1,14 +1,13 @@
 // 存放共享功能，避免循环引用
 import { use_private_tencent_cos, sign_expires_tencent_cos } from "../config";
 import COS from '../packages/tencentcloud/cos';
-import { removeQueryParams, parseQueryParams, getDeltaHours } from './utils'
+import { removeQueryParams, parseQueryParams } from './utils'
 import { getCacheItem, setCacheItem } from "./cache";
 
 // 获取当前用户的openid
 async function getCurrentUserOpenid() {
   try {
     const app = getApp();
-    console.log("App instance:", app);
     const res = await app.mpServerless.user.getInfo({
       authProvider: 'wechat_openapi'
     });
@@ -150,34 +149,43 @@ async function signCosUrl(inputUrl) {
   // 获取缓存
   let cacheKey = `cos-sign-${url}`;
   let cacheItem = getCacheItem(cacheKey);
-  if (cacheItem) {
+  if (cacheItem && !(await _needResign(cacheItem))) {
     return cacheItem;
   }
 
   // 实际签名
   let signedUrl = await _doCosSign(url);
 
-  // 保存缓存，使用默认过期时间
-  let expireHours = sign_expires_tencent_cos / 3600; // 默认过期时间（小时）
-  setCacheItem(cacheKey, signedUrl, expireHours);
+  // URL 的签名时限可能长于 STS 凭证本身，缓存必须同时受两者约束。
+  const remaining = _cosSignExpiresAt(signedUrl) - Math.floor(Date.now() / 1000) - 60;
+  if (remaining > 0) setCacheItem(cacheKey, signedUrl, remaining / 3600);
 
   return signedUrl;
 }
 
 // 检查是否需要重新签名
 async function _needResign(url) {
-  if (!url.includes("?")) {
-    return true;
-  }
+  return _cosSignExpiresAt(url) <= Math.floor(Date.now() / 1000) + 60;
+}
 
-  let params = parseQueryParams(url);
-  let signTime = parseInt(params["q-sign-time"]);
-  // 检查是否有签名，签名是否过期
-  if (!signTime || getDeltaHours(signTime) * 3600 > sign_expires_tencent_cos) {
-    return true;
+function _cosSignExpiresAt(url) {
+  if (!url || !url.includes('?')) return 0;
+  const params = parseQueryParams(url);
+  if (!params['q-signature'] || !params['q-ak']) return 0;
+  const now = Math.floor(Date.now() / 1000);
+  const ends = ['q-sign-time', 'q-key-time'].map(key => {
+    const [start, end] = String(params[key] || '').split(';').map(Number);
+    return Number.isFinite(start) && Number.isFinite(end) && start <= now + 60 && end > start ? end : 0;
+  });
+  if (params['x-cos-security-token']) {
+    const token = wx.getStorageSync('cosTemp');
+    // 旧缓存没有记录其 STS 到期时间；凭证已轮换时用当前凭证重新签名。
+    if (!token?.Credentials || params['q-ak'] !== token.Credentials.TmpSecretId) return 0;
+    const expires = Number(token.ExpiredTime) || Date.parse(token.Expiration) / 1000;
+    if (!Number.isFinite(expires) || expires <= 0) return 0;
+    ends.push(expires);
   }
-
-  return false;
+  return Math.min(...ends);
 }
 
 
@@ -185,7 +193,7 @@ async function _needResign(url) {
 async function _doCosSign(url) {
   const app = getApp();
   const cosInfo = _getRegionBucketPath(url);
-  return new Promise((resolve) => {
+  return new Promise((resolve, reject) => {
     app.cos.getObjectUrl({
       Bucket: cosInfo.bucket, /* 填入您自己的存储桶，必须字段 */
       Region: cosInfo.region, /* 存储桶所在地域，例如 ap-beijing，必须字段 */
@@ -195,7 +203,7 @@ async function _doCosSign(url) {
     }, function (err, data) {
       if (err) {
         console.error(err);
-        resolve(url)
+        reject(err)
         return;
       }
       // console.log("[signCosUrl]", data.Url);

@@ -1,0 +1,22 @@
+<view class="achievement-detail" wx:if="{{achievement}}">
+  <view class="badge-hero">
+    <view class="award-stamp" wx:if="{{stampDay}}">
+      <view class="stamp-ring">
+        <text class="stamp-caption">已点亮</text>
+        <text class="stamp-day">{{stampDay}}</text>
+        <text class="stamp-year">{{stampYear}}</text>
+      </view>
+      <view class="stamp-waves"><view class="stamp-wave"></view><view class="stamp-wave"></view><view class="stamp-wave"></view></view>
+    </view>
+    <view class="badge-art {{achievement.unlocked ? '' : 'locked'}}"><achievementBadge front="{{achievement.frontImage}}" back="{{achievement.backImage}}" size="360" /></view>
+  </view>
+  <view class="badge-name">{{achievement.name}}</view>
+  <view class="condition-card">
+    <view class="condition-top">
+      <view class="condition-title">{{achievement.desc}}</view>
+      <view class="condition-status">{{achievement.unlocked ? '已达成' : (achievement.currentCount !== null && achievement.currentCount >= achievement.threshold ? '已达条件' : '未解锁')}}</view>
+    </view>
+    <view class="condition-progress" wx:if="{{progress !== null}}">{{achievement.unlocked ? '完成进度' : '当前进度'}}：{{progress}}/{{achievement.threshold}} {{achievement.unit}}</view>
+    <view class="condition-progress" wx:else>进度暂不可用</view>
+  </view>
+</view>

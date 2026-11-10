@@ -29,7 +29,7 @@ import { showMpcode } from "../../../utils/mpcode";
 import { signCosUrl } from "../../../utils/common";
 import api from "../../../utils/cloudApi";
 import { isDemoMode, getDemoCat } from "../../../utils/demo";
-import { trackViewCat, trackFollow } from "../../../utils/achievement";
+import { trackViewCat, refreshAchievements } from "../../../utils/achievement";
 
 const app = getApp();
 
@@ -991,7 +991,7 @@ Page({
 
     // 成就：关注猫猫
     if (res && !followedCat) {
-      trackFollow((this.data.user.followCats || []).length);
+      refreshAchievements();
     }
   },
 

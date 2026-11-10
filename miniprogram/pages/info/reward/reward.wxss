@@ -1,68 +1,40 @@
-/* miniprogram/pages/info/reward/reward.wxss */
+@import "/pages/public/wxss/card.wxss";
+@import "/pages/public/wxss/button.wxss";
 
-.block {
-  width: 690rpx;
-  margin: 50rpx 30rpx 0 30rpx;
-  padding: 50rpx 30rpx 25rpx 30rpx;
-  box-sizing: border-box;
-  border-radius: 10rpx;
-  box-shadow: 0 0 10rpx var(--color-gray-max);
-  position: relative;
+page { background: var(--color-gray-light); }
+.reward-actions .form-button {
+  flex: 1;
+  width: 0;
+  min-width: 0;
+}
+.reward-note { margin: calc(0rpx - var(--space-sm)) 0 var(--space-md); }
+
+.month-toggle {
   display: flex;
-  justify-content: center;
-  align-content: center;
+  align-items: center;
+  justify-content: space-between;
   flex-wrap: wrap;
-}
-
-.block .title {
-  font-size: 28rpx;
-  font-weight: 500;
-  background-color: var(--color-primary);
-  color: var(--color-text-onPrimary);
-  display: inline-block;
-  padding: 10rpx;
-  box-shadow: 0 0 10rpx var(--color-gray-max);
-  position: absolute;
-  top: -20rpx;
-  left: -15rpx;
-}
-
-.block .desc {
+  gap: var(--space-xs) var(--space-sm);
   width: 100%;
-  font-size: 26rpx;
+  margin: 0;
+  padding: 0;
+  background: transparent;
+  text-align: left;
+  line-height: 1.5;
+}
+.month-toggle::after { border: none; }
+.month-toggle:active { opacity: 0.65; }
+.month-label {
   color: var(--color-black-light);
-  line-height: 50rpx;
-  margin-bottom: 10rpx;
-}
-
-.block .hl {
+  font-size: var(--font-size-section);
   font-weight: 600;
-  /* background-color: lightgoldenrodyellow; */
-  text-align: center;
 }
-
-.block .buttons {
-  width: 100%;
+.month-disclosure {
   display: flex;
+  align-items: center;
+  gap: var(--space-xs);
 }
-
-button {
-  font-size: 30rpx;
-  line-height: 40rpx;
-  margin: 10rpx;
-  padding: 16rpx 30rpx;
-  border: 1rpx solid var(--color-gray-max);
-  border-radius: 25rpx;
-}
-
-button.primary {
-  background-color: var(--color-primary);
-  color: var(--color-text-onPrimary);
-}
-
-/* 最后的小tip */
-.tip {
-  font-size: 28rpx;
-  margin: 15rpx 40rpx;
-  color: var(--color-gray-max);
-}
+.month-disclosure .iconfont { font-size: 28rpx; }
+.month-disclosure .expanded { transform: rotate(180deg); }
+.month-body { margin-top: var(--space-lg); }
+.record-paragraph + .record-paragraph { margin-top: var(--space-sm); }

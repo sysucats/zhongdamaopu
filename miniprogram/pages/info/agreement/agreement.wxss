@@ -1,13 +1,4 @@
-/* pages/info/agreement/agreement.wxss */
+@import "/pages/public/wxss/card.wxss";
 
-.title {
-  font-size: 50rpx;
-  text-align: center;
-}
-
-.agreement {
-  width: 750rpx;
-  margin: 30rpx 0;
-  font-size: 28rpx;
-  box-sizing: border-box;
-}
+page { background: var(--color-gray-light); }
+.agreement { display: block; }

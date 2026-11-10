@@ -50,22 +50,26 @@
     </view>
 
     <view class="tags">
-      <text class='tag' wx:if="{{cat.adopt != undefined}}">{{adopt_desc[cat.adopt]}}</text>
-      <text class='tag'>{{cat.sterilized? text_cfg.detail_cat.sterilized_true: text_cfg.detail_cat.sterilized_false}}</text>
-      <text class='tag to_star' wx:if='{{cat.to_star}}'>{{text_cfg.genealogy.to_star_tip}}</text>
-      <text class='tag to_star' wx:if='{{cat.missing}}'>{{text_cfg.genealogy.missing_tip}}</text>
-
-      <view class="mpcode" bindtap="bingMpTap">
+      <view class="cat-status-list">
+        <view class="tag-pill cat-status-tag {{cat.adopt === 1 ? 'status-approved' : cat.adopt === 2 ? 'status-pending' : 'status-cancelled'}}" wx:if="{{cat.adopt != undefined}}">{{adopt_desc[cat.adopt]}}</view>
+        <view class="tag-pill cat-status-tag {{cat.sterilized ? 'status-approved' : 'status-pending'}}">{{cat.sterilized? text_cfg.detail_cat.sterilized_true: text_cfg.detail_cat.sterilized_false}}</view>
+        <view class="tag-pill cat-status-tag status-cancelled" wx:if="{{cat.to_star}}">{{text_cfg.genealogy.to_star_tip}}</view>
+        <view class="tag-pill cat-status-tag status-pending" wx:if="{{cat.missing}}">{{text_cfg.genealogy.missing_tip}}</view>
+      </view>
+      <view class="mpcode" bindtap="bingMpTap" aria-role="button" aria-label="查看猫猫二维码">
         <view class='iconfont icon-qrcode'></view>
       </view>
     </view>
 
-    <!-- 领养横幅：寻找领养中时展示 -->
-    <view class="adopt-banner" wx:if="{{cat.adopt === 2}}" bindtap="toApplyAdoption">🐱 我在等一个家，点我申请领养 →</view>
+    <!-- 领养入口：寻找领养中时展示 -->
+    <button class="form-button with-icon adopt-banner" wx:if="{{cat.adopt === 2}}" bindtap="toApplyAdoption" aria-label="申请领养">
+      <text class="iconfont icon-home"></text>
+      <text>我在等一个家，点我申请领养</text>
+    </button>
     <view class='details'>
 
       <!-- 基本信息 -->
-      <view class="card">
+      <view class="content-card card">
         <view class="card-header">
           <view class="card-title">
             <view class="iconfont icon-id"></view>
@@ -146,7 +150,7 @@
       </view>
 
       <!-- 医疗记录 -->
-      <view class="card medical-card" wx:if="{{medicalTimeline.length || is_manager}}">
+      <view class="content-card card medical-card" wx:if="{{medicalTimeline.length || is_manager}}">
         <view class="card-header">
           <view class="card-title">
             <view class="iconfont icon-report-medical"></view>
@@ -175,7 +179,7 @@
 
 
       <!-- 徽章口袋 --> 
-      <view class="card" wx:if="{{showBadge}}">
+      <view class="content-card card" wx:if="{{showBadge}}">
         <view class="card-header">
           <view class="card-title">
             <view class="iconfont icon-diamond"></view>
@@ -203,7 +207,7 @@
       </view>
 
       <!-- 关系 -->
-      <view class="card" wx:if="{{is_manager || (cat.relations && cat.relations.length)}}">
+      <view class="content-card card" wx:if="{{is_manager || (cat.relations && cat.relations.length)}}">
         <view class="card-header">
           <view class="card-title">
             <view class="iconfont icon-relation"></view>
@@ -277,10 +281,7 @@
     <image class="icon" src='/pages/public/images/button/plus.svg'></image>
   </view>
   <popup show="{{showFunc}}" bind:close="closeFunction">
-    <view class="withdrawbtn" bindtap="closeFunction">
-      <!-- <image class="withdraw" src="/pages/public/images/button/withdraw.png"></image> -->
-      <view class="iconfont icon-arrow-down"></view>
-    </view>
+    <button class="withdrawbtn" bindtap="closeFunction" hover-class="withdraw-hover" aria-label="收起操作菜单"><image class="withdraw" src="/pages/public/images/button/withdraw.png" mode="aspectFit"></image></button>
     <view class="buttons"> 
       <view class="button" bindtap='toComment'>
         <image class="icon" src='/pages/public/images/button/comment.svg'></image>
@@ -314,6 +315,7 @@
 
 <!-- 赠予徽章弹出框 -->
 <popup show="{{showGiveBadge}}" bind:close="hideGiveBadge">
+  <popup-header title="赠予徽章" close-position="none" />
   <scroll-view class="user-badge-list" scroll-y="1" enable-flex="1">
     <view class="user-badge-item badge-level-{{item.level}} {{item.count === 0? 'zero-count': ''}} {{activeUserBadge === index? 'active': ''}}" wx:for="{{userBadges}}" wx:key="name" bindtap="bindTapUserBadge" data-index="{{index}}">
       <image class="user-badge-item-avatar" src="{{item.img}}" mode="aspectFill" />
@@ -330,10 +332,7 @@
 <!-- 医疗记录时间线弹出层 -->
 <popup show="{{showMedicalHistory}}" position="center" bind:close="hideMedicalHistory">
   <view class="modal-content-wrapper">
-    <view class="modal-header">
-      <view>{{cat.name}}的医疗记录</view>
-      <view class="modal-close" bindtap="hideMedicalHistory">×</view>
-    </view>
+    <popup-header title="{{cat.name}}的医疗记录" bind:close="hideMedicalHistory" />
     <scroll-view class="modal-body" scroll-y="1">
       <view class="medical-timeline" wx:if="{{medicalTimeline && medicalTimeline.length}}">
         <view class="timeline-item" wx:for="{{medicalTimeline}}" wx:key="_id">
@@ -364,3 +363,5 @@
 
 <!-- 海报图弹窗组件 -->
 <poster id="posterComponent" cat="{{cat}}" coverImg="{{cat.avatar}}" zindex="3"></poster>
+
+<achievement-unlock id="achievement-unlock" />

@@ -1,5 +1,10 @@
 {
   "navigationBarTitleText": "我的成就",
   "backgroundColor": "#f7f7f7",
-  "usingComponents": {}
+  "usingComponents": {
+    "popup": "/components/popup/popup",
+    "achievementDetail": "/components/achievementDetail/achievementDetail",
+    "achievement-unlock": "/components/achievementUnlock/achievementUnlock",
+    "popup-header": "/components/popupHeader/popupHeader"
+  }
 }

@@ -1,48 +1,57 @@
-<!-- 我的足迹 -->
-<view class="page">
-  <view class="tabs">
-    <view class="tab {{activeTab === item.key ? 'active' : ''}}" wx:for="{{tabs}}" wx:key="key" data-key="{{item.key}}" bindtap="switchTab">{{item.name}}</view>
-  </view>
+<footprintOverview id="footprint-overview" wx:if="{{viewMode === 'overview'}}" openid="{{myOpenid}}" />
 
-  <!-- 我拍的照片 -->
-  <block wx:if="{{activeTab === 'photos'}}">
-    <view class="stats-bar" wx:if="{{photoStats}}">已拍 {{photoStats.total}} 张照片 · 其中 {{photoStats.best}} 张获精选</view>
-    <view class="empty" wx:if="{{!loading && photos.length === 0}}">还没有上传过照片</view>
-    <view class="photo-grid">
-      <view class="photo-item" wx:for="{{photos}}" wx:key="_id">
-        <image class="photo-img" src="{{item.url}}" mode="aspectFill" bindtap="previewPhoto" data-url="{{item.url}}" />
+<view class="page list-page" wx:if="{{viewMode !== 'overview'}}">
+  <view class="footprint-section" wx:if="{{viewMode === 'photos'}}">
+    <view class="stats-bar" wx:if="{{photoStats && photoSort !== 'likes'}}">已拍 <text class="stats-number">{{photoStats.total}}</text> 张照片 <text class="stats-separator">·</text> 精选 <text class="stats-number">{{photoStats.best}}</text> 张</view>
+    <view class="page-state" wx:if="{{photosLoading && photos.length === 0}}">加载中...</view>
+    <view class="page-state" wx:if="{{!photosLoading && photos.length === 0}}">还没有上传过照片</view>
+    <view class="photo-grid" wx:if="{{displayPhotos.length > 0}}">
+      <view class="photo-item" wx:for="{{displayPhotos}}" wx:key="_id">
+        <view class="photo-cover">
+          <image class="photo-img" src="{{item.url}}" mode="aspectFill" bindtap="previewPhoto" data-url="{{item.url}}" />
+          <view class="mosaic-likes" catchtap="likePhoto" data-item-id="{{item._id}}" aria-role="button" aria-label="{{item.liked ? '已点赞' : '点赞照片'}}">
+            <view class="footprint-heart-viewport"><view class="footprint-heart-sprite"><heart size="80" liked="{{item.liked}}"></heart></view></view>
+            <text>{{item.like_count || 0}}</text>
+          </view>
+        </view>
         <view class="photo-info">
-          <view class="photo-cat" bindtap="toCatDetail" data-cat_id="{{item.cat_id}}">{{item.cat.name || '未知猫咪'}} →</view>
-          <view class="photo-meta">{{item.create_date_formatted}} · {{item.status_desc}}</view>
+          <view class="photo-cat" bindtap="toCatDetail" data-cat_id="{{item.cat_id}}">{{item.cat.name || '未知猫咪'}}</view>
+          <view class="photo-time">{{item.create_date_formatted}}</view>
+          <view class="photo-meta">
+            <view class="photo-status {{item.status_type}}">
+              <text class="iconfont {{item.status_icon}}"></text>
+              <text>{{item.status_desc}}</text>
+            </view>
+          </view>
         </view>
       </view>
     </view>
-    <view class="load-more-tip" wx:if="{{!loading && photosNoMore && photos.length > 0}}">— 没有更多了 —</view>
-  </block>
+    <view class="load-more-tip" wx:if="{{!photosLoading && photosNoMore && photos.length > 0}}">— 没有更多了 —</view>
+  </view>
 
-  <!-- 拍过的猫咪 -->
-  <block wx:if="{{activeTab === 'cats'}}">
-    <view class="empty" wx:if="{{!loading && cats.length === 0}}">还没有拍过猫咪</view>
-    <view class="cat-card" wx:for="{{cats}}" wx:key="_id" bindtap="toCatDetail" data-cat_id="{{item._id}}">
-      <image class="cat-avatar" src="{{item.avatar.photo_compressed || item.avatar.photo_id}}" mode="aspectFill" wx:if="{{item.avatar}}" />
-      <view class="cat-avatar placeholder" wx:else></view>
-      <view class="cat-info">
-        <view class="cat-name">{{item.name}}</view>
-        <view class="cat-desc">{{item.campus}} {{item.area}}</view>
-      </view>
-      <view class="cat-count">{{item.my_photo_count}}张</view>
+  <view class="footprint-section" wx:if="{{viewMode === 'comments'}}">
+    <view class="page-state" wx:if="{{commentsLoading && comments.length === 0}}">加载中...</view>
+    <view class="page-state" wx:if="{{!commentsLoading && comments.length === 0}}">还没有写过便利贴</view>
+    <view class="footprint-list notes" wx:if="{{displayComments.length > 0}}">
+      <comment-paper class="comment-card" wx:for="{{displayComments}}" wx:key="_id" item="{{item}}" header-mode="cat" bind:open="toCommentBoard" data-cat_id="{{item.cat_id}}" bind:like="likeComment" data-item-id="{{item._id}}" />
     </view>
-  </block>
+  </view>
 
-  <!-- 我的便利贴 -->
-  <block wx:if="{{activeTab === 'comments'}}">
-    <view class="empty" wx:if="{{!loading && comments.length === 0}}">还没有写过便利贴</view>
-    <view class="comment-card" wx:for="{{comments}}" wx:key="_id" bindtap="toCommentBoard" data-cat_id="{{item.cat_id}}">
-      <view class="comment-content">{{item.content}}</view>
-      <view class="comment-footer">
-        <view class="comment-cat">{{item.cat.name || '未知猫咪'}}的便利贴墙 →</view>
-        <view class="comment-time">{{item.datetime}} {{item.status_desc}}</view>
+  <view class="footprint-section" wx:if="{{viewMode === 'cats'}}">
+    <view class="page-state" wx:if="{{catsLoading && cats.length === 0}}">加载中...</view>
+    <view class="page-state" wx:if="{{!catsLoading && cats.length === 0}}">还没有拍过猫咪</view>
+    <view class="footprint-list" wx:if="{{displayCats.length > 0}}">
+      <view class="cat-card" wx:for="{{displayCats}}" wx:key="_id" bindtap="toCatDetail" data-cat_id="{{item._id}}">
+        <image class="cat-avatar" src="{{item.avatar.photo_compressed || item.avatar.photo_id}}" mode="aspectFill" wx:if="{{item.avatar}}" />
+        <image class="cat-avatar placeholder" src="/pages/public/images/info/btn/cat_head.png" mode="aspectFit" wx:else />
+        <view class="cat-info">
+          <view class="cat-name">{{item.name}}</view>
+          <view class="cat-desc">{{item.campus}} {{item.area}}</view>
+        </view>
+        <view class="cat-count">{{item.my_photo_count}}张</view>
       </view>
     </view>
-  </block>
+  </view>
 </view>
+
+<achievement-unlock id="achievement-unlock" />

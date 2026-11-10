@@ -1,5 +1,5 @@
 /* pages/tools/inviteUser/inviteUser.wxss */
-@import "/pages/public/wxss/form.wxss";
+@import "/pages/public/wxss/button.wxss";
 
 page {
   display: flex;
@@ -14,6 +14,7 @@ page {
   color: var(--color-black-min);
 }
 
-button {
-  margin-top: 20rpx;
+.invite-action {
+  width: 45%;
+  margin: 20rpx auto 0;
 }

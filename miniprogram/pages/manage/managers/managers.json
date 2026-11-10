@@ -1,6 +1,8 @@
 {
   "usingComponents": {
-    "no-auth": "/components/noAuth/noAuth"
+    "no-auth": "/components/noAuth/noAuth",
+    "popup": "/components/popup/popup",
+    "popup-header": "/components/popupHeader/popupHeader"
   },
   "navigationBarTitleText": "人员管理"
 }

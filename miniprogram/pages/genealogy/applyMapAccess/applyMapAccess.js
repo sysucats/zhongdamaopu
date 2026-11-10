@@ -41,7 +41,8 @@ Page({
         isAuth: true,
         photoCount: 5,
         commentCount: 3,
-        meetRequirement: true,
+        meetRequirement: 8 >= this.data.minRequired,
+        autoPass: 8 >= this.data.autoPassCount,
         applyStatus: 'none',
       });
       return;

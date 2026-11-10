@@ -1,71 +1,31 @@
-/* miniprogram/pages/info/devTeam/devTeam.wxss */
-/* 以下为 pages/info/reward/reward.wxss 的内容拷贝（分包隔离，不能直接 @import 跨包文件）——原 pages/info/devTeam/devTeam.wxss 中 @import */
-/* miniprogram/pages/info/reward/reward.wxss */
+@import "/pages/public/wxss/card.wxss";
 
-.block {
-  width: 690rpx;
-  margin: 50rpx 30rpx 0 30rpx;
-  padding: 50rpx 30rpx 25rpx 30rpx;
-  box-sizing: border-box;
-  border-radius: 10rpx;
-  box-shadow: 0 0 10rpx var(--color-gray-max);
-  position: relative;
+page { background: var(--color-gray-light); }
+.source-row {
   display: flex;
-  justify-content: center;
-  align-content: center;
-  flex-wrap: wrap;
-}
-
-.block .title {
-  font-size: 28rpx;
-  font-weight: 500;
-  background-color: var(--color-primary);
-  color: var(--color-text-onPrimary);
-  display: inline-block;
-  padding: 10rpx;
-  box-shadow: 0 0 10rpx var(--color-gray-max);
-  position: absolute;
-  top: -20rpx;
-  left: -15rpx;
-}
-
-.block .desc {
+  align-items: center;
+  gap: var(--space-sm);
   width: 100%;
-  font-size: 26rpx;
-  color: var(--color-black-light);
-  line-height: 50rpx;
-  margin-bottom: 10rpx;
+  min-height: 88rpx;
+  min-height: max(88rpx, 44px);
+  margin: var(--space-sm) 0 0;
+  padding: 0;
+  background: transparent;
+  text-align: left;
+  line-height: 1.75;
 }
-
-.block .hl {
-  font-weight: 600;
-  /* background-color: lightgoldenrodyellow; */
-  text-align: center;
+.source-row::after { border: none; }
+.source-row:active { opacity: 0.65; }
+.source-link {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--color-primary-text);
 }
-
-.block .buttons {
-  width: 100%;
-  display: flex;
+.source-copy {
+  flex-shrink: 0;
+  color: var(--color-primary-text);
+  font-size: 32rpx;
 }
-
-button {
-  font-size: 30rpx;
-  line-height: 40rpx;
-  margin: 10rpx;
-  padding: 16rpx 30rpx;
-  border: 1rpx solid var(--color-gray-max);
-  border-radius: 25rpx;
-}
-
-button.primary {
-  background-color: var(--color-primary);
-  color: var(--color-text-onPrimary);
-}
-
-/* 最后的小tip */
-.tip {
-  font-size: 28rpx;
-  margin: 15rpx 40rpx;
-  color: var(--color-gray-max);
-}
-/* pages/info/reward/reward.wxss 内容拷贝结束 */

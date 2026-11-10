@@ -1,283 +1,72 @@
 @import "../adminPage.wxss";
+@import "/pages/public/wxss/formControls.wxss";
+@import "/pages/public/wxss/review.wxss";
+@import "/pages/public/wxss/iconfont.wxss";
 
 page {
-  width: 750rpx;
-  padding: 35rpx 35rpx 150rpx;
   box-sizing: border-box;
+  padding: var(--space-md) var(--space-lg)
+    calc(var(--space-lg) + env(safe-area-inset-bottom));
+  background: var(--color-gray-light);
 }
-
-button {
-  width: 47%;
-  display: inline-block;
-  font-size: 30rpx;
-  box-sizing: border-box;
-}
-
-button.primary {
-  background-color: var(--color-primary);
-  color: var(--color-text-onPrimary);
-}
-
-button + button {
-  margin-left: 5%;
-}
-
-/* 审核过程记录：独占一行 */
-button.long {
-  margin: 16rpx 0 0;
-  width: 100%;
-}
-
-button.btn-note {
-  color: #1890ff;
-  border: 1rpx solid #1890ff;
-  background: #fff;
-}
-
-button.btn-reject {
-  color: #f5222d;
-  border: 1rpx solid #f5222d;
-  background: #fff;
-}
-
-/* 按钮行：拒绝/通过、取消/确认 —— 等宽铺满，两端对齐 */
-.action-row,
-.panel-buttons {
-  display: flex;
-  justify-content: space-between;
-  gap: 24rpx;
-}
-
-.action-row { margin-top: 16rpx; }
-.panel-buttons { margin-top: 24rpx; }
-
-/* 覆盖全局 button 的固定宽度与 + 号间距，改由 flex 均分 */
-.action-row button,
-.panel-buttons button {
-  flex: 1;
-  width: auto;
-  margin: 0;
-}
-
-.empty {
-  text-align: center;
-  color: #999;
-  font-size: 28rpx;
-  padding: 100rpx 0;
-}
-
-/* 审核面板（内嵌） */
-.review-panel {
-  background: #fff;
-  border-radius: 20rpx;
-  padding: 30rpx;
-  margin-bottom: 40rpx;
-  box-shadow: 0rpx 0rpx 30rpx var(--color-gray);
-  border: 2rpx solid var(--color-primary);
-  box-sizing: border-box;
-}
-
-.panel-title {
-  font-size: 32rpx;
-  font-weight: bold;
-  text-align: center;
-}
-
-.panel-desc {
-  font-size: 26rpx;
-  color: #666;
-  text-align: center;
-  margin-top: 12rpx;
-}
-
-.panel-textarea {
-  background: #f7f7f7;
-  border-radius: 12rpx;
-  padding: 20rpx;
-  width: 100%;
-  height: 160rpx;
-  box-sizing: border-box;
-  font-size: 26rpx;
-  margin-top: 24rpx;
-}
-
-/* 申请卡片（复用 verify-box 骨架） */
-.verify-box {
-  box-sizing: border-box;
-  margin-bottom: 50rpx;
-  padding: 40rpx 40rpx 30rpx 40rpx;
-  box-shadow: 0rpx 0rpx 30rpx var(--color-gray);
-  border-radius: 20rpx;
-  background-color: #FFFFFF;
-}
-
-.line {
+.adoption-empty { padding: 100rpx 0; text-align: center; }
+.applicant-meta { justify-content: flex-end; }
+.adoption-contact {
   display: flex;
   align-items: center;
-  font-size: 32rpx;
-  font-weight: bold;
-  color: var(--color-black-light);
-  margin-bottom: 16rpx;
+  gap: var(--space-sm);
+  margin-top: var(--space-xs);
+  color: var(--color-black-min);
+  font-size: var(--font-size-body);
+  line-height: 1.6;
 }
-
-.line image.icon {
-  height: 40rpx;
-  width: 40rpx;
-  min-width: 40rpx;
-  margin-right: 15rpx;
-}
-
-.line image.icon.cat-avatar {
-  width: 56rpx;
-  height: 56rpx;
-  min-width: 56rpx;
-  border-radius: 50%;
-  background: #f5f5f5;
-}
-
-.line text {
-  text-decoration: underline;
-}
-
-/* 状态徽章 */
-.status-badge {
-  font-size: 22rpx;
-  font-weight: normal;
-  padding: 6rpx 20rpx;
-  border-radius: 24rpx;
-  margin-left: auto;
-  flex-shrink: 0;
-}
-
-.status-pending { background: #fff7e6; color: #fa8c16; }
-.status-reviewing { background: #e6f7ff; color: #1890ff; }
-.status-approved { background: #f6ffed; color: #52c41a; }
-.status-rejected { background: #fff1f0; color: #f5222d; }
-.status-cancelled { background: #f5f5f5; color: #999; }
-
-.status-bg-pending { background: #fa8c16; }
-.status-bg-reviewing { background: #1890ff; }
-.status-bg-approved { background: #52c41a; }
-.status-bg-rejected { background: #f5222d; }
-.status-bg-cancelled { background: #999; }
-
-/* 气泡（复用 checkFeedbacks 结构） */
-.bubble1, .bubble2 {
-  margin-bottom: 12rpx;
-}
-
-.bubble1 .date, .bubble2 .date {
-  font-size: 28rpx;
-  color: var(--color-gray-max);
-  text-align: left;
-}
-
-.bubble1 .name, .bubble2 .name {
-  font-size: 28rpx;
+.contact-label { margin-top: var(--space-md); }
+.contact-copy { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+.latest-review { margin-top: var(--space-md); }
+.latest-review .review-content { margin-top: var(--space-xs); }
+.review-log { margin-top: var(--space-md); }
+.form-button.log-toggle {
+  width: 100%;
+  justify-content: flex-start;
+  background: transparent;
+  padding: 0;
   color: var(--color-gray-max);
 }
-
-.bubble1 .name { text-align: left; }
-.bubble2 .name { text-align: left; }
-
-.bubble1 .floating, .bubble2 .floating {
-  width: max-content;
-  max-width: 90%;
-}
-
-.bubble1 .floating { margin: 0; }
-.bubble2 .floating { margin: 0 auto 0 0; }
-
-.bubble1 .floating::after, .bubble2 .floating::after {
-  display: block;
-  content: "";
-  clear: both;
-}
-
-.bubble1 .floating .content, .bubble2 .floating .content {
-  clear: both;
+.log-toggle .iconfont:last-child { margin-left: auto; }
+.review-log-item {
   position: relative;
-  border-radius: 8rpx;
-  padding: 12rpx 20rpx;
-  font-size: 30rpx;
-  line-height: 1.5;
+  display: flex;
+  gap: var(--space-sm);
+  padding: var(--space-sm) 0;
 }
-
-.bubble1 .floating .content {
-  float: left;
-  background: var(--color-gray);
-}
-
-.bubble2 .floating .content {
-  float: left;
-  background: var(--color-primary);
-  color: var(--color-text-onPrimary);
-}
-
-.bubble1 .floating .footer {
-  float: left;
-  clear: both;
-  background-color: var(--color-gray-light);
-  font-size: 28rpx;
-  border-radius: 8rpx;
-  padding: 4rpx 20rpx;
-  margin-top: 4rpx;
-}
-
-/* 流转记录 */
-.timeline-toggle {
-  font-size: 24rpx;
-  color: var(--color-primary-text);
-  margin: 12rpx 0;
-  text-align: left;
-}
-
-.timeline {
-  border-left: 4rpx solid #f0f0f0;
-  margin: 12rpx 0 12rpx 10rpx;
-  padding-left: 24rpx;
-}
-
-.timeline-item {
-  position: relative;
-  padding-bottom: 24rpx;
-}
-
-.timeline-dot {
+.review-log-item:not(:last-child)::after {
+  content: '';
   position: absolute;
-  left: -32rpx;
-  top: 8rpx;
-  width: 14rpx;
-  height: 14rpx;
-  border-radius: 50%;
+  left: 19rpx;
+  top: 56rpx;
+  bottom: -16rpx;
+  width: 2rpx;
+  background: var(--color-gray-normal);
 }
-
-.timeline-head {
+.log-status-icon {
+  position: relative;
+  z-index: 1;
   display: flex;
-  justify-content: space-between;
   align-items: center;
-}
-
-.timeline-status {
-  font-size: 26rpx;
-  font-weight: bold;
-  color: #333;
-}
-
-.timeline-time {
-  font-size: 22rpx;
-  color: #999;
-}
-
-.timeline-note {
-  font-size: 24rpx;
-  color: #666;
-  margin-top: 6rpx;
+  justify-content: center;
+  width: 40rpx;
+  height: 40rpx;
+  flex-shrink: 0;
+  font-size: 30rpx;
   line-height: 1.5;
+  background: var(--color-surface);
 }
-
-.timeline-operator {
-  font-size: 22rpx;
-  color: #999;
-  margin-top: 4rpx;
-}
+.log-copy { flex: 1; min-width: 0; }
+.log-heading { display: flex; justify-content: space-between; flex-wrap: wrap; gap: var(--space-xs); font-size: var(--font-size-caption); font-weight: 500; }
+.log-note { margin: var(--space-xs) 0; font-size: var(--font-size-caption); }
+.card-actions .reject-action { margin-right: auto; }
+.adoption-editor { padding: 0 var(--space-md); }
+.editor-body { padding: 0 0 calc(var(--space-lg) + env(safe-area-inset-bottom)); }
+.editor-body .description-input { border: 1rpx solid var(--color-gray-normal); }
+.editor-parties { display: flex; align-items: center; flex-wrap: wrap; gap: var(--space-xs); }
+.editor-parties .iconfont { color: var(--color-gray-max); font-size: 30rpx; }

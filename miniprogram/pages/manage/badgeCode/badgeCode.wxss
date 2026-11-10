@@ -1,15 +1,47 @@
 /* pages/manage/badgeCode/badgeCode.wxss */
-@import "../badgeDef/badgeDef.wxss";
+page {
+  background: var(--color-gray-light);
+}
+.code-page {
+  padding: 24rpx var(--space-lg) 60rpx;
+}
+.code-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16rpx;
+  min-height: 72rpx;
+}
+.code-title {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: var(--color-black-light);
+}
+.code-create {
+  display: flex;
+  align-items: center;
+  gap: 10rpx;
+  min-height: 72rpx;
+  padding-left: 16rpx;
+  color: var(--color-primary-text);
+  font-size: 25rpx;
+}
+.code-create .iconfont {
+  font-size: 30rpx;
+}
+.action-pressed {
+  opacity: 0.65;
+}
 
 .code-group {
-  width: 690rpx;
-  margin: 30rpx;
-  border-radius: 20rpx;
-  background-color: white;
+  margin: 24rpx 0;
+  border-radius: var(--radius-xl);
+  background-color: #fff;
+  overflow: hidden;
 }
 
 .code-info {
-  padding: 10rpx 30rpx;
+  padding: 24rpx;
   border-bottom: 1rpx solid var(--color-gray-light);
 }
 
@@ -17,20 +49,27 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 16rpx;
+  margin-bottom: 12rpx;
 }
 
 .code-info-taskid {
   font-size: 24rpx;
+  min-width: 0;
+  overflow-wrap: break-word;
 }
 
 .code-btn {
   font-size: 22rpx;
+  color: var(--color-black-min);
   text-decoration: underline;
+  padding: 12rpx 0;
 }
 
 .code-info-item {
-  font-size: 18rpx;
-  color: var(--color-gray-dark);
+  font-size: 22rpx;
+  color: var(--color-gray-max);
+  line-height: 1.6;
 }
 
 /* 单个码 */
@@ -40,6 +79,8 @@
   align-items: center;
   font-size: 20rpx;
   text-align: center;
+  min-height: 72rpx;
+  border-bottom: 1rpx solid var(--color-gray-light);
 }
 
 .code-item-valid {

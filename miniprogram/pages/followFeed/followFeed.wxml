@@ -22,7 +22,7 @@
 
   <view class="selected-cat" wx:if="{{currentCatId}}">
     <view class="cat-name">{{currentCatName}}的动态：</view>
-    <view class="iconfont icon-cross" bind:tap="closeThisCatFeed"></view>
+    <view class="iconfont icon-close" bind:tap="closeThisCatFeed"></view>
   </view>
   
   <block wx:for="{{feed}}" wx:for-item="feedItem" wx:key="_id" wx:for-index="outerIndex" data-feed-index="{{outerIndex}}">
@@ -89,39 +89,7 @@
           </view>
         </view>
       </view>
-    <view wx:for="{{feedItem.items}}" wx:key="_id" class="comment {{item.paper_color}} {{item.needVerify? 'need-verify': ''}}" style="transform: rotate({{item.rotate || 0}}deg);">
-      <view class="wavy-line"></view>
-      <view class="paper">
-        <view class="user-info">
-          <view class="user-avatar">
-            <image wx:if="{{ item.userInfo}}" class="avatar" src="{{item.userInfo.avatarUrl}}" mode='aspectFit' lazy-load="true"></image>
-            <image wx:else class="avatar" src="/pages/public/images/app_logo.png" mode='aspectFit' lazy-load="true"></image>
-          </view>
-          <view class="username">
-            {{item.userInfo.nickName || '-'}}
-          </view>
-        </view>
-        <view class="content">
-          {{item.content}}
-        </view>
-
-        <view class="comment-footer">
-          <view class="datetime">{{item.datetime}}</view>
-          <view class="interact-btn like-btn small" catchtap="likeFeedItem" data-feed-index="{{outerIndex}}" data-item-id="{{item._id}}" data-item-type="comment">
-            <view class="feed-heart-viewport">
-              <view class="feed-heart-sprite"><heart size="80" liked="{{item.liked}}"></heart></view>
-            </view>
-            <text class="interact-num">{{item.like_count || ''}}</text>
-          </view>
-        </view>
-
-      </view>
-
-      <view class="tape" style="left: {{item.tape_pos_left}}rpx; transform: rotate({{item.tape_rotate}}deg);">
-        <view class="wavy-line"></view>
-        <view class="wavy-line bottom"></view>
-      </view>
-    </view>
+    <comment-paper class="comment" wx:for="{{feedItem.items}}" wx:key="_id" item="{{item}}" bind:like="likeFeedItem" data-feed-index="{{outerIndex}}" data-item-id="{{item._id}}" data-item-type="comment" />
 
     <!-- 去留言按钮 -->
     <view class="interact-bar">
@@ -156,18 +124,19 @@
 
 <popup show="{{showMenu}}" bind:close="closeMenu">
   <view class="menu-container">
+    <popup-header title="{{selectedCat.name || '猫猫操作'}}" align="left" bind:close="closeMenu" />
     <view class="menu-item">
       <view class="cat-avatar-wrapper">
         <view class="cat-avatar">
           <image class="avatar" src="{{selectedCat.avatar.photo_compressed || selectedCat.avatar.photo_id}}" mode="aspectFill" lazy-load="true"/>
         </view>
       </view>
-      <view class="cat-name">{{selectedCat.name || '-'}}</view>
     </view>
     <view class="menu-item" bind:tap="toCat" data-cat_id="{{selectedCat._id}}">查看主页</view>
     <view class="menu-item follow-btn {{selectedCat.unfollowed ? 'unfollowed' : 'followed'}}" bind:tap="toggleFollowCat" data-catid="{{selectedCat._id}}" data-unfollowed="{{selectedCat.unfollowed}}">
       {{selectedCat.unfollowed ? "继续关注" : "取消关注"}}
     </view>
-    <view class="menu-item" bind:tap="closeMenu">关闭</view>
   </view>
 </popup>
+
+<achievement-unlock id="achievement-unlock" />

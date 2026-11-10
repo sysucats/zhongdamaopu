@@ -1,7 +1,11 @@
 {
   "usingComponents": {
     "modifyUserInfo": "/components/modifyUserInfo/modifyUserInfo",
-    "popup": "/components/popup/popup"
+    "popup": "/components/popup/popup",
+    "achievementDetail": "/components/achievementDetail/achievementDetail",
+    "footprintOverview": "/components/footprintOverview/footprintOverview",
+    "achievement-unlock": "/components/achievementUnlock/achievementUnlock",
+    "popup-header": "/components/popupHeader/popupHeader"
   },
   "navigationBarTitleText": "个人主页",
   "disableScroll": false

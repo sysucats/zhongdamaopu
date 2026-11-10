@@ -1,0 +1,27 @@
+@import "/pages/public/wxss/formControls.wxss";
+@import "/pages/public/wxss/iconfont.wxss";
+
+:host {
+  display: block;
+  width: 100%;
+}
+
+.profile-prompt-icon {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 72rpx;
+  height: 72rpx;
+  border-radius: var(--radius-lg);
+  background: var(--color-gray-light);
+  color: var(--color-gray-max);
+}
+
+.profile-prompt-icon .iconfont {
+  font-size: 40rpx;
+}
+
+.profile-prompt-action {
+  margin-top: var(--space-md);
+}

@@ -76,14 +76,8 @@
         <view class='image-title' wx:else>{{item.photo.photo_id? (text_cfg.genealogy.photo_by_tip + (item.photo.photographer ||(item.photo.userInfo? item.photo.userInfo.nickName: text_cfg.genealogy.photo_by_unknow_tip))): text_cfg.genealogy.photo_loading_tip}}</view>
       </view>
       <view class='info' hover-class="hoverInfo">
-        <view class='line'>
-          <text class='name'>{{item.name}}</text>
-          <block wx:if='{{item.gender}}'>
-            <image mode='aspectFill' class='gender' wx:if='{{item.gender === "公"}}' src="/pages/public/images/card/card/male.png"></image>
-            <image mode='aspectFill' class='gender' wx:if='{{item.gender === "母"}}' src="/pages/public/images/card/card/female.png"></image>
-          </block>
-          <view wx:if='{{item.adopt}}' class='adopt'>{{adopt_desc[item.adopt]}}</view>
-          <view wx:if='{{item.to_star}}' class='to_star'>{{text_cfg.genealogy.to_star_tip}}</view>
+        <view class='line cat-heading'>
+          <view class="cat-heading-counts">
           <view class='popularity'>
             <view class='iconfont icon-fire primary'></view>
             <text> {{item.popularity + (item.photo_count_total? item.photo_count_total * photoPopWeight: 0) }}</text>
@@ -91,6 +85,18 @@
           <view class='comment' wx:if="{{item.comment_count}}">
             <view class='iconfont icon-chat primary'></view>
             <text> {{item.comment_count}}</text>
+          </view>
+          </view>
+          <view class="cat-name-group">
+          <text class='name'>{{item.name}}</text>
+          <block wx:if='{{item.gender}}'>
+            <image mode='aspectFill' class='gender' wx:if='{{item.gender === "公"}}' src="/pages/public/images/card/card/male.png"></image>
+            <image mode='aspectFill' class='gender' wx:if='{{item.gender === "母"}}' src="/pages/public/images/card/card/female.png"></image>
+          </block>
+          </view>
+          <view class="cat-status-list" wx:if="{{item.adopt === 1 || item.adopt === 2 || item.to_star}}">
+          <view class="tag-pill cat-status-tag {{item.adopt === 1 ? 'status-approved' : 'status-pending'}}" wx:if="{{item.adopt === 1 || item.adopt === 2}}">{{adopt_desc[item.adopt]}}</view>
+          <view class="tag-pill cat-status-tag status-cancelled" wx:if="{{item.to_star}}">{{text_cfg.genealogy.to_star_tip}}</view>
           </view>
         </view>
 

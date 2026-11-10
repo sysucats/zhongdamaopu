@@ -1,4 +1,4 @@
-import { getPageUserInfo, toSetUserInfo, fillUserInfo } from "../../utils/user";
+import { getUser, fillUserInfo } from "../../utils/user";
 import { formatDate } from "../../utils/utils";
 import { text as text_cfg } from "../../config";
 const app = getApp();
@@ -23,17 +23,18 @@ Component({
     ranks: [],
     rankTime: '',
     loading: false,
+    profileLoaded: false,
   },
 
   lifetimes: {
     async attached() {
-      this.boundGetPageUserInfo = getPageUserInfo.bind(this, this);
+      this.boundRefreshProfile = this.refreshProfile.bind(this);
       // 监听用户信息更新事件
-      app.globalData.eventBus.$on('userInfoUpdated', this.boundGetPageUserInfo);
+      app.globalData.eventBus.$on('userInfoUpdated', this.boundRefreshProfile);
     },
     detached() {
       // 移除用户信息更新事件监听
-      app.globalData.eventBus.$off('userInfoUpdated', this.boundGetPageUserInfo);
+      app.globalData.eventBus.$off('userInfoUpdated', this.boundRefreshProfile);
     }
   },
 
@@ -41,11 +42,22 @@ Component({
    * 组件的方法列表
    */
   methods: {
+    async loadProfile() {
+      const user = await getUser();
+      const complete = Boolean(user?.userInfo?.nickName?.trim() && user?.userInfo?.avatarUrl);
+      this.setData({ user: complete ? user : null, profileLoaded: true });
+    },
+
+    async refreshProfile() {
+      await this.loadProfile();
+      await this.getMyRank();
+    },
+
     async reloadData() {
       this.setData({ loading: true });
       try {
         await this.getRank();
-        await getPageUserInfo(this);
+        await this.loadProfile();
         await this.getMyRank();
       } finally {
         this.setData({ loading: false });

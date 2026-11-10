@@ -17,7 +17,6 @@ Component({
   },
   methods: {
     hide: function() {
-      this.setData({ show: false });
       this.triggerEvent('close');
     },
     catchTouchMove: function() {

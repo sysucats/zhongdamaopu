@@ -16,7 +16,6 @@ import config from "../../../config";
 import api from "../../../utils/cloudApi";
 import { uploadFile } from "../../../utils/common"
 import { isDemoMode, getDemoCat } from "../../../utils/demo";
-import { trackAddPhoto } from "../../../utils/achievement";
 import { loadFilter } from "../../../utils/page";
 
 const app = getApp();
@@ -36,12 +35,12 @@ Page({
     campusCenters: {},  // 校区中心坐标字典
     // 地图选点
     mapPickerVisible: false,
+    mapPickerConfirming: false,
     pageMetaStyle: '',
     mapPickerInitLat: 23.1026,
     mapPickerInitLng: 113.2996,
     mapPickerLat: 23.1026,
     mapPickerLng: 113.2996,
-    mapPickerInitScale: 14,
     mapPickerScale: 14,
     demoMode: false,
   },
@@ -136,138 +135,108 @@ Page({
 
   // ==================== 地图选点（内嵌 map 组件） ====================
 
-  // 自动定位：获取当前位置后打开地图选点，供用户微调确认
+  // 自动定位只提供选点起点，确认前不修改照片位置。
   autoLocate() {
-    var that = this;
     wx.showLoading({ title: '定位中...' });
     wx.getFuzzyLocation({
-      type: 'wgs84',
-      success(res) {
+      type: 'gcj02',
+      success: res => {
         wx.hideLoading();
-        that.setData({
-          location: {
-            latitude: res.latitude,
-            longitude: res.longitude,
-          },
-        });
-        // 在自动定位的基础上打开地图，让用户微调后确认
-        that.openMapPicker();
-        wx.showToast({ title: '已定位，可微调后确认', icon: 'none' });
+        this.showMapPicker({ latitude: res.latitude, longitude: res.longitude });
       },
-      fail(err) {
+      fail: err => {
         wx.hideLoading();
         console.log('[autoLocate] - 定位失败:', err);
         wx.showModal({
           title: '定位失败',
-          content: (err && err.errMsg) ? err.errMsg : '未知原因，请改用「地图选点」',
+          content: '暂时无法获取当前位置，请使用「选择拍摄位置」在地图上选点。',
           showCancel: false,
         });
-      }
+      },
     });
   },
 
   openMapPicker() {
-    var lat, lng, scale;
-    // 已选过位置，地图中心定位到已选坐标
-    if (this.data.location) {
-      lat = this.data.location.latitude;
-      lng = this.data.location.longitude;
-    }
-    // scale 统一从校区中心或 config 读取（不记录在 location 中）
-    var campus = this.data.cat && this.data.cat.campus;
-    var centers = this.data.campusCenters;
-    if (campus && centers && centers[campus]) {
-      var c = centers[campus];
-      if (!lat) { lat = c.latitude; lng = c.longitude; }
-      scale = c.scale || 14;
-    } else {
-      if (!lat) {
-        lat = config.map_center.latitude;
-        lng = config.map_center.longitude;
-      }
-      scale = 14;
-    }
+    this.showMapPicker(this.data.location);
+  },
+
+  showMapPicker(location) {
+    const campus = this.data.cat && this.data.cat.campus;
+    const campusCenter = this.data.campusCenters[campus];
+    const center = location || campusCenter || config.map_center;
+    const scale = campusCenter ? (campusCenter.scale || 14) : 14;
+    this._mapPickerSession = (this._mapPickerSession || 0) + 1;
     this.setData({
       mapPickerVisible: true,
+      mapPickerConfirming: false,
       pageMetaStyle: 'overflow: hidden;',
-      mapPickerInitLat: lat,
-      mapPickerInitLng: lng,
-      mapPickerInitScale: scale,
-      mapPickerLat: lat,
-      mapPickerLng: lng,
+      mapPickerInitLat: center.latitude,
+      mapPickerInitLng: center.longitude,
+      mapPickerLat: center.latitude,
+      mapPickerLng: center.longitude,
       mapPickerScale: scale,
     });
   },
 
+  // 手势结束后同步中心和级别；忽略自身更新引发的事件，避免回写循环。
   onMapRegionChange(e) {
-    if (e.type === 'end') {
-      if (e.detail && e.detail.centerLocation) {
-        var lat = e.detail.centerLocation.latitude;
-        var lng = e.detail.centerLocation.longitude;
-        this.setData({
-          mapPickerLat: lat,
-          mapPickerLng: lng,
-        });
-      } else {
-        var that = this;
-        var mapCtx = wx.createMapContext('photoMapPicker');
-        mapCtx.getCenterLocation({
-          success: function (res) {
-            that.setData({
-              mapPickerLat: res.latitude,
-              mapPickerLng: res.longitude,
-            });
-          }
-        });
-        mapCtx.getScale({
-          success: function (res) {
-            that.setData({ mapPickerScale: res.scale });
-          }
-        });
-      }
+    if (e.type !== 'end' || e.causedBy === 'update') return;
+    const { centerLocation, scale } = e.detail || {};
+    const session = this._mapPickerSession;
+    const update = patch => {
+      if (this.data.mapPickerVisible && this._mapPickerSession === session) this.setData(patch);
+    };
+    const mapCtx = wx.createMapContext('photoMapPicker');
+    if (centerLocation) {
+      update({ mapPickerLat: centerLocation.latitude, mapPickerLng: centerLocation.longitude });
+    } else {
+      mapCtx.getCenterLocation({
+        success: res => update({ mapPickerLat: res.latitude, mapPickerLng: res.longitude }),
+      });
+    }
+    if (scale !== undefined) {
+      update({ mapPickerScale: scale });
+    } else {
+      mapCtx.getScale({ success: res => update({ mapPickerScale: res.scale }) });
     }
   },
 
-  confirmMapPicker() {
-    this.setData({
-      location: {
-        latitude: this.data.mapPickerLat,
-        longitude: this.data.mapPickerLng,
-      },
-      mapPickerVisible: false,
-      pageMetaStyle: '',
-    });
-    wx.showToast({ title: '已选择位置', icon: 'success' });
+  async confirmMapPicker() {
+    if (!this.data.mapPickerVisible || this.data.mapPickerConfirming) return;
+    const session = this._mapPickerSession;
+    this.setData({ mapPickerConfirming: true });
+    try {
+      const center = await new Promise((resolve, reject) => {
+        wx.createMapContext('photoMapPicker').getCenterLocation({ success: resolve, fail: reject });
+      });
+      if (!this.data.mapPickerVisible || this._mapPickerSession !== session) return;
+      this.setData({
+        location: { latitude: center.latitude, longitude: center.longitude },
+        mapPickerVisible: false,
+        pageMetaStyle: '',
+      });
+      wx.showToast({ title: '已选择位置', icon: 'success' });
+    } catch (err) {
+      if (this.data.mapPickerVisible && this._mapPickerSession === session) {
+        wx.showToast({ title: '无法读取地图位置，请重试', icon: 'none' });
+      }
+    } finally {
+      if (this._mapPickerSession === session) this.setData({ mapPickerConfirming: false });
+    }
   },
 
   cancelMapPicker() {
-    this.setData({ mapPickerVisible: false, pageMetaStyle: '' });
+    this.setData({ mapPickerVisible: false, mapPickerConfirming: false, pageMetaStyle: '' });
   },
 
   zoomMapIn() {
-    var s = this.data.mapPickerInitScale;
-    if (s < 18) {
-      var ns = s + 1;
-      this.setData({
-        mapPickerInitLat: this.data.mapPickerLat,
-        mapPickerInitLng: this.data.mapPickerLng,
-        mapPickerInitScale: ns,
-        mapPickerScale: ns,
-      });
-    }
+    const scale = Math.min(20, this.data.mapPickerScale + 1);
+    this.setData({ mapPickerScale: scale });
   },
 
   zoomMapOut() {
-    var s = this.data.mapPickerInitScale;
-    if (s > 3) {
-      var ns = s - 1;
-      this.setData({
-        mapPickerInitLat: this.data.mapPickerLat,
-        mapPickerInitLng: this.data.mapPickerLng,
-        mapPickerInitScale: ns,
-        mapPickerScale: ns,
-      });
-    }
+    const scale = Math.max(3, this.data.mapPickerScale - 1);
+    this.setData({ mapPickerScale: scale });
   },
 
   clearLocation() {
@@ -299,12 +268,13 @@ Page({
       }
 
       photos.push({
-        file: file
+        file: file,
+        shooting_date: this.data.set_all.shooting_date,
+        pher: this.data.set_all.pher,
       });
     }
     this.setData({
-      photos: photos,
-      set_all: {},
+      photos: this.data.photos.concat(photos),
     });
   },
 
@@ -422,9 +392,6 @@ Page({
         content: `成功上传 ${photos.length} 张照片`,
         showCancel: false
       });
-
-      // 成就：上传照片
-      trackAddPhoto();
     } catch (error) {
       console.error('批量上传失败:', error);
       wx.showToast({

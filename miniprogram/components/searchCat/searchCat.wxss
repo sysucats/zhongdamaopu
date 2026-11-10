@@ -8,14 +8,6 @@
   flex-direction: column;
 }
 
-.popup-header {
-  padding: 30rpx 20rpx;
-  text-align: center;
-  font-size: 30rpx;
-  font-weight: 500;
-  border-bottom: 1rpx solid var(--color-gray-light);
-}
-
 .search-input {
   display: flex;
   align-items: center;
@@ -85,11 +77,11 @@
 }
 
 .search-cat-tag {
-  padding: 6rpx 14rpx;
-  border-radius: 12rpx;
+  padding: 4rpx 14rpx;
+  border-radius: var(--radius-pill);
   background-color: var(--color-gray-light);
-  color: var(--color-gray-dark);
-  font-size: 22rpx;
+  color: var(--color-black-min);
+  font-size: var(--font-size-tag);
 }
 
 .item-hover {

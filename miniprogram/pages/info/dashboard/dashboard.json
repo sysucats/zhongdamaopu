@@ -1,8 +1,9 @@
 {
   "usingComponents": {
-    "popup": "/components/popup/popup"
+    "popup": "/components/popup/popup",
+    "popup-header": "/components/popupHeader/popupHeader"
   },
   "navigationBarTitleText": "数据看板",
   "backgroundColor": "#f7f7f7",
   "enablePullDownRefresh": true
-} 
+}

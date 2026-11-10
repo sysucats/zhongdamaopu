@@ -1,44 +1,34 @@
-<form bindsubmit="bindSubmit" wx:if="{{canFeedback}}">
-  <view wx:if="{{!isAuth}}" class='unAuth'>
-    <!-- <text>请授权后进行操作</text> -->
-    <view class='userInfo'>
-      <image src='/pages/public/images/system/user.png'></image>
-      <view>
-        <text>[等待授权]\n---准备为「<text style="font-weight:600;">{{cat? cat.name: text_cfg.app_name}}</text>」反馈信息</text>
-      </view>
+<view class="form-page">
+  <form bindsubmit="bindSubmit" wx:if="{{canFeedback}}">
+    <view class="form-section" wx:if="{{!isAuth}}">
+      <profile-prompt context="为「{{cat ? cat.name : text_cfg.app_name}}」反馈信息" bind:edit="getUInfo" />
     </view>
-    <button class='long primary' bindtap='getUInfo'>点击授权</button>
-  </view>
-  <block wx:else>
-    <!-- <view>--已经授权--</view> -->
-    <view class='userInfo'>
-      <image src='{{user.userInfo.avatarUrl}}'></image>
-      <view>
-        <text>{{user.userInfo.nickName}}\n---正在为「<text style="font-weight:600;">{{cat? cat.name: text_cfg.app_name}}</text>」反馈信息</text>
+    <block wx:else>
+      <view class="form-section form-context">
+        <image class="context-avatar" src="{{user.userInfo.avatarUrl || '/pages/public/images/system/user.png'}}" mode="aspectFill" />
+        <view class="context-copy">
+          <view>{{user.userInfo.nickName}}</view>
+          <view class="field-hint">正在为「{{cat ? cat.name : text_cfg.app_name}}」反馈信息</view>
+        </view>
+        <button class="profile-edit-button" bindtap="getUInfo" aria-label="修改个人信息"><text class="iconfont icon-edit"></text></button>
       </view>
-    </view>
-    <view class='inputColumns'>
-      <view>
-        <text class='inputTitle'>{{text_cfg.feedback_detail.feedback_title}}：</text>
-        <textarea class='feedbackColumn' placeholder="{{text_cfg.feedback_detail.feedback_tip}}" name='feedbackInfo' maxlength='{{maxlength}}' bindinput='bindInput' data-name="feedbackInfo"></textarea>
-        <text class='lengthTips'>{{text_cfg.feedback_detail.input_length_tip}}：{{feedbackLength}}/{{maxlength}}</text>
+      <view class="form-section">
+        <view class="field-label field-required">{{text_cfg.feedback_detail.feedback_title}}</view>
+        <textarea class="description-input long-input" placeholder="{{text_cfg.feedback_detail.feedback_tip}}" name="feedbackInfo" maxlength="{{maxlength}}" bindinput="bindInput" data-name="feedbackInfo"></textarea>
+        <view class="field-counter">{{text_cfg.feedback_detail.input_length_tip}}：{{feedbackLength}}/{{maxlength}}</view>
+        <view class="field-label spaced-label">{{text_cfg.feedback_detail.contract_title}}</view>
+        <input class="field-input" placeholder="{{text_cfg.feedback_detail.contract_tip}}" name="contactInfo" maxlength="30" bindinput="bindInput" data-name="contactInfo" />
       </view>
-      <view style='margin-top:40rpx;'>
-        <text class="inputTitle">{{text_cfg.feedback_detail.contract_title}}：</text>
-        <input placeholder="{{text_cfg.feedback_detail.contract_tip}}" name='contactInfo' maxlength='30' bindinput='bindInput' data-name="contactInfo"/>
+      <checkbox-group class="feedback-agreement" bindchange="changeAgreement">
+        <checkbox value="agree" color="#e74e49" checked="{{agreementChecked}}">对于其他信息，您已阅读并同意<navigator url="/pages/info/agreement/agreement">《服务协议和隐私政策》</navigator></checkbox>
+      </checkbox-group>
+      <view class="save-bar">
+        <button class="form-button primary save-button" form-type="submit" disabled="{{contactLength > 0 && !agreementChecked}}">{{text_cfg.feedback_detail.submit_button}}</button>
       </view>
-    </view>
-    <checkbox-group class="agreement" bindchange="changeAgreement">
-      <checkbox color="var(--color-primary)" checked="{{agreementChecked}}">对于其他信息，您已阅读并同意<navigator url="/pages/info/agreement/agreement">《服务协议和隐私政策》</navigator></checkbox>
-    </checkbox-group>
-    <view class='submitButton'>
-      <button form-type='submit' disabled="{{contactLength > 0 && !agreementChecked}}">{{text_cfg.feedback_detail.submit_button}}</button>
-    </view>
-  </block>
-</form>
-<view class='footnote' wx:else>
-  <text>*暂不开放反馈信息功能</text>
+    </block>
+  </form>
+  <view class="form-state" wx:else>*暂不开放反馈信息功能</view>
+  <view class="field-hint feedback-notice">{{text_cfg.feedback_detail.submit_tip}}</view>
 </view>
-<view class='footnote'>
-  <text>{{text_cfg.feedback_detail.submit_tip}}</text>
-</view>
+
+<modifyUserInfo show="{{showEdit}}" bind:close="closeEdit" bind:userInfoUpdated="onUserInfoUpdated" />

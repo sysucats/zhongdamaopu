@@ -1,30 +1,13 @@
+import { confirmDiscard } from "../../../utils/popup";
 import { getUser } from "../../../utils/user";
-import { deepcopy } from "../../../utils/utils";
-import { getUnlockedList, getShowcase, setShowcase } from "../../../utils/achievement";
+import { deepcopy, formatDate } from "../../../utils/utils";
+import { getUnlockedList, getShowcase, highestUnlockedByCategory, resolveShowcase, setShowcase } from "../../../utils/achievement";
 import config from "../../../config";
-import api from "../../../utils/cloudApi";
 
 const app = getApp();
 const defaultAvatarUrl = "/pages/public/images/info/default_avatar.png"
 // 分享的标语
 const share_text = config.text.app_name + ' - ' + config.text.genealogy.share_tip;
-
-function categoryOf(achievement) {
-  return achievement.key.slice(0, achievement.key.lastIndexOf('_'));
-}
-
-function highestUnlockedByCategory(list) {
-  const result = [];
-  list.forEach(achievement => {
-    const index = result.findIndex(item => categoryOf(item) === categoryOf(achievement));
-    if (index < 0) {
-      result.push(achievement);
-    } else if (achievement.tier > result[index].tier) {
-      result[index] = achievement;
-    }
-  });
-  return result;
-}
 
 Page({
   data: {
@@ -36,6 +19,8 @@ Page({
     showcase: [],
     hasUnlockedAchv: false,
     showAchvPicker: false,
+    pickerDirty: false,
+    savingPicker: false,
     showAchvDetail: false,
     selectedAchievement: null,
     unlockedAchv: [],
@@ -53,16 +38,6 @@ Page({
             action:"shareApp",
             btnAble: true,
             btnType: "share",
-          }, {
-            label:"我关注的猫猫",
-            icon:"icon-heart",
-            action:"/pages/info/myFollowCats/myFollowCats",
-            btnAble: false,
-          }, {
-            label:"我的足迹",
-            icon:"icon-history",
-            action:"/pages/info/myFootprint/myFootprint",
-            btnAble: false,
           }, {
             label:"我的领养",
             icon:"icon-user-share",
@@ -100,6 +75,18 @@ Page({
     wx.navigateTo({
       url: to,
     });
+  },
+
+  openStat(e) {
+    const type = e.currentTarget.dataset.type;
+    const url = type === 'follows'
+      ? '/pages/info/myFollowCats/myFollowCats'
+      : `/pages/info/myFootprint/myFootprint?type=${type}${type === 'photos' ? '&sort=likes' : ''}`;
+    wx.navigateTo({ url });
+  },
+
+  onFootprintStats(e) {
+    this.setData(e.detail);
   },
   
   // 编辑个人信息弹窗
@@ -142,15 +129,7 @@ Page({
   async onLoad() {
     await this.loadUser();
     
-    // 获取用户数据
-    const openid = this.data.user.openid;
-    const result = await api.getUserStats({ openid });
-    this.setData({
-      numUserComments: result.numUserComments,
-      numUserLiked: result.numUserLiked,
-      numUserPhotos: result.numUserPhotos,
-      numCats: result.numCats,
-    });
+    this.setData({ numFollowCats: (this.data.user.followCats || []).length });
 
     // 监听用户信息更新事件
     this.boundLoadUser = this.loadUser.bind(this);
@@ -164,14 +143,12 @@ Page({
   async loadShowcase() {
     try {
       const openid = this.data.user.openid;
-      const unlocked = highestUnlockedByCategory(await getUnlockedList());
+      const unlocked = await getUnlockedList();
       const saved = await getShowcase(openid);
-      let showcase = unlocked.slice(-3).reverse();
-      if (saved !== null) {
-        showcase = highestUnlockedByCategory(saved.map(item =>
-          unlocked.find(available => categoryOf(available) === categoryOf(item))
-        ).filter(Boolean)).slice(0, 3);
-      }
+      const showcase = resolveShowcase(unlocked, saved).map(item => ({
+        ...item,
+        unlock_time_text: item.unlock_time ? formatDate(new Date(item.unlock_time), 'yyyy-MM-dd') : '',
+      }));
       this.setData({ showcase, hasUnlockedAchv: unlocked.length > 0 });
     } catch (e) {
       console.log('加载成就展示位失败', e);
@@ -186,6 +163,7 @@ Page({
       return;
     }
     const curKeys = this.data.showcase.map(s => s.key);
+    this._initialPicker = curKeys.slice();
     this.setData({
       showAchvPicker: true,
       unlockedAchv: unlocked,
@@ -199,11 +177,12 @@ Page({
   _refreshPickerList() {
     const sel = this.data.pickerSelected;
     const list = this.data.unlockedAchv.map(a => ({ ...a, selected: sel.indexOf(a.key) >= 0 }));
-    this.setData({ unlockedAchv: list });
+    this.setData({ unlockedAchv: list, pickerDirty: JSON.stringify(sel) !== JSON.stringify(this._initialPicker) });
   },
 
   // 选择/取消一个成就（最多3个）
   toggleAchvPick(e) {
+    if (this.data.savingPicker) return;
     const key = e.currentTarget.dataset.key;
     let selected = this.data.pickerSelected.slice();
     const idx = selected.indexOf(key);
@@ -220,13 +199,9 @@ Page({
     this._refreshPickerList();
   },
 
-  clearAchvPick() {
-    this.setData({ pickerSelected: [] });
-    this._refreshPickerList();
-  },
-
-  closeAchvPicker() {
-    this.setData({ showAchvPicker: false });
+  async closeAchvPicker() {
+    if (this.data.savingPicker) return;
+    if (await confirmDiscard(this, this._initialPicker, this.data.pickerSelected)) this.setData({ showAchvPicker: false });
   },
 
   openAchvDetail(e) {
@@ -237,7 +212,7 @@ Page({
   },
 
   closeAchvDetail() {
-    this.setData({ showAchvDetail: false });
+    this.setData({ showAchvDetail: false, selectedAchievement: null });
   },
 
   toMyAchievement() {
@@ -247,15 +222,23 @@ Page({
 
   // 保存展示位
   async saveAchvPicker() {
-    const keys = this.data.pickerSelected;
-    const ok = await setShowcase(keys);
-    if (!ok) {
+    if (this.data.savingPicker || !this.data.pickerDirty) return;
+    this.setData({ savingPicker: true });
+    try {
+      const keys = this.data.pickerSelected;
+      const ok = await setShowcase(keys);
+      if (!ok) {
+        wx.showToast({ title: '保存失败，请重试', icon: 'none' });
+        return;
+      }
+      this.setData({ showAchvPicker: false });
+      await this.loadShowcase();
+      wx.showToast({ title: '已保存', icon: 'success' });
+    } catch (error) {
       wx.showToast({ title: '保存失败，请重试', icon: 'none' });
-      return;
+    } finally {
+      this.setData({ savingPicker: false });
     }
-    this.setData({ showAchvPicker: false });
-    await this.loadShowcase();
-    wx.showToast({ title: '已保存', icon: 'success' });
   },
 
   onUnload() {
@@ -267,6 +250,10 @@ Page({
     // 从成就页返回时刷新展示位
     if (this.data.user) {
       this.loadShowcase();
+      this.loadUser().then(() => {
+        this.setData({ numFollowCats: (this.data.user.followCats || []).length });
+        this.selectComponent('#footprint-overview')?.refresh();
+      });
     }
   },
 

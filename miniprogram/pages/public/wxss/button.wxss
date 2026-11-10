@@ -1,0 +1,133 @@
+.form-button {
+  display: block;
+  box-sizing: border-box;
+  width: 100%;
+  margin: 0;
+  padding: 0 24rpx;
+  border-radius: var(--radius-pill);
+  background: var(--color-gray-normal);
+  color: var(--color-black-light);
+  font-size: 29rpx;
+  line-height: 88rpx;
+}
+
+.form-button::after {
+  border: none;
+}
+
+.form-button.primary {
+  background: var(--color-primary);
+  color: var(--color-text-onPrimary);
+}
+
+.form-button:active:not([disabled]) {
+  background: var(--color-gray);
+}
+
+.form-button.primary:active:not([disabled]) {
+  background: var(--color-primary-dark);
+  color: var(--color-text-onPrimary);
+}
+
+.form-button[disabled] {
+  background: var(--color-gray-normal);
+  color: var(--color-gray-max);
+}
+
+/* 破坏性操作复用语义配色；尺寸、间距仍由页面决定。 */
+.form-button.danger:not([disabled]) {
+  color: var(--color-red);
+}
+
+.form-button.danger:active:not([disabled]) {
+  color: var(--color-red-dark);
+}
+
+.form-button.compact {
+  width: auto;
+  padding: 0 20rpx;
+  font-size: 24rpx;
+  line-height: 64rpx;
+}
+
+/* 卡片操作：图标配文字，内容撑宽。 */
+.form-button.with-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-xs);
+  min-height: 88rpx;
+  line-height: 1.5;
+  white-space: nowrap;
+}
+.form-button.compact.with-icon { min-height: 64rpx; }
+.form-button.with-icon .iconfont { font-size: 30rpx; }
+
+/* 固定底栏：等宽按钮，底部避让安全区。 */
+.fixed-action-bar,
+.save-bar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  box-sizing: border-box;
+  padding: var(--space-sm) var(--space-lg)
+    calc(var(--space-sm) + env(safe-area-inset-bottom));
+  border-top: 1rpx solid var(--color-gray-normal);
+  background: var(--color-surface);
+}
+.fixed-action-bar > .form-button,
+.save-bar > .save-button {
+  flex: 1;
+  width: 0;
+  min-width: 0;
+  margin: 0;
+}
+
+/* 选中操作：浅主题底深字；删除用浅红底红字。 */
+.form-button.review-option.marked {
+  background: var(--color-primary-light);
+  color: var(--color-primary-text);
+}
+.form-button.review-option.danger.marked {
+  background: var(--color-status-error-bg);
+  color: var(--color-red);
+}
+.form-button.review-option.marked:active:not([disabled]) {
+  background: var(--color-gray);
+}
+
+.profile-edit-button {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 88rpx;
+  height: 88rpx;
+  min-width: 44px;
+  min-height: 44px;
+  margin: 0 0 0 auto;
+  padding: 0;
+  background: transparent;
+  line-height: 1;
+}
+
+.profile-edit-button::after {
+  border: none;
+}
+
+.profile-edit-button .iconfont {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 60rpx;
+  height: 60rpx;
+  margin: 0;
+  border-radius: 20rpx;
+  background: var(--color-primary-bg);
+  color: var(--color-primary-text);
+  font-size: 40rpx;
+}

@@ -64,21 +64,18 @@ module.exports = {
       </view>
     </view>
     <view class="campus-toggle" bindtap="toggleCampusBtns">
-      <text>{{campusBtnExpanded ? '✕' : '📍'}}</text>
+      <text class="iconfont {{campusBtnExpanded ? 'icon-close' : 'icon-map-pin'}}"></text>
     </view>
   </view>
 
   <!-- 底部详情卡片 -->
   <popup show="{{showDetail}}" bind:close="closeDetail">
-    <view class="detail-withdraw-btn" bindtap="closeDetail">
-      <image class="detail-withdraw" src="/pages/public/images/button/withdraw.png" mode="aspectFit"></image>
-    </view>
+<popup-header title="{{currentCat.name || '未知猫咪'}}" align="left" bind:close="closeDetail" />
     <view class="detail-card">
       <!-- 头部 -->
       <view class="detail-header">
         <view class="detail-title">
           <view class="detail-title-main">
-            <text class="detail-name">{{currentCat.name || '未知猫咪'}}</text>
             <image wx:if="{{currentCat.gender === '公'}}" class="title-gender-icon" src="/pages/public/images/card/card/male.png" mode="aspectFill" />
             <image wx:elif="{{currentCat.gender === '母'}}" class="title-gender-icon" src="/pages/public/images/card/card/female.png" mode="aspectFill" />
             <view class="detail-location-inline" wx:if="{{currentCat.campus || currentCat.area}}">
@@ -105,7 +102,7 @@ module.exports = {
       <!-- 轨迹点模式：显示拍摄时间和坐标 -->
       <view class="detail-profile" wx:if="{{currentCat.isTrajectoryPoint}}">
         <view class="profile-header">
-          <view class="iconfont icon-location-o profile-header-icon"></view>
+          <view class="iconfont icon-map-pin profile-header-icon"></view>
           <text>轨迹记录</text>
         </view>
         <view class="profile-item">
@@ -136,7 +133,7 @@ module.exports = {
       <!-- 按钮组：查看轨迹 + 查看详情 并排（轨迹点模式隐藏查看轨迹） -->
       <view class="detail-btn-group">
         <view class="detail-trajectory-btn" wx:if="{{!currentCat.isTrajectoryPoint && currentCat.trajectory_count >= 2}}" bindtap="showTrajectory">
-          📍 查看轨迹
+          查看轨迹
         </view>
         <button class="detail-btn primary {{!currentCat.isTrajectoryPoint && currentCat.trajectory_count >= 2 ? 'half' : ''}}" bindtap="goToDetail">猫猫详情</button>
       </view>

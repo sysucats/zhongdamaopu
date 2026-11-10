@@ -1,5 +1,5 @@
 <canvas style="width: 1200px; height: 1200px; left: 1000px; position: fixed;" id="bigPhoto" type="2d"></canvas>
-<block wx:if="{{auth}}">
+<view class="content-page processing-page" wx:if="{{auth}}">
   <!-- 原图预览区域 -->
   <view class="image-blocks">
     <view class="image-block">
@@ -27,20 +27,21 @@
   
   <!-- 操作按钮 -->
   <view class="buttons">
-    <button class='short' bindtap='clickProcessBtn' data-test="{{true}}">{{processing ? "停止" : "试运行"}}</button>
-    <button class='primary' bindtap='clickProcessBtn'>{{processing ? "停止" : "开始处理"}}</button>
+    <button wx:if="{{!processing}}" class='form-button' bindtap='clickProcessBtn' data-test="{{true}}">{{processing ? "停止" : "试运行"}}</button>
+    <button class='form-button primary' bindtap='clickProcessBtn'>{{processing ? "停止" : "开始处理"}}</button>
   </view>
   
   <!-- 功能说明 -->
   <view class="info-block">
-    <view>【功能说明】</view>
+    <view>使用说明</view>
     <view>1. 后台会自动处理待处理照片（每 5 分钟跑一次 timeTrigger 云函数），正常情况下不需要手动处理</view>
     <view>2. 仅在"处理失败 / 后台没跑 / 想立刻处理"时，才用下方"开始处理"按钮手动跑</view>
     <view>3. 选中照片后点击"开始处理"进行批量处理</view>
   </view>
   
   <!-- 待处理照片列表 -->
-  <view class="photo-list">
+  <view class="photo-list content-card">
+    <view class="section-title">待处理照片</view>
     <view class="list-header">
       <view class="select-all">
         <checkbox checked="{{allSelected}}" bindtap="toggleSelectAll" /> 全选
@@ -63,8 +64,8 @@
           <view class="photo-date">时间: {{item.formattedDate}}</view>
         </view>
         <view class="photo-actions">
-          <button class="btn-small btn-danger" bindtap="deletePhoto" data-index="{{index}}">删除</button>
-          <button class="btn-small btn-primary" bindtap="processSinglePhoto" data-index="{{index}}">处理</button>
+          <button class="form-button compact with-icon danger btn-small" bindtap="deletePhoto" data-index="{{index}}"><text class="iconfont icon-clean"></text><text>删除</text></button>
+          <button class="form-button compact with-icon btn-small" bindtap="processSinglePhoto" data-index="{{index}}"><text class="iconfont icon-adjust-horizontal"></text><text>处理</text></button>
         </view>
       </view>
     </view>
@@ -77,7 +78,7 @@
     <view>【错误堆栈】</view>
     <view bind:tap="copyText" data-text="{{errStack}}">{{errStack}}</view>
   </view>
-</block>
+</view>
 
 <!-- 未授权提示 -->
 <no-auth wx:else tip-text="{{tipText}}"></no-auth>

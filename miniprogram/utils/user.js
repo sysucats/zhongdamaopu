@@ -94,10 +94,14 @@ async function getUserInfoMulti(openids, cacheOptions, retMap) {
   // 请求没有的
   if (not_found.length) {
     var { result: db_res } = await app.mpServerless.db.collection('user').find({ openid: { $in: not_found } });
+    const score = record => Number(Boolean(record?.userInfo?.nickName)) * 2 + Number(Boolean(record?.userInfo?.avatarUrl));
     for (var user of db_res) {
-      const cacheKey = `uinfo-${user.openid}`;
-      setCacheItem(cacheKey, user, 0, randomInt(25, 35));
-      res[user.openid] = user;
+      const previous = res[user.openid];
+      if (!previous || score(user) > score(previous)) res[user.openid] = user;
+    }
+    // 选定完整资料后再写缓存，避免后到的空记录覆盖。
+    for (const openid of not_found) {
+      if (res[openid]) setCacheItem(`uinfo-${openid}`, res[openid], 0, randomInt(25, 35));
     }
   }
 

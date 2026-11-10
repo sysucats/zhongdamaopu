@@ -1,21 +1,8 @@
+@import "/pages/public/wxss/card.wxss";
+
 /* pages/genealogy/detailCat/badgeDetail/badgeDetail.wxss */
 page {
   background-color: var(--color-gray-light);
-}
-
-.bd-block {
-  width: 690rpx;
-  margin: 50rpx 30rpx;
-  background-color: white;
-  border-radius: 30rpx;
-  overflow: hidden;
-}
-
-.bd-title {
-  width: 100%;
-  padding: 20rpx 30rpx;
-  font-size: 28rpx;
-  font-weight: bold;
 }
 
 .bd-item {
@@ -23,31 +10,31 @@ page {
   flex-direction: row;
   margin: 10rpx 0;
   align-items: center;
-  justify-content: space-evenly;
+  gap: var(--space-sm);
 }
 
 .badge-order {
   width: 30rpx;
-  font-size: 20rpx;
+  flex-shrink: 0;
+  font-size: var(--font-size-caption);
   text-align: center;
 }
 
 .badge-img {
   width: 100rpx;
   height: 100rpx;
+  flex-shrink: 0;
 }
 
 .badge-info {
-  width: 300rpx;
+  flex: 1;
+  min-width: 0;
   display: flex;
   flex-direction: column;
 }
 
-.badge-info.order {
-  width: 400rpx;
-}
-
 .badge-name {
+  overflow-wrap: anywhere;
   font-size: 24rpx;
 }
 
@@ -56,7 +43,7 @@ page {
 }
 
 .badge-desc {
-  font-size: 16rpx;
+  font-size: var(--font-size-caption);
   color: var(--color-gray-max);
 }
 
@@ -73,54 +60,58 @@ page {
 }
 
 .user-info {
-  width: 200rpx;
+  width: 240rpx;
+  flex-shrink: 0;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-end;
 }
 
 .user-info.current-user {
   border-right: 10rpx solid var(--color-primary);
+  padding-right: var(--space-sm);
 }
 
 .user-info-name{
-  width: 200rpx;
-  font-size: 18rpx;
+  width: 100%;
+  min-width: 0;
+  font-size: var(--font-size-caption);
   color: var(--color-black-min);
   display: flex;
   flex-direction: row;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-end;
 }
 
 .user-info-name-text {
-  max-width: 170rpx;
+  display: block;
+  min-width: 0;
+  flex: 0 1 auto;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  text-align: right;
 }
 
 .user-avatar {
   width: 30rpx;
   height: 30rpx;
+  flex-shrink: 0;
   border-radius: 100%;
   margin-right: 10rpx;
   display: inline-block;
 }
 
 .badge-count {
-  width: 50rpx;
-  font-size: 22rpx;
+  flex-shrink: 0;
+  font-size: var(--font-size-caption);
   text-align: center;
 }
 
 .user-info-time {
-  font-size: 16rpx;
+  font-size: var(--font-size-caption);
   color: var(--color-gray-dark);
-}
-
-.user-info-small-text {
-  font-size: 24rpx;
-  color: var(--color-black-light);
+  white-space: nowrap;
+  text-align: right;
 }

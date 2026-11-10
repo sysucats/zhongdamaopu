@@ -8,6 +8,7 @@ Page({
    * 页面的初始数据
    */
   data: {
+    campusSaving: false,
     filters: [],
     campusCenters: {},
     campusCenterStrs: {},
@@ -97,6 +98,7 @@ Page({
 
   // 打开地图选点
   openMapPicker(e) {
+    if (this.data.campusSaving) return;
     var campus = e.currentTarget.dataset.campus;
     var centers = this.data.campusCenters;
     var lat, lng, scale;
@@ -252,6 +254,7 @@ Page({
 
   // 增加option
   addOptionInput(e) {
+    if (this.data.campusSaving) return;
     const filters_sub = e.currentTarget.dataset.filterssub;
     const index = e.currentTarget.dataset.cateindex;
     var filters = this.data.filters;
@@ -261,6 +264,7 @@ Page({
   },
 
   async addOptionConfirm(e) {
+    if (this.data.campusSaving) return;
     var filters = this.data.filters;
 
     const name = e.detail.value.name;
@@ -291,7 +295,31 @@ Page({
   },
 
   // 移动、管理option
+  async moveCampus(e) {
+    if (this.data.campusSaving) return;
+    const index = Number(e.currentTarget.dataset.index);
+    const next = index + (e.currentTarget.dataset.direct === 'up' ? -1 : 1);
+    const original = this.data.filters[0].category;
+    const categories = [...original];
+    if (next < 0 || next >= categories.length) return;
+    [categories[index], categories[next]] = [categories[next], categories[index]];
+    this.setData({ campusSaving: true, 'filters[0].category': categories });
+    wx.showLoading({ title: '保存中...', mask: true });
+    try {
+      const result = await api.curdOp({ operation: 'update', collection: 'setting', item_id: 'filter', data: { campuses: categories.map(item => item.name) } });
+      if (!result || result.ok === false || result.matchedCount === 0 || result.n === 0) throw new Error('保存失败');
+      await this.reloadFilter();
+    } catch (error) {
+      this.setData({ 'filters[0].category': original });
+      wx.showToast({ title: '校区排序保存失败', icon: 'none' });
+    } finally {
+      this.setData({ campusSaving: false });
+      wx.hideLoading();
+    }
+  },
+
   async moveOption(e) {
+    if (this.data.campusSaving) return;
     var filters = this.data.filters;
 
     const filters_sub = e.currentTarget.dataset.filterssub;
@@ -315,6 +343,7 @@ Page({
   },
 
   async deleteOption(e) {
+    if (this.data.campusSaving) return;
     wx.showLoading({
       title: '检查中...',
       mask: true
@@ -356,6 +385,7 @@ Page({
 
   // 确定上传
   async uploadFilters() {
+    if (this.data.campusSaving) return;
     var filters = this.data.filters;
     // 开始上传
     wx.showLoading({
@@ -392,11 +422,13 @@ Page({
   },
 
   async addCampus() {
+    if (this.data.campusSaving) return;
     this.setData({
       addingCampus: true,
     })
   },
   async addCampusConfirm(e) {
+    if (this.data.campusSaving) return;
     const category = this.data.filters[0].category;
     const name = e.detail.value.name;
 
@@ -428,6 +460,7 @@ Page({
   },
 
   async deleteCampus(e) {
+    if (this.data.campusSaving) return;
     const category = this.data.filters[0].category;
     const { cateindex } = e.currentTarget.dataset;
 console.log("删除111", category);

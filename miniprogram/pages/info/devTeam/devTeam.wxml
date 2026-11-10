@@ -1,27 +1,23 @@
-<view class='block'>
-  <view class='title'>开发团队</view>
-  <view class='desc'>
-    <text>{{text_cfg.dev_team.team}}</text>
+<view class="content-page">
+  <view class="content-card">
+    <view class="content-title">开发团队</view>
+    <view class="content-text"><text selectable="{{true}}">{{text_cfg.dev_team.team}}</text></view>
   </view>
-</view>
 
-<view class='block'>
-  <view class='title'>开源代码</view>
-  <view class='desc'>
-    <text selectable='true'>小程序代码开源啦！配备部署教程~\n{{github_link}}</text>
-    <button class="primary" bindtap='copyOpenSourceLink'>点击复制到剪切板</button>
+  <view class="content-card">
+    <view class="content-title">开源代码</view>
+    <view class="content-text">小程序代码开源啦！配备部署教程~</view>
+    <button class="source-row" bindtap="copyOpenSourceLink" aria-label="复制开源链接">
+      <text class="iconfont icon-copy source-copy"></text>
+      <text class="source-link content-text">{{github_link}}</text>
+    </button>
   </view>
-</view>
 
-<view class='block'>
-  <view class='title'>更新日志</view>
-  <view class='desc'>
-    <block wx:for="{{update_log}}" wx:key="*this">
-      <view class='sub-title hl'>{{item.version}}</view>
-      <view class='sub-detail' wx:for="{{item.content}}" wx:key="*this">- {{item}}</view>
-      <view class='sub-detail'>- {{item.time}}</view>
-    </block>
+  <view class="content-card">
+    <view class="content-title">更新日志</view>
+    <view class="content-group" wx:for="{{update_log}}" wx:for-item="log" wx:key="version">
+      <view class="content-group-heading"><text>{{log.version}}</text><text class="content-note">{{log.time}}</text></view>
+      <view class="content-entry content-text" wx:for="{{log.content}}" wx:for-item="entry" wx:key="*this"><text>·</text><text>{{entry}}</text></view>
     </view>
+  </view>
 </view>
-
-<view style="height: 20rpx;"></view>

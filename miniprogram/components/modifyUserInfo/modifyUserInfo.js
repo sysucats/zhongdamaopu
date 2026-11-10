@@ -1,3 +1,4 @@
+import { confirmDiscard } from "../../utils/popup";
 import { getUser } from "../../utils/user";
 import { deepcopy } from "../../utils/utils";
 import api from "../../utils/cloudApi";
@@ -9,6 +10,8 @@ Component({
   data: {
     defaultAvatarUrl: "/pages/public/images/info/default_avatar.png",
     user: null,
+    saving: false,
+    canSaveProfile: false,
     privacyAuthorized: false,  // 是否已通过隐私协议授权
   },
 
@@ -22,6 +25,13 @@ Component({
         }
       }
     }
+  },
+
+  observers: {
+    'user.userInfo.**': function () {
+      const info = this.data.user?.userInfo;
+      this.setData({ canSaveProfile: !!(info?.avatarUrl && info?.nickName?.trim() && info.nickName.length <= 30) });
+    },
   },
 
   lifetimes: {
@@ -94,12 +104,25 @@ Component({
       if (!user.userInfo) {
         user.userInfo = {};
       }
-      this.setData({
-        user: user
-      });
+      this._initialProfile = JSON.parse(JSON.stringify(user.userInfo));
+      this.setData({ user: user });
     },
 
     async clickUpload() {
+      if (this.data.saving || !this.data.user) return;
+      this.setData({ saving: true });
+      try {
+        await this.saveUserInfo();
+      } catch (e) {
+        console.warn('保存个人信息失败:', e);
+        wx.showToast({ title: '保存失败，请稍后重试', icon: 'none' });
+      } finally {
+        wx.hideLoading();
+        this.setData({ saving: false });
+      }
+    },
+
+    async saveUserInfo() {
       wx.showLoading({
         title: '保存中...',
       });
@@ -145,7 +168,8 @@ Component({
       removeCacheItem("current-user");
       app.globalData.eventBus.$emit('userInfoUpdated');
 
-      this.hide();
+      this.setData({ show: false });
+      this.triggerEvent('close');
       wx.showToast({
         title: '保存成功',
         icon: 'success'
@@ -198,7 +222,9 @@ Component({
     },
 
     // 隐藏
-    hide() {
+    async hide() {
+      if (this.data.saving) return;
+      if (!await confirmDiscard(this, this._initialProfile, this.data.user?.userInfo)) return;
       this.setData({ show: false });
       this.triggerEvent('close');
     }

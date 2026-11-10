@@ -11,6 +11,7 @@ Page({
    */
   data: {
     settings: {},
+    settingGroups: [],
     desc,
   },
 
@@ -108,6 +109,7 @@ Page({
     }
     this.setData({
       settings,
+      settingGroups: Object.keys(settings).map(key => ({ key, fields: Object.keys(settings[key]) })),
       desc
     });
   },

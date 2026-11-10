@@ -1,5 +1,5 @@
 <view class="content">
-  <view class="profile-card">
+  <view class="profile-card content-card">
     <view class="user-container">
       <view class="avatar-container">
         <image class="avatar" src="{{user.userInfo.avatarUrl || defaultAvatarUrl}}" mode="aspectFill"></image>
@@ -8,25 +8,23 @@
         <text class="user-name">{{user.userInfo.nickName}}</text>
         <text class="badge {{badgeClass}}-badge">{{badgeName}}</text>
       </view>
-      <view class="edit-container" bindtap="editProfile">
-        <view class="iconfont icon-edit"></view>
-      </view>
+      <button class="profile-edit-button" bindtap="editProfile" aria-label="修改个人信息"><text class="iconfont icon-edit"></text></button>
     </view>
 
     <view class="num-info">
-      <view class="num"> 
-        <view class="num-title">{{numUserPhotos !== null && numUserPhotos !== undefined ? numUserPhotos : '0'}}</view>
-        <text class='small-title'>照片</text>
-      </view>
-      <view class="num">
+      <view class="num" bindtap="openStat" data-type="photos">
         <view class="num-title">{{numUserLiked !== null && numUserLiked !== undefined ? numUserLiked : '0'}}</view>
         <text class='small-title'>照片被赞</text>
       </view>
-      <view class="num">
+      <view class="num" bindtap="openStat" data-type="cats">
         <view class="num-title">{{numCats !== null && numCats !== undefined ? numCats : '0'}}</view>
         <text class='small-title'>拍过猫猫</text>
       </view>
-      <view class="num">
+      <view class="num" bindtap="openStat" data-type="follows">
+        <view class="num-title">{{numFollowCats !== null && numFollowCats !== undefined ? numFollowCats : '0'}}</view>
+        <text class='small-title'>关注猫猫</text>
+      </view>
+      <view class="num" bindtap="openStat" data-type="comments">
         <view class="num-title">{{numUserComments !== null && numUserComments !== undefined ? numUserComments : '0'}}</view>
         <text class='small-title'>便利贴</text>
       </view>
@@ -38,22 +36,27 @@
 <view class="showcase">
   <view class="showcase-header">
     <view class="showcase-title">我的成就</view>
-    <view class="showcase-edit" bindtap="openAchvPicker" wx:if="{{showcase.length > 0}}">编辑展示</view>
+    <view class="showcase-actions">
+      <view class="showcase-edit" bindtap="openAchvPicker" wx:if="{{showcase.length > 0}}">编辑展示</view>
+      <view class="showcase-all" bindtap="toMyAchievement">查看全部</view>
+    </view>
   </view>
   <view class="showcase-row" wx:if="{{showcase.length > 0}}">
     <view class="showcase-item" wx:for="{{showcase}}" wx:key="key" bindtap="openAchvDetail" data-key="{{item.key}}">
-      <view class="showcase-medal tier-{{item.tier}}">{{item.icon}}</view>
+      <image class="showcase-medal" src="{{item.frontImage}}" mode="aspectFit" />
       <view class="showcase-name">{{item.name}}</view>
+      <view class="showcase-time" wx:if="{{item.unlock_time_text}}">{{item.unlock_time_text}}</view>
     </view>
   </view>
   <view class="showcase-empty" wx:else>
     <view>{{hasUnlockedAchv ? '还没有展示成就' : '解锁成就后，可在这里展示'}}</view>
-    <view class="showcase-add" wx:if="{{hasUnlockedAchv}}" bindtap="openAchvPicker">选择成就</view>
+    <button class="form-button compact with-icon showcase-add" wx:if="{{hasUnlockedAchv}}" bindtap="openAchvPicker"><text class="iconfont icon-circle-plus"></text><text>选择成就</text></button>
   </view>
-  <view class="showcase-all" bindtap="toMyAchievement">查看全部成就 ›</view>
 </view>
 
-<view class="menu-container">
+<footprintOverview id="footprint-overview" class="footprint-home" openid="{{user.openid || ''}}" bind:statschange="onFootprintStats" />
+
+<view class="menu-container content-card">
   <view wx:for="{{menu}}" wx:key="type" wx:for-index="typeIndex">
     <!-- 如果不是第一个type，则添加分割线 -->
     <view wx:if="{{typeIndex > 0}}" class="type-separator"></view>
@@ -64,7 +67,7 @@
           <view wx:else class="iconfont {{item.icon}}"></view>
           <text class="label-small">{{item.label}}</text>
         </view>
-        <view class="right-arrow"><image mode='aspectFill' src="/pages/public/images/filter/right.png"></image></view>
+        <view class="right-arrow"><text class="iconfont icon-chevron-right"></text></view>
       </view>
   </view>
 </view>
@@ -74,14 +77,13 @@
 <!-- 成就展示位选择器 -->
 <popup show="{{showAchvPicker}}" position="center" bind:close="closeAchvPicker">
   <view class="achv-picker">
-    <view class="achv-picker-title">选择展示成就</view>
+    <popup-header title="选择展示成就" close-position="left" confirm="{{true}}" disabled="{{!pickerDirty}}" busy="{{savingPicker}}" bind:close="closeAchvPicker" bind:confirm="saveAchvPicker" />
     <view class="achv-picker-meta">
       <view class="achv-picker-tip">已选 {{pickerSelected.length}}/3</view>
-      <view class="achv-picker-clear" wx:if="{{pickerSelected.length > 0}}" bindtap="clearAchvPick">清空</view>
     </view>
     <scroll-view scroll-y="1" class="achv-picker-list" style="height: {{pickerListHeight}}rpx;">
       <view class="achv-pick-item {{item.selected ? 'selected' : ''}}" wx:for="{{unlockedAchv}}" wx:key="key" bindtap="toggleAchvPick" data-key="{{item.key}}">
-        <view class="showcase-medal small tier-{{item.tier}}">{{item.icon}}</view>
+        <image class="showcase-medal small" src="{{item.frontImage}}" mode="aspectFit" />
         <view class="achv-pick-info">
           <view class="achv-pick-name">{{item.name}}</view>
           <view class="achv-pick-desc">{{item.desc}}</view>
@@ -89,19 +91,15 @@
         <view class="achv-pick-check">{{item.selected ? '✓' : ''}}</view>
       </view>
     </scroll-view>
-    <view class="achv-picker-btns">
-      <view class="achv-picker-btn cancel" bindtap="closeAchvPicker">取消</view>
-      <view class="achv-picker-btn confirm" bindtap="saveAchvPicker">{{pickerSelected.length ? '保存展示' : '隐藏展示'}}</view>
-    </view>
+
   </view>
 </popup>
 
-<popup show="{{showAchvDetail}}" position="center" bind:close="closeAchvDetail">
+<popup id="achievement-detail-popup" show="{{showAchvDetail}}" position="center" bind:close="closeAchvDetail">
   <view class="achv-detail" wx:if="{{selectedAchievement}}">
-    <view class="achv-detail-close" bindtap="closeAchvDetail" aria-label="关闭">×</view>
-    <view class="achv-detail-medal showcase-medal tier-{{selectedAchievement.tier}}">{{selectedAchievement.icon}}</view>
-    <view class="achv-detail-name">{{selectedAchievement.name}}</view>
-    <view class="achv-detail-desc">{{selectedAchievement.desc}}</view>
-    <view class="achv-detail-action" bindtap="toMyAchievement">查看全部成就</view>
+    <popup-header title="成就详情" bind:close="closeAchvDetail" />
+    <achievementDetail achievement="{{selectedAchievement}}" />
   </view>
 </popup>
+
+<achievement-unlock id="achievement-unlock" />

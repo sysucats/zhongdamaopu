@@ -1,25 +1,21 @@
 @import "../wxss/iconfont.wxss";
+@import "./tag.wxss";
 
 .h-filter-list {
   width: 750rpx;
-  height: 90rpx;
+  min-height: 80rpx;
   flex-direction: row;
-  padding: 0 20rpx;
+  padding: 8rpx 20rpx;
   white-space: nowrap;
   box-sizing: border-box;
 }
 
 .h-filter-item {
   display: inline-flex;
-  align-items: center;
-  border-radius: 30rpx;
-  border: 5rpx solid var(--color-gray);
-  padding: 8rpx 15rpx;
-  margin: 1rpx 10rpx;
-
-  font-size: 22rpx;
-  line-height: 26rpx;
-  color: var(--color-gray-dark);
+  min-height: 64rpx;
+  padding: 6rpx 18rpx;
+  font-size: 24rpx;
+  border: 2rpx solid var(--color-gray);
   transition: color 100ms ease,
         background-color 200ms ease,
         border-color 200ms ease,
@@ -27,16 +23,18 @@
   box-sizing: border-box;
 }
 
+/* 防止后导入的标签基础样式清除间距。 */
+.h-filter-list .h-filter-item {
+  margin: 0 var(--space-xs);
+}
+
 .h-filter-item.long {
-  width: 150rpx;
+  min-width: 132rpx;
   justify-content: center;
 }
 
 .h-filter-item.active {
-  border: 5rpx solid var(--color-primary);
-  color: var(--color-primary-dark);
-  background-color: var(--color-primary-light);
-  /* font-weight: bold; */
+  border-color: var(--color-primary);
 }
 
 .h-filter-item .location-logo {

@@ -1,39 +1,38 @@
-<!--pages/manage/badgeDef/badgeDef.wxml-->
-<!-- 改成view以便使用modifyUserInfo.wxss改后的样式 -->
-<view class="editInfo" wx:if="{{auth}}">
-  <view class="top-margin-100"></view>
-
-  <view class="label-tip">id: {{badgeDef._id || 'new'}}</view>
-  <view class="label-small">徽章图像</view>
-  <view class="label-tip">tip: 点击进行更换</view>
-  <!-- 复用了个人信息页修改的css，所以还是叫avatar -->
-  <button class="avatar-wrapper" style="border-radius: 15rpx;" bindtap="chooseImage">
-    <image class="avatar" style="border-radius: 15rpx;" src="{{badgeDef.img}}" mode="aspectFill"></image>
-  </button>
-
-  <view class="label-small">名称</view>
-  <view class="label-tip">tip: 最好5个字以内，否则展示效果可能不佳</view>
-  <input type="text" class="nickname-input" placeholder="请输入名称" value="{{badgeDef.name}}" bindinput="onChangeText" data-field="name"/>
-
-  <view class="label-small">描述</view>
-  <view class="label-tip">tip: 描述这个徽章应该送给哪类猫猫</view>
-  <input type="text" class="nickname-input" placeholder="请输入描述" value="{{badgeDef.desc}}" bindinput="onChangeText" data-field="desc"/>
-
-  <view class="label-small">榜单标语</view>
-  <view class="label-tip">tip: 简短的一句话，展示在榜单Tab</view>
-  <input type="text" class="nickname-input" placeholder="请输入标语" value="{{badgeDef.rankDesc}}" bindinput="onChangeText" data-field="rankDesc"/>
-
-  <view class="label-small">徽章等级</view>
-  <view class="label-tip">tip: 抽取概率为A级10%，B级30%，C级60%</view>
-  <picker bindchange="onLevelChange" value="{{badgeDef.level}}" range="{{levelDefs}}">
-    <view class="picker">
-      {{badgeDef.level || '未选择'}}
+<block wx:if="{{auth}}">
+  <view class="form-state" wx:if="{{loading}}">加载中…</view>
+  <view class="form-state" wx:elif="{{loadError}}">
+    <view>{{loadError}}</view>
+    <button class="form-button retry-button" bindtap="retryLoad">重新加载</button>
+  </view>
+  <view class="form-page" wx:else>
+    <view class="form-section">
+      <view class="section-title">基本信息</view>
+      <view class="field-label field-required">名称</view>
+      <input class="field-input" value="{{badgeDef.name}}" maxlength="20" placeholder="最好5个字以内，否则展示效果可能不佳" data-field="name" bindinput="onChangeText" aria-label="名称" />
+      <view class="field-label spaced-label field-required">徽章等级</view>
+      <picker range="{{levelDefs}}" value="{{levelIndex}}" bindchange="onLevelChange">
+        <view class="field-picker">{{badgeDef.level ? badgeDef.level + ' 级' : '请选择等级'}}<view class="picker-arrow"></view></view>
+      </picker>
+      <view class="field-hint">等级决定抽取权重和展示顺序。</view>
+      <view class="field-label spaced-label field-required">描述</view>
+      <textarea class="description-input" value="{{badgeDef.desc}}" maxlength="200" placeholder="描述这个徽章应该送给哪类猫猫" data-field="desc" bindinput="onChangeText" aria-label="描述" />
+      <view class="field-label spaced-label field-required">榜单标语</view>
+      <input class="field-input" value="{{badgeDef.rankDesc}}" maxlength="80" placeholder="简短的一句话，展示在榜单Tab" data-field="rankDesc" bindinput="onChangeText" aria-label="榜单标语" />
     </view>
-  </picker>
 
+    <view class="form-section">
+      <view class="section-title field-required">徽章图像</view>
+      <view class="image-upload cat-image-upload" bindtap="chooseImage" aria-role="button" aria-label="{{imagePreview ? '更换徽章图片' : '上传徽章图片'}}">
+        <image class="cat-editor-image" wx:if="{{imagePreview}}" src="{{imagePreview}}" mode="aspectFit" />
+        <text class="iconfont icon-photo-up upload-icon" wx:else></text>
+        <view class="upload-label">{{imagePreview ? '更换图片' : '上传徽章图片'}}</view>
+      </view>
+    </view>
 
-  <button class="primary" bindtap="clickUpload">提交</button>
-</view>
-
-<!-- 未授权提示 -->
+    <view class="form-error" wx:if="{{formError}}">{{formError}}</view>
+    <view class="save-bar">
+      <button class="form-button primary save-button" bindtap="clickUpload" loading="{{saving || choosingImage}}" disabled="{{saving || choosingImage}}">{{saving ? '保存中' : (isNew ? '添加徽章' : '保存修改')}}</button>
+    </view>
+  </view>
+</block>
 <no-auth wx:else tip-text="{{tipText}}"></no-auth>

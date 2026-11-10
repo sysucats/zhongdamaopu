@@ -1,2 +1,1 @@
-/* pages/manage/badgeCode/addBadgeCode/addBadgeCode.wxss */
-@import "../../../../components/modifyUserInfo/modifyUserInfo.wxss";
+@import "/pages/public/wxss/form.wxss";

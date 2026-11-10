@@ -1,0 +1,6 @@
+<view class="badge-scene" style="width: {{size}}rpx; height: {{size}}rpx;" bindtap="flip" aria-role="button" aria-label="翻转徽章">
+  <view class="badge-body {{flipped ? 'flipped' : ''}}">
+    <image class="badge-face badge-front" src="{{front}}" mode="aspectFit" />
+    <image class="badge-face badge-back" src="{{back}}" mode="aspectFit" />
+  </view>
+</view>

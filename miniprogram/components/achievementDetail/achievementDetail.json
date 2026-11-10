@@ -1,0 +1,6 @@
+{
+  "component": true,
+  "usingComponents": {
+    "achievementBadge": "/components/achievementBadge/achievementBadge"
+  }
+}

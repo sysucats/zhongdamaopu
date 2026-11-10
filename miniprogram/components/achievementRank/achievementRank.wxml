@@ -1,6 +1,9 @@
 <!--components/achievementRank/achievementRank.wxml-->
 <view class="leaderboard-section">
-  <view class="leaderboard-card leaderboard-summary" bindtap="toMyAchievement" wx:if="{{myOpenid}}">
+  <view class="content-card" wx:if="{{profileLoaded && !hasProfile}}">
+    <profile-prompt context="查看我的成就排名" bind:edit="editProfile" />
+  </view>
+  <view class="content-card leaderboard-summary" bindtap="toMyAchievement" wx:elif="{{hasProfile}}">
     <view class="leaderboard-summary-grid">
       <view class="leaderboard-summary-cell">
         <view class="leaderboard-summary-label">排名</view>
@@ -19,7 +22,7 @@
     <view class="leaderboard-summary-action">查看我的成就</view>
   </view>
 
-  <view class="leaderboard-card leaderboard-list achievement-list" wx:if="{{list.length > 0}}">
+  <view class="content-card leaderboard-list achievement-list" wx:if="{{list.length > 0}}">
     <view class="leaderboard-row rank-{{item.rank <= 3 ? item.rank : 0}}" wx:for="{{list}}" wx:key="openid">
       <view class="leaderboard-order">{{item.rank}}</view>
       <view class="leaderboard-avatar-wrap">
@@ -29,7 +32,9 @@
         </view>
       </view>
       <view class="leaderboard-name">{{item.nickName}}</view>
-      <view class="leaderboard-value">{{item.count}}<text class="leaderboard-unit"> 枚</text></view>
+      <view class="leaderboard-value achievement-count" bindtap="openShowcase" data-openid="{{item.openid}}" data-name="{{item.nickName}}" aria-role="button" aria-label="查看{{item.nickName}}展示的成就">
+        <text class="achievement-count-number">{{item.count}}</text><text class="leaderboard-unit">枚</text>
+      </view>
     </view>
   </view>
 
@@ -38,3 +43,5 @@
   </view>
   <view class="leaderboard-state" wx:if="{{loading}}">加载中...</view>
 </view>
+
+<modifyUserInfo show="{{showEdit}}" bind:close="closeEdit"></modifyUserInfo>

@@ -1,5 +1,5 @@
-@import "/components/photoRank/photoRank.wxss";
+@import "/pages/leaderboard/rankShared.wxss";
 
-.achievement-list {
-  margin-top: var(--space-md);
+.achievement-count-number {
+  border-bottom: 2rpx solid currentColor;
 }

@@ -1,0 +1,25 @@
+<view class="comment-paper {{note.paper_color || 'white'}}" wx:if="{{note}}" style="transform: rotate({{note.rotate}}deg);" bindtap="open">
+  <view class="wavy-line"></view>
+  <view class="paper">
+    <view class="note-header">
+      <view class="note-cat" wx:if="{{headerMode === 'cat'}}">
+        <image class="note-avatar" src="{{note.cat.avatar.photo_compressed || note.cat.avatar.photo_id || '/pages/public/images/info/btn/cat_head.png'}}" mode="aspectFill" lazy-load="true" />
+        <text class="note-cat-name">{{note.cat.name || '未知猫咪'}}的便利贴墙</text>
+      </view>
+      <view class="note-author" wx:else>
+        <image class="note-avatar" src="{{maskPending && note.needVerify ? '/pages/public/images/app_logo.png' : (note.userInfo.avatarUrl || '/pages/public/images/app_logo.png')}}" mode="aspectFill" lazy-load="true" />
+        <text class="note-username">{{maskPending && note.needVerify ? '喵友' : (note.userInfo.nickName || '喵友')}}</text>
+      </view>
+      <view class="note-delete" wx:if="{{canDelete}}" catchtap="remove" aria-role="button" aria-label="删除便利贴">删除</view>
+    </view>
+    <view class="note-content">{{maskPending && note.needVerify ? '（内容审核中...）' : note.content}}</view>
+    <view class="note-footer">
+      <view class="note-time">{{note.datetime}}<text class="note-status" wx:if="{{note.needVerify && !maskPending}}">待审核</text></view>
+      <view class="note-like" wx:if="{{!note.needVerify && note._id}}" catchtap="like" aria-role="button" aria-label="{{note.liked ? '已点赞' : '点赞便利贴'}}">
+        <view class="note-heart-viewport"><view class="note-heart-sprite"><heart size="80" liked="{{note.liked}}"></heart></view></view>
+        <text class="note-like-count">{{note.like_count || 0}}</text>
+      </view>
+    </view>
+  </view>
+  <view class="tape" style="left: {{note.tape_pos_left}}rpx; transform: rotate({{note.tape_rotate}}deg);"><view class="wavy-line"></view><view class="wavy-line bottom"></view></view>
+</view>

@@ -1,23 +1,24 @@
+@import "/pages/public/wxss/card.wxss";
+@import "/pages/public/wxss/button.wxss";
+
 page {
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
-  padding: 30rpx;
+  padding: var(--space-md) var(--space-lg) calc(var(--space-lg) + env(safe-area-inset-bottom));
   background-color: var(--color-gray-light);
 }
 
 /* 头像名字和角色 */
 .profile-card {
   overflow: hidden;
-  background-color: #fff;
-  border-radius: 20rpx;
-  box-shadow: 0 4rpx 16rpx var(--color-ltblack-transparent);
+  padding: 0;
 }
 
 .user-container {
   display: flex;
   align-items: center;
-  padding: 30rpx 30rpx 24rpx;
+  padding: var(--space-lg);
 }
 
 .avatar-container {
@@ -35,28 +36,6 @@ page {
   margin-left: 20rpx;
 }
 
-.edit-container {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-left: auto;
-  padding-left: 12rpx;
-  flex-shrink: 0;
-}
-
-.edit-container .icon-edit {
-  height: 60rpx;
-  width: 60rpx;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  border-radius: 20rpx;
-  background-color: var(--color-primary-bg);
-  font-size: 40rpx;
-  color: var(--color-primary);
-  margin: 0 !important;
-}
-
 .avatar {
   width: 120rpx;
   height: 120rpx;
@@ -72,13 +51,14 @@ page {
   text-overflow: ellipsis;
   width: fit-content;
   white-space: nowrap;
-  padding: 6rpx 14rpx;
-  border-radius: 999rpx;
-  font-size: 22rpx;
+  padding: 4rpx 14rpx;
+  border-radius: var(--radius-pill);
+  font-size: var(--font-size-tag);
+  line-height: 1.5;
 }
 .pro-badge {
-  background-color: #ffa601;
-  color: #fff;
+  background-color: var(--color-status-pending-bg);
+  color: var(--color-status-pending-text);
 }
 .manager-badge {
   background-color: var(--color-primary-light);
@@ -94,8 +74,8 @@ page {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  font-size: 40rpx;
-  font-weight: bold;
+  font-size: var(--font-size-page);
+  font-weight: 600;
   color: var(--color-black-light);
 }
 
@@ -104,8 +84,8 @@ page {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin: 0 30rpx;
-  padding: 24rpx 0 30rpx;
+  margin: 0 var(--space-lg);
+  padding: var(--space-md) 0 var(--space-lg);
   border-top: 1rpx solid var(--color-gray-normal);
 }
 
@@ -132,14 +112,16 @@ page {
 } */
 
 .num-title {
-  font-size: 35rpx;
-  font-weight: bold;
+  font-size: var(--font-size-stat);
+  font-weight: 600;
   text-align: center;
   white-space: nowrap;
 }
 .small-title {
-  font-size: 20rpx;
-  font-weight: 300;
+  font-size: var(--font-size-caption);
+  font-weight: 400;
+  line-height: 1.5;
+  color: var(--color-gray-max);
 }
 
 .content {
@@ -147,15 +129,19 @@ page {
   box-sizing: border-box;
 }
 
+.footprint-home {
+  display: block;
+  width: 100%;
+  margin-bottom: var(--space-md);
+}
+
 /* 一些菜单 */
 .menu-container {
   width: 100%;
-  background-color: #fff;
-  border-radius: 20rpx;
+
   overflow: hidden;
-  padding: 10rpx 0;
-  margin-bottom: 30rpx;
-  box-shadow: 0 4rpx 16rpx var(--color-ltblack-transparent);
+  padding: 0;
+
 }
 .type-separator {
   height: 1rpx;
@@ -167,31 +153,29 @@ page {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 15rpx;
+  padding: var(--space-sm) var(--space-lg);
   position: relative;
-}
-.hiddenbtn {
-  opacity:0;
-	position: absolute;
-	top: 10rpx;
-	right: 10rpx;
+  min-height: 88rpx;
+  box-sizing: border-box;
+  gap: var(--space-sm);
 }
 .icon-and-text {
   display: flex;
   align-items: center;
 }
 .iconfont {
-  font-size: 60rpx;
-  margin: 0 30rpx 0  40rpx;
+  font-size: 40rpx;
+  margin: 0 var(--space-md) 0 0;
+  color: var(--color-black-min);
 }
 .menu-icon-img {
-  width: 46rpx;
-  height: 46rpx;
-  padding: 18rpx 0;
-  margin: 0 37rpx 0 47rpx;
+  width: 40rpx;
+  height: 40rpx;
+  padding: 0;
+  margin: 0 var(--space-md) 0 0;
 }
 .label-small {
-  font-size: 28rpx;
+  font-size: var(--font-size-body);
   flex: 1;
 }
 .right-arrow image {
@@ -205,16 +189,12 @@ page {
 .showcase {
   width: 100%;
   box-sizing: border-box;
-  margin: 30rpx 0;
-  background: #fff;
-  border-radius: 20rpx;
-  padding: 30rpx;
-  box-shadow: 0 4rpx 16rpx var(--color-ltblack-transparent);
+  margin: var(--space-lg) 0;
 }
 
 .showcase-title {
-  font-size: 28rpx;
-  font-weight: bold;
+  font-size: var(--font-size-section);
+  font-weight: 600;
   color: var(--color-black-light);
 }
 
@@ -222,13 +202,25 @@ page {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 24rpx;
+  min-height: 52rpx;
+  margin-bottom: var(--space-md);
+  gap: var(--space-sm);
+  flex-wrap: wrap;
 }
 
-.showcase-edit {
-  font-size: 26rpx;
-  color: var(--color-primary);
-  padding: 12rpx 0 12rpx 20rpx;
+.showcase-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+}
+.showcase-actions .with-icon .iconfont,
+.showcase-add .iconfont { margin: 0; }
+
+.showcase-edit,
+.showcase-all {
+  font-size: var(--font-size-caption);
+  color: var(--color-gray-max);
+  line-height: 64rpx;
 }
 
 .showcase-row {
@@ -247,37 +239,13 @@ page {
 }
 
 .showcase-medal {
-  width: 80rpx;
-  height: 80rpx;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #fff;
-  font-size: 40rpx;
-}
-
-.showcase-medal.tier-1 {
-  background: var(--grad-achievement-bronze);
-  box-shadow: 0 4rpx 12rpx rgba(176, 111, 50, 0.3);
-}
-
-.showcase-medal.tier-2 {
-  background: var(--grad-achievement-silver);
-  box-shadow: 0 4rpx 12rpx rgba(135, 149, 164, 0.3);
-  color: var(--color-black-light);
-}
-
-.showcase-medal.tier-3 {
-  background: var(--grad-achievement-gold);
-  box-shadow: 0 4rpx 12rpx rgba(222, 159, 18, 0.35);
-  color: var(--color-black-light);
+  width: 160rpx;
+  height: 160rpx;
 }
 
 .showcase-medal.small {
-  width: 60rpx;
-  height: 60rpx;
-  font-size: 26rpx;
+  width: 80rpx;
+  height: 80rpx;
   flex-shrink: 0;
 }
 
@@ -291,6 +259,14 @@ page {
   overflow-wrap: break-word;
 }
 
+.showcase-time {
+  margin-top: 4rpx;
+  color: var(--color-gray-max);
+  font-size: var(--font-size-caption);
+  text-align: center;
+  line-height: 1.5;
+}
+
 .showcase-empty {
   font-size: 24rpx;
   color: var(--color-gray-max);
@@ -299,18 +275,7 @@ page {
 }
 
 .showcase-add {
-  color: var(--color-primary);
-  margin-top: 12rpx;
-  padding: 8rpx;
-}
-
-.showcase-all {
-  color: var(--color-primary-text);
-  font-size: 24rpx;
-  text-align: right;
-  margin-top: 24rpx;
-  padding: 18rpx 0 4rpx;
-  border-top: 1rpx solid var(--color-gray-normal);
+  margin: var(--space-sm) auto 0;
 }
 
 /* 成就选择器 */
@@ -319,17 +284,10 @@ page {
   max-height: 70vh;
   box-sizing: border-box;
   background: #fff;
-  border-radius: 40rpx;
-  padding: 30rpx;
+  border-radius: var(--radius-modal);
+  padding: 0 30rpx 30rpx;
   display: flex;
   flex-direction: column;
-}
-
-.achv-picker-title {
-  font-size: 30rpx;
-  font-weight: bold;
-  color: var(--color-black-light);
-  text-align: center;
 }
 
 .achv-picker-meta {
@@ -340,14 +298,9 @@ page {
 }
 
 .achv-picker-tip {
-  font-size: 22rpx;
+  font-size: var(--font-size-caption);
   color: var(--color-gray-max);
-}
-
-.achv-picker-clear {
-  font-size: 24rpx;
-  color: var(--color-primary);
-  padding: 6rpx 0 6rpx 16rpx;
+  line-height: 1.5;
 }
 
 .achv-picker-list {
@@ -377,101 +330,33 @@ page {
 }
 
 .achv-pick-name {
-  font-size: 28rpx;
+  font-size: var(--font-size-body);
   color: var(--color-black-light);
-  font-weight: bold;
+  font-weight: 500;
 }
 
 .achv-pick-desc {
-  font-size: 22rpx;
+  font-size: var(--font-size-caption);
   color: var(--color-gray-max);
   margin-top: 4rpx;
+  line-height: 1.5;
 }
 
 .achv-pick-check {
   width: 44rpx;
   font-size: 34rpx;
-  color: var(--color-primary);
+  color: var(--color-primary-text);
   text-align: center;
-}
-
-.achv-picker-btns {
-  display: flex;
-  margin-top: 24rpx;
-}
-
-.achv-picker-btn {
-  flex: 1;
-  text-align: center;
-  padding: 18rpx 0;
-  border-radius: 32rpx;
-  font-size: 28rpx;
-}
-
-.achv-picker-btn.cancel {
-  color: var(--color-black-min);
-  background: var(--color-gray-normal);
-  margin-right: 20rpx;
-}
-
-.achv-picker-btn.confirm {
-  color: var(--color-text-onPrimary);
-  background: var(--color-primary);
 }
 
 .achv-detail {
   position: relative;
+  z-index: 1;
   width: 620rpx;
   box-sizing: border-box;
-  padding: 40rpx 30rpx;
   background: #fff;
-  border-radius: 40rpx;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  border-radius: 32rpx;
 }
 
-.achv-detail-close {
-  position: absolute;
-  top: 12rpx;
-  right: 18rpx;
-  width: 64rpx;
-  height: 64rpx;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--color-gray-max);
-  font-size: 40rpx;
-}
-
-.achv-detail-medal {
-  width: 112rpx;
-  height: 112rpx;
-  font-size: 56rpx;
-}
-
-.achv-detail-name {
-  margin-top: 24rpx;
-  color: var(--color-black-light);
-  font-size: 32rpx;
-  font-weight: bold;
-}
-
-.achv-detail-desc {
-  margin-top: 14rpx;
-  color: var(--color-gray-max);
-  font-size: 26rpx;
-  text-align: center;
-}
-
-.achv-detail-action {
-  margin-top: 32rpx;
-  width: 100%;
-  box-sizing: border-box;
-  border-radius: 20rpx;
-  padding: 18rpx;
-  text-align: center;
-  color: var(--color-text-onPrimary);
-  background: var(--color-primary);
-  font-size: 28rpx;
-}
+.menu-item:active { background: var(--color-gray-light); }
+.right-arrow .iconfont { margin: 0; font-size: 28rpx; color: var(--color-gray-max); }
