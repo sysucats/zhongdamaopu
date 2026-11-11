@@ -14,8 +14,6 @@
 
   <comment-paper class="comment" wx:for="{{comments}}" wx:key="_id" item="{{item}}" mask-pending="{{true}}" can-delete="{{is_manager || item.user_openid === user.openid}}" bind:like="likeComment" data-item-id="{{item._id}}" bind:delete="deleteComment" data-item="{{item}}" data-index="{{index}}" />
 
-  <!-- 输入框占位 -->
-  <view class="input-block-ph"></view>
 </scroll-view>
 
 <!-- 悬浮的猫猫名称栏 -->
@@ -46,7 +44,7 @@
             <view class="input-color {{item}} {{paper_color_select == index ? 'selected' : ''}}"></view>
           </button>
         </view>
-        <button class="send-btn" bindtap="sendComment">发送</button>
+        <button class="form-button primary compact send-btn" bindtap="sendComment">发送</button>
       </view>
     </view>
   </block>

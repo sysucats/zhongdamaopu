@@ -1,7 +1,10 @@
 @import "/pages/public/wxss/iconfont.wxss";
+@import "/pages/public/wxss/button.wxss";
 
 /* 便利贴墙 */
 page {
+  display: flex;
+  flex-direction: column;
   height: 100%;
   overflow: hidden;
   background-color: var(--color-gray-light);
@@ -53,7 +56,9 @@ page {
 
 #comment-list {
   width: 750rpx;
-  height: 100%;
+  flex: 1;
+  min-height: 0;
+  height: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -65,20 +70,19 @@ page {
   box-sizing: border-box;
 }
 
-.input-block-ph {
-  width: 100%;
-  min-height: 200rpx;
+.big-header.fix {
+  position: absolute;
+  left: 0;
+  top: 0;
 }
 
 #input-block,
 .comment-input-closed {
   width: 750rpx;
-  position: absolute;
-  bottom: 0;
+  flex-shrink: 0;
   display: flex;
   flex-wrap: wrap;
   padding: 20rpx;
-  /* padding-bottom: 20rpx; */
   background-color: white;
   box-sizing: border-box;
   border-top: 1rpx solid var(--color-gray-light);
@@ -156,8 +160,7 @@ page {
   background: transparent;
 }
 
-.color-choice::after,
-.send-btn::after {
+.color-choice::after {
   border: none;
 }
 
@@ -187,22 +190,7 @@ page {
 }
 
 #input-block .send-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
   flex-shrink: 0;
-  box-sizing: border-box;
-  height: 64rpx;
-  width: 112rpx;
-  min-height: 44px;
-  margin: 0;
-  padding: 0;
-  border-radius: var(--radius-pill);
-  background: var(--color-primary);
-  color: var(--color-text-onPrimary);
-  font-size: 28rpx;
-  line-height: 1.4;
-  text-align: center;
 }
 
 .comment-composer {
