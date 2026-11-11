@@ -10,7 +10,7 @@
 
 .wx-modal {
   width: 600rpx;
-  background-color: #fff;
+  background-color: var(--color-surface);
   border-radius: var(--radius-modal);
   overflow: visible;
   padding: 0 35rpx;
@@ -54,7 +54,7 @@
   width: auto;
   padding: 15rpx 5rpx;
   height: 600rpx;
-  background-color: #fff;
+  background-color: var(--color-surface);
 }
 
 /* 无图片时减少滚动区域高度，使布局更紧凑 */
@@ -101,8 +101,8 @@
   top: 0;
   right: 0;
   height: 1px;
-  border-top: 1px solid #d5d5d6;
-  color: #d5d5d6;
+  border-top: 1px solid var(--color-divider);
+  color: var(--color-divider);
   -webkit-transform-origin: 0 0;
   transform-origin: 0 0;
   -webkit-transform: scaleY(0.5);
@@ -131,8 +131,8 @@
   top: 0;
   width: 1px;
   bottom: 0;
-  border-left: 1px solid #d5d5d6;
-  color: #d5d5d6;
+  border-left: 1px solid var(--color-divider);
+  color: var(--color-divider);
   transform-origin: 0 0;
   transform: scaleX(0.5);
 }

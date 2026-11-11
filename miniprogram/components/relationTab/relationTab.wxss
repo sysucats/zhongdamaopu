@@ -406,7 +406,7 @@
   left: 24rpx;
   top: 50%;
   transform: translateY(-50%);
-  color: #a855f7;
+  color: var(--color-tag-purple);
   font-size: 28rpx;
 }
 .main-input {
@@ -550,20 +550,20 @@
   flex-shrink: 0;
 }
 .icon-box.blue {
-  background: #eff6ff;
-  color: #3b82f6;
+  background: var(--color-tag-blue-bg);
+  color: var(--color-tag-blue);
 }
 .icon-box.pink {
-  background: #fdf2f8;
-  color: #ec4899;
+  background: var(--color-tag-pink-bg);
+  color: var(--color-tag-pink);
 }
 .icon-box.gray {
-  background: #f3f4f6;
-  color: #9ca3af;
+  background: var(--color-tag-gray-bg);
+  color: var(--color-tag-gray);
 }
 .icon-box.purple {
-  background: #f3e8ff;
-  color: #a855f7;
+  background: var(--color-tag-purple-bg);
+  color: var(--color-tag-purple);
 }
 
 .input-right {

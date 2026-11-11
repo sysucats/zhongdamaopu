@@ -55,7 +55,7 @@
   height: 360rpx;
   flex-shrink: 0;
   border-radius: 50%;
-  background: radial-gradient(circle, #fff0b9 0%, #fff8e5 48%, transparent 72%);
+  background: radial-gradient(circle, var(--color-achievement-glow-inner) 0%, var(--color-achievement-glow-outer) 48%, transparent 72%);
 }
 
 .unlock-name {

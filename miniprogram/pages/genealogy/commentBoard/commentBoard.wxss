@@ -232,7 +232,7 @@ page {
   bottom: 0;
   width: 32rpx;
   height: 32rpx;
-  border: 3rpx solid #fff;
+  border: 3rpx solid var(--color-surface);
   border-radius: 50%;
   background: var(--color-gray-normal);
   color: var(--color-black-min);

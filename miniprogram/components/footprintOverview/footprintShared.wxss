@@ -134,7 +134,7 @@
   padding: var(--space-xxs) var(--space-xs);
   border-radius: var(--radius-pill);
   background-color: var(--color-black-transparent);
-  color: #fff;
+  color: var(--color-text-inverse);
   font-size: 20rpx;
   line-height: 1.4;
 }
@@ -177,7 +177,7 @@
   width: calc((100% - var(--space-md)) / 2);
   overflow: hidden;
   border-radius: var(--radius-xl);
-  background-color: #fff;
+  background-color: var(--color-surface);
   box-shadow: var(--shadow-hairline);
 }
 

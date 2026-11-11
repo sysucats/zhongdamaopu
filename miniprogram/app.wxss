@@ -97,6 +97,39 @@ page {
   --shadow-float: 0 12rpx 24rpx rgba(0, 0, 0, 0.15);
   --shadow-modal: 0 20rpx 60rpx rgba(0, 0, 0, 0.25);
 
+  /* 细分割线（弹窗分隔、缩放条）。 */
+  --color-divider: #d5d5d6;
+
+  /* 关系类型标签色板：浅底配深字。 */
+  --color-tag-blue: #3b82f6;
+  --color-tag-blue-bg: #eff6ff;
+  --color-tag-pink: #ec4899;
+  --color-tag-pink-bg: #fdf2f8;
+  --color-tag-gray: #9ca3af;
+  --color-tag-gray-bg: #f3f4f6;
+  --color-tag-purple: #a855f7;
+  --color-tag-purple-bg: #f3e8ff;
+
+  /* 族谱关系图：节点与连线。 */
+  --color-graph-node-blue: #a2d2ff;
+  --color-graph-node-pink: #ffc8dd;
+  --color-graph-node-main: #ffb347;
+  --color-graph-node-border: #fff0d6;
+  --color-graph-line: #ccc;
+
+  /* 编辑操作按钮底色（对应删除用的 red）。 */
+  --color-edit: #787aff;
+
+  /* 地图截图/缩放控件的选区高亮。 */
+  --color-filter-accent: #e74c3c;
+
+  /* 排行榜暖色底。 */
+  --color-warm-bg: #fbf7f0;
+
+  /* 成就解锁光晕（内/外圈）。 */
+  --color-achievement-glow-inner: #fff0b9;
+  --color-achievement-glow-outer: #fff8e5;
+
   --color-comment-paper-white: #ffffff;
   --color-comment-paper-yellow: #fff7ee;
   --color-comment-paper-green: #ebffe9;

@@ -949,7 +949,7 @@ one-rating-title {
   width: 20rpx;
   height: 20rpx;
   border-radius: 50%;
-  background-color: #fff;
+  background-color: var(--color-surface);
   border: 4rpx solid var(--color-gray-dark);
   box-sizing: border-box;
   transform: translateX(-50%);
@@ -994,13 +994,13 @@ one-rating-title {
   padding: 22rpx 24rpx;
   border: 1rpx solid var(--color-gray-normal);
   border-radius: var(--radius-xl);
-  background-color: #fff;
+  background-color: var(--color-surface);
   box-shadow: var(--shadow-card);
 }
 
 .timeline-item:first-child .timeline-content {
   border-color: var(--color-vaccine);
-  background-color: #fffdf7;
+  background-color: var(--color-primary-bg);
 }
 
 .timeline-title {

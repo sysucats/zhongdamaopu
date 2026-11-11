@@ -36,7 +36,7 @@ page {
 .code-group {
   margin: 24rpx 0;
   border-radius: var(--radius-xl);
-  background-color: #fff;
+  background-color: var(--color-surface);
   overflow: hidden;
 }
 

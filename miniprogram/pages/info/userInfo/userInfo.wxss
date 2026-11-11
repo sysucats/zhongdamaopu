@@ -41,7 +41,7 @@ page {
   height: 120rpx;
   border-radius: calc(50% + 8rpx);
   background-color: var(--color-gray-light);
-  border: 4rpx solid #fff;
+  border: 4rpx solid var(--color-surface);
   box-shadow: 0 4rpx 16rpx var(--color-ltblack-transparent);
   flex-shrink: 0;
 }
@@ -283,7 +283,7 @@ page {
   width: 620rpx;
   max-height: 70vh;
   box-sizing: border-box;
-  background: #fff;
+  background: var(--color-surface);
   border-radius: var(--radius-modal);
   padding: 0 30rpx 30rpx;
   display: flex;

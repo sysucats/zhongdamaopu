@@ -5,9 +5,9 @@ page {
   --text-main: var(--color-warm-text);
   --text-sub: var(--color-warm-sub);
   --line-color: var(--color-warm-line);
-  --blue: #a2d2ff;
-  --pink: #ffc8dd;
-  --mainNode: #ffb347; /* var(--color-primary) */
+  --blue: var(--color-graph-node-blue);
+  --pink: var(--color-graph-node-pink);
+  --mainNode: var(--color-graph-node-main);
   /* isLonely发光颜色层次 */
   --neon-1: rgba(255, 194, 102, 0.42);
   --neon-2: rgba(255, 124, 76, 0.3);
@@ -146,14 +146,14 @@ page {
   font-size: 32rpx;
   color: var(--color-gray-max);
   font-weight: bold;
-  background: #f5f5f5;
+  background: var(--color-gray-light);
   width: 100%;
   height: 100%;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 2rpx dashed #ccc;
+  border: 2rpx dashed var(--color-graph-line);
 }
 
 /* 连线 */
@@ -170,7 +170,7 @@ page {
 }
 .line.dashed {
   background: transparent;
-  border-top: 2rpx dashed #ccc;
+  border-top: 2rpx dashed var(--color-graph-line);
 }
 
 .label-box {
@@ -184,7 +184,7 @@ page {
   padding: 2rpx 8rpx;
   border-radius: 8rpx;
   color: var(--text-sub);
-  border: 1rpx solid #fff0d6;
+  border: 1rpx solid var(--color-graph-node-border);
   max-width: 220rpx;
   white-space: nowrap;
   overflow: hidden;

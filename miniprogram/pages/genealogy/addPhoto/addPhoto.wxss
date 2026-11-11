@@ -109,7 +109,7 @@
   top: 50%;
   margin-top: -80rpx;
   width: 88rpx;
-  background: #fff;
+  background: var(--color-surface);
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-card);
   overflow: hidden;
@@ -144,7 +144,7 @@
     calc(var(--space-md) + env(safe-area-inset-bottom));
   border-top-left-radius: var(--radius-xl);
   border-top-right-radius: var(--radius-xl);
-  background: #fff;
+  background: var(--color-surface);
 }
 
 .picker-title {

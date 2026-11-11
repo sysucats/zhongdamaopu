@@ -143,7 +143,7 @@ page {
 }
 
 .achv-cur.material-bronze {
-  color: #fff;
+  color: var(--color-text-inverse);
   background: var(--grad-achievement-bronze);
 }
 

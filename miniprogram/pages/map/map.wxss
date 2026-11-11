@@ -13,7 +13,7 @@
   right: 20rpx;
   z-index: 100;
   background: rgba(0, 0, 0, 0.55);
-  color: var(--color-primary, #ffd101);
+  color: var(--color-primary);
   font-size: 22rpx;
   padding: 6rpx 16rpx;
   border-radius: 20rpx;
@@ -37,7 +37,7 @@
   left: 50%;
   transform: translate(-50%, -50%);
   background: var(--color-black-transparent);
-  color: #fff;
+  color: var(--color-text-inverse);
   padding: 20rpx 40rpx;
   border-radius: 30rpx;
   font-size: 28rpx;
@@ -51,7 +51,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  background: #fff;
+  background: var(--color-surface);
   padding: 60rpx 50rpx;
   border-radius: 20rpx;
   box-shadow: 0 0 20rpx var(--color-gray);
@@ -107,7 +107,7 @@
 }
 
 .campus-btn {
-  background: #fff;
+  background: var(--color-surface);
   border-radius: 44rpx;
   padding: 14rpx 28rpx;
   display: flex;
@@ -119,12 +119,12 @@
 
 .campus-btn:active {
   opacity: 0.75;
-  background: var(--color-gray-light, #f7f7f7);
+  background: var(--color-gray-light);
 }
 
 .campus-btn-text {
   font-size: 26rpx;
-  color: #333;
+  color: var(--color-text-onPrimary);
   font-weight: 500;
   white-space: nowrap;
 }
@@ -149,7 +149,7 @@
 
 .campus-toggle:active {
   transform: scale(0.9);
-  background: var(--color-gray-light, #f7f7f7);
+  background: var(--color-gray-light);
 }
 
 /* 底部详情面板：结构对齐猫咪详情页的 popup */
@@ -238,7 +238,7 @@
 .detail-profile {
   overflow: hidden;
   border-radius: 16rpx;
-  background: #fff;
+  background: var(--color-surface);
   box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.08);
   margin-bottom: 25rpx;
 }
@@ -336,7 +336,7 @@
   text-align: center;
   font-size: 28rpx;
   color: var(--color-primary-text);
-  background: var(--color-primary-light, #fffced);
+  background: var(--color-primary-light);
   border-radius: 44rpx;
   letter-spacing: 2rpx;
   min-width: 0;
@@ -344,7 +344,7 @@
 
 .detail-trajectory-btn:active {
   opacity: 0.75;
-  background: var(--color-primary, #ffd101);
+  background: var(--color-primary);
   color: var(--color-text-onPrimary);
 }
 
@@ -404,6 +404,6 @@
 
 .total-cats-label {
   font-size: 24rpx;
-  color: var(--color-gray-max, #888);
+  color: var(--color-gray-max);
   line-height: 1;
 }

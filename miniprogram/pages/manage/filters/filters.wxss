@@ -85,7 +85,7 @@
   top: 0;
   width: 4rpx;
   height: 100%;
-  background: #e74c3c;
+  background: var(--color-filter-accent);
   margin-left: -2rpx;
   border-radius: 2rpx;
 }
@@ -96,7 +96,7 @@
   left: 0;
   height: 4rpx;
   width: 100%;
-  background: #e74c3c;
+  background: var(--color-filter-accent);
   margin-top: -2rpx;
   border-radius: 2rpx;
 }
@@ -130,7 +130,7 @@
 .zoom-divider {
   width: 52rpx;
   height: 1rpx;
-  background: #e0e0e0;
+  background: var(--color-divider);
   margin: 0 auto;
 }
 
@@ -158,7 +158,7 @@
 
 .picker-btn.delete {
   background: var(--color-red);
-  color: #ffffff;
+  color: var(--color-text-inverse);
 }
 
 .picker-btn.delete:active {
@@ -173,7 +173,7 @@
   width: 100%;
   padding: 24rpx;
   box-sizing: border-box;
-  background: #fff;
+  background: var(--color-surface);
 }
 
 .picker-toolbar {

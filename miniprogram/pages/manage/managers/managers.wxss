@@ -102,7 +102,7 @@ page {
   margin-bottom: var(--space-xs);
   padding: var(--space-sm) var(--space-md);
   border-radius: var(--radius-lg);
-  background: #fff;
+  background: var(--color-surface);
 }
 
 .user-edit-target {

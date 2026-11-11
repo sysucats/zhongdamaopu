@@ -9,14 +9,14 @@
   margin-bottom: 24rpx;
   border-radius: 16rpx;
   overflow: hidden;
-  background: #fff;
+  background: var(--color-surface);
   box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.08);
 }
 .record-content {
   position: relative;
   z-index: 2;
   padding: 22rpx 30rpx;
-  background: #fff;
+  background: var(--color-surface);
   transition: transform 0.2s ease;
 }
 .swipe-actions {
@@ -33,11 +33,11 @@
   align-items: center;
   justify-content: center;
   width: 150rpx;
-  color: #fff;
+  color: var(--color-text-inverse);
   font-size: 28rpx;
 }
 .action-edit {
-  background: #787aff;
+  background: var(--color-edit);
 }
 .action-delete {
   background: var(--color-red);

@@ -26,7 +26,7 @@
 }
 
 .admin-segment.active {
-  background: #fff;
+  background: var(--color-surface);
   color: var(--color-primary-text);
   font-weight: 600;
   box-shadow: 0 2rpx 6rpx rgba(0, 0, 0, 0.06);

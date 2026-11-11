@@ -50,7 +50,7 @@ page {
   min-width: 0;
   box-sizing: border-box;
   border-radius: var(--radius-lg);
-  background: #fff;
+  background: var(--color-surface);
   overflow: hidden;
   text-align: center;
 }
@@ -168,7 +168,7 @@ page {
   justify-content: space-between;
   margin: 12rpx 0 24rpx;
   padding: 22rpx 24rpx;
-  background: #fff;
+  background: var(--color-surface);
   border-radius: var(--radius-lg);
   color: var(--color-black-min);
   font-size: 26rpx;

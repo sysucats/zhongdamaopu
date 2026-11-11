@@ -304,7 +304,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: #fff;
+  background: var(--color-surface);
   border-radius: 16rpx;
   padding: 24rpx;
   margin-bottom: 16rpx;

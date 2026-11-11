@@ -187,7 +187,7 @@ heart {
   overflow-y: auto;
   padding: 0 var(--space-md) 12rpx;
   border-radius: var(--radius-modal);
-  background: #fff;
+  background: var(--color-surface);
 }
 
 .achievement-showcase-state {
@@ -201,7 +201,7 @@ heart {
   position: relative;
   height: 660rpx;
   margin-top: 8rpx;
-  background: radial-gradient(ellipse at center, #fbf7f0 0%, #fff 72%);
+  background: radial-gradient(ellipse at center, var(--color-warm-bg) 0%, var(--color-surface) 72%);
 }
 
 .achievement-showcase-board.count-1 {
