@@ -58,6 +58,13 @@ Component({
       ]);
       rankRes = rankRes.result;
       if (!rankRes) {
+        this.setData({
+          dispOrder: [],
+          dispContent: {},
+          hasContent: false,
+          updateTime: null,
+          loading: false,
+        });
         return;
       }
       let updateTime = formatDate(new Date(rankRes.mdate), "yyyy-MM-dd hh:mm");

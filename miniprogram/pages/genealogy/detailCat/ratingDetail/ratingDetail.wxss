@@ -1,12 +1,16 @@
 /* pages/genealogy/detailCat/ratingDetail/ratingDetail.wxss */
-@import "../badgeDetail/badgeDetail.wxss";
+@import "/pages/public/wxss/card.wxss";
+@import "/pages/public/wxss/button.wxss";
+
+page { background: var(--color-gray-light); }
 
 .one-rating {
   display: flex;
   flex-direction: row;
   justify-content: space-evenly;
   align-items: center;
-  margin-bottom: 30rpx;
+  margin-bottom: var(--space-md);
+  font-size: var(--font-size-body);
 }
 
 .one-rating .title {
@@ -42,14 +46,10 @@
 .score {
   width: 50rpx;
   text-align: center;
-  color: var(--color-primary);
+  color: var(--color-primary-text);
   font-weight: bold;
 }
 
-button.primary {
-  border-radius: 40rpx;
-  background-color: var(--color-primary);
-  color: var(--color-text-onPrimary);
-  width: 500rpx;
-  margin-bottom: 30rpx;
+.rating-submit {
+  margin-top: var(--space-md);
 }

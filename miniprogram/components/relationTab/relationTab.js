@@ -1,3 +1,4 @@
+import { confirmDiscard } from "../../utils/popup";
 import { getAvatar, getCatItemMulti } from "../../utils/cat";
 import api from "../../utils/cloudApi";
 const app = getApp();
@@ -30,6 +31,8 @@ Component({
     // UI状态
     showSearchCat: false,
     showSearchType: false,
+    pendingRelationTypeIdx: null,
+    savingRelationType: false,
     
     selectRelationTypeIdx: undefined,
     editingRelationIndex: undefined, // 当前正在编辑的关系索引
@@ -55,6 +58,20 @@ Component({
       inverse_any: ''
     },
     activeGenderIndex: 2,
+    canSaveType: false,
+    savingType: false,
+  },
+
+  observers: {
+    'createTypeForm.**': function () {
+      this.setData({ canSaveType: !!this.data.createTypeForm.name.trim() });
+    },
+    showCreateType(show) {
+      if (show) this._initialType = JSON.parse(JSON.stringify(this.data.createTypeForm));
+    },
+    showEditAlias(show) {
+      if (show) this._initialAlias = this.data.editingAliasValue;
+    },
   },
 
   lifetimes: {
@@ -132,6 +149,7 @@ Component({
         relation_cards: cards,
         relationTitle: title,
         activeTypeName,
+        pendingRelationTypeIdx: null,
         showSearchType: true,
         showSearchCat: false,
         // 进入时清空输入与高亮
@@ -152,7 +170,8 @@ Component({
       });
     },
 
-    closeEditAlias() {
+    async closeEditAlias() {
+      if (!await confirmDiscard(this, this._initialAlias, this.data.editingAliasValue)) return;
       this.setData({
         showEditAlias: false,
         editingAliasIndex: -1,
@@ -172,7 +191,7 @@ Component({
       this.setData({
         [`cat.relations[${index}].alias`]: alias
       });
-      this.closeEditAlias();
+      this.setData({ showEditAlias: false, editingAliasIndex: -1, editingAliasValue: '' });
       this.saveRelations();
     },
 
@@ -312,9 +331,29 @@ Component({
       return rule.inverse_any || '';
     },
 
-    async selectRelationType(e, idx) {
+    async saveSelectedRelationType() {
+      if (this.data.savingRelationType || this.data.pendingRelationTypeIdx === null) return;
+      if (this.data.selectRelationTypeIdx === undefined || !this.data.relation_types[this.data.pendingRelationTypeIdx]) return;
+      this.setData({ savingRelationType: true });
+      await this.selectRelationType(null, this.data.pendingRelationTypeIdx, true);
+    },
+
+    async cancelSelectedRelationType() {
+      if (this.data.savingRelationType) return;
+      const original = this.data.cat?.relations?.[this.data.selectRelationTypeIdx]?.type || '';
+      if (!await confirmDiscard(this, original, this.data.activeTypeName)) return;
+      this.hideSearch();
+      if (this.data.editingRelationIndex !== undefined) await this.loadRelations();
+    },
+
+    async selectRelationType(e, idx, confirmed = false) {
       const index = idx !== undefined ? idx : e.currentTarget.dataset.index;
       const type = this.data.relation_types[index];
+      if (!this.data.isAddingNewRelation && !confirmed) {
+        if (this.data.savingRelationType) return;
+        this.setData({ pendingRelationTypeIdx: index, activeTypeName: type });
+        return;
+      }
       // 判断是新增关系还是修改已有关系
       if (this.data.isAddingNewRelation) {
         // 新增关系模式
@@ -356,7 +395,7 @@ Component({
             });
           };
 
-          (async () => {
+          return (async () => {
             try {
               const result = (oldTargetId && String(oldTargetId) !== String(newTargetId)) ?
                 await doRemoveAdd() : await doUpdate();
@@ -382,7 +421,7 @@ Component({
             console.error('编辑关系失败:', err);
             wx.showToast({ title: '编辑失败', icon: 'none' });
           } finally {
-            this.setData({ showSearchType: false, editingOldTargetId: null });
+            this.setData({ showSearchType: false, editingOldTargetId: null, savingRelationType: false, pendingRelationTypeIdx: null });
           }
           })();
         }
@@ -715,7 +754,9 @@ Component({
       });
     },
 
-    closeCreateType() {
+    async closeCreateType() {
+      if (this.data.savingType) return;
+      if (!await confirmDiscard(this, this._initialType, this.data.createTypeForm)) return;
       this.setData({ showCreateType: false, editingRuleName: null, isMigrationMode: false });
     },
     setCreateTypeField(e) {
@@ -751,6 +792,8 @@ Component({
       });
     },
     async saveCreateType() {
+      if (this.data.savingType) return;
+      this.setData({ savingType: true });
       try {
         const form = this.data.createTypeForm;
         const name = (form.name || '').trim();
@@ -827,6 +870,8 @@ Component({
       } catch (error) {
         console.error('保存失败:', error);
         wx.showToast({ title: error.message || '操作失败', icon: 'none' });
+      } finally {
+        this.setData({ savingType: false });
       }
     },
 

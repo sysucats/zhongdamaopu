@@ -1,21 +1,17 @@
-/* pages/news/news.wxss */
-.news-box {
+@import "/pages/public/wxss/tag.wxss";
+@import "/pages/public/wxss/card.wxss";
+page {
   box-sizing: border-box;
-  padding: 25rpx 25rpx 25rpx 30rpx;
-  margin: 30rpx;
-  box-shadow: 5rpx 5rpx 30rpx var(--color-gray-normal);
-  border-radius: 20rpx;
-  background-color: #FFFFFF;
-
-  display: flex;
-  justify-content: space-between;
-  flex-grow: 1;
-  overflow: hidden;
+  padding: var(--space-md) var(--space-lg)
+    calc(var(--space-lg) + env(safe-area-inset-bottom));
+  background: var(--color-gray-light);
 }
 
-.news {
-  font-weight: 300;
-  /* margin: 10rpx 0; */
+.news-box {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-lg);
+  overflow: hidden;
 }
 
 .news.infoBox{
@@ -23,49 +19,42 @@
   flex-direction: column;
   justify-content: space-between;
   overflow: hidden;
-  flex-grow: 1;
+  flex: 1;
+  min-width: 0;
 }
 
 .news.title {
-  font-size: 33rpx;
+  font-size: var(--font-size-section);
   font-weight: 600;
-  margin-bottom: 6rpx;
+  margin-bottom: var(--space-xs);
 }
 
 .news .row-container{
   display: flex;
   flex-direction: row;
   align-items: center;
-  margin-bottom: 8rpx;
+  gap: var(--space-xs);
+
 }
 .news.tag {
-  width: 80rpx;
-  height: 38rpx;
-  border-radius: 15rpx;
-  margin: 4rpx 12rpx 0 0;
-  
-  font-size: 24rpx;
-  font-weight: 500;
-  text-align: center;
-  line-height: 38rpx;
-
-  background-color: var(--color-primary-light);
-  color: var(--color-primary);
+  margin: 0;
 }
 
 .news.user {
-  font-size: 26rpx;
+  flex: 1;
+  min-width: 0;
+  font-size: var(--font-size-caption);
   color: var(--color-gray-dark);
-  margin-right: 10rpx;
 
   white-space: nowrap;  
   text-overflow:ellipsis; 
   overflow:hidden;
 }
 .news.time {
-  font-size: 26rpx;
+  min-width: 0;
+  font-size: var(--font-size-caption);
   color: var(--color-gray-dark);
-  flex-grow: 1;
+  flex: 0 1 auto;
   text-align: right;
   white-space: nowrap;  
   text-overflow:ellipsis; 
@@ -77,11 +66,11 @@
   flex-grow: 1;
 }
 .news.content {
-  font-size: 28rpx;
+  font-size: var(--font-size-body);
   font-weight: 400;
   /* letter-spacing:0.005rpx; */
 
-  margin-bottom: 10rpx;
+  margin-bottom: var(--space-sm);
   overflow: hidden;
   display: -webkit-box;
   -webkit-box-orient: vertical;
@@ -94,7 +83,8 @@
 .loading image {
   width: 165.9rpx;
   height: 90.3rpx;
-  margin: 10rpx 292rpx;
+  display: block;
+  margin: 10rpx auto;
   margin-top: 40rpx;
 }
 
@@ -102,9 +92,7 @@
   width: 200rpx;
   height: 200rpx;
 
-  border-radius: 10rpx;
-  margin: 5rpx 5rpx 5rpx 30rpx;
-  float: right;
+  border-radius: var(--radius-md);
 
   flex-shrink: 0;
   /* flex-grow: 1; */
@@ -115,8 +103,8 @@
 .button_container {
   display: flex;
   flex-direction: row;
-  margin: 20rpx 20rpx 0rpx 20rpx;
-  justify-content: space-around;
+  margin: var(--space-md) 0;
+  width: 100%;
   height: 130rpx;
 }
 
@@ -126,9 +114,10 @@
   justify-content: center;
   align-items: center;
   flex-direction: column;
-  width: 15%;
+  flex: 1;
+  min-width: 0;
   border-bottom: 5rpx solid transparent;
-  background-color: white;
+  background: transparent;
   padding: 8rpx 5rpx;
   box-sizing: border-box;
   transition: background-color 500ms ease,
@@ -140,7 +129,7 @@
 /* 按钮选中 */
 .checked_button {
   border-color: var(--color-primary-dark);
-  color: var(--color-primary-dark);
+  color: var(--color-primary-text);
   font-weight: bold;
 }
 
@@ -164,26 +153,26 @@ border-radius: 10rpx;
 }
 
 .checked_button.tab-text{
-  color: white;
+  color: var(--color-primary-text);
   font-weight: 500;
 }
 
 swiper {
-  width: 692rpx;
+  width: 100%;
   height: 261rpx;
-  margin: 25rpx 28rpx 23rpx 28rpx;
-  border-radius: 15rpx;
+  margin: 0 0 var(--space-md);
+  border-radius: var(--radius-xl);
   overflow: hidden;
 }
 
 swiper image {
-  width: 692rpx;
+  width: 100%;
   height: 261rpx;
-  border-radius: 15rpx;
+  border-radius: var(--radius-xl);
 }
 
 .emptyImg {
-  width: 750rpx;
+  width: 100%;
   height: 100rpx;
   margin: 30rpx 0;
 }

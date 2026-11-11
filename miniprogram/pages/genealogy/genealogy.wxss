@@ -19,6 +19,11 @@ scroll-view {
   align-items: center;
 }
 
+/* 补齐筛选胶囊下方留白，与搜索框下方的视觉间距接近。 */
+.cards .h-filter-list {
+  margin-bottom: 20rpx;
+}
+
 .card {
   margin-bottom: 50rpx;
   font-size: 24rpx;
@@ -135,29 +140,36 @@ scroll-view {
   margin-left: 8rpx;
 }
 
-.card .info .adopt {
-  padding: 0 10rpx;
-  height: 30rpx;
-  border-radius: 15rpx;
-  font-size: 18rpx;
-  line-height: 30rpx;
-  text-align: center;
-  background-color: var(--color-primary-light);
-  color: var(--color-primary);
-  margin-left: 8rpx;
+.card .info .line.cat-heading {
+  display: block;
 }
-
-.card .info .to_star {
-  height: 30rpx;
-  border-radius: 15rpx;
-  font-size: 18rpx;
-  line-height: 30rpx;
-  text-align: center;
-  background-color: var(--color-gray-max);
-  color: #fff;
-
-  padding: 0 10rpx;
-  margin: 0 10rpx;
+.cat-heading::after {
+  content: "";
+  display: block;
+  clear: both;
+}
+.cat-heading-counts {
+  float: right;
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  min-height: 64rpx;
+  white-space: nowrap;
+  margin-left: var(--space-sm);
+}
+.cat-heading .cat-status-list {
+  display: inline-flex;
+  max-width: 100%;
+  vertical-align: middle;
+}
+.cat-name-group {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  max-width: 100%;
+  min-height: 64rpx;
+  margin-right: var(--space-xs);
+  vertical-align: middle;
 }
 
 .card .info .popularity {
@@ -312,7 +324,7 @@ scroll-view {
   box-shadow: 0 4rpx 12rpx rgba(232, 155, 108, 0.35);
 }
 
-/* 猫猫详情：主题色黄（柔化版，降低饱和度避免刺眼） */
+/* 猫猫详情：柔和黄 */
 .card-action-btn.btn-detail {
   background: #F0C04A;
   box-shadow: 0 4rpx 12rpx rgba(240, 192, 74, 0.4);
@@ -467,7 +479,7 @@ scroll-view {
 }
 
 .f-column .item.active {
-  color: var(--color-primary);
+  color: var(--color-primary-text);
   border: 3rpx solid var(--color-primary);
   border-radius: 40rpx;
 }
@@ -515,7 +527,7 @@ scroll-view {
 }
 
 #filter-block .buttons .active {
-  color: var(--color-primary);
+  color: var(--color-primary-text);
 }
 
 .searchPlaceholderStyle{

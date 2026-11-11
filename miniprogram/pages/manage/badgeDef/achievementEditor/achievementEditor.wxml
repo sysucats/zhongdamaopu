@@ -1,0 +1,118 @@
+<block wx:if="{{auth}}">
+  <view class="form-state" wx:if="{{loading}}">加载中…</view>
+  <view class="form-state" wx:elif="{{loadError}}">
+    <view>{{loadError}}</view>
+    <button class="form-button retry-button" bindtap="retryLoad">重新加载</button>
+  </view>
+  <view class="form-page" wx:else>
+    <view class="form-section">
+      <view class="section-title">基本信息</view>
+      <view class="field-label field-required">{{mode === 'material' ? '材质名称' : '成就名称'}}</view>
+      <input class="field-input" value="{{form.name}}" maxlength="20" placeholder="{{mode === 'material' ? '例如：翡翠' : '例如：镜头收藏家'}}" data-field="name" bindinput="onInput" aria-label="名称" />
+    </view>
+
+    <block wx:if="{{mode === 'material'}}">
+      <view class="form-section">
+        <view class="section-title field-required">材质图片</view>
+        <view class="image-upload" data-field="image" bindtap="chooseImage" aria-role="button" aria-label="{{form.image ? '更换材质图片' : '上传材质图片'}}">
+          <image wx:if="{{previews.image}}" class="material-image" src="{{previews.image}}" mode="aspectFill" />
+          <text wx:else class="iconfont icon-photo-up upload-icon"></text>
+          <view class="upload-label">{{form.image ? '更换图片' : '上传材质 PNG'}}</view>
+        </view>
+        <view class="field-hint">PNG，最大 5 MB，宽高不超过 2048 像素。</view>
+        <view class="field-hint">更换材质后，引用它的成就背面会同步更新。</view>
+      </view>
+    </block>
+
+    <block wx:else>
+      <view class="form-section">
+        <view class="section-heading">
+          <view class="section-title">达成条件</view>
+          <text class="readonly-tag" wx:if="{{ruleLocked}}">已锁定</text>
+        </view>
+        <block wx:if="{{ruleLocked}}">
+          <view class="rule-summary">{{ruleDescription}}</view>
+          <view class="field-hint">上线或已有人获得后，达成条件不可修改。</view>
+        </block>
+        <block wx:else>
+          <view class="field-label field-required">统计类别</view>
+          <picker range="{{metricOptions}}" range-key="label" value="{{metricIndex}}" data-field="metric" bindchange="onPick">
+            <view class="field-picker">{{metricOptions[metricIndex].label}}<view class="picker-arrow"></view></view>
+          </picker>
+          <view class="quantity-row">
+            <view class="quantity-label field-required">达成数量</view>
+            <view class="count-field">
+              <input class="count-input" type="number" maxlength="6" value="{{form.rule.count}}" data-field="rule.count" bindinput="onInput" aria-label="达成数量" />
+              <text class="count-unit">{{metricOptions[metricIndex].unit}}</text>
+            </view>
+          </view>
+        </block>
+      </view>
+
+      <view class="form-section">
+        <view class="section-title">徽章外观</view>
+        <view class="field-label field-required">材质</view>
+        <picker range="{{materialOptions}}" range-key="name" value="{{materialIndex}}" data-field="material" bindchange="onPick" disabled="{{!materialOptions.length}}">
+          <view class="field-picker">{{selectedMaterial.name || '请先在材质库添加材质'}}<view class="picker-arrow" wx:if="{{materialOptions.length}}"></view></view>
+        </picker>
+        <view class="face-grid">
+          <view class="face-column">
+            <view class="face-tile front-tile" data-field="frontImage" bindtap="chooseImage" aria-role="button" aria-label="{{form.frontImage ? '更换正面图片' : '上传正面图片'}}">
+              <image wx:if="{{previews.frontImage}}" class="face-image" src="{{previews.frontImage}}" mode="aspectFit" />
+              <text wx:else class="iconfont icon-photo-up upload-icon"></text>
+            </view>
+            <view class="face-label"><text class="field-required">正面</text> · <text class="upload-link">{{form.frontImage ? '更换图片' : '上传图片'}}</text></view>
+          </view>
+          <view class="face-column">
+            <view class="face-tile">
+              <image wx:if="{{previews.backImage && !backPending}}" class="face-image" src="{{previews.backImage}}" mode="aspectFit" />
+              <view class="auto-back" wx:else>保存后生成</view>
+            </view>
+            <view class="face-label">背面 · 自动生成</view>
+          </view>
+        </view>
+        <view class="field-hint">正面使用透明 PNG，最大 5 MB，宽高不超过 2048 像素。</view>
+        <view class="field-hint" wx:if="{{backPending && form.frontImage}}">保存后自动生成背面和 3D 轮廓。</view>
+      </view>
+
+      <view class="form-section status-section">
+        <view class="status-row">
+          <view class="status-copy">
+            <view class="status-title">上线成就</view>
+            <view class="field-hint">{{form.status === 'active' ? '按达成条件自动发放' : '保存为草稿，暂不展示和发放'}}</view>
+          </view>
+          <switch checked="{{form.status === 'active'}}" disabled="{{form.status === 'active' && holders > 0}}" color="var(--color-green)" bindchange="onStatusChange" aria-label="上线成就" />
+        </view>
+        <view class="holder-note" wx:if="{{!isNew}}">{{holders > 0 ? '已有 ' + holders + ' 人获得，不能退回草稿' : '尚无人获得'}}</view>
+      </view>
+
+      <view class="form-section more-section">
+        <view class="more-toggle" bindtap="toggleMore" aria-role="button" aria-label="更多设置" aria-expanded="{{showMore}}">
+          <view>更多设置<text class="more-summary" wx:if="{{!showMore}}">{{form.series}}</text></view>
+          <text class="more-action">{{showMore ? '收起' : '展开'}}</text>
+        </view>
+        <view class="more-fields" wx:if="{{showMore}}">
+          <view class="field-label field-required">系列</view>
+          <input class="field-input" value="{{form.series}}" maxlength="20" placeholder="例如：日常" data-field="series" bindinput="onInput" aria-label="系列" />
+          <view class="chip-row" wx:if="{{seriesOptions.length}}">
+            <view class="chip {{form.series === item ? 'active' : ''}}" wx:for="{{seriesOptions}}" wx:key="*this" data-series="{{item}}" bindtap="pickSeries">{{item}}</view>
+          </view>
+          <view class="field-label spaced-label">成就说明（选填）</view>
+          <textarea class="description-input" value="{{form.description}}" maxlength="100" placeholder="{{ruleDescription}}" data-field="description" bindinput="onInput" aria-label="成就说明" />
+          <view class="field-hint">仅描述当前这枚成就，留空则使用达成条件作为说明。</view>
+        </view>
+      </view>
+    </block>
+
+    <view class="field-hint generation-status" wx:if="{{generation}}">
+      <view>{{generation.label}}{{generation.total ? '（步骤 ' + generation.step + '/' + generation.total + '）' : ''}}</view>
+      <view wx:if="{{generation.error}}">{{generation.error}}</view>
+    </view>
+    <view class="form-error" wx:if="{{formError}}">{{formError}}</view>
+    <view class="save-bar">
+      <button class="form-button danger delete-button" wx:if="{{mode === 'badge' && !isNew && holders === 0}}" bindtap="remove" loading="{{deleting}}" disabled="{{saving || uploading}}">{{deleting ? '删除中' : '删除成就'}}</button>
+      <button class="form-button primary save-button" bindtap="save" loading="{{(saving && !deleting) || uploading}}" disabled="{{saving || uploading}}">{{uploading ? '图片上传中' : (mode === 'material' ? '保存材质' : (isNew ? (form.status === 'active' ? '保存并上线' : '保存草稿') : '保存修改'))}}</button>
+    </view>
+  </view>
+</block>
+<no-auth wx:else tip-text="{{tipText}}"></no-auth>

@@ -171,18 +171,10 @@ Page({
     })
   },
 
-  radioModalButtonTap: function (e) {
-    let id = e.currentTarget.dataset.id;
-    var mb = this.data.modalButtons;
-    for (let i = 0; i < mb.length; i++) {
-      if (mb[i].id == id) {
-        mb[i].checked = true;
-      } else {
-        mb[i].checked = false;
-      }
-    }
+  onModalSwitchChange(e) {
+    const selectedId = e.detail.value ? 1 : 0;
     this.setData({
-      modalButtons: mb
+      modalButtons: this.data.modalButtons.map(item => ({ ...item, checked: item.id === selectedId })),
     });
   },
 

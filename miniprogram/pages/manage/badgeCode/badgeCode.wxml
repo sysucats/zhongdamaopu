@@ -1,6 +1,12 @@
 <!--pages/manage/badgeCode/badgeCode.wxml-->
 <block wx:if="{{auth}}">
-  <button class="primary" bindtap="onNew">生成兑换码</button>
+  <view class="code-page">
+  <view class="code-heading">
+    <view class="code-title">兑换码管理</view>
+    <view class="code-create" bindtap="onNew" hover-class="action-pressed" aria-role="button" aria-label="生成兑换码">
+      <text class="iconfont icon-circle-plus"></text><text>生成兑换码</text>
+    </view>
+  </view>
 
   <view class="code-group" wx:for="{{groups}}" wx:key="key" wx:for-index="key" wx:for-item="codes">
     <view class="code-info">
@@ -42,17 +48,7 @@
     </view>
   </view>
 
-  <view class="badge" wx:for="{{badgeDefs}}" wx:key="_id">
-    <image src="{{item.img}}" mode="aspectFill"/>
-    <view class="badge-info">
-      <view class="badge-name">[{{item.level}}级] {{item.name}}</view>
-      <view class="badge-desc">徽章描述：{{item.desc}}</view>
-      <view class="badge-desc">榜单标语：{{item.rankDesc}}</view>
-      <view class="badge-count">现存数量：{{item.count}}</view>
-    </view>
-    <view class="modify-btn" bindtap="onEdit" data-id="{{item._id}}">修改</view>
   </view>
-  <view style="height: 1rpx;"></view>
 </block>
 
 <!-- 未授权提示 -->

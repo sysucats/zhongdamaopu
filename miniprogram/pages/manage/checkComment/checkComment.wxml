@@ -1,36 +1,61 @@
 <!--pages/manage/checkComment/checkComment.wxml-->
 
 <block wx:if="{{auth}}">
-  <view id='total-count'><text>先逐张标记处理方式，再点击“批量审核”。\n点击名字跳转猫猫详情。\n每次展示前20张，注意流量消耗哈。</text></view>
-  <view class="campus-list">
-    <view class="campus {{index == active_campus ? 'active': ''}}" bindtap="bindClickCampus" data-key="{{index}}" wx:for="{{campus_list}}" wx:key="key">{{index}}（{{item.length}}）</view>
+  <view class="admin-segments">
+    <view class="admin-segment {{mode === 'pending' ? 'active' : ''}}" data-mode="pending" bindtap="switchMode">待审核<text class="segment-count" wx:if="{{pendingCount}}">{{pendingCount}}</text></view>
+    <view class="admin-segment {{mode === 'history' ? 'active' : ''}}" data-mode="history" bindtap="switchMode">审核记录</view>
   </view>
-  <view class="tip" wx:if="{{!campus_list || campus_list.length == 0}}">没有待审核的便利贴啦~</view>
+  <block wx:if="{{mode === 'pending'}}">
+  <view class="admin-page-hint">逐条标记处理方式后，批量提交审核。</view>
+  <scroll-view class="h-filter-list h-filter-scroll campus-list" scroll-x="true">
+    <view class="h-filter-content">
+      <view class="h-filter-item {{index == active_campus ? 'active': ''}}" bindtap="bindClickCampus" data-key="{{index}}" wx:for="{{campus_list}}" wx:key="key">{{index}}（{{item.length}}）</view>
+    </view>
+  </scroll-view>
+  <view class="tip" wx:if="{{!pendingCount}}">没有待审核的便利贴啦~</view>
   <view class="tip" wx:elif="{{!campus_list[active_campus]}}">请在上方选择一个校区</view>
   <block wx:for="{{campus_list[active_campus]}}" wx:key="_id" wx:if="{{index < 20}}">
-    <view class='verify-box'>
+    <view class='review-card'>
       <view class="info">
-        <view class='label cat'><text bindtap="toCatDetail" data-cat_id="{{item.cat._id}}">{{item.cat.name}}（{{item.cat.campus}}）</text></view>
-        <view class='label user user-info'>
-          <text>上传者：</text>
+        <view class="review-heading">
+          <text class="review-object" bindtap="toCatDetail" data-cat_id="{{item.cat._id}}">{{item.cat.name}}（{{item.cat.campus}}）</text>
+          <text class="review-state">{{item.mark === 'delete' ? '已标记删除' : item.mark === 'pass' ? '已标记通过' : '待标记'}}</text>
+        </view>
+        <view class='review-meta user-info'>
           <image mode='aspectFill' src='{{item.userInfo.avatarUrl}}' bindtap='openBigPhoto' data-pid='{{item.userInfo.avatarUrl}}' class="user-avatar"></image>
           <text>{{item.userInfo.nickName || '-'}}</text>
+          <text>{{item.datetime}}</text>
         </view>
-        <view class='label user content'>内容：<text wx:if="{{item.photo_id}}" class="photo-tag">[照片评论] </text>{{item.content}}</view>
-        <view class='label user shotTime'>时间：{{item.datetime}}</view>
-        <view class="buttons">
-          <view class="button delete {{item.mark == 'delete' ? 'marked' : ''}}" bindtap='bindMark' data-index='{{index}}' data-type="delete">删除</view>
-          <view class="button pass {{item.mark == 'pass' ? 'marked' : ''}}" bindtap='bindMark' data-index='{{index}}' data-type="pass">通过</view>
+        <view class='review-content'><text wx:if="{{item.photo_id}}" class="photo-tag">[照片评论] </text><text selectable="{{true}}">{{item.content}}</text></view>
+        <view class="card-actions">
+          <button class="form-button compact with-icon review-option danger {{item.mark == 'delete' ? 'marked' : ''}}" bindtap='bindMark' data-index='{{index}}' data-type="delete" disabled="{{reviewing}}" aria-label="删除{{item.mark === 'delete' ? '，已选中' : ''}}"><text class="iconfont icon-clean"></text><text>删除</text></button>
+          <button class="form-button compact with-icon review-option  {{item.mark == 'pass' ? 'marked' : ''}}" bindtap='bindMark' data-index='{{index}}' data-type="pass" disabled="{{reviewing}}" aria-label="通过{{item.mark === 'pass' ? '，已选中' : ''}}"><text class="iconfont icon-check"></text><text>通过</text></button>
         </view>
       </view>
     </view>
   </block>
 
-  <view class='bottom-bar'>
-    <button class='' bindtap="requestSubscribeMessage">订阅通知</button>
-    <button class='primary' bindtap="bindCheckMulti">批量审核</button>
+  <view class='fixed-action-bar'>
+    <button class='form-button' bindtap="requestSubscribeMessage">订阅通知</button>
+    <button class='form-button primary' bindtap="bindCheckMulti" disabled="{{reviewing}}" loading="{{reviewing}}">批量审核</button>
   </view>
 
+  </block>
+  <block wx:else>
+    <view class="admin-page-hint">展示已通过且未删除的便利贴，早期记录可能没有审核人和时间。</view>
+    <view class="review-card" wx:for="{{historyList}}" wx:key="_id">
+      <view class="review-heading"><text class="review-object">{{item.cat.name || '猫猫已移除'}}{{item.cat.campus ? '（' + item.cat.campus + '）' : ''}}</text><text class="status-tag status-approved">通过</text></view>
+      <view class="review-meta"><text>{{item.userInfo.nickName || '未知用户'}}</text><text>审核人：{{item.managerInfo.nickName || '未知'}}</text><text>{{item.checkedAt}}</text></view>
+      <view class="review-content"><text selectable="{{true}}">{{item.content}}</text></view>
+      <view class="card-actions history-actions">
+        <button class="form-button compact with-icon danger" bindtap="deleteHistoryComment" data-id="{{item._id}}" disabled="{{historyDeleting || historyLoading}}"><text class="iconfont icon-clean"></text><text>删除</text></button>
+      </view>
+    </view>
+    <view class="tip" wx:if="{{historyLoading}}">加载中…</view>
+    <view wx:elif="{{historyError}}"><view class="tip">{{historyError}}</view><button class="form-button compact" bindtap="retryHistory">重试</button></view>
+    <view class="tip" wx:elif="{{!historyList.length}}">暂无审核记录</view>
+    <view class="tip" wx:elif="{{historyNoMore}}">没有更多记录了</view>
+  </block>
 </block>
 
 <!-- 未授权提示 -->

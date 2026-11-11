@@ -1,0 +1,11 @@
+<view class="badge-scene {{badge && !badge.unlocked && !preview ? 'locked' : ''}}" style="width: {{size}}rpx; height: {{size}}rpx;">
+  <badge-3d id="badge-renderer" wx:if="{{badgeMode === '3d'}}" badge="{{resolvedBadge}}" preview="{{preview}}" rotation-mode="{{rotationMode === 'intro' && introPlayed ? 'snap' : rotationMode}}" bind:introcomplete="introComplete" thickness-mm="{{thicknessMm}}" bind:ready="viewerReady" bind:fallback="viewerFailed" />
+  <view class="badge-loading" wx:elif="{{badgeMode === 'loading'}}"><view class="loading-ring"></view></view>
+  <view class="badge-fit" wx:else style="width: {{badge ? size / 1.08 : size}}rpx; height: {{badge ? size / 1.08 : size}}rpx;" bindtap="flip">
+    <view class="badge-body {{flipped ? 'flipped' : ''}}">
+      <image class="badge-face badge-front" wx:if="{{!frontFailed && (badge ? resolvedBadge.frontImage : front)}}" src="{{badge ? resolvedBadge.frontImage : front}}" mode="aspectFit" binderror="onFrontError" />
+      <view class="badge-placeholder badge-face" wx:else aria-hidden="true">★</view>
+      <image class="badge-face badge-back" wx:if="{{(!badge || badge.unlocked || preview) && (badge ? resolvedBadge.backImage : back)}}" src="{{badge ? resolvedBadge.backImage : back}}" mode="aspectFit" />
+    </view>
+  </view>
+</view>

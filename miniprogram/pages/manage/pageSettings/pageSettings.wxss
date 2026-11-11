@@ -1,22 +1,32 @@
-/* pages/manage/pageSettings/pageSettings.wxss */
 @import "/pages/public/wxss/form.wxss";
 
-.setting-title {
-  text-align: center;
-  font-size: 36rpx;
-  margin-top: 30rpx;
+.setting-description {
+  margin-top: 0;
 }
 
-.setting-title-tip {
+.setting-field {
+  margin-top: var(--space-lg);
+}
+
+.setting-field + .setting-field {
+  padding-top: var(--space-md);
+  border-top: 1rpx solid var(--color-gray-normal);
+}
+
+.setting-choice {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  min-height: 72rpx;
   color: var(--color-black-min);
-  text-align: center;
   font-size: 26rpx;
+  line-height: 1.5;
 }
 
-.confirm {
-  padding: 10rpx 30rpx 50rpx 30rpx;
+.setting-field .status-copy {
+  margin-top: 0;
 }
 
-checkbox {
-  font-size: 26rpx;
+.field-input[disabled] {
+  color: var(--color-gray-max);
 }

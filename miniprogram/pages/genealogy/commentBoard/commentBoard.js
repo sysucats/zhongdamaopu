@@ -1,7 +1,5 @@
-import {
-  formatDate,
-  randomInt
-} from "../../../utils/utils";
+import { serializeCommentPaper } from "../../../utils/commentPaper";
+import { likeCheck, likeAdd } from "../../../utils/inter";
 import config from "../../../config";
 import {
   getPageUserInfo,
@@ -18,7 +16,6 @@ import {
 import {
   requestNotice,
 } from "../../../utils/msg";
-import { trackComment } from "../../../utils/achievement";
 import api from "../../../utils/cloudApi";
 const app = getApp();
 Page({
@@ -27,6 +24,9 @@ Page({
    * 页面的初始数据
    */
   data: {
+    showEdit: false,
+    isAuth: false,
+    user: {},
     show_fix_header: false,
     cat: {},
     comments: [],
@@ -37,6 +37,7 @@ Page({
     is_owner: false,
 
     paper_colors: ['white', 'yellow', 'green', 'pink'],
+    paper_color_names: ['白色', '淡黄色', '淡绿色', '淡粉色'],
     paper_color_select: 0,
   },
 
@@ -180,10 +181,16 @@ Page({
 
   // 授权个人信息
   getUInfo: function () {
+    wx.hideKeyboard();
     this.setData({
+      keyboard_height: 0,
       showEdit: true
     });
   },
+  async onUserInfoUpdated() {
+    await getPageUserInfo(this);
+  },
+
   closeEdit: function () {
     this.setData({
       showEdit: false
@@ -267,7 +274,7 @@ Page({
       // 插入最新便利贴 + 清空输入框
       console.log(item);
       item.userInfo = user.userInfo;
-      item.datetime = formatDate(new Date(), "yyyy-MM-dd hh:mm:ss")
+      item.create_date = item.create_date || new Date().toISOString();
       var comments = this.data.comments;
       comments.unshift(item);
 
@@ -286,8 +293,6 @@ Page({
         title: '张贴成功~',
       });
 
-      // 成就：发便利贴
-      trackComment();
     } catch {
       wx.showModal({
         title: "张贴失败",
@@ -326,19 +331,52 @@ Page({
 
     // 填充userInfo
     await fillUserInfo(res, "user_openid", "userInfo");
+    const approved = res.filter(item => !item.needVerify && item._id);
+    try {
+      const liked = approved.length ? await likeCheck(approved.map(item => item._id)) : [];
+      approved.forEach((item, index) => { item.liked = Boolean(liked[index]); });
+    } catch (error) {
+      console.warn('查询便利贴点赞状态失败', error);
+    }
     for (var item of res) {
-      item.datetime = formatDate(new Date(item.create_date), "yyyy-MM-dd hh:mm:ss")
-      // 便签旋转
-      item.rotate = randomInt(-5, 5);
-      // 贴纸位置
-      item.tape_pos_left = randomInt(20, 520);
-      item.tape_rotate = randomInt(-50, +50);
-      comments.push(item);
+      comments.push(serializeCommentPaper(item));
     }
 
     console.log(comments);
     this.setData({ comments });
 
+  },
+
+  async likeComment(e) {
+    const { itemId } = e.currentTarget.dataset;
+    if (!itemId) return;
+    const item = this.data.comments.find(comment => comment._id === itemId);
+    if (!item || item.needVerify || item.deleted) return;
+    if (!this.jsData.likingIds) this.jsData.likingIds = new Set();
+    const locks = this.jsData.likingIds;
+    if (locks.has(itemId)) return;
+    if (item.liked) {
+      wx.showToast({ title: '已经赞过啦', icon: 'none' });
+      return;
+    }
+    locks.add(itemId);
+    try {
+      const added = await likeAdd(itemId, 'comment');
+      // 点赞过程中列表可能因删除、发帖而移动，用 ID 重新定位。
+      const index = this.data.comments.findIndex(comment => comment._id === itemId);
+      if (index >= 0) {
+        const current = this.data.comments[index];
+        this.setData({
+          [`comments[${index}].liked`]: true,
+          ...(added ? { [`comments[${index}].like_count`]: (Number(current.like_count) || 0) + 1 } : {}),
+        });
+      }
+      if (!added) wx.showToast({ title: '已经赞过啦', icon: 'none' });
+    } catch (error) {
+      wx.showToast({ title: '点赞失败，稍后再试', icon: 'none' });
+    } finally {
+      locks.delete(itemId);
+    }
   },
 
   async deleteComment(e) {

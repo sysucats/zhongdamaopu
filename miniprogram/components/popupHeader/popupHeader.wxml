@@ -1,0 +1,6 @@
+<view class="popup-heading align-{{align}} {{closePosition === 'none' && !confirm ? 'heading-plain' : ''}}">
+  <button class="heading-button heading-left {{busy ? 'heading-disabled' : ''}}" hover-class="heading-hover" wx:if="{{closePosition === 'left'}}" bindtap="close" disabled="{{busy}}" aria-label="取消并关闭"><text class="iconfont icon-close"></text></button>
+  <view class="heading-title">{{title}}</view>
+  <button class="heading-button heading-right {{disabled || busy ? 'heading-disabled' : ''}}" hover-class="heading-hover" wx:if="{{confirm}}" bindtap="submit" disabled="{{disabled || busy}}" loading="{{busy}}" aria-label="确定并保存"><text class="iconfont icon-check" wx:if="{{!busy}}"></text></button>
+  <button class="heading-button heading-right {{busy ? 'heading-disabled' : ''}}" hover-class="heading-hover" wx:elif="{{closePosition === 'right'}}" bindtap="close" disabled="{{busy}}" aria-label="关闭"><text class="iconfont icon-close"></text></button>
+</view>

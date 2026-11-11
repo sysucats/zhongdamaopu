@@ -1,0 +1,7 @@
+{
+  "usingComponents": {
+    "popup": "/components/popup/popup",
+    "popup-header": "/components/popupHeader/popupHeader"
+  },
+  "navigationBarTitleText": "喵地图"
+}

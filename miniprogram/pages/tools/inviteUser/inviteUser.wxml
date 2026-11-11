@@ -1,7 +1,7 @@
 <!--pages/tools/inviteUser/inviteUser.wxml-->
 <block wx:if="{{!isManager && !invited}}">
   <view class="tip">{{text_cfg.inviteUser.default_tip}}</view>
-  <button bindtap="toGenealogy">返回首页</button>
+  <button class="form-button invite-action" bindtap="toGenealogy">返回首页</button>
 </block>
 
 <block wx:if="{{!isManager && invited}}">
@@ -10,5 +10,5 @@
 
 <block wx:if="{{isManager}}">
   <view class="tip">{{text_cfg.inviteUser.manager_tip}}</view>
-  <button class="primary" open-type="share">发送邀请</button>
+  <button class="form-button primary invite-action" open-type="share">发送邀请</button>
 </block>

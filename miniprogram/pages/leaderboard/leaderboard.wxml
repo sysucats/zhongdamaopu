@@ -7,12 +7,12 @@
 </view>
 
 <swiper current="{{threadsActive}}" indicator-dots="{{false}}" bindchange="onSwiperChange" style="height: {{heights.windowHeight - heights.threads - tabBarHeight}}px;">
-  <!-- 徽章收集榜 -->
+  <!-- 徽章榜 -->
   <swiper-item>
     <scroll-view scroll-y="1" style="height: 100%;">
       <badgeRank id="badge-rank"></badgeRank>
     </scroll-view>
-  </swiper-item><!-- 徽章收集榜 end -->
+  </swiper-item><!-- 徽章榜 end -->
 
   <!-- 照片点赞榜 -->
   <swiper-item>
@@ -30,7 +30,7 @@
 
       <view class="main">
         <view wx:for="{{columns}}" wx:key="null" class="column" wx:for-index="col">
-          <view wx:for="{{item}}" wx:key="pic" class="column_item" wx:for-item="pics">
+          <view wx:for="{{item}}" wx:key="pic" class="content-card column_item" wx:for-item="pics">
             <view class="column_pic" bindtap="clickPhoto" data-url="{{pics.pic_prev}}">
               <image src="{{pics.pic}}" mode="widthFix" />
               <!-- <view class="dark_mask"></view> -->
@@ -77,11 +77,33 @@
   <!-- 成就榜 -->
   <swiper-item>
     <scroll-view scroll-y="1" style="height: 100%;">
-      <achievementRank id="achievement-rank"></achievementRank>
+      <achievementRank id="achievement-rank" bind:showcase="openAchievementShowcase"></achievementRank>
     </scroll-view>
   </swiper-item><!-- 成就榜 end -->
 
 </swiper>
 
+<popup show="{{showAchievementShowcase}}" position="center" bind:close="closeAchievementShowcase">
+  <view class="achievement-showcase-dialog">
+    <popup-header title="{{achievementShowcaseName}}展示的成就" bind:close="closeAchievementShowcase" />
+    <view class="achievement-showcase-state" wx:if="{{achievementShowcaseLoading}}">加载中...</view>
+    <view class="achievement-showcase-state" wx:elif="{{achievementShowcaseError}}">加载失败，请稍后重试</view>
+    <view class="achievement-showcase-state" wx:elif="{{achievementShowcase.length === 0}}">还没有展示成就</view>
+    <view class="achievement-showcase-board count-{{achievementShowcase.length}}" wx:else>
+      <view class="achievement-showcase-placement" wx:for="{{achievementShowcase}}" wx:key="key" style="{{item.placementStyle}}">
+        <view class="achievement-showcase-entry" style="{{item.entryStyle}}">
+          <view class="achievement-showcase-art">
+            <view class="achievement-showcase-shadow"></view>
+            <achievementBadge class="achievement-showcase-badge" front="{{item.frontImage}}" back="{{item.backImage}}" size="{{item.displaySize}}" />
+          </view>
+          <view class="achievement-showcase-name material-{{item.materialKey}}">{{item.tierName}}</view>
+        </view>
+      </view>
+    </view>
+  </view>
+</popup>
+
 <!-- 底tab占位 -->
 <view style="height: {{tabBarHeight}}px;"></view>
+
+<achievement-unlock id="achievement-unlock" />

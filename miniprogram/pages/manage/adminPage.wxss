@@ -1,0 +1,36 @@
+.admin-page-hint {
+  margin-bottom: 24rpx;
+  padding: 0 4rpx;
+  color: var(--color-gray-max);
+  font-size: 24rpx;
+  line-height: 1.5;
+}
+
+.admin-segments {
+  display: flex;
+  margin-bottom: 24rpx;
+  padding: 6rpx;
+  border-radius: 18rpx;
+  background: var(--color-gray-normal);
+}
+
+.admin-segment {
+  flex: 1;
+  min-width: 0;
+  height: 68rpx;
+  line-height: 68rpx;
+  border-radius: 14rpx;
+  color: var(--color-gray-max);
+  font-size: 26rpx;
+  text-align: center;
+}
+
+.admin-segment.active {
+  background: var(--color-surface);
+  color: var(--color-primary-text);
+  font-weight: 600;
+  box-shadow: 0 2rpx 6rpx rgba(0, 0, 0, 0.06);
+}
+
+/* 分段导航中的待办数。 */
+.segment-count { display: inline-flex; align-items: center; justify-content: center; min-width: 32rpx; height: 32rpx; box-sizing: border-box; margin-left: var(--space-xs); padding: 0 var(--space-xs); border-radius: var(--radius-pill); background: var(--color-red); color: var(--color-text-inverse); font-size: 22rpx; font-weight: 500; line-height: 1; vertical-align: middle; }

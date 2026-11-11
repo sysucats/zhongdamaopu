@@ -1,86 +1,91 @@
+import { loadFootprintComments, presentFootprintComments } from "../../../utils/footprint";
 // 我的足迹：我拍的照片、拍过的猫咪、我的便利贴
 import { getCatItemMulti, getAvatar } from "../../../utils/cat";
 import { signCosUrl } from "../../../utils/common";
 import { formatDate } from "../../../utils/utils";
+import { likeCheck, likeAdd } from "../../../utils/inter";
 import api from "../../../utils/cloudApi";
 
 const app = getApp();
 
-const TABS = [
-  { key: 'photos', name: '我拍的照片' },
-  { key: 'cats', name: '拍过的猫咪' },
-  { key: 'comments', name: '我的便利贴' },
-];
-
 const PHOTO_PAGE_SIZE = 8;
+const PAGE_TITLES = { photos: '我拍的照片', cats: '拍过的猫咪', comments: '我的便利贴' };
 
 Page({
   data: {
-    tabs: TABS,
-    activeTab: 'photos',
-    loading: true,
+    viewMode: 'overview',
+    myOpenid: '',
+    photoSort: 'recent',
+    photosLoading: true,
+    catsLoading: true,
+    commentsLoading: true,
     // 我拍的照片
     photos: [],
+    displayPhotos: [],
     photosNoMore: false,
     // 照片统计（单次 count，与分页加载无关）
     photoStats: null,
     // 拍过的猫咪
     cats: [],
+    displayCats: [],
     // 我的便利贴
     comments: [],
+    displayComments: [],
   },
 
-  jsData: {
-    myOpenid: '',
-    loaded: {}, // 各 tab 是否已加载
-    photoSkip: 0, // 照片分页游标
-    photosLoading: false, // 防止触底重复请求
-  },
-
-  async onLoad() {
+  async onLoad(options) {
+    this.jsData = {
+      myOpenid: '',
+      photoSkip: 0,
+      photosLoading: false,
+      hasShown: false,
+    };
+    const viewMode = PAGE_TITLES[options.type] ? options.type : 'overview';
+    const photoSort = viewMode === 'photos' && options.sort === 'likes' ? 'likes' : 'recent';
+    this.setData({ viewMode, photoSort });
+    if (viewMode !== 'overview') wx.setNavigationBarTitle({ title: photoSort === 'likes' ? '照片被赞' : PAGE_TITLES[viewMode] });
     this.jsData.myOpenid = await api.getCurrentUserOpenid();
     if (!this.jsData.myOpenid) {
       wx.showToast({ title: '请先登录', icon: 'none' });
-      this.setData({ loading: false });
+      this.setData({ photosLoading: false, catsLoading: false, commentsLoading: false });
       return;
     }
-    await this.loadPhotos();
-    this.loadPhotoStats();
+    this.setData({ myOpenid: this.jsData.myOpenid });
+    if (viewMode !== 'overview') this.refresh();
   },
 
-  async onShow() {
-    // 返回本页时强制刷新：照片可能被管理员转移到正确的猫，归属会变化
-    if (!this.jsData.myOpenid) return;
-    this.jsData.loaded = {};
-    const key = this.data.activeTab;
-    if (key === 'photos') await this.loadPhotos();
-    else if (key === 'cats') await this.loadCats();
-    else if (key === 'comments') await this.loadComments();
-  },
-
-  // 上拉触底：照片 tab 追加下一页
-  onReachBottom() {
-    if (this.data.activeTab === 'photos') this.loadMorePhotos();
-  },
-
-  switchTab(e) {
-    const key = e.currentTarget.dataset.key;
-    if (key === this.data.activeTab) return;
-    this.setData({ activeTab: key });
-
-    // 按需加载
-    if (!this.jsData.loaded[key]) {
-      if (key === 'photos') this.loadPhotos();
-      else if (key === 'cats') this.loadCats();
-      else if (key === 'comments') this.loadComments();
+  onShow() {
+    if (!this.jsData) return;
+    if (!this.jsData.hasShown) {
+      this.jsData.hasShown = true;
+      return;
     }
+    if (!this.jsData.myOpenid) return;
+    this.refresh();
+  },
+
+  onReachBottom() {
+    if (this.data.viewMode === 'photos') this.loadMorePhotos();
+  },
+
+  refresh() {
+    const mode = this.data.viewMode;
+    if (mode === 'overview') {
+      this.selectComponent('#footprint-overview')?.refresh();
+    }
+    if (mode === 'photos') {
+      this.loadPhotos();
+      if (this.data.photoSort !== 'likes') this.loadPhotoStats();
+    }
+    if (mode === 'cats') this.loadCats();
+    if (mode === 'comments') this.loadComments();
   },
 
   // 我上传过的照片（含猫咪名、上传时间，可定位猫咪主页）
   async loadPhotos() {
     // 重置分页游标，重新拉第一页
     this.jsData.photoSkip = 0;
-    this.setData({ photos: [], photosNoMore: false });
+    this.setData({ photos: [], displayPhotos: [], photosNoMore: false, photosLoading: true });
     await this.loadMorePhotos();
   },
 
@@ -90,18 +95,17 @@ Page({
     if (this.jsData.photoSkip > 0 && this.data.photosNoMore) return;
     this.jsData.photosLoading = true;
     const isFirstPage = this.jsData.photoSkip === 0;
-    if (isFirstPage) this.setData({ loading: true });
+    if (isFirstPage) this.setData({ photosLoading: true });
     try {
+      const pageSize = PHOTO_PAGE_SIZE;
+      const mostLiked = this.data.photoSort === 'likes';
       const { result: photos } = await app.mpServerless.db.collection('photo').find(
-        { _openid: this.jsData.myOpenid },
+        mostLiked
+          ? { _openid: this.jsData.myOpenid, like_count: { $gt: 0 } }
+          : { _openid: this.jsData.myOpenid },
         // create_date 旧数据可能缺失（老后端迁移），用 mdate 兜底排序
-        { sort: { create_date: -1, mdate: -1 }, skip: this.jsData.photoSkip, limit: PHOTO_PAGE_SIZE }
+        { sort: mostLiked ? { like_count: -1, _id: -1 } : { create_date: -1, mdate: -1 }, skip: this.jsData.photoSkip, limit: pageSize }
       );
-      // 诊断：核实各照片 create_date/mdate 的实际存值
-      console.log('[loadMorePhotos] 日期字段核查:', (photos || []).map(p => ({
-        _id: p._id, create_date: p.create_date, mdate: p.mdate,
-      })));
-
       // 猫名
       const catIds = [...new Set((photos || []).map(p => p.cat_id).filter(Boolean))];
       const catMap = {};
@@ -123,21 +127,31 @@ Page({
           url: await signCosUrl(p.photo_compressed || p.photo_id),
           create_date_formatted: (d && !isNaN(d.getTime())) ? formatDate(d, 'yyyy-MM-dd hh:mm') : '',
           status_desc: p.verified ? (p.best ? '精选' : '已通过') : '待审核',
+          status_icon: p.verified ? (p.best ? 'icon-star' : 'icon-check') : 'icon-clock',
+          status_type: p.verified ? (p.best ? 'best' : 'passed') : 'pending',
         };
       }));
 
+      try {
+        const liked = list.length ? await likeCheck(list.map(item => item._id)) : [];
+        list.forEach((item, index) => { item.liked = Boolean(liked[index]); });
+      } catch (error) {
+        console.warn('查询足迹照片点赞状态失败', error);
+      }
+
       this.jsData.photoSkip += (photos || []).length;
-      const noMore = !photos || photos.length < PHOTO_PAGE_SIZE;
-      this.jsData.loaded.photos = true;
+      const noMore = !photos || photos.length < pageSize;
+      const allPhotos = isFirstPage ? list : this.data.photos.concat(list);
       this.setData({
-        photos: isFirstPage ? list : this.data.photos.concat(list),
+        photos: allPhotos,
+        displayPhotos: allPhotos,
         photosNoMore: noMore,
-        loading: false,
+        photosLoading: false,
       });
     } catch (err) {
       console.error('[loadMorePhotos] - 加载我的照片失败:', err);
       wx.showToast({ title: '加载失败', icon: 'none' });
-      this.setData({ loading: false });
+      this.setData({ photosLoading: false });
     } finally {
       this.jsData.photosLoading = false;
     }
@@ -159,17 +173,24 @@ Page({
 
   // 我拍过的猫咪列表（去重）
   async loadCats() {
-    this.setData({ loading: true });
+    this.setData({ catsLoading: true });
     try {
-      const { result: photos } = await app.mpServerless.db.collection('photo').find(
-        { _openid: this.jsData.myOpenid },
-        { limit: 500 }
-      );
-      const catIds = [...new Set((photos || []).map(p => p.cat_id).filter(Boolean))];
+      const photos = [];
+      const batchSize = 500;
+      let batch;
+      do {
+        const response = await app.mpServerless.db.collection('photo').find(
+          { _openid: this.jsData.myOpenid },
+          { sort: { _id: 1 }, skip: photos.length, limit: batchSize }
+        );
+        batch = response.result || [];
+        photos.push(...batch);
+      } while (batch.length === batchSize);
+      const catIds = [...new Set(photos.map(p => p.cat_id).filter(Boolean))];
 
       // 统计每只猫的照片数
       const countMap = {};
-      for (const p of (photos || [])) {
+      for (const p of photos) {
         if (p.cat_id) countMap[p.cat_id] = (countMap[p.cat_id] || 0) + 1;
       }
 
@@ -186,48 +207,63 @@ Page({
       // 按我拍的照片数降序
       cats.sort((a, b) => b.my_photo_count - a.my_photo_count);
 
-      this.jsData.loaded.cats = true;
-      this.setData({ cats, loading: false });
+      this.setData({ cats, displayCats: cats, catsLoading: false });
     } catch (err) {
       console.error('[loadCats] - 加载拍过的猫咪失败:', err);
       wx.showToast({ title: '加载失败', icon: 'none' });
-      this.setData({ loading: false });
+      this.setData({ catsLoading: false });
     }
   },
 
   // 我的便利贴（含猫咪定位）
   async loadComments() {
-    this.setData({ loading: true });
+    this.setData({ commentsLoading: true });
     try {
-      let { result: comments } = await app.mpServerless.db.collection('comment').find(
-        { user_openid: this.jsData.myOpenid, deleted: { $ne: true } },
-        { sort: { create_date: -1 }, limit: 100 }
-      );
-      // EMAS 客户端查询不认 $exists，客户端排除照片评论
-      comments = (comments || []).filter(c => !c.photo_id);
-
-      const catIds = [...new Set((comments || []).map(c => c.cat_id).filter(Boolean))];
-      const catMap = {};
-      if (catIds.length) {
-        const cats = await getCatItemMulti(catIds);
-        for (const cat of cats) {
-          if (cat) catMap[cat._id] = cat;
-        }
-      }
-
-      const list = (comments || []).map(c => ({
-        ...c,
-        cat: catMap[c.cat_id] || {},
-        datetime: c.create_date ? formatDate(new Date(c.create_date), 'yyyy-MM-dd hh:mm') : '',
-        status_desc: c.needVerify ? '待审核' : '',
-      }));
-
-      this.jsData.loaded.comments = true;
-      this.setData({ comments: list, loading: false });
+      const comments = await loadFootprintComments(this.jsData.myOpenid);
+      const list = await presentFootprintComments(comments);
+      this.setData({ comments: list, displayComments: list, commentsLoading: false });
     } catch (err) {
       console.error('[loadComments] - 加载我的便利贴失败:', err);
       wx.showToast({ title: '加载失败', icon: 'none' });
-      this.setData({ loading: false });
+      this.setData({ commentsLoading: false });
+    }
+  },
+
+  likePhoto(e) {
+    return this.likeItem(e, 'photo', 'photos', 'displayPhotos');
+  },
+
+  likeComment(e) {
+    return this.likeItem(e, 'comment', 'comments', 'displayComments');
+  },
+
+  async likeItem(e, type, sourceField, displayField) {
+    const { itemId } = e.currentTarget.dataset;
+    const item = this.data[displayField].find(item => item._id === itemId);
+    if (!item || item.deleted || (type === 'comment' && item.needVerify)) return;
+    if (!this.likingIds) this.likingIds = new Set();
+    const lock = `${type}:${itemId}`;
+    if (this.likingIds.has(lock)) return;
+    if (item.liked) {
+      wx.showToast({ title: '已经赞过啦', icon: 'none' });
+      return;
+    }
+    this.likingIds.add(lock);
+    try {
+      const added = await likeAdd(itemId, type);
+      const patch = {};
+      for (const field of [sourceField, displayField]) {
+        const index = this.data[field].findIndex(item => item._id === itemId);
+        if (index < 0) continue;
+        patch[`${field}[${index}].liked`] = true;
+        if (added) patch[`${field}[${index}].like_count`] = (Number(this.data[field][index].like_count) || 0) + 1;
+      }
+      this.setData(patch);
+      if (!added) wx.showToast({ title: '已经赞过啦', icon: 'none' });
+    } catch (error) {
+      wx.showToast({ title: '点赞失败，稍后再试', icon: 'none' });
+    } finally {
+      this.likingIds.delete(lock);
     }
   },
 

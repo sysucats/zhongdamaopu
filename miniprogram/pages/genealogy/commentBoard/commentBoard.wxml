@@ -12,37 +12,8 @@
 
   <!-- 评论列表 -->
 
-  <view class="comment {{item.paper_color}} {{item.needVerify? 'need-verify': ''}}" wx:for="{{comments}}" wx:key="_id" style="transform: rotate({{item.rotate || 0}}deg);">
-    <view class="wavy-line"></view>
-    <view class="paper">
-      <view class="user-info">
-        <view class="user-avatar">
-          <image wx:if="{{!item.needVerify && item.userInfo}}" class="avatar" src="{{item.userInfo.avatarUrl}}" mode='aspectFit'></image>
-          <image wx:else class="avatar" src="/pages/public/images/app_logo.png" mode='aspectFit'></image>
-        </view>
-        <view class="username">
-          <text wx:if="{{item.needVerify}}">喵友</text>
-          <text wx:else>{{item.userInfo.nickName || '-'}}</text>
-          <text>：</text>
-        </view>
-        <view wx:if="{{is_manager || item.user_openid === user.openid}}" class="delete" bindtap="deleteComment" data-item="{{item}}" data-index="{{index}}">删除</view>
-      </view>
-      <view class="content">
-        <text wx:if="{{item.needVerify}}">（内容审核中...）</text>
-        <text wx:else>{{item.content}}</text>
-      </view>
+  <comment-paper class="comment" wx:for="{{comments}}" wx:key="_id" item="{{item}}" mask-pending="{{true}}" can-delete="{{is_manager || item.user_openid === user.openid}}" bind:like="likeComment" data-item-id="{{item._id}}" bind:delete="deleteComment" data-item="{{item}}" data-index="{{index}}" />
 
-      <view class="datetime">{{item.datetime}}</view>
-    </view>
-
-    <view class="tape" style="left: {{item.tape_pos_left}}rpx; transform: rotate({{item.tape_rotate}}deg);">
-      <view class="wavy-line"></view>
-      <view class="wavy-line bottom"></view>
-    </view>
-  </view>
-
-  <!-- 输入框占位 -->
-  <view class="input-block-ph"></view>
 </scroll-view>
 
 <!-- 悬浮的猫猫名称栏 -->
@@ -56,18 +27,32 @@
 
 
 <view id="input-block" style="margin-bottom: {{keyboard_height}}px;" class="{{keyboard_height>0 ? 'active': ''}}" wx:if="{{canComment}}">
-  <button wx:if="{{!isAuth}}" class='long primary' bindtap='getUInfo'>{{text_cfg.comment_board.auth_tip}}</button>
+  <profile-prompt wx:if="{{!isAuth}}" context="为「{{cat.name}}」写便利贴" bind:edit="getUInfo" />
   <block wx:else>
-    <textarea id="comment-input" value="{{comment_input}}" auto-height="{{true}}" show-confirm-bar="{{false}}" maxlength="300" placeholder="{{text_cfg.comment_board.comment_tip}}" adjust-position="{{false}}" bindfocus="commentFocus" bindblur="commentBlur" bindinput="commentInput"></textarea>
+    <view class="comment-composer">
+      <button class="comment-profile" bindtap="getUInfo" aria-label="修改个人信息">
+        <image class="comment-profile-avatar" src="{{user.userInfo.avatarUrl || '/pages/public/images/system/user.png'}}" mode="aspectFill" />
+        <text class="iconfont icon-edit comment-profile-mark"></text>
+      </button>
+      <textarea id="comment-input" value="{{comment_input}}" auto-height="{{true}}" show-confirm-bar="{{false}}" maxlength="300" placeholder="{{text_cfg.comment_board.comment_tip}}" adjust-position="{{false}}" bindfocus="commentFocus" bindblur="commentBlur" bindinput="commentInput"></textarea>
+    </view>
     <view class="bottom-line">
-      颜色
-      <view class="input-colors">
-        <view class="input-color {{item}} {{paper_color_select == index? 'selected': ''}}" wx:for="{{paper_colors}}" wx:key="*this" bindtap="selectPaperColor" data-index="{{index}}"></view>
+      <view class="color-label">颜色</view>
+      <view class="composer-actions">
+        <view class="input-colors">
+          <button class="color-choice" wx:for="{{paper_colors}}" wx:key="*this" bindtap="selectPaperColor" data-index="{{index}}" aria-label="{{paper_color_names[index]}}">
+            <view class="input-color {{item}} {{paper_color_select == index ? 'selected' : ''}}"></view>
+          </button>
+        </view>
+        <button class="form-button primary compact send-btn" bindtap="sendComment">发送</button>
       </view>
-      <view class="send-btn" bindtap="sendComment">发 送</view>
     </view>
   </block>
   <!-- 解决iOS UI兼容性 -->
   <view wx:if="{{keyboard_height == 0}}" id="input-block-bottom"></view>
 </view>
 <view wx:else class="comment-input-closed"><text>便利贴功能已被关闭... QAQ</text></view>
+
+<achievement-unlock id="achievement-unlock" />
+
+<modifyUserInfo show="{{showEdit}}" bind:close="closeEdit" bind:userInfoUpdated="onUserInfoUpdated" />

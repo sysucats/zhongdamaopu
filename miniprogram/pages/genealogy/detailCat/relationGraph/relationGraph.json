@@ -1,6 +1,7 @@
 {
   "usingComponents": {
-    "popup": "/components/popup/popup"
+    "popup": "/components/popup/popup",
+    "popup-header": "/components/popupHeader/popupHeader"
   },
   "navigationBarTitleText": "关系图谱"
 }

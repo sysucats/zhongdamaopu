@@ -1,6 +1,10 @@
 {
   "usingComponents": {
-    "popup": "/components/popup/popup"
+    "popup": "/components/popup/popup",
+    "heart": "/packages/heart-button/heart",
+    "achievement-unlock": "/components/achievementUnlock/achievementUnlock",
+    "comment-paper": "/components/commentPaper/commentPaper",
+    "popup-header": "/components/popupHeader/popupHeader"
   },
   "navigationBarTitleText": "喵友圈"
 }

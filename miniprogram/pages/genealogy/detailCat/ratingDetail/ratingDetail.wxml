@@ -1,6 +1,7 @@
+<view class="content-page">
 <!--pages/genealogy/detailCat/ratingDetail/ratingDetail.wxml-->
-<view class="bd-block">
-  <view class="bd-title">{{cat.name}}（共{{cat.rating.count || 0}}人参评）</view>
+<view class="content-card bd-block">
+  <view class="content-title bd-title">{{cat.name}}（共{{cat.rating.count || 0}}人参评）</view>
   <view class="one-rating">
     <view class="title">综合：</view>
     <view class="stars">
@@ -13,8 +14,8 @@
 </view>
 
 
-<view class="bd-block">
-  <view class="bd-title">各项评分</view>
+<view class="content-card bd-block">
+  <view class="content-title bd-title">各项评分</view>
   <view class="one-rating" wx:for="{{catRatings}}" wx:key="name" wx:for-item="x"  wx:for-index="i">
     <view class="title">{{x.name}}：</view>
     <view class="stars">
@@ -27,8 +28,8 @@
 </view>
 
 
-<view class="bd-block">
-  <view class="bd-title">我的评分</view>
+<view class="content-card bd-block">
+  <view class="content-title bd-title">我的评分</view>
   <view class="one-rating" wx:for="{{myRatings}}" wx:key="name" wx:for-item="x" wx:for-index="i">
     <view class="title">{{x.name}}：</view>
     <view class="stars">
@@ -38,5 +39,6 @@
     </view>
     <view class="score">{{x.score}}.0</view>
   </view>
-  <button class="primary" bind:tap="submitRating">提交</button>
+  <button class="form-button primary rating-submit" bind:tap="submitRating">提交</button>
+</view>
 </view>

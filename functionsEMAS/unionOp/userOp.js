@@ -26,7 +26,13 @@ module.exports = async (ctx) => {
       if (count === 0) {
         newUser['manager'] = 99;
       }
-      await ctx.mpserverless.db.collection('user').insertOne(newUser);
+      // 同一微信身份使用固定主键，依赖已有 _id 唯一约束原子创建。
+      // 旧用户沿用上方已查到的原记录，不改变历史主键。
+      await ctx.mpserverless.db.collection('user').updateOne(
+        { _id: `wx_${openid}` },
+        { $setOnInsert: newUser },
+        { upsert: true }
+      );
       const {
         result
       } = await ctx.mpserverless.db.collection('user').findOne({

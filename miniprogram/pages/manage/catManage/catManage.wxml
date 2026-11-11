@@ -18,6 +18,10 @@
       <text class="iconfont icon-relation"></text>
       <text class="tab-text">关系</text>
     </view>
+    <view class="tab {{activeTab === 'medical' ? 'active' : ''}}" bindtap="switchTab" data-tab="medical">
+      <text class="iconfont icon-report-medical"></text>
+      <text class="tab-text">医疗</text>
+    </view>
     <view class="tab {{activeTab === 'haunt' ? 'active' : ''}}" bindtap="switchTab" data-tab="haunt">
       <text class="iconfont icon-current-location"></text>
       <text class="tab-text">地点</text>
@@ -38,11 +42,12 @@
     <!-- 关系组件 -->
     <relation-tab wx:if="{{activeTab === 'relation'}}" selected-cat="{{selectedCat}}" id="relationTab"></relation-tab>
 
+    <medical-records wx:if="{{activeTab === 'medical' && selectedCat}}" cat-id="{{selectedCat._id}}" id="medicalRecords" bind:recordsChanged="onMedicalRecordsChanged"></medical-records>
+
     <!-- 常出没地点管理 -->
     <view class="haunt-panel" wx:if="{{activeTab === 'haunt' && selectedCat}}">
-      <view class="haunt-title">「{{selectedCat.name}}」的常出没地点</view>
-      <view class="haunt-tip">添加后会显示在喵地图上（绿色猫爪标记）</view>
-      <view class="haunt-empty" wx:if="{{!selectedCat.haunts || selectedCat.haunts.length === 0}}">还没有标记地点，点击右下角 + 添加~</view>
+      <view class="section-title">常出没地点</view>
+      <view class="haunt-empty" wx:if="{{!selectedCat.haunts || selectedCat.haunts.length === 0}}">暂无常出没地点</view>
       <view class="haunt-item" wx:for="{{selectedCat.haunts}}" wx:key="index">
         <view class="haunt-info">
           <view class="haunt-name">{{item.name}}</view>
@@ -53,20 +58,20 @@
     </view>
 
     <!-- 猫咪信息编辑组件 -->
-    <cat-info-tab wx:if="{{activeTab === 'info'}}" 
-                 selected-cat="{{selectedCat}}" 
-                 cat_id="{{selectedCat._id || ''}}" 
-                 auth="{{auth}}" 
+    <cat-info-tab wx:if="{{activeTab === 'info'}}"
+                 selected-cat="{{selectedCat}}"
+                 cat_id="{{selectedCat._id || ''}}"
+                 auth="{{auth}}"
                  id="catInfoTab"
                  is-new-cat="{{isNewMode && !selectedCat}}"
-                 bind:catCreated="onCatCreated" 
-                 bind:catUpdated="onCatUpdated" 
+                 bind:catCreated="onCatCreated"
+                 bind:catUpdated="onCatUpdated"
                  bind:modeChange="onInfoTabModeChange"></cat-info-tab>
-    
+
     <!-- 浮动添加按钮 -->
     <view class="floating-actions">
       <!-- 主按钮 -->
-      <view class="iconfont {{activeTab === 'info' && (selectedCat || isNewMode) ? 'icon-check' : 'icon-circle-plus'}} action-button" 
+      <view class="iconfont {{activeTab === 'info' && (selectedCat || isNewMode) ? 'icon-check' : 'icon-circle-plus'}} cat-manage-action"
             bindtap="handleActionButtonClick"></view>
     </view>
   </view>
@@ -88,8 +93,7 @@
   <!-- 提示信息 -->
   <view class="tips" wx:if="{{!selectedCat && !isNewMode}}">
     <view class="tip-icon">🔍</view>
-    <view class="tip-text">请搜索并选择一只猫猫进行管理</view>
-    <view class="tip-text" wx:if="{{activeTab === 'info'}}">或点击右下角按钮添加新猫</view>
+    <view class="tip-text">选择猫猫</view>
   </view>
 </view>
 

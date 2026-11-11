@@ -9,8 +9,8 @@
       <view class="relation-content">
         <!-- 关系组 -->
         <view class="relation-meta">
-          <view class="relation-type" hover-class="button-hover" bindtap="openRelationAction" data-type="relation" data-index="{{index}}">
-            {{item.type || '选择关系'}}
+          <view class="chip relation-type" hover-class="button-hover" bindtap="openRelationAction" data-type="relation" data-index="{{index}}">
+            <text class="relation-type-label">{{item.type || '选择关系'}}</text>
           </view>
           
           <!-- 备注 -->
@@ -32,8 +32,8 @@
         </view>
       
         <!-- 删除按钮 -->
-        <view class="relation-delete-btn" hover-class="button-hover" bindtap='bindRelationTap' data-index='{{index}}' data-type="delete">
-          <text class="iconfont icon-delete"></text>
+        <view class="relation-delete-btn" hover-class="button-hover" bindtap='bindRelationTap' data-index='{{index}}' data-type="delete" aria-role="button" aria-label="删除关系">
+          <text class="iconfont icon-clean"></text>
         </view>
       </view>
       
@@ -58,11 +58,9 @@
 <!-- 搜索 -->
 <searchCat show="{{showSearchCat}}" disabledIds="{{existingRelationIds}}" selfId="{{cat._id}}" bind:select="searchSelectCat" bind:close="hideSearch"></searchCat>
 
-<popup id='search' show="{{showSearchType}}" bind:close="hideSearch">
+<popup id='search' show="{{showSearchType}}" bind:close="cancelSelectedRelationType">
   <view class="popup-container">
-    <view class="popup-header">
-      <text>{{relationTitle || '选择关系类型'}}</text>
-    </view>
+    <popup-header title="{{relationTitle || '选择关系类型'}}" close-position="{{isAddingNewRelation ? 'right' : 'left'}}" confirm="{{!isAddingNewRelation}}" disabled="{{pendingRelationTypeIdx === null}}" busy="{{savingRelationType}}" bind:close="cancelSelectedRelationType" bind:confirm="saveSelectedRelationType" />
     <!-- 输入栏 -->
     <view class="search-input">
       <view class='input-icon'>
@@ -113,12 +111,7 @@
 <popup id='create-type' show="{{showCreateType}}" bind:close="closeCreateType">
   <view class="popup-container">
 
-      <view class="popup-header-with-actions">
-          <view class="btn-cancel" bindtap="closeCreateType">取消</view>
-          <view class="title" wx:if="{{editingRuleName}}">编辑关系</view>
-          <view class="title" wx:else>新建关系</view>
-          <view class="btn-save" bindtap="saveCreateType">保存</view>
-        </view>
+      <popup-header title="{{editingRuleName ? '编辑关系' : '新建关系'}}" close-position="left" confirm="{{true}}" disabled="{{!canSaveType}}" busy="{{savingType}}" bind:close="closeCreateType" bind:confirm="saveCreateType" />
 
       <!-- 滚动内容 -->
       <scroll-view scroll-y class="popup-body">
@@ -144,7 +137,7 @@
 
           <!-- 适用性别限制 -->
           <view class="segment-group">
-            <view class="segment-label">对方必须是：</view>
+            <view class="segment-label">对方必须是</view>
             <view class="segment-control">
               <view class="segment-slider" style="transform: translateX({{activeGenderIndex * 100}}%)"></view>
               <!-- 公猫选项 -->
@@ -234,14 +227,10 @@
 <!-- 添加备注 -->
 <popup id='edit-alias' show="{{showEditAlias}}" bind:close="closeEditAlias">
   <view class="popup-container">
-    <view class="popup-header-with-actions">
-      <view class="btn-cancel" bindtap="closeEditAlias">取消</view>
-      <view class="title">添加备注</view>
-      <view class="btn-save" bindtap="saveAlias">保存</view>
-    </view>
+    <popup-header title="添加备注" close-position="left" confirm="{{true}}" bind:close="closeEditAlias" bind:confirm="saveAlias" />
     <view class="popup-body">
       <view class="card">
-        <view class="card-label">备注：</view>
+        <view class="card-label">备注</view>
         <view class="input-group">
           <view class="icon-tag">#</view>
           <input class="main-input" placeholder="输入个性化称呼" placeholder-class="ph-color" value="{{editingAliasValue}}" bindinput="onEditingAliasInput"/>

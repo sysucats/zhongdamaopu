@@ -5,10 +5,10 @@
     <view class="empty-tip">在「寻找领养中」的猫猫主页可以申请领养</view>
   </view>
 
-  <view class="adoption-card" wx:for="{{list}}" wx:key="_id">
+  <view class="adoption-card content-card" wx:for="{{list}}" wx:key="_id">
     <view class="card-header" bindtap="toCatDetail" data-cat_id="{{item.cat_id}}">
       <view class="cat-name">{{item.cat_name}}</view>
-      <view class="status {{statusClass[item.status]}}">{{statusDesc[item.status]}}</view>
+      <view class="status-tag {{statusClass[item.status]}}">{{statusDesc[item.status]}}</view>
     </view>
 
     <view class="apply-time">申请时间：{{item.apply_time_formatted}}</view>
@@ -27,8 +27,8 @@
       </view>
     </view>
 
-    <view class="actions">
-      <button class="btn-cancel" size="mini" wx:if="{{item.status === 'pending' || item.status === 'reviewing'}}" bindtap="cancelApply" data-id="{{item._id}}" data-index="{{index}}">撤销申请</button>
+    <view class="card-actions">
+      <button class="form-button compact danger" wx:if="{{item.status === 'pending' || item.status === 'reviewing'}}" bindtap="cancelApply" data-id="{{item._id}}" data-index="{{index}}">撤销申请</button>
     </view>
   </view>
 </view>

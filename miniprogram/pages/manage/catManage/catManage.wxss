@@ -1,3 +1,5 @@
+@import "/pages/public/wxss/formControls.wxss";
+
 /* pages/manage/catManage/catManage.wxss */
 .container {
   min-height: 100vh;
@@ -82,26 +84,9 @@
 
 .tab.active .iconfont,
 .tab.active .tab-text {
-  color: var(--color-primary);
+  color: var(--color-primary-text);
   font-weight: bold;
   transform: translateY(-2rpx);
-}
-
-.tab::before {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: var(--color-primary-light);
-  transform: translateY(100%);
-  transition: transform 0.3s ease;
-  z-index: -1;
-}
-
-.tab.active::before {
-  transform: translateY(0);
 }
 
 /* 添加点击反馈效果 */
@@ -152,7 +137,9 @@
 .content {
   width: 100%;
   box-sizing: border-box;
-  margin-bottom: calc(120rpx + env(safe-area-inset-bottom)); /* 为底部选项卡留出空间 */
+  margin-bottom: calc(
+    120rpx + env(safe-area-inset-bottom)
+  ); /* 为底部选项卡留出空间 */
 }
 
 /* 浮动操作按钮区域 */
@@ -166,7 +153,7 @@
   gap: 20rpx;
 }
 
-.action-button {
+.cat-manage-action {
   width: 100rpx;
   height: 100rpx;
   border-radius: 50%;
@@ -174,26 +161,24 @@
   justify-content: center;
   align-items: center;
   box-shadow: 0 6rpx 20rpx rgba(0, 0, 0, 0.15);
-  transition: transform 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease;
+  transition:
+    transform 0.3s ease,
+    background-color 0.3s ease,
+    box-shadow 0.3s ease;
   z-index: 100;
   font-size: 55rpx;
   background-color: var(--color-primary);
   color: var(--color-text-onPrimary);
 }
 
-.action-button:active {
+.cat-manage-action:active {
   transform: scale(0.95);
   box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.2);
 }
 
 .iconfont {
-  font-family: 'iconfont';
+  font-family: "iconfont";
   font-size: 55rpx;
-}
-
-/* 按钮旋转动画 */
-.rotate {
-  transform: rotate(45deg);
 }
 
 /* 搜索结果 */
@@ -269,7 +254,7 @@
   position: fixed;
   top: 50%;
   left: 50%;
-  transform: translate(-50%, calc(-50% - 0.5 * 100% ));
+  transform: translate(-50%, calc(-50% - 0.5 * 100%));
   text-align: center;
   width: 100%;
   padding: 100rpx 0;
@@ -303,69 +288,9 @@
   }
 }
 
-/* 疫苗选项弹出动画 */
-.vaccine-options {
-  position: absolute;
-  bottom: 120rpx;
-  right: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 20rpx;
-  opacity: 0;
-  transform: translateY(20rpx);
-  pointer-events: none;
-  transition: all 0.3s ease;
-}
-
-.vaccine-options.show {
-  opacity: 1;
-  transform: translateY(0);
-  pointer-events: auto;
-}
-
-.vaccine-option {
-  display: flex;
-  align-items: center;
-  background: white;
-  padding: 10rpx 20rpx;
-  border-radius: 50rpx;
-  box-shadow: 0 4rpx 15rpx rgba(0, 0, 0, 0.1);
-  transition: all 0.2s ease;
-}
-
-.vaccine-option:active {
-  transform: scale(0.95);
-  box-shadow: 0 2rpx 5rpx rgba(0, 0, 0, 0.1);
-}
-
-.option-text {
-  font-size: 26rpx;
-  color: var(--color-black-light);
-  margin-right: 10rpx;
-  white-space: nowrap;
-}
-
-.option-icon {
-  color: var(--color-black-light);
-  font-size: 36rpx;
-} 
 /* 常出没地点管理 */
 .haunt-panel {
-  padding: 30rpx;
-}
-
-.haunt-title {
-  font-size: 32rpx;
-  font-weight: bold;
-  color: #333;
-  margin-bottom: 8rpx;
-}
-
-.haunt-tip {
-  font-size: 24rpx;
-  color: #999;
-  margin-bottom: 24rpx;
+  margin: 0 var(--space-lg) var(--space-md);
 }
 
 .haunt-empty {
@@ -379,7 +304,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: var(--color-gray-light);
+  background: var(--color-surface);
   border-radius: 16rpx;
   padding: 24rpx;
   margin-bottom: 16rpx;
@@ -398,6 +323,10 @@
 
 .haunt-del {
   font-size: 26rpx;
-  color: #e64545;
+  color: var(--color-red);
   padding: 10rpx 20rpx;
+}
+
+.haunt-del:active {
+  color: var(--color-red-dark);
 }

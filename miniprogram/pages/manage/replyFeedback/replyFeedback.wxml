@@ -1,29 +1,26 @@
-<block wx:if="{{auth}}">
-  <view class='feedback-info'>
-    <image src='{{feedback.userInfo.avatarUrl}}'></image>
-    <view>
-      <text>正在回复[<text style="font-weight:600;">{{feedback.userInfo.nickName}}</text>]的反馈信息：\n</text>
-    </view>
-  </view>
-  <view>
-    <text class='feedback-content' selectable='true'>反馈内容：\n{{feedback.feedbackInfo}}\n\n</text>
-    <text class='label user' selectable='true'>联系方式：{{feedback.contactInfo}}\n</text>
-    <text class='label user' selectable='true'>反馈时间：{{feedback.openDateStr}}\n\n</text>
-  </view>
-  
-  <form bindsubmit='bindReply'>
-    <view class='inputColumns'>
-      <view>
-        <text>回复内容：\n</text>
-        <textarea class='replyColumn' placeholder="有什么进展、待确认事项等~" name='replyInfo' maxlength='{{maxlength}}' bindinput='bindInput' />
-        <text class='lengthTips'>字数：{{length}}/{{maxlength}}\n</text>
+<view class="form-page" wx:if="{{auth}}">
+  <block wx:if="{{feedback}}">
+    <view class="form-section">
+      <view class="form-context">
+        <image class="context-avatar" src="{{feedback.userInfo.avatarUrl || '/pages/public/images/system/user.png'}}" mode="aspectFill" />
+        <view class="context-copy">正在回复[<text class="feedback-author">{{feedback.userInfo.nickName}}</text>]的反馈信息：</view>
       </view>
+      <view class="field-label spaced-label">反馈内容</view>
+      <text class="feedback-content" selectable="true">{{feedback.feedbackInfo}}</text>
+      <text class="field-hint feedback-meta" selectable="true">联系方式：{{feedback.contactInfo}}</text>
+      <text class="field-hint feedback-meta" selectable="true">反馈时间：{{feedback.openDateStr}}</text>
     </view>
-    <view class='submitButton'>
-      <button class='submit' form-type='submit'>提交回复</button>
-    </view>
-  </form>
-</block>
-
-<!-- 未授权提示 -->
+    <form bindsubmit="bindReply">
+      <view class="form-section">
+        <view class="field-label field-required">回复内容</view>
+        <textarea class="description-input long-input" placeholder="有什么进展、待确认事项等~" name="replyInfo" maxlength="{{maxlength}}" bindinput="bindInput"></textarea>
+        <view class="field-counter">字数：{{length}}/{{maxlength}}</view>
+      </view>
+      <view class="save-bar">
+        <button class="form-button primary save-button" form-type="submit">提交回复</button>
+      </view>
+    </form>
+  </block>
+  <view class="form-state" wx:else>加载中...</view>
+</view>
 <no-auth wx:else tip-text="{{tipText}}"></no-auth>

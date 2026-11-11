@@ -1,111 +1,25 @@
 /* 猫咪信息编辑区域 */
 @import "../../pages/public/wxss/iconfont.wxss";
-.iconfont {
-  font-family: 'iconfont';
-}
+
+@import "/pages/public/wxss/formControls.wxss";
 
 .cat-info-section {
-  padding: 0 30rpx 160rpx;
+  padding: 0 var(--space-lg) 160rpx;
 }
 
-/* 编辑模式指示 */
 .edit-mode-indicator {
+  margin-bottom: var(--space-md);
+  color: var(--color-gray-max);
+  font-size: 28rpx;
   text-align: center;
-  font-size: 28rpx;
-  color: var(--color-gray-max);
 }
 
-/* 信息卡片 */
-.info-card {
-  background-color: #fff;
-  border-radius: 15rpx;
-  margin-bottom: 30rpx;
-  box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.05);
-  overflow: hidden;
+.cat-field {
+  margin-bottom: var(--space-md);
 }
 
-.card-header {
-  padding: 20rpx 30rpx;
-  border-bottom: 1rpx solid var(--color-gray-normal);
-}
-
-.card-title {
-  display: flex;
-  align-items: center;
-  font-size: 30rpx;
-  font-weight: bold;
-  color: var(--color-black-light);
-}
-
-.card-title .iconfont {
-  font-size: 36rpx;
-}
-
-.card-body {
-  padding: 20rpx 30rpx;
-}
-
-/* 表单 */
-.form-item {
-  margin-bottom: 25rpx;
-}
-
-.form-item:last-child {
+.cat-field:last-child {
   margin-bottom: 0;
-}
-
-.form-label {
-  font-size: 28rpx;
-  color: var(--color-gray-max);
-  margin-bottom: 10rpx;
-}
-
-.form-item input, .form-item textarea {
-  width: 100%;
-  box-sizing: border-box;
-  border: 1rpx solid #eee;
-  border-radius: 8rpx;
-  padding: 15rpx 20rpx;
-  font-size: 28rpx;
-  background-color: var(--color-gray-light);
-}
-
-.form-item input {
-  height: 80rpx;
-  line-height: 80rpx;
-  padding: 0 20rpx;
-}
-
-.form-item textarea {
-  min-height: 150rpx;
-}
-
-/* 选择器 */
-.picker-container {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
-  height: 80rpx;
-  box-sizing: border-box;
-  border: 1rpx solid #eee;
-  border-radius: 8rpx;
-  padding: 0 20rpx;
-  font-size: 28rpx;
-  background-color: var(--color-gray-light);
-}
-
-.picker-text {
-  color: var(--color-black-light);
-}
-
-.picker-text.placeholder {
-  color: var(--color-gray-max);
-}
-
-.picker-icon {
-  color: var(--color-gray-max);
-  font-size: 24rpx;
 }
 
 /* 人气 */
@@ -114,49 +28,6 @@
   font-size: 26rpx;
   color: var(--color-gray-max);
   padding: 10rpx 0 30rpx;
-}
-
-/* 空状态提示 */
-.empty-tip {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 100rpx 0;
-}
-
-.empty-icon {
-  font-size: 80rpx;
-  margin-bottom: 20rpx;
-}
-
-.empty-text {
-  color: var(--color-gray-max);
-  font-size: 28rpx;
-  text-align: center;
-  padding: 0 40rpx;
-}
-
-/* 照片 */
-.photo-header-card {
-  border-radius: 16rpx;
-  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.08);
-  margin-bottom: 30rpx;
-}
-
-.filter-control {
-  margin-bottom: 0;
-}
-
-.switch-container {
-  display: flex;
-  align-items: center;
-}
-
-.switch-label {
-  margin-left: 16rpx;
-  font-size: 28rpx;
-  color: var(--color-black-light);
 }
 
 /* 照片网格 */
@@ -198,7 +69,7 @@
   right: 0;
   background-color: var(--color-primary);
   color: var(--color-text-onPrimary);
-  opacity: .8;
+  opacity: 0.8;
   padding: 8rpx 0;
   font-size: 24rpx;
   text-align: center;
@@ -240,41 +111,14 @@
   font-weight: 500;
 }
 
-.action-buttons {
-  display: flex;
-  justify-content: space-between;
-  gap: 16rpx;
-  margin-top: 16rpx;
+.cat-danger-button {
+  background: var(--color-gray-light);
 }
 
-.action-button {
-  flex: 1;
-  height: 80rpx;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  border-radius: 12rpx;
-  font-size: 28rpx;
-  font-weight: 500;
-  padding: 0;
-  line-height: 1;
-  border: none;
+.photo-actions {
+  margin-top: 0;
 }
-
-.primary-button {
-  background-color: var(--color-primary);
-  color: var(--color-text-onPrimary);
-}
-
-.secondary-button {
-  background-color: var(--color-gray-light);
-  color: var(--color-primary);
-}
-
-.danger-button {
-  background-color: var(--color-red);
-  color: var(--color-gray-light);
-}
+.photo-actions .danger { margin-right: auto; }
 
 /* 加载更多部分 */
 .load-more-container {
@@ -286,20 +130,18 @@
   align-items: center;
 }
 
-.bottom-hint {
-  font-size: 26rpx;
-  color: var(--color-gray-max);
-  margin-bottom: 16rpx;
+.loading-animation {
+  width: 165.9rpx;
+  height: 90.3rpx;
+  margin: 10rpx 0;
 }
 
-.load-more-button {
-  background-color: white;
-  color: var(--color-primary);
-  font-size: 28rpx;
-  font-weight: 500;
+.bottom-hint {
   width: 100%;
-  height: 80rpx;
-  line-height: 80rpx;
-  border-radius: 12rpx;
-  border: none;
+  text-align: center;
+  color: var(--color-gray-max);
+  font-size: 28rpx;
+  margin-top: 10rpx;
+  padding-bottom: constant(safe-area-inset-bottom);
+  padding-bottom: env(safe-area-inset-bottom);
 }

@@ -1,6 +1,10 @@
 /* pages/manage/checkComment/checkComment.wxss */
 @import "../checkPhotos/checkPhotos.wxss";
 
+.history-actions {
+  justify-content: flex-start;
+}
+
 .info {
   width: 100%;
 }
@@ -18,12 +22,9 @@
   margin: 0 10rpx 0 0;
 }
 
-.buttons {
-  justify-content: flex-end;
-}
 
 /* 照片评论标记 */
 .photo-tag {
-  color: var(--color-primary, #ffd101);
+  color: var(--color-primary-text);
   font-weight: bold;
 }

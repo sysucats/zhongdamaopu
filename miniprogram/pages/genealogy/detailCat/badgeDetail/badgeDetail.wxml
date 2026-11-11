@@ -1,6 +1,7 @@
+<view class="content-page">
 <!--pages/genealogy/detailCat/badgeDetail/badgeDetail.wxml-->
-<view class="bd-block">
-  <view class="bd-title">徽章排名</view>
+<view class="content-card bd-block">
+  <view class="content-title bd-title">徽章排名</view>
   <view class="bd-item" wx:for="{{orderBadges}}" wx:key="badgeDef">
     <view class="badge-order">{{item.order}}</view>
     <image class="badge-img" src="{{item.badgeInfo.img}}" mode="aspectFill" />
@@ -15,8 +16,8 @@
   </view>
 </view>
 
-<view class="bd-block">
-  <view class="bd-title">赠予记录</view>
+<view class="content-card bd-block">
+  <view class="content-title bd-title">赠予记录</view>
   <view class="bd-item" wx:for="{{detailBadges}}" wx:key="_id">
     <image class="badge-img" src="{{item.badgeInfo.img}}" mode="aspectFill" />
     <view class="badge-info badge-level-{{item.badgeInfo.level}}">
@@ -34,4 +35,5 @@
       <view class="user-info-time">{{item.dispTime}}</view>
     </view>
   </view>
+</view>
 </view>

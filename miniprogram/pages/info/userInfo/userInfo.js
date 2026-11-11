@@ -1,8 +1,8 @@
+import { confirmDiscard } from "../../../utils/popup";
 import { getUser } from "../../../utils/user";
-import { deepcopy } from "../../../utils/utils";
-import { getUnlockedList, getShowcase, setShowcase } from "../../../utils/achievement";
+import { deepcopy, formatDate } from "../../../utils/utils";
+import { getUnlockedList, getShowcase, highestUnlockedByCategory, resolveShowcase, setShowcase } from "../../../utils/achievement";
 import config from "../../../config";
-import api from "../../../utils/cloudApi";
 
 const app = getApp();
 const defaultAvatarUrl = "/pages/public/images/info/default_avatar.png"
@@ -17,9 +17,15 @@ Page({
 
     // 成就展示位
     showcase: [],
+    hasUnlockedAchv: false,
     showAchvPicker: false,
+    pickerDirty: false,
+    savingPicker: false,
+    showAchvDetail: false,
+    selectedAchievement: null,
     unlockedAchv: [],
     pickerSelected: [],
+    pickerListHeight: 0,
 
     // 一些菜单选项
     menu: [
@@ -32,16 +38,6 @@ Page({
             action:"shareApp",
             btnAble: true,
             btnType: "share",
-          }, {
-            label:"我关注的猫猫",
-            icon:"icon-heart",
-            action:"/pages/info/myFollowCats/myFollowCats",
-            btnAble: false,
-          }, {
-            label:"我的足迹",
-            icon:"icon-history",
-            action:"/pages/info/myFootprint/myFootprint",
-            btnAble: false,
           }, {
             label:"我的领养",
             icon:"icon-user-share",
@@ -67,9 +63,6 @@ Page({
       }
     ],
   },
-  handleContact (e) {
-    console.log(e)
-  },
   clickbtn(e) {
     const to = e.currentTarget.dataset.to;
     if (this[to] && typeof this[to] === 'function') {
@@ -82,6 +75,18 @@ Page({
     wx.navigateTo({
       url: to,
     });
+  },
+
+  openStat(e) {
+    const type = e.currentTarget.dataset.type;
+    const url = type === 'follows'
+      ? '/pages/info/myFollowCats/myFollowCats'
+      : `/pages/info/myFootprint/myFootprint?type=${type}${type === 'photos' ? '&sort=likes' : ''}`;
+    wx.navigateTo({ url });
+  },
+
+  onFootprintStats(e) {
+    this.setData(e.detail);
   },
   
   // 编辑个人信息弹窗
@@ -124,15 +129,7 @@ Page({
   async onLoad() {
     await this.loadUser();
     
-    // 获取用户数据
-    const openid = this.data.user.openid;
-    const result = await api.getUserStats({ openid });
-    this.setData({
-      numUserComments: result.numUserComments,
-      numUserLiked: result.numUserLiked,
-      numUserPhotos: result.numUserPhotos,
-      numCats: result.numCats,
-    });
+    this.setData({ numFollowCats: (this.data.user.followCats || []).length });
 
     // 监听用户信息更新事件
     this.boundLoadUser = this.loadUser.bind(this);
@@ -142,16 +139,17 @@ Page({
     this.loadShowcase();
   },
 
-  // 加载成就展示位：设置过就按自选（全不选=不展示）；从未设置过则默认推荐最新解锁的3个
+  // 每个成就类目只展示当前已解锁的最高等级
   async loadShowcase() {
     try {
       const openid = this.data.user.openid;
-      let showcase = await getShowcase(openid);
-      if (showcase === null) {
-        const unlocked = await getUnlockedList();
-        showcase = unlocked.slice(-3).reverse();
-      }
-      this.setData({ showcase });
+      const unlocked = await getUnlockedList();
+      const saved = await getShowcase(openid);
+      const showcase = resolveShowcase(unlocked, saved).map(item => ({
+        ...item,
+        unlock_time_text: item.unlock_time ? formatDate(new Date(item.unlock_time), 'yyyy-MM-dd') : '',
+      }));
+      this.setData({ showcase, hasUnlockedAchv: unlocked.length > 0 });
     } catch (e) {
       console.log('加载成就展示位失败', e);
     }
@@ -159,16 +157,18 @@ Page({
 
   // 打开展示位选择器
   async openAchvPicker() {
-    const unlocked = await getUnlockedList();
+    const unlocked = highestUnlockedByCategory(await getUnlockedList());
     if (unlocked.length === 0) {
       wx.showToast({ title: '还没有解锁成就，先去互动吧~', icon: 'none' });
       return;
     }
     const curKeys = this.data.showcase.map(s => s.key);
+    this._initialPicker = curKeys.slice();
     this.setData({
       showAchvPicker: true,
       unlockedAchv: unlocked,
       pickerSelected: curKeys,
+      pickerListHeight: Math.min(unlocked.length * 136, 520),
     });
     this._refreshPickerList();
   },
@@ -177,11 +177,12 @@ Page({
   _refreshPickerList() {
     const sel = this.data.pickerSelected;
     const list = this.data.unlockedAchv.map(a => ({ ...a, selected: sel.indexOf(a.key) >= 0 }));
-    this.setData({ unlockedAchv: list });
+    this.setData({ unlockedAchv: list, pickerDirty: JSON.stringify(sel) !== JSON.stringify(this._initialPicker) });
   },
 
   // 选择/取消一个成就（最多3个）
   toggleAchvPick(e) {
+    if (this.data.savingPicker) return;
     const key = e.currentTarget.dataset.key;
     let selected = this.data.pickerSelected.slice();
     const idx = selected.indexOf(key);
@@ -198,23 +199,46 @@ Page({
     this._refreshPickerList();
   },
 
-  noop() {},
+  async closeAchvPicker() {
+    if (this.data.savingPicker) return;
+    if (await confirmDiscard(this, this._initialPicker, this.data.pickerSelected)) this.setData({ showAchvPicker: false });
+  },
 
-  closeAchvPicker() {
-    this.setData({ showAchvPicker: false });
+  openAchvDetail(e) {
+    const achievement = this.data.showcase.find(item => item.key === e.currentTarget.dataset.key);
+    if (achievement) {
+      this.setData({ selectedAchievement: achievement, showAchvDetail: true });
+    }
+  },
+
+  closeAchvDetail() {
+    this.setData({ showAchvDetail: false, selectedAchievement: null });
+  },
+
+  toMyAchievement() {
+    this.closeAchvDetail();
+    wx.navigateTo({ url: '/pages/info/myAchievement/myAchievement' });
   },
 
   // 保存展示位
   async saveAchvPicker() {
-    const keys = this.data.pickerSelected;
-    const ok = await setShowcase(keys);
-    if (!ok) {
+    if (this.data.savingPicker || !this.data.pickerDirty) return;
+    this.setData({ savingPicker: true });
+    try {
+      const keys = this.data.pickerSelected;
+      const ok = await setShowcase(keys);
+      if (!ok) {
+        wx.showToast({ title: '保存失败，请重试', icon: 'none' });
+        return;
+      }
+      this.setData({ showAchvPicker: false });
+      await this.loadShowcase();
+      wx.showToast({ title: '已保存', icon: 'success' });
+    } catch (error) {
       wx.showToast({ title: '保存失败，请重试', icon: 'none' });
-      return;
+    } finally {
+      this.setData({ savingPicker: false });
     }
-    this.setData({ showAchvPicker: false });
-    await this.loadShowcase();
-    wx.showToast({ title: '已保存', icon: 'success' });
   },
 
   onUnload() {
@@ -226,6 +250,10 @@ Page({
     // 从成就页返回时刷新展示位
     if (this.data.user) {
       this.loadShowcase();
+      this.loadUser().then(() => {
+        this.setData({ numFollowCats: (this.data.user.followCats || []).length });
+        this.selectComponent('#footprint-overview')?.refresh();
+      });
     }
   },
 

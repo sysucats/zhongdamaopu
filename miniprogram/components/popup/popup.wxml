@@ -1,4 +1,5 @@
-<mask style="z-index: {{zindex}};" show="{{show && !closing}}" bind:close="hide"></mask>
-<view class="popup-container {{position}} {{show ? 'show' : ''}} {{closing ? 'hide' : ''}}" wx:if="{{internalShow || show}}">
+<mask zindex="{{layerZ}}" show="{{show && !closing}}" bind:close="onMaskTap"></mask>
+<view class="popup-decoration" style="z-index: {{layerZ + 3}};" wx:if="{{show && !closing}}"><slot name="decoration"></slot></view>
+<view class="popup-container {{position}} {{show ? 'show' : ''}} {{closing ? 'hide' : ''}}" style="z-index: {{layerZ + 2}}; max-height: {{maxHeight}};" wx:if="{{internalShow || show}}">
   <slot></slot>
 </view>

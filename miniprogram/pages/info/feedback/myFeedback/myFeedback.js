@@ -37,7 +37,7 @@ Page({
     const that = this;
     const countRes = await app.mpServerless.db.collection('feedback').count({ _openid: this.jsData.currentUser.openid })
     that.setData({
-      total: countRes.result,
+      total: typeof countRes.result === 'number' ? countRes.result : (countRes.result?.total ?? countRes.result?.count ?? 0),
     });
     // 清空，loadFeedbacks再填充
     this.data.feedbacks = [];

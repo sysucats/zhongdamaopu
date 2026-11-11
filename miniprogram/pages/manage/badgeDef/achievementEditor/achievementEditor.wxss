@@ -1,0 +1,65 @@
+@import "/pages/public/wxss/form.wxss";
+
+.rule-summary {
+  color: var(--color-black-light);
+  font-size: 29rpx;
+  line-height: 1.6;
+}
+
+.face-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-md);
+  margin-top: var(--space-md);
+}
+
+.face-column {
+  min-width: 0;
+}
+
+.face-tile {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 236rpx;
+  border-radius: var(--radius-lg);
+  background: var(--color-gray-light);
+}
+
+.face-image {
+  display: block;
+  width: 200rpx;
+  max-width: 100%;
+  height: 200rpx;
+}
+
+.face-label {
+  margin-top: 14rpx;
+  text-align: center;
+  color: var(--color-gray-max);
+  font-size: 23rpx;
+  line-height: 1.5;
+}
+
+.auto-back {
+  color: var(--color-gray-max);
+  font-size: 23rpx;
+}
+
+.material-image {
+  display: block;
+  width: 100%;
+  height: 240rpx;
+  border-radius: var(--radius-md);
+}
+
+.holder-note {
+  margin-top: 20rpx;
+  padding-top: 18rpx;
+  border-top: 1rpx solid var(--color-gray-normal);
+  color: var(--color-gray-max);
+  font-size: 23rpx;
+  line-height: 1.5;
+}
+
+.generation-status { margin: var(--space-md) 0; }

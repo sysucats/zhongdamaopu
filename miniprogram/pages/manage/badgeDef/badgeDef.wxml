@@ -1,20 +1,117 @@
 <!--pages/manage/badgeDef/badgeDef.wxml-->
 <block wx:if="{{auth}}">
-  <view class="buttons">
-    <button class="primary" bindtap="onEdit">新增徽章</button>
-    <button class="primary" bindtap="onBadgeCode">徽章兑换码</button>
-  </view>
-  <view class="badge" wx:for="{{badgeDefs}}" wx:key="_id">
-    <image src="{{item.img}}" mode="aspectFill" />
-    <view class="badge-info">
-      <view class="badge-name">[{{item.level}}级] {{item.name}}</view>
-      <view class="badge-desc">徽章描述：{{item.desc}}</view>
-      <view class="badge-desc">榜单标语：{{item.rankDesc}}</view>
-      <view class="badge-count">现存数量：{{item.count}}</view>
+  <view class="badge-manage">
+    <view class="admin-segments">
+      <view class="admin-segment {{activeTab === 'cat' ? 'active' : ''}}" data-tab="cat" bindtap="switchTab">猫猫徽章</view>
+      <view class="admin-segment {{activeTab === 'user' ? 'active' : ''}}" data-tab="user" bindtap="switchTab">用户徽章</view>
     </view>
-    <view class="modify-btn" bindtap="onEdit" data-id="{{item._id}}">修改</view>
+    <block wx:if="{{activeTab === 'cat'}}">
+      <view class="catalog-heading">
+        <view class="section-title">猫猫徽章<text class="catalog-count">{{badgeDefs.length}} 种</text></view>
+        <view class="new-achievement" wx:if="{{canEdit}}" bindtap="onEdit" hover-class="tile-pressed" aria-role="button" aria-label="添加猫猫徽章">
+          <text class="iconfont icon-circle-plus"></text><text>添加徽章</text>
+        </view>
+      </view>
+      <view class="code-entry" bindtap="onBadgeCode" hover-class="tile-pressed" aria-role="button" aria-label="徽章兑换码管理">
+        <text>兑换码管理</text><view class="entry-arrow"></view>
+      </view>
+      <view class="catalog-error" wx:if="{{catError}}" bindtap="loadBadgeDefs">{{catError}} · 点击重试</view>
+      <view class="catalog-empty" wx:if="{{catLoading && !badgeDefs.length}}">加载中…</view>
+      <view class="catalog-empty" wx:elif="{{!catLoading && !catError && !badgeDefs.length}}">暂无猫猫徽章</view>
+      <view class="catalog-section" wx:for="{{catGroups}}" wx:for-item="group" wx:key="level">
+        <view class="catalog-heading metric-heading">
+          <view class="section-subtitle">{{group.level}} 级<text class="catalog-count">{{group.items.length}} 种</text></view>
+        </view>
+        <view class="catalog-grid">
+          <view class="catalog-tile badge-tile" wx:for="{{group.items}}" wx:for-item="badge" wx:key="_id" bindtap="onEdit" data-id="{{badge._id}}" hover-class="tile-pressed" aria-role="button" aria-label="编辑{{badge.name}}徽章">
+            <image class="badge-preview" wx:if="{{badge.img}}" src="{{badge.img}}" mode="aspectFit" />
+            <view class="badge-preview image-placeholder" wx:else>待上传</view>
+            <view class="tile-name">{{badge.name}}</view>
+            <view class="tile-condition cat-description">{{badge.desc}}</view>
+            <view class="tile-holders">现存 {{badge.count}} 枚</view>
+          </view>
+        </view>
+      </view>
+    </block>
+    <block wx:else>
+      <view class="catalog-error" wx:if="{{catalogError}}">{{catalogError}}</view>
+      <view class="catalog-section">
+        <view class="catalog-heading">
+          <view class="section-title">材质库<text class="catalog-count">{{materials.length}} 种</text></view>
+        </view>
+        <view class="catalog-grid material-grid">
+          <view class="catalog-tile material-tile" wx:for="{{materials}}" wx:key="key" bindtap="editMaterial" data-key="{{item.key}}" hover-class="tile-pressed" aria-role="button" aria-label="编辑{{item.name}}材质">
+            <image class="material-preview" src="{{item.preview}}" mode="aspectFill" wx:if="{{item.preview}}" />
+            <view class="material-preview image-placeholder" wx:else>待上传</view>
+            <view class="tile-name">{{item.name}}</view>
+          </view>
+          <view class="catalog-tile material-tile material-add" bindtap="editMaterial" hover-class="tile-pressed" aria-role="button" aria-label="新增材质">
+            <text class="iconfont icon-circle-plus material-add-icon"></text>
+            <text class="material-add-label">添加材质</text>
+          </view>
+        </view>
+      </view>
+
+      <view class="catalog-heading catalog-main-heading">
+        <view class="section-title">用户徽章</view>
+        <view class="new-achievement" bindtap="addUserAchievement" hover-class="tile-pressed" aria-role="button" aria-label="添加成就">
+          <text class="iconfont icon-circle-plus"></text>
+          <text>添加成就</text>
+        </view>
+      </view>
+      <button wx:if="{{pendingBadges.length}}" class="form-button compact prepare-existing" bindtap="prepareExistingBadges" disabled="{{preparing}}">生成立体素材与编号（{{pendingBadges.length}}）</button>
+      <view class="tile-holders" wx:if="{{preparing}}">{{prepareSummary}} · {{generation.label}}{{generation.total ? '（步骤 ' + generation.step + '/' + generation.total + '）' : ''}}</view>
+      <view class="catalog-empty" wx:if="{{!userSeries.length && !catalogError}}">暂无用户徽章</view>
+      <view class="catalog-section" wx:for="{{userSeries}}" wx:for-item="series" wx:key="name">
+        <view class="catalog-heading series-heading">
+          <view class="section-title">{{series.name}}<text class="catalog-count">{{series.count}} 枚</text></view>
+        </view>
+        <view class="metric-group" wx:for="{{series.groups}}" wx:for-item="group" wx:key="metric">
+          <view class="catalog-heading metric-heading">
+            <view class="section-subtitle">{{group.name}}</view>
+          </view>
+          <view class="catalog-grid">
+            <view class="catalog-tile badge-tile" wx:for="{{group.items}}" wx:for-item="badge" wx:key="key" bindtap="editUserBadge" data-key="{{badge.key}}" hover-class="tile-pressed" aria-role="button" aria-label="编辑{{badge.name}}">
+              <image class="badge-preview" src="{{badge.preview}}" mode="aspectFit" wx:if="{{badge.preview}}" />
+              <view class="badge-preview image-placeholder" wx:else>待上传</view>
+              <view class="tile-name">{{badge.name}}</view>
+              <view class="tile-condition">{{badge.description || badge.thresholdText}}</view>
+              <view class="tile-status {{badge.status === 'draft' ? 'is-draft' : ''}}">{{badge.statusText}}</view>
+              <view class="tile-asset-status {{badge.generation.status === 'failed' ? 'is-error' : ''}}">{{badge.assetStatusText}}</view>
+              <view class="tile-asset-error" wx:if="{{badge.generation.error}}">{{badge.generation.error}}</view>
+              <view class="tile-holders">{{badge.holders}} 人获得{{badge.needsUpload ? ' · 待上传' : ''}}</view>
+            </view>
+          </view>
+        </view>
+      </view>
+      <view class="catalog-section common-settings">
+        <view class="catalog-heading catalog-main-heading"><view class="section-title">通用设置</view></view>
+        <view class="thickness-setting {{savingDisplaySettings ? 'is-saving' : ''}}">
+          <view class="thickness-row">
+            <view class="section-subtitle">立体厚度</view>
+            <view class="thickness-value">{{thicknessMm}}<text class="thickness-unit">mm</text></view>
+          </view>
+          <view class="thickness-control" catchtouchstart="onThicknessTouchStart" catchtouchmove="onThicknessTouchMove" catchtouchend="onThicknessTouchEnd" catchtouchcancel="onThicknessTouchEnd">
+            <view class="thickness-appearance" aria-hidden="true">
+              <view class="thickness-track"><view class="thickness-fill" style="width: {{thicknessMm * 50}}%;"></view></view>
+              <view class="thickness-thumb" style="left: {{thicknessMm * 50}}%;"></view>
+              <view class="thickness-tick" wx:for="{{thicknessTicks}}" wx:key="*this" style="left: {{item * 5}}%;"></view>
+            </view>
+            <slider class="thickness-slider" min="0" max="20" step="1" value="{{thicknessMm * 10}}" block-size="28" disabled="{{savingDisplaySettings}}" bindchanging="onThicknessChange" bindchange="onThicknessChange" aria-label="立体厚度，当前 {{thicknessMm}} 毫米，范围 0 到 2 毫米，每步 0.1 毫米" />
+          </view>
+          <view class="thickness-limits" aria-hidden="true"><text>0 mm</text><text>2 mm</text></view>
+          <view class="thickness-actions">
+            <button class="form-button compact with-icon {{savingDisplaySettings || thicknessMm <= 0 ? 'is-disabled' : ''}}" data-delta="-0.1" bindtap="stepThickness" disabled="{{savingDisplaySettings || thicknessMm <= 0}}" aria-label="厚度减少 0.1 毫米"><text aria-hidden="true">−</text><text>0.1</text></button>
+            <button class="form-button compact with-icon {{savingDisplaySettings || thicknessMm >= 2 ? 'is-disabled' : ''}}" data-delta="0.1" bindtap="stepThickness" disabled="{{savingDisplaySettings || thicknessMm >= 2}}" aria-label="厚度增加 0.1 毫米"><text aria-hidden="true">+</text><text>0.1</text></button>
+            <button class="form-button primary compact with-icon thickness-save {{savingDisplaySettings || thicknessMm === savedThicknessMm ? 'is-disabled' : ''}}" bindtap="saveDisplaySettings" loading="{{savingDisplaySettings}}" disabled="{{savingDisplaySettings || thicknessMm === savedThicknessMm}}"><text class="iconfont icon-check"></text><text>保存</text></button>
+          </view>
+          <view class="thickness-preview" wx:if="{{previewBadge}}">
+            <achievement-badge id="thickness-preview" rotation-mode="auto" badge="{{previewBadge}}" thickness-mm="{{thicknessMm}}" preview="{{true}}" size="320" />
+          </view>
+        </view>
+      </view>
+    </block>
   </view>
-  <view style="height: 1rpx;"></view>
 </block>
 
 <!-- 未授权提示 -->

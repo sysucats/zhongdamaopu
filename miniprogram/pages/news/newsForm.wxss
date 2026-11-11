@@ -1,0 +1,29 @@
+@import "/pages/public/wxss/form.wxss";
+
+.news-choices {
+  margin-top: 0;
+}
+
+.news-choice {
+  flex: 1;
+  min-width: 0;
+  width: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.news-choice::after {
+  border: none;
+}
+
+.news-media-hint {
+  margin-top: 0;
+  margin-bottom: var(--space-md);
+}
+
+.news-auth {
+  margin-top: var(--space-md);
+}

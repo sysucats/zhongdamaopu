@@ -1,9 +1,7 @@
 <!--components/searchCat/searchCat.wxml-->
 <popup id='search' show="{{show}}" bind:close="hide">
   <view class="popup-container">
-    <view class="popup-header">
-      <text>选择猫猫</text>
-    </view>
+    <popup-header title="选择猫猫" close-position="none" />
     <view class='search-input'>
       <view class='input-icon'>
         <image class="search-icon" mode='aspectFit' src="/pages/public/images/filter/search.png"></image>

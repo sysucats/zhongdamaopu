@@ -25,3 +25,4 @@ miniprogram/signKey.js
 .workbuddy
 *.bak
 functionsEMAS/*.zip
+docs/

@@ -1,4 +1,7 @@
 {
-  "usingComponents": {},
+  "usingComponents": {
+    "modifyUserInfo": "/components/modifyUserInfo/modifyUserInfo",
+    "profile-prompt": "/components/profilePrompt/profilePrompt"
+  },
   "navigationBarTitleText": "信息反馈"
 }

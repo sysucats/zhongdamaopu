@@ -1,72 +1,68 @@
-/* miniprogram/pages/info/feedback/feedback.wxss */
+@import "/pages/public/wxss/button.wxss";
+@import "/pages/public/wxss/card.wxss";
+@import "/pages/public/wxss/iconfont.wxss";
 
-/* 以下为 pages/info/reward/reward.wxss 的内容拷贝（分包隔离，不能直接 @import 跨包文件）——原 pages/info/feedback/feedback.wxss 中 @import */
-/* miniprogram/pages/info/reward/reward.wxss */
-
-.block {
-  width: 690rpx;
-  margin: 50rpx 30rpx 0 30rpx;
-  padding: 50rpx 30rpx 25rpx 30rpx;
+page {
+  background: var(--color-gray-light);
+}
+.feedback-page {
   box-sizing: border-box;
-  border-radius: 10rpx;
-  box-shadow: 0 0 10rpx var(--color-gray-max);
-  position: relative;
+  padding: var(--space-md) var(--space-lg)
+    calc(var(--space-lg) + env(safe-area-inset-bottom));
+}
+.card-heading {
   display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-md);
+}
+.card-icon {
+  display: flex;
+  align-items: center;
   justify-content: center;
-  align-content: center;
-  flex-wrap: wrap;
+  flex-shrink: 0;
+  width: 64rpx;
+  height: 64rpx;
+  border-radius: var(--radius-lg);
+  background: var(--color-primary-light);
+  color: var(--color-primary-text);
 }
-
-.block .title {
-  font-size: 28rpx;
-  font-weight: 500;
-  background-color: var(--color-primary);
-  color: var(--color-text-onPrimary);
-  display: inline-block;
-  padding: 10rpx;
-  box-shadow: 0 0 10rpx var(--color-gray-max);
-  position: absolute;
-  top: -20rpx;
-  left: -15rpx;
+.card-icon .iconfont {
+  font-size: 36rpx;
+  line-height: 1;
 }
-
-.block .desc {
-  width: 100%;
-  font-size: 26rpx;
+.card-title {
+  min-width: 0;
   color: var(--color-black-light);
-  line-height: 50rpx;
-  margin-bottom: 10rpx;
-}
-
-.block .hl {
+  font-size: var(--font-size-section);
   font-weight: 600;
-  /* background-color: lightgoldenrodyellow; */
-  text-align: center;
+  line-height: 1.5;
 }
-
-.block .buttons {
-  width: 100%;
+.card-description {
+  margin-bottom: var(--space-lg);
+  color: var(--color-black-min);
+  font-size: var(--font-size-body);
+  line-height: 1.75;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+}
+.feedback-actions {
   display: flex;
+  gap: var(--space-sm);
 }
-
-button {
-  font-size: 30rpx;
-  line-height: 40rpx;
-  margin: 10rpx;
-  padding: 16rpx 30rpx;
-  border: 1rpx solid var(--color-gray-max);
-  border-radius: 25rpx;
+.feedback-actions .form-button {
+  flex: 1;
+  min-width: 0;
+  width: 0;
 }
-
-button.primary {
-  background-color: var(--color-primary);
-  color: var(--color-text-onPrimary);
+.contact-icon {
+  background: var(--color-gray-light);
+  color: var(--color-black-min);
 }
-
-/* 最后的小tip */
-.tip {
-  font-size: 28rpx;
-  margin: 15rpx 40rpx;
-  color: var(--color-gray-max);
+.contact-description {
+  display: block;
+  margin-bottom: 0;
 }
-/* pages/info/reward/reward.wxss 内容拷贝结束 */
+.feedback-card:last-child {
+  margin-bottom: 0;
+}

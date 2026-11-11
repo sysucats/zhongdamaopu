@@ -20,7 +20,7 @@
 <view wx:if="{{newsList_show.length === 0}}">
   <image class="emptyImg" src='/pages/public/images/system/nomore.png'></image>
 </view>
-<view wx:for='{{newsList_show}}' wx:key="_id" class='news-box' bindtap='clickNews' data-news_id='{{item._id}}'>
+<view wx:for='{{newsList_show}}' wx:key="_id" class='content-card news-box' bindtap='clickNews' data-news_id='{{item._id}}'>
   <view class='news infoBox'>
     <view class='news title'>{{item.title}}</view>
     <view class="news content-wrapper">
@@ -28,7 +28,7 @@
       <view class="news content">{{item.mainContent}}</view>
     </view>
     <view class="news row-container">
-      <view wx:if="{{item.class}}" class='news tag'>{{item.class}}</view>
+      <view wx:if="{{item.class}}" class='tag-pill news tag'>{{item.class}}</view>
       <view class='news user'>{{item.userNicknameLastModify?item.userNicknameLastModify:item.userNickname}} </view>
       <view class='news time'>{{item.ddate}}</view>
 

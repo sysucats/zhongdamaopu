@@ -3,7 +3,11 @@
     "heart": "/packages/heart-button/heart",
     "photoRank": "/components/photoRank/photoRank",
     "badgeRank": "/components/badgeRank/badgeRank",
-    "achievementRank": "/components/achievementRank/achievementRank"
+    "achievementRank": "/components/achievementRank/achievementRank",
+    "popup": "/components/popup/popup",
+    "achievement-unlock": "/components/achievementUnlock/achievementUnlock",
+    "achievementBadge": "/components/achievementBadge/achievementBadge",
+    "popup-header": "/components/popupHeader/popupHeader"
   },
   "disableScroll": true,
   "navigationBarTitleText": "榜单"

@@ -1,21 +1,8 @@
-page {
-  width: 750rpx;
-  padding: 30rpx;
-  box-sizing: border-box;
-}
-
-.loading-box {
-  text-align: center;
-  padding: 100rpx 0;
-  color: var(--color-gray-max, #999);
-  font-size: 28rpx;
-}
+@import "/pages/public/wxss/form.wxss";
 
 /* 状态卡片 */
 .status-card {
-  border-radius: 16rpx;
   padding: 40rpx 30rpx;
-  margin-bottom: 30rpx;
   text-align: center;
 }
 
@@ -63,35 +50,7 @@ page {
   margin-top: 30rpx;
 }
 
-.reapply-btn button {
-  background-color: var(--color-primary);
-  color: var(--color-text-onPrimary);
-  font-size: 30rpx;
-  padding: 16rpx 40rpx;
-  border-radius: 44rpx;
-  border: none;
-  line-height: 1.2;
-}
-
-.reapply-btn button::after {
-  border: none;
-}
-
 /* 申请条件 */
-.requirement-box {
-  background: var(--color-primary-light);
-  border-radius: 16rpx;
-  padding: 25rpx;
-  margin-bottom: 30rpx;
-}
-
-.req-title {
-  font-size: 32rpx;
-  font-weight: 600;
-  color: var(--color-primary-text);
-  margin-bottom: 12rpx;
-}
-
 .req-desc {
   font-size: 26rpx;
   color: var(--color-black-min);
@@ -118,17 +77,8 @@ page {
 }
 
 /* 自动通过规则 */
-.auto-pass-box {
-  background: #f0f4ff;
-  border-radius: 16rpx;
-  padding: 25rpx;
-  margin-bottom: 30rpx;
-  border: 2rpx solid #d0d9f0;
-}
-
 .auto-pass-box.active {
   background: #e6f7e6;
-  border: 2rpx solid #27ae60;
 }
 
 .auto-pass-desc {
@@ -138,53 +88,7 @@ page {
   line-height: 1.6;
 }
 
-/* 输入区域 */
-.inputTitle {
-  margin-left: 15rpx;
-  font-size: 30rpx;
-}
-
-textarea {
-  width: 650rpx;
-  height: 10rem;
-  border-bottom: 2rpx var(--color-primary) solid;
-  background-color: var(--color-white-dark);
-  padding: 20rpx;
-  color: var(--color-black-light);
-  margin-top: 8rpx;
-  font-size: 28rpx;
-}
-
-.lengthTips {
-  font-size: 26rpx;
-  color: var(--color-gray-max);
-  float: right;
-  margin-right: 10rpx;
-  margin-top: 5rpx;
-}
-
-.submitButton {
-  margin-top: 30rpx;
-}
-
-.submitButton button {
-  background-color: var(--color-primary);
-  color: var(--color-text-onPrimary);
-  width: 100%;
-  font-size: 35rpx;
-  padding: 20rpx 30rpx;
-  border-radius: 44rpx;
-  border: none;
-  line-height: 1.2;
-}
-
-.submitButton button::after {
-  border: none;
-}
-
-.footnote {
-  margin-top: 20rpx;
-  font-size: 24rpx;
-  color: var(--color-gray-max);
+.application-note {
+  margin-top: var(--space-md);
   text-align: center;
 }

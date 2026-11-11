@@ -1,3 +1,6 @@
+@import "/pages/public/wxss/tag.wxss";
+@import "/pages/public/wxss/card.wxss";
+@import "/pages/public/wxss/button.wxss";
 page {
   height: 100%;
   overflow: hidden;
@@ -70,13 +73,23 @@ swiper-item image {
 .info {
   width: 750rpx;
   box-sizing: border-box;
-  padding: 30rpx 30rpx 15rpx 30rpx;
+  padding: 30rpx var(--space-lg) 15rpx;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-content: center;
   background-color: var(--color-gray-light);
-  background-image: radial-gradient(circle at left bottom, #f7f7fa 15rpx, transparent 16rpx), radial-gradient(circle at right bottom, #f7f7fa 15rpx, transparent 16rpx);
+  background-image:
+    radial-gradient(
+      circle at left bottom,
+      var(--color-gray-light) 15rpx,
+      transparent 16rpx
+    ),
+    radial-gradient(
+      circle at right bottom,
+      var(--color-gray-light) 15rpx,
+      transparent 16rpx
+    );
 }
 
 .info .identity {
@@ -103,7 +116,7 @@ swiper-item image {
 .info image.gender {
   margin-left: 10rpx;
   height: 34rpx;
-  width: 34rpx;  
+  width: 34rpx;
   padding-bottom: 12rpx;
 }
 
@@ -139,37 +152,25 @@ swiper-item image {
   margin-left: auto;
 }
 
-
 .tags {
   display: flex;
   align-items: center;
-  justify-content: flex-start;
-}
-
-.tags .tag {
-  font-size: 20rpx;
-  height: 40rpx;
-  box-sizing: border-box;
-  border-radius: 20rpx;
-  background-color: var(--color-primary-light);
-  color: var(--color-primary);
-  padding: 6rpx 15rpx 8rpx 15rpx;
-  margin-right: 20rpx;
-}
-
-
-.tags .to_star {
-  background-color: var(--color-gray-max);
-  color: white;
+  gap: var(--space-sm);
 }
 
 .tags .mpcode {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  min-width: 64rpx;
+  min-height: 64rpx;
   font-size: 40rpx;
-  margin-left: auto;
-  color: var(--color-primary);
+  color: var(--color-primary-text);
 }
 
-.fb-button, .badge-all {
+.badge-all {
+  float: right;
   font-size: 20rpx;
   font-weight: 500;
   height: 40rpx;
@@ -178,7 +179,7 @@ swiper-item image {
   text-align: center;
   margin-left: auto;
   background-color: var(--color-primary-light);
-  color: var(--color-primary);
+  color: var(--color-primary-text);
   border-radius: 20rpx;
 }
 
@@ -201,10 +202,6 @@ swiper-item image {
 /* 卡片布局 */
 .details .card {
   width: 100%;
-  background-color: #fff;
-  border-radius: 20rpx;
-  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.1);
-  margin-bottom: 30rpx;
   overflow: hidden;
 }
 
@@ -212,19 +209,15 @@ swiper-item image {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 15rpx 30rpx;
-}
-.card-header {
-  display: flex;
-  align-items: center;
-  padding: 20rpx;
+  gap: var(--space-sm);
+  padding-bottom: var(--space-md);
   border-bottom: 1rpx solid var(--color-gray-light);
 }
 .card-title {
   display: flex;
   align-items: center;
-  font-size: 28rpx;
-  font-weight: bold;
+  font-size: var(--font-size-section);
+  font-weight: 600;
 }
 
 .card-title .iconfont {
@@ -235,16 +228,20 @@ swiper-item image {
 
 .details .item {
   width: 30%;
-  padding: 30rpx 30rpx;
+  padding: var(--space-md) 0;
   box-sizing: border-box;
   position: relative;
 }
 
+.details .item:last-child {
+  padding-bottom: 0;
+}
+
 .details .item:not(:last-child)::after {
-  content: '';
+  content: "";
   position: absolute;
-  left: 30rpx;
-  right: 30rpx;
+  left: 0;
+  right: 0;
   bottom: 0;
   height: 1rpx;
   background-color: rgba(0, 0, 0, 0.03);
@@ -304,7 +301,7 @@ swiper-item image {
 .sort-button .icon {
   height: 25rpx;
   width: 25rpx;
-  margin: 0 0 0 10rpx ;
+  margin: 0 0 0 10rpx;
 }
 .sort-button .type {
   font-weight: 400;
@@ -330,12 +327,6 @@ swiper-item image {
   align-items: stretch;
   flex-direction: column;
   background-color: #fff;
-}
-
-.album-title {
-  text-align: center;
-  padding: 20rpx;
-  font-size: 34rpx;
 }
 
 .album-block {
@@ -426,21 +417,36 @@ swiper-item image {
   align-items: center;
   z-index: 1;
 }
-.plus .icon{
+.plus .icon {
   width: 100%;
   height: 100%;
 }
-.withdrawbtn{
-  width: 100%;
+.withdrawbtn {
   display: flex;
+  align-items: center;
   justify-content: center;
+  width: 100%;
+  height: 88rpx;
+  min-height: 44px;
+  margin: 0;
+  padding: 0;
+  background: transparent;
+  line-height: 1;
 }
-.withdraw{
+
+.withdrawbtn::after {
+  border: none;
+}
+
+.withdraw {
   width: 72rpx;
   height: 19.5rpx;
-  margin-top: 30rpx;
-  margin-bottom: 30rpx;
 }
+
+.withdraw-hover {
+  opacity: 0.55;
+}
+
 .buttons {
   display: flex;
   flex-wrap: wrap;
@@ -457,11 +463,11 @@ swiper-item image {
   justify-content: center;
   align-items: center;
 }
-.button .icon{
+.button .icon {
   width: 100rpx;
   height: 100rpx;
 }
-.button .icon.gray{
+.button .icon.gray {
   filter: grayscale(100);
 }
 .button-text {
@@ -478,7 +484,7 @@ swiper-item image {
   background-color: white;
   display: flex;
   align-items: center;
-  border:solid var(--color-gray-light);
+  border: solid var(--color-gray-light);
   border-width: 1rpx 0;
   position: sticky;
   top: 0;
@@ -555,13 +561,23 @@ swiper-item image {
 }
 
 /* 猫猫关系 */
-.relations, .badge-list {
-  width: 100%;
+.relations,
+.badge-list {
+  width: calc(100% + var(--space-lg) * 2);
+  margin-left: calc(0px - var(--space-lg));
   white-space: nowrap;
   box-sizing: border-box;
-  padding: 30rpx 5rpx;
 }
-.relation-block, .badge-item {
+.cat-strip-content {
+  display: inline-flex;
+  min-width: 100%;
+  box-sizing: border-box;
+  padding: var(--space-md) var(--space-lg) 0;
+}
+.cat-strip-content .relation-block,
+.cat-strip-content .badge-item { flex-shrink: 0; }
+.relation-block,
+.badge-item {
   width: 150rpx;
   display: inline-flex;
   flex-direction: column;
@@ -569,7 +585,8 @@ swiper-item image {
   padding: 10rpx 0;
   border-radius: 20rpx;
 }
-.relation-block.tap, .badge-item.tap {
+.relation-block.tap,
+.badge-item.tap {
   background-color: var(--color-gray-light);
 }
 .relation-cat-avatar {
@@ -578,7 +595,9 @@ swiper-item image {
   border-radius: 100%;
   background-color: var(--color-white-dark);
 }
-.relation-name, .badge-item-count, .user-badge-item-count {
+.relation-name,
+.badge-item-count,
+.user-badge-item-count {
   max-width: 100rpx;
   margin-top: -20rpx;
   font-size: 20rpx;
@@ -586,16 +605,17 @@ swiper-item image {
   padding: 5rpx 10rpx;
   border-radius: 10rpx;
   white-space: nowrap;
-  text-overflow:ellipsis;
-  overflow:hidden;
+  text-overflow: ellipsis;
+  overflow: hidden;
 }
-.relation-cat-name, .badge-item-name {
+.relation-cat-name,
+.badge-item-name {
   max-width: 150rpx;
   font-size: 24rpx;
-  color: var(--color-primary);
+  color: var(--color-primary-text);
   white-space: nowrap;
-  text-overflow:ellipsis;
-  overflow:hidden;
+  text-overflow: ellipsis;
+  overflow: hidden;
 }
 
 /* 关掉关系板块滚动条，安卓滚动条略丑 */
@@ -604,11 +624,6 @@ swiper-item image {
   width: 0;
   height: 0;
   color: transparent;
-}
-
-/* 徽章 */
-.badge-all {
-  float: right;
 }
 
 /* 赠予徽章 */
@@ -628,7 +643,9 @@ swiper-item image {
 
   overflow: hidden;
   box-sizing: border-box;
-  transition: height 400ms ease, bottom 400ms ease;
+  transition:
+    height 400ms ease,
+    bottom 400ms ease;
 
   z-index: 999;
 
@@ -723,13 +740,14 @@ swiper-item image {
 }
 .search-btn.active {
   background-color: var(--color-primary);
-  color: var(--color-text-onPrimary)
+  color: var(--color-text-onPrimary);
 }
 .search-btn.active.hover {
   background-color: var(--color-primary-dark);
 }
 .search-btn.disabled {
-  background-color: var(--color-gray-dark);
+  background-color: var(--color-gray-normal);
+  color: var(--color-gray-max);
 }
 
 /* 徽章 */
@@ -767,7 +785,8 @@ swiper-item image {
   color: var(--color-badge-C);
 }
 
-.badge-item-count, .user-badge-item-count {
+.badge-item-count,
+.user-badge-item-count {
   font-size: 18rpx;
   background-color: var(--color-gray-light);
   opacity: 0.7;
@@ -775,9 +794,8 @@ swiper-item image {
 }
 
 .badge-item-count.hidden {
-  opacity: 0.0;
+  opacity: 0;
 }
-
 
 /* 猫猫评分 */
 
@@ -792,7 +810,8 @@ swiper-item image {
   border-bottom: 1rpx solid var(--color-gray-light);
 }
 
-.one-rating .title, one-rating-title {
+.one-rating .title,
+one-rating-title {
   font-size: 24rpx;
   text-align: right;
 }
@@ -829,28 +848,72 @@ swiper-item image {
   font-weight: bold;
 }
 
-/* 疫苗记录 */
-.latest-vaccine {
-  background-color: var(--color-vaccine-light);
-  border-radius: 15rpx;
-  padding: 15rpx;
-  width: 100%;
-  box-sizing: border-box;
+/* 医疗记录 */
+.medical-card-actions {
   display: flex;
   align-items: center;
+  gap: 12rpx;
+  margin-left: auto;
 }
 
-.latest-vaccine .icon-check {
-  margin-right: 10rpx;
+.medical-card .card-header {
+  justify-content: flex-start;
 }
 
-.vaccine-info {
+.medical-card-actions .badge-all {
+  float: none;
+  flex: none;
+  margin: 0;
+}
+
+.medical-summary-meta,
+.timeline-meta {
   display: flex;
-  justify-content: space-between;
-  width: 100%;
+  align-items: center;
+  gap: 12rpx;
 }
 
-/* 疫苗记录弹出层样式 */
+.medical-type-tag.recent {
+  background-color: var(--color-vaccine);
+  color: var(--color-black-min);
+}
+
+.medical-summary-check {
+  flex: none;
+  color: var(--color-vaccine);
+  font-size: 40rpx;
+}
+
+.medical-summary-title,
+.timeline-title {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--color-black-light);
+  font-weight: 600;
+}
+
+.medical-summary-title {
+  font-size: 28rpx;
+}
+
+.medical-summary-date,
+.timeline-date {
+  flex: none;
+  margin-left: auto;
+  color: var(--color-gray-max);
+  font-size: 22rpx;
+  white-space: nowrap;
+}
+
+.medical-empty {
+  color: var(--color-gray-max);
+  font-size: 26rpx;
+}
+
+/* 医疗时间线 */
 .modal-content-wrapper {
   width: 80vw;
   height: 100%;
@@ -861,22 +924,6 @@ swiper-item image {
   box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.1);
 }
 
-.modal-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 30rpx;
-  background-color: white;
-  font-size: 32rpx;
-  font-weight: bold;
-}
-
-.modal-close {
-  font-size: 40rpx;
-  color: var(--color-gray);
-  padding: 0 10rpx;
-}
-
 .modal-body {
   flex: 1;
   margin-top: 20rpx;
@@ -884,133 +931,103 @@ swiper-item image {
   overflow-y: auto;
 }
 
-/* 疫苗时间线样式 */
-.vaccine-timeline {
-  padding: 0 30rpx 0 50rpx;
+.medical-timeline {
+  padding: 0 30rpx 20rpx 48rpx;
   position: relative;
 }
 
 .timeline-item {
   position: relative;
   display: flex;
-  margin-bottom: 30rpx;
-  padding-left: 20rpx;
+  margin-bottom: 20rpx;
 }
 
-.timeline-icon {
+.timeline-node {
   position: absolute;
   left: 0;
-  top: 24rpx; /* 调整图标位置，与疫苗类型中心对齐 */
-  z-index: 2;
-  width: 40rpx;
-  height: 40rpx;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  transform: translateX(-50%);
-}
-
-.timeline-dot {
+  top: 34rpx;
   width: 20rpx;
   height: 20rpx;
   border-radius: 50%;
-  top: 32rpx; /* 调整图标位置，与疫苗类型中心对齐 */
-  background-color: var(--color-gray);
+  background-color: var(--color-surface);
+  border: 4rpx solid var(--color-gray-dark);
+  box-sizing: border-box;
+  transform: translateX(-50%);
+  z-index: 2;
 }
 
-.icon-check {
-  font-size: 40rpx;
+.timeline-node.recent {
+  top: 24rpx;
+  width: 40rpx;
+  height: 40rpx;
+  border: none;
+  border-radius: 50%;
+  background-color: var(--color-vaccine-light);
   color: var(--color-vaccine);
-}
-
-.icon-bulb {
-  color: var(--color-red-dark); /* 过期图标颜色 */
-  font-size: 40rpx;
+  font-size: 26rpx;
+  line-height: 40rpx;
+  text-align: center;
+  box-shadow: 0 0 0 6rpx rgba(255, 192, 67, 0.12);
 }
 
 .timeline-connector {
   position: absolute;
-  top: 65rpx;
-  bottom: -50rpx;
+  top: 54rpx;
+  bottom: -54rpx;
   left: 0;
-  width: 2rpx;
-  background-color: var(--color-gray);
+  width: 3rpx;
+  background-color: var(--color-gray-normal);
   transform: translateX(-50%);
+  z-index: 0;
+}
+
+.timeline-item:first-child .timeline-connector {
+  top: 64rpx;
 }
 
 .timeline-content {
+  position: relative;
+  z-index: 1;
   flex: 1;
-  margin-left: 30rpx;
-  background-color: white;
-  border-radius: 15rpx;
-  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.1);
-  padding: 20rpx;
+  min-width: 0;
+  margin-left: 28rpx;
+  padding: 22rpx 24rpx;
+  border: 1rpx solid var(--color-gray-normal);
+  border-radius: var(--radius-xl);
+  background-color: var(--color-surface);
+  box-shadow: var(--shadow-card);
 }
 
-/* 第一条卡片特殊背景色 */
-.timeline-content.first-card {
-  background-color: var(--color-vaccine-light);
-}
-
-/* 过期卡片样式 */
-.timeline-content.expired-card {
-  background-color: white;
-}
-
-/* 过期卡片内所有文本颜色 */
-.timeline-content.expired-card .timeline-title,
-.timeline-content.expired-card .timeline-date,
-.timeline-content.expired-card .timeline-info {
-  color: var(--color-gray-max);
-}
-
-.timeline-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 16rpx;
-  flex-wrap: wrap;
-  gap: 8rpx;
+.timeline-item:first-child .timeline-content {
+  border-color: var(--color-vaccine);
+  background-color: var(--color-primary-bg);
 }
 
 .timeline-title {
-  font-size: 30rpx;
-  font-weight: 500;
-  color: #333;
-  flex: 1;
-  min-width: 0;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.timeline-date {
-  font-size: 24rpx;
-  white-space: nowrap;
+  font-size: 26rpx;
 }
 
 .timeline-body {
-  font-size: 26rpx;
-  color: var(--color-black-min);
+  margin-top: 14rpx;
+  padding-top: 12rpx;
+  border-top: 1rpx solid var(--color-gray-light);
+  color: var(--color-gray-max);
+  font-size: 24rpx;
   line-height: 1.6;
 }
 
 .timeline-info {
   word-break: break-all;
-  margin-bottom: 8rpx;
+  margin-bottom: 6rpx;
 }
 
-/* 领养提示：单行小字 */
-.adopt-banner {
+.timeline-info.expired {
+  color: var(--color-red-dark);
+}
+
+/* 领养入口保留原来的浅橙渐变，内容居中。 */
+.form-button.adopt-banner {
+  margin-top: var(--space-lg);
   background: linear-gradient(90deg, #fff7e6, #ffe7ba);
-  border-radius: 12rpx;
-  padding: 10rpx 24rpx;
-  margin: 16rpx 30rpx 0;
-  font-size: 24rpx;
-  line-height: 1.6;
-  color: #d46b08;
-  text-align: center;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  color: var(--color-primary-text);
 }

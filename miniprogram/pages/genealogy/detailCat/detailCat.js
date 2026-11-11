@@ -29,7 +29,7 @@ import { showMpcode } from "../../../utils/mpcode";
 import { signCosUrl } from "../../../utils/common";
 import api from "../../../utils/cloudApi";
 import { isDemoMode, getDemoCat } from "../../../utils/demo";
-import { trackViewCat, trackFollow } from "../../../utils/achievement";
+import { trackViewCat, refreshAchievements } from "../../../utils/achievement";
 
 const app = getApp();
 
@@ -88,10 +88,6 @@ Page({
 
     // 是否展开评分详情
     showDetailRating: false,
-
-    // 疫苗记录相关
-    showVaccineHistory: false,
-    vaccineHistory: [],
 
     // 医疗记录相关
     showMedicalHistory: false,
@@ -225,7 +221,20 @@ Page({
   /**
    * 生命周期函数--监听页面显示
    */
-  onShow: function () { },
+  onShow: function () {
+    if (!this.jsData.medicalTabOpened) return;
+    this.jsData.medicalTabOpened = false;
+    this.setData({
+      medicalTimeline: [],
+    });
+    app.mpServerless.db.collection('cat').findOne({ _id: this.jsData.cat_id }).then(({ result: cat }) => {
+      if (cat) this.setData({
+        'cat.sterilized': cat.sterilized,
+        'cat.sterilized_time': cat.sterilized_time || null
+      });
+    }).catch(error => console.error('刷新绝育状态失败:', error));
+    this.getMedicalTimeline(this.jsData.cat_id);
+  },
 
   /**
    * 生命周期函数--监听页面隐藏
@@ -312,7 +321,6 @@ Page({
       this.loadFollowCount(),
       this.loadRelations(),
       this.reloadCatBadge(),
-      this.getLatestVaccine(cat._id),
       this.getMedicalTimeline(cat._id),
     ]);
 
@@ -983,80 +991,11 @@ Page({
 
     // 成就：关注猫猫
     if (res && !followedCat) {
-      trackFollow((this.data.user.followCats || []).length);
+      refreshAchievements();
     }
   },
 
-  // 获取最新疫苗记录（疫苗已并入医疗记录，从 medical 集合按 type=vaccine 读取）
-  async getLatestVaccine(cat_id) {
-    try {
-      const result = await api.medicalOp({
-        operation: 'list',
-        cat_id: cat_id,
-        type: 'vaccine'
-      });
-
-      if (result?.result === true && Array.isArray(result.data) && result.data.length > 0) {
-        // 医疗记录字段映射回疫苗卡片需要的字段
-        const normalized = result.data.map(record => ({
-          ...record,
-          vaccine_type: record.title,
-          vaccine_date: record.record_date,
-        }));
-        // 处理所有疫苗记录的日期格式
-        const vaccineHistory = normalized.map(vaccine => {
-          // 判断疫苗是否过期
-          const today = new Date();
-          const expireDate = vaccine.expire_date ? new Date(vaccine.expire_date) : null;
-          const is_expired = expireDate ? today > expireDate : false;
-          return {
-            ...vaccine,
-            vaccine_date_formatted: vaccine.vaccine_date ? formatDate(vaccine.vaccine_date, "yyyy-MM-dd") : '',
-            expire_date_formatted: vaccine.expire_date ? formatDate(vaccine.expire_date, "yyyy-MM-dd") : '',
-            next_vaccine_date_formatted: vaccine.next_vaccine_date ? formatDate(vaccine.next_vaccine_date, "yyyy-MM-dd") : '',
-            is_expired
-          };
-        });
-
-        // 按日期排序
-        vaccineHistory.sort((a, b) => {
-          const dateA = a.vaccine_date ? new Date(a.vaccine_date).getTime() : 0;
-          const dateB = b.vaccine_date ? new Date(b.vaccine_date).getTime() : 0;
-          return dateB - dateA;
-        });
-
-        // 保存所有疫苗记录
-        this.setData({
-          vaccineHistory
-        });
-
-        // 设置最新的疫苗记录
-        if (vaccineHistory[0] && vaccineHistory[0].vaccine_date) {
-          this.setData({
-            'cat.lastVaccine': vaccineHistory[0]
-          });
-        }
-      }
-    } catch (error) {
-      console.error('获取疫苗记录失败:', error);
-    }
-  },
-
-  // 显示疫苗记录历史
-  toVaccineDetail() {
-    this.setData({
-      showVaccineHistory: true
-    });
-  },
-
-  // 隐藏疫苗记录历史
-  hideVaccineHistory() {
-    this.setData({
-      showVaccineHistory: false
-    });
-  },
-
-  // 获取医疗记录时间线（绝育/就诊/驱虫等）
+  // 获取统一的医疗记录时间线（包含疫苗）
   async getMedicalTimeline(cat_id) {
     try {
       const result = await api.medicalOp({
@@ -1068,7 +1007,9 @@ Page({
         const medicalTimeline = result.data.map(record => ({
           ...record,
           record_date_formatted: record.record_date ? formatDate(record.record_date, "yyyy-MM-dd") : '',
+          expire_date_formatted: record.expire_date ? formatDate(record.expire_date, "yyyy-MM-dd") : '',
           next_vaccine_date_formatted: record.next_vaccine_date ? formatDate(record.next_vaccine_date, "yyyy-MM-dd") : '',
+          is_expired: record.expire_date ? new Date(record.expire_date) < new Date() : false,
         }));
         // 按日期降序
         medicalTimeline.sort((a, b) => {
@@ -1097,10 +1038,11 @@ Page({
     });
   },
 
-  // 跳转医疗记录管理（管理员）
+  // 跳转猫猫管理的医疗选项卡（管理员）
   toMedicalManage() {
+    this.jsData.medicalTabOpened = true;
     wx.navigateTo({
-      url: '/pages/manage/medicalManage/medicalManage?cat_id=' + this.jsData.cat_id,
+      url: '/pages/manage/catManage/catManage?cat_id=' + this.jsData.cat_id + '&activeTab=medical',
     });
   },
 

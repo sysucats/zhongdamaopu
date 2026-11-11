@@ -10,10 +10,31 @@ import { getDateWithDiffHours, formatDate } from "../../utils/utils";
 import config from "../../config";
 import { showTab } from "../../utils/page";
 import { signCosUrl } from "../../utils/common";
+import { getUserShowcase } from "../../utils/achievement";
 
 const app = getApp();
 
 const share_text = config.text.app_name + ' - ' + config.text.genealogy.share_tip;
+
+// Keep a clear space for each badge; random offsets only vary its presentation.
+function arrangeShowcase(badges) {
+  const layouts = {
+    1: [[50, 47, 340]],
+    2: [[29, 32, 280], [73, 69, 280]],
+    3: [[28, 24, 250], [74, 47, 250], [31, 76, 250]],
+  };
+  const items = badges.slice(0, 3);
+  return items.map((badge, index) => {
+    const [left, top, size] = layouts[items.length][index];
+    const angle = Math.round(Math.random() * 14 - 7);
+    return {
+      ...badge,
+      displaySize: size,
+      placementStyle: `left:${left}%;top:${top}%;width:${size}rpx`,
+      entryStyle: `--badge-angle:${angle}deg;--badge-start-angle:${angle - 10}deg;--badge-x:${Math.round(Math.random() * 12 - 6)}rpx;--badge-y:${Math.round(Math.random() * 12 - 6)}rpx;animation-delay:${index * 85}ms`,
+    };
+  });
+}
 
 Page({
   //不需要渲染到wxml的数据存储在jsData中
@@ -31,7 +52,12 @@ Page({
     ],
     tempPics: [],
     loadnomore: false,
-    threads: ["徽章收集", "照片点赞", "拍照月榜", "成就榜"],
+    showAchievementShowcase: false,
+    achievementShowcaseLoading: false,
+    achievementShowcaseError: false,
+    achievementShowcaseName: '',
+    achievementShowcase: [],
+    threads: ["徽章榜", "照片点赞", "拍照月榜", "成就榜"],
     threadsActive: 1,
     filters: [{
       name: "周精选",
@@ -51,6 +77,31 @@ Page({
   onShow: function () {
     // 切换自定义tab
     showTab(this);
+  },
+  async openAchievementShowcase(e) {
+    const { openid, name } = e.detail;
+    const requestId = (this._achievementShowcaseRequestId || 0) + 1;
+    this._achievementShowcaseRequestId = requestId;
+    this.setData({
+      showAchievementShowcase: true,
+      achievementShowcaseLoading: true,
+      achievementShowcaseError: false,
+      achievementShowcaseName: name || '猫友',
+      achievementShowcase: [],
+    });
+    try {
+      const showcase = await getUserShowcase(openid);
+      if (this._achievementShowcaseRequestId !== requestId) return;
+      this.setData({ achievementShowcase: arrangeShowcase(showcase), achievementShowcaseLoading: false });
+    } catch (error) {
+      if (this._achievementShowcaseRequestId !== requestId) return;
+      console.error('加载展示成就失败', error);
+      this.setData({ achievementShowcaseError: true, achievementShowcaseLoading: false });
+    }
+  },
+  closeAchievementShowcase() {
+    this._achievementShowcaseRequestId = (this._achievementShowcaseRequestId || 0) + 1;
+    this.setData({ showAchievementShowcase: false });
   },
   onShareAppMessage: function () {
     return {

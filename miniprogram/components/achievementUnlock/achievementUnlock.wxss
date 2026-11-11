@@ -1,0 +1,156 @@
+@import "/pages/public/wxss/button.wxss";
+
+:host {
+  display: block;
+  height: 0;
+}
+
+.unlock-card {
+  position: relative;
+  z-index: 1;
+  box-sizing: border-box;
+  width: 640rpx;
+  max-width: 100%;
+  max-height: 88vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 0 24rpx 32rpx;
+  border-radius: var(--radius-modal);
+  background: var(--color-surface);
+  text-align: center;
+  box-shadow: var(--shadow-modal);
+}
+
+.unlock-subtitle {
+  margin-top: 12rpx;
+  color: var(--color-gray-max);
+  font-size: 25rpx;
+}
+
+.unlock-continue {
+  width: 50%;
+  margin: 24rpx auto 0;
+}
+
+.unlock-swiper {
+  overflow: hidden;
+  width: calc(100% + 48rpx);
+  margin-left: -24rpx;
+  height: 550rpx;
+  margin-top: 12rpx;
+}
+
+.unlock-badge {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20rpx 12rpx 0;
+}
+
+.unlock-art {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 360rpx;
+  height: 360rpx;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--color-achievement-glow-inner) 0%, var(--color-achievement-glow-outer) 48%, transparent 72%);
+}
+
+.unlock-name {
+  margin-top: 16rpx;
+  color: var(--color-black-light);
+  font-size: 34rpx;
+  font-weight: 600;
+}
+
+.unlock-name.material-gold {
+  color: var(--color-achievement-gold);
+}
+
+.unlock-name.material-silver {
+  color: var(--color-achievement-silver);
+}
+
+.unlock-name.material-bronze {
+  color: var(--color-achievement-bronze);
+}
+
+.unlock-description {
+  margin-top: 12rpx;
+  color: var(--color-gray-max);
+  font-size: 25rpx;
+  line-height: 1.5;
+}
+
+.unlock-pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.unlock-page-target {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44rpx;
+  height: 44rpx;
+}
+
+.unlock-page-mark {
+  width: 10rpx;
+  height: 10rpx;
+  border-radius: 10rpx;
+  background: var(--color-gray-max);
+  opacity: 0.3;
+  transition:
+    width 200ms ease,
+    opacity 200ms ease;
+}
+
+.unlock-page-mark.active {
+  width: 32rpx;
+  opacity: 0.8;
+}
+
+.unlock-confetti {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 2;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.confetti-piece {
+  position: absolute;
+  top: 72%;
+  opacity: 0;
+  animation-name: confetti-launch;
+  animation-fill-mode: both;
+  animation-timing-function: linear;
+  will-change: transform, opacity;
+}
+
+@keyframes confetti-launch {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 0, 0) rotate(0);
+    animation-timing-function: ease-out;
+  }
+  8% {
+    opacity: 1;
+  }
+  45% {
+    opacity: 1;
+    transform: translate3d(var(--dx), var(--peak), 0) rotate(var(--spin));
+    animation-timing-function: ease-in;
+  }
+  100% {
+    opacity: 0;
+    transform: translate3d(var(--end-x), 40vh, 0) rotate(var(--spin-end));
+  }
+}

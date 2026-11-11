@@ -1,0 +1,59 @@
+.cat-card + .cat-card {
+  margin-top: var(--space-md);
+}
+
+.cat-card {
+  display: flex;
+  align-items: center;
+  padding: var(--space-md);
+  border-radius: var(--radius-xl);
+  background-color: var(--color-surface);
+
+}
+
+.cat-avatar {
+  flex-shrink: 0;
+  width: 108rpx;
+  height: 108rpx;
+  border-radius: var(--radius-lg);
+  background-color: var(--color-gray-normal);
+}
+
+.cat-avatar.placeholder {
+  box-sizing: border-box;
+  padding: var(--space-md);
+}
+
+.cat-info {
+  flex: 1;
+  min-width: 0;
+  margin-left: var(--space-md);
+}
+
+.cat-name {
+  overflow: hidden;
+  color: var(--color-black-light);
+  font-size: 30rpx;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cat-desc {
+  overflow: hidden;
+  margin-top: var(--space-xs);
+  color: var(--color-gray-max);
+  font-size: 23rpx;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cat-count {
+  flex-shrink: 0;
+  margin-left: var(--space-sm);
+  padding: var(--space-xs) var(--space-sm);
+  border-radius: var(--radius-pill);
+  background-color: var(--color-gray-light);
+  color: var(--color-black-min);
+  font-size: 22rpx;
+}

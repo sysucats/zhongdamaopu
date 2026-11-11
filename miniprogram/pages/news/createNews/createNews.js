@@ -6,6 +6,7 @@ import {
   checkAuth
 } from "../../../utils/user";
 import api from "../../../utils/cloudApi";
+import { text as text_cfg } from "../../../config";
 import { uploadFile } from "../../../utils/common"
 const app = getApp();
 Page({
@@ -13,6 +14,7 @@ Page({
    * 页面的初始数据
    */
   data: {
+    appName: text_cfg.app_name,
     auth: false,
     user: {},
     news_id: 0,
@@ -289,18 +291,10 @@ Page({
     })
   },
 
-  radioModalButtonTap: function (e) {
-    let id = e.currentTarget.dataset.id;
-    var mb = this.data.modalButtons;
-    for (let i = 0; i < mb.length; i++) {
-      if (mb[i].id == id) {
-        mb[i].checked = true;
-      } else {
-        mb[i].checked = false;
-      }
-    }
+  onModalSwitchChange(e) {
+    const selectedId = e.detail.value ? 1 : 0;
     this.setData({
-      modalButtons: mb
+      modalButtons: this.data.modalButtons.map(item => ({ ...item, checked: item.id === selectedId })),
     });
   },
 
@@ -333,7 +327,7 @@ Page({
     }
 
     var data = {
-      userNickname: submitData.name,
+      userNickname: (submitData.name || '').trim() || text_cfg.app_name,
       date: api.getDate(),
       title: submitData.title,
       mainContent: submitData.mainContent,

@@ -11,8 +11,8 @@ const app = getApp();
 
 // 审核记录的操作类型（数据源为 photo 表 verified=true 的照片，best 区分精选/通过）
 const HISTORY_ACTIONS = {
-  pass: { text: '通过', class: 'pass' },
-  best: { text: '精选', class: 'best' },
+  pass: { text: '通过' },
+  best: { text: '精选' },
 };
 
 Page({
@@ -29,12 +29,12 @@ Page({
     showTransferSelect: false,
     // 模式：pending 待审核 / history 审核记录（回溯，所有管理员的审核互相可见）
     mode: 'pending',
+    pendingCount: 0,
     // 审核记录（不区分校区，统一按审核时间倒序）
     historyList: [],
     historyTotal: 0,
     historyLoading: false,
     historyNoMore: false,
-    historyInited: false,
     // 图片默认不加载，勾选后才批量签名；未勾选时可点击单张加载
     showHistoryImages: false,
   },
@@ -136,6 +136,7 @@ Page({
       this.setData({
         campus_list,
         campus_counts,
+        pendingCount: Object.values(campus_counts).reduce((sum, value) => sum + value, 0),
         hasPhotos: Object.keys(campus_counts).length > 0,
         active_campus: cache_active_campus,
       });
@@ -204,8 +205,7 @@ Page({
     const mode = e.currentTarget.dataset.mode;
     if (mode === this.data.mode) return;
     this.setData({ mode });
-    if (mode === 'history' && !this.data.historyInited) {
-      this.setData({ historyInited: true });
+    if (mode === 'history') {
       this.loadHistory(true);
     }
   },
@@ -270,9 +270,10 @@ Page({
     for (const p of list) {
       const cat = catCache[p.cat_id] || {};
       p.cat_name = cat.name || '未知猫猫';
-      const act = HISTORY_ACTIONS[p.action] || { text: p.action, class: '' };
+      p.cat_campus = cat.campus || '';
+      p.cat_area = cat.area || '';
+      const act = HISTORY_ACTIONS[p.action] || { text: p.action };
       p.action_text = act.text;
-      p.action_class = act.class;
       p.check_time_formatted = p.check_time ? formatDate(p.check_time, 'yyyy-MM-dd hh:mm') : '';
     }
     if (this.data.showHistoryImages) {
@@ -312,14 +313,22 @@ Page({
   async loadOneHistoryImage(e) {
     const index = e.currentTarget.dataset.index;
     const item = this.jsData.historyState.list[index];
-    if (!item || !item.thumb || item.thumbSigned || item.imgError) return;
+    if (!item || !item.thumb || item.imgError) return;
+
+    if (item.thumbSigned) {
+      item.imageExpanded = true;
+      this.setData({ [`historyList[${index}].imageExpanded`]: true });
+      return;
+    }
 
     try {
       item.thumb = await signCosUrl(item.thumb);
       item.thumbSigned = true;
+      item.imageExpanded = true;
       this.setData({
         [`historyList[${index}].thumb`]: item.thumb,
         [`historyList[${index}].thumbSigned`]: true,
+        [`historyList[${index}].imageExpanded`]: true,
       });
     } catch (err) {
       console.error('[loadOneHistoryImage] - 签名失败:', err);
@@ -331,6 +340,8 @@ Page({
   // 审核记录中的图片加载失败（如已删除的照片）
   onHistoryImgError(e) {
     const index = e.currentTarget.dataset.index;
+    const item = this.jsData.historyState.list[index];
+    if (item) item.imgError = true;
     this.setData({
       [`historyList[${index}].imgError`]: true,
     });
@@ -578,6 +589,7 @@ Page({
     this.setData({
       [`campus_list.${active_campus}`]: new_photos,
       [`campus_counts.${active_campus}`]: newCount,
+      pendingCount: Math.max(0, this.data.pendingCount - (this.data.campus_counts[active_campus] - newCount)),
     });
 
     if (transferFailCount > 0) {

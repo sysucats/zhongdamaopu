@@ -1,0 +1,8 @@
+{
+  "component": true,
+  "usingComponents": {
+    "popup-header": "/components/popupHeader/popupHeader",
+    "popup": "/components/popup/popup",
+    "achievement-badge": "/components/achievementBadge/achievementBadge"
+  }
+}

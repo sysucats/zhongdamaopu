@@ -1,0 +1,142 @@
+<!-- 坐标格式化 WXS -->
+<wxs module="fmt">
+function fixed6(val) {
+  if (val === undefined || val === null) return '--';
+  return val.toFixed(6);
+}
+module.exports = {
+  fixed6: fixed6
+};
+</wxs>
+
+<view class="map-page">
+  <!-- 隐藏的 Canvas，用于生成圆形头像 -->
+  <canvas type="2d" id="avatarCanvas" style="position:fixed;left:-9999px;top:-9999px;width:80px;height:80px;"></canvas>
+
+  <!-- Demo 模式标记 -->
+  <view class="demo-badge" wx:if="{{demoMode}}">Demo</view>
+
+  <!-- 地图容器 -->
+  <view class="map-container" style="height: calc(100vh - {{tabBarHeight}}px);">
+    <map
+      id="campusMap"
+      class="campus-map"
+      latitude="{{latitude}}"
+      longitude="{{longitude}}"
+      scale="{{scale}}"
+      markers="{{markers}}"
+      polyline="{{trajectoryPolyline}}"
+      bindmarkertap="onMarkerTap"
+      bindregionchange="onRegionChange"
+      bindtap="onMapTap"
+      show-location="{{true}}"
+    />
+
+    <!-- 退出轨迹模式 -->
+    <view class="restore-btn" wx:if="{{showTrajectory}}" bindtap="restoreMap">
+      返回
+    </view>
+
+    <!-- 左下角：喵地图总猫猫数量（浅色字，固定） -->
+    <view class="total-cats-badge" wx:if="{{!showTrajectory && totalCats > 0}}">
+      <text class="total-cats-num">{{totalCats}}</text>
+      <text class="total-cats-label">只喵</text>
+    </view>
+
+    <!-- 加载提示 -->
+    <view class="map-tip" wx:if="{{loading}}">
+      <text>正在加载猫咪位置...</text>
+    </view>
+
+    <!-- 空状态 -->
+    <view class="map-empty" wx:if="{{!loading && markers.length === 0}}">
+      <view class="empty-icon">🗺️</view>
+      <text class="empty-text">还没有猫咪位置记录</text>
+      <text class="empty-sub">请在上传照片时记录</text>
+    </view>
+  </view>
+
+  <!-- 定位到校区按钮组（可折叠） -->
+  <view class="campus-btn-group" wx:if="{{campusButtons.length > 0}}">
+    <view class="campus-btns-panel {{campusBtnExpanded ? 'expanded' : ''}}">
+      <view class="campus-btn" wx:for="{{campusButtons}}" wx:key="name" bindtap="locateToCampus" data-campus="{{item.name}}">
+        <text class="campus-btn-text">{{item.name}}</text>
+      </view>
+    </view>
+    <view class="campus-toggle" bindtap="toggleCampusBtns">
+      <text class="iconfont {{campusBtnExpanded ? 'icon-close' : 'icon-map-pin'}}"></text>
+    </view>
+  </view>
+
+  <!-- 底部详情卡片 -->
+  <popup show="{{showDetail}}" bind:close="closeDetail">
+<popup-header title="{{currentCat.name || '未知猫咪'}}" align="left" bind:close="closeDetail" />
+    <view class="detail-card">
+      <!-- 头部 -->
+      <view class="detail-header">
+        <view class="detail-title">
+          <view class="detail-title-main">
+            <image wx:if="{{currentCat.gender === '公'}}" class="title-gender-icon" src="/pages/public/images/card/card/male.png" mode="aspectFill" />
+            <image wx:elif="{{currentCat.gender === '母'}}" class="title-gender-icon" src="/pages/public/images/card/card/female.png" mode="aspectFill" />
+            <view class="detail-location-inline" wx:if="{{currentCat.campus || currentCat.area}}">
+              <image class="location-icon" src="/pages/public/images/filter/location_gray.png" mode="aspectFit"></image>
+              <text>{{currentCat.campus || ''}}{{currentCat.area ? ' · ' + currentCat.area : ''}}</text>
+            </view>
+          </view>
+        </view>
+      </view>
+
+      <!-- 猫头像预览 -->
+      <view class="detail-photo-wrap">
+        <image
+          class="detail-photo {{photoPanDistance > 0 ? 'pan-animate' : ''}}"
+          src="{{currentCat.avatarUrl || '/pages/public/images/info/default_avatar.png'}}"
+          mode="widthFix"
+          bindload="onPhotoLoad"
+          bindtap="previewPhoto"
+          style="--pan-distance: {{photoPanDistance}}px; --pan-duration: {{photoPanDuration}}s;"
+        />
+      </view>
+
+      <!-- 猫咪基本信息 -->
+      <!-- 轨迹点模式：显示拍摄时间和坐标 -->
+      <view class="detail-profile" wx:if="{{currentCat.isTrajectoryPoint}}">
+        <view class="profile-header">
+          <view class="iconfont icon-map-pin profile-header-icon"></view>
+          <text>轨迹记录</text>
+        </view>
+        <view class="profile-item">
+          <view class="profile-label"><view class="profile-label-block"></view><text>拍摄时间</text></view>
+          <text class="profile-value">{{currentCat.trajectoryPointDate || '未知'}}</text>
+        </view>
+        <view class="profile-item" wx:if="{{currentCat.trajectoryPointUser}}">
+          <view class="profile-label"><view class="profile-label-block"></view><text>拍摄者</text></view>
+          <text class="profile-value">{{currentCat.trajectoryPointUser}}</text>
+        </view>
+        <view class="profile-item">
+          <view class="profile-label"><view class="profile-label-block"></view><text>坐标</text></view>
+          <text class="profile-value coordinate">{{fmt.fixed6(currentCat.trajectoryPointLat)}}, {{fmt.fixed6(currentCat.trajectoryPointLng)}}</text>
+        </view>
+      </view>
+      <!-- 普通模式：显示猫基本信息 -->
+      <view class="detail-profile" wx:else>
+        <view class="profile-item">
+          <view class="profile-label"><view class="profile-label-block"></view><text>性格特点</text></view>
+          <text class="profile-value">{{currentCat.characteristics || currentCat.habit ? currentCat.characteristics + (currentCat.habit ? '，' + currentCat.habit : '') : '有待人类探索'}}</text>
+        </view>
+        <view class="profile-item">
+          <view class="profile-label"><view class="profile-label-block"></view><text>撸猫指南</text></view>
+          <text class="profile-value">{{currentCat.tutorial || '暂时还没有'}}</text>
+        </view>
+      </view>
+
+      <!-- 按钮组：查看轨迹 + 查看详情 并排（轨迹点模式隐藏查看轨迹） -->
+      <view class="detail-btn-group">
+        <view class="detail-trajectory-btn" wx:if="{{!currentCat.isTrajectoryPoint && currentCat.trajectory_count >= 2}}" bindtap="showTrajectory">
+          查看轨迹
+        </view>
+        <button class="detail-btn primary {{!currentCat.isTrajectoryPoint && currentCat.trajectory_count >= 2 ? 'half' : ''}}" bindtap="goToDetail">猫猫详情</button>
+      </view>
+    </view>
+  </popup>
+</view>

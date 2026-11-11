@@ -1,0 +1,7 @@
+{
+  "component": true,
+  "usingComponents": {
+    "heart": "/packages/heart-button/heart",
+    "comment-paper": "/components/commentPaper/commentPaper"
+  }
+}

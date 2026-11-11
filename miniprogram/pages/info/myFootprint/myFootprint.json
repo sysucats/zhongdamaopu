@@ -1,4 +1,10 @@
 {
-  "usingComponents": {},
-  "navigationBarTitleText": "我的足迹"
+  "navigationBarTitleText": "我的足迹",
+  "usingComponents": {
+    "footprintOverview": "/components/footprintOverview/footprintOverview",
+    "achievement-unlock": "/components/achievementUnlock/achievementUnlock",
+    "heart": "/packages/heart-button/heart",
+    "comment-paper": "/components/commentPaper/commentPaper"
+  },
+  "backgroundColor": "#f7f7f7"
 }

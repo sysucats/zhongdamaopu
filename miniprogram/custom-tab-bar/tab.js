@@ -30,7 +30,7 @@ module.exports = {
     "text": "关于"
   },
   map: {
-    "pagePath": "pages/map/index/index",
+    "pagePath": "pages/map/map",
     "iconPath": "/pages/public/images/tabs/default/map.png",
     "selectedIconPath": "/pages/public/images/tabs/active/map.png",
     "text": "喵地图"

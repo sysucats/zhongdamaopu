@@ -1,3 +1,4 @@
+@import "/pages/public/wxss/tag.wxss";
 /* components/newsModal/newsModal.wxss */
 .wx-modal-catlogo {
     position: absolute;
@@ -8,149 +9,130 @@
 }
 
 .wx-modal {
-    width: 600rpx;
-    background-color: #FFFFFF;
-    border-radius: 40rpx;
-    overflow: visible;
-    padding: 20rpx 35rpx 0 35rpx;
+  width: 600rpx;
+  background-color: var(--color-surface);
+  border-radius: var(--radius-modal);
+  overflow: visible;
+  padding: 0 35rpx;
 }
 
-.wx-modal-row{
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    margin-bottom: 8rpx;
-}
-
-.wx-modal-title {
-    /* padding: 15px 15px 5px; */
-    margin: 0 0 10rpx 5rpx;
-    text-align: left;
-    font-size: 33rpx;
-    font-weight: 600;
+.wx-modal-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-bottom: 8rpx;
 }
 
 .wx-modal-content {
-    /* padding: 15px 15px 5px;
+  /* padding: 15px 15px 5px;
     min-height: 40px;
     line-height: 1.3;
     */
-    white-space: pre-wrap;
-    font-size: 28rpx;
-    font-weight: 400;
-    margin-bottom: 30rpx;
-    overflow: hidden;
-    display: -webkit-box;
-    -webkit-box-orient: vertical;
-    -webkit-line-clamp: 4;
-    color: var(--color-gray-max);
+  white-space: pre-wrap;
+  font-size: 28rpx;
+  font-weight: 400;
+  margin-bottom: 30rpx;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 4;
+  color: var(--color-gray-max);
 }
 
 /* 无图片时不限制内容显示行数 */
 .wx-modal-content.full-height {
-    -webkit-line-clamp: unset;
-    margin-bottom: 0;
+  -webkit-line-clamp: unset;
+  margin-bottom: 0;
 }
 
 .wx-modal-image {
-    margin: 10rpx;
-    width: 540rpx;
+  margin: 10rpx;
+  width: 540rpx;
 }
 
 .wx-modal-scroll {
-    width: auto;
-    padding: 15rpx 5rpx;
-    height: 600rpx;
-    background-color: #FFFFFF;
+  width: auto;
+  padding: 15rpx 5rpx;
+  height: 600rpx;
+  background-color: var(--color-surface);
 }
 
 /* 无图片时减少滚动区域高度，使布局更紧凑 */
 .wx-modal-scroll.no-image {
-    height: auto;
-    max-height: 450rpx;
+  height: auto;
+  max-height: 450rpx;
 }
 
 .wx-modal-class {
-    width: 80rpx;
-    height: 38rpx;
-    border-radius: 15rpx;
-    margin: 0 12rpx 0 0;
-    
-    font-size: 24rpx;
-    font-weight: 500;
-    text-align: center;
-    line-height: 38rpx;
-
-    background-color: var(--color-primary-light);
-    color: var(--color-primary);
+  margin: 0 12rpx 0 0;
 }
 
 .wx-modal-user {
-    font-size: 26rpx;
-    color: var(--color-gray-dark);
-    margin-right: 20rpx;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    overflow: hidden;
+  font-size: 26rpx;
+  color: var(--color-gray-dark);
+  margin-right: 20rpx;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
 }
 
 .wx-modal-time {
-    font-size: 26rpx;
-    color: var(--color-gray-dark);
-    flex-grow: 1;
-    text-align: right;
-    white-space: nowrap;  
-    text-overflow:ellipsis; 
-    overflow: hidden;
+  font-size: 26rpx;
+  color: var(--color-gray-dark);
+  flex-grow: 1;
+  text-align: right;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
 }
 
 .wx-modal-footer {
-    display: flex;
-    align-items: center;
-    position: relative;
-    line-height: 90rpx;
-    font-size: 32rpx;
+  display: flex;
+  align-items: center;
+  position: relative;
+  line-height: 90rpx;
+  font-size: 32rpx;
 }
 
 .wx-modal-footer::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 0;
-    right: 0;
-    height: 1px;
-    border-top: 1px solid #D5D5D6;
-    color: #D5D5D6;
-    -webkit-transform-origin: 0 0;
-    transform-origin: 0 0;
-    -webkit-transform: scaleY(0.5);
-    transform: scaleY(0.5);
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  right: 0;
+  height: 1px;
+  border-top: 1px solid var(--color-divider);
+  color: var(--color-divider);
+  -webkit-transform-origin: 0 0;
+  transform-origin: 0 0;
+  -webkit-transform: scaleY(0.5);
+  transform: scaleY(0.5);
 }
 
 .wx-modal-btn {
-    display: block;
-    flex: 1;
-    position: relative;
-    text-align: center;
+  display: block;
+  flex: 1;
+  position: relative;
+  text-align: center;
 }
 
 .wx-modal-footer .wx-modal-btn:nth-of-type(1) {
-    color: var(--color-gray-max);
+  color: var(--color-gray-max);
 }
 
 .wx-modal-footer .wx-modal-btn:nth-of-type(2) {
-    color: var(--color-primary);
+  color: var(--color-primary-text);
 }
 
 .wx-modal-footer .wx-modal-btn:nth-of-type(2):after {
-    content: " ";
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 1px;
-    bottom: 0;
-    border-left: 1px solid #D5D5D6;
-    color: #D5D5D6;
-    transform-origin: 0 0;
-    transform: scaleX(0.5);
+  content: " ";
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 1px;
+  bottom: 0;
+  border-left: 1px solid var(--color-divider);
+  color: var(--color-divider);
+  transform-origin: 0 0;
+  transform: scaleX(0.5);
 }

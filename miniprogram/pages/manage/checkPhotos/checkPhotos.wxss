@@ -1,7 +1,13 @@
+@import "../adminPage.wxss";
+@import "/pages/public/wxss/button.wxss";
+@import "/pages/public/wxss/review.wxss";
+@import "/pages/public/wxss/hFilter.wxss";
+
 page {
   width: 750rpx;
   padding: 35rpx 35rpx 160rpx 35rpx;
   box-sizing: border-box;
+  background: var(--color-gray-light);
 }
 
 button {
@@ -26,19 +32,6 @@ button.long {
   width: 100%;
 }
 
-.verify-box {
-  width: 100%;
-  box-sizing: border-box;
-  padding: 30rpx 40rpx;
-  margin-bottom: 40rpx;
-  box-shadow: 0rpx 0rpx 30rpx var(--color-gray);
-  border-radius: 20rpx;
-  background-color: #FFFFFF;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
 .info-box {
   width: 100%;
   display: flex;
@@ -53,121 +46,31 @@ image {
   margin-top: 10rpx;
 }
 
-.verify-box .info {
+.review-card .info-box .info {
   margin-left: 20rpx;
 }
+.review-card .label.user { color: var(--color-gray-max); line-height: 1.7; }
+.review-card .info-box > image { flex-shrink: 0; margin-top: 0; }
 
-/* 并排处理的按钮 */
-.buttons {
-  margin-top: 10rpx;
-  display: flex;
-  flex-direction: row;
-}
-
-.buttons .button {
-  border: 1rpx solid var(--color-gray-dark);
-  padding: 10rpx 30rpx;
-  margin: 0 5rpx;
-  font-size: 30rpx;
-  background-color: #FFFFFF;
-  transition: background-color 500ms ease,
-              border-color 500ms ease,
-              color 500ms ease;
-}
-
-.buttons :nth-child(1) {
-  border-top-left-radius: 10rpx;
-  border-bottom-left-radius: 10rpx;
-}
-.buttons :nth-last-child(1) {
-  border-top-right-radius: 10rpx;
-  border-bottom-right-radius: 10rpx;
-}
-.button.delete {
-  color: red;
-}
-.button.delete.marked {
-  border-color: var(--color-red-dark);
-  background-color: var(--color-red);
-  color: white;
-}
-.button.pass.marked {
-  border-color: var(--color-green-dark);
-  background-color: var(--color-green);
-  color: white;
-}
-.button.best.marked {
-  border-color: var(--color-primary-dark);
-  background-color: var(--color-primary);
-  color: white;
-}
-.button.transfer {
-  color: #722ed1;
-}
-.button.transfer.marked {
-  border-color: #531dab;
-  background-color: #722ed1;
-  color: white;
-}
+.card-actions .review-option.danger { margin-right: auto; }
 
 .label {
   font-size: 24rpx;
   font-weight: 300;
 }
-.label.cat text {
-  font-size: 28rpx;
-  font-weight: bold;
-  text-decoration: underline;
-}
+
 .label.user.shotTime{
   margin-bottom: 20rpx;
 }
 
-#total-count {
-  font-size: 30rpx;
-  font-weight: 300;
-  color: var(--color-gray-max);
-  box-shadow: 0rpx 0rpx 30rpx var(--color-gray);
-  padding: 40rpx;
-  margin-bottom: 30rpx;
-  border-radius: 10rpx;
-}
-
-.bottom-bar {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  padding: 16rpx 40rpx env(safe-area-inset-bottom) 40rpx; /*底部iOS小黑边safe-area*/
-  border-top: 1rpx solid var(--color-gray);
-  background-color: #FFFFFF;
-  width: 100%;
-  box-sizing: border-box;
-}
-
-.bottom-bar button.primary, .bottom-bar button.long {
-  margin-top: 0;
-}
 
 /* 校区选择器 */
-.campus-list {
-  width: 100%;
+.h-filter-list.campus-list {
+  width: 100vw;
+  margin-left: -35rpx;
+  margin-bottom: var(--space-xs);
 }
-
-.campus {
-  display: inline-block;
-  margin: 10rpx 10rpx;
-  padding: 0 10rpx;
-  color: var(--color-black-min);
-  border: 3rpx solid transparent;
-  border-radius: 15rpx;
-  font-size: 28rpx;
-}
-
-.campus.active {
-  /* font-weight: bold; */
-  border-left: 3rpx solid var(--color-primary);
-  border-right: 3rpx solid var(--color-primary);
-}
+.campus-list .h-filter-content { padding: var(--space-xs) 35rpx; }
 
 /* 提示选择 */
 .tip {
@@ -177,32 +80,19 @@ image {
   text-align: center;
 }
 
-/* 待审核 / 审核记录 切换 */
-.mode-tabs {
-  display: flex;
-  background: #fff;
-  border-radius: 20rpx;
-  box-shadow: 0rpx 0rpx 30rpx var(--color-gray);
-  padding: 8rpx;
-  margin-bottom: 30rpx;
-}
-
-.mode-tab {
-  flex: 1;
-  text-align: center;
-  font-size: 30rpx;
-  color: var(--color-gray-dark);
-  padding: 16rpx 0;
-  border-radius: 14rpx;
-}
-
-.mode-tab.active {
-  background: var(--color-primary);
-  color: var(--color-text-onPrimary);
-  font-weight: bold;
-}
-
 /* 审核记录 */
+.history-box {
+  display: flex;
+  gap: var(--space-md);
+  flex-direction: row;
+  align-items: flex-start;
+}
+
+.history-box .info {
+  flex: 1;
+  min-width: 0;
+}
+
 .history-toolbar {
   display: flex;
   align-items: center;
@@ -247,25 +137,9 @@ image {
 
 /* 可点击加载单张图片 */
 .img-hidden {
-  color: var(--color-primary-dark);
+  color: var(--color-primary-text);
 }
 
 .img-hidden:active {
   opacity: 0.7;
 }
-
-.history-badges {
-  display: flex;
-  align-items: center;
-  margin-top: 12rpx;
-}
-
-.action-badge {
-  font-size: 22rpx;
-  padding: 4rpx 20rpx;
-  border-radius: 20rpx;
-  color: #fff;
-}
-
-.action-badge.pass { background-color: var(--color-green); }
-.action-badge.best { background-color: var(--color-primary-dark); }

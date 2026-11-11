@@ -1,21 +1,14 @@
-<!--pages/info/myFollowCats/myFollowCats.wxml-->
-
-
-<view class="follow-count">共关注{{followCount || 0}}只猫猫</view>
-
-<view class="cat-info-container">
-<view class="cat-info" wx:for="{{followCats}}" wx:key="_id">
-  <view class="cat-avatar">
-    <image src="{{item.avatar.photo_compressed || item.avatar.photo_id}}" mode="aspectFill"/>
-  </view>
-  <view class="cat-name">
-    <text>{{item.name || '-'}}</text>
-    <view class='cat-campus'>
-      <image class="location-logo" src="/pages/public/images/filter/location_gray.png" mode="aspectFit"></image>
-      {{item.campus || '-'}}
+<view class="follow-page">
+  <view class="follow-count">已关注 <text class="follow-count-number">{{followCount || 0}}</text> 只猫咪</view>
+  <view class="follow-list">
+    <view class="cat-card" wx:for="{{followCats}}" wx:key="_id">
+      <image class="cat-avatar" src="{{item.avatar.photo_compressed || item.avatar.photo_id}}" mode="aspectFill" wx:if="{{item.avatar}}" />
+      <image class="cat-avatar placeholder" src="/pages/public/images/info/btn/cat_head.png" mode="aspectFit" wx:else />
+      <view class="cat-info">
+        <view class="cat-name">{{item.name || '未知猫咪'}}</view>
+        <view class="cat-desc">{{item.campus || '-'}} {{item.area || ''}}</view>
+      </view>
+      <button class="form-button compact follow-btn {{item.unfollowed ? 'unfollowed' : 'followed'}}" bindtap="doFollowCat" data-index="{{index}}" data-catid="{{item._id}}" data-unfollowed="{{item.unfollowed}}">{{item.unfollowed ? '继续关注' : '取消关注'}}</button>
     </view>
   </view>
-  
-  <view class="follow-btn {{item.unfollowed ? 'unfollowed' : 'followed'}}" bind:tap="doFollowCat" data-index="{{index}}" data-catid="{{item._id}}" data-unfollowed="{{item.unfollowed}}">{{item.unfollowed ? '继续关注' : '取消关注'}}</view>
-</view>
 </view>

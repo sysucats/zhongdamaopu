@@ -1,0 +1,26 @@
+<popup show="{{visible}}" position="center" zindex="{{2147483000}}" max-height="88vh" bind:close="close">
+  <view slot="decoration" class="unlock-confetti" aria-hidden="true">
+    <view class="confetti-piece" wx:for="{{confetti}}" wx:key="id" style="{{item.style}}"></view>
+  </view>
+  <view class="unlock-card" aria-role="dialog" aria-modal="true" aria-label="成就解锁">
+    <popup-header title="成就解锁！" close-position="none" />
+    <view class="unlock-subtitle">{{unlocks.length > 1 ? '这次点亮了 ' + unlocks.length + ' 枚成就' : '已加入你的成就收藏'}}</view>
+    <swiper class="unlock-swiper" bindtouchstart="onSwipeStart" bindtouchend="onSwipeEnd" bindtouchcancel="onSwipeCancel" current="{{activeIndex}}" bindchange="onBadgeChange" bindtransition="onBadgeTransition" bindanimationfinish="onBadgeSettled" indicator-dots="{{false}}">
+      <swiper-item wx:for="{{unlocks}}" wx:key="key" catchtouchmove="onSwipeMove">
+        <view class="unlock-badge">
+          <view class="unlock-art">
+            <achievement-badge id="unlock-badge-{{index}}" rotation-mode="intro" wx:if="{{visible}}" badge="{{item}}" size="360" active="{{index === activeIndex && !swiping}}" />
+          </view>
+          <view class="unlock-name material-{{item.materialKey}}">{{item.name}}</view>
+          <view class="unlock-description">{{item.description}}</view>
+        </view>
+      </swiper-item>
+    </swiper>
+    <view class="unlock-pagination" wx:if="{{unlocks.length > 1}}">
+      <view class="unlock-page-target" wx:for="{{unlocks}}" wx:key="key" data-index="{{index}}" bindtap="onPageTap" aria-role="button" aria-label="{{item.name}}" aria-selected="{{activeIndex === index}}">
+        <view class="unlock-page-mark {{activeIndex === index ? 'active' : ''}}"></view>
+      </view>
+    </view>
+    <button class="form-button unlock-continue" bindtap="close">耶！！</button>
+  </view>
+</popup>

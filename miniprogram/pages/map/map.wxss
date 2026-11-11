@@ -1,0 +1,409 @@
+@import "/pages/public/wxss/iconfont.wxss";
+
+.map-page {
+  width: 100%;
+  height: 100vh;
+  position: relative;
+  overflow: hidden;
+}
+
+.demo-badge {
+  position: fixed;
+  top: 20rpx;
+  right: 20rpx;
+  z-index: 100;
+  background: rgba(0, 0, 0, 0.55);
+  color: var(--color-primary);
+  font-size: 22rpx;
+  padding: 6rpx 16rpx;
+  border-radius: 20rpx;
+  font-weight: 600;
+  letter-spacing: 2rpx;
+}
+
+.map-container {
+  width: 100%;
+  position: relative;
+}
+
+.campus-map {
+  width: 100%;
+  height: 100%;
+}
+
+.map-tip {
+  position: absolute;
+  top: 40%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: var(--color-black-transparent);
+  color: var(--color-text-inverse);
+  padding: 20rpx 40rpx;
+  border-radius: 30rpx;
+  font-size: 28rpx;
+}
+
+.map-empty {
+  position: absolute;
+  top: 40%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: var(--color-surface);
+  padding: 60rpx 50rpx;
+  border-radius: 20rpx;
+  box-shadow: 0 0 20rpx var(--color-gray);
+}
+
+.empty-icon {
+  font-size: 80rpx;
+  margin-bottom: 20rpx;
+}
+
+.empty-text {
+  font-size: 30rpx;
+  color: var(--color-black-min);
+  margin-bottom: 10rpx;
+}
+
+.empty-sub {
+  font-size: 24rpx;
+  color: var(--color-gray-max);
+}
+
+/* 定位到校区按钮组（可折叠） */
+.campus-btn-group {
+  position: fixed;
+  right: 24rpx;
+  bottom: calc(15vh + 20rpx);
+  z-index: 99;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0;
+}
+
+/* 折叠面板：校区按钮列表 */
+.campus-btns-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 12rpx;
+  max-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  margin-bottom: 0;
+  transition:
+    max-height 0.3s ease,
+    opacity 0.25s ease,
+    margin-bottom 0.3s ease;
+}
+
+.campus-btns-panel.expanded {
+  max-height: 600rpx;
+  opacity: 1;
+  margin-bottom: 12rpx;
+}
+
+.campus-btn {
+  background: var(--color-surface);
+  border-radius: 44rpx;
+  padding: 14rpx 28rpx;
+  display: flex;
+  align-items: center;
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.15);
+  transition: opacity 0.25s ease;
+  align-self: flex-end;
+}
+
+.campus-btn:active {
+  opacity: 0.75;
+  background: var(--color-gray-light);
+}
+
+.campus-btn-text {
+  font-size: 26rpx;
+  color: var(--color-text-onPrimary);
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+/* 折叠开关按钮 */
+.campus-toggle {
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.9);
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.15);
+  backdrop-filter: blur(8rpx);
+  -webkit-backdrop-filter: blur(8rpx);
+  font-size: 36rpx;
+  transition: transform 0.25s ease;
+  flex-shrink: 0;
+}
+
+.campus-toggle:active {
+  transform: scale(0.9);
+  background: var(--color-gray-light);
+}
+
+/* 底部详情面板：结构对齐猫咪详情页的 popup */
+.detail-card {
+  padding: 0 10rpx 20rpx;
+  max-height: 70vh;
+  overflow-y: auto;
+  box-sizing: border-box;
+}
+
+.detail-header {
+  padding: 4rpx 4rpx 22rpx;
+}
+
+.detail-title {
+  width: 100%;
+}
+
+.detail-title-main {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+  gap: 12rpx;
+  width: 100%;
+  text-align: left;
+}
+
+.title-gender-icon {
+  width: 30rpx;
+  height: 30rpx;
+  flex-shrink: 0;
+}
+
+.detail-photo-wrap {
+  position: relative;
+  margin-bottom: 20rpx;
+  height: 360rpx;
+  overflow: hidden;
+  border-radius: 16rpx;
+  background: var(--color-gray-normal);
+}
+
+.detail-photo {
+  width: 100%;
+  /* widthFix 让图片按宽度等比缩放，高度自适应（竖屏照片会很高） */
+  /* 通过外层 overflow:hidden + animation 实现上下往返移动 */
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: block;
+  will-change: transform;
+}
+
+/* 竖屏照片自动上下往返：CSS animation infinite alternate 由渲染引擎驱动，
+   无需 JS transitionend 切换方向，避免到顶/底时因 setData 异步导致的闪烁 */
+.detail-photo.pan-animate {
+  animation: panVertical var(--pan-duration, 6s) ease-in-out infinite alternate;
+}
+
+@keyframes panVertical {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(calc(var(--pan-distance, 0px) * -1));
+  }
+}
+
+.detail-location-inline {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  color: var(--color-gray-max);
+  font-size: 22rpx;
+  line-height: 1.4;
+}
+
+.location-icon {
+  width: 22rpx;
+  height: 22rpx;
+  margin-right: 6rpx;
+  flex-shrink: 0;
+}
+
+.detail-profile {
+  overflow: hidden;
+  border-radius: 16rpx;
+  background: var(--color-surface);
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.08);
+  margin-bottom: 25rpx;
+}
+
+.profile-header {
+  display: flex;
+  align-items: center;
+  padding: 18rpx 24rpx;
+  border-bottom: 1rpx solid var(--color-gray-light);
+  color: var(--color-black-min);
+  font-size: 28rpx;
+  font-weight: 700;
+}
+
+.profile-header-icon {
+  margin-right: 10rpx;
+  color: var(--color-primary);
+  font-size: 34rpx;
+}
+
+.profile-item {
+  position: relative;
+  padding: 20rpx 24rpx 22rpx;
+}
+
+.profile-item + .profile-item::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 24rpx;
+  right: 24rpx;
+  height: 1rpx;
+  background: rgba(0, 0, 0, 0.04);
+}
+
+.profile-label {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8rpx;
+  color: var(--color-gray-max);
+  font-size: 22rpx;
+}
+
+.profile-label-block {
+  width: 8rpx;
+  height: 24rpx;
+  margin-right: 10rpx;
+  border-radius: 4rpx;
+  background: var(--color-primary);
+}
+
+.profile-value {
+  display: block;
+  color: var(--color-black-min);
+  font-size: 26rpx;
+  line-height: 1.65;
+  word-break: break-word;
+}
+
+.profile-value.coordinate {
+  font-variant-numeric: tabular-nums;
+}
+
+.detail-btn {
+  width: 100%;
+  background: var(--color-primary);
+  color: var(--color-text-onPrimary);
+  font-size: 32rpx;
+  font-weight: 600;
+  border-radius: 44rpx;
+  padding: 20rpx 0;
+  border: none;
+  line-height: 1.2;
+}
+
+.detail-btn::after {
+  border: none;
+}
+
+/* ===== 轨迹相关样式 ===== */
+
+/* 详情卡内按钮组：查看轨迹 + 查看详情 并排 */
+.detail-btn-group {
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+  padding: 0 30rpx;
+  margin-bottom: 25rpx;
+}
+
+/* 详情卡内「查看轨迹」按钮 */
+.detail-trajectory-btn {
+  flex: 1;
+  padding: 20rpx 0;
+  text-align: center;
+  font-size: 28rpx;
+  color: var(--color-primary-text);
+  background: var(--color-primary-light);
+  border-radius: 44rpx;
+  letter-spacing: 2rpx;
+  min-width: 0;
+}
+
+.detail-trajectory-btn:active {
+  opacity: 0.75;
+  background: var(--color-primary);
+  color: var(--color-text-onPrimary);
+}
+
+/* 查看详情按钮 - 并排时等宽 */
+.detail-btn.primary.half {
+  flex: 1;
+  min-width: 0;
+}
+
+/* 地图右上角「返回」按钮：对齐关系图谱重置按钮 */
+.restore-btn {
+  position: fixed;
+  top: 100rpx;
+  right: 24rpx;
+  z-index: 999;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(8rpx);
+  -webkit-backdrop-filter: blur(8rpx);
+  color: var(--color-primary-text);
+  border: none;
+  font-size: 28rpx;
+  font-weight: 600;
+  padding: 16rpx 28rpx;
+  border-radius: 999rpx;
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.15);
+}
+
+.restore-btn:active {
+  opacity: 0.75;
+}
+
+/* 左下角：喵地图总猫猫数量（浅色字，固定） */
+.total-cats-badge {
+  position: fixed;
+  left: 24rpx;
+  bottom: calc(15vh + 20rpx);
+  z-index: 99;
+  display: flex;
+  align-items: baseline;
+  gap: 6rpx;
+  padding: 12rpx 24rpx;
+  background: rgba(255, 255, 255, 0.9);
+  border: none;
+  border-radius: 32rpx;
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.15);
+  backdrop-filter: blur(8rpx);
+  -webkit-backdrop-filter: blur(8rpx);
+  pointer-events: none;
+}
+
+.total-cats-num {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: var(--color-primary);
+  line-height: 1;
+}
+
+.total-cats-label {
+  font-size: 24rpx;
+  color: var(--color-gray-max);
+  line-height: 1;
+}

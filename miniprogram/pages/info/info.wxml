@@ -46,8 +46,7 @@
 
 <view class='block-name'>友情链接</view>
 
-<!-- <scroll-view class="scroll-friend-link-box" scroll-x="true" enable-flex='true' enhanced="true" show-scrollbar='false'></scroll-view> -->
-<view class="block">
+<view class="content-card friend-links">
   <view wx:for="{{friendApps}}" class="friend-link" bindtap="clickFriendLink" data-appid="{{item.appid}}" wx:key="name">
     <image mode='aspectFit' src="{{item.logo}}"></image>
     <view class="friend-link-text">{{item.name}}</view>
@@ -68,7 +67,7 @@
 <!-- 宫格式布局，待处理数量右上角红点标记 -->
 <block wx:for="{{menuList}}" wx:key="title" wx:for-item="menu" wx:if="{{showCond[menu.show]}}">
   <view wx:if="{{menu.type == '管理后台'}}" class='block-name'>{{menu.title}}</view>
-    <view wx:if="{{menu.type == '管理后台'}}" class="block">
+    <view wx:if="{{menu.type == '管理后台'}}" class="content-card block">
       <view wx:for="{{menu.items}}" wx:key="name" class="grid-item" bindtap='clickbtn' data-to='{{item.path}}'>
           <view class="iconfont {{item.icon}}"></view>
           <text wx:if="{{nums[item.num]}}" class="badge">{{nums[item.num]}}</text>

@@ -1,114 +1,87 @@
-<block wx:if="{{auth}}">
-  <!-- Tab 切换 -->
-  <view class="tab-bar">
-    <view class="tab-item {{currentTab === 'users' ? 'active' : ''}}" data-tab="users" bindtap="switchTab">
-      用户管理
-    </view>
-    <view class="tab-item {{currentTab === 'apps' ? 'active' : ''}}" data-tab="apps" bindtap="switchTab">
-      地图待审
-      <text class="badge" wx:if="{{appCount > 0}}">{{appCount}}</text>
-    </view>
+<view class="managers-page" wx:if="{{auth}}">
+  <view class="admin-segments">
+    <view class="admin-segment {{currentTab === 'users' ? 'active' : ''}}" data-tab="users" bindtap="switchTab">用户管理</view>
+    <view class="admin-segment {{currentTab === 'apps' ? 'active' : ''}}" data-tab="apps" bindtap="switchTab">地图待审<text class="pending-count" wx:if="{{appCount > 0}}">{{appCount}}</text></view>
   </view>
 
-  <!-- ========== Tab: 用户管理 ========== -->
-  <view wx:if="{{currentTab === 'users'}}">
-    <view class='filter-block'>
-      <view class='search'>
-        <icon size='30rpx' type='search' style="transform: translateY(15%)"></icon>
-        <input style="font-size: 30rpx; margin-left: 25rpx; width: 100%;" placeholder='搜索用户'
-        value='{{userSearch}}' maxlength='20' confirm-type='search' bindinput='fSearchInput' bindconfirm='fSearch'>
-        </input>
+  <view class="management-panel" wx:if="{{currentTab === 'users'}}">
+    <view class="form-section filter-section">
+      <view class="search-field">
+        <text class="iconfont icon-search search-icon"></text>
+        <input class="field-input search-input" placeholder="搜索用户" value="{{userSearch}}" maxlength="20" confirm-type="search" bindinput="fSearchInput" bindconfirm="fSearch" />
       </view>
-      <!--分割线--><view class="line"></view>
-      <view class='filters'>
-        <checkbox-group bindchange="filterChange">
-          <checkbox value="manager-only" style="font-size: 28rpx;  margin-right: 20rpx;">只看管理员</checkbox>
-          <checkbox value="role1-only" style="font-size: 28rpx; margin-right: 20rpx;">只看特邀</checkbox>
-          <checkbox value="mapAccess-only" style="font-size: 28rpx;">只看地图</checkbox>
-        </checkbox-group>
-      </view>
+      <checkbox-group class="user-filters" bindchange="filterChange">
+        <label class="filter-choice"><checkbox value="manager-only" checked="{{managerOnly}}" color="var(--color-primary)" />只看管理员</label>
+        <label class="filter-choice"><checkbox value="role1-only" checked="{{role1Only}}" color="var(--color-primary)" />只看特邀</label>
+        <label class="filter-choice"><checkbox value="mapAccess-only" checked="{{mapAccessOnly}}" color="var(--color-primary)" />只看地图</label>
+      </checkbox-group>
     </view>
     <navigator class="old-invite" url="/pages/tools/inviteUser/inviteUser">特邀用户管理</navigator>
 
-    <scroll-view style="height: {{windowHeight}}px;" scroll-y="true" enable-back-to-top="true" bindscrolltolower="scrollToReload">
-      <view class="user-box" wx:for="{{users}}" wx:key="_id">
-        <view wx:if="{{item.userInfo}}" class="info">
-          <image class="avatar" src="{{item.userInfo.avatarUrl}}"></image>
-          <view class="name-and-others">
-            <view class="nickName">{{item.userInfo.nickName}}</view>
-            <view class="user-detail">
-              <block wx:if="{{item.userInfo.gender}}">
-                {{item.userInfo.gender == 2? '女': '男'}}
-              </block>
-              {{item.userInfo.country || '-'}}, {{item.userInfo.province || '-'}}, {{item.userInfo.city || '-'}}
+    <scroll-view class="management-list" scroll-y="true" enable-back-to-top="true" bindscrolltolower="scrollToReload">
+      <view class="list-content">
+        <view class="user-row" wx:for="{{users}}" wx:key="_id">
+          <view class="user-edit-target" data-index="{{index}}" bindtap="openUserEditor" hover-class="user-edit-hover">
+            <image class="context-avatar" src="{{item.userInfo.avatarUrl || '/pages/public/images/info/default_avatar.png'}}" mode="aspectFill" />
+            <view class="context-copy">
+              <view class="user-name">{{item.userInfo.nickName || '匿名用户'}}</view>
+              <view class="user-summary"><text wx:if="{{item.manager}}">{{manager_types[item.manager == 99 ? manager_types.length - 1 : item.manager]}} · </text>{{role_types[item.role || 0]}}</view>
             </view>
+            <view class="picker-arrow"></view>
+          </view>
+          <view class="user-map-access">
+            <view class="map-access-label">地图</view>
+            <switch checked="{{item.mapAccess && item.mapAccess.status === 'approved'}}" data-index="{{index}}" bindchange="toggleMapAccess" color="var(--color-green)" />
           </view>
         </view>
-        <view wx:else class="unknow-info info">匿名用户</view>
-
-        <form bindsubmit="updateUserSettings">
-          <input style="display: none;" name="index" value="{{index}}"></input>
-          <input style="display: none;" name="_id" value="{{item._id}}"></input>
-
-          <!-- 行1: 管理员等级 + 角色 -->
-          <view class="operation-row">
-            <view class="picker-group">
-              <text class="picker-label">管理员</text>
-              <picker mode="selector" range="{{manager_types}}" class="manager-level" name="level" value="{{item.manager == 99? (manager_types.length-1) : (item.manager || 0)}}" bindchange="onManagerChange" data-index="{{index}}">
-                <view class="picker-text">{{manager_types[item.manager == 99? (manager_types.length-1) : (item.manager || 0)]}}</view>
-              </picker>
-            </view>
-            <view class="picker-group">
-              <text class="picker-label">角色</text>
-              <picker mode="selector" range="{{role_types}}" class="role-level" name="role" value="{{item.role || 0}}" bindchange="onRoleChange" data-index="{{index}}">
-                <view class="picker-text">{{role_types[item.role || 0]}}</view>
-              </picker>
-            </view>
-          </view>
-
-          <!-- 行2: 地图权限开关 + 更新按钮 -->
-          <view class="operation-row operation-row-bottom">
-            <view class="map-toggle">
-              <text class="toggle-label">喵地图</text>
-              <switch checked="{{item.mapAccess && item.mapAccess.status === 'approved'}}" data-index="{{index}}" bindchange="toggleMapAccess" color="#ffd101" />
-            </view>
-            <button form-type="submit" class="manager-update primary">更新</button>
-            <view class="index">#{{index}}</view>
-          </view>
-        </form>
       </view>
-      <view style="height: 50rpx; opacity: 0;"></view> <!--加个透明块防止内容偏低按不到-->
     </scroll-view>
   </view>
 
-  <!-- ========== Tab: 地图待审申请 ========== -->
-  <view wx:if="{{currentTab === 'apps'}}" class="tab-content">
-    <view class="empty-hint" wx:if="{{!applications.length && !appsLoading}}">暂无待审申请</view>
-    <scroll-view scroll-y="true" style="height: {{windowHeight}}px;">
-      <view class="app-card" wx:for="{{applications}}" wx:key="_id">
-        <view class="app-header">
-          <text class="app-user">申请人: {{item.userInfo.nickName || '未知用户'}}</text>
-          <text class="app-date">申请时间: {{item.mapAccess.applyDate}}</text>
+  <view class="management-panel" wx:else>
+    <view class="management-empty" wx:if="{{!applications.length && !appsLoading}}">暂无待审申请</view>
+    <scroll-view class="management-list" scroll-y="true">
+      <view class="list-content">
+        <view class="review-card" wx:for="{{applications}}" wx:key="_id">
+          <view class="review-heading"><view class="review-object">{{item.userInfo.nickName || '未知用户'}}</view><text class="review-state">待审核</text></view>
+          <view class="review-meta">申请时间：{{item.mapAccess.applyDate}}</view>
+          <view class="application-stats">
+            <text>照片 {{item.photoCount}} 张</text><text>便利贴 {{item.commentCount}} 条</text>
+            <text class="attention-tip" wx:if="{{item.photoCount + item.commentCount < minRequired}}">注意甄别</text>
+          </view>
+          <view class="field-hint">申请理由</view>
+          <text class="review-content" selectable="{{true}}">{{item.mapAccess.applyReason}}</text>
+          <view class="card-actions"><button class="form-button compact with-icon danger" data-index="{{index}}" bindtap="rejectApplication"><text class="iconfont icon-close"></text><text>拒绝</text></button><button class="form-button compact with-icon primary" data-index="{{index}}" bindtap="approveApplication"><text class="iconfont icon-check"></text><text>通过</text></button></view>
         </view>
-        <view class="app-stats {{item.photoCount + item.commentCount < 10 ? 'warn' : ''}}">
-          <text class="stat-item">照片: {{item.photoCount}}张</text>
-          <text class="stat-item">便利贴: {{item.commentCount}}条</text>
-          <text class="attention-tip" wx:if="{{item.photoCount + item.commentCount < 10}}">⚠ 注意甄别</text>
-        </view>
-        <view class="app-reason">
-          <text class="reason-label">申请理由：</text>
-          <text class="reason-text">{{item.mapAccess.applyReason}}</text>
-        </view>
-        <view class="app-actions">
-          <button class="btn-approve" data-index="{{index}}" bindtap="approveApplication">通过</button>
-          <button class="btn-reject" data-index="{{index}}" bindtap="rejectApplication">拒绝</button>
-        </view>
+        <view class="management-loading" wx:if="{{appsLoading}}">加载中...</view>
       </view>
-      <view class="load-more" wx:if="{{appsLoading}}">加载中...</view>
-      <view style="height: 50rpx; opacity: 0;"></view>
     </scroll-view>
   </view>
-</block>
-
-<!-- 未授权提示 -->
+  <popup show="{{showUserEditor}}" position="bottom" bind:close="closeUserEditor">
+    <view class="user-editor">
+      <popup-header title="人员设置" close-position="left" confirm="{{true}}" disabled="{{!userDraftDirty}}" busy="{{savingUser}}" bind:close="closeUserEditor" bind:confirm="updateUserSettings" />
+      <view class="user-editor-body">
+        <view class="form-context editor-user">
+          <image class="context-avatar" src="{{editingUser.avatar}}" mode="aspectFill" />
+          <view class="context-copy user-name">{{editingUser.name}}</view>
+        </view>
+        <view class="form-section">
+          <view class="section-title">管理员等级</view>
+          <radio-group bindchange="onManagerChange">
+            <label class="manager-option {{userDraft.level === index ? 'selected' : ''}}" wx:for="{{manager_types}}" wx:key="*this">
+              <view class="context-copy"><view class="status-title">{{item}}</view><view class="field-hint">{{manager_descriptions[index]}}</view></view>
+              <radio value="{{index}}" checked="{{userDraft.level === index}}" color="var(--color-primary)" disabled="{{savingUser}}" />
+            </label>
+          </radio-group>
+        </view>
+        <view class="form-section">
+          <view class="section-title">角色</view>
+          <view class="chip-row role-choices">
+            <button class="chip role-choice {{userDraft.role === index ? 'active' : ''}}" wx:for="{{role_types}}" wx:key="*this" data-role="{{index}}" bindtap="onRoleChange" disabled="{{savingUser}}">{{item}}</button>
+          </view>
+        </view>
+      </view>
+    </view>
+  </popup>
+</view>
 <no-auth wx:else tip-text="{{tipText}}"></no-auth>

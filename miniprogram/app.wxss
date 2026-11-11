@@ -1,12 +1,23 @@
 /**app.wxss**/
 page {
-  /* 定义一些颜色变量 */
+  /* 按钮：主题底配 text-onPrimary，浅主题底配 primary-text。
+   * 次按钮：灰底深字；禁用：灰底灰字；删除：灰底红字或红底白字。
+   */
+  /* 浅底按钮的深色文字。 */
   --color-primary-text: #92400E;
+  /* 主题按钮按下时的底色，不用作浅底文字。 */
   --color-primary-dark: #dfb600;
+  /* 主按钮底色。 */
   --color-primary: #ffd101;
+  /* 浅主题底色，配 primary-text。 */
   --color-primary-light: #fffced;
+  --color-primary-bg: #fffef7;
 
   --color-white-dark: #fafafa;
+  /* 普通卡片底色。 */
+  --color-surface: #fff;
+  /* 深色底上的文字。 */
+  --color-text-inverse: #fff;
 
   --color-gray-light: #f7f7f7;
   --color-gray-normal:#eeeeee;
@@ -20,15 +31,104 @@ page {
   --color-black-transparent: rgba(0,0,0,0.6);
   --color-ltblack-transparent: rgba(0,0,0,0.05);
 
-  --color-red: #dc3545;
-  --color-red-dark: #8b0000;
+  /* 删除色；dark 是按下色，不是深色模式。 */
+  --color-red: #ff383c;
+  --color-red-dark: #e9152d;
 
-  --color-green: #22ad6d;
-  --color-green-dark: #015e32;
+  /* 成功色；浅底文字用 green-dark。 */
+  --color-green: #34c759;
+  --color-green-dark: #008932;
+
+  --color-warm-text: #5D4037;
+  --color-warm-sub: #8D6E63;
+  --color-warm-line: #E6D0B3;
 
   --color-badge-A: #ffa601;
   --color-badge-B: #004ad3;
   --color-badge-C: #258100;
+
+  --color-achievement-bronze: #c88a4b;
+  --color-achievement-silver: #9aa5b1;
+  --color-achievement-gold: #e6a823;
+  --color-achievement-locked: #d9dde3;
+
+  /* 成就奖牌渐变（铜/银/金/未解锁） */
+  --grad-achievement-bronze: linear-gradient(135deg, #e3ad74 0%, #b06f32 100%);
+  --grad-achievement-silver: linear-gradient(135deg, #cdd6e0 0%, #8795a4 100%);
+  --grad-achievement-gold: linear-gradient(135deg, #f8d87c 0%, #de9f12 100%);
+  --grad-achievement-locked: linear-gradient(135deg, #eef0f3 0%, #d9dde3 100%);
+
+  /* 通用间距 / 圆角 / 阴影规范 */
+  --space-xxs: 4rpx;
+  --space-xs: 8rpx;
+  --space-sm: 16rpx;
+  --space-md: 24rpx;
+  --space-lg: 32rpx;
+  --space-xl: 40rpx;
+  --space-2xl: 48rpx;
+  --space-section: 64rpx;
+  --radius-xs: 4rpx;
+  --radius-sm: 8rpx;
+  --radius-md: 12rpx;
+  --radius-lg: 16rpx;
+  --radius-xl: 24rpx;
+  --radius-modal: 40rpx;
+  --radius-pill: 999rpx;
+  /* 标签文字、可点击选项文字。 */
+  --font-size-tag: 24rpx;
+  --font-size-chip: 26rpx;
+  /* 内容页：分区标题、正文、辅助说明。 */
+  --font-size-section: 30rpx;
+  --font-size-body: 28rpx;
+  --font-size-caption: 24rpx;
+  /* 页面主标题、主要统计数字。 */
+  --font-size-page: 36rpx;
+  --font-size-stat: 40rpx;
+  /* 状态标签：浅底配深字。 */
+  --color-status-pending-bg: #fff7e6;
+  --color-status-pending-text: #92400e;
+  --color-status-reviewing-bg: #e6f7ff;
+  --color-status-reviewing-text: #005a9e;
+  --color-status-success-bg: #eef9f0;
+  --color-status-error-bg: #fff1f0;
+  --shadow-hairline: 0 2rpx 8rpx rgba(0, 0, 0, 0.04);
+  --shadow-card: 0 4rpx 16rpx rgba(0, 0, 0, 0.08);
+  --shadow-card-strong: 0 8rpx 24rpx rgba(0, 0, 0, 0.12);
+  --shadow-float: 0 12rpx 24rpx rgba(0, 0, 0, 0.15);
+  --shadow-modal: 0 20rpx 60rpx rgba(0, 0, 0, 0.25);
+
+  /* 细分割线（弹窗分隔、缩放条）。 */
+  --color-divider: #d5d5d6;
+
+  /* 关系类型标签色板：浅底配深字。 */
+  --color-tag-blue: #3b82f6;
+  --color-tag-blue-bg: #eff6ff;
+  --color-tag-pink: #ec4899;
+  --color-tag-pink-bg: #fdf2f8;
+  --color-tag-gray: #9ca3af;
+  --color-tag-gray-bg: #f3f4f6;
+  --color-tag-purple: #a855f7;
+  --color-tag-purple-bg: #f3e8ff;
+
+  /* 族谱关系图：节点与连线。 */
+  --color-graph-node-blue: #a2d2ff;
+  --color-graph-node-pink: #ffc8dd;
+  --color-graph-node-main: #ffb347;
+  --color-graph-node-border: #fff0d6;
+  --color-graph-line: #ccc;
+
+  /* 编辑操作按钮底色（对应删除用的 red）。 */
+  --color-edit: #787aff;
+
+  /* 地图截图/缩放控件的选区高亮。 */
+  --color-filter-accent: #e74c3c;
+
+  /* 排行榜暖色底。 */
+  --color-warm-bg: #fbf7f0;
+
+  /* 成就解锁光晕（内/外圈）。 */
+  --color-achievement-glow-inner: #fff0b9;
+  --color-achievement-glow-outer: #fff8e5;
 
   --color-comment-paper-white: #ffffff;
   --color-comment-paper-yellow: #fff7ee;
@@ -39,6 +139,7 @@ page {
   --color-vaccine: #FFC043; 
   --color-vaccine-light: rgba(255, 192, 67, 0.15);
 
+  /* 主题色底上的文字和图标。 */
   --color-text-onPrimary: #333;
 
   --img-default: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBzdGFuZGFsb25lPSJubyI/PjwhRE9DVFlQRSBzdmcgUFVCTElDICItLy9XM0MvL0RURCBTVkcgMS4xLy9FTiIgImh0dHA6Ly93d3cudzMub3JnL0dyYXBoaWNzL1NWRy8xLjEvRFREL3N2ZzExLmR0ZCI+PHN2ZyB0PSIxNTUzOTI5NDU5ODM3IiBjbGFzcz0iaWNvbiIgc3R5bGU9IiIgdmlld0JveD0iMCAwIDEyMTYgMTAyNCIgdmVyc2lvbj0iMS4xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHAtaWQ9IjIxMzYiIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB3aWR0aD0iMjM3LjUiIGhlaWdodD0iMjAwIj48ZGVmcz48c3R5bGUgdHlwZT0idGV4dC9jc3MiPjwvc3R5bGU+PC9kZWZzPjxwYXRoIGQ9Ik0xMTIwIDEwMjRIOTZjLTU0LjQgMC05Ni00MS42LTk2LTk2Vjk2YzAtNTQuNCA0MS42LTk2IDk2LTk2aDEwMjRjNTQuNCAwIDk2IDQxLjYgOTYgOTZ2ODMyYzAgNTQuNC00MS42IDk2LTk2IDk2ek05NiA2NGMtMTkuMiAwLTMyIDEyLjgtMzIgMzJ2ODMyYzAgMTkuMiAxMi44IDMyIDMyIDMyaDEwMjRjMTkuMiAwIDMyLTEyLjggMzItMzJWOTZjMC0xOS4yLTEyLjgtMzItMzItMzJIOTZ6IiBwLWlkPSIyMTM3IiBmaWxsPSIjY2RjZGNkIj48L3BhdGg+PHBhdGggZD0iTTY0IDc2OGMtOS42IDAtMTYtMy4yLTIyLjQtOS42LTEyLjgtMTIuOC0xMi44LTMyIDAtNDQuOGwzNTItMzUyYzEyLjgtMTIuOCAyOC44LTEyLjggNDEuNi0zLjJMODAwIDY2Mi40bDE3Mi44LTExNS4yYzEyLjgtNi40IDI1LjYtNi40IDM4LjQgMy4ybDE2MCAxMjhjMTIuOCA5LjYgMTYgMzIgNi40IDQ0LjgtOS42IDEyLjgtMzIgMTYtNDQuOCA2LjRMOTkyIDYxNy42bC0xNzIuOCAxMTUuMmMtMTIuOCA2LjQtMjguOCA2LjQtMzguNC0zLjJsLTM2MS42LTMwMC44TDg2LjQgNzU4LjRjLTYuNCA2LjQtMTIuOCA5LjYtMjIuNCA5LjZ6IiBwLWlkPSIyMTM4IiBmaWxsPSIjY2RjZGNkIj48L3BhdGg+PHBhdGggZD0iTTg5NiA1MTJjLTg5LjYgMC0xNjAtNzAuNC0xNjAtMTYwczcwLjQtMTYwIDE2MC0xNjAgMTYwIDcwLjQgMTYwIDE2MC03MC40IDE2MC0xNjAgMTYweiBtMC0yNTZjLTU0LjQgMC05NiA0MS42LTk2IDk2czQxLjYgOTYgOTYgOTYgOTYtNDEuNiA5Ni05Ni00MS42LTk2LTk2LTk2eiIgcC1pZD0iMjEzOSIgZmlsbD0iI2NkY2RjZCI+PC9wYXRoPjwvc3ZnPg==);

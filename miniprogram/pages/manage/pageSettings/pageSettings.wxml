@@ -1,42 +1,36 @@
-<!--pages/manage/system/system.wxml-->
-<!-- 记录一下设置项：
-1. 保持settings表不变进行设置保存
-2. 只需要设置_id = pages的文档
-3. 分多项展开来设置，不要叠加超过2层
--->
-
 <wxs module="wxfn">
 var indexOf = function(values, target) {
-  var array = values.split(",");
+  var array = (values || "").split(",");
   return array.indexOf(target);
 }
 module.exports.indexOf = indexOf;
 </wxs>
 
 <block wx:if="{{auth}}">
-  <view wx:for="{{settings}}" wx:key="unique" wx:for-index="i">
-    <view class="setting-title">{{i}}</view>
-    <view class="setting-title-tip">{{desc[i].tip}}</view>
-    <view wx:for="{{settings[i]}}"  wx:key="unique" wx:for-index="j" class="form-input-block">
-      <view class="form-input-name">{{j}}</view>
-      <view class="form-input-tip">{{desc[i][j].tip}}</view>
-      <checkbox-group wx:if="{{desc[i][j].type=='multi-select'}}" bindchange="checkBoxChange" data-i="{{i}}" data-j="{{j}}">
-        <view wx:for="{{desc[i][j].choices}}" wx:key="val">
-          <checkbox value="{{item.val}}" disabled="{{desc[i][j].disabled}}" checked="{{wxfn.indexOf(settings[i][j], item.val) != -1}}">
-          <text wx:if="{{desc[i][j].order}}">[{{wxfn.indexOf(settings[i][j], item.val)+1}}]</text>
-          {{item.name}} ({{item.val}})
-          </checkbox>
+  <view class="form-page">
+    <view class="form-section" wx:for="{{settingGroups}}" wx:key="key" wx:for-item="group">
+      <view class="section-title">{{group.key}}</view>
+      <view class="field-hint setting-description">{{desc[group.key].tip}}</view>
+      <view class="setting-field" wx:for="{{group.fields}}" wx:key="*this" wx:for-item="j">
+        <view class="field-label">{{j}}</view>
+        <checkbox-group wx:if="{{desc[group.key][j].type === 'multi-select'}}" bindchange="checkBoxChange" data-i="{{group.key}}" data-j="{{j}}">
+          <label class="setting-choice" wx:for="{{desc[group.key][j].choices}}" wx:key="val">
+            <checkbox value="{{item.val}}" disabled="{{desc[group.key][j].disabled}}" checked="{{wxfn.indexOf(settings[group.key][j], item.val) !== -1}}" color="#e74e49" />
+            <text><text wx:if="{{desc[group.key][j].order}}">[{{wxfn.indexOf(settings[group.key][j], item.val) + 1}}] </text>{{item.name}} ({{item.val}})</text>
+          </label>
+          <view class="field-hint">储存值: "{{settings[group.key][j]}}"</view>
+        </checkbox-group>
+        <view class="status-row" wx:elif="{{desc[group.key][j].type === 'bool'}}">
+          <view class="status-copy field-hint">{{desc[group.key][j].tip}}</view>
+          <switch checked="{{settings[group.key][j]}}" disabled="{{desc[group.key][j].disabled}}" bindchange="switchChange" data-i="{{group.key}}" data-j="{{j}}" color="var(--color-green)" />
         </view>
-        <view class="form-input-tip">储存值: "{{settings[i][j]}}"</view>
-      </checkbox-group>
-      <switch wx:elif="{{desc[i][j].type=='bool'}}" checked="{{settings[i][j]}}" disabled="{{desc[i][j].disabled}}" bindchange="switchChange" data-i="{{i}}" data-j="{{j}}"/>
-      <input wx:else class="form-input" type="{{desc[i][j].type}}" disabled="{{desc[i][j].disabled}}" value="{{settings[i][j]}}" bindinput="inputChange" data-i="{{i}}" data-j="{{j}}"/>
+        <input wx:else class="field-input" type="{{desc[group.key][j].type === 'number' ? 'digit' : 'text'}}" disabled="{{desc[group.key][j].disabled}}" value="{{settings[group.key][j]}}" bindinput="inputChange" data-i="{{group.key}}" data-j="{{j}}" />
+        <view class="field-hint" wx:if="{{desc[group.key][j].type !== 'bool'}}">{{desc[group.key][j].tip}}</view>
+      </view>
+    </view>
+    <view class="save-bar">
+      <button class="form-button primary save-button" bindtap="uploadSetting">提交</button>
     </view>
   </view>
-  <view class="confirm">
-    <button class="primary long" bindtap="uploadSetting">提交</button>
-  </view>
 </block>
-
-<!-- 未授权提示 -->
 <no-auth wx:else tip-text="{{tipText}}"></no-auth>

@@ -93,11 +93,6 @@ module.exports = async (ctx) => {
         const oldData = oldCatRes.result[0];
 
         // 记录状态变更时间
-        // 绝育状态变更
-        if (cat.sterilized !== undefined && oldData.sterilized !== cat.sterilized) {
-          cat.sterilized_time = cat.sterilized === true ? currentTime : null;
-        }
-
         // 领养状态变更
         if (cat.adopt !== undefined && oldData.adopt !== cat.adopt) {
           cat.adopt_time = cat.adopt === 1 ? currentTime : null;
@@ -151,9 +146,8 @@ module.exports = async (ctx) => {
     cat.update_time = currentTime;
 
     // 如果新猫就已经设置了某些状态，也记录对应时间
-    if (cat.sterilized === true) {
-      cat.sterilized_time = currentTime;
-    }
+    cat.sterilized = false;
+    cat.sterilized_time = null;
     if (cat.adopt === 1) {
       cat.adopt_time = currentTime;
     }
@@ -170,12 +164,12 @@ module.exports = async (ctx) => {
   function deepcopy(origin) {
     // not for modifying.
     const copyKeys = ['area', 'campus', 'characteristics',
-      'colour', 'father', 'gender', 'mother', 'name', 'nickname', 'popularity', 'sterilized', 'adopt',
+      'colour', 'father', 'gender', 'mother', 'name', 'nickname', 'popularity', 'adopt',
       'missing', 'birthday', 'habit', 'tutorial', 'relation', 'to_star', 'deleted',
       // 地理位置字段
       'mapMarker',
       // 添加时间相关字段
-      'create_time', 'update_time', 'sterilized_time', 'adopt_time', 'missing_time', 'deceased_time'
+      'create_time', 'update_time', 'adopt_time', 'missing_time', 'deceased_time'
     ]
     var res = {};
     for (const key of copyKeys) {

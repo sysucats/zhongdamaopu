@@ -1,7 +1,9 @@
 /* miniprogram/pages/info/info.wxss */
+@import "/pages/public/wxss/card.wxss";
+
 page {
-  width: 750rpx;
-  padding: 30rpx 30rpx;
+  padding: var(--space-md) var(--space-lg)
+    calc(var(--space-lg) + env(safe-area-inset-bottom));
   box-sizing: border-box;
   background-color: var(--color-gray-light);
 }
@@ -20,7 +22,7 @@ page {
   flex-wrap: wrap;
   justify-content: space-between;
   row-gap: 30rpx;
-  margin: 10rpx 6rpx 10rpx 6rpx;
+  margin: 10rpx 0;
 }
 
 .card {
@@ -124,41 +126,43 @@ page {
 .block-name {
   font-size:30rpx;
   font-weight: 400;
-  margin-top: 35rpx;
+  margin-top: var(--space-lg);
+  margin-bottom: var(--space-sm);
   width: 100%;
   text-align: center;
 }
 
 .block{
-  background-color: white;
-  margin: 10rpx 6rpx 10rpx 6rpx;
-  padding: 15rpx 15rpx;
-  box-shadow: 0rpx 10rpx 25rpx var(--color-ltblack-transparent);
-  border-radius: 15rpx;
   display: flex;
   flex-wrap: wrap;
 }
 
 
+.friend-links {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--space-lg) var(--space-sm);
+}
+
 .friend-link {
-  margin: 28rpx 10rpx 20rpx 5rpx;
-  width: 148rpx;
+  min-width: 0;
   display: flex;
   flex-direction: column;
-  justify-content: center;
   align-items: center;
+  gap: var(--space-sm);
 }
 
 .friend-link image {
   width: 100rpx;
   height: 100rpx;
   border-radius: 50rpx;
-  margin-bottom: 15rpx;
+  flex-shrink: 0;
 }
 
 .friend-link-text {
   width: 100%;
-  font-size: 25rpx;
+  font-size: var(--font-size-caption);
+  line-height: 1.5;
   text-align: center;
   white-space: nowrap;
   text-overflow: ellipsis;
@@ -201,7 +205,7 @@ page {
   height: 26rpx;
   line-height: 26rpx;
   border-radius: 26rpx;
-  background-color: red;
+  background-color: var(--color-red);
   color: white;
   font-size: 22rpx;
   font-weight: bold;
@@ -217,7 +221,7 @@ page {
   right: 70rpx;
   width: 11rpx;
   height: 11rpx;
-  background-color: red;
+  background-color: var(--color-red);
   border-radius: 50%;
 }
 

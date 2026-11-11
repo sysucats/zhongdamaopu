@@ -1,6 +1,5 @@
+import { serializeCommentPaper } from "../../utils/commentPaper";
 import {
-  randomInt,
-  formatDate,
   deepcopy,
   getDateWithDiffHours
 } from "../../utils/utils";
@@ -19,7 +18,7 @@ import {
 import api from "../../utils/cloudApi";
 import { signCosUrl } from "../../utils/common.js";
 import { likeCheck, likeAdd } from "../../utils/inter";
-import { trackFollow } from "../../utils/achievement";
+import { refreshAchievements } from "../../utils/achievement";
 
 const app = getApp();
 
@@ -355,13 +354,7 @@ Page({
 
       // 格式化时间
       p.datetime = this.formatDateTime(new Date(p.create_date));
-
-      if (coll == 'comment') {
-        // 便签旋转和贴纸位置
-        p.rotate = randomInt(-5, 5);
-        p.tape_pos_left = randomInt(20, 520);
-        p.tape_rotate = randomInt(-50, +50);
-      }
+      if (coll === 'comment') p.create_date = serializeCommentPaper(p).create_date;
 
       if (coll == 'photo') {
         // 使用压缩版图片
@@ -863,8 +856,7 @@ Page({
 
     // 成就：关注猫猫（unfollowed=true 表示本次是重新关注）
     if (res && unfollowed) {
-      const followCount = updatedCatsList.filter(c => !c.unfollowed).length;
-      trackFollow(followCount);
+      refreshAchievements();
     }
 
     // 如果当前是该猫动态，取关后关闭
@@ -997,10 +989,7 @@ Page({
         }
         newComments.forEach(p => {
           p.cat = this.data.followCatsList.find(cat => cat._id === p.cat_id);
-          p.datetime = this.formatDateTime(new Date(p.create_date));
-          p.rotate = randomInt(-5, 5);
-          p.tape_pos_left = randomInt(20, 520);
-          p.tape_rotate = randomInt(-50, +50);
+          p.create_date = serializeCommentPaper(p).create_date;
           p.dtype = 'comment';
         });
       }

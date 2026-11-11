@@ -1,0 +1,107 @@
+@import "/pages/public/wxss/tag.wxss";
+@import "/pages/public/wxss/formControls.wxss";
+
+.record-list {
+  padding: 0 30rpx;
+}
+.record-item {
+  position: relative;
+  margin-bottom: 24rpx;
+  border-radius: 16rpx;
+  overflow: hidden;
+  background: var(--color-surface);
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.08);
+}
+.record-content {
+  position: relative;
+  z-index: 2;
+  padding: 22rpx 30rpx;
+  background: var(--color-surface);
+  transition: transform 0.2s ease;
+}
+.swipe-actions {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  z-index: 1;
+}
+.action-edit,
+.action-delete {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 150rpx;
+  color: var(--color-text-inverse);
+  font-size: 28rpx;
+}
+.action-edit {
+  background: var(--color-edit);
+}
+.action-delete {
+  background: var(--color-red);
+}
+.action-delete:active {
+  background: var(--color-red-dark);
+}
+.record-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16rpx;
+}
+
+.record-date {
+  font-size: 24rpx;
+  color: var(--color-gray-max);
+  white-space: nowrap;
+}
+.record-title {
+  margin-top: 8rpx;
+  font-size: 30rpx;
+  font-weight: 500;
+  color: var(--color-black-light);
+  word-break: break-all;
+}
+.record-body {
+  margin-top: 12rpx;
+  font-size: 26rpx;
+  line-height: 1.6;
+  color: var(--color-gray-max);
+}
+.record-body view {
+  margin-top: 6rpx;
+}
+.empty {
+  padding: 100rpx 30rpx;
+  text-align: center;
+  color: var(--color-gray-max);
+}
+.editor {
+  box-sizing: border-box;
+  width: 100%;
+  max-height: 78vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border-radius: 28rpx 28rpx 12rpx 12rpx;
+  background: var(--color-gray-light);
+}
+.editor-body {
+  flex: 0 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+}
+.editor-fields {
+  box-sizing: border-box;
+  margin: var(--space-md);
+}
+
+.medical-field {
+  margin-bottom: var(--space-md);
+}
+
+.medical-field:last-child {
+  margin-bottom: 0;
+}

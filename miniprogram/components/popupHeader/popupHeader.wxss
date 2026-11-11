@@ -1,0 +1,87 @@
+@import "/pages/public/wxss/iconfont.wxss";
+
+:host {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  flex-shrink: 0;
+}
+
+.popup-heading {
+  position: relative;
+  display: flex;
+  align-items: center;
+  box-sizing: border-box;
+  min-height: 128rpx;
+  padding: var(--space-md) 96rpx;
+  flex-shrink: 0;
+}
+
+.heading-title {
+  flex: 1;
+  min-width: 0;
+  color: var(--color-black-light);
+  font-size: 30rpx;
+  font-weight: 600;
+  line-height: 1.4;
+  text-align: center;
+  overflow-wrap: break-word;
+}
+
+.align-left {
+  padding-left: var(--space-md);
+}
+
+.align-left .heading-title {
+  text-align: left;
+}
+
+.heading-plain {
+  padding: var(--space-md);
+}
+
+.popup-heading .heading-button {
+  position: absolute;
+  top: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 88rpx;
+  height: 88rpx;
+  min-width: 44px;
+  min-height: 44px;
+  margin: 0;
+  padding: 0;
+  border-radius: var(--radius-md);
+  background: transparent !important;
+  color: var(--color-black-min);
+  line-height: 1;
+  transform: translateY(-50%);
+}
+
+.heading-button::after {
+  border: none;
+}
+
+.popup-heading .heading-button.heading-disabled {
+  color: var(--color-gray-dark);
+}
+
+.heading-hover {
+  opacity: 0.55;
+}
+
+.heading-button .iconfont {
+  font-size: 38rpx;
+  color: inherit;
+}
+
+.popup-heading .heading-left {
+  left: 0;
+  justify-content: flex-start;
+}
+
+.popup-heading .heading-right {
+  right: 0;
+  justify-content: flex-end;
+}

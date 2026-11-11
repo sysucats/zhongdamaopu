@@ -1,40 +1,50 @@
 <block wx:if="{{auth}}">
-  <view id='tips'><text>目前共有 {{total}} 条反馈{{checkHistory? '已': '待'}}处理，\n点击所属猫猫名字可以跳转到该猫猫详情。\n</text></view>
-  <block wx:for="{{feedbacks}}" wx:key="_id">
-    <view class='verify-box'>
-      <view wx:if="{{item.cat}}" class='line'>
-        <image mode='aspectFit' class='icon' src='/pages/public/images/card/card/cat.png'></image>
-        <text user-select='false' bindtap='toCatDetail' bindlongpress='toCatManage' data-cat_id="{{item.cat_id}}">{{item.cat.name}}（{{item.cat.campus}}）</text>
+  <view class="admin-segments">
+    <view class="admin-segment {{!checkHistory ? 'active' : ''}}" data-history="{{false}}" bindtap="switchHistory">待处理<text class="segment-count" wx:if="{{pendingCount}}">{{pendingCount}}</text></view>
+    <view class="admin-segment {{checkHistory ? 'active' : ''}}" data-history="{{true}}" bindtap="switchHistory">已处理</view>
+  </view>
+  <view class="admin-page-hint">点击猫猫名称查看详情，长按进入猫猫管理。</view>
+  <view class="admin-page-hint" wx:if="{{loading}}">加载中…</view>
+  <view class="admin-page-hint" wx:if="{{loadError}}">{{loadError}}</view>
+
+  <view class="form-section feedback-card" wx:for="{{feedbacks}}" wx:key="_id">
+    <view class="review-heading">
+      <view class="review-subject" wx:if="{{item.cat}}" bindtap="toCatDetail" bindlongpress="toCatManage" data-cat_id="{{item.cat_id}}">
+        <image class="review-avatar" mode="aspectFill" src="{{item.cat_avatar}}" />
+        <view class="review-subject-copy"><view class="review-name">{{item.cat.name}}</view><view class="review-location">{{item.cat.campus}} {{item.cat.area}}</view></view>
+        <text class="iconfont icon-chevron-right review-chevron"></text>
       </view>
-      <view wx:else class='line'>
-        <text user-select='true'>信息反馈</text>
-      </view>
-      <view class='bubble1'>
-        <view class='date'><text user-select='true'>{{item.openDateStr}}</text></view>
-        <view class='name'><text user-select='true'>{{item.userInfo.nickName}}</text></view>
-        <view class='floating'>
-          <view class='content'><text user-select='true'>{{item.feedbackInfo}}</text></view>
-          <view class='footer' wx:if="{{item.contactInfo}}"><text user-select='true'>联系方式：{{item.contactInfo}}</text></view>
-        </view>
-      </view>
-      <view wx:if="{{!item.repliable}}" class='noReplyLabel'>对方没有订阅回复通知，无法回复</view>
-      <view wx:elif="{{item.replied}}" class='bubble2'>
-        <view class='date'><text user-select='true'>{{item.replyDateStr}}</text></view>
-        <view class='name'><text user-select='true'>管理员的回复</text></view>
-        <view class='floating'>
-          <view class='content'><text user-select='true'>{{item.replyInfo}}</text></view>
-        </view>
-      </view>
-      <button class="{{checkHistory? 'long': ''}}" bindtap='bindCopy' data-feedback='{{item}}'>复制</button>
-      <button class='primary' wx:if="{{!checkHistory}}" disabled='{{item.replied || !item.repliable}}' bindtap='toReply' data-fbid='{{item._id}}'>{{item.replied? '已回复': '回复'}}</button>
-      <button class='long primary' wx:if="{{!checkHistory}}" bindtap='bindCheck' data-feedback='{{item}}'>标记为已处理</button>
+      <view class="review-subject" wx:else><view class="review-name">信息反馈</view></view>
+      <text class="status-tag review-state {{checkHistory ? 'status-approved' : item.replied ? 'status-reviewing' : 'status-pending'}}">{{checkHistory ? '已处理' : item.replied ? '已回复' : '待处理'}}</text>
     </view>
-  </block>
-  <view class='bottom-bar'>
-    <button class='primary' bindtap="refreshStatus">刷新+订阅</button>
-    <button bindtap="switchHistory">{{checkHistory? '查看待处理': '查看已处理'}}</button>
+    <view class="feedback-meta">
+      <text>{{item.userInfo.nickName || '猫友'}}</text>
+      <text>{{item.openDateStr}}</text>
+    </view>
+    <view class="review-bubble user-bubble"><text class="feedback-content" selectable="{{true}}">{{item.feedbackInfo}}</text></view>
+    <view class="feedback-contact" wx:if="{{item.contactInfo}}">
+      <text class="contact-label">联系方式</text>
+      <text selectable="{{true}}">{{item.contactInfo}}</text>
+    </view>
+
+    <view class="feedback-reply" wx:if="{{item.replied}}">
+      <view class="reply-heading"><text>管理员回复</text><text class="reply-date">{{item.replyDateStr}}</text></view>
+      <view class="review-bubble admin-bubble"><text class="reply-content" selectable="{{true}}">{{item.replyInfo}}</text></view>
+    </view>
+    <view class="feedback-notice" wx:elif="{{!item.repliable && !checkHistory}}">对方未订阅回复通知，无法在小程序内回复。</view>
+
+    <view class="card-actions">
+      <button class="form-button compact with-icon feedback-copy" bindtap="bindCopy" data-feedback="{{item}}" aria-label="复制反馈信息"><text class="iconfont icon-copy"></text><text>复制</text></button>
+      <block wx:if="{{!checkHistory}}">
+        <button class="form-button compact with-icon" bindtap="bindCheck" data-feedback="{{item}}" aria-label="标为已处理"><text class="iconfont icon-check"></text><text>标为已处理</text></button>
+        <button class="form-button compact with-icon primary" wx:if="{{!item.replied && item.repliable}}" bindtap="toReply" data-fbid="{{item._id}}" aria-label="回复反馈"><text class="iconfont icon-newchat"></text><text>回复</text></button>
+      </block>
+    </view>
+  </view>
+
+  <view class="feedback-empty" wx:if="{{!loading && !loadError && !feedbacks.length}}">{{checkHistory ? '暂无已处理的反馈' : '暂无待处理的反馈'}}</view>
+  <view class="fixed-action-bar">
+    <button class="form-button primary" bindtap="refreshStatus">刷新+订阅</button>
   </view>
 </block>
-
-<!-- 未授权提示 -->
 <no-auth wx:else tip-text="{{tipText}}"></no-auth>

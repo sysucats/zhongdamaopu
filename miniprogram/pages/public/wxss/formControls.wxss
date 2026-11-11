@@ -1,0 +1,297 @@
+@import "/pages/public/wxss/tag.wxss";
+@import "./button.wxss";
+@import "./card.wxss";
+
+.retry-button {
+  margin-top: var(--space-md);
+  font-size: 27rpx;
+}
+.section-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-md);
+}
+.section-heading .section-title {
+  margin-bottom: 0;
+}
+/* 字段标签使用辅助字号，与分组标题区分。 */
+.field-label {
+  margin-bottom: 12rpx;
+  color: var(--color-black-min);
+  font-size: var(--font-size-caption);
+  font-weight: 400;
+}
+.field-required::after {
+  content: "*";
+  margin-left: 8rpx;
+  color: var(--color-red);
+  font-weight: 500;
+}
+.spaced-label {
+  margin-top: var(--space-md);
+}
+.field-input,
+.field-picker,
+.count-field,
+.description-input {
+  box-sizing: border-box;
+  width: 100%;
+  background: var(--color-gray-light);
+  border-radius: var(--radius-md);
+  color: var(--color-black-light);
+  font-size: 28rpx;
+}
+.field-input {
+  height: 88rpx;
+  padding: 0 var(--space-md);
+}
+.field-picker {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-sm);
+  min-height: 88rpx;
+  padding: 20rpx var(--space-md);
+}
+.picker-arrow {
+  width: 12rpx;
+  height: 12rpx;
+  flex-shrink: 0;
+  border-right: 2rpx solid var(--color-gray-max);
+  border-bottom: 2rpx solid var(--color-gray-max);
+  transform: rotate(-45deg);
+  margin-right: 4rpx;
+}
+.count-field {
+  display: flex;
+  align-items: center;
+  min-height: 88rpx;
+  padding: 0 var(--space-md);
+  gap: var(--space-sm);
+}
+.count-input {
+  flex: 1;
+  min-width: 0;
+  height: 88rpx;
+  font-size: 30rpx;
+}
+.count-unit {
+  flex-shrink: 0;
+  color: var(--color-gray-max);
+  font-size: 26rpx;
+}
+.quantity-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  margin-top: var(--space-md);
+}
+.quantity-label {
+  flex: 1;
+  color: var(--color-black-min);
+  font-size: 25rpx;
+}
+.quantity-row .count-field {
+  flex: 0 0 240rpx;
+  width: 240rpx;
+}
+.field-hint {
+  margin-top: 12rpx;
+  color: var(--color-gray-max);
+  font-size: 23rpx;
+  line-height: 1.6;
+}
+.field-counter {
+  margin-top: 8rpx;
+  color: var(--color-gray-max);
+  font-size: 23rpx;
+  line-height: 1.5;
+  text-align: right;
+}
+.form-actions,
+.form-inline {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+.form-actions .form-button {
+  flex: 1;
+  min-width: 0;
+}
+.form-inline .field-input {
+  flex: 1;
+  min-width: 0;
+}
+.form-inline .form-button {
+  width: auto;
+  flex-shrink: 0;
+}
+.form-context {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+}
+.context-avatar {
+  width: 64rpx;
+  height: 64rpx;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: var(--color-gray-normal);
+}
+.context-copy {
+  flex: 1;
+  min-width: 0;
+  color: var(--color-black-min);
+  font-size: 26rpx;
+  line-height: 1.6;
+  overflow-wrap: break-word;
+}
+.context-copy .field-hint {
+  margin-top: 6rpx;
+}
+.readonly-tag {
+  padding: 6rpx 14rpx;
+  border-radius: var(--radius-pill);
+  background: var(--color-gray-light);
+  color: var(--color-gray-max);
+  font-size: var(--font-size-tag);
+}
+.image-upload {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 240rpx;
+  padding: var(--space-md);
+  border-radius: var(--radius-lg);
+  background: var(--color-gray-light);
+}
+
+.image-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12rpx;
+}
+
+.image-thumb {
+  display: block;
+  width: 100%;
+  height: 190rpx;
+  border-radius: var(--radius-md);
+  background: var(--color-gray-light);
+}
+
+.image-preview {
+  display: block;
+  width: 100%;
+  height: 300rpx;
+  margin-bottom: var(--space-md);
+  border-radius: var(--radius-md);
+  background: var(--color-gray-light);
+}
+
+.image-upload-tile {
+  min-height: 190rpx;
+  height: 190rpx;
+  padding: 16rpx;
+}
+
+.upload-icon {
+  color: var(--color-gray-max);
+  font-size: 52rpx;
+}
+.upload-link,
+.upload-label {
+  color: var(--color-gray-max);
+}
+.upload-label {
+  margin-top: 16rpx;
+  font-size: 26rpx;
+}
+.status-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+}
+.status-copy {
+  flex: 1;
+  min-width: 0;
+}
+.status-title {
+  color: var(--color-black-light);
+  font-size: 28rpx;
+  font-weight: 500;
+}
+.status-copy .field-hint {
+  margin-top: 6rpx;
+}
+.more-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 32rpx;
+  gap: var(--space-sm);
+  color: var(--color-black-min);
+  font-size: 26rpx;
+}
+.more-summary {
+  margin-left: var(--space-sm);
+  color: var(--color-gray-max);
+  font-size: 23rpx;
+}
+.more-action {
+  flex-shrink: 0;
+  color: var(--color-gray-max);
+  font-size: 23rpx;
+}
+.more-fields {
+  margin-top: var(--space-md);
+  padding-top: var(--space-md);
+  border-top: 1rpx solid var(--color-gray-normal);
+}
+.chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12rpx;
+  margin-top: 14rpx;
+}
+
+
+
+
+.description-input {
+  min-height: 144rpx;
+  height: 144rpx;
+  padding: 20rpx var(--space-md);
+  line-height: 1.5;
+}
+.description-input.long-input {
+  min-height: 320rpx;
+  height: 320rpx;
+}
+/* 表单底栏沿用公共固定底栏，仅调整留白。 */
+.save-bar {
+  gap: var(--space-md);
+  z-index: 10;
+  padding: 20rpx var(--space-lg) calc(20rpx + env(safe-area-inset-bottom));
+}
+.delete-button {
+  flex: 0 0 180rpx;
+  width: 180rpx;
+  background: var(--color-gray-light);
+  font-size: 26rpx;
+  line-height: 88rpx;
+  padding: 0 16rpx;
+  margin: 0;
+  border-radius: var(--radius-pill);
+}
+.delete-button::after {
+  border: none;
+}
+.form-error {
+  padding: 0 8rpx;
+  color: var(--color-red);
+  font-size: 24rpx;
+  line-height: 1.6;
+}

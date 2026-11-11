@@ -13,54 +13,48 @@ module.exports = {
 </wxs>
 
 <block wx:if="{{auth}}">
-
-  <!-- 校区管理 -->
-  <view class='mainF-block'>
-    <view class="campus-block">
-      <view class="title">校区选项</view>
-      <view class="container">
-        <view class='category-box' wx:for="{{filters[0].category}}" wx:for-item="ctg" wx:for-index='cateindex' wx:key='name'>
-          <view class='sub-option campus-row'>
-            <view class='campus-info'>
-              <view class='content'>{{ctg.name}}</view>
-              <view class='coord-text' wx:if="{{campusCenterStrs[ctg.name]}}">{{campusCenterStrs[ctg.name]}}</view>
-              <view class='coord-text unset' wx:else>未设置中心坐标</view>
-            </view>
-            <view class='campus-actions'>
-              <button class='short' bindtap='openMapPicker' data-campus='{{ctg.name}}'>坐标</button>
-              <button class='short' bindtap='deleteCampus' data-cateindex='{{cateindex}}'>删</button>
-            </view>
+  <view class="form-page">
+    <view class="form-section">
+      <view class="section-title">校区选项</view>
+      <view class="filter-row" wx:for="{{filters[0].category}}" wx:for-item="ctg" wx:for-index="cateindex" wx:key="name">
+        <view class="filter-copy">
+          <view class="filter-name">{{ctg.name}}</view>
+          <view class="field-hint coord-text" wx:if="{{campusCenterStrs[ctg.name]}}">{{campusCenterStrs[ctg.name]}}</view>
+          <view class="field-hint" wx:else>未设置中心坐标</view>
+        </view>
+        <view class="filter-actions">
+          <button class="form-button compact filter-move" bindtap="moveCampus" data-index="{{cateindex}}" data-direct="up" disabled="{{campusSaving || (cateindex === 0)}}" aria-label="上移{{ctg.name}}"><text class="iconfont icon-arrow-up"></text></button>
+          <button class="form-button compact filter-move" bindtap="moveCampus" data-index="{{cateindex}}" data-direct="down" disabled="{{campusSaving || (cateindex === filters[0].category.length - 1)}}" aria-label="下移{{ctg.name}}"><text class="iconfont icon-arrow-down"></text></button>
+          <button disabled="{{campusSaving}}" class="form-button compact" bindtap="openMapPicker" data-campus="{{ctg.name}}">坐标</button>
+          <button disabled="{{campusSaving}}" class="form-button compact danger" bindtap="deleteCampus" data-cateindex="{{cateindex}}">删除</button>
+        </view>
+      </view>
+      <form class="filter-add-form" wx:if="{{addingCampus}}" bindsubmit="addCampusConfirm">
+        <view class="field-label field-required">校区名称</view>
+        <view class="form-inline"><input class="field-input" name="name" placeholder="请输入校区名称" /><button disabled="{{campusSaving}}" class="form-button primary" form-type="submit">确定</button></view>
+      </form>
+      <button disabled="{{campusSaving}}" class="form-button filter-add" wx:else bindtap="addCampus" aria-label="新增校区"><text class="iconfont icon-circle-plus"></text></button>
+    </view>
+    <view class="form-section" wx:for="{{filters}}" wx:for-item="mainF" wx:for-index="filters_sub" wx:key="name">
+      <view class="section-title">{{mainF.name}}选项</view>
+      <view class="filter-category" wx:for="{{mainF.category}}" wx:for-item="ctg" wx:for-index="cateindex" wx:key="name">
+        <view class="filter-category-title">{{ctg.name}}</view>
+        <view class="filter-row" wx:for="{{ctg.items}}" wx:for-index="innerindex" wx:key="name">
+          <view class="filter-copy filter-name">{{item.name}}</view>
+          <view class="filter-actions">
+            <button class="form-button compact filter-move" bindtap="moveOption" data-innerindex="{{innerindex}}" data-cateindex="{{cateindex}}" data-filterssub="{{filters_sub}}" data-direct="up" disabled="{{campusSaving || (innerindex === 0)}}" aria-label="上移{{item.name}}"><text class="iconfont icon-arrow-up"></text></button>
+            <button class="form-button compact filter-move" bindtap="moveOption" data-innerindex="{{innerindex}}" data-cateindex="{{cateindex}}" data-filterssub="{{filters_sub}}" data-direct="down" disabled="{{campusSaving || (innerindex === ctg.items.length - 1)}}" aria-label="下移{{item.name}}"><text class="iconfont icon-arrow-down"></text></button>
+            <button disabled="{{campusSaving}}" class="form-button compact danger" bindtap="deleteOption" data-innerindex="{{innerindex}}" data-cateindex="{{cateindex}}" data-filterssub="{{filters_sub}}">删除</button>
           </view>
         </view>
-
-        <form wx:if="{{addingCampus}}" bindsubmit="addCampusConfirm">
-          <input class='content' name='name'></input>
-          <button class='submit' form-type='submit'>确定</button>
+        <form class="filter-add-form" wx:if="{{ctg.adding}}" data-filterssub="{{filters_sub}}" data-cateindex="{{cateindex}}" bindsubmit="addOptionConfirm">
+          <view class="field-label field-required">{{ctg.name}}选项名称</view>
+          <view class="form-inline"><input class="field-input" name="name" placeholder="请输入选项名称" /><button disabled="{{campusSaving}}" class="form-button primary" form-type="submit">确定</button></view>
         </form>
-        <button wx:if='{{!addingCampus}}' class='long' bindtap='addCampus'>加校区</button>
+        <button disabled="{{campusSaving}}" class="form-button filter-add" wx:else bindtap="addOptionInput" data-filterssub="{{filters_sub}}" data-cateindex="{{cateindex}}" aria-label="新增{{ctg.name}}选项"><text class="iconfont icon-circle-plus"></text></button>
       </view>
     </view>
-  </view>
-
-  <!-- 区域管理 -->
-  <view class='mainF-block' wx:for='{{filters}}' wx:for-item='mainF' wx:for-index="filters_sub" wx:key='name'>
-    <view class="title">{{mainF.name}}选项</view>
-    <view class='container'>
-      <view class='category-box' wx:for="{{mainF.category}}" wx:for-item="ctg" wx:for-index='cateindex' wx:key='name'>
-        <view class="category">{{ctg.name}}</view>
-        <view class='sub-option' wx:for="{{ctg.items}}" wx:for-index='innerindex' wx:key='name'>
-          <view class='content'>{{item.name}}</view>
-          <button class='short' bindtap='moveOption' data-innerindex='{{innerindex}}' data-cateindex='{{cateindex}}' data-filterssub='{{filters_sub}}' data-direct='up'>上</button>
-          <button class='short' bindtap='moveOption' data-innerindex='{{innerindex}}' data-cateindex='{{cateindex}}' data-filterssub='{{filters_sub}}' data-direct='down'>下</button>
-          <button class='short' bindtap='deleteOption' data-innerindex='{{innerindex}}' data-cateindex='{{cateindex}}' data-filterssub='{{filters_sub}}'>删</button>
-        </view>
-        <form wx:if="{{ctg.adding}}" data-filterssub='{{filters_sub}}' data-cateindex='{{cateindex}}' bindsubmit="addOptionConfirm">
-          <input class='content' name='name'></input>
-          <button class='submit' form-type='submit'>确定</button>
-        </form>
-        <button wx:if='{{!ctg.adding}}' class='long' bindtap='addOptionInput' data-filterssub='{{filters_sub}}' data-cateindex='{{cateindex}}'>加{{ctg.name}}选项</button>
-      </view>
-    </view>
+    <view class="save-bar" wx:if="{{!mapPickerVisible}}"><button disabled="{{campusSaving}}" class="form-button primary save-button" bindtap="uploadFilters">确定上传</button></view>
   </view>
   <!-- 地图选点浮层 -->
   <map
@@ -86,20 +80,19 @@ module.exports = {
       <cover-view class="zoom-btn" bindtap="zoomMapOut">−</cover-view>
     </cover-view>
     <cover-view class="picker-top-bar">
-      <cover-view class="picker-campus-label">{{mapPickerCampus}}</cover-view>
+      <cover-view class="picker-toolbar">
+        <cover-view class="picker-toolbar-button picker-toolbar-left" bindtap="cancelMapPicker" aria-label="取消选点">
+          <cover-view class="picker-close-line"></cover-view>
+          <cover-view class="picker-close-line alternate"></cover-view>
+        </cover-view>
+        <cover-view class="picker-toolbar-title">{{mapPickerCampus}}</cover-view>
+        <cover-view class="picker-toolbar-button picker-toolbar-right" bindtap="confirmMapPicker" aria-label="确定位置"><cover-view class="picker-confirm-mark"></cover-view></cover-view>
+      </cover-view>
       <cover-view class="picker-coords-display">{{fmt.fixed6(mapPickerLat)}}, {{fmt.fixed6(mapPickerLng)}} | {{mapPickerScale}}级</cover-view>
     </cover-view>
-    <cover-view class="picker-bottom-bar">
-      <cover-view class="picker-btn cancel" bindtap="cancelMapPicker">取消</cover-view>
-      <cover-view wx:if="{{mapPickerHasCenter}}" class="picker-btn delete" bindtap="deleteCampusCenter">删除坐标</cover-view>
-      <cover-view class="picker-btn confirm" bindtap="confirmMapPicker">确定</cover-view>
+    <cover-view class="picker-bottom-bar" wx:if="{{mapPickerHasCenter}}">
+      <cover-view class="picker-btn delete" bindtap="deleteCampusCenter">删除坐标</cover-view>
     </cover-view>
   </map>
-
-  <view class='bottom-bar'>
-    <button class='bottom' bindtap='uploadFilters'>确定上传</button>
-  </view>
 </block>
-
-<!-- 未授权提示 -->
 <no-auth wx:else tip-text="{{tipText}}"></no-auth>

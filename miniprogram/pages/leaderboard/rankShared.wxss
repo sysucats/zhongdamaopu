@@ -1,0 +1,225 @@
+@import "/pages/public/wxss/card.wxss";
+
+/* 榜单概览和排名列表的共同布局。 */
+.leaderboard-section {
+  padding: var(--space-md) var(--space-lg) var(--space-lg);
+}
+
+.leaderboard-row {
+  display: flex;
+  align-items: center;
+  padding: 18rpx 0;
+}
+
+.leaderboard-row + .leaderboard-row {
+  border-top: 1rpx solid var(--color-gray-light);
+}
+
+.leaderboard-order {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 64rpx;
+  flex-shrink: 0;
+  font-size: 30rpx;
+  font-weight: bold;
+  color: var(--color-gray-max);
+}
+
+.leaderboard-avatar-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 136rpx;
+  height: 72rpx;
+  margin: 0 8rpx 0 0;
+  flex-shrink: 0;
+}
+
+.leaderboard-avatar-inner {
+  position: relative;
+  width: 72rpx;
+  height: 72rpx;
+  flex-shrink: 0;
+}
+
+.leaderboard-avatar {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: var(--color-gray-normal);
+  box-sizing: border-box;
+}
+
+.leaderboard-avatar-inner .leaderboard-medal {
+  position: absolute;
+  top: -16rpx;
+  left: -10rpx;
+  width: 50rpx;
+  height: 50rpx;
+  z-index: 1;
+}
+
+.leaderboard-row.rank-1 .leaderboard-avatar-inner {
+  width: 128rpx;
+  height: 128rpx;
+}
+
+.leaderboard-row.rank-1 .leaderboard-avatar {
+  border: 4rpx solid var(--color-achievement-gold);
+}
+
+.leaderboard-row.rank-1 .leaderboard-avatar-wrap {
+  height: 132rpx;
+}
+
+.leaderboard-row.rank-2 .leaderboard-avatar-inner {
+  width: 108rpx;
+  height: 108rpx;
+}
+
+.leaderboard-row.rank-2 .leaderboard-avatar {
+  border: 4rpx solid var(--color-achievement-silver);
+}
+
+.leaderboard-row.rank-2 .leaderboard-avatar-wrap {
+  height: 112rpx;
+}
+
+.leaderboard-row.rank-3 .leaderboard-avatar-inner {
+  width: 88rpx;
+  height: 88rpx;
+}
+
+.leaderboard-row.rank-3 .leaderboard-avatar {
+  border: 4rpx solid var(--color-achievement-bronze);
+}
+
+.leaderboard-row.rank-3 .leaderboard-avatar-wrap {
+  height: 92rpx;
+}
+
+.leaderboard-row.rank-1 .leaderboard-order,
+.leaderboard-row.rank-1 .leaderboard-value {
+  color: var(--color-achievement-gold);
+}
+
+.leaderboard-row.rank-2 .leaderboard-order,
+.leaderboard-row.rank-2 .leaderboard-value {
+  color: var(--color-achievement-silver);
+}
+
+.leaderboard-row.rank-3 .leaderboard-order,
+.leaderboard-row.rank-3 .leaderboard-value {
+  color: var(--color-achievement-bronze);
+}
+
+.leaderboard-name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-size: 28rpx;
+  color: var(--color-black-min);
+}
+
+.leaderboard-value {
+  display: flex;
+  align-items: baseline;
+  gap: 8rpx;
+  padding: 14rpx 0;
+  margin-left: 12rpx;
+  flex-shrink: 0;
+  font-size: 34rpx;
+  font-weight: bold;
+  color: var(--color-black-light);
+  line-height: 1.3;
+}
+
+.leaderboard-unit {
+  font-size: 22rpx;
+  font-weight: normal;
+  color: var(--color-gray-max);
+}
+
+.leaderboard-summary-grid {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.leaderboard-summary-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 120rpx;
+  flex-shrink: 0;
+}
+
+.leaderboard-summary-cell.center {
+  width: auto;
+  flex: 1;
+  min-width: 0;
+}
+
+.leaderboard-summary-label {
+  font-size: 23rpx;
+  color: var(--color-gray-max);
+}
+
+.leaderboard-summary-number,
+.leaderboard-summary-status {
+  margin-top: 4rpx;
+  font-size: 52rpx;
+  font-weight: bold;
+  line-height: 1.1;
+  color: var(--color-black-light);
+}
+
+.leaderboard-summary-status {
+  font-size: 25rpx;
+  line-height: 57rpx;
+  white-space: nowrap;
+}
+
+.leaderboard-summary-avatar {
+  width: 112rpx;
+  height: 112rpx;
+  border-radius: 50%;
+  background: var(--color-white-dark);
+}
+
+.leaderboard-summary-name {
+  margin-top: 12rpx;
+  max-width: 220rpx;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-size: 28rpx;
+  font-weight: 500;
+  color: var(--color-black-light);
+}
+
+.leaderboard-summary-action {
+  margin-top: var(--space-md);
+  padding-top: var(--space-md);
+  border-top: 1rpx solid var(--color-gray-light);
+  text-align: center;
+  font-size: 24rpx;
+  color: var(--color-primary-text);
+}
+
+.leaderboard-state {
+  padding: 40rpx 0;
+  text-align: center;
+  font-size: 26rpx;
+  color: var(--color-gray-max);
+}
+
+.leaderboard-meta {
+  margin-top: var(--space-md);
+  text-align: center;
+  font-size: 22rpx;
+  color: var(--color-gray-max);
+}

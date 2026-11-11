@@ -1,36 +1,32 @@
-<!--miniprogram/pages/info/reward/reward.wxml-->
-<!-- <text>miniprogram/pages/info/reward/reward.wxml</text> -->
-
-<view class='block'>
-  <view class='title'>{{text_cfg.reward.reward_tip_title}}</view>
-  <view class='desc'>
-    <text wx:if="{{canReward}}">{{text_cfg.reward.reward_tip}}</text>
-    <!-- 只有当普通用户无法上传时，才会显示下面的提示，正常不需要改这里 -->
-    <text wx:else>暂时无法投喂！感谢您对本小程序的帮助与支持！\n喵(^･ｪ･^)</text>
-  </view>
-  <view style='flex-basis:100%;'>
-    <!-- 打开小程序 -->
-
-    <view class="buttons" wx:if="{{canReward}}">
-      <!-- 打开赞赏码 -->
-      <button bindtap='openImg' style='flex-basis:100%;'>投喂码</button>
-      
-      <!-- 打开激励广告 -->
-      <button wx:if="{{showAdBlock}}" class='primary' bindtap='openAd' style='flex-basis:100%;'>观看广告</button>
+<view class="content-page">
+  <view class="content-card">
+    <view class="content-title">{{text_cfg.reward.reward_tip_title}}</view>
+    <view class="content-text"><text wx:if="{{canReward !== false}}">{{text_cfg.reward.reward_tip}}</text><text wx:else>暂时无法投喂！感谢您对本小程序的帮助与支持！
+喵(^･ｪ･^)</text></view>
+    <view class="card-actions reward-actions" wx:if="{{canReward}}">
+      <button class="form-button with-icon" bindtap="openImg"><text class="iconfont icon-qrcode"></text><text>投喂码</text></button>
+      <button class="form-button primary with-icon" wx:if="{{showAdBlock}}" bindtap="openAd"><text class="iconfont icon-chevrons-right"></text><text>观看广告</text></button>
     </view>
   </view>
-</view>
 
-<view class='tip'>{{text_cfg.reward.reward_count_tip}}</view>
-
-<view class='block'>
-  <view class='title'>投喂记录</view>
-  <view class='desc' wx:for='{{reward}}' wx:key='mdate'>
-    <view class='sub-title hl'>{{item.mdate}}{{text_cfg.reward.reward_title}}</view>
-    <view class='sub-detail' wx:for='{{item.records}}' wx:for-item="record" wx:key="item"><text>- {{record}}</text></view>
+  <view class="content-title">投喂记录</view>
+  <view class="content-note reward-note">{{text_cfg.reward.reward_count_tip}}</view>
+  <view class="content-card" wx:if="{{rewardLoading}}"><view class="content-note">正在加载投喂记录…</view></view>
+  <view class="content-card" wx:elif="{{rewardLoadError}}">
+    <view class="content-text">{{rewardLoadError}}</view>
+    <view class="card-actions"><button class="form-button compact" bindtap="loadReward">重新加载</button></view>
   </view>
+  <view class="content-card" wx:elif="{{!reward.length}}"><view class="content-note">暂无投喂记录</view></view>
+  <block wx:else>
+    <view class="content-card" wx:for="{{reward}}" wx:for-item="month" wx:key="_id">
+      <button class="month-toggle" bindtap="toggleMonth" data-index="{{index}}" aria-label="{{month.monthLabel + (month.expanded ? '，收起明细' : '，展开明细')}}">
+        <text class="month-label">{{month.monthLabel}}</text>
+        <view class="month-disclosure content-note"><text>{{month.expanded ? '收起明细' : '查看明细'}}</text><text class="iconfont icon-arrow-down {{month.expanded ? 'expanded' : ''}}"></text></view>
+      </button>
+      <view class="month-body" wx:if="{{month.expanded}}">
+        <view class="record-paragraph content-text" wx:for="{{month.paragraphs}}" wx:for-item="paragraph" wx:key="key"><text selectable="{{true}}">{{paragraph.text}}</text></view>
+        <view class="content-note" wx:if="{{!month.paragraphs.length}}">本月暂无明细</view>
+      </view>
+    </view>
+  </block>
 </view>
-
-
-
-<view style='height: 20rpx;'></view>

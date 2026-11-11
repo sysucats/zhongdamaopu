@@ -1,6 +1,7 @@
 {
-    "component": true,
-    "usingComponents": {
-        "popup": "../popup/popup"
-    }
+  "component": true,
+  "usingComponents": {
+    "popup": "../popup/popup",
+    "popup-header": "/components/popupHeader/popupHeader"
+  }
 }

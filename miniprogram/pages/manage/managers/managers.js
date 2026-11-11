@@ -3,6 +3,8 @@ import { checkAuth } from "../../../utils/user";
 import { formatDate } from "../../../utils/utils";
 import api from "../../../utils/cloudApi";
 import { signCosUrl } from "../../../utils/common";
+import config from "../../../config";
+import { confirmDiscard } from "../../../utils/popup";
 import { isDemoMode } from "../../../utils/demo";
 
 // 是否正在加载
@@ -18,10 +20,18 @@ Page({
     tipBtn: false,
     userSearch: '',
     managerOnly: false,
+    role1Only: false,
+    mapAccessOnly: false,
     users: [],
-    windowHeight: "300",
-    manager_types: ['0-非管理员', '1-审核照片、删除便利贴', '2-修改猫猫、校区、关系、徽章', '3-发布公告', '99-管理成员、页面设置、处理图片'],
+    minRequired: config.mapAccessMinRequired,
+    manager_types: ['0 非管理员', '1 审核管理', '2 内容管理', '3 公告管理', '99 超级管理'],
+    manager_descriptions: ['无管理员权限', '审核照片、删除便利贴', '修改猫猫、校区、关系、徽章', '发布公告', '管理成员、页面设置、处理图片'],
     role_types: ['游客', '特邀用户'],
+    showUserEditor: false,
+    editingUser: null,
+    userDraft: { level: 0, role: 0 },
+    userDraftDirty: false,
+    savingUser: false,
     // Tab
     currentTab: 'users',
     // 地图待审申请
@@ -35,16 +45,8 @@ Page({
   onLoad: async function (options) {
     if (await checkAuth(this, 99)) {
       await this.loadUsers(true);
-      this.getHeights();
       this.loadApplications();
     }
-  },
-
-  /**
-   * 生命周期函数--监听页面初次渲染完成
-   */
-  onReady: function () {
-
   },
 
   /**
@@ -146,89 +148,90 @@ Page({
   // 筛选条件复选框
   async filterChange(e) {
     let filters = e.detail.value;
-    this.data.managerOnly = filters.indexOf('manager-only') != -1;
-    this.data.role1Only = filters.indexOf('role1-only') != -1;
-    this.data.mapAccessOnly = filters.indexOf('mapAccess-only') != -1;
-    this.data.users = [];
-    await this.loadUsers(true);
-  },
-
-  // 获取一下页面高度，铺满scroll-view
-  getHeights() {
-    const res = wx.getSystemInfoSync();
     this.setData({
-      "windowHeight": res.windowHeight,
+      managerOnly: filters.indexOf('manager-only') !== -1,
+      role1Only: filters.indexOf('role1-only') !== -1,
+      mapAccessOnly: filters.indexOf('mapAccess-only') !== -1,
+      users: [],
     });
+    await this.loadUsers(true);
   },
 
   // ========== 用户设置更新（管理员等级 + 角色，一次更新） ==========
 
-  // 管理员等级 picker 变动
+  openUserEditor(e) {
+    const user = this.data.users[e.currentTarget.dataset.index];
+    const draft = {
+      level: user.manager === 99 ? this.data.manager_types.length - 1 : (user.manager || 0),
+      role: user.role || 0,
+    };
+    this._initialUserDraft = { ...draft };
+    this.setData({
+      editingUser: {
+        _id: user._id,
+        name: user.userInfo?.nickName || '匿名用户',
+        avatar: user.userInfo?.avatarUrl || '/pages/public/images/info/default_avatar.png',
+      },
+      userDraft: draft,
+      userDraftDirty: false,
+      showUserEditor: true,
+    });
+  },
+
+  changeUserDraft(patch) {
+    const draft = { ...this.data.userDraft, ...patch };
+    this.setData({
+      userDraft: draft,
+      userDraftDirty: draft.level !== this._initialUserDraft.level || draft.role !== this._initialUserDraft.role,
+    });
+  },
+
   onManagerChange(e) {
-    const index = e.currentTarget.dataset.index;
-    const value = parseInt(e.detail.value);
-    this.setData({
-      ["users[" + index + "].manager"]: value
-    });
+    this.changeUserDraft({ level: Number(e.detail.value) });
   },
 
-  // 角色 picker 变动
   onRoleChange(e) {
-    const index = e.currentTarget.dataset.index;
-    const value = parseInt(e.detail.value);
-    this.setData({
-      ["users[" + index + "].role"]: value
-    });
+    this.changeUserDraft({ role: Number(e.currentTarget.dataset.role) });
   },
 
-  // 一次性更新管理员等级和角色
-  async updateUserSettings(e) {
-    const formData = e.detail.value;
-    const index = parseInt(formData.index);
-    const _id = formData._id;
-    var level = parseInt(formData.level);
-    var role = parseInt(formData.role);
-
-    if (isNaN(level)) {
-      level = null;
+  async closeUserEditor() {
+    if (this.data.savingUser) return;
+    if (await confirmDiscard(this, this._initialUserDraft, this.data.userDraft)) {
+      this.setData({ showUserEditor: false });
     }
-    if (level == this.data.manager_types.length - 1) {
-      // 最后一个是99管理员
-      level = 99;
-    }
-    if (isNaN(role)) {
-      role = null;
-    }
+  },
 
-    console.log("updateUserSettings #" + index, _id, "manager:", level, "role:", role);
-
-    const res = await api.curdOp({
-      operation: "update",
-      collection: "user",
-      item_id: _id,
-      data: {
-        manager: level,
-        role: role
-      }
-    })
-
-    console.log("updateUserSettings Result:", res);
-    if (res.ok && res.n == 1) {
-      wx.showToast({
-        title: '更新成功',
+  async updateUserSettings() {
+    if (this.data.savingUser || !this.data.userDraftDirty) return;
+    const { editingUser, userDraft, manager_types } = this.data;
+    const manager = userDraft.level === manager_types.length - 1 ? 99 : userDraft.level;
+    const role = userDraft.role;
+    this.setData({ savingUser: true });
+    try {
+      const res = await api.curdOp({
+        operation: 'update',
+        collection: 'user',
+        item_id: editingUser._id,
+        data: { manager, role },
       });
-      // 同步本地数据
-      if (level !== null) {
-        this.setData({ ["users[" + index + "].manager"]: level });
+      if (res.ok && res.n === 1) {
+        const index = this.data.users.findIndex(user => user._id === editingUser._id);
+        if (index !== -1) {
+          this.setData({
+            [`users[${index}].manager`]: manager,
+            [`users[${index}].role`]: role,
+          });
+        }
+        this.setData({ showUserEditor: false });
+        wx.showToast({ title: '更新成功' });
+      } else {
+        wx.showToast({ title: '更新失败', icon: 'none' });
       }
-      if (role !== null) {
-        this.setData({ ["users[" + index + "].role"]: role });
-      }
-    } else {
-      wx.showToast({
-        title: '更新失败',
-        icon: 'none',
-      })
+    } catch (err) {
+      console.error('更新人员设置失败:', err);
+      wx.showToast({ title: '更新失败', icon: 'none' });
+    } finally {
+      this.setData({ savingUser: false });
     }
   },
 
@@ -285,8 +288,8 @@ Page({
         .find({ 'mapAccess.status': 'pending' }, { sort: { 'mapAccess.applyDate': -1 } });
       const apps = await Promise.all((users || []).map(async u => {
         const [photoRes, commentRes] = await Promise.all([
-          app.mpServerless.db.collection('photo').count({ openid: u.openid, verified: true }),
-          app.mpServerless.db.collection('comment').count({ openid: u.openid, deleted: { $ne: true }, needVerify: { $ne: true } })
+          app.mpServerless.db.collection('photo').count({ _openid: u.openid, verified: true }),
+          app.mpServerless.db.collection('comment').count({ user_openid: u.openid, deleted: { $ne: true }, needVerify: { $ne: true } })
         ]);
         return {
           _id: u._id,
