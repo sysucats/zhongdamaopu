@@ -349,14 +349,5 @@ page {
   text-align: center;
 }
 
-.achv-detail {
-  position: relative;
-  z-index: 1;
-  width: 620rpx;
-  box-sizing: border-box;
-  background: #fff;
-  border-radius: 32rpx;
-}
-
 .menu-item:active { background: var(--color-gray-light); }
 .right-arrow .iconfont { margin: 0; font-size: 28rpx; color: var(--color-gray-max); }

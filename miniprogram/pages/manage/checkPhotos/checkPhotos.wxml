@@ -13,9 +13,11 @@
 
   <block wx:if="{{mode === 'pending'}}">
   <view class="admin-page-hint">逐张标记处理方式后，批量提交审核。转移的照片可一起选择目标猫猫。</view>
-  <scroll-view class="h-filter-list campus-list" scroll-x="true">
-    <view class="h-filter-item {{index == active_campus ? 'active': ''}}" bindtap="bindClickCampus" data-key="{{index}}"
-      wx:for="{{campus_list}}" wx:key="key">{{index}}（{{campus_counts[index] || 0}}）</view>
+  <scroll-view class="h-filter-list h-filter-scroll campus-list" scroll-x="true">
+    <view class="h-filter-content">
+      <view class="h-filter-item {{index == active_campus ? 'active': ''}}" bindtap="bindClickCampus" data-key="{{index}}"
+        wx:for="{{campus_list}}" wx:key="key">{{index}}（{{campus_counts[index] || 0}}）</view>
+    </view>
   </scroll-view>
   <view class="tip" wx:if="{{!hasPhotos}}">没有待审核的照片啦~</view>
   <view class="tip" wx:elif="{{!active_campus}}">请在上方选择一个校区</view>

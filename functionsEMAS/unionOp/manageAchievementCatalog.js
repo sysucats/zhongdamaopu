@@ -1,8 +1,10 @@
 // 管理员维护成就目录：材质库 achievement_material、徽章 achievement_def
 const { createInternalCtx } = require('./_helper.js');
 const isManager = require('./isManager.js');
-const { generateBack } = require('./achievementBack.js');
-const { METRICS, findAll } = require('./achievement.js');
+const { generateAssets } = require('./achievementBack.js');
+const { METRICS, findAll, loadDisplaySettings } = require('./achievement.js');
+const serials = require('./achievementSerial');
+const { randomUUID } = require('crypto');
 
 const KEY_PATTERN = /^[a-z][a-z0-9_-]{1,39}$/;
 const STATUSES = ['draft', 'active'];
@@ -30,39 +32,79 @@ async function holderCounts(db) {
   return (result || []).reduce((map, row) => { map[row._id] = row.count; return map; }, {});
 }
 
+const progressId = key => `achievement_assets:${key}`;
+const needsAssets = (badge, material) => !badge.backImage || !badge.model3dUrl || !material?.image || badge.backMaterialImage !== material.image;
+
+async function beginProgress(db, key, generationId) {
+  const collection = db.collection('setting');
+  await collection.updateOne({ _id: progressId(key) }, { $set: { generationId, status: 'running', step: 0, total: 6, label: '读取素材', error: '', updated_at: new Date() } }, { upsert: true });
+  return async (step, label, status = 'running', error = '') => {
+    await collection.updateOne({ _id: progressId(key), generationId }, { $set: { step, label, status, error, updated_at: new Date() } });
+  };
+}
+
+async function generateTrackedAssets(ctx, front, material, key, generationId = randomUUID(), batchReport, applyAssets) {
+  const report = await beginProgress(ctx.mpserverless.db, key, generationId);
+  try {
+    const assets = await generateAssets(ctx, front, material, key, async (step, label) => {
+      await report(step, label);
+      if (batchReport) await batchReport(step, label);
+    });
+    await report(5, '保存素材');
+    if (batchReport) await batchReport(5, '保存素材');
+    await applyAssets(assets);
+    await report(6, '素材已更新', 'complete');
+    return assets;
+  } catch (error) {
+    await report(0, '生成失败', 'failed', clean(error.message, 120));
+    throw error;
+  }
+}
+
 async function list(db) {
-  const [materials, badges, counts] = await Promise.all([
+  const [materials, badges, counts, sequences, progress, displaySettings] = await Promise.all([
     findAll(db.collection('achievement_material')),
     findAll(db.collection('achievement_def')),
     holderCounts(db),
+    findAll(db.collection('setting'), { _id: { $regex: '^achievement_serial:' } }),
+    findAll(db.collection('setting'), { _id: { $regex: '^achievement_assets:' } }),
+    loadDisplaySettings(db),
   ]);
   return {
     ok: true,
     metrics: METRICS,
-    materials: materials.sort((a, b) => a.key.localeCompare(b.key)),
-    badges: badges.map(badge => ({ ...badge, holders: counts[badge.key] || 0 })),
+    numberingRevision: serials.revision,
+    displaySettings,
+    materials: materials.map(item => ({ ...item, generation: progress.find(p => p._id === progressId(`material:${item.key}`)) || null })).sort((a, b) => a.key.localeCompare(b.key)),
+    badges: badges.map(badge => ({ ...badge, needsAssets: needsAssets(badge, materials.find(m => m.key === badge.materialKey)), generation: progress.find(p => p._id === progressId(badge.key)) || null, holders: counts[badge.key] || 0, serialReady: sequences.some(seq => seq._id === serials.counterId(badge.key) && seq.ready) })),
   };
 }
 
 // 重新生成引用该材质、且背面不是用当前材质图生成的徽章
-async function regenerateBacks(ctx, material) {
+async function regenerateBacks(ctx, material, generationId) {
   const db = ctx.mpserverless.db;
   const badges = await findAll(db.collection('achievement_def'), { materialKey: material.key });
   const result = { regenerated: 0, failed: 0, skipped: 0 };
+  const pending = badges.filter(b => isCosUrl(b.frontImage) && needsAssets(b, material));
+  const report = await beginProgress(db, `material:${material.key}`, generationId || randomUUID());
+  let index = 0;
   for (const badge of badges) {
     if (!isCosUrl(badge.frontImage)) { result.skipped++; continue; }
-    if (badge.backMaterialImage === material.image) continue;
+    if (!needsAssets(badge, material)) continue;
     try {
-      const backImage = await generateBack(ctx, badge.frontImage, material.image, badge.key);
-      await db.collection('achievement_def').updateOne({ _id: badge._id }, {
-        $set: { backImage, backMaterialImage: material.image, updated_at: new Date() },
-      });
+      index++;
+      await generateTrackedAssets(ctx, badge.frontImage, material.image, badge.key, undefined,
+        (step, label) => report(step, `第 ${index}/${pending.length} 枚 · ${badge.name} · ${label}`),
+        assets => db.collection('achievement_def').updateOne({ _id: badge._id }, {
+          $set: { ...assets, backMaterialImage: material.image, updated_at: new Date() },
+        }));
       result.regenerated++;
     } catch (error) {
       console.error('[achievement catalog] regenerate', badge.key, error);
       result.failed++;
     }
   }
+  await report(6, result.failed ? `已生成 ${result.regenerated} 枚，失败 ${result.failed} 枚` : `已生成 ${result.regenerated} 枚`, result.failed ? 'failed' : 'complete');
   return result;
 }
 
@@ -81,7 +123,7 @@ async function saveMaterial(ctx, input) {
   const data = { key, name, image, updated_at: new Date() };
   if (current) await collection.updateOne({ _id: current._id }, { $set: data });
   else await collection.insertOne({ ...data, created_at: new Date() });
-  return { ok: true, ...(await regenerateBacks(ctx, data)) };
+  return { ok: true, ...(await regenerateBacks(ctx, data, input.generationId)) };
 }
 
 async function saveBadge(ctx, input) {
@@ -124,23 +166,39 @@ async function saveBadge(ctx, input) {
     description: clean(input.description, 100),
     backImage: current?.backImage || '',
     backMaterialImage: current?.backMaterialImage || '',
+    model3dUrl: current?.model3dUrl || '',
     updated_at: new Date(),
   };
-  const needsBack = frontChanged || materialKey !== current?.materialKey || material.image !== current?.backMaterialImage;
-  if (needsBack && isCosUrl(frontImage)) {
+  const persist = async (assets = {}) => {
+    Object.assign(data, assets);
+    if (status === 'active' && (!data.frontImage || !data.backImage)) throw new Error('正面和背面齐全后才能上线');
+    if (current) await collection.updateOne({ _id: current._id }, { $set: data, $unset: { thicknessMm: '' } });
+    else await collection.insertOne({ ...data, created_at: new Date() });
+  };
+  const regenerate = !current || needsAssets(current, material) || frontChanged || materialKey !== current.materialKey;
+  if (regenerate && isCosUrl(frontImage)) {
     if (!isCosUrl(material.image)) return { ok: false, error: `请先在材质库上传「${material.name}」材质` };
-    data.backImage = await generateBack(ctx, frontImage, material.image, key);
     data.backMaterialImage = material.image;
+    await generateTrackedAssets(ctx, frontImage, material.image, key, input.generationId, undefined, persist);
   } else if (current && materialKey !== current.materialKey) {
     return { ok: false, error: '更换材质前请先上传正面 PNG' };
-  }
-  if (status === 'active' && (!data.frontImage || !data.backImage)) {
-    return { ok: false, error: '正面和背面齐全后才能上线' };
-  }
+  } else await persist();
+  return { ok: true, ...(await serials.prepare(db, key)) };
+}
 
-  if (current) await collection.updateOne({ _id: current._id }, { $set: data });
-  else await collection.insertOne({ ...data, created_at: new Date() });
-  return { ok: true };
+async function prepareBadge(ctx, input) {
+  const db = ctx.mpserverless.db, key = clean(input.key, 40);
+  const badge = (await db.collection('achievement_def').findOne({ key })).result;
+  if (!badge) return { ok: false, error: '徽章不存在' };
+  const material = (await db.collection('achievement_material').findOne({ key: badge.materialKey })).result;
+  if (needsAssets(badge, material)) {
+    if (!material?.image || !badge.frontImage) return { ok: false, error: '请先补齐正面图片和材质' };
+    await generateTrackedAssets(ctx, badge.frontImage, material.image, key, input.generationId, undefined,
+      assets => db.collection('achievement_def').updateOne({ _id: badge._id }, {
+        $set: { ...assets, backMaterialImage: material.image, updated_at: new Date() },
+      }));
+  }
+  return { ok: true, ...(await serials.prepare(db, key)) };
 }
 
 async function deleteBadge(ctx, input) {
@@ -162,9 +220,20 @@ module.exports = async (ctx) => {
   const input = ctx.args?.data || {};
   try {
     if (action === 'list') return await list(ctx.mpserverless.db);
+    if (action === 'saveDisplaySettings') {
+      const thicknessMm = Number(input.thicknessMm);
+      if (!Number.isFinite(thicknessMm) || thicknessMm < 0 || thicknessMm > 2) return { ok: false, error: '厚度需在 0～2 mm 之间' };
+      await ctx.mpserverless.db.collection('setting').updateOne({ _id: 'achievement_display' }, { $set: { thicknessMm, updated_at: new Date() } }, { upsert: true });
+      return { ok: true, displaySettings: { thicknessMm } };
+    }
+    if (action === 'generationStatus') {
+      const { result } = await ctx.mpserverless.db.collection('setting').findOne({ _id: progressId(clean(input.key, 60)) });
+      return { ok: true, progress: result || null };
+    }
     if (action === 'saveMaterial') return await saveMaterial(ctx, input);
     if (action === 'saveBadge') return await saveBadge(ctx, input);
     if (action === 'deleteBadge') return await deleteBadge(ctx, input);
+    if (action === 'prepareBadge') return await prepareBadge(ctx, input);
     return { ok: false, error: '未知操作' };
   } catch (error) {
     console.error('[achievement catalog]', action, error);

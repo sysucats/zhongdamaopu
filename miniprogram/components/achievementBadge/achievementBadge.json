@@ -1,3 +1,7 @@
 {
-  "component": true
+  "component": true,
+  "usingComponents": {
+    "badge-3d": "/components/badge3d/badge3d"
+  },
+  "componentPlaceholder": { "badge-3d": "view" }
 }

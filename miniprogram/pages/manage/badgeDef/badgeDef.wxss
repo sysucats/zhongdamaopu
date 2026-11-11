@@ -1,5 +1,7 @@
 /* pages/manage/badgeDef/badgeDef.wxss */
 @import "../adminPage.wxss";
+@import "/pages/public/wxss/formControls.wxss";
+.prepare-existing { margin-bottom: var(--space-md); }
 page {
   background-color: var(--color-gray-light);
 }
@@ -22,10 +24,8 @@ page {
   min-height: 72rpx;
   gap: 16rpx;
 }
-.catalog-title {
-  color: var(--color-black-light);
-  font-size: 32rpx;
-  font-weight: 600;
+.catalog-heading .section-title {
+  margin-bottom: 0;
 }
 .catalog-count {
   margin-left: 16rpx;
@@ -40,9 +40,6 @@ page {
 }
 .series-heading {
   margin-top: 16rpx;
-}
-.series-heading .catalog-title {
-  font-size: 30rpx;
 }
 .catalog-grid {
   display: grid;
@@ -107,11 +104,7 @@ page {
   min-height: 64rpx;
   margin-bottom: 8rpx;
 }
-.metric-title {
-  color: var(--color-black-light);
-  font-size: 25rpx;
-  font-weight: 500;
-}
+
 .badge-tile {
   padding: 18rpx 12rpx 20rpx;
 }
@@ -194,3 +187,116 @@ page {
   overflow: hidden;
   min-height: 60rpx;
 }
+
+.common-settings {
+  margin-top: var(--space-lg);
+}
+.thickness-setting {
+  margin-top: var(--space-sm);
+}
+.thickness-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+}
+.thickness-value {
+  color: var(--color-black-light);
+  font-size: var(--font-size-body);
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+.thickness-unit {
+  margin-left: 6rpx;
+  font-size: var(--font-size-caption);
+  font-weight: 400;
+  color: var(--color-gray-max);
+}
+/* 整个控件（包括刻度行）共用展示轨道的实测坐标；原生 slider 保留无障碍操作。 */
+.thickness-control {
+  position: relative;
+  height: 44px;
+  margin-top: var(--space-xs);
+}
+.thickness-appearance {
+  position: absolute;
+  top: 0;
+  right: 17px;
+  bottom: 0;
+  left: 17px;
+  pointer-events: none;
+}
+.thickness-track {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 8px;
+  transform: translateY(-50%);
+  overflow: hidden;
+  border-radius: var(--radius-pill);
+  background: var(--color-gray);
+}
+.thickness-fill {
+  height: 100%;
+  border-radius: inherit;
+  background: var(--color-primary);
+}
+.thickness-thumb {
+  position: absolute;
+  top: 50%;
+  width: 32px;
+  height: 24px;
+  box-sizing: border-box;
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  border-radius: 14px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.86), rgba(255, 255, 255, 0.62));
+  -webkit-backdrop-filter: blur(4px) saturate(1.15);
+  backdrop-filter: blur(4px) saturate(1.15);
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.8), 0 1px 4px rgba(0, 0, 0, 0.12);
+  transform: translate(-50%, -50%);
+}
+.thickness-tick {
+  position: absolute;
+  top: 38px;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: var(--color-gray-dark);
+  transform: translateX(-50%);
+}
+.thickness-slider {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 44px;
+  margin: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+.thickness-limits {
+  display: flex;
+  justify-content: space-between;
+  margin-top: var(--space-xs);
+  color: var(--color-gray-max);
+  font-size: var(--font-size-caption);
+  line-height: 1.5;
+}
+.thickness-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  margin-top: var(--space-md);
+}
+.thickness-actions .thickness-save {
+  margin-left: auto;
+}
+.thickness-setting.is-saving .thickness-appearance {
+  opacity: 0.45;
+}
+.tile-asset-status { margin-top: 8rpx; color: var(--color-gray-max); font-size: 20rpx; line-height: 1.5; }
+.tile-asset-status.is-error, .tile-asset-error { color: var(--color-red); }
+.tile-asset-error { font-size: 20rpx; line-height: 1.5; overflow-wrap: anywhere; }
+
+.thickness-preview { display: flex; justify-content: center; margin-top: var(--space-md); }

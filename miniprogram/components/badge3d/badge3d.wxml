@@ -1,0 +1,4 @@
+<view class="badge-viewer">
+    <canvas id="badge-canvas" class="badge-canvas {{ready ? 'ready' : ''}}" type="webgl" catchtouchstart="dragStart" catchtouchmove="dragMove" bindtouchend="dragEnd" bindtouchcancel="dragCancel" binderror="fallback" />
+    <view class="badge-loading" wx:if="{{!ready}}"><view class="loading-ring"></view></view>
+</view>

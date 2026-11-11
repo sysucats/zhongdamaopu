@@ -6,12 +6,6 @@
   margin-top: var(--space-md);
   font-size: 27rpx;
 }
-.section-title {
-  margin-bottom: var(--space-md);
-  color: var(--color-black-light);
-  font-size: 30rpx;
-  font-weight: 600;
-}
 .section-heading {
   display: flex;
   align-items: center;
@@ -21,10 +15,12 @@
 .section-heading .section-title {
   margin-bottom: 0;
 }
+/* 字段标签使用辅助字号，与分组标题区分。 */
 .field-label {
   margin-bottom: 12rpx;
   color: var(--color-black-min);
-  font-size: 25rpx;
+  font-size: var(--font-size-caption);
+  font-weight: 400;
 }
 .field-required::after {
   content: "*";

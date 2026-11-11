@@ -192,16 +192,18 @@
         </view>
 
         <scroll-view class="badge-list" scroll-x="1">
-          <view class="badge-item badge-level-{{item.level}}" wx:for="{{catBadges}}" wx:key="_id" hover-class="tap" bindtap="showBadgeModal" data-index="{{index}}">
-            <image class="badge-item-avatar" src="{{item.img}}" mode="aspectFill"/>
-            <view class="badge-item-count">x{{item.count}}</view>
-            <view class="badge-item-name">{{item.name}}</view>
-          </view>
+          <view class="cat-strip-content">
+            <view class="badge-item badge-level-{{item.level}}" wx:for="{{catBadges}}" wx:key="_id" hover-class="tap" bindtap="showBadgeModal" data-index="{{index}}">
+              <image class="badge-item-avatar" src="{{item.img}}" mode="aspectFill"/>
+              <view class="badge-item-count">x{{item.count}}</view>
+              <view class="badge-item-name">{{item.name}}</view>
+            </view>
 
-          <view class="relation-block add" hover-class="tap" bindtap="showGiveBadge">
-            <image class="badge-item-avatar" src="/pages/public/images/button/plus2.svg" mode="aspectFit"></image>
-            <view class="badge-item-count hidden">+</view>
-            <view class="badge-item-name">赠予徽章</view>
+            <view class="relation-block add" hover-class="tap" bindtap="showGiveBadge">
+              <image class="badge-item-avatar" src="/pages/public/images/button/plus2.svg" mode="aspectFit"></image>
+              <view class="badge-item-count hidden">+</view>
+              <view class="badge-item-name">赠予徽章</view>
+            </view>
           </view>
         </scroll-view>
       </view>
@@ -217,15 +219,17 @@
         </view>
         
         <scroll-view scroll-x="1" class="relations">
-          <view class="relation-block" wx:for="{{cat.relations}}" wx:key="_id" bindtap="toRelationCat" data-cat_id="{{item.cat._id}}" hover-class="tap">
-            <image class="relation-cat-avatar" src='{{item.cat.avatar.photo_compressed || item.cat.avatar.photo_id}}' mode="aspectFill"></image>
-            <view class="relation-name">{{item.alias || item.type}}</view>
-            <view class="relation-cat-name">{{item.cat.name}}</view>
-          </view>
-          <view class="relation-block add" hover-class="tap" wx:if="{{is_manager}}" bindtap="toAddRelation">
-            <image class="relation-cat-avatar" src="../../public/images/info/default_avatar.png" mode="aspectFill"></image>
-            <view class="relation-name">+</view>
-            <view class="relation-cat-name">添加关系</view>
+          <view class="cat-strip-content">
+            <view class="relation-block" wx:for="{{cat.relations}}" wx:key="_id" bindtap="toRelationCat" data-cat_id="{{item.cat._id}}" hover-class="tap">
+              <image class="relation-cat-avatar" src='{{item.cat.avatar.photo_compressed || item.cat.avatar.photo_id}}' mode="aspectFill"></image>
+              <view class="relation-name">{{item.alias || item.type}}</view>
+              <view class="relation-cat-name">{{item.cat.name}}</view>
+            </view>
+            <view class="relation-block add" hover-class="tap" wx:if="{{is_manager}}" bindtap="toAddRelation">
+              <image class="relation-cat-avatar" src="../../public/images/info/default_avatar.png" mode="aspectFill"></image>
+              <view class="relation-name">+</view>
+              <view class="relation-cat-name">添加关系</view>
+            </view>
           </view>
         </scroll-view>
       </view>

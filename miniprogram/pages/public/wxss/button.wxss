@@ -1,4 +1,6 @@
+/* 基础按钮；compact 只切换尺寸，with-icon 只处理图文排列。 */
 .form-button {
+  --form-button-height: 88rpx;
   display: block;
   box-sizing: border-box;
   width: 100%;
@@ -8,7 +10,7 @@
   background: var(--color-gray-normal);
   color: var(--color-black-light);
   font-size: 29rpx;
-  line-height: 88rpx;
+  line-height: var(--form-button-height);
 }
 
 .form-button::after {
@@ -29,8 +31,11 @@
   color: var(--color-text-onPrimary);
 }
 
-.form-button[disabled] {
-  background: var(--color-gray-normal);
+/* 原生禁用状态和禁用类使用相同配色。 */
+.form-button[disabled],
+.form-button.is-disabled,
+.form-button.primary.is-disabled {
+  background: var(--color-gray);
   color: var(--color-gray-max);
 }
 
@@ -44,10 +49,10 @@
 }
 
 .form-button.compact {
+  --form-button-height: 64rpx;
   width: auto;
   padding: 0 20rpx;
   font-size: 24rpx;
-  line-height: 64rpx;
 }
 
 /* 卡片操作：图标配文字，内容撑宽。 */
@@ -56,11 +61,10 @@
   align-items: center;
   justify-content: center;
   gap: var(--space-xs);
-  min-height: 88rpx;
+  min-height: var(--form-button-height);
   line-height: 1.5;
   white-space: nowrap;
 }
-.form-button.compact.with-icon { min-height: 64rpx; }
 .form-button.with-icon .iconfont { font-size: 30rpx; }
 
 /* 固定底栏：等宽按钮，底部避让安全区。 */

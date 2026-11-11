@@ -66,10 +66,11 @@ image {
 
 /* 校区选择器 */
 .h-filter-list.campus-list {
-  width: 100%;
-  padding: var(--space-xs) 0;
+  width: 100vw;
+  margin-left: -35rpx;
   margin-bottom: var(--space-xs);
 }
+.campus-list .h-filter-content { padding: var(--space-xs) 35rpx; }
 
 /* 提示选择 */
 .tip {

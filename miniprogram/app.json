@@ -175,6 +175,10 @@
       "pages": [
         "sciDetail"
       ]
+    },
+    {
+      "root": "components/badge3d",
+      "pages": []
     }
   ],
   "tabBar": {

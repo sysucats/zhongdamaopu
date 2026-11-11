@@ -72,7 +72,7 @@
           </view>
         </view>
         <view class="field-hint">正面使用透明 PNG，最大 5 MB，宽高不超过 2048 像素。</view>
-        <view class="field-hint" wx:if="{{backPending && form.frontImage}}">保存后将按当前正面与材质生成背面。</view>
+        <view class="field-hint" wx:if="{{backPending && form.frontImage}}">保存后自动生成背面和 3D 轮廓。</view>
       </view>
 
       <view class="form-section status-section">
@@ -104,6 +104,10 @@
       </view>
     </block>
 
+    <view class="field-hint generation-status" wx:if="{{generation}}">
+      <view>{{generation.label}}{{generation.total ? '（步骤 ' + generation.step + '/' + generation.total + '）' : ''}}</view>
+      <view wx:if="{{generation.error}}">{{generation.error}}</view>
+    </view>
     <view class="form-error" wx:if="{{formError}}">{{formError}}</view>
     <view class="save-bar">
       <button class="form-button danger delete-button" wx:if="{{mode === 'badge' && !isNew && holders === 0}}" bindtap="remove" loading="{{deleting}}" disabled="{{saving || uploading}}">{{deleting ? '删除中' : '删除成就'}}</button>

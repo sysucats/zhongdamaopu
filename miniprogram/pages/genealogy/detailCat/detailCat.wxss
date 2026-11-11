@@ -563,11 +563,19 @@ swiper-item image {
 /* 猫猫关系 */
 .relations,
 .badge-list {
-  width: 100%;
+  width: calc(100% + var(--space-lg) * 2);
+  margin-left: calc(0px - var(--space-lg));
   white-space: nowrap;
   box-sizing: border-box;
-  padding: var(--space-md) 0 0;
 }
+.cat-strip-content {
+  display: inline-flex;
+  min-width: 100%;
+  box-sizing: border-box;
+  padding: var(--space-md) var(--space-lg) 0;
+}
+.cat-strip-content .relation-block,
+.cat-strip-content .badge-item { flex-shrink: 0; }
 .relation-block,
 .badge-item {
   width: 150rpx;

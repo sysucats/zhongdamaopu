@@ -1,4 +1,3 @@
-import { signCosUrl } from '../../utils/common';
 import {
   activateUnlockPresenter,
   deactivateUnlockPresenter,
@@ -37,12 +36,12 @@ Component({
     visible: false,
     unlocks: [],
     activeIndex: 0,
+    swiping: false,
     confetti: [],
   },
 
   lifetimes: {
     attached() {
-      this._renderVersion = 0;
       this.activate();
     },
     detached() {
@@ -62,37 +61,35 @@ Component({
 
     suspend() {
       deactivateUnlockPresenter(this);
-      this._renderVersion = (this._renderVersion || 0) + 1;
+      this._switchVersion = (this._switchVersion || 0) + 1;
+      this._switching = false;
+      this._swipeStart = null;
       clearTimeout(this._confettiTimer);
-      this.setData({ visible: false, confetti: [] });
+      this.setData({ visible: false, swiping: false, confetti: [] });
     },
 
     present(unlocks) {
-      const version = this._renderVersion = (this._renderVersion || 0) + 1;
       if (!unlocks.length) {
+        this._switchVersion = (this._switchVersion || 0) + 1;
+        this._switching = false;
+        this._swipeStart = null;
         clearTimeout(this._confettiTimer);
-        this.setData({ visible: false, unlocks: [], activeIndex: 0, confetti: [] });
+        this.setData({ visible: false, unlocks: [], activeIndex: 0, swiping: false, confetti: [] });
         return;
       }
       const opening = !this.data.visible;
-      const previous = new Map(this.data.unlocks.map(item => [item.key, item]));
       this.setData({
         visible: true,
-        unlocks: unlocks.map(item => ({ ...item, frontImage: previous.get(item.key)?.frontImage || '' })),
+        unlocks,
         activeIndex: Math.min(this.data.activeIndex, unlocks.length - 1),
-        ...(opening ? { confetti: makeConfetti() } : {}),
+        ...(opening ? { swiping: false, confetti: makeConfetti() } : {}),
       });
       if (opening) {
+        this._switchVersion = (this._switchVersion || 0) + 1;
+        this._switching = false;
         clearTimeout(this._confettiTimer);
         this._confettiTimer = setTimeout(() => this.setData({ confetti: [] }), 3400);
       }
-      // 图片签名不阻塞弹窗；失败时保留文字和占位图形。
-      Promise.all(unlocks.map(async item => {
-        try { return { ...item, frontImage: item.frontImage ? await signCosUrl(item.frontImage) : '' }; }
-        catch (error) { return { ...item, frontImage: '' }; }
-      })).then(items => {
-        if (this._renderVersion === version && this.data.visible) this.setData({ unlocks: items });
-      });
     },
 
     close() {
@@ -103,15 +100,38 @@ Component({
       this.setData({ activeIndex: e.detail.current });
     },
 
-    onPageTap(e) {
-      this.setData({ activeIndex: Number(e.currentTarget.dataset.index) });
+    onBadgeTransition(e) {
+      if (Math.abs(e.detail.dx) > .5 && !this.data.swiping) this.setData({ swiping: true });
     },
 
-    onImageError(e) {
-      const index = this.data.unlocks.findIndex(item => item.key === e.currentTarget.dataset.key);
-      if (index >= 0) this.setData({ [`unlocks[${index}].frontImage`]: '' });
+    onBadgeSettled(e) {
+      this._switching = false;
+      this.setData({ activeIndex: e.detail.current, swiping: false });
     },
 
-    noop() {},
+    async switchBadge(index) {
+      if (this._switching || index < 0 || index >= this.data.unlocks.length || index === this.data.activeIndex) return;
+      this._switching = true;
+      const version = this._switchVersion;
+      const viewer = this.selectComponent(`#unlock-badge-${this.data.activeIndex}`);
+      await viewer?.resetToFront();
+      if (!this.data.visible || version !== this._switchVersion) return;
+      this.setData({ activeIndex: index, swiping: true });
+    },
+
+    onSwipeStart(e) { this._swipeStart = e.touches[0]; this._swipeLast = null; },
+    onSwipeMove(e) { this._swipeLast = e.touches[0]; },
+    onSwipeCancel() { this._swipeStart = null; },
+    onSwipeEnd(e) {
+      const start = this._swipeStart;
+      this._swipeStart = null;
+      if (!start) return;
+      const end = e.changedTouches[0] || this._swipeLast;
+      if (!end) return;
+      const dx = end.clientX - start.clientX, dy = end.clientY - start.clientY;
+      if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy) * 1.2) this.switchBadge(this.data.activeIndex + (dx < 0 ? 1 : -1));
+    },
+
+    onPageTap(e) { return this.switchBadge(Number(e.currentTarget.dataset.index)); },
   },
 });

@@ -19,13 +19,7 @@ function queueAchievementUnlocks(defs = [], keys = []) {
     const def = definitions.get(key);
     if (!def || seen.has(key)) continue;
     seen.add(key);
-    pending.push({
-      key,
-      name: def.name,
-      materialKey: def.materialKey || '',
-      description: def.description || '',
-      frontImage: def.frontImage || '',
-    });
+    pending.push({ ...def, description: def.desc || def.description || '' });
     changed = true;
   }
   if (changed) render();

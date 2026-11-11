@@ -3,8 +3,9 @@ import { uploadFile, signCosUrl } from "../../../../utils/common";
 import { generateUUID } from "../../../../utils/utils";
 import { clearAchievementCache } from "../../../../utils/achievement";
 
+import { watchGeneration, stopGenerationWatch } from "../generationProgress";
+
 const app = getApp();
-const METRIC_LABELS = { view: '浏览猫猫', follow: '关注猫猫', photo: '上传照片', comment: '发布便利贴', like: '点赞' };
 
 function decodeOption(value = '') {
   try { return decodeURIComponent(value); } catch (error) { return value; }
@@ -35,6 +36,7 @@ Page({
     ruleDescription: '',
     selectedMaterial: null,
     backPending: false,
+    generation: null,
     ruleLocked: false,
     holders: 0,
     saving: false,
@@ -51,13 +53,13 @@ Page({
     wx.setNavigationBarTitle({ title: mode === 'material' ? (key ? '编辑材质' : '添加材质') : (key ? '编辑成就' : '新增成就') });
     try {
       const result = await callCatalog('list');
-      const metricOptions = Object.keys(result.metrics || {}).map(id => ({ key: id, ...result.metrics[id], label: METRIC_LABELS[id] || result.metrics[id].name }));
+      const metricOptions = Object.keys(result.metrics || {}).map(id => ({ key: id, ...result.metrics[id], label: result.metrics[id].label || result.metrics[id].name }));
       const materialOptions = result.materials || [];
       if (mode === 'material') {
         const current = materialOptions.find(item => item.key === key);
         if (key && !current) throw new Error('材质不存在');
         const form = current ? { key, name: current.name, image: current.image } : { key: `mat_${generateUUID().replace(/-/g, '')}`, name: '', image: '' };
-        this.setData({ mode, isNew: !current, form });
+        this.setData({ mode, isNew: !current, form, generation: current?.generation || null });
         await this.loadPreviews({ image: form.image });
         return;
       }
@@ -77,6 +79,7 @@ Page({
         materialOptions,
         seriesOptions: [...new Set(badges.map(item => item.series).filter(Boolean))],
         holders: current?.holders || 0,
+        generation: current?.generation || null,
         ruleLocked: Boolean(current && (current.status === 'active' || current.holders > 0)),
         metricIndex: Math.max(0, metricOptions.findIndex(item => item.key === form.rule.metric)),
         materialIndex: Math.max(0, materialOptions.findIndex(item => item.key === form.materialKey)),
@@ -89,6 +92,8 @@ Page({
       this.setData({ loading: false });
     }
   },
+
+  onUnload() { stopGenerationWatch(this); },
 
   async loadPreviews(urls) {
     const previews = {};
@@ -185,12 +190,20 @@ Page({
       wx.showToast({ title: error, icon: 'none' });
       return;
     }
-    this.setData({ saving: true, formError: '' });
+    this.setData({ saving: true, formError: '', generation: { label: '正在保存' } });
+    const generationId = generateUUID();
+    watchGeneration(this, mode === 'material' ? `material:${form.key}` : form.key, generationId);
     try {
       const data = mode === 'material'
-        ? { ...form, isNew }
-        : { ...form, isNew, sort: Number(form.sort) || 0, rule: { metric: form.rule.metric, count: Number(form.rule.count) } };
+        ? { ...form, isNew, generationId }
+        : { ...form, isNew, generationId, sort: Number(form.sort) || 0, rule: { metric: form.rule.metric, count: Number(form.rule.count) } };
       const result = await callCatalog(mode === 'material' ? 'saveMaterial' : 'saveBadge', data);
+      let pending = result.pending;
+      while (pending) {
+        this.setData({ generation: { label: '素材已就绪，正在整理历史编号' } });
+        pending = (await callCatalog('prepareBadge', { key: form.key, generationId })).pending;
+      }
+      this.setData({ generation: { label: '保存完成', status: 'complete' } });
       clearAchievementCache();
       if (mode === 'material' && (result.regenerated || result.failed)) {
         await new Promise(resolve => wx.showModal({
@@ -205,8 +218,8 @@ Page({
       setTimeout(() => wx.navigateBack(), 500);
     } catch (error) {
       wx.showToast({ title: error.message || '保存失败', icon: 'none' });
-      this.setData({ saving: false, formError: error.message || '保存失败' });
-    }
+      this.setData({ saving: false, formError: error.message || '保存失败', generation: { label: '保存未完成', status: 'failed' } });
+    } finally { stopGenerationWatch(this); }
   },
 
   async remove() {

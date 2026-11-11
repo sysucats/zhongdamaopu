@@ -49,12 +49,14 @@
 
 <scroll-view enable-flex='1' class='cards' style='height: {{heights.windowHeight - heights.filters}}px;' scroll-y='true' enable-back-to-top='true' bindscrolltolower='onReachBottom' bindscroll='fScroll' lower-threshold='{{main_lower_threshold}}' scroll-top='{{targetScrollTop}}' scroll-with-animation='true'>
   <!-- 校区外显筛选 -->
-  <scroll-view class="h-filter-list" scroll-x="1" wx:if="{{filters[0].category.length > 1}}">
-    <view class='h-filter-item {{item.all_active? "active": ""}}'  bindtap='fClickCampus' data-index='{{index}}' data-filters_sub="0"
-          wx:for="{{filters[0].category}}" wx:key="name">
-          <image class="location-logo" wx:if="{{! item.all_active}}" src="/pages/public/images/filter/location_gray.png" mode="aspectFit"></image>
-          <image class="location-logo" wx:else src="/pages/public/images/filter/location_active_dark.png" mode="aspectFit"></image>
-          {{item.name}}
+  <scroll-view class="h-filter-list h-filter-scroll" scroll-x="1" wx:if="{{filters[0].category.length > 1}}">
+    <view class="h-filter-content">
+      <view class='h-filter-item {{item.all_active? "active": ""}}'  bindtap='fClickCampus' data-index='{{index}}' data-filters_sub="0"
+            wx:for="{{filters[0].category}}" wx:key="name">
+            <image class="location-logo" wx:if="{{! item.all_active}}" src="/pages/public/images/filter/location_gray.png" mode="aspectFit"></image>
+            <image class="location-logo" wx:else src="/pages/public/images/filter/location_active_dark.png" mode="aspectFit"></image>
+            {{item.name}}
+      </view>
     </view>
   </scroll-view>
 

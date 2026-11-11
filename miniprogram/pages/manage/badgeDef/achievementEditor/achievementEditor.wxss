@@ -61,3 +61,5 @@
   font-size: 23rpx;
   line-height: 1.5;
 }
+
+.generation-status { margin: var(--space-md) 0; }

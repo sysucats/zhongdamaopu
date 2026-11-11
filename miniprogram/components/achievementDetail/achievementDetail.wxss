@@ -1,9 +1,7 @@
 .achievement-detail {
   box-sizing: border-box;
   width: 620rpx;
-  padding: 36rpx 30rpx 30rpx;
-  border-radius: 32rpx;
-  background: var(--color-surface);
+  padding: 0 var(--space-lg) var(--space-lg);
 }
 
 .badge-hero {
@@ -17,13 +15,9 @@
 .badge-art {
   position: relative;
   z-index: 1;
+  width: 360rpx;
+  height: 360rpx;
 }
-
-.badge-art.locked {
-  filter: grayscale(1);
-  opacity: 0.45;
-}
-
 .award-stamp {
   position: absolute;
   top: 0;

@@ -13,6 +13,7 @@
   max-width: 100%;
   max-height: 88vh;
   overflow-y: auto;
+  overflow-x: hidden;
   padding: 0 24rpx 32rpx;
   border-radius: var(--radius-modal);
   background: var(--color-surface);
@@ -32,7 +33,9 @@
 }
 
 .unlock-swiper {
-  width: 100%;
+  overflow: hidden;
+  width: calc(100% + 48rpx);
+  margin-left: -24rpx;
   height: 550rpx;
   margin-top: 12rpx;
 }
@@ -53,17 +56,6 @@
   flex-shrink: 0;
   border-radius: 50%;
   background: radial-gradient(circle, #fff0b9 0%, #fff8e5 48%, transparent 72%);
-}
-
-.unlock-image {
-  width: 330rpx;
-  height: 330rpx;
-  animation: unlock-medal 550ms ease-out both;
-}
-
-.unlock-placeholder {
-  color: var(--color-accent);
-  font-size: 160rpx;
 }
 
 .unlock-name {
@@ -141,15 +133,6 @@
   animation-fill-mode: both;
   animation-timing-function: linear;
   will-change: transform, opacity;
-}
-
-@keyframes unlock-medal {
-  from {
-    transform: scale(0.7) rotate(-12deg);
-  }
-  to {
-    transform: scale(1) rotate(0);
-  }
 }
 
 @keyframes confetti-launch {

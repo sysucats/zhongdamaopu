@@ -1,6 +1,16 @@
+:host { display: block; }
 .badge-scene {
-  perspective: 900rpx;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
+.badge-fit { perspective: 900rpx; }
+.badge-scene.locked { filter: grayscale(1); opacity: 0.45; }
+.badge-loading { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; }
+.loading-ring { width: 36rpx; height: 36rpx; border: 3rpx solid var(--color-gray-normal); border-top-color: var(--color-gray-max); border-radius: 50%; animation: spin 1s linear infinite; }
+.badge-placeholder { display: flex; align-items: center; justify-content: center; color: var(--color-primary); font-size: 120rpx; }
+@keyframes spin { to { transform: rotate(360deg); } }
 
 .badge-body {
   position: relative;

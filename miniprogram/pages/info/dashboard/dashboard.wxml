@@ -319,10 +319,10 @@
       <popup-header title="{{currentAreaDetails.area}}区域详情" bind:close="closeAreaDetailsPopup" />
       <view class="details-content">
         <!-- TNR指数详情 -->
-        <view class="section-title large {{currentAreaDetails.tnrIndex >= 60 ? 'status-good' : (currentAreaDetails.tnrIndex >= 40 ? 'status-medium' : 'status-poor')}}">TNR指数: {{currentAreaDetails.tnrIndex}}</view>
+        <view class="tnr-value {{currentAreaDetails.tnrIndex >= 60 ? 'status-good' : (currentAreaDetails.tnrIndex >= 40 ? 'status-medium' : 'status-poor')}}">TNR指数: {{currentAreaDetails.tnrIndex}}</view>
         
         <view class="info-panel default">
-          <view class="section-title medium">计算公式</view>
+          <view class="section-title">计算公式</view>
           <view class="section-content">
             <view>基础分 = NS × 0.4</view>
             <view>质量分 = [0.4(1-G)+0.3A+0.2s+0.1R] × 0.6</view>
@@ -364,7 +364,7 @@
         </view>
         
         <view class="info-panel default">
-          <view class="section-title medium">计算过程</view>
+          <view class="section-title">计算过程</view>
           <view class="section-content">
             <view wx:if="{{currentAreaDetails.tnrDetail.adoption_rate == 100}}">基础分 = {{currentAreaDetails.tnrDetail.base_score}}</view>
             <view wx:else>基础分 = {{currentAreaDetails.tnrDetail.net_sterilization_rate}} × 0.4 = {{currentAreaDetails.tnrDetail.base_score}}</view>
@@ -374,7 +374,7 @@
         </view>
         
         <view class="tnr-explanation">
-          <view class="section-title medium">指标说明</view>
+          <view class="section-title">指标说明</view>
           <view class="section-content">
             <view class="list-item">· TNR指数满分为100分，分为基础分(40分)和质量分(60分)</view>
             <view class="list-item">· 基础分由净绝育率决定，若当区域猫动态清零时，基础分赋满</view>

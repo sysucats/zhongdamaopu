@@ -5,12 +5,11 @@
   <view class="unlock-card" aria-role="dialog" aria-modal="true" aria-label="成就解锁">
     <popup-header title="成就解锁！" close-position="none" />
     <view class="unlock-subtitle">{{unlocks.length > 1 ? '这次点亮了 ' + unlocks.length + ' 枚成就' : '已加入你的成就收藏'}}</view>
-    <swiper class="unlock-swiper" current="{{activeIndex}}" bindchange="onBadgeChange" indicator-dots="{{false}}">
-      <swiper-item wx:for="{{unlocks}}" wx:key="key">
+    <swiper class="unlock-swiper" bindtouchstart="onSwipeStart" bindtouchend="onSwipeEnd" bindtouchcancel="onSwipeCancel" current="{{activeIndex}}" bindchange="onBadgeChange" bindtransition="onBadgeTransition" bindanimationfinish="onBadgeSettled" indicator-dots="{{false}}">
+      <swiper-item wx:for="{{unlocks}}" wx:key="key" catchtouchmove="onSwipeMove">
         <view class="unlock-badge">
           <view class="unlock-art">
-            <image class="unlock-image" wx:if="{{item.frontImage}}" src="{{item.frontImage}}" mode="aspectFit" binderror="onImageError" data-key="{{item.key}}" />
-            <view class="unlock-placeholder" wx:else aria-hidden="true">★</view>
+            <achievement-badge id="unlock-badge-{{index}}" rotation-mode="intro" wx:if="{{visible}}" badge="{{item}}" size="360" active="{{index === activeIndex && !swiping}}" />
           </view>
           <view class="unlock-name material-{{item.materialKey}}">{{item.name}}</view>
           <view class="unlock-description">{{item.description}}</view>

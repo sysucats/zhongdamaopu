@@ -1,4 +1,5 @@
 <view class="achievement-detail" wx:if="{{achievement}}">
+  <popup-header id="achievement-header" title="成就详情" bind:close="close" />
   <view class="badge-hero">
     <view class="award-stamp" wx:if="{{stampDay}}">
       <view class="stamp-ring">
@@ -8,7 +9,9 @@
       </view>
       <view class="stamp-waves"><view class="stamp-wave"></view><view class="stamp-wave"></view><view class="stamp-wave"></view></view>
     </view>
-    <view class="badge-art {{achievement.unlocked ? '' : 'locked'}}"><achievementBadge front="{{achievement.frontImage}}" back="{{achievement.backImage}}" size="360" /></view>
+    <view class="badge-art">
+      <achievementBadge id="detail-badge" badge="{{achievement}}" size="360" />
+    </view>
   </view>
   <view class="badge-name">{{achievement.name}}</view>
   <view class="condition-card">

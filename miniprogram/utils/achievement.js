@@ -32,6 +32,7 @@ async function signDefs(defs) {
     ...def,
     frontImage: await signCosUrl(def.frontImage),
     backImage: await signCosUrl(def.backImage),
+    model3dUrl: def.model3dUrl ? await signCosUrl(def.model3dUrl) : '',
   })));
 }
 
@@ -57,11 +58,11 @@ function finishViewMigration() {
   }
 }
 
-async function applyResult(result) {
+async function applyResult(result, user) {
   if (result.migrated) finishViewMigration();
-  queueAchievementUnlocks(result.defs, result.newlyUnlocked);
   const data = {
     metrics: result.metrics || {},
+    displaySettings: result.displaySettings || { thicknessMm: .6 },
     defs: await signDefs(result.defs),
     unlocked: result.unlocked || [],
     counts: result.counts || {},
@@ -69,8 +70,10 @@ async function applyResult(result) {
   };
   syncCache = data;
   syncAt = Date.now();
-  catalogCache = { metrics: data.metrics, defs: data.defs };
+  catalogCache = { metrics: data.metrics, defs: data.defs, displaySettings: data.displaySettings };
   catalogAt = syncAt;
+  const badges = buildLadders(data, data.unlocked, data.counts, user?.userInfo?.nickName || '').flatMap(ladder => ladder.tiers);
+  queueAchievementUnlocks(badges, data.newlyUnlocked);
   return data;
 }
 
@@ -81,7 +84,7 @@ async function requestSync(args = {}) {
   const result = pending || args.catId
     ? await invoke('view', { ...args, ...(pending ? { catIds: pending } : {}) })
     : await invoke('sync');
-  return applyResult(result);
+  return applyResult(result, user);
 }
 
 // 读取成就状态；force 时跳过缓存。服务端会顺带补发已达条件的成就
@@ -117,7 +120,7 @@ async function getCatalog() {
     return { ...catalogCache, defs: await signDefs(catalogCache.defs) };
   }
   const result = await invoke('catalog');
-  catalogCache = { metrics: result.metrics || {}, defs: await signDefs(result.defs) };
+  catalogCache = { metrics: result.metrics || {}, defs: await signDefs(result.defs), displaySettings: result.displaySettings || { thicknessMm: .6 } };
   catalogAt = Date.now();
   return catalogCache;
 }
@@ -130,9 +133,10 @@ function clearAchievementCache() {
 }
 
 // 同一系列、同一统计项的徽章按门槛排成一组阶梯
-function buildLadders({ metrics, defs }, unlocked = [], counts = null) {
+function buildLadders({ metrics, defs, displaySettings }, unlocked = [], counts = null, ownerName = '') {
   const unlockTime = {};
-  unlocked.forEach(record => { unlockTime[record.key] = record.create_date; });
+  const serialNumbers = {};
+  unlocked.forEach(record => { unlockTime[record.key] = record.create_date; serialNumbers[record.key] = record.serialNo || null; });
   const ladders = [];
   defs.forEach(def => {
     const id = `${def.series}|${def.rule.metric}`;
@@ -161,6 +165,11 @@ function buildLadders({ metrics, defs }, unlocked = [], counts = null) {
       materialKey: def.materialKey,
       frontImage: def.frontImage,
       backImage: def.backImage,
+      model3dUrl: def.model3dUrl || '',
+      thicknessMm: displaySettings?.thicknessMm ?? .6,
+      engravingModels: sorted.map(item => item.model3dUrl).filter(Boolean),
+      ownerName,
+      serialNo: unlockTime[def.key] ? serialNumbers[def.key] || null : null,
       unlocked: Boolean(unlockTime[def.key]),
       unlock_time: unlockTime[def.key] || null,
       currentCount: counts && typeof counts[def.rule.metric] === 'number' ? counts[def.rule.metric] : null,
@@ -171,9 +180,9 @@ function buildLadders({ metrics, defs }, unlocked = [], counts = null) {
 
 // 成就页：强制同步一次，返回阶梯列表和本次新解锁的徽章名
 async function getMyAchievements() {
-  const data = await syncAchievements({ force: true });
+  const [data, user] = await Promise.all([syncAchievements({ force: true }), getUser()]);
   return {
-    ladders: buildLadders(data, data.unlocked, data.counts),
+    ladders: buildLadders(data, data.unlocked, data.counts, user?.userInfo?.nickName || ''),
     newlyUnlocked: data.newlyUnlocked.map(key => data.defs.find(def => def.key === key)?.name).filter(Boolean),
   };
 }
@@ -184,8 +193,8 @@ async function getMyAchievementCount() {
 }
 
 async function getUnlockedList() {
-  const data = await syncAchievements();
-  return buildLadders(data, data.unlocked, data.counts).flatMap(ladder => ladder.tiers).filter(item => item.unlocked);
+  const [data, user] = await Promise.all([syncAchievements(), getUser()]);
+  return buildLadders(data, data.unlocked, data.counts, user?.userInfo?.nickName || '').flatMap(ladder => ladder.tiers).filter(item => item.unlocked);
 }
 
 function highestUnlockedByCategory(list) {
@@ -218,7 +227,7 @@ async function getShowcase(openid) {
       app.mpServerless.db.collection('user').findOne({ openid }),
       syncAchievements(),
     ]);
-    return savedShowcase(user, buildLadders(data, data.unlocked).flatMap(ladder => ladder.tiers));
+    return savedShowcase(user, buildLadders(data, data.unlocked, null, user?.userInfo?.nickName || '').flatMap(ladder => ladder.tiers));
   } catch (e) {
     console.log('读取展示位失败', e);
     return null;
@@ -240,7 +249,7 @@ async function getUserShowcase(openid) {
     records.push(...batch);
     if (batch.length < pageSize) break;
   }
-  const badges = buildLadders(catalog, records).flatMap(ladder => ladder.tiers);
+  const badges = buildLadders(catalog, records, null, user?.userInfo?.nickName || '').flatMap(ladder => ladder.tiers);
   return resolveShowcase(badges.filter(item => item.unlocked), savedShowcase(user, badges));
 }
 

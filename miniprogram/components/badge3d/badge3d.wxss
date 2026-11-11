@@ -1,0 +1,7 @@
+:host { display: block; width: 100%; height: 100%; }
+.badge-viewer { position: relative; width: 100%; height: 100%; }
+.badge-canvas { width: 100%; height: 100%; opacity: 0; }
+.badge-canvas.ready { opacity: 1; }
+.badge-loading { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; pointer-events: none; }
+.loading-ring { width: 36rpx; height: 36rpx; border: 3rpx solid var(--color-gray-normal); border-top-color: var(--color-gray-max); border-radius: 50%; animation: spin 1s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }

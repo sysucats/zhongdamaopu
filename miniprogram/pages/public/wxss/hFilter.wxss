@@ -10,6 +10,16 @@
   box-sizing: border-box;
 }
 
+/* Horizontal viewports have no padding; inset the scrollable content instead. */
+.h-filter-list.h-filter-scroll { padding: 0; }
+.h-filter-content {
+  display: inline-flex;
+  min-width: 100%;
+  box-sizing: border-box;
+  padding: 8rpx 20rpx;
+}
+.h-filter-content .h-filter-item { flex-shrink: 0; }
+
 .h-filter-item {
   display: inline-flex;
   min-height: 64rpx;

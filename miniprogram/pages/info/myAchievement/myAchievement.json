@@ -4,7 +4,6 @@
   "usingComponents": {
     "popup": "/components/popup/popup",
     "achievementDetail": "/components/achievementDetail/achievementDetail",
-    "achievement-unlock": "/components/achievementUnlock/achievementUnlock",
-    "popup-header": "/components/popupHeader/popupHeader"
+    "achievement-unlock": "/components/achievementUnlock/achievementUnlock"
   }
 }

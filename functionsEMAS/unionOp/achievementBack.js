@@ -1,6 +1,7 @@
 const COS = require('cos-nodejs-sdk-v5');
 const { PNG } = require('pngjs');
 const { createHash } = require('crypto');
+const { createBadgeGeometry } = require('./achievementGeometry');
 
 const MAX_BYTES = 5 * 1024 * 1024;
 const MAX_SIDE = 2048;
@@ -49,7 +50,8 @@ function renderBack(frontBytes, materialBytes) {
   return PNG.sync.write(back, { deflateLevel: 9 });
 }
 
-async function generateBack(ctx, frontUrl, materialUrl, badgeKey) {
+async function generateAssets(ctx, frontUrl, materialUrl, badgeKey, report = async () => {}) {
+  await report(0, '读取素材');
   const { result: secret } = await ctx.mpserverless.db.collection('app_secret').findOne();
   if (!secret?.OSS_BUCKET || !secret?.OSS_ENDPOINT || !secret?.OSS_SECRET_ID || !secret?.OSS_SECRET_KEY) {
     throw new Error('COS 配置不完整');
@@ -64,13 +66,26 @@ async function generateBack(ctx, frontUrl, materialUrl, badgeKey) {
     cosCall(cos, 'getObject', { ...common, Key: frontKey }),
     cosCall(cos, 'getObject', { ...common, Key: materialKey }),
   ]);
+  await report(1, '生成背面图');
   const png = renderBack(front.Body, material.Body);
   const digest = createHash('sha256').update(png).digest('hex').slice(0, 12);
   const backKey = `achievement/generated/${badgeKey}_${digest}_back.png`;
+  await report(2, '生成 3D 轮廓');
+  const geometry = createBadgeGeometry(PNG.sync.read(front.Body));
+  const materialPng = PNG.sync.read(material.Body);
+  const center = (Math.floor(materialPng.height / 2) * materialPng.width + Math.floor(materialPng.width / 2)) * 4;
+  geometry.edgeColor = Array.from(materialPng.data.subarray(center, center + 3));
+  const model = Buffer.from(JSON.stringify(geometry));
+  const modelDigest = createHash('sha256').update(model).digest('hex').slice(0, 12);
+  const modelKey = `achievement/generated/${badgeKey}_${modelDigest}_model-v1.json`;
+  await report(3, '上传背面图');
   await cosCall(cos, 'putObject', {
     ...common, Key: backKey, Body: png, ContentType: 'image/png',
   });
-  return `https://${secret.OSS_BUCKET}.${secret.OSS_ENDPOINT}/${backKey}`;
+  await report(4, '上传 3D 素材');
+  await cosCall(cos, 'putObject', { ...common, Key: modelKey, Body: model, ContentType: 'application/json' });
+  const origin = `https://${secret.OSS_BUCKET}.${secret.OSS_ENDPOINT}/`;
+  return { backImage: origin + backKey, model3dUrl: origin + modelKey };
 }
 
-module.exports = { generateBack, renderBack, objectKey };
+module.exports = { generateAssets, renderBack, objectKey };

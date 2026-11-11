@@ -1,12 +1,14 @@
 // 用户成就：读取目录、服务端统计并发放、记录浏览
-// achievement_def：徽章定义；achievement：获得记录 { openid, key, create_date, _openid }
+// achievement_def：徽章定义；achievement：获得记录 { openid, key, create_date, serialNo, _openid }
 // 浏览记录存在 user.viewedCats（猫的 _id 数组）
+const { createHash } = require('crypto');
+const serials = require('./achievementSerial');
 const METRICS = {
-  view: { name: '猫口普查', unit: '只', desc: '看过 {} 只不同的猫猫' },
-  follow: { name: '吸猫', unit: '只', desc: '关注 {} 只猫猫' },
-  photo: { name: '留影', unit: '张', desc: '上传 {} 张审核通过的照片' },
-  comment: { name: '便利贴', unit: '张', desc: '发出 {} 张审核通过的便利贴' },
-  like: { name: '点赞', unit: '个', desc: '给出 {} 个点赞' },
+  view: { label: '浏览猫猫', name: '猫口普查', unit: '只', desc: '看过 {} 只不同的猫猫' },
+  follow: { label: '关注猫猫', name: '吸猫', unit: '只', desc: '关注 {} 只猫猫' },
+  photo: { label: '上传照片', name: '留影', unit: '张', desc: '上传 {} 张审核通过的照片' },
+  comment: { label: '发布便利贴', name: '便利贴', unit: '张', desc: '发出 {} 张审核通过的便利贴' },
+  like: { label: '点赞', name: '点赞', unit: '个', desc: '给出 {} 个点赞' },
 };
 
 const MAX_MIGRATE_CATS = 500;
@@ -37,6 +39,7 @@ function publicDef(def) {
     materialKey: def.materialKey,
     frontImage: def.frontImage,
     backImage: def.backImage,
+    model3dUrl: def.model3dUrl || '',
     rule: { metric: def.rule.metric, count: def.rule.count },
   };
 }
@@ -68,6 +71,11 @@ async function countMetrics(db, openid, user) {
   };
 }
 
+async function loadDisplaySettings(db) {
+  const { result } = await db.collection('setting').findOne({ _id: 'achievement_display' });
+  return { thicknessMm: result?.thicknessMm ?? .6 };
+}
+
 async function sync(db, openid, user) {
   const [defs, counts, records] = await Promise.all([
     loadActiveDefs(db),
@@ -78,7 +86,11 @@ async function sync(db, openid, user) {
   const newlyUnlocked = [];
   for (const def of defs) {
     if (owned.has(def.key) || counts[def.rule.metric] < def.rule.count) continue;
-    const record = { openid, _openid: openid, key: def.key, create_date: new Date() };
+    const sequence = await serials.state(db, def.key);
+    if (sequence && !sequence.ready) continue;
+    const serialNo = sequence ? await serials.allocate(db, def.key) : null;
+    const id = 'achv_' + createHash('sha256').update(`${openid}\0${def.key}`).digest('hex').slice(0, 40);
+    const record = { _id: id, openid, _openid: openid, key: def.key, create_date: new Date(), ...(serialNo ? { serialNo } : {}) };
     try {
       const inserted = await db.collection('achievement').insertOne(record);
       if (!inserted?.insertedId) throw new Error('成就写入失败');
@@ -95,8 +107,9 @@ async function sync(db, openid, user) {
   return {
     ok: true,
     metrics: METRICS,
+    displaySettings: await loadDisplaySettings(db),
     defs: defs.map(publicDef),
-    unlocked: records.map(record => ({ key: record.key, create_date: record.create_date })),
+    unlocked: records.map(record => ({ key: record.key, create_date: record.create_date, serialNo: record.serialNo || null })),
     counts,
     newlyUnlocked,
   };
@@ -139,7 +152,7 @@ async function handler(ctx) {
   const op = ctx.args?.op;
   try {
     if (op === 'catalog') {
-      return { ok: true, metrics: METRICS, defs: (await loadActiveDefs(db)).map(publicDef) };
+      return { ok: true, metrics: METRICS, displaySettings: await loadDisplaySettings(db), defs: (await loadActiveDefs(db)).map(publicDef) };
     }
     const openid = ctx.args?.openid;
     if (!openid) return { ok: false, error: '未登录' };
@@ -160,3 +173,5 @@ module.exports = handler;
 module.exports.METRICS = METRICS;
 module.exports.findAll = findAll;
 module.exports.describe = describe;
+
+module.exports.loadDisplaySettings = loadDisplaySettings;

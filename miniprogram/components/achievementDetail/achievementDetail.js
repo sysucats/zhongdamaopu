@@ -25,4 +25,7 @@ Component({
     stampYear: '',
     progress: null,
   },
+  methods: {
+    close() { this.triggerEvent('close'); },
+  },
 });

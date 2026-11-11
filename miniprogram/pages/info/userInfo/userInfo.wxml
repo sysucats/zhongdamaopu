@@ -95,11 +95,8 @@
   </view>
 </popup>
 
-<popup id="achievement-detail-popup" show="{{showAchvDetail}}" position="center" bind:close="closeAchvDetail">
-  <view class="achv-detail" wx:if="{{selectedAchievement}}">
-    <popup-header title="成就详情" bind:close="closeAchvDetail" />
-    <achievementDetail achievement="{{selectedAchievement}}" />
-  </view>
+<popup id="achievement-detail-popup" style="--popup-background: var(--color-surface);" show="{{showAchvDetail}}" position="center" bind:close="closeAchvDetail">
+  <achievementDetail id="achievement-detail" wx:if="{{selectedAchievement}}" achievement="{{selectedAchievement}}" bind:close="closeAchvDetail" />
 </popup>
 
 <achievement-unlock id="achievement-unlock" />

@@ -59,9 +59,8 @@
   <view class="footer-tip">多和猫猫互动，就能解锁更高级别的成就哦~</view>
 </view>
 
-<popup id="achievement-detail-popup" show="{{showBadgeDetail}}" position="center" bind:close="closeBadge">
-  <popup-header title="成就详情" bind:close="closeBadge" />
-  <achievementDetail wx:if="{{selectedBadge}}" achievement="{{selectedBadge}}" />
+<popup id="achievement-detail-popup" style="--popup-background: var(--color-surface);" show="{{showBadgeDetail}}" position="center" bind:close="closeBadge">
+  <achievementDetail id="achievement-detail" wx:if="{{selectedBadge}}" achievement="{{selectedBadge}}" bind:close="closeBadge" />
 </popup>
 
 <achievement-unlock id="achievement-unlock" />

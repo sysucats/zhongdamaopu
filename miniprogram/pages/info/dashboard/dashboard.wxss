@@ -140,25 +140,14 @@
   color: var(--color-primary-text);
 }
 
-/* 标题样式 */
-.section-title {
-  font-weight: 600;
-}
-
-.section-title.large {
+/* 指数是统计值；说明标题沿用公共分区标题。 */
+.tnr-value {
   font-size: var(--font-size-page);
+  font-weight: 600;
   text-align: center;
   margin: 20rpx 0 30rpx;
 }
-
-.section-title.medium {
-  font-size: var(--font-size-section);
-  margin-bottom: 10rpx;
-}
-
-.section-title.small {
-  font-size: var(--font-size-body);
-}
+.details-content .section-title { margin-bottom: 10rpx; }
 
 /* 区块内容样式 */
 .section-content {
@@ -437,8 +426,8 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  width: 100%;
-  margin: 20rpx 0;
+  width: calc(100% + 60rpx);
+  margin: 20rpx -30rpx;
   gap: var(--space-sm);
 }
 
@@ -449,10 +438,14 @@
   min-width: 0;
 }
 .campus-selector {
-  display: flex;
+  display: inline-flex;
+  min-width: 100%;
+  box-sizing: border-box;
   justify-content: flex-start;
   gap: 20rpx;
+  padding: 0 30rpx;
 }
+.distribution-header .sort-button { margin-right: 30rpx; }
 
 .campus-tab {
   display: flex;
