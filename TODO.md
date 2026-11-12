@@ -10,11 +10,7 @@
 
 ## 中优先级
 
-- [ ] **派生字段落库**：`cat.photo_count_best` / `photo_count_total` 由 `timeTrigger/countPhoto.js` 定时统计后写回，属可计算数据。需决策：保留（有读性能理由则补文档）或改为读时聚合。
-
 - [ ] **rank 缓存表**：`photo_rank` / `badge_rank` 由定时任务整表删重建（`getPhotoRank.js`、`getBadgeRank.js`），同样是可计算数据。需同上决策。
-
-- [ ] **countPhoto N+1**：`countPhoto.js:53-70` 对每只猫 2 次 count + 1 次 updateOne，随猫数量线性放大。可改为一次聚合查询 + bulkWrite。
 
 ## 低优先级
 
@@ -26,6 +22,9 @@
 
 ## 已处理（留档备查）
 
+- [x] **派生字段 `photo_count_*` 保留（已决策）**：虽然可由 photo 集合算出，但读取点有 4 处（分类列表、详情页、海报组件、识别的随机选取），其中分类列表是客户端直连数据库，改读时计算要给每页多加一次聚合、且会让旧版客户端显示冻结。故保留字段、只优化维护方式；同一决策适用于 rank 缓存表（待确认）。
+
+- [x] **countPhoto N+1 + 12 倍重复计算**：原实现逐只猫 2 次 count + 1 次 update，且定时器 5 分钟一轮配 1 小时窗口，同一次照片变更会被重复重算约 12 次。已改为分批聚合 + 并发回写，并用 `photo_count_at` 水位（记录上次计数时 mphoto 的值）保证一次变更只算一次。SDK 无 `bulkWrite`，故用并发 `updateOne`（限 10）替代。
 - [x] **材质背面图重算同步超时**：`manageAchievementCatalog.js` 原 `regenerateBacks` 在 `saveMaterial` 内串行处理全部引用徽章（每枚 2 次 COS 下载 + 2 次 PNG 渲染 + 2 次 COS 上传，约 1–3 秒），徽章多时撞函数超时，进度停在 `running`。已改为单批 3 枚 + 前端循环续跑（新接口 `regenerateMaterialBacks`），进度按「已完成枚数/总枚数」计，单批有失败即停并提示重试。
 
 - [x] `wx-canvas-2d` 依赖被误删导致 poster 组件静默降级 → 已恢复（`866f46d`）
