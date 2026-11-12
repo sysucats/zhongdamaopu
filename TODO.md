@@ -12,8 +12,6 @@
 
 - [ ] **rank 缓存表**（暂缓，暂不修）：`photo_rank` / `badge_rank` 由定时任务整表删重建（`getPhotoRank.js`、`getBadgeRank.js`），属可计算数据。暂不动的理由：每天 0 点才跑一次，不是 countPhoto 那种 12 倍放大；且读取端是 `photoRank` / `badgeRank` 组件，改读时计算要把排序+分页搬到客户端。等榜单数据量或刷新频率上来再处理。
 
-- [ ] **photoProcess 失败照片会永久占名额，可致流水线停摆**：`photoProcess.js:189` 取待处理照片用 `photo_compressed 为空 + verified:true`、`limit: 6`、无排序、无失败标记。处理失败的照片条件仍成立，下一轮（5 分钟后）仍被优先取到。累积 6 张永久失败图（COS 404 / 文件损坏 / 超大图 OOM）后，新照片永远轮不到，表现为「新上传的照片一直不出压缩图和水印图」，且无告警。修法：失败时写 `photo_process_error` + `retry_count`，查询加 `retry_count: { $lt: 3 }` 并跳过；或用 `$or` 把失败过的排到后面。
-
 - [ ] **photoProcess 与 countPhoto / rank 任务共享同一个函数超时**：`timeTrigger/index.js:43` 用 `Promise.all` 并发跑三个 handler，photoProcess 自己的预算是 `TOTAL_BUDGET_MS = 60000`、按自身 `baseTime` 计，但三个任务实际共享同一次调用的执行时长上限。rank 整表重建那天（0 点后第一次触发）风险最高，可能整体被强杀、留下半完成的榜单。建议 photoProcess 预算下调（如 45s）或 rank 任务错峰。
 
 - [ ] **弹窗/遮罩类组件 5 个平行实现**：`popup`(73 行)、`newsModal`(122)、`badgeModal`(78)、`mask`(29)、`profilePrompt`(12) 各自维护遮罩+弹出逻辑，未收敛到统一 popup。需人工确认功能差异后决定是否合并（checklist §5）。
@@ -33,6 +31,8 @@
 - [ ] 根目录 `themeChanging.py` 游离，按规范应归入 `wb_code/`，暂保留。
 
 ## 已处理（留档备查）
+
+- [x] **photoProcess 失败照片永久占名额**：原查询只按「未压缩 + 已审核」取 6 条、无排序无失败标记，坏图每轮都被优先取到，累积 6 张即让新照片永远排不进来（压缩图/水印图不出且无告警）。已改为 `photo_process_retry` 计数：失败时 `$inc` 并记录 `photo_process_error/at`，候选查询用 `$or`（字段不存在 / 小于上限 3）排除超限照片，并按 `_id` 升序先来先处理；返回结果带 `retry` / `giving_up`，summary 汇总 `giving_up` 便于从日志发现坏图。桩测试 `wb_code/testPhotoProcess.cjs` 覆盖筛选语义与 3 轮淘汰。
 
 - [x] **派生字段 `photo_count_*` 保留（已决策）**：虽然可由 photo 集合算出，但读取点有 4 处（分类列表、详情页、海报组件、识别的随机选取），其中分类列表是客户端直连数据库，改读时计算要给每页多加一次聚合、且会让旧版客户端显示冻结。故保留字段、只优化维护方式；rank 缓存表暂缓，见中优先级条目。
 
