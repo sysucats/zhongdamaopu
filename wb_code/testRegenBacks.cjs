@@ -108,7 +108,7 @@ const call = (action, data) => handler({ ...ctx, args: { openid: 'o1', action, d
     assert.strictEqual(done.generationId, 'g1', '进度应绑定同一 generationId');
     assert.strictEqual(done.total, 7, `total 应恒为 7，实际 ${done.total}`);
     assert.strictEqual(done.step, regenerated, `step 应等于已完成枚数，实际 ${done.step}/${regenerated}`);
-    if (!res.pending) break;
+    if (!res.hasMore) break;
     assert.ok(round <= 10, '续跑轮数应有限');
     res = await call('regenerateMaterialBacks', { key: 'mat1', generationId: 'g1' });
   }
@@ -123,8 +123,8 @@ const call = (action, data) => handler({ ...ctx, args: { openid: 'o1', action, d
   failKeys = new Set(['badge_6']);
   let last = await call('saveMaterial', { key: 'mat1', name: '材质1', image: 'https://cos.example/mat-new.png', isNew: false, generationId: 'g2' });
   let guard = 0;
-  while (last.pending && guard++ < 20) last = await call('regenerateMaterialBacks', { key: 'mat1', generationId: 'g2' });
-  assert.strictEqual(last.pending, false, '有失败时不应继续续跑');
+  while (last.hasMore && guard++ < 20) last = await call('regenerateMaterialBacks', { key: 'mat1', generationId: 'g2' });
+  assert.strictEqual(last.hasMore, false, '有失败时不应继续续跑');
   assert.strictEqual(last.failed, 1, `应有 1 枚失败，实际 ${last.failed}`);
   assert.strictEqual(last.done, 6, `应完成 6 枚，实际 ${last.done}`);
   assert.strictEqual(settings.get('achievement_assets:material:mat1').status, 'failed');
@@ -134,7 +134,7 @@ const call = (action, data) => handler({ ...ctx, args: { openid: 'o1', action, d
   failKeys = new Set();
   const retry = await call('saveMaterial', { key: 'mat1', name: '材质1', image: 'https://cos.example/mat-new.png', isNew: false, generationId: 'g3' });
   assert.strictEqual(retry.regenerated, 1, `重试应只补 1 枚，实际 ${retry.regenerated}`);
-  assert.strictEqual(retry.pending, false);
+  assert.strictEqual(retry.hasMore, false);
   console.log('场景3 通过：重试仅补做失败的那 1 枚');
 
   console.log('\n全部通过');

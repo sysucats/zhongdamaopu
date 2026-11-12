@@ -201,10 +201,11 @@ Page({
       let regenerated = result.regenerated || 0;
       let failed = result.failed || 0;
       if (mode === 'material') {
-        // 背面图重算按批推进，单批失败即停止，避免无限重试同一批
+        // 背面图重算按批推进，单批失败即停止，避免无限重试同一批；
+        // hasMore 而非 pending：旧版客户端不认这个字段，不会误去整理编号
         let batch = result;
         let rounds = 0;
-        while (batch.pending && rounds++ < 200) {
+        while (batch.hasMore && rounds++ < 200) {
           this.setData({ generation: { label: `正在生成背面图 ${batch.done}/${batch.total}` } });
           batch = await callCatalog('regenerateMaterialBacks', { key: form.key, generationId });
           regenerated += batch.regenerated || 0;

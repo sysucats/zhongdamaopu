@@ -87,7 +87,7 @@ async function list(db) {
 
 // 重新生成引用该材质、且背面不是用当前材质图生成的徽章。
 // 每枚都要走 COS 下载 → PNG 渲染 → COS 上传，约 1~3 秒；单次调用只处理一小批，
-// 剩余部分通过 return pending 交回调用方续跑，避免同步调用撞云函数超时。
+// 剩余部分通过 hasMore 交回调用方续跑，避免同步调用撞云函数超时。
 const REGEN_BATCH = 3;
 
 async function pendingBacks(db, material) {
@@ -102,7 +102,9 @@ async function regenerateBacks(ctx, material, generationId) {
   const total = ready.length;
   const batch = pending.slice(0, REGEN_BATCH);
   const done = total - pending.length;
-  const result = { regenerated: 0, failed: 0, skipped, done, total, remaining: pending.length, pending: false };
+  // 用 hasMore 而非 pending：旧版小程序会把 pending 当成「编号整理未完成」去调 prepareBadge，
+  // 材质 key 在徽章表里查不到会直接报错；换字段名让旧客户端自然忽略，最多少处理几枚。
+  const result = { regenerated: 0, failed: 0, skipped, done, total, remaining: pending.length, hasMore: false };
   const report = await beginProgress(db, `material:${material.key}`, generationId, {
     step: done, total, label: batch.length ? `准备生成背面图 ${done}/${total}` : '背面图已是最新',
   });
@@ -127,11 +129,11 @@ async function regenerateBacks(ctx, material, generationId) {
   const remaining = pending.length - result.regenerated;
   result.remaining = remaining;
   result.done = total - remaining;
-  result.pending = remaining > 0 && result.failed === 0;
-  const label = result.pending
+  result.hasMore = remaining > 0 && result.failed === 0;
+  const label = result.hasMore
     ? `${result.done}/${total} 枚已完成，继续生成…`
     : (result.failed ? `${result.done}/${total} 枚已就绪，${result.failed} 枚生成失败，可再次保存重试` : `背面图已更新，共 ${result.done} 枚`);
-  await report(result.done, label, result.pending ? 'running' : (result.failed ? 'failed' : 'complete'));
+  await report(result.done, label, result.hasMore ? 'running' : (result.failed ? 'failed' : 'complete'));
   return result;
 }
 
@@ -153,7 +155,7 @@ async function saveMaterial(ctx, input) {
   return { ok: true, ...(await regenerateBacks(ctx, data, input.generationId)) };
 }
 
-// 续跑材质背面图重算：saveMaterial 返回 pending 后，前端循环调用本接口直到 pending 为 false
+// 续跑材质背面图重算：saveMaterial 返回 hasMore 后，前端循环调用本接口直到 hasMore 为 false
 async function continueRegenerateBacks(ctx, input) {
   const key = clean(input.key, 40);
   const material = (await ctx.mpserverless.db.collection('achievement_material').findOne({ key })).result;
