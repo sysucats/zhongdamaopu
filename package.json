@@ -2,7 +2,8 @@
   "name": "laf-app",
   "description": "the app engine service of lat",
   "dependencies": {
-    "laf-cli": "^1.0.0"
+    "laf-cli": "^1.0.0",
+    "miniprogram-ci": "^2.1.31"
   },
   "devDependencies": {
     "@aws-sdk/client-s3": "^3.231.0",

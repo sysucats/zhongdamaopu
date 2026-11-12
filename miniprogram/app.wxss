@@ -22,8 +22,23 @@ page {
   --color-gray-light: #f7f7f7;
   --color-gray-normal:#eeeeee;
   --color-gray: #dddddd;
+  --color-gray-mid: #cccccc;
   --color-gray-dark: #bbbbbb;
   --color-gray-max: #888;
+  --color-gray-deep: #666666;
+
+  /* 正文文字层级：主/次/辅助/占位，按灰阶递浅。 */
+  --color-text-main: #333;
+  --color-text-secondary: #666666;
+  --color-text-muted: #999999;
+  --color-text-placeholder: #cccccc;
+
+  --color-black: #000;
+  /* 页面/区块底色：page 用于整页，subtle 用于卡片内部浅底。 */
+  --color-bg-page: #f5f5f5;
+  --color-bg-subtle: #f8f8f8;
+  /* 浅边框（列表分隔、卡片描边）。 */
+  --color-border: #e5e5e5;
 
   --color-black-min:#414141;
   --color-black-light: #222222;
@@ -58,6 +73,9 @@ page {
   --grad-achievement-gold: linear-gradient(135deg, #f8d87c 0%, #de9f12 100%);
   --grad-achievement-locked: linear-gradient(135deg, #eef0f3 0%, #d9dde3 100%);
 
+  /* 浅橙横幅渐变（领养入口等暖色 CTA）。 */
+  --grad-warm-banner: linear-gradient(90deg, #fff7e6, #ffe7ba);
+
   /* 通用间距 / 圆角 / 阴影规范 */
   --space-xxs: 4rpx;
   --space-xs: 8rpx;
@@ -90,7 +108,13 @@ page {
   --color-status-reviewing-bg: #e6f7ff;
   --color-status-reviewing-text: #005a9e;
   --color-status-success-bg: #eef9f0;
+  --color-status-success-line: #27ae60;
   --color-status-error-bg: #fff1f0;
+  --color-status-error-line: #e74c3c;
+  /* 微信品牌绿（通过/授权态描边）。 */
+  --color-brand-wechat: #07c160;
+  /* 链接/次级操作蓝。 */
+  --color-link: #007bff;
   --shadow-hairline: 0 2rpx 8rpx rgba(0, 0, 0, 0.04);
   --shadow-card: 0 4rpx 16rpx rgba(0, 0, 0, 0.08);
   --shadow-card-strong: 0 8rpx 24rpx rgba(0, 0, 0, 0.12);
@@ -121,7 +145,7 @@ page {
   --color-edit: #787aff;
 
   /* 地图截图/缩放控件的选区高亮。 */
-  --color-filter-accent: #e74c3c;
+  --color-filter-accent: var(--color-status-error-line);
 
   /* 排行榜暖色底。 */
   --color-warm-bg: #fbf7f0;
@@ -140,7 +164,7 @@ page {
   --color-vaccine-light: rgba(255, 192, 67, 0.15);
 
   /* 主题色底上的文字和图标。 */
-  --color-text-onPrimary: #333;
+  --color-text-onPrimary: var(--color-text-main);
 
   --img-default: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBzdGFuZGFsb25lPSJubyI/PjwhRE9DVFlQRSBzdmcgUFVCTElDICItLy9XM0MvL0RURCBTVkcgMS4xLy9FTiIgImh0dHA6Ly93d3cudzMub3JnL0dyYXBoaWNzL1NWRy8xLjEvRFREL3N2ZzExLmR0ZCI+PHN2ZyB0PSIxNTUzOTI5NDU5ODM3IiBjbGFzcz0iaWNvbiIgc3R5bGU9IiIgdmlld0JveD0iMCAwIDEyMTYgMTAyNCIgdmVyc2lvbj0iMS4xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHAtaWQ9IjIxMzYiIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB3aWR0aD0iMjM3LjUiIGhlaWdodD0iMjAwIj48ZGVmcz48c3R5bGUgdHlwZT0idGV4dC9jc3MiPjwvc3R5bGU+PC9kZWZzPjxwYXRoIGQ9Ik0xMTIwIDEwMjRIOTZjLTU0LjQgMC05Ni00MS42LTk2LTk2Vjk2YzAtNTQuNCA0MS42LTk2IDk2LTk2aDEwMjRjNTQuNCAwIDk2IDQxLjYgOTYgOTZ2ODMyYzAgNTQuNC00MS42IDk2LTk2IDk2ek05NiA2NGMtMTkuMiAwLTMyIDEyLjgtMzIgMzJ2ODMyYzAgMTkuMiAxMi44IDMyIDMyIDMyaDEwMjRjMTkuMiAwIDMyLTEyLjggMzItMzJWOTZjMC0xOS4yLTEyLjgtMzItMzItMzJIOTZ6IiBwLWlkPSIyMTM3IiBmaWxsPSIjY2RjZGNkIj48L3BhdGg+PHBhdGggZD0iTTY0IDc2OGMtOS42IDAtMTYtMy4yLTIyLjQtOS42LTEyLjgtMTIuOC0xMi44LTMyIDAtNDQuOGwzNTItMzUyYzEyLjgtMTIuOCAyOC44LTEyLjggNDEuNi0zLjJMODAwIDY2Mi40bDE3Mi44LTExNS4yYzEyLjgtNi40IDI1LjYtNi40IDM4LjQgMy4ybDE2MCAxMjhjMTIuOCA5LjYgMTYgMzIgNi40IDQ0LjgtOS42IDEyLjgtMzIgMTYtNDQuOCA2LjRMOTkyIDYxNy42bC0xNzIuOCAxMTUuMmMtMTIuOCA2LjQtMjguOCA2LjQtMzguNC0zLjJsLTM2MS42LTMwMC44TDg2LjQgNzU4LjRjLTYuNCA2LjQtMTIuOCA5LjYtMjIuNCA5LjZ6IiBwLWlkPSIyMTM4IiBmaWxsPSIjY2RjZGNkIj48L3BhdGg+PHBhdGggZD0iTTg5NiA1MTJjLTg5LjYgMC0xNjAtNzAuNC0xNjAtMTYwczcwLjQtMTYwIDE2MC0xNjAgMTYwIDcwLjQgMTYwIDE2MC03MC40IDE2MC0xNjAgMTYweiBtMC0yNTZjLTU0LjQgMC05NiA0MS42LTk2IDk2czQxLjYgOTYgOTYgOTYgOTYtNDEuNiA5Ni05Ni00MS42LTk2LTk2LTk2eiIgcC1pZD0iMjEzOSIgZmlsbD0iI2NkY2RjZCI+PC9wYXRoPjwvc3ZnPg==);
 }

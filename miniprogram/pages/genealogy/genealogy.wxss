@@ -1,3 +1,10 @@
+/* 卡片操作按钮配色：仅本页使用（鼠尾草绿 / 杏橙 / 柔和黄） */
+page {
+  --genealogy-btn-upload: #6FB58A;
+  --genealogy-btn-comment: #E89B6C;
+  --genealogy-btn-detail: #F0C04A;
+}
+
 /* miniprogram/pages/genealogy/genealogy.wxss */
 @import "/pages/public/wxss/hFilter.wxss";
 
@@ -32,7 +39,7 @@ scroll-view {
   border-radius: 15rpx;
 
   box-sizing: border-box;
-  background-color: white;
+  background-color: var(--color-surface);
 
   box-shadow: 13rpx 13rpx 30rpx var(--color-gray);
   position: relative;
@@ -74,7 +81,7 @@ scroll-view {
   background-color: var(--color-black-light);
   opacity: .4;
   text-align: center;
-  color: white;
+  color: var(--color-text-inverse);
   position: absolute;
   bottom: 0;
 }
@@ -304,7 +311,7 @@ scroll-view {
   letter-spacing: 2rpx;
   padding: 20rpx 0;
   border-radius: 14rpx;
-  color: #fff;
+  color: var(--color-text-inverse);
 }
 
 .card-action-btn:active {
@@ -314,19 +321,19 @@ scroll-view {
 
 /* 上传喵照：柔和绿（鼠尾草绿） */
 .card-action-btn.btn-upload {
-  background: #6FB58A;
+  background: var(--genealogy-btn-upload);
   box-shadow: 0 4rpx 12rpx rgba(111, 181, 138, 0.35);
 }
 
 /* 便利贴墙：柔和橙（杏橙） */
 .card-action-btn.btn-comment {
-  background: #E89B6C;
+  background: var(--genealogy-btn-comment);
   box-shadow: 0 4rpx 12rpx rgba(232, 155, 108, 0.35);
 }
 
 /* 猫猫详情：柔和黄 */
 .card-action-btn.btn-detail {
-  background: #F0C04A;
+  background: var(--genealogy-btn-detail);
   box-shadow: 0 4rpx 12rpx rgba(240, 192, 74, 0.4);
 }
 
@@ -336,7 +343,7 @@ scroll-view {
   top: 24rpx;
   right: 24rpx;
   background: rgba(0, 0, 0, 0.5);
-  color: #fff;
+  color: var(--color-text-inverse);
   font-size: 22rpx;
   padding: 8rpx 22rpx;
   border-radius: 24rpx;
@@ -360,7 +367,7 @@ scroll-view {
   margin-bottom: 50rpx;
   width: 635rpx;
   border-radius: 15rpx;
-  background-color: white;
+  background-color: var(--color-surface);
   box-shadow: 13rpx 13rpx 30rpx var(--color-gray);
   overflow: hidden;
 
@@ -399,7 +406,7 @@ scroll-view {
   display: flex;
   align-items: center;
   flex-wrap: nowrap;
-  background-color: white;
+  background-color: var(--color-surface);
 }
 
 #search .input-icon {
@@ -411,7 +418,7 @@ scroll-view {
   width: 90%;
   height: 2.2rem;
   line-height: 2.2rem;
-  background-color: white;
+  background-color: var(--color-surface);
   border-top-right-radius: 10rpx;
   border-bottom-right-radius: 10rpx;
   display: inline-block;
@@ -450,7 +457,7 @@ scroll-view {
 
 #filter-block .filters {
   width: 100%;
-  background-color: white;
+  background-color: var(--color-surface);
   display: flex;
   flex-wrap: nowrap;
 }
@@ -521,7 +528,7 @@ scroll-view {
   height: 80rpx;
   line-height: 80rpx;
   font-size: 30rpx;
-  background-color: white;
+  background-color: var(--color-surface);
   color: var(--color-gray-dark);
   text-align: center;
 }
@@ -605,7 +612,7 @@ scroll-view {
   font-size: 22rpx;
   padding: 10rpx;
   background-color: var(--color-black-transparent);
-  color: white;
+  color: var(--color-text-inverse);
 
   border-radius: 10rpx;
   

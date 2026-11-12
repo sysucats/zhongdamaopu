@@ -326,7 +326,7 @@ swiper-item image {
   justify-content: flex-start;
   align-items: stretch;
   flex-direction: column;
-  background-color: #fff;
+  background-color: var(--color-surface);
 }
 
 .album-block {
@@ -396,7 +396,7 @@ swiper-item image {
 .album .loading {
   width: 100%;
   text-align: center;
-  background-color: #fff;
+  background-color: var(--color-surface);
   color: var(--color-gray);
   font-size: 28rpx;
   margin-top: 10rpx;
@@ -481,7 +481,7 @@ swiper-item image {
 
 /* 下面开始悬浮标题 */
 .big-header {
-  background-color: white;
+  background-color: var(--color-surface);
   display: flex;
   align-items: center;
   border: solid var(--color-gray-light);
@@ -734,7 +734,7 @@ swiper-item image {
   line-height: 42rpx;
   font-size: 22rpx;
   text-align: center;
-  background-color: white;
+  background-color: var(--color-surface);
   border-radius: 10rpx;
   border: 1rpx solid var(--color-gray-normal);
 }
@@ -1028,6 +1028,6 @@ one-rating-title {
 /* 领养入口保留原来的浅橙渐变，内容居中。 */
 .form-button.adopt-banner {
   margin-top: var(--space-lg);
-  background: linear-gradient(90deg, #fff7e6, #ffe7ba);
+  background: var(--grad-warm-banner);
   color: var(--color-primary-text);
 }

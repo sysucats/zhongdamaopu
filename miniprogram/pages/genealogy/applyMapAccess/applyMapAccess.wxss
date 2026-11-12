@@ -7,18 +7,18 @@
 }
 
 .status-card.approved {
-  background: #e8f8e8;
-  border: 2rpx solid #27ae60;
+  background: var(--color-status-success-bg);
+  border: 2rpx solid var(--color-status-success-line);
 }
 
 .status-card.pending {
-  background: #fff8e1;
+  background: var(--color-status-pending-bg);
   border: 2rpx solid var(--color-primary);
 }
 
 .status-card.rejected {
-  background: #fde8e8;
-  border: 2rpx solid #e74c3c;
+  background: var(--color-status-error-bg);
+  border: 2rpx solid var(--color-status-error-line);
 }
 
 .status-icon {
@@ -34,14 +34,14 @@
 
 .status-detail {
   font-size: 26rpx;
-  color: var(--color-black-min, #666);
+  color: var(--color-black-min);
   margin-top: 8rpx;
   line-height: 1.6;
 }
 
 .status-hint {
   font-size: 26rpx;
-  color: var(--color-black-min, #666);
+  color: var(--color-black-min);
   margin-top: 20rpx;
   line-height: 1.6;
 }
@@ -66,24 +66,24 @@
 
 .req-status.unmet {
   font-size: 24rpx;
-  color: var(--color-red, #dc3545);
+  color: var(--color-red);
   margin-top: 8rpx;
 }
 
 .req-status.met {
   font-size: 24rpx;
-  color: var(--color-green, #22ad6d);
+  color: var(--color-green);
   margin-top: 8rpx;
 }
 
 /* 自动通过规则 */
 .auto-pass-box.active {
-  background: #e6f7e6;
+  background: var(--color-status-success-bg);
 }
 
 .auto-pass-desc {
   font-size: 26rpx;
-  color: var(--color-black-min, #666);
+  color: var(--color-black-min);
   margin-top: 8rpx;
   line-height: 1.6;
 }

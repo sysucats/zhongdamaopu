@@ -10,7 +10,7 @@
   width: 120rpx;
   height: 120rpx;
   border-radius: 50%;
-  background: #eee;
+  background: var(--color-gray-normal);
 }
 
 .cat-info {
@@ -20,12 +20,12 @@
 .cat-name {
   font-size: 36rpx;
   font-weight: bold;
-  color: #333;
+  color: var(--color-text-main);
 }
 
 .cat-desc {
   font-size: 26rpx;
-  color: #999;
+  color: var(--color-text-muted);
   margin-top: 8rpx;
 }
 
@@ -40,7 +40,7 @@
 .status-label {
   font-size: 28rpx;
   font-weight: 500;
-  color: #333;
+  color: var(--color-text-main);
 }
 
 
@@ -53,14 +53,14 @@
 
 .status-line {
   font-size: 24rpx;
-  color: #999;
+  color: var(--color-text-muted);
   line-height: 1.8;
 }
 
 .status-note {
   font-size: 26rpx;
-  color: #666;
-  background: #f7f7f7;
+  color: var(--color-text-secondary);
+  background: var(--color-gray-light);
   border-radius: 12rpx;
   padding: 16rpx 20rpx;
   margin-top: 12rpx;
@@ -69,7 +69,7 @@
 
 .status-tip {
   font-size: 24rpx;
-  color: var(--color-primary-text, #d46b08);
+  color: var(--color-primary-text);
   margin-top: 16rpx;
   line-height: 1.6;
 }

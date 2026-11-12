@@ -27,6 +27,7 @@ const JPEG_QUALITY = 80;            // 对应前端 compressImage(80)
 const WATERMARK_FONT_RATIO = 0.03;  // 水印字号 = 缩放后画布高 * 0.03
 const WATERMARK_MARGIN = 30;        // 水印左下偏移
 const BATCH_SIZE = 6;             // 单次最多处理的照片数，避免超时
+const MAX_PROCESS_RETRY = 3;        // 单张照片最多处理 3 次；超过即跳过，避免坏图长期占满 BATCH_SIZE
 const HTTP_TIMEOUT_MS = 30000;      // 下载/上传超时
 const SIGN_EXPIRES_SECONDS = 2 * 60 * 60; // 与前端 sign_expires_tencent_cos 一致
 
@@ -185,11 +186,11 @@ module.exports = async (ctx) => {
   const appName = await loadAppName(ctx);
   phaseLog('appName =', appName);
 
-  // 2) 查找待处理照片：photo_compressed 为空 + verified=true
-  const { result: photos } = await ctx.mpserverless.db.collection('photo').find({
-    photo_compressed: { $in: [undefined, ''] },
-    verified: true
-  }, {
+  // 2) 查找待处理照片：photo_compressed 为空 + verified=true + 未超过重试上限
+  //    按 _id 升序（先来的先处理）。失败的照片会累加 photo_process_retry，
+  //    超过 MAX_PROCESS_RETRY 后不再入选，否则坏图会永久占满 BATCH_SIZE，
+  //    让新上传的照片一直轮不到（表现为「压缩图/水印图永远不出现」且无告警）。
+  const { result: photos } = await ctx.mpserverless.db.collection('photo').find(pendingQuery(), {
     projection: {
       _id: 1,
       _openid: 1,
@@ -197,7 +198,9 @@ module.exports = async (ctx) => {
       photographer: 1,
       userInfo: 1,
       cat_id: 1,
+      photo_process_retry: 1,
     },
+    sort: { _id: 1 },
     limit: BATCH_SIZE
   });
 
@@ -235,14 +238,19 @@ module.exports = async (ctx) => {
       results.push({ _id: photo._id, ok: true, elapsed_ms: elapsed, ...res });
     } catch (error) {
       const elapsed = Date.now() - photoStart;
+      const retry = (photo.photo_process_retry || 0) + 1;
       perPhotoTimings.push({ _id: photo._id, elapsed_ms: elapsed, ok: false });
-      phaseLog(`processOne failed for ${photo._id} after ${elapsed}ms`, error && error.message);
+      phaseLog(`processOne failed for ${photo._id} after ${elapsed}ms (retry ${retry}/${MAX_PROCESS_RETRY})`, error && error.message);
       results.push({
         _id: photo._id,
         ok: false,
         elapsed_ms: elapsed,
-        error: (error && error.message) || String(error)
+        error: (error && error.message) || String(error),
+        retry,
+        giving_up: retry >= MAX_PROCESS_RETRY
       });
+      // 累计失败次数，超过上限后不再被 pendingQuery 选中，让后续照片能排进来
+      await markFailed(ctx, photo._id, error);
     }
     phaseLog(`progress ${i + 1}/${photos.length}, remaining=${remaining()}ms`);
   }
@@ -263,6 +271,9 @@ module.exports = async (ctx) => {
   };
   if (stopReason) summary.stop_reason = stopReason;
   if (perPhotoTimings.length) summary.per_photo_timings = perPhotoTimings;
+  // 本轮被判定为坏图（达到重试上限）的照片，便于在日志里发现而不是静默跳过
+  const givenUp = results.filter(r => r.giving_up).length;
+  if (givenUp) summary.giving_up = givenUp;
 
   return summary;
 };
@@ -502,6 +513,36 @@ async function uploadBuffer(ctx, buffer, cloudPath) {
   };
 }
 
+// 待处理照片的查询条件：未压缩 + 已审核 + 未超重试上限
+// 用 $or 而不是直接 photo_process_retry: { $lt: N }，因为后者不匹配字段不存在的文档，
+// 会让所有新照片（从没失败过、没有该字段）全部漏掉。
+function pendingQuery() {
+  return {
+    photo_compressed: { $in: [undefined, ''] },
+    verified: true,
+    $or: [
+      { photo_process_retry: { $exists: false } },
+      { photo_process_retry: { $lt: MAX_PROCESS_RETRY } }
+    ]
+  };
+}
+
+// 记录一次处理失败：累加重试次数并留下最后错误，便于直接在库里看出哪些是坏图
+async function markFailed(ctx, photoId, error) {
+  const message = String((error && error.message) || error || '').slice(0, 300);
+  try {
+    await ctx.mpserverless.db.collection('photo').updateOne({
+      _id: photoId
+    }, {
+      $inc: { photo_process_retry: 1 },
+      $set: { photo_process_error: message, photo_process_at: new Date() }
+    });
+  } catch (e) {
+    // 记账失败不能影响主流程（否则一张坏图会连带整批中断）
+    console.error('[photoProcess] markFailed failed', photoId, e && e.message);
+  }
+}
+
 function generateUUID() {
   return crypto.randomUUID
     ? crypto.randomUUID()
@@ -511,3 +552,8 @@ function generateUUID() {
         return v.toString(16);
       });
 }
+
+// 供桩测试调用，不参与线上逻辑
+module.exports.pendingQuery = pendingQuery;
+module.exports.markFailed = markFailed;
+module.exports.MAX_PROCESS_RETRY = MAX_PROCESS_RETRY;

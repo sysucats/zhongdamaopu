@@ -11,7 +11,7 @@ page {
   margin: 10rpx 0;
   align-items: center;
   padding: 10rpx 30rpx;
-  background-color: white;
+  background-color: var(--color-surface);
   justify-content: space-between;
 }
 
@@ -71,8 +71,23 @@ button.primary {
 }
 /* pages/manage/badgeDef/badgeDef.wxss 内容拷贝结束 */
 
+/* 徽章页配色：仅本页使用的青色/金色主题 */
 page {
-  background-color: #EAC843 !important;
+  --badge-gold: #EAC843;
+  --badge-gold-dark: #c9a824;
+  --badge-gold-deep: #A78F2A;
+  --badge-yellow: #ffde54;
+  --badge-cyan-1: #BCDEE5;
+  --badge-cyan-2: #addce6;
+  --badge-cyan-3: #ADC4C9;
+  --badge-cyan-4: #D6ECE6;
+  --badge-cyan-5: #E3F9F9;
+  --badge-cyan-6: #e9fbff;
+  --badge-cyan-7: #F2FFFF;
+  --badge-text: #507E7E;
+  --badge-text-sub: #5F6D70;
+  --badge-text-muted: #9BA8A5;
+  background-color: var(--badge-gold) !important;
 }
 
 .container {
@@ -81,14 +96,14 @@ page {
 
 .up-part {
   width: 100%;
-  background-color: #D6ECE6;
-  border: 30rpx solid #BCDEE5;
+  background-color: var(--badge-cyan-4);
+  border: 30rpx solid var(--badge-cyan-1);
   box-sizing: border-box;
   display: flex;
 }
 
 .glass {
-  background-color: #F2FFFF;
+  background-color: var(--badge-cyan-7);
   width: 300rpx;
   height: 300rpx;
   padding: 4rpx;
@@ -111,11 +126,11 @@ page {
 .btn {
   width: 220rpx;
   height: 70rpx;
-  background-color: #BCDEE5;
-  box-shadow: 0px 7px 0px 0px #ADC4C9;
+  background-color: var(--badge-cyan-1);
+  box-shadow: 0px 7px 0px 0px var(--badge-cyan-3);
   border-radius: 20rpx;
   font-size: 22rpx;
-  color: #507E7E;
+  color: var(--badge-text);
   display: flex;
   align-items: center;
   padding: 0 20rpx;
@@ -128,13 +143,13 @@ page {
 }
 
 .btn.active {
-  background-color: #addce6;
-  box-shadow: 0px 2px 0px 0px #ADC4C9;
+  background-color: var(--badge-cyan-2);
+  box-shadow: 0px 2px 0px 0px var(--badge-cyan-3);
 }
 
 .btn.disabled {
-  background-color: #e9fbff;
-  box-shadow: 0px 2px 0px 0px #ADC4C9;
+  background-color: var(--badge-cyan-6);
+  box-shadow: 0px 2px 0px 0px var(--badge-cyan-3);
 }
 
 .btn-tip {
@@ -161,13 +176,13 @@ page {
 }
 
 .round-btn-shadow {
-  box-shadow: 0px 8px 0px 2px #A78F2A;
+  box-shadow: 0px 8px 0px 2px var(--badge-gold-deep);
 }
 
 .tip {
   text-align: center;
   font-size: 20rpx;
-  color: #A78F2A;
+  color: var(--badge-gold-deep);
 }
 
 .badge-list {
@@ -175,14 +190,14 @@ page {
   margin: 20rpx 10rpx;
   border-radius: 50rpx;
   padding: 20rpx;
-  background-color: #E3F9F9;
+  background-color: var(--badge-cyan-5);
   box-sizing: border-box;
 }
 
 .badge-list-inner {
   width: 690rpx;
   height: 480rpx;
-  background-color: white;
+  background-color: var(--color-surface);
   border-radius: 20rpx;
   overflow: hidden;
   box-sizing: border-box;
@@ -205,7 +220,7 @@ page {
 
 .badge-list-title {
   width: 100%;
-  color: #5F6D70;
+  color: var(--badge-text-sub);
   font-size: 32rpx;
   font-weight: bold;
   padding: 0 0 20rpx 20rpx;
@@ -217,7 +232,7 @@ page {
   margin-left: 20rpx;
   font-size: 24rpx;
   font-weight: normal;
-  color: #9BA8A5;
+  color: var(--badge-text-muted);
 }
 
 .sub-title-btn {
@@ -235,7 +250,7 @@ page {
 }
 
 .input-code, .code-btn {
-  background-color: #ffde54;
+  background-color: var(--badge-yellow);
   padding: 10rpx 5rpx;
   border-radius: 10rpx;
   font-size: 24rpx;
@@ -257,5 +272,5 @@ page {
 }
 
 .code-btn.hover {
-  background-color: #c9a824;
+  background-color: var(--badge-gold-dark);
 }

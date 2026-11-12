@@ -17,7 +17,7 @@
 .relation-item {
   margin-bottom: 24rpx;
   width: 100%;
-  background-color: white;
+  background-color: var(--color-surface);
   border-radius: 16rpx;
   overflow: hidden;
   box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.05);
@@ -31,7 +31,7 @@
   top: 0;
   left: 0;
   font-size: 18rpx;
-  color: #fff;
+  color: var(--color-text-inverse);
   background-color: var(--color-gray-dark);
   opacity: 0.6;
   padding: 2rpx 12rpx;
@@ -81,7 +81,7 @@
 
 .alias-text {
   font-size: 22rpx;
-  color: #333;
+  color: var(--color-text-main);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -137,7 +137,7 @@
 
 .relation-cat-name {
   font-size: 28rpx;
-  color: #333;
+  color: var(--color-text-main);
   font-weight: bold;
   margin-bottom: 4rpx;
   white-space: nowrap;
@@ -193,7 +193,7 @@
 .move-btn.up,
 .move-btn.down {
   background-color: var(--color-gray);
-  border-bottom: 1rpx solid #eee;
+  border-bottom: 1rpx solid var(--color-gray-normal);
 }
 
 .move-btn.disabled {
@@ -219,7 +219,7 @@
 
 .empty-icon {
   font-size: 80rpx;
-  color: #ddd;
+  color: var(--color-gray);
   margin-bottom: 20rpx;
   animation: bounceIn 0.6s ease;
 }
@@ -245,7 +245,7 @@
 #search .popup-container {
   width: 100%;
   max-height: 80vh;
-  background-color: white;
+  background-color: var(--color-surface);
   border-radius: 20rpx 20rpx 0 0;
   overflow: hidden;
   display: flex;
@@ -272,7 +272,7 @@
 .input-field {
   flex: 1;
   height: 72rpx;
-  background-color: white;
+  background-color: var(--color-surface);
   border-radius: 36rpx;
   padding: 0 20rpx;
   font-size: 26rpx;
@@ -293,7 +293,7 @@
 }
 
 .relation-card {
-  background-color: #fff;
+  background-color: var(--color-surface);
   border-radius: 16rpx;
   box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.06);
   overflow: hidden;
@@ -377,7 +377,7 @@
 }
 
 .popup-body .card {
-  background: #fff;
+  background: var(--color-surface);
   border-radius: 24rpx;
   padding: 20rpx;
   margin-bottom: 30rpx;
@@ -449,7 +449,7 @@
   left: 8rpx;
   width: calc((100% - 16rpx) / 3);
   height: calc(100% - 16rpx);
-  background: #fff;
+  background: var(--color-surface);
   border-radius: 12rpx;
   box-shadow: 0 2rpx 4rpx rgba(0, 0, 0, 0.05);
   transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
@@ -469,7 +469,7 @@
 }
 
 .segment-item.active {
-  color: #333;
+  color: var(--color-text-main);
   font-weight: bold;
 }
 .gender-icon {
@@ -516,7 +516,7 @@
 .toggle-dot {
   width: 32rpx;
   height: 32rpx;
-  background: #fff;
+  background: var(--color-surface);
   border-radius: 50%;
   position: absolute;
   top: 4rpx;

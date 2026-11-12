@@ -37,9 +37,8 @@ git diff master...HEAD -- '**/config.js' '**/pageSettings/*.js' '**/deployConfig
 ```
 
 **判定标准**：
-- [ ] `utils/config.js` 无破坏性修订（删 key、改 key 名、改默认值语义、改返回结构 = 破坏；新增 key = 兼容）
+- [ ] `miniprogram/config.js` 无破坏性修订（删 key、改 key 名、改默认值语义、改返回结构 = 破坏；新增 key = 兼容）
 - [ ] pageSettings / jsData 只增字段不改字段名，旧版本客户端读到新字段应忽略不崩
-- [ ] deployConfig（云数据库 collection 映射）只增 collection，不删不改
 - [ ] app.json：`tabBar`、`pages`、`subPackages` 的路径改动 = 老客户端 breaking（见第 4 节）
 
 ## 3. 硬编码名称 / logo
@@ -77,8 +76,60 @@ git grep -n "<oldPath>" -- 'miniprogram/**/*.js' 'miniprogram/**/*.wxml' 'minipr
 - [ ] 代码内无对已删除路径的残留引用
 - [ ] `window` 全局配色改动（navigationBarBackgroundColor / backgroundColor）需说明，避免全局视觉意外
 
-## 5. 通用收尾
+## 5. 组件复用（不重复造轮子）
+
+```bash
+# 5.1 本 PR 新增了哪些组件
+git diff master...HEAD --name-only --diff-filter=A -- 'miniprogram/components/**'
+
+# 5.2 现有组件清单（对照看是否有同功能组件）
+ls miniprogram/components
+```
+
+**判定标准**：
+- [ ] 新写组件前已检查 `miniprogram/components/` 下是否有类似功能组件；有则复用或扩展，不并行造轮子
+- [ ] 页面内新写的"局部组件化"片段（如自定义弹窗、卡片、选择器），如与现有组件功能重叠，应改为复用
+- [ ] 对现有组件的扩展（加 props/slot）优先于新建组件；若确需新建，PR 中说明为何不复用
+
+## 6. 数据集合与字段设计
+
+```bash
+# 6.1 本 PR 是否新增了数据集合引用（替换为实际 collection 名逐一判断）
+git diff master...HEAD -- 'functionsEMAS/**' | grep -E '^\+' | grep -oE "collection\(['\"][^'\"]+['\"]\)" | sort -u
+
+# 6.2 云函数侧新增写入的字段（判断哪些是"原始数据"、哪些是可计算字段）
+git diff master...HEAD -- 'functionsEMAS/**' | grep -E '^\+' | grep -iE 'add|update|\$set'
+
+# 6.3 小程序侧本地存储新增 key
+git diff master...HEAD -- 'miniprogram/**' | grep -E '^\+' | grep -oE "(setStorageSync|getStorageSync)\(['\"][^'\"]+['\"]" | sort -u
+```
+
+**判定标准**：
+- [ ] 新建数据集合 = 重决策。必须逐一检查：现有集合能否复用？所需数据能否由已有集合的字段计算得出？两者皆否才允许新建，且 PR 中说明理由
+- [ ] 新增字段前先判断是否"原始数据"：能通过其他字段/集合计算得出的，一律不落库，读时计算或查询后聚合
+- [ ] 新增字段对旧数据默认值为 `undefined/null` 时，读写两侧逻辑均不崩（云函数侧判断 + 前端侧兜底）
+- [ ] 历史数据是否需要回填/迁移脚本？若需要，脚本在 PR 中或附单独 PR，不允许"只管新数据、旧数据静默丢弃"
+
+## 7. 云函数改动
+
+```bash
+# 7.1 云函数改动范围与规模
+git diff master...HEAD --stat -- 'functionsEMAS/**'
+
+# 7.2 是否有循环内逐条 await 查询（N+1，数据量大时的性能隐患）
+git diff master...HEAD -- 'functionsEMAS/**' | grep -nE '^\+.*(for|while).*' 
+```
+
+**判定标准**：
+- [ ] 云函数改动有足够必要性：能在前端完成、或已有函数可扩展完成的，不新写/不改云函数
+- [ ] 兼容线上旧版本前端：接口返回结构只增不改不删；旧版本客户端调新函数不报错（返回字段名、类型不变）
+- [ ] 性能：无循环内逐条 `await db.collection(...)`（N+1 查询），批量操作用 `where + skip/limit` 分页或聚合；新增查询考虑数据量增长后的耗时与索引
+- [ ] 新增/修改的 SECRET_KEY、环境依赖已在 settings 系统配置，未硬编码
+
+## 8. 通用收尾
 
 - [ ] 交叉核对：涉及数据计算/统计的改动，结果抽样验证
 - [ ] 改配置文件前有备份习惯：合并前 `git tag` 或记录 commit hash
 - [ ] wxs/云函数两侧字段名同步（EMAS 云函数侧对应改动的兼容性）
+- [ ] PR 说明覆盖代码改动：逐条对照 diff 中的功能点，PR 描述未提及的功能改动必须补充说明（含动机、影响范围、验证方式）；"PR 说改了 A，代码还顺手动了 B"视为不合规
+- [ ] 无新增无用文件：diff 中新增的每个文件都被引用（工具/测试/文档类需说明保留原因）；顺手删除已无引用的死代码文件，不留孤儿文件

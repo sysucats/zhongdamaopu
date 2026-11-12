@@ -1,3 +1,12 @@
+/* 统计图配色：仅本页使用（iOS 系彩色 + 深绿变体） */
+page {
+  --dash-green: #4cd964;
+  --dash-green-dark: #24803d;
+  --dash-blue: #32ade6;
+  --dash-gray: #8e8e93;
+  --dash-yellow: #ffcc00;
+}
+
 @import "/pages/public/wxss/button.wxss";
 @import "/pages/public/wxss/tag.wxss";
 @import "/pages/public/wxss/card.wxss";
@@ -239,7 +248,7 @@
 
 .progress-fill {
   height: 100%;
-  background-color: #34c759;
+  background-color: var(--color-green);
   transition: width 0.3s;
 }
 
@@ -253,11 +262,11 @@
 }
 
 .progress-fill.current {
-  background-color: #24803d;
+  background-color: var(--dash-green-dark);
 }
 
 .progress-fill.adoption {
-  background-color: #32ade6;
+  background-color: var(--dash-blue);
 }
 
 /* 5.3 数据网格样式 */
@@ -336,8 +345,8 @@
 .gender-icon.unknown {
   font-size: 40rpx;
   font-weight: 600;
-  background-color: #8e8e93;
-  color: white;
+  background-color: var(--dash-gray);
+  color: var(--color-text-inverse);
 }
 
 /* 突出显示可点击的未知性别图标 */
@@ -673,15 +682,15 @@
 
 /* TNR */
 .tnr-good {
-  background-color: #4cd964;
+  background-color: var(--dash-green);
 }
 
 .tnr-medium {
-  background-color: #ffcc00;
+  background-color: var(--dash-yellow);
 }
 
 .tnr-poor {
-  background-color: #ff3b30;
+  background-color: var(--color-red);
 }
 
 /* ==================== 6. 弹窗样式 ==================== */
@@ -690,7 +699,7 @@
   width: 560rpx;
   max-height: 80vh;
   box-sizing: border-box;
-  background-color: white;
+  background-color: var(--color-surface);
   border-radius: 40rpx;
   overflow: hidden;
   display: flex;
@@ -743,8 +752,8 @@
 }
 
 .info-panel.highlight {
-  background-color: #f0f9eb;
-  border-left: 4rpx solid #07c160;
+  background-color: var(--color-status-success-bg);
+  border-left: 4rpx solid var(--color-brand-wechat);
 }
 
 /* 列表项样式 */
