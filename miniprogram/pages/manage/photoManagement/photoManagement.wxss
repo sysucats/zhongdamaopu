@@ -1,8 +1,16 @@
+/* 统计卡片配色：仅本页使用的暖灰/粉四色 */
+page {
+  --pm-card-1: #7c7575;
+  --pm-card-2: #b8b0b0;
+  --pm-card-3: #dfd3d3;
+  --pm-card-4: #fbf0f0;
+}
+
 
 
 .container {
   padding: 0;
-  background: #ffffff;
+  background: var(--color-surface);
   min-height: 100vh;
   font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Helvetica, sans-serif;
 }
@@ -13,7 +21,7 @@
   justify-content: center;
   align-items: center;
   height: 400rpx;
-  color: #666;
+  color: var(--color-text-secondary);
   font-size: 32rpx;
 }
 
@@ -22,7 +30,7 @@
   position: sticky;
   top: 0;
   z-index: 100;
-  background: #ffffff;
+  background: var(--color-surface);
   padding: 0 24rpx;
   box-sizing: border-box;
   width: 100%;
@@ -43,7 +51,7 @@
   position: relative;
   display: flex;
   align-items: center;
-  background: #f8f8f8;
+  background: var(--color-bg-subtle);
   border-radius: 12rpx;
   padding: 0 20rpx;
   height: 60rpx;
@@ -54,17 +62,17 @@
   flex: 1;
   height: 100%;
   font-size: 28rpx;
-  color: #000;
+  color: var(--color-black);
   background: transparent;
 }
 
 .search-input::placeholder {
-  color: #999;
+  color: var(--color-text-muted);
 }
 
 .search-icon {
   font-size: 28rpx;
-  color: #666;
+  color: var(--color-text-secondary);
   margin-left: 12rpx;
 }
 
@@ -72,7 +80,7 @@
   width: 32rpx;
   height: 32rpx;
   border-radius: 50%;
-  background: #ccc;
+  background: var(--color-gray-mid);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -81,7 +89,7 @@
 
 .clear-icon {
   font-size: 24rpx;
-  color: #fff;
+  color: var(--color-text-inverse);
   font-weight: bold;
 }
 
@@ -99,18 +107,18 @@
 }
 
 .action-btn:active {
-  background-color: #f5f5f5;
+  background-color: var(--color-bg-page);
 }
 
 .action-icon {
   font-size: 28rpx;
-  color: #000;
+  color: var(--color-black);
 }
 
 /* 首页统计卡片 */
 .stats-section {
   padding: 6rpx;
-  background: #f8f8f8;
+  background: var(--color-bg-subtle);
   box-sizing: border-box;
   border-radius: 12rpx;
   width: 100%;
@@ -136,23 +144,23 @@
 
 /* 指定颜色 */
 .card1 {
-  background: #7c7575;
-  color: white;
+  background: var(--pm-card-1);
+  color: var(--color-text-inverse);
 }
 
 .card2 {
-  background: #b8b0b0;
-  color: white;
+  background: var(--pm-card-2);
+  color: var(--color-text-inverse);
 }
 
 .card3 {
-  background: #dfd3d3;
-  color: #333;
+  background: var(--pm-card-3);
+  color: var(--color-text-main);
 }
 
 .card4 {
-  background: #fbf0f0;
-  color: #333;
+  background: var(--pm-card-4);
+  color: var(--color-text-main);
 }
 
 .stat-value {
@@ -177,7 +185,7 @@
   position: sticky;
   top: 88rpx; /* 导航栏高度 */
   z-index: 98;
-  background: #ffffff;
+  background: var(--color-surface);
   padding: 0;
   box-sizing: border-box;
   width: 100%;
@@ -219,9 +227,9 @@
   display: inline-flex;
   align-items: center;
   padding: 8rpx 14rpx;
-  background: #f8f8f8;
+  background: var(--color-bg-subtle);
   border-radius: 12rpx;
-  border: 1rpx solid #e5e5e5;
+  border: 1rpx solid var(--color-border);
   transition: all 0.2s ease;
   flex-shrink: 0;
   max-width: 180rpx;
@@ -229,8 +237,8 @@
 }
 
 .campus-tag.active {
-  background: #000000;
-  border-color: #000000;
+  background: var(--color-black);
+  border-color: var(--color-black);
 }
 
 .campus-tag:active {
@@ -239,7 +247,7 @@
 
 .campus-name {
   font-size: 20rpx;
-  color: #666;
+  color: var(--color-text-secondary);
   margin-right: 4rpx;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -247,12 +255,12 @@
 }
 
 .campus-tag.active .campus-name {
-  color: #ffffff;
+  color: var(--color-text-inverse);
 }
 
 .campus-count {
   font-size: 16rpx;
-  color: #999;
+  color: var(--color-text-muted);
   background: rgba(255, 255, 255, 0.2);
   padding: 2rpx 4rpx;
   border-radius: 12rpx;
@@ -260,13 +268,13 @@
 }
 
 .campus-tag.active .campus-count {
-  color: #000;
+  color: var(--color-black);
   background: rgba(255, 255, 255, 0.9);
 }
 
 /* 内容区域 */
 .content-area {
-  background: white;
+  background: var(--color-surface);
   height: calc(100vh - 200rpx); /* 减去顶部导航栏(88rpx) + 统计卡片(约80rpx) + 位置筛选栏(约32rpx) 的高度 */
 }
 
@@ -283,7 +291,7 @@
   justify-content: center;
   align-items: center;
   padding: 30rpx 0;
-  color: #999;
+  color: var(--color-text-muted);
   font-size: 24rpx;
 }
 
@@ -293,7 +301,7 @@
   justify-content: center;
   align-items: center;
   padding: 30rpx 0;
-  color: #ccc;
+  color: var(--color-text-placeholder);
   font-size: 24rpx;
 }
 
@@ -306,11 +314,11 @@
 }
 
 .cat-item {
-  background: #ffffff;
+  background: var(--color-surface);
   border-radius: 12rpx;
   overflow: hidden;
   box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.06);
-  border: 1rpx solid #f0f0f0;
+  border: 1rpx solid var(--color-border);
   transition: all 0.2s ease;
 }
 
@@ -338,7 +346,7 @@
 .cat-name {
   font-size: 30rpx;
   font-weight: 600;
-  color: #000000;
+  color: var(--color-black);
   text-align: center;
   white-space: nowrap;
   overflow: hidden;
@@ -356,16 +364,16 @@
 
 .photo-count {
   font-size: 22rpx;
-  color: #666;
-  background: #f5f5f5;
+  color: var(--color-text-secondary);
+  background: var(--color-bg-page);
   padding: 4rpx 12rpx;
   border-radius: 12rpx;
 }
 
 .best-count {
   font-size: 22rpx;
-  color: #666;
-  background: #fff8e1;
+  color: var(--color-text-secondary);
+  background: var(--color-status-pending-bg);
   padding: 4rpx 12rpx;
   border-radius: 12rpx;
 }
@@ -377,8 +385,8 @@
 
 .campus-badge {
   font-size: 18rpx;
-  color: #666;
-  background: #e8f4fd;
+  color: var(--color-text-secondary);
+  background: var(--color-status-reviewing-bg);
   padding: 0rpx 8rpx;
   border-radius: 8rpx;
 }
@@ -388,7 +396,7 @@
   position: sticky;
   top: 88rpx; /* photo-header 的高度 */
   z-index: 99;
-  background: #ffffff;
+  background: var(--color-surface);
   padding: 0;
   box-sizing: border-box;
   width: 100%;
@@ -435,9 +443,9 @@
   display: inline-flex;
   align-items: center;
   padding: 8rpx 14rpx;
-  background: #f8f8f8;
+  background: var(--color-bg-subtle);
   border-radius: 12rpx;
-  border: 1rpx solid #e5e5e5;
+  border: 1rpx solid var(--color-border);
   transition: all 0.2s ease;
   flex-shrink: 0;
   max-width: 180rpx;
@@ -445,8 +453,8 @@
 }
 
 .uploader-tag.active {
-  background: #000000;
-  border-color: #000000;
+  background: var(--color-black);
+  border-color: var(--color-black);
 }
 
 .uploader-tag:active {
@@ -458,13 +466,13 @@
   height: 32rpx;
   border-radius: 50%;
   margin-right: 6rpx;
-  border: 1rpx solid #e5e5e5;
+  border: 1rpx solid var(--color-border);
   flex-shrink: 0;
 }
 
 .uploader-name {
   font-size: 20rpx;
-  color: #666;
+  color: var(--color-text-secondary);
   margin-right: 4rpx;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -472,12 +480,12 @@
 }
 
 .uploader-tag.active .uploader-name {
-  color: #ffffff;
+  color: var(--color-text-inverse);
 }
 
 .uploader-count {
   font-size: 16rpx;
-  color: #999;
+  color: var(--color-text-muted);
   background: rgba(255, 255, 255, 0.2);
   padding: 2rpx 4rpx;
   border-radius: 12rpx;
@@ -485,7 +493,7 @@
 }
 
 .uploader-tag.active .uploader-count {
-  color: #000;
+  color: var(--color-black);
   background: rgba(255, 255, 255, 0.9);
 }
 
@@ -503,9 +511,9 @@
   align-items: center;
   justify-content: center;
   padding: 14rpx 0;
-  background: #f8f8f8;
+  background: var(--color-bg-subtle);
   border-radius: 12rpx;
-  border: 1rpx solid #e5e5e5;
+  border: 1rpx solid var(--color-border);
   transition: all 0.2s ease;
   flex: 1;
   min-height: 60rpx;
@@ -513,9 +521,9 @@
 }
 
 .filter-tab.active {
-  background: #000000;
-  border-color: #000000;
-  color: #ffffff;
+  background: var(--color-black);
+  border-color: var(--color-black);
+  color: var(--color-text-inverse);
 }
 
 .filter-tab:active {
@@ -525,21 +533,21 @@
 .filter-icon {
   font-size: 24rpx;
   margin-right: 8rpx;
-  color: #666;
+  color: var(--color-text-secondary);
 }
 
 .filter-tab.active .filter-icon {
-  color: #ffffff;
+  color: var(--color-text-inverse);
 }
 
 .filter-text {
   font-size: 24rpx;
-  color: #666;
+  color: var(--color-text-secondary);
   font-weight: 500;
 }
 
 .filter-tab.active .filter-text {
-  color: #ffffff;
+  color: var(--color-text-inverse);
 }
 
 /* 照片容器 */
@@ -567,7 +575,7 @@
   aspect-ratio: 1;
   border-radius: 12rpx;
   overflow: hidden;
-  background: #f8f8f8;
+  background: var(--color-bg-subtle);
   transition: all 0.2s ease;
   border: 2rpx solid transparent;
   box-sizing: border-box;
@@ -581,7 +589,7 @@
 }
 
 .photo-item.selected {
-  border-color: #07c160;
+  border-color: var(--color-brand-wechat);
 }
 
 .edit-mode .photo-item {
@@ -589,7 +597,7 @@
 }
 
 .edit-mode .photo-item.selected {
-  border-color: #007bff;
+  border-color: var(--color-link);
 }
 
 .photo-image {
@@ -605,7 +613,7 @@
   top: 8rpx;
   right: 8rpx;
   background: rgba(0, 0, 0, 0.7);
-  color: #ffffff;
+  color: var(--color-text-inverse);
   padding: 6rpx 10rpx;
   border-radius: 12rpx;
   font-size: 20rpx;
@@ -625,7 +633,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: white;
+  color: var(--color-text-inverse);
   font-size: 22rpx;
   font-weight: bold;
   box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.3);
@@ -635,7 +643,7 @@
 .empty-state {
   text-align: center;
   padding: 120rpx 40rpx;
-  color: #999;
+  color: var(--color-text-muted);
 }
 
 .empty-icon {
@@ -647,12 +655,12 @@
 .empty-text {
   font-size: 28rpx;
   margin-bottom: 24rpx;
-  color: #666;
+  color: var(--color-text-secondary);
 }
 
 .empty-subtext {
   font-size: 24rpx;
-  color: #999;
+  color: var(--color-text-muted);
   line-height: 1.5;
 }
 
@@ -662,9 +670,9 @@
   bottom: 0;
   left: 0;
   right: 0;
-  background: #ffffff;
+  background: var(--color-surface);
   padding: 24rpx;
-  border-top: 1rpx solid #e5e5e5;
+  border-top: 1rpx solid var(--color-border);
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -676,7 +684,7 @@
 
 .action-info {
   font-size: 26rpx;
-  color: #000000;
+  color: var(--color-black);
   font-weight: 500;
 }
 
@@ -697,23 +705,23 @@
 }
 
 .action-btn.primary {
-  background: #000000;
-  color: #ffffff;
+  background: var(--color-black);
+  color: var(--color-text-inverse);
 }
 
 .action-btn.secondary {
-  background: #666666;
-  color: #ffffff;
+  background: var(--color-gray-deep);
+  color: var(--color-text-inverse);
 }
 
 .action-btn.danger {
-  background: #ff3b30;
-  color: #ffffff;
+  background: var(--color-red);
+  color: var(--color-text-inverse);
 }
 
 .action-btn:disabled {
-  background: #f5f5f5;
-  color: #ccc;
+  background: var(--color-bg-page);
+  color: var(--color-text-placeholder);
   transform: none;
 }
 
@@ -737,7 +745,7 @@
 }
 
 .modal-content {
-  background: white;
+  background: var(--color-surface);
   border-radius: 12rpx;
   padding: 40rpx;
   width: 100%;
@@ -750,12 +758,12 @@
   font-size: 32rpx;
   font-weight: 700;
   margin-bottom: 20rpx;
-  color: #000000;
+  color: var(--color-black);
 }
 
 .modal-message {
   font-size: 28rpx;
-  color: #666;
+  color: var(--color-text-secondary);
   margin-bottom: 40rpx;
   line-height: 1.5;
 }
@@ -776,18 +784,18 @@
 }
 
 .modal-btn.cancel {
-  background: #f5f5f5;
-  color: #666;
-  border: 1rpx solid #e5e5e5;
+  background: var(--color-bg-page);
+  color: var(--color-text-secondary);
+  border: 1rpx solid var(--color-border);
 }
 
 .modal-btn.confirm {
-  background: #ff3b30;
-  color: white;
+  background: var(--color-red);
+  color: var(--color-text-inverse);
 }
 
 .modal-btn.confirm.primary {
-  background: #000000;
+  background: var(--color-black);
 }
 
 .modal-btn:active {

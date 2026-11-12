@@ -1,7 +1,7 @@
 #search .popup-container {
   width: 100%;
   max-height: 80vh;
-  background-color: white;
+  background-color: var(--color-surface);
   border-radius: 20rpx 20rpx 0 0;
   overflow: hidden;
   display: flex;
@@ -27,7 +27,7 @@
 .input-field {
   flex: 1;
   height: 72rpx;
-  background-color: white;
+  background-color: var(--color-surface);
   border-radius: 36rpx;
   padding: 0 20rpx;
   font-size: 26rpx;
@@ -85,7 +85,7 @@
 }
 
 .item-hover {
-  background-color: #f5f5f5;
+  background-color: var(--color-bg-page);
 }
 
 .search-empty {

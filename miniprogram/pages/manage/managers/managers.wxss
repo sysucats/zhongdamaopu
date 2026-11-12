@@ -31,7 +31,7 @@ page {
   padding: 0 var(--space-xs);
   border-radius: var(--radius-pill);
   background: var(--color-red);
-  color: #fff;
+  color: var(--color-text-inverse);
   font-size: 22rpx;
   line-height: 32rpx;
   vertical-align: middle;
