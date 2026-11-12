@@ -6,8 +6,6 @@
 
 - [ ] **`cat._no` 并发重复**：`functionsEMAS/unionOp/updateCat.js:131` 先 count 查重再 insert，非原子；两个管理员同时新建猫会拿到同一编号。`_no` 用于猫编号搜索（genealogy.js:192）和小程序码 scene（mpcode.js:15），重复会串。修法：`_no` 加唯一索引 + 捕获 duplicate key 重试，而非给 `while(true)` 加次数上限。
 
-- [ ] **achievement 系 vs badge 系双轨集合**：`achievement_def/achievement/achievement_material` 与 `badge/badge_def/badge_code` 功能高度重叠，需确认是否历史包袱、能否收敛（违反「新建集合前先查复用」）。
-
 ## 中优先级
 
 - [ ] **rank 缓存表**（暂缓，暂不修）：`photo_rank` / `badge_rank` 由定时任务整表删重建（`getPhotoRank.js`、`getBadgeRank.js`），属可计算数据。暂不动的理由：每天 0 点才跑一次，不是 countPhoto 那种 12 倍放大；且读取端是 `photoRank` / `badgeRank` 组件，改读时计算要把排序+分页搬到客户端。等榜单数据量或刷新频率上来再处理。
@@ -31,6 +29,8 @@
 - [ ] 根目录 `themeChanging.py` 游离，按规范应归入 `wb_code/`，暂保留。
 
 ## 已处理（留档备查）
+
+- [x] **achievement 系 vs badge 系「疑似双轨」——误判，已排除**：两者不是同一业务。`badge / badge_def / badge_code` 面向**猫**发徽章（`giveBadge`、`genBadgeCode` 生成兑换码、`getBadge` 按 `badge_def` 查找）；`achievement / achievement_def / achievement_material` 面向**用户**记成就解锁（`openid` + `key` + `serialNo`，另有个人榜）。此前仅凭集合命名相近就判为重复，是误判。
 
 - [x] **photoProcess 失败照片永久占名额**：原查询只按「未压缩 + 已审核」取 6 条、无排序无失败标记，坏图每轮都被优先取到，累积 6 张即让新照片永远排不进来（压缩图/水印图不出且无告警）。已改为 `photo_process_retry` 计数：失败时 `$inc` 并记录 `photo_process_error/at`，候选查询用 `$or`（字段不存在 / 小于上限 3）排除超限照片，并按 `_id` 升序先来先处理；返回结果带 `retry` / `giving_up`，summary 汇总 `giving_up` 便于从日志发现坏图。桩测试 `wb_code/testPhotoProcess.cjs` 覆盖筛选语义与 3 轮淘汰。
 
