@@ -91,25 +91,20 @@ async function likeAdd(item_id, item_type) {
 
   // 没有记录
   await ensureUser();
-  await api.curdOp({
+  const added = await api.curdOp({
     operation: "add",
     collection: "inter",
     data: {
       type: TYPE_LIKE,
       uid: user.openid,
       item_id: item_id,
+      item_type: item_type,
       count: 1
     }
   });
 
-  // 加上去
-  console.log("like", item_type, item_id);
-  await api.curdOp({
-    operation: "inc",
-    collection: item_type,
-    type: "like",
-    item_id, item_id,
-  });
+  if (!added?.ok) throw new Error(added?.errMsg || '点赞失败');
+  if (added.alreadyLiked) return false;
 
   // 刷新缓存
   await likeCheck([item_id], {

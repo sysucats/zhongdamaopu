@@ -46,19 +46,10 @@ module.exports = async (ctx) => {
       } = await ctx.mpserverless.db.collection('user').findOne({
         openid: openid
       });
-      if (targetUser.openid != openid) {
-        return "Err, can only update your own info.";
+      if (!targetUser || (ctx.args.user?._id && ctx.args.user._id !== targetUser._id)) {
+        return { ok: false, errMsg: 'can only update your own info' };
       }
-      var user = ctx.args.user;
-      const _id = user._id;
-      delete user._id; // 因为数据库不能更新_id
-      delete user.openid; // 这个键唯一
-      delete user.manager; // 不能用这个函数更新
-      await ctx.mpserverless.db.collection('user').updateOne({
-        _id: _id
-      }, {
-        $set: user
-      });
+      await updateUser(ctx, ctx.args.user || {}, targetUser._id, true);
       const {
         result
       } = await ctx.mpserverless.db.collection('user').findOne({
@@ -81,9 +72,9 @@ module.exports = async (ctx) => {
       if (myLevel < 99) {
         return { errMsg: 'not a manager', ok: false };
       }
-      var user = Object.assign({}, ctx.args.user || {});
-      const targetOpenid = user.openid || openid;
-      delete user.openid; // 不允许改身份键，否则会挪走别人的账号
+      const input = ctx.args.user || {};
+      var user = pick(input, ['manager', 'role']);
+      const targetOpenid = input.openid || openid;
       if (String(targetOpenid) === String(openid) && user.manager !== undefined) {
         return { errMsg: 'cannot change your own manager level', ok: false };
       }
@@ -102,3 +93,36 @@ module.exports = async (ctx) => {
     }
   }
 };
+
+function pick(input, fields) {
+  return Object.fromEntries(fields.filter(key => Object.hasOwn(input, key)).map(key => [key, input[key]]));
+}
+
+// 资料只写展示字段；权限由最高管理员维护，统计字段不接受客户端更新。
+async function updateUser(ctx, input, targetId, profileOnly = false) {
+  const db = ctx.mpserverless.db, openid = ctx.args.openid;
+  const { result: caller } = await db.collection('user').findOne({ openid });
+  if (!caller) return { ok: false, errMsg: 'user not found' };
+  const own = targetId === caller._id;
+  const admin = !profileOnly && caller.manager >= 99;
+  if (!own && !admin) return { ok: false, errMsg: 'not allowed' };
+  const fields = profileOnly ? ['userInfo'] : [
+    ...(own ? ['userInfo', 'showcase_achievements', 'mapAccess'] : []),
+    ...(admin ? ['manager', 'role', 'mapAccess'] : []),
+  ];
+  const data = pick(input, fields);
+  if ('mapAccess' in data && !admin) {
+    const [photos, comments] = await Promise.all([
+      db.collection('photo').count({ _openid: openid }),
+      db.collection('comment').count({ user_openid: openid }),
+    ]);
+    const autoPass = photos.result + comments.result >= 60;
+    data.mapAccess = { status: autoPass ? 'approved' : 'pending', autoPass,
+      applyReason: String(input.mapAccess?.applyReason || ''), applyDate: new Date() };
+  }
+  if (admin && own && 'manager' in data) return { ok: false, errMsg: 'cannot change your own manager level' };
+  if (!Object.keys(data).length) return { ok: false, errMsg: 'no editable fields' };
+  return db.collection('user').updateOne({ _id: targetId }, { $set: { ...data, mdate: new Date() } });
+}
+
+module.exports.updateUser = updateUser;
