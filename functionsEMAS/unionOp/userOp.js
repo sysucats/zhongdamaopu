@@ -111,16 +111,6 @@ async function updateUser(ctx, input, targetId, profileOnly = false) {
     ...(admin ? ['manager', 'role', 'mapAccess'] : []),
   ];
   const data = pick(input, fields);
-  if ('mapAccess' in data && !admin) {
-    const [photos, comments] = await Promise.all([
-      db.collection('photo').count({ _openid: openid }),
-      db.collection('comment').count({ user_openid: openid }),
-    ]);
-    const autoPass = photos.result + comments.result >= 60;
-    data.mapAccess = { status: autoPass ? 'approved' : 'pending', autoPass,
-      applyReason: String(input.mapAccess?.applyReason || ''), applyDate: new Date() };
-  }
-  if (admin && own && 'manager' in data) return { ok: false, errMsg: 'cannot change your own manager level' };
   if (!Object.keys(data).length) return { ok: false, errMsg: 'no editable fields' };
   return db.collection('user').updateOne({ _id: targetId }, { $set: { ...data, mdate: new Date() } });
 }

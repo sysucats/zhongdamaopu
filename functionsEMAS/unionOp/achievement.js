@@ -61,7 +61,12 @@ async function countMetrics(db, openid, user) {
   const count = async (name, query) => (await db.collection(name).count(query)).result || 0;
   const [photo, comment, like] = await Promise.all([
     count('photo', { _openid: openid, verified: true }),
-    count('comment', { _openid: openid, deleted: { $ne: true }, needVerify: { $ne: true } }),
+    // 累计曾通过审核的便利贴，软删除不扣减。
+    count('comment', { _openid: openid, $or: [
+      { approvedOnce: true },
+      { review_action: 'pass' },
+      { needVerify: { $ne: true }, deleted: { $ne: true }, review_action: { $ne: 'delete' } },
+    ] }),
     count('inter', { _openid: openid, type: 10000 }),
   ]);
   return {
@@ -77,41 +82,51 @@ async function loadDisplaySettings(db) {
 }
 
 async function sync(db, openid, user) {
-  const [defs, counts, records] = await Promise.all([
+  const [defs, counts, records, displaySettings] = await Promise.all([
     loadActiveDefs(db),
     countMetrics(db, openid, user),
     findAll(db.collection('achievement'), { openid }),
+    loadDisplaySettings(db),
   ]);
   const owned = new Set(records.map(record => record.key));
   const newlyUnlocked = [];
+  const failedKeys = [];
   for (const def of defs) {
     if (owned.has(def.key) || counts[def.rule.metric] < def.rule.count) continue;
-    const sequence = await serials.state(db, def.key);
-    if (sequence && !sequence.ready) continue;
-    const serialNo = sequence ? await serials.allocate(db, def.key) : null;
-    const id = 'achv_' + createHash('sha256').update(`${openid}\0${def.key}`).digest('hex').slice(0, 40);
-    const record = { _id: id, openid, _openid: openid, key: def.key, create_date: new Date(), ...(serialNo ? { serialNo } : {}) };
     try {
-      const inserted = await db.collection('achievement').insertOne(record);
-      if (!inserted?.insertedId) throw new Error('成就写入失败');
-      owned.add(def.key);
-      records.push(record);
-      newlyUnlocked.push(def.key);
+      await serials.allocate(db, def.key, async serialNo => {
+        const { result: current } = await db.collection('achievement_def').findOne({ key: def.key });
+        if (!current || current.status !== 'active' || current.rule.metric !== def.rule.metric
+            || current.rule.count !== def.rule.count) return;
+        const id = 'achv_' + createHash('sha256').update(`${openid}\0${def.key}`).digest('hex').slice(0, 40);
+        const record = { _id: id, openid, _openid: openid, key: def.key, create_date: new Date(), serialNo };
+        try {
+          const inserted = await db.collection('achievement').insertOne(record);
+          if (!inserted?.insertedId) throw new Error('成就写入失败');
+          owned.add(def.key);
+          records.push(record);
+          newlyUnlocked.push(def.key);
+        } catch (error) {
+          const { result: existing } = await db.collection('achievement').findOne({ openid, key: def.key });
+          if (!existing) throw error;
+          owned.add(def.key);
+          records.push(existing);
+        }
+      });
     } catch (error) {
-      const { result: existing } = await db.collection('achievement').findOne({ openid, key: def.key });
-      if (!existing) throw error;
-      owned.add(def.key);
-      records.push(existing);
+      console.error('[achievement] award failed', def.key, error);
+      failedKeys.push(def.key);
     }
   }
   return {
     ok: true,
     metrics: METRICS,
-    displaySettings: await loadDisplaySettings(db),
+    displaySettings,
     defs: defs.map(publicDef),
     unlocked: records.map(record => ({ key: record.key, create_date: record.create_date, serialNo: record.serialNo || null })),
     counts,
     newlyUnlocked,
+    failedKeys,
   };
 }
 

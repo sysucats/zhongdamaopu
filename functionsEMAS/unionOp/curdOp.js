@@ -1,5 +1,6 @@
 const { createHash } = require('crypto')
 const { updateUser } = require('./userOp.js')
+const serials = require('./achievementSerial.js')
 const { createInternalCtx } = require('./_helper.js')
 const isManagerHandler = require('./isManager.js')
 const deleteFilesHandler = require('./deleteFiles.js')
@@ -166,13 +167,32 @@ module.exports = async (ctx) => {
         }
         data.create_date = new Date();
         data.mdate = data.mdate || new Date();
+        // 旧版解锁入口同步分配编号，保留 insertedId 返回格式。
+        if (collection === 'achievement') {
+            return await serials.allocate(ctx.mpserverless.db, data.key, serialNo =>
+                ctx.mpserverless.db.collection('achievement').insertOne({ ...data, serialNo })
+            );
+        }
         return await ctx.mpserverless.db.collection(collection).insertOne(data);
     }
     else if (operation == "update") {  // 更新记录
+        if (collection === 'comment') {
+            const { result: current } = await ctx.mpserverless.db.collection('comment').findOne({ _id: item_id });
+            if (wasApproved(current) || data.review_action === 'pass'
+                || (data.needVerify === false && data.deleted !== true && data.review_action !== 'delete')) {
+                data.approvedOnce = true;
+            } else delete data.approvedOnce;
+        }
         data.mdate = new Date();
         return await ctx.mpserverless.db.collection(collection).updateOne({ _id: item_id }, { $set: data })
     }
     else if (operation == "remove") {  // 移除记录
+        if (collection === 'comment') {
+            const { result: current } = await ctx.mpserverless.db.collection('comment').findOne({ _id: item_id });
+            return await ctx.mpserverless.db.collection('comment').updateOne(
+                { _id: item_id }, { $set: { deleted: true, ...(wasApproved(current) ? { approvedOnce: true } : {}), mdate: new Date() } }
+            );
+        }
         if (collection == "news") {  // 删除公告关联的图片和封面
             await delete_photo_for_news(item_id);
         }
@@ -275,4 +295,9 @@ async function addLike(ctx, input) {
     }
     await db.collection(targetType).updateOne({ _id: input.item_id }, { $inc: { like_count: 1 } });
     return { ...inserted, ok: true };
+}
+
+function wasApproved(comment) {
+    return Boolean(comment && (comment.approvedOnce || comment.review_action === 'pass'
+        || (comment.needVerify !== true && !comment.deleted && comment.review_action !== 'delete')));
 }

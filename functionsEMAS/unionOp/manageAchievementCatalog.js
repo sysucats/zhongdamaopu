@@ -37,7 +37,6 @@ const needsAssets = (badge, material) => !badge.backImage || !badge.model3dUrl |
 
 async function beginProgress(db, key, generationId, init = {}) {
   const collection = db.collection('setting');
-  // 统一在此处兜底，避免写入用 undefined、后续按 undefined 过滤导致进度更新静默失效
   const gid = generationId || randomUUID();
   await collection.updateOne({ _id: progressId(key) }, { $set: {
     generationId: gid, status: 'running', step: init.step || 0, total: init.total || 6,
@@ -67,13 +66,14 @@ async function generateTrackedAssets(ctx, front, material, key, generationId = r
 }
 
 async function list(db) {
-  const [materials, badges, counts, sequences, progress, displaySettings] = await Promise.all([
+  const [materials, badges, counts, sequences, progress, displaySettings, missingSerials] = await Promise.all([
     findAll(db.collection('achievement_material')),
     findAll(db.collection('achievement_def')),
     holderCounts(db),
     findAll(db.collection('setting'), { _id: { $regex: '^achievement_serial:' } }),
     findAll(db.collection('setting'), { _id: { $regex: '^achievement_assets:' } }),
     loadDisplaySettings(db),
+    findAll(db.collection('achievement'), { $or: [{ serialNo: { $exists: false } }, { serialNo: null }, { serialNo: { $lte: 0 } }] }, { projection: { key: 1 } }),
   ]);
   return {
     ok: true,
@@ -81,13 +81,10 @@ async function list(db) {
     numberingRevision: serials.revision,
     displaySettings,
     materials: materials.map(item => ({ ...item, generation: progress.find(p => p._id === progressId(`material:${item.key}`)) || null })).sort((a, b) => a.key.localeCompare(b.key)),
-    badges: badges.map(badge => ({ ...badge, needsAssets: needsAssets(badge, materials.find(m => m.key === badge.materialKey)), generation: progress.find(p => p._id === progressId(badge.key)) || null, holders: counts[badge.key] || 0, serialReady: sequences.some(seq => seq._id === serials.counterId(badge.key) && seq.ready) })),
+    badges: badges.map(badge => ({ ...badge, needsAssets: needsAssets(badge, materials.find(m => m.key === badge.materialKey)), generation: progress.find(p => p._id === progressId(badge.key)) || null, holders: counts[badge.key] || 0, serialReady: sequences.some(seq => seq._id === serials.counterId(badge.key) && seq.ready) && !missingSerials.some(record => record.key === badge.key) })),
   };
 }
 
-// 重新生成引用该材质、且背面不是用当前材质图生成的徽章。
-// 每枚都要走 COS 下载 → PNG 渲染 → COS 上传，约 1~3 秒；单次调用只处理一小批，
-// 剩余部分通过 hasMore 交回调用方续跑，避免同步调用撞云函数超时。
 const REGEN_BATCH = 3;
 
 async function pendingBacks(db, material) {
@@ -102,8 +99,7 @@ async function regenerateBacks(ctx, material, generationId) {
   const total = ready.length;
   const batch = pending.slice(0, REGEN_BATCH);
   const done = total - pending.length;
-  // 用 hasMore 而非 pending：旧版小程序会把 pending 当成「编号整理未完成」去调 prepareBadge，
-  // 材质 key 在徽章表里查不到会直接报错；换字段名让旧客户端自然忽略，最多少处理几枚。
+  // hasMore 表示材质续跑；pending 保留给编号整理。
   const result = { regenerated: 0, failed: 0, skipped, done, total, remaining: pending.length, hasMore: false };
   const report = await beginProgress(db, `material:${material.key}`, generationId, {
     step: done, total, label: batch.length ? `准备生成背面图 ${done}/${total}` : '背面图已是最新',
@@ -125,7 +121,6 @@ async function regenerateBacks(ctx, material, generationId) {
     }
   }
 
-  // 整批都有失败时不再续跑，否则会反复重试同一批；交回用户在保存时重试
   const remaining = pending.length - result.regenerated;
   result.remaining = remaining;
   result.done = total - remaining;
@@ -155,7 +150,6 @@ async function saveMaterial(ctx, input) {
   return { ok: true, ...(await regenerateBacks(ctx, data, input.generationId)) };
 }
 
-// 续跑材质背面图重算：saveMaterial 返回 hasMore 后，前端循环调用本接口直到 hasMore 为 false
 async function continueRegenerateBacks(ctx, input) {
   const key = clean(input.key, 40);
   const material = (await ctx.mpserverless.db.collection('achievement_material').findOne({ key })).result;
@@ -209,8 +203,18 @@ async function saveBadge(ctx, input) {
   const persist = async (assets = {}) => {
     Object.assign(data, assets);
     if (status === 'active' && (!data.frontImage || !data.backImage)) throw new Error('正面和背面齐全后才能上线');
-    if (current) await collection.updateOne({ _id: current._id }, { $set: data, $unset: { thicknessMm: '' } });
-    else await collection.insertOne({ ...data, created_at: new Date() });
+    await serials.withLock(db, key, async () => {
+      const { result: latest } = await collection.findOne({ key });
+      if (current && !latest) throw new Error('徽章已删除，请刷新后重试');
+      if (!current && latest) throw new Error('徽章标识已存在');
+      if (latest) {
+        if (+new Date(latest.updated_at || 0) !== +new Date(current.updated_at || 0)) throw new Error('徽章已更新，请刷新后重试');
+        const holders = await holderCount(db, key);
+        if ((latest.status === 'active' || holders > 0) && !sameRule(latest.rule, rule)) throw new Error('徽章上线或已有人获得后，规则不能修改');
+        if (latest.status === 'active' && status === 'draft' && holders > 0) throw new Error('已有人获得的徽章不能退回草稿');
+        await collection.updateOne({ _id: latest._id }, { $set: data, $unset: { thicknessMm: '' } });
+      } else await collection.insertOne({ ...data, created_at: new Date() });
+    });
   };
   const regenerate = !current || needsAssets(current, material) || frontChanged || materialKey !== current.materialKey;
   if (regenerate && isCosUrl(frontImage)) {
@@ -243,9 +247,11 @@ async function deleteBadge(ctx, input) {
   const key = clean(input.key, 40);
   const current = (await db.collection('achievement_def').findOne({ key })).result;
   if (!current) return { ok: false, error: '徽章不存在' };
-  if (await holderCount(db, key) > 0) return { ok: false, error: '已有人获得的徽章不能删除' };
-  await db.collection('achievement_def').deleteOne({ _id: current._id });
-  return { ok: true };
+  return serials.withLock(db, key, async () => {
+    if (await holderCount(db, key) > 0) return { ok: false, error: '已有人获得的徽章不能删除' };
+    await db.collection('achievement_def').deleteOne({ _id: current._id });
+    return { ok: true };
+  });
 }
 
 module.exports = async (ctx) => {
