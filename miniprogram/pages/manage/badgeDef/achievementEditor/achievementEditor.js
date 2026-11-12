@@ -198,17 +198,31 @@ Page({
         ? { ...form, isNew, generationId }
         : { ...form, isNew, generationId, sort: Number(form.sort) || 0, rule: { metric: form.rule.metric, count: Number(form.rule.count) } };
       const result = await callCatalog(mode === 'material' ? 'saveMaterial' : 'saveBadge', data);
-      let pending = result.pending;
-      while (pending) {
-        this.setData({ generation: { label: '素材已就绪，正在整理历史编号' } });
-        pending = (await callCatalog('prepareBadge', { key: form.key, generationId })).pending;
+      let regenerated = result.regenerated || 0;
+      let failed = result.failed || 0;
+      if (mode === 'material') {
+        // 背面图重算按批推进，单批失败即停止，避免无限重试同一批
+        let batch = result;
+        let rounds = 0;
+        while (batch.pending && rounds++ < 200) {
+          this.setData({ generation: { label: `正在生成背面图 ${batch.done}/${batch.total}` } });
+          batch = await callCatalog('regenerateMaterialBacks', { key: form.key, generationId });
+          regenerated += batch.regenerated || 0;
+          failed += batch.failed || 0;
+        }
+      } else {
+        let pending = result.pending;
+        while (pending) {
+          this.setData({ generation: { label: '素材已就绪，正在整理历史编号' } });
+          pending = (await callCatalog('prepareBadge', { key: form.key, generationId })).pending;
+        }
       }
       this.setData({ generation: { label: '保存完成', status: 'complete' } });
       clearAchievementCache();
-      if (mode === 'material' && (result.regenerated || result.failed)) {
+      if (mode === 'material' && (regenerated || failed)) {
         await new Promise(resolve => wx.showModal({
           title: '材质已保存',
-          content: `重新生成背面 ${result.regenerated} 枚${result.failed ? `，失败 ${result.failed} 枚，可再次保存重试` : ''}。`,
+          content: `重新生成背面 ${regenerated} 枚${failed ? `，失败 ${failed} 枚，可再次保存重试` : ''}。`,
           showCancel: false,
           complete: resolve,
         }));

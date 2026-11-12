@@ -35,11 +35,16 @@ async function holderCounts(db) {
 const progressId = key => `achievement_assets:${key}`;
 const needsAssets = (badge, material) => !badge.backImage || !badge.model3dUrl || !material?.image || badge.backMaterialImage !== material.image;
 
-async function beginProgress(db, key, generationId) {
+async function beginProgress(db, key, generationId, init = {}) {
   const collection = db.collection('setting');
-  await collection.updateOne({ _id: progressId(key) }, { $set: { generationId, status: 'running', step: 0, total: 6, label: '读取素材', error: '', updated_at: new Date() } }, { upsert: true });
+  // 统一在此处兜底，避免写入用 undefined、后续按 undefined 过滤导致进度更新静默失效
+  const gid = generationId || randomUUID();
+  await collection.updateOne({ _id: progressId(key) }, { $set: {
+    generationId: gid, status: 'running', step: init.step || 0, total: init.total || 6,
+    label: init.label || '读取素材', error: '', updated_at: new Date(),
+  } }, { upsert: true });
   return async (step, label, status = 'running', error = '') => {
-    await collection.updateOne({ _id: progressId(key), generationId }, { $set: { step, label, status, error, updated_at: new Date() } });
+    await collection.updateOne({ _id: progressId(key), generationId: gid }, { $set: { step, label, status, error, updated_at: new Date() } });
   };
 }
 
@@ -80,21 +85,34 @@ async function list(db) {
   };
 }
 
-// 重新生成引用该材质、且背面不是用当前材质图生成的徽章
+// 重新生成引用该材质、且背面不是用当前材质图生成的徽章。
+// 每枚都要走 COS 下载 → PNG 渲染 → COS 上传，约 1~3 秒；单次调用只处理一小批，
+// 剩余部分通过 return pending 交回调用方续跑，避免同步调用撞云函数超时。
+const REGEN_BATCH = 3;
+
+async function pendingBacks(db, material) {
+  const badges = await findAll(db.collection('achievement_def'), { materialKey: material.key });
+  const ready = badges.filter(badge => isCosUrl(badge.frontImage));
+  return { skipped: badges.length - ready.length, ready, pending: ready.filter(badge => needsAssets(badge, material)) };
+}
+
 async function regenerateBacks(ctx, material, generationId) {
   const db = ctx.mpserverless.db;
-  const badges = await findAll(db.collection('achievement_def'), { materialKey: material.key });
-  const result = { regenerated: 0, failed: 0, skipped: 0 };
-  const pending = badges.filter(b => isCosUrl(b.frontImage) && needsAssets(b, material));
-  const report = await beginProgress(db, `material:${material.key}`, generationId || randomUUID());
-  let index = 0;
-  for (const badge of badges) {
-    if (!isCosUrl(badge.frontImage)) { result.skipped++; continue; }
-    if (!needsAssets(badge, material)) continue;
+  const { skipped, ready, pending } = await pendingBacks(db, material);
+  const total = ready.length;
+  const batch = pending.slice(0, REGEN_BATCH);
+  const done = total - pending.length;
+  const result = { regenerated: 0, failed: 0, skipped, done, total, remaining: pending.length, pending: false };
+  const report = await beginProgress(db, `material:${material.key}`, generationId, {
+    step: done, total, label: batch.length ? `准备生成背面图 ${done}/${total}` : '背面图已是最新',
+  });
+
+  for (let i = 0; i < batch.length; i++) {
+    const badge = batch[i];
+    const at = done + i + 1;
     try {
-      index++;
       await generateTrackedAssets(ctx, badge.frontImage, material.image, badge.key, undefined,
-        (step, label) => report(step, `第 ${index}/${pending.length} 枚 · ${badge.name} · ${label}`),
+        (step, label) => report(at, `${at}/${total} 枚 · ${badge.name} · ${label}`),
         assets => db.collection('achievement_def').updateOne({ _id: badge._id }, {
           $set: { ...assets, backMaterialImage: material.image, updated_at: new Date() },
         }));
@@ -104,7 +122,16 @@ async function regenerateBacks(ctx, material, generationId) {
       result.failed++;
     }
   }
-  await report(6, result.failed ? `已生成 ${result.regenerated} 枚，失败 ${result.failed} 枚` : `已生成 ${result.regenerated} 枚`, result.failed ? 'failed' : 'complete');
+
+  // 整批都有失败时不再续跑，否则会反复重试同一批；交回用户在保存时重试
+  const remaining = pending.length - result.regenerated;
+  result.remaining = remaining;
+  result.done = total - remaining;
+  result.pending = remaining > 0 && result.failed === 0;
+  const label = result.pending
+    ? `${result.done}/${total} 枚已完成，继续生成…`
+    : (result.failed ? `${result.done}/${total} 枚已就绪，${result.failed} 枚生成失败，可再次保存重试` : `背面图已更新，共 ${result.done} 枚`);
+  await report(result.done, label, result.pending ? 'running' : (result.failed ? 'failed' : 'complete'));
   return result;
 }
 
@@ -124,6 +151,14 @@ async function saveMaterial(ctx, input) {
   if (current) await collection.updateOne({ _id: current._id }, { $set: data });
   else await collection.insertOne({ ...data, created_at: new Date() });
   return { ok: true, ...(await regenerateBacks(ctx, data, input.generationId)) };
+}
+
+// 续跑材质背面图重算：saveMaterial 返回 pending 后，前端循环调用本接口直到 pending 为 false
+async function continueRegenerateBacks(ctx, input) {
+  const key = clean(input.key, 40);
+  const material = (await ctx.mpserverless.db.collection('achievement_material').findOne({ key })).result;
+  if (!material) return { ok: false, error: '材质不存在' };
+  return { ok: true, ...(await regenerateBacks(ctx, material, input.generationId)) };
 }
 
 async function saveBadge(ctx, input) {
@@ -231,6 +266,7 @@ module.exports = async (ctx) => {
       return { ok: true, progress: result || null };
     }
     if (action === 'saveMaterial') return await saveMaterial(ctx, input);
+    if (action === 'regenerateMaterialBacks') return await continueRegenerateBacks(ctx, input);
     if (action === 'saveBadge') return await saveBadge(ctx, input);
     if (action === 'deleteBadge') return await deleteBadge(ctx, input);
     if (action === 'prepareBadge') return await prepareBadge(ctx, input);
