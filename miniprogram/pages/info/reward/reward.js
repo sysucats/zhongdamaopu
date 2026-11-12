@@ -28,6 +28,7 @@ Page({
     reward: [],
     rewardLoading: true,
     rewardLoadError: '',
+    canReward: false,
   },
 
   jsData: {
