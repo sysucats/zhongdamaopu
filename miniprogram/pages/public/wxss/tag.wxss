@@ -71,16 +71,16 @@
   line-height: 1.5;
   white-space: nowrap;
 }
-.status-pending { background: var(--color-status-pending-bg); color: var(--color-status-pending-text); }
-.status-reviewing { background: var(--color-status-reviewing-bg); color: var(--color-status-reviewing-text); }
-.status-approved { background: var(--color-status-success-bg); color: var(--color-green-dark); }
-.status-rejected { background: var(--color-status-error-bg); color: var(--color-red-dark); }
-.status-cancelled { background: var(--color-gray-normal); color: var(--color-black-min); }
+/* 色调底色统一走 --status-bg，拼接段也取这一份。 */
+.status-pending { --status-bg: var(--color-status-pending-bg); background: var(--status-bg); color: var(--color-status-pending-text); }
+.status-reviewing { --status-bg: var(--color-status-reviewing-bg); background: var(--status-bg); color: var(--color-status-reviewing-text); }
+.status-approved { --status-bg: var(--color-status-success-bg); background: var(--status-bg); color: var(--color-green-dark); }
+.status-rejected { --status-bg: var(--color-status-error-bg); background: var(--status-bg); color: var(--color-red-dark); }
+.status-cancelled { --status-bg: var(--color-gray-normal); background: var(--status-bg); color: var(--color-black-min); }
 
 /* 猫猫状态：各入口共用尺寸和排列。 */
 .cat-status-list {
   display: flex;
-  flex: 1;
   min-width: 0;
   flex-wrap: nowrap;
   overflow-x: auto;
@@ -92,4 +92,56 @@
   padding: 6rpx 14rpx;
   font-size: 22rpx;
   line-height: 1.4;
+}
+
+/* 拼接状态：一行一颗胶囊（行由 catStatus.wxs 切好），圆头按行裁切。 */
+.cat-status-rows {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8rpx;
+  max-width: 100%;
+  min-width: 0;
+}
+.cat-status-joined {
+  display: inline-flex;
+  flex: 0 1 auto;
+  max-width: 100%;
+  gap: 4rpx;
+  overflow-x: auto;
+  border-radius: var(--radius-pill);
+}
+.cat-status-joined .cat-status-tag {
+  position: relative;
+  border-radius: 0;
+  background: transparent;
+}
+.cat-status-joined .cat-status-tag::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  border-radius: 6rpx;
+  /* 缺 tone 时退回灰底，避免裸文字。 */
+  background: var(--status-bg, var(--color-gray-normal));
+  transform: skewX(-18deg);
+}
+/* 两端外扩补偿斜切缺口（h/2·tan18°≈7rpx），当前被圆头盖住。 */
+.cat-status-joined .cat-status-tag:first-child::before {
+  left: -12rpx;
+}
+.cat-status-joined .cat-status-tag:last-child::before {
+  right: -12rpx;
+}
+.cat-status-joined .cat-status-tag > text {
+  position: relative;
+}
+.cat-status-joined .cat-status-tag:only-child {
+  border-radius: var(--radius-pill);
+  background: var(--status-bg, var(--color-gray-normal));
+}
+.cat-status-joined .cat-status-tag:only-child::before {
+  display: none;
 }

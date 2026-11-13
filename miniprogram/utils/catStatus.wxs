@@ -1,0 +1,71 @@
+/*
+ * 猫猫状态标签：文案、色调、分行规则的唯一来源。
+ * 用法见各页 wxml：cs.rows() 出每一行的段，cs.list() 供 aria-label 用。
+ * scope：detail 详情页 / list 首页卡片 / recognize 识猫卡片；tone 对应 tag.wxss 的 .status-*。
+ */
+
+var ADOPT_TEXT = ['未领养', '已领养', '寻找领养中'];
+var ADOPT_TONE = ['cancelled', 'approved', 'pending'];
+// 每行段数预算，按各入口可用宽度定：详情 ~610rpx / 首页 ~555rpx / 识猫 ~287rpx。
+var MAX_PER_ROW = { detail: 4, list: 3, recognize: 2 };
+
+function adoptItem(cat, scope, adoptDesc) {
+  if (cat.adopt === undefined || cat.adopt === null) return null;
+  // 卡片口径不展示"未领养"，避免默认态占位。
+  if (scope !== 'detail' && cat.adopt !== 1 && cat.adopt !== 2) return null;
+  return {
+    key: 'adopt',
+    text: (adoptDesc && adoptDesc[cat.adopt]) || ADOPT_TEXT[cat.adopt] || ADOPT_TEXT[0],
+    tone: ADOPT_TONE[cat.adopt] || 'cancelled'
+  };
+}
+
+function list(cat, scope, cfg, adoptDesc) {
+  if (!cat || !cfg) return [];
+  var items = [];
+  var adopt = adoptItem(cat, scope, adoptDesc);
+  if (adopt) items.push(adopt);
+  if (scope === 'detail') {
+    items.push({
+      key: 'sterilized',
+      text: cat.sterilized ? cfg.detail_cat.sterilized_true : cfg.detail_cat.sterilized_false,
+      tone: cat.sterilized ? 'approved' : 'pending'
+    });
+  }
+  if (cat.to_star) {
+    items.push({ key: 'to_star', text: cfg.genealogy.to_star_tip, tone: 'cancelled' });
+  }
+  if (cat.missing) {
+    items.push({ key: 'missing', text: cfg.genealogy.missing_tip, tone: 'cancelled' });
+  }
+  return items;
+}
+
+/* 按预算切行，一行一颗胶囊。 */
+function rows(cat, scope, cfg, adoptDesc) {
+  var items = list(cat, scope, cfg, adoptDesc);
+  var max = MAX_PER_ROW[scope] || items.length || 1;
+  var result = [];
+  var row = null;
+  for (var i = 0; i < items.length; i++) {
+    if (i % max === 0) {
+      row = { key: 'row' + (i / max), items: [] };
+      result.push(row);
+    }
+    row.items.push(items[i]);
+  }
+  return result;
+}
+
+/* 读屏文案；空列表返回空串。 */
+function label(items) {
+  var texts = [];
+  for (var i = 0; i < items.length; i++) texts.push(items[i].text);
+  return texts.length ? '状态：' + texts.join('、') : '';
+}
+
+module.exports = {
+  list: list,
+  rows: rows,
+  label: label
+};
