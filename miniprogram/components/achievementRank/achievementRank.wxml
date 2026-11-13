@@ -32,8 +32,11 @@
         </view>
       </view>
       <view class="leaderboard-name">{{item.nickName}}</view>
-      <view class="leaderboard-value achievement-count" bindtap="openShowcase" data-openid="{{item.openid}}" data-name="{{item.nickName}}" aria-role="button" aria-label="查看{{item.nickName}}展示的成就">
-        <text class="achievement-count-number">{{item.count}}</text><text class="leaderboard-unit">枚</text>
+      <view class="{{item.rank <= 3 ? 'rank-ticket rank-ticket-' + item.rank : 'leaderboard-value'}} achievement-count" bindtap="openShowcase" data-openid="{{item.openid}}" data-name="{{item.nickName}}" aria-role="button" aria-label="查看{{item.nickName}}展示的成就">
+        <view class="rank-ticket-label" wx:if="{{item.rank <= 3}}">TOP 0{{item.rank}}</view>
+        <view class="{{item.rank <= 3 ? 'rank-ticket-value' : 'leaderboard-score'}}">
+          <text class="achievement-count-number {{item.rank <= 3 ? 'rank-ticket-number' : ''}}">{{item.count}}</text><text class="{{item.rank <= 3 ? 'rank-ticket-unit' : 'leaderboard-unit'}}">枚</text>
+        </view>
       </view>
     </view>
   </view>
