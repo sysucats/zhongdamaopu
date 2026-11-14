@@ -27,3 +27,5 @@ miniprogram/signKey.js
 *.bak
 functionsEMAS/*.zip
 docs/
+private.*.key
+preview-qrcode.png

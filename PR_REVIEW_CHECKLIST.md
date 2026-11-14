@@ -126,7 +126,79 @@ git diff master...HEAD -- 'functionsEMAS/**' | grep -nE '^\+.*(for|while).*'
 - [ ] 性能：无循环内逐条 `await db.collection(...)`（N+1 查询），批量操作用 `where + skip/limit` 分页或聚合；新增查询考虑数据量增长后的耗时与索引
 - [ ] 新增/修改的 SECRET_KEY、环境依赖已在 settings 系统配置，未硬编码
 
-## 8. 通用收尾
+## 8. NPM 依赖安装与构建
+
+```bash
+# 8.1 本 PR 是否改动了依赖清单
+git diff master...HEAD -- package.json miniprogram/package.json package-lock.json
+
+# 8.2 新增依赖后本地安装（小程序侧依赖装在 miniprogram/ 下，不是仓库根目录）
+npm install                      # 根目录：工程/脚本类依赖
+cd miniprogram && npm install    # 小程序侧：会被打包进 miniprogram_npm 的依赖
+
+# 8.3 用 miniprogram-ci 构建 npm（对应开发者工具的"工具-构建npm"，产物在 miniprogram_npm/）
+miniprogram-ci pack-npm --pp ./miniprogram
+
+# 8.4 构建产物是否被误提交（miniprogram_npm/ 应在 .gitignore，除非团队约定提交）
+git status --short | grep miniprogram_npm
+```
+
+**判定标准**：
+- [ ] 新增依赖先确认必要性：标准库/已有依赖能做的不引新包；能 `require` 云函数侧已有实现的不重复装
+- [ ] 依赖装对位置：仅小程序运行时用的装到 `miniprogram/package.json`，工程/脚本类装根目录，不混装
+- [ ] `miniprogram-ci pack-npm` 构建成功、无报错；`miniprogram_npm/` 产物与 `miniprogram/package.json` 一致（改了依赖必须重新构建）
+- [ ] 新增依赖不引入超包体积风险：确认依赖体积与 tree-shaking 情况，主包大小未逼近 2M 上限
+- [ ] `package-lock.json` 同步提交，锁版本；不允许他人拉代码后 `npm install` 结果不一致
+- [ ] 真机验证：引用新包的页面在真机预览可用（开发者工具的"构建npm"与 CI 构建产物需保持同源）
+
+## 9. 编译校验：miniprogram-ci preview
+
+**原则**：preview 走的是和「上传」同一条云端编译链路，WXML/WXSS/JS 语法错误、依赖缺失、包体积超限都会在这一步直接抛错。所以 review 时用它替代「打开开发者工具点预览」。
+
+```bash
+# 9.1 推荐：走仓库脚本（自动读 project.config.json 的 appid、产出 preview-qrcode.png）
+node wb_code/preview.mjs                          # 默认首页
+node wb_code/preview.mjs pages/catDetail/catDetail            # 指定页面
+node wb_code/preview.mjs pages/catDetail/catDetail "id=123"   # 页面 + 启动参数
+
+# 9.2 兜底：纯命令行（脚本不可用时）
+miniprogram-ci preview \
+  --pp . \
+  --appid wx5bd705b2bc91c73b \
+  --pkp ./private.wx5bd705b2bc91c73b.key \
+  --uv 0.0.0 \
+  --qrcode-format image \
+  --qrcode-output-dest ./preview-qrcode.png
+
+# 9.3 需要和开发者工具编译设置完全一致时加 --use-project-config
+miniprogram-ci preview --pp . --appid <appid> --pkp ./private.<appid>.key --uv 0.0.0 \
+  --use-project-config --qrcode-format image --qrcode-output-dest ./preview-qrcode.png
+```
+
+Node API 关键参数（脚本里就是传这些）：
+
+| 参数 | 必填 | 说明 |
+| --- | --- | --- |
+| `project` | 是 | ci.Project 实例（appid / projectPath / privateKeyPath / ignores） |
+| `qrcodeOutputDest` | 是 | 二维码落地路径，配合 `qrcodeFormat: 'image'` 生成 png |
+| `qrcodeFormat` | 否 | `image` / `base64` / `terminal`（默认 terminal，仅供调试） |
+| `desc` | 否 | 显示在「小程序助手」开发版列表里的备注 |
+| `setting` | 否 | 编译设置（es6/es7/minify/autoPrefixWXSS 等） |
+| `robot` | 否 | 使用哪个 ci 机器人，1~30 |
+| `pagePath` | 否 | 预览指定页面路径 |
+| `searchQuery` | 否 | 页面启动参数 |
+| `scene` | 否 | 场景值，默认 1011 |
+| `onProgressUpdate` | 否 | 进度回调 |
+
+**判定标准**：
+- [ ] `preview` 编译通过、无报错（报错 = 直接阻塞合并，不看代码质量了）
+- [ ] 生成 `preview-qrcode.png` 并扫码进真机：目标页面无白屏、无样式错乱、无接口报错
+- [ ] PR 新增/改动页面的，必须用 `pagePath`（必要时带 `searchQuery`）直连该页预览，不能只靠手点导航
+- [ ] 私钥不入库：`private.*.key` 已在 `.gitignore`，CI 环境用 `MP_PRIVATE_KEY_PATH` 注入
+- [ ] 改动依赖或 `app.json` 后必须重新 preview，确认包体积与分包加载正常
+- [ ] `preview-qrcode.png` 属临时产物，不提交
+
+## 10. 通用收尾
 
 - [ ] 交叉核对：涉及数据计算/统计的改动，结果抽样验证
 - [ ] 改配置文件前有备份习惯：合并前 `git tag` 或记录 commit hash
