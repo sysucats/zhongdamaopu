@@ -18,6 +18,9 @@ let syncAt = 0;
 let syncRequest = null;
 let catalogCache = null;
 let catalogAt = 0;
+let cacheVersion = 0;
+let nextRequestId = 0;
+let appliedRequestId = 0;
 const sentViews = new Set();
 
 async function invoke(op, args = {}) {
@@ -58,8 +61,7 @@ function finishViewMigration() {
   }
 }
 
-async function applyResult(result, user) {
-  if (result.migrated) finishViewMigration();
+async function applyResult(result, user, version, requestId) {
   const data = {
     metrics: result.metrics || {},
     displaySettings: result.displaySettings || { thicknessMm: .6 },
@@ -68,29 +70,38 @@ async function applyResult(result, user) {
     counts: result.counts || {},
     newlyUnlocked: result.newlyUnlocked || [],
   };
+  if (version !== cacheVersion) return syncAchievements();
+  if (result.migrated) finishViewMigration();
+  const badges = buildLadders(data, data.unlocked, data.counts, user?.userInfo?.nickName || '').flatMap(ladder => ladder.tiers);
+  // 旧响应的新解锁仍入队，进度沿用较新的结果。
+  queueAchievementUnlocks(badges, data.newlyUnlocked);
+  if (requestId < appliedRequestId) return syncCache;
+  appliedRequestId = requestId;
   syncCache = data;
   syncAt = Date.now();
   catalogCache = { metrics: data.metrics, defs: data.defs, displaySettings: data.displaySettings };
   catalogAt = syncAt;
-  const badges = buildLadders(data, data.unlocked, data.counts, user?.userInfo?.nickName || '').flatMap(ladder => ladder.tiers);
-  queueAchievementUnlocks(badges, data.newlyUnlocked);
   return data;
 }
 
 async function requestSync(args = {}) {
   const user = await getUser();
   if (!user?.openid) throw new Error('用户信息读取失败');
+  const version = cacheVersion, requestId = ++nextRequestId;
   const pending = pendingViewedCats();
   const result = pending || args.catId
     ? await invoke('view', { ...args, ...(pending ? { catIds: pending } : {}) })
     : await invoke('sync');
-  return applyResult(result, user);
+  return applyResult(result, user, version, requestId);
 }
 
 // 读取成就状态；force 时跳过缓存。服务端会顺带补发已达条件的成就
 async function syncAchievements({ force = false } = {}) {
   if (!force && syncCache && Date.now() - syncAt < SYNC_TTL) {
-    return { ...syncCache, defs: await signDefs(syncCache.defs) };
+    const version = cacheVersion, cached = syncCache;
+    const defs = await signDefs(cached.defs);
+    if (version !== cacheVersion) return syncAchievements();
+    return { ...cached, defs };
   }
   if (!force && syncRequest) return syncRequest;
   const request = requestSync().finally(() => {
@@ -109,8 +120,9 @@ function refreshAchievements() {
 function trackViewCat(catId) {
   if (!catId || sentViews.has(catId)) return;
   sentViews.add(catId);
+  const version = cacheVersion;
   requestSync({ catId }).catch(error => {
-    sentViews.delete(catId);
+    if (version === cacheVersion) sentViews.delete(catId);
     console.warn('记录浏览失败', error);
   });
 }
@@ -119,13 +131,21 @@ async function getCatalog() {
   if (catalogCache && Date.now() - catalogAt < CATALOG_TTL) {
     return { ...catalogCache, defs: await signDefs(catalogCache.defs) };
   }
+  const version = cacheVersion;
   const result = await invoke('catalog');
-  catalogCache = { metrics: result.metrics || {}, defs: await signDefs(result.defs), displaySettings: result.displaySettings || { thicknessMm: .6 } };
-  catalogAt = Date.now();
-  return catalogCache;
+  const data = { metrics: result.metrics || {}, defs: await signDefs(result.defs), displaySettings: result.displaySettings || { thicknessMm: .6 } };
+  if (version === cacheVersion) {
+    catalogCache = data;
+    catalogAt = Date.now();
+  }
+  return data;
 }
 
 function clearAchievementCache() {
+  cacheVersion++;
+  syncRequest = null;
+  appliedRequestId = 0;
+  sentViews.clear();
   syncCache = null;
   catalogCache = null;
   syncAt = 0;

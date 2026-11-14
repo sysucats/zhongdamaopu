@@ -1,10 +1,10 @@
 // 成就数量排行榜：按解锁成就数排出前 50 名
 module.exports = async (ctx) => {
-  // 1. 按 openid 聚合成就数量（旧版 key 和新版 key 一条记录算一个成就，不做映射去重，差异可忽略）
+  // 1. 按获得记录统计数量，同分按 openid 稳定排序。
   const { result: grouped } = await ctx.mpserverless.db.collection('achievement')
     .aggregate([
       { $group: { _id: '$openid', count: { $sum: 1 } } },
-      { $sort: { count: -1 } },
+      { $sort: { count: -1, _id: 1 } },
       { $limit: 50 },
     ]);
 

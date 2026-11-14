@@ -23,6 +23,9 @@ miniprogram/signKey.js
 # Others
 .trae
 .workbuddy
+.claude
 *.bak
 functionsEMAS/*.zip
 docs/
+private.*.key
+preview-qrcode.png

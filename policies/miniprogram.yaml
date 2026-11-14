@@ -39,7 +39,7 @@
     count: openid
     update: false
     remove: false
-    add: openid
+    add: false
 - collectionName: feedback
   rules:
     read: openid
@@ -53,7 +53,7 @@
     count: openid
     update: false
     remove: false
-    add: openid
+    add: false
 - collectionName: news
   rules:
     read: openid
@@ -67,7 +67,7 @@
     count: openid
     update: false
     remove: false
-    add: openid
+    add: false
 - collectionName: photo_rank
   rules:
     read: openid
@@ -104,6 +104,27 @@
     remove: false
     add: false
 - collectionName: user
+  rules:
+    read: openid
+    count: openid
+    update: false
+    remove: false
+    add: false
+- collectionName: achievement
+  rules:
+    read: openid
+    count: openid
+    update: false
+    remove: false
+    add: false
+- collectionName: achievement_def
+  rules:
+    read: openid
+    count: openid
+    update: false
+    remove: false
+    add: false
+- collectionName: achievement_material
   rules:
     read: openid
     count: openid

@@ -201,8 +201,6 @@ Page({
       let regenerated = result.regenerated || 0;
       let failed = result.failed || 0;
       if (mode === 'material') {
-        // 背面图重算按批推进，单批失败即停止，避免无限重试同一批；
-        // hasMore 而非 pending：旧版客户端不认这个字段，不会误去整理编号
         let batch = result;
         let rounds = 0;
         while (batch.hasMore && rounds++ < 200) {
@@ -211,6 +209,8 @@ Page({
           regenerated += batch.regenerated || 0;
           failed += batch.failed || 0;
         }
+        if (batch.hasMore) throw new Error(`材质已保存，仍有 ${batch.remaining} 枚待生成，请再次保存继续`);
+        if (failed) throw new Error(`材质已保存，${failed} 枚生成失败，请再次保存重试`);
       } else {
         let pending = result.pending;
         while (pending) {
