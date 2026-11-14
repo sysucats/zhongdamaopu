@@ -41,7 +41,9 @@ const start = Date.now();
 const res = await ci.preview({
   project,
   desc: `CI 预览 ${new Date().toISOString().slice(0, 16).replace('T', ' ')}`,
-  setting: { es6: true, es7: true, autoPrefixWXSS: true, minify: false },
+  // 走 project.config.json 的编译设置（含 minified:true），与开发者工具上传口径一致；
+  // 手动 minify:false 会因源码体积超 2048KB 被微信拒绝（crypto-js 等未压缩源码）。
+  setting: { useProjectConfig: true },
   qrcodeFormat: 'image',
   qrcodeOutputDest: dest,
   ...(pagePath ? { pagePath } : {}),
