@@ -16,6 +16,10 @@
 
 ## 低优先级
 
+- [ ] **云函数运行时依赖漏洞（dependabot，评估后暂缓）**：均为传递依赖引入，自身声明的 `form-data ^4.0.6` 无问题。① unionOp：form-data 3.0.4（high，tencentcloud-sdk 嵌套，修复版 3.0.5 兼容可升）、qs 6.16.0（medium，`npm update qs` 即可）、stream-json 1.9.1（medium，minio 锁定 ^1.8.0 升不动）、uuid 9.0.1（medium，tencentcloud-sdk 嵌套，修复版 11.1.1 跨大版本）；② timeTrigger：zod 3.25.76（high，jimp 全家桶引入，修复版 4.6.6 为 zod 4 大改版，override 会破坏 jimp，需先评估 CVE 实际攻击面）。另：temp/updateEMAS 的 uuid alert 未部署可忽略。
+
+- [ ] **开发链依赖漏洞约 25 条（dependabot，暂缓）**：lodash、minimatch、tmp、protobufjs、@babel、json5、tough-cookie、phin、fast-xml-parser、request、flatted 等，全在 devDependencies / 构建链，不进小程序包与云函数运行时，实际风险低。批量合并 dependabot PR 即可清掉大部分。
+
 - [ ] `random_string` 可能产出 `.`：`updateCat.js:183` 取 `Math.random().toString(36)` 末 2 位，极端情况得到 ".i"，编号出现 `c42.i`。改用固定字符集更稳。
 
 - [ ] **压图/水印图标不上 fileId，删除时成 COS 孤儿文件**：`photoProcess.js` 的 `uploadBuffer` 返回 `fileId: ''`，于是 `photo.photo_compressed_id` / `photo_watermark_id` 被写成空串；`managePhoto.js:129` 判断 `if (photo.photo_compressed_id)` 为假，删除照片时只删了原图，压缩图和水印图永久残留。慢性存储泄漏。修法：改为按 URL 删除，或让 `uploadBuffer` 返回可用 id。
