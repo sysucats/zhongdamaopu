@@ -1,3 +1,6 @@
+<!-- 猫猫状态标签：文案与色调统一由 catStatus.wxs 产出 -->
+<wxs src="/utils/catStatus.wxs" module="cs" />
+
 <!-- 这是一张画布 -->
 <canvas style="width: 2000px; height: 2000px; border: 3rpx solid red; left: 1000000px; position: fixed;" canvas-id="bigPhoto"></canvas>
 
@@ -50,11 +53,12 @@
     </view>
 
     <view class="tags">
-      <view class="cat-status-list">
-        <view class="tag-pill cat-status-tag {{cat.adopt === 1 ? 'status-approved' : cat.adopt === 2 ? 'status-pending' : 'status-cancelled'}}" wx:if="{{cat.adopt != undefined}}">{{adopt_desc[cat.adopt]}}</view>
-        <view class="tag-pill cat-status-tag {{cat.sterilized ? 'status-approved' : 'status-pending'}}">{{cat.sterilized? text_cfg.detail_cat.sterilized_true: text_cfg.detail_cat.sterilized_false}}</view>
-        <view class="tag-pill cat-status-tag status-cancelled" wx:if="{{cat.to_star}}">{{text_cfg.genealogy.to_star_tip}}</view>
-        <view class="tag-pill cat-status-tag status-pending" wx:if="{{cat.missing}}">{{text_cfg.genealogy.missing_tip}}</view>
+      <view class="cat-status-rows" aria-label="{{cs.label(cs.list(cat, 'detail', text_cfg, adopt_desc))}}">
+        <view wx:for="{{cs.rows(cat, 'detail', text_cfg, adopt_desc)}}" wx:for-item="row" wx:key="key"
+              class="cat-status-list cat-status-joined">
+          <view wx:for="{{row.items}}" wx:for-item="status" wx:key="key"
+                class="tag-pill cat-status-tag status-{{status.tone}}"><text>{{status.text}}</text></view>
+        </view>
       </view>
       <view class="mpcode" bindtap="bingMpTap" aria-role="button" aria-label="查看猫猫二维码">
         <view class='iconfont icon-qrcode'></view>

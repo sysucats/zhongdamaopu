@@ -25,14 +25,20 @@ module.exports = async (ctx) => {
     if (!userMap[u.openid] || score(info) > score(userMap[u.openid])) userMap[u.openid] = info;
   });
 
-  // 3. 合并结果
-  const data = grouped.map((g, i) => ({
-    openid: g._id,
-    count: g.count,
-    rank: i + 1,
-    nickName: userMap[g._id]?.nickName || '神秘猫友',
-    avatarUrl: userMap[g._id]?.avatarUrl || '',
-  }));
+  // 3. 同数量并列，后续名次按人数跳位（例如 1、1、3、4）。
+  let rank = 0;
+  const data = grouped.map((g, i) => {
+    if (i === 0 || g.count !== grouped[i - 1].count) {
+      rank = i + 1;
+    }
+    return {
+      openid: g._id,
+      count: g.count,
+      rank,
+      nickName: userMap[g._id]?.nickName || '神秘猫友',
+      avatarUrl: userMap[g._id]?.avatarUrl || '',
+    };
+  });
 
   return { success: true, data };
 };

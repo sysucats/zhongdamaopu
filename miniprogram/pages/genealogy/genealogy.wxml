@@ -1,5 +1,8 @@
 <!--miniprogram/pages/genealogy/genealogy.wxml-->
 
+<!-- 猫猫状态标签：文案与色调统一由 catStatus.wxs 产出 -->
+<wxs src="/utils/catStatus.wxs" module="cs" />
+
 <view id='search' class='{{filters_show_shadow? "shadow": ""}}' style='height: {{heights.filters}}px'>
   <view class='input-block'>
     <view class='input-icon iconfont icon-search gray'></view>
@@ -96,9 +99,12 @@
             <image mode='aspectFill' class='gender' wx:if='{{item.gender === "母"}}' src="/pages/public/images/card/card/female.png"></image>
           </block>
           </view>
-          <view class="cat-status-list" wx:if="{{item.adopt === 1 || item.adopt === 2 || item.to_star}}">
-          <view class="tag-pill cat-status-tag {{item.adopt === 1 ? 'status-approved' : 'status-pending'}}" wx:if="{{item.adopt === 1 || item.adopt === 2}}">{{adopt_desc[item.adopt]}}</view>
-          <view class="tag-pill cat-status-tag status-cancelled" wx:if="{{item.to_star}}">{{text_cfg.genealogy.to_star_tip}}</view>
+          <view class="cat-status-rows" aria-label="{{cs.label(cs.list(item, 'list', text_cfg, adopt_desc))}}">
+            <view wx:for="{{cs.rows(item, 'list', text_cfg, adopt_desc)}}" wx:for-item="row" wx:key="key"
+                  class="cat-status-list cat-status-joined">
+              <view wx:for="{{row.items}}" wx:for-item="status" wx:key="key"
+                    class="tag-pill cat-status-tag status-{{status.tone}}"><text>{{status.text}}</text></view>
+            </view>
           </view>
         </view>
 

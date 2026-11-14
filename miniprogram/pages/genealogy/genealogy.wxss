@@ -164,7 +164,7 @@ scroll-view {
   white-space: nowrap;
   margin-left: var(--space-sm);
 }
-.cat-heading .cat-status-list {
+.cat-heading .cat-status-rows {
   display: inline-flex;
   max-width: 100%;
   vertical-align: middle;

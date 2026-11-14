@@ -1,4 +1,5 @@
 @import "/pages/public/wxss/card.wxss";
+@import "/pages/public/wxss/rank-ticket.wxss";
 
 /* 榜单概览和排名列表的共同布局。 */
 .leaderboard-section {
@@ -21,8 +22,8 @@
   justify-content: center;
   width: 64rpx;
   flex-shrink: 0;
-  font-size: 30rpx;
-  font-weight: bold;
+  font-size: 28rpx;
+  font-weight: 500;
   color: var(--color-gray-max);
 }
 
@@ -99,18 +100,15 @@
   height: 92rpx;
 }
 
-.leaderboard-row.rank-1 .leaderboard-order,
-.leaderboard-row.rank-1 .leaderboard-value {
+.leaderboard-row.rank-1 .leaderboard-order {
   color: var(--color-achievement-gold);
 }
 
-.leaderboard-row.rank-2 .leaderboard-order,
-.leaderboard-row.rank-2 .leaderboard-value {
+.leaderboard-row.rank-2 .leaderboard-order {
   color: var(--color-achievement-silver);
 }
 
-.leaderboard-row.rank-3 .leaderboard-order,
-.leaderboard-row.rank-3 .leaderboard-value {
+.leaderboard-row.rank-3 .leaderboard-order {
   color: var(--color-achievement-bronze);
 }
 
@@ -127,13 +125,12 @@
 .leaderboard-value {
   display: flex;
   align-items: baseline;
-  gap: 8rpx;
   padding: 14rpx 0;
   margin-left: 12rpx;
   flex-shrink: 0;
   font-size: 34rpx;
   font-weight: bold;
-  color: var(--color-black-light);
+  color: var(--color-gray-max);
   line-height: 1.3;
 }
 
@@ -222,4 +219,13 @@
   text-align: center;
   font-size: 22rpx;
   color: var(--color-gray-max);
+}
+
+.leaderboard-row .rank-ticket {
+  margin-left: 12rpx;
+}
+.leaderboard-score {
+  display: flex;
+  align-items: baseline;
+  gap: 8rpx;
 }

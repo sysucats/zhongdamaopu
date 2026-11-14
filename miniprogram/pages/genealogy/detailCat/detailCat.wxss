@@ -159,6 +159,7 @@ swiper-item image {
 }
 
 .tags .mpcode {
+  margin-left: auto;
   display: flex;
   align-items: center;
   justify-content: center;

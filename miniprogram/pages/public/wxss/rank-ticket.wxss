@@ -1,0 +1,51 @@
+/* TOP 票签外观；排名数据、概率刻度和榜单布局由使用方负责。 */
+.rank-ticket {
+  --rank-ticket-accent: var(--color-gray-max);
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  min-width: 160rpx;
+  padding: 16rpx 18rpx 18rpx;
+  border-radius: var(--radius-xl) var(--radius-sm) var(--radius-xl) var(--radius-sm);
+  color: var(--color-text-main);
+}
+.rank-ticket.rank-ticket-1 {
+  --rank-ticket-accent: var(--color-achievement-gold);
+  background: var(--color-primary-light);
+}
+.rank-ticket.rank-ticket-2 {
+  --rank-ticket-accent: var(--color-achievement-silver);
+  background: var(--color-gray-light);
+}
+.rank-ticket.rank-ticket-3 {
+  --rank-ticket-accent: var(--color-achievement-bronze);
+  background: var(--color-warm-bg);
+}
+.rank-ticket-label {
+  color: var(--rank-ticket-accent);
+  font-size: 18rpx;
+  font-weight: 600;
+  line-height: 1.3;
+  letter-spacing: 1.8rpx;
+}
+.rank-ticket-value {
+  display: flex;
+  align-items: baseline;
+  justify-content: flex-end;
+  gap: var(--space-xs);
+  margin-top: var(--space-xs);
+  line-height: 1.1;
+  white-space: nowrap;
+}
+.rank-ticket-number {
+  font-size: 44rpx;
+  font-weight: 600;
+  letter-spacing: -1.2rpx;
+  font-variant-numeric: tabular-nums;
+}
+.rank-ticket-unit {
+  color: var(--rank-ticket-accent);
+  font-size: 22rpx;
+  font-weight: 400;
+}
