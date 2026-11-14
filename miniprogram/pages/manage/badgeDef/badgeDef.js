@@ -25,7 +25,10 @@ Page({
     catError: '',
     badgeDefs: [],
     pendingBadges: [],
+    allBadges: [],
+    draftCount: 0,
     preparing: false,
+    activating: false,
     generation: null,
     prepareSummary: '',
   },
@@ -95,6 +98,8 @@ Page({
         thicknessMm: result.displaySettings?.thicknessMm ?? .6,
         savedThicknessMm: result.displaySettings?.thicknessMm ?? .6,
         pendingBadges: badges.filter(badge => badge.needsAssets || !badge.model3dUrl || !badge.backImage || !badge.serialReady).map(badge => ({ key: badge.key, name: badge.name })),
+        allBadges: badges.map(badge => ({ key: badge.key, name: badge.name, status: badge.status })),
+        draftCount: badges.filter(badge => badge.status !== 'active').length,
         userSeries: seriesNames.map(name => {
           const items = badges.filter(item => item.series === name);
           const metricKeys = [...new Set([...Object.keys(metrics), ...items.map(item => item.rule?.metric)])];
@@ -179,41 +184,89 @@ Page({
     } finally { this.setData({ savingDisplaySettings: false }); }
   },
 
-  async prepareExistingBadges() {
-    if (this.data.preparing) return;
-    this.setData({ preparing: true });
-    let failure = '';
+  // 全量刷新：逐枚重算背面图、3D 轮廓并整理历史编号，已有素材也一并重算
+  async refreshBadges() {
+    if (this.data.preparing || this.data.activating) return;
+    const badges = this.data.allBadges;
+    if (!badges.length) {
+      wx.showToast({ title: '暂无可更新的徽章', icon: 'none' });
+      return;
+    }
+    const confirmed = await new Promise(resolve => wx.showModal({
+      title: '更新徽章',
+      content: `将重新生成 ${badges.length} 枚徽章的背面图、3D 轮廓与历史编号，过程中请保持页面打开。`,
+      success: res => resolve(res.confirm),
+      fail: () => resolve(false),
+    }));
+    if (!confirmed) return;
+    this.setData({ preparing: true, catalogError: '', prepareSummary: '', generation: { label: '开始生成' } });
+    const failed = [];
     try {
-      const badges = this.data.pendingBadges;
       for (let index = 0; index < badges.length; index++) {
         this.setData({ prepareSummary: `第 ${index + 1}/${badges.length} 枚 · ${badges[index].name}`, generation: { label: '开始生成' } });
         const generationId = generateUUID();
         watchGeneration(this, badges[index].key, generationId);
-        let pending;
-        do {
-          const { result } = await app.mpServerless.function.invoke('unionOp', {
-            unionAction: 'manageAchievementCatalog', action: 'prepareBadge', data: { key: badges[index].key, generationId },
-          });
-          if (!result?.ok) throw new Error(`${badges[index].name}：${result?.error || '更新失败'}`);
-          pending = result.pending;
-          if (pending) this.setData({ generation: { label: '素材已就绪，正在整理历史编号' } });
-        } while (pending);
-        stopGenerationWatch(this);
+        try {
+          let pending;
+          do {
+            const { result } = await app.mpServerless.function.invoke('unionOp', {
+              unionAction: 'manageAchievementCatalog', action: 'prepareBadge', data: { key: badges[index].key, generationId, force: true },
+            });
+            if (!result?.ok) throw new Error(result?.error || '更新失败');
+            pending = result.pending;
+            if (pending) this.setData({ generation: { label: '素材已就绪，正在整理历史编号' } });
+          } while (pending);
+        } catch (error) {
+          failed.push(`${badges[index].name}：${error.message || '更新失败'}`);
+        } finally { stopGenerationWatch(this); }
       }
       clearAchievementCache();
-    } catch (error) {
-      failure = error.message || '更新失败，可重新尝试';
     } finally {
-      stopGenerationWatch(this);
       this.setData({ preparing: false, generation: null, prepareSummary: '' });
       await this.loadUserCatalog();
     }
-    if (failure) {
-      this.setData({ catalogError: failure });
-      wx.showToast({ title: '更新未完成，请查看页面提示', icon: 'none' });
+    if (failed.length) {
+      this.setData({ catalogError: `${failed.length} 枚未完成：${failed.slice(0, 3).join('；')}${failed.length > 3 ? ' 等' : ''}` });
+      wx.showToast({ title: `${badges.length - failed.length} 枚已更新，${failed.length} 枚失败`, icon: 'none' });
     } else {
-      wx.showToast({ title: '已更新', icon: 'success' });
+      wx.showToast({ title: '徽章已更新', icon: 'success' });
     }
+  },
+
+  // 全部上线：校验素材与编号后批量切 active，不齐的列出原因
+  async activateAllBadges() {
+    if (this.data.preparing || this.data.activating || !this.data.draftCount) return;
+    const confirmed = await new Promise(resolve => wx.showModal({
+      title: '全部上线',
+      content: `将把 ${this.data.draftCount} 枚草稿徽章切为上线。素材或编号未就绪的会被拦下，上线后达成条件锁定不可修改。`,
+      success: res => resolve(res.confirm),
+      fail: () => resolve(false),
+    }));
+    if (!confirmed) return;
+    this.setData({ activating: true, catalogError: '' });
+    try {
+      const { result } = await app.mpServerless.function.invoke('unionOp', {
+        unionAction: 'manageAchievementCatalog', action: 'activateAll',
+      });
+      if (!result?.ok) throw new Error(result?.error || '上线失败');
+      clearAchievementCache();
+      await this.loadUserCatalog();
+      const blocked = result.blocked || [];
+      if (blocked.length) {
+        const detail = blocked.slice(0, 6).map(item => `${item.name}：${item.reason}`).join('\n');
+        await new Promise(resolve => wx.showModal({
+          title: `已上线 ${result.activated.length} 枚`,
+          content: `${blocked.length} 枚未满足条件：\n${detail}${blocked.length > 6 ? `\n…等 ${blocked.length} 枚` : ''}\n\n请先更新徽章再重试。`,
+          showCancel: false,
+          complete: resolve,
+        }));
+      } else {
+        wx.showToast({ title: `已上线 ${result.activated.length} 枚`, icon: 'success' });
+      }
+    } catch (error) {
+      wx.showToast({ title: error.message || '上线失败', icon: 'none' });
+      this.setData({ catalogError: error.message || '上线失败' });
+    } finally { this.setData({ activating: false }); }
   },
 
   editMaterial(e) {

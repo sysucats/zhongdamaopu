@@ -232,7 +232,7 @@ async function prepareBadge(ctx, input) {
   const badge = (await db.collection('achievement_def').findOne({ key })).result;
   if (!badge) return { ok: false, error: '徽章不存在' };
   const material = (await db.collection('achievement_material').findOne({ key: badge.materialKey })).result;
-  if (needsAssets(badge, material)) {
+  if (input.force || needsAssets(badge, material)) {
     if (!material?.image || !badge.frontImage) return { ok: false, error: '请先补齐正面图片和材质' };
     await generateTrackedAssets(ctx, badge.frontImage, material.image, key, input.generationId, undefined,
       assets => db.collection('achievement_def').updateOne({ _id: badge._id }, {
@@ -240,6 +240,37 @@ async function prepareBadge(ctx, input) {
       }));
   }
   return { ok: true, ...(await serials.prepare(db, key)) };
+}
+
+// 批量上线：逐枚校验素材与编号，只放行齐备的草稿徽章
+async function activateAll(ctx) {
+  const db = ctx.mpserverless.db;
+  const [badges, materials, sequences, missingSerials] = await Promise.all([
+    findAll(db.collection('achievement_def')),
+    findAll(db.collection('achievement_material')),
+    findAll(db.collection('setting'), { _id: { $regex: '^achievement_serial:' } }),
+    findAll(db.collection('achievement'), { $or: [{ serialNo: { $exists: false } }, { serialNo: null }, { serialNo: { $lte: 0 } }] }, { projection: { key: 1 } }),
+  ]);
+  const materialByKey = new Map(materials.map(item => [item.key, item]));
+  const ready = [], blocked = [];
+  let already = 0;
+  for (const badge of badges) {
+    if (badge.status === 'active') { already++; continue; }
+    const material = materialByKey.get(badge.materialKey);
+    let reason = '';
+    if (!isCosUrl(badge.frontImage)) reason = '正面图未上传';
+    else if (!material?.image) reason = '材质图片缺失';
+    else if (!badge.backImage || !badge.model3dUrl || badge.backMaterialImage !== material.image) reason = '背面或 3D 素材未更新';
+    else if (!sequences.some(seq => seq._id === serials.counterId(badge.key) && seq.ready) || missingSerials.some(row => row.key === badge.key)) reason = '历史编号未就绪';
+    if (reason) blocked.push({ key: badge.key, name: badge.name, reason });
+    else ready.push(badge);
+  }
+  if (ready.length) {
+    await Promise.all(ready.map(badge => db.collection('achievement_def').updateOne(
+      { _id: badge._id }, { $set: { status: 'active', updated_at: new Date() } }
+    )));
+  }
+  return { ok: true, activated: ready.map(badge => badge.key), blocked, already };
 }
 
 async function deleteBadge(ctx, input) {
@@ -278,6 +309,7 @@ module.exports = async (ctx) => {
     if (action === 'saveBadge') return await saveBadge(ctx, input);
     if (action === 'deleteBadge') return await deleteBadge(ctx, input);
     if (action === 'prepareBadge') return await prepareBadge(ctx, input);
+    if (action === 'activateAll') return await activateAll(ctx);
     return { ok: false, error: '未知操作' };
   } catch (error) {
     console.error('[achievement catalog]', action, error);

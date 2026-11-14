@@ -1,7 +1,20 @@
 /* pages/manage/badgeDef/badgeDef.wxss */
 @import "../adminPage.wxss";
 @import "/pages/public/wxss/formControls.wxss";
-.prepare-existing { margin-bottom: var(--space-md); }
+.batch-actions {
+  display: flex;
+  gap: var(--space-md);
+  margin-bottom: var(--space-sm);
+}
+.batch-actions .batch-button {
+  flex: 1;
+  margin: 0;
+}
+.batch-note {
+  margin-bottom: var(--space-md);
+  color: var(--color-gray-max);
+  font-size: 24rpx;
+}
 page {
   background-color: var(--color-gray-light);
 }

@@ -26,3 +26,9 @@ functionsEMAS/*.zip
 docs/
 private.*.key
 preview-qrcode.png
+badgeAssets/*
+functionsEMAS/**/*.zip
+wb_code/
+
+# 一次性导入函数的内嵌图片数据（由 wb_code/buildBadgeImport.cjs 生成）
+functionsEMAS/temp/importBadges/data.js
