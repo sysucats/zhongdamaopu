@@ -1,36 +1,12 @@
 {
-  "name": "laf-app",
-  "description": "the app engine service of lat",
-  "dependencies": {
-    "laf-cli": "^1.0.0",
-    "miniprogram-ci": "^2.1.48"
+  "name": "zhongdamaopu",
+  "description": "笃行猫谱微信小程序工程（miniprogram 前端 + functionsEMAS 云函数 + wb_code 工具脚本）",
+  "private": true,
+  "scripts": {
+    "build:npm": "node wb_code/buildNpm.mjs",
+    "preview": "node wb_code/preview.mjs"
   },
   "devDependencies": {
-    "@aws-sdk/client-s3": "^3.1169.0",
-    "@aws-sdk/client-sts": "^3.1169.0",
-    "@aws-sdk/s3-request-presigner": "^3.231.0",
-    "@kubernetes/client-node": "^1.4.0",
-    "@lafjs/cloud": "1.0.0-beta.7",
-    "axios": "^1.21.1",
-    "chatgpt": "^5.2.5",
-    "crypto-js": "4.1.1",
-    "database-proxy": "^1.0.0",
-    "dayjs": "^1.11.7",
-    "dotenv": "^8.2.0",
-    "ejs": "^3.1.8",
-    "express": "^4.22.3",
-    "express-xml-bodyparser": "^0.4.1",
-    "jsonwebtoken": "^9.0.3",
-    "lodash": "^4.18.1",
-    "log4js": "^6.7.1",
-    "minio": "^8.0.7",
-    "mongodb": "^4.12.1",
-    "mongodb-uri": "^0.9.7",
-    "multer": "^2.5.0",
-    "node-modules-utils": "^0.8.2",
-    "nodemailer": "^10.1.4",
-    "tencentcloud-sdk-nodejs": "4.0.571",
-    "validator": "^13.15.35",
-    "ws": "^8.11.0"
+    "miniprogram-ci": "^2.1.48"
   }
 }

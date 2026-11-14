@@ -16,9 +16,6 @@ miniprogram_npm/
 cloudfunctions/package-lock.json
 project.private.config.json
 miniprogram/appSecret.js
-.secret.yaml
-miniprogram/signKey.js
-.app.yaml
 
 # Others
 .trae
