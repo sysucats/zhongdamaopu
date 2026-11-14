@@ -7,5 +7,10 @@
     "tmp": "^0.2.6",
     "cos-nodejs-sdk-v5": "^3.0.0",
     "pngjs": "^7.0.0"
+  },
+  "overrides": {
+    "query-string": {
+      "decode-uri-component": "0.5.1"
+    }
   }
 }
