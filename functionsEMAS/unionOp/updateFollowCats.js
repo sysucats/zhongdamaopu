@@ -5,10 +5,12 @@ module.exports = async (ctx) => {
   }
 
   if (ctx.args.updateCmd == 'add') {
+    const { result: cat } = await ctx.mpserverless.db.collection('cat').findOne({ _id: ctx.args.catId });
+    if (!cat || cat.deleted) return false;
     await ctx.mpserverless.db.collection('user').updateOne({
       openid: openid
     }, {
-      $push: {
+      $addToSet: {
         followCats: ctx.args.catId
       }
     });

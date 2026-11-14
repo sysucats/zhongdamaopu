@@ -1,3 +1,6 @@
+const { createHash } = require('crypto')
+const { updateUser } = require('./userOp.js')
+const serials = require('./achievementSerial.js')
 const { createInternalCtx } = require('./_helper.js')
 const isManagerHandler = require('./isManager.js')
 const deleteFilesHandler = require('./deleteFiles.js')
@@ -5,7 +8,7 @@ const deleteCosFilesHandler = require('./deleteCosFiles.js')
 // 操作对应collection需要的等级
 const permissionNeed = {
     "add": {
-        "achievement": 0,
+        "achievement": 0, // 新版上线并完成旧版过渡后改为 99
         "badge_def": 2,
         "cat": 2,
         "comment": 0,
@@ -19,7 +22,7 @@ const permissionNeed = {
         "reward": 3,
         "science": 3,
         "setting": 3,
-        "user": 0,
+        "user": 99,
         "vaccine": 2,
     },
     "update": {
@@ -55,7 +58,7 @@ const permissionNeed = {
         "reward": 99,
         "science": 99,
         "setting": 99,
-        "user": 1,
+        "user": 99,
         "vaccine": 2,
     },
     "set": {
@@ -73,7 +76,7 @@ const permissionNeed = {
         "reward": 1,
         "science": 1,
         "setting": 1,
-        "user": 1,
+        "user": 99,
         "vaccine": 2,
     },
     "inc": {
@@ -91,7 +94,7 @@ const permissionNeed = {
         "reward": 1,
         "science": 1,
         "setting": 99,
-        "user": 1,
+        "user": 99,
         "vaccine": 99,
     },
     "read": {
@@ -133,6 +136,10 @@ module.exports = async (ctx) => {
     const item_id = ctx.args?.item_id;
     var data = ctx.args?.data;
 
+    if (collection === 'user' && operation === 'update') {
+        return updateUser(ctx, data || {}, item_id);
+    }
+
     // 检查权限
     if (permissionLevel) {
         const allowAuthor = permissionAuthor[operation][collection];
@@ -143,19 +150,49 @@ module.exports = async (ctx) => {
     }
 
     if (operation == "add") {  // 添加记录
+        if (collection === 'inter') return addLike(ctx, data);
+        if (collection === 'photo') {
+            data = pick(data, ['cat_id', 'photo_id', 'photo_file_id', 'user_id', 'shooting_date', 'photographer', 'latitude', 'longitude']);
+            data.verified = false;
+            data.best = false;
+        }
+        if (collection === 'comment') {
+            data = pick(data, ['cat_id', 'photo_id', 'content', 'paper_color']);
+            data.user_openid = openid;
+            data.needVerify = true;
+        }
         // 前端可能需要跟据 _openid 字段进行数据库搜索，故手动保存
         if (openid) {
             data._openid = openid;
         }
         data.create_date = new Date();
         data.mdate = data.mdate || new Date();
+        // 旧版解锁入口同步分配编号，保留 insertedId 返回格式。
+        if (collection === 'achievement') {
+            return await serials.allocate(ctx.mpserverless.db, data.key, serialNo =>
+                ctx.mpserverless.db.collection('achievement').insertOne({ ...data, serialNo })
+            );
+        }
         return await ctx.mpserverless.db.collection(collection).insertOne(data);
     }
     else if (operation == "update") {  // 更新记录
+        if (collection === 'comment') {
+            const { result: current } = await ctx.mpserverless.db.collection('comment').findOne({ _id: item_id });
+            if (wasApproved(current) || data.review_action === 'pass'
+                || (data.needVerify === false && data.deleted !== true && data.review_action !== 'delete')) {
+                data.approvedOnce = true;
+            } else delete data.approvedOnce;
+        }
         data.mdate = new Date();
         return await ctx.mpserverless.db.collection(collection).updateOne({ _id: item_id }, { $set: data })
     }
     else if (operation == "remove") {  // 移除记录
+        if (collection === 'comment') {
+            const { result: current } = await ctx.mpserverless.db.collection('comment').findOne({ _id: item_id });
+            return await ctx.mpserverless.db.collection('comment').updateOne(
+                { _id: item_id }, { $set: { deleted: true, ...(wasApproved(current) ? { approvedOnce: true } : {}), mdate: new Date() } }
+            );
+        }
         if (collection == "news") {  // 删除公告关联的图片和封面
             await delete_photo_for_news(item_id);
         }
@@ -170,7 +207,7 @@ module.exports = async (ctx) => {
             return await ctx.mpserverless.db.collection(collection).updateOne({ _id: item_id }, { $inc: { popularity: 1 } })
         }
         else if (type == "like") {
-            return await ctx.mpserverless.db.collection(collection).updateOne({ _id: item_id }, { $inc: { like_count: 1 } })
+            return { ok: false, errMsg: 'like count is maintained by add inter' };
         }
         else {
             return { errMsg: `unk type ${type}`, ok: false };
@@ -220,4 +257,47 @@ module.exports = async (ctx) => {
             await deleteCosFilesHandler(createInternalCtx(ctx, { photoUrls: photoUrls }));
         }
     }
+}
+
+function pick(input, fields) {
+    return Object.fromEntries(fields.filter(key => Object.hasOwn(input, key)).map(key => [key, input[key]]));
+}
+
+async function addLike(ctx, input) {
+    const db = ctx.mpserverless.db, openid = ctx.args.openid;
+    if (input.type !== 10000 || typeof input.item_id !== 'string' || !input.item_id) {
+        return { ok: false, errMsg: 'invalid like' };
+    }
+    // 旧客户端未传 item_type，按现有三种内容查找目标。
+    const types = input.item_type ? [input.item_type] : ['photo', 'comment', 'cat'];
+    let targetType;
+    for (const type of types) {
+        if (!['photo', 'comment', 'cat'].includes(type)) continue;
+        const { result: item } = await db.collection(type).findOne({ _id: input.item_id });
+        if (item && !item.deleted && (type !== 'photo' || item.verified === true)
+            && (type !== 'comment' || !item.needVerify)) {
+            targetType = type;
+            break;
+        }
+    }
+    if (!targetType) return { ok: false, errMsg: 'like target unavailable' };
+    const records = db.collection('inter');
+    const query = { type: 10000, item_id: input.item_id, $or: [{ _openid: openid }, { uid: openid }] };
+    if ((await records.findOne(query)).result) return { ok: true, alreadyLiked: true };
+    const _id = 'like_' + createHash('sha256').update(`${openid}\0${input.item_id}`).digest('hex').slice(0, 40);
+    let inserted;
+    try {
+        inserted = await records.insertOne({ _id, _openid: openid, uid: openid, type: 10000,
+            item_id: input.item_id, item_type: targetType, count: 1, create_date: new Date(), mdate: new Date() });
+    } catch (error) {
+        if ((await records.findOne({ _id })).result) return { ok: true, alreadyLiked: true };
+        throw error;
+    }
+    await db.collection(targetType).updateOne({ _id: input.item_id }, { $inc: { like_count: 1 } });
+    return { ...inserted, ok: true };
+}
+
+function wasApproved(comment) {
+    return Boolean(comment && (comment.approvedOnce || comment.review_action === 'pass'
+        || (comment.needVerify !== true && !comment.deleted && comment.review_action !== 'delete')));
 }
