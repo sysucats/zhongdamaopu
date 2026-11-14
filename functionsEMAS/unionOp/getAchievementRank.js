@@ -1,11 +1,15 @@
-// 成就数量排行榜：按解锁成就数排出前 50 名
+// 成就数量排行榜：按解锁成就数排出前 200 名
+// 注：$limit 直接截断，末尾同分的人会按 openid 字典序被砍掉一部分（并列名次不完整），当前用户量下不处理
+// RANK_LIMIT 与前端 components/achievementRank/achievementRank.wxml 的「200名外」文案保持一致
+const RANK_LIMIT = 200;
+
 module.exports = async (ctx) => {
   // 1. 按获得记录统计数量，同分按 openid 稳定排序。
   const { result: grouped } = await ctx.mpserverless.db.collection('achievement')
     .aggregate([
       { $group: { _id: '$openid', count: { $sum: 1 } } },
       { $sort: { count: -1, _id: 1 } },
-      { $limit: 50 },
+      { $limit: RANK_LIMIT },
     ]);
 
   if (!grouped || grouped.length === 0) {

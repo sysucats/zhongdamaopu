@@ -8,7 +8,7 @@ const deleteCosFilesHandler = require('./deleteCosFiles.js')
 // 操作对应collection需要的等级
 const permissionNeed = {
     "add": {
-        "achievement": 0, // 新版上线并完成旧版过渡后改为 99
+        "achievement": 99,
         "badge_def": 2,
         "cat": 2,
         "comment": 0,

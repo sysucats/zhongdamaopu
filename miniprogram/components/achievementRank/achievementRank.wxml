@@ -8,7 +8,7 @@
       <view class="leaderboard-summary-cell">
         <view class="leaderboard-summary-label">排名</view>
         <view class="leaderboard-summary-number" wx:if="{{myRank > 0}}">{{myRank}}</view>
-        <view class="leaderboard-summary-status" wx:else>{{myCount > 0 ? '50名外' : '未上榜'}}</view>
+        <view class="leaderboard-summary-status" wx:else>{{myCount > 0 ? '200名外' : '未上榜'}}</view>
       </view>
       <view class="leaderboard-summary-cell center">
         <image class="leaderboard-summary-avatar" mode="aspectFill" src="{{myAvatarUrl}}"></image>

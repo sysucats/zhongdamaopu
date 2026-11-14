@@ -10,6 +10,13 @@ Page({
     text_cfg: text_cfg,
     github_link: "https://github.com/sysucats/zhongdamaopu",
     update_log: [{
+      version: "v1.20.4",
+      content: [
+        "旧版本遗留代码清理",
+        "用户成就徽章处理"
+      ],
+      time: "2026/11/14"
+    }, {
       version: "v1.20.3",
       content: [
         "整合医疗记录并统一页面样式与照片加载体验（感谢xuannfx）",
