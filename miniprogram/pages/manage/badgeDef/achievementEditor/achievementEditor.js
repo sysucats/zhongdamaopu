@@ -32,7 +32,6 @@ Page({
     loading: true,
     loadError: '',
     formError: '',
-    showMore: false,
     ruleDescription: '',
     selectedMaterial: null,
     backPending: false,
@@ -53,7 +52,12 @@ Page({
     wx.setNavigationBarTitle({ title: mode === 'material' ? (key ? '编辑材质' : '添加材质') : (key ? '编辑成就' : '新增成就') });
     try {
       const result = await callCatalog('list');
-      const metricOptions = Object.keys(result.metrics || {}).map(id => ({ key: id, ...result.metrics[id], label: result.metrics[id].label || result.metrics[id].name }));
+      // name 是成就页的类别名（如「猫口普查」），label 是统计口径（如「浏览猫猫」）
+      const metricOptions = Object.keys(result.metrics || {}).map(id => ({
+        key: id, ...result.metrics[id],
+        name: result.metrics[id].name || result.metrics[id].label || id,
+        label: result.metrics[id].label || result.metrics[id].name || id,
+      }));
       const materialOptions = result.materials || [];
       if (mode === 'material') {
         const current = materialOptions.find(item => item.key === key);
@@ -111,8 +115,6 @@ Page({
   },
 
   retryLoad() { this.onLoad(this.editorOptions || {}); },
-
-  toggleMore() { this.setData({ showMore: !this.data.showMore }); },
 
   updateDerived() {
     const { form, metricOptions, materialOptions } = this.data;
@@ -180,13 +182,13 @@ Page({
     if (!form.name?.trim()) error = mode === 'material' ? '请填写材质名称' : '请填写成就名称';
     else if (mode === 'material' && !form.image) error = '请上传材质图片';
     else if (mode === 'badge') {
-      if (!form.series?.trim()) error = '请在更多设置中填写系列';
+      if (!form.series?.trim()) error = '请填写系列';
       else if (!this.data.metricOptions.some(item => item.key === form.rule.metric) || !Number.isInteger(Number(form.rule.count)) || Number(form.rule.count) < 1 || Number(form.rule.count) > 100000) error = '达成数量需为 1～100000 的整数';
       else if (!this.data.selectedMaterial?.image) error = '请选择已上传图片的材质';
       else if (!form.frontImage) error = '请上传成就正面图片';
     }
     if (error) {
-      this.setData({ formError: error, ...(!form.series?.trim() && mode === 'badge' ? { showMore: true } : {}) });
+      this.setData({ formError: error });
       wx.showToast({ title: error, icon: 'none' });
       return;
     }

@@ -4,6 +4,7 @@
 .batch-actions {
   display: flex;
   gap: var(--space-md);
+  margin-top: var(--space-md);
   margin-bottom: var(--space-sm);
 }
 .batch-actions .batch-button {

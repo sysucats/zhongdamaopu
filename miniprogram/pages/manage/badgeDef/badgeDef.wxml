@@ -60,7 +60,7 @@
         </view>
       </view>
       <view class="batch-actions" wx:if="{{allBadges.length}}">
-        <button class="form-button compact batch-button" bindtap="refreshBadges" loading="{{preparing}}" disabled="{{preparing || activating}}">{{preparing ? '更新中' : '更新徽章'}}</button>
+        <button class="form-button compact batch-button" bindtap="refreshBadges" loading="{{preparing}}" disabled="{{preparing || activating}}">{{preparing ? '生成中' : '重新生成素材'}}</button>
         <button class="form-button primary compact batch-button" bindtap="activateAllBadges" loading="{{activating}}" disabled="{{preparing || activating || !draftCount}}">全部上线{{draftCount ? '（' + draftCount + '）' : ''}}</button>
       </view>
       <view class="batch-note" wx:if="{{pendingBadges.length && !preparing}}">{{pendingBadges.length}} 枚素材或编号待更新</view>

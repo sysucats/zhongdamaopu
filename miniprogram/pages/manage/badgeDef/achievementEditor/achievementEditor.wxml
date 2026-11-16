@@ -6,9 +6,13 @@
   </view>
   <view class="form-page" wx:else>
     <view class="form-section">
-      <view class="section-title">基本信息</view>
+      <view class="section-title">{{mode === 'material' ? '基本信息' : '成就'}}</view>
       <view class="field-label field-required">{{mode === 'material' ? '材质名称' : '成就名称'}}</view>
       <input class="field-input" value="{{form.name}}" maxlength="20" placeholder="{{mode === 'material' ? '例如：翡翠' : '例如：镜头收藏家'}}" data-field="name" bindinput="onInput" aria-label="名称" />
+      <block wx:if="{{mode !== 'material'}}">
+        <view class="field-label spaced-label">成就说明（选填）</view>
+        <textarea class="description-input" value="{{form.description}}" maxlength="100" placeholder="{{ruleDescription}}" data-field="description" bindinput="onInput" aria-label="成就说明" />
+      </block>
     </view>
 
     <block wx:if="{{mode === 'material'}}">
@@ -27,30 +31,36 @@
     <block wx:else>
       <view class="form-section">
         <view class="section-heading">
-          <view class="section-title">达成条件</view>
+          <view class="section-title">规则</view>
           <text class="readonly-tag" wx:if="{{ruleLocked}}">已锁定</text>
         </view>
-        <block wx:if="{{ruleLocked}}">
-          <view class="rule-summary">{{ruleDescription}}</view>
-          <view class="field-hint">上线或已有人获得后，达成条件不可修改。</view>
-        </block>
-        <block wx:else>
-          <view class="field-label field-required">统计类别</view>
-          <picker range="{{metricOptions}}" range-key="label" value="{{metricIndex}}" data-field="metric" bindchange="onPick">
-            <view class="field-picker">{{metricOptions[metricIndex].label}}<view class="picker-arrow"></view></view>
-          </picker>
-          <view class="quantity-row">
-            <view class="quantity-label field-required">达成数量</view>
-            <view class="count-field">
-              <input class="count-input" type="number" maxlength="6" value="{{form.rule.count}}" data-field="rule.count" bindinput="onInput" aria-label="达成数量" />
-              <text class="count-unit">{{metricOptions[metricIndex].unit}}</text>
-            </view>
+        <view class="path-row">
+          <view class="path-col">
+            <view class="field-label field-required">系列</view>
+            <input class="field-input" value="{{form.series}}" maxlength="20" placeholder="例如：日常" data-field="series" bindinput="onInput" aria-label="系列" />
           </view>
-        </block>
+          <text class="path-sep">›</text>
+          <view class="path-col">
+            <view class="field-label field-required">类别</view>
+            <picker range="{{metricOptions}}" range-key="name" value="{{metricIndex}}" data-field="metric" bindchange="onPick" disabled="{{ruleLocked}}">
+              <view class="field-picker {{ruleLocked ? 'locked' : ''}}">{{metricOptions[metricIndex].name}}<view class="picker-arrow" wx:if="{{!ruleLocked}}"></view></view>
+            </picker>
+          </view>
+        </view>
+        <view class="chip-row" wx:if="{{seriesOptions.length}}">
+          <view class="chip {{form.series === item ? 'active' : ''}}" wx:for="{{seriesOptions}}" wx:key="*this" data-series="{{item}}" bindtap="pickSeries">{{item}}</view>
+        </view>
+        <view class="quantity-row">
+          <view class="quantity-label {{ruleLocked ? '' : 'field-required'}}">{{metricOptions[metricIndex].label}}</view>
+          <view class="count-field {{ruleLocked ? 'locked' : ''}}">
+            <input class="count-input" type="number" maxlength="6" value="{{form.rule.count}}" disabled="{{ruleLocked}}" data-field="rule.count" bindinput="onInput" aria-label="达成数量" />
+            <text class="count-unit">{{metricOptions[metricIndex].unit}}</text>
+          </view>
+        </view>
       </view>
 
       <view class="form-section">
-        <view class="section-title">徽章外观</view>
+        <view class="section-title">外观</view>
         <view class="field-label field-required">材质</view>
         <picker range="{{materialOptions}}" range-key="name" value="{{materialIndex}}" data-field="material" bindchange="onPick" disabled="{{!materialOptions.length}}">
           <view class="field-picker">{{selectedMaterial.name || '请先在材质库添加材质'}}<view class="picker-arrow" wx:if="{{materialOptions.length}}"></view></view>
@@ -78,7 +88,7 @@
       <view class="form-section status-section">
         <view class="status-row">
           <view class="status-copy">
-            <view class="status-title">上线成就</view>
+            <view class="status-title">上线</view>
             <view class="field-hint">{{form.status === 'active' ? '按达成条件自动发放' : '保存为草稿，暂不展示和发放'}}</view>
           </view>
           <switch checked="{{form.status === 'active'}}" disabled="{{form.status === 'active' && holders > 0}}" color="var(--color-green)" bindchange="onStatusChange" aria-label="上线成就" />
@@ -86,22 +96,6 @@
         <view class="holder-note" wx:if="{{!isNew}}">{{holders > 0 ? '已有 ' + holders + ' 人获得，不能退回草稿' : '尚无人获得'}}</view>
       </view>
 
-      <view class="form-section more-section">
-        <view class="more-toggle" bindtap="toggleMore" aria-role="button" aria-label="更多设置" aria-expanded="{{showMore}}">
-          <view>更多设置<text class="more-summary" wx:if="{{!showMore}}">{{form.series}}</text></view>
-          <text class="more-action">{{showMore ? '收起' : '展开'}}</text>
-        </view>
-        <view class="more-fields" wx:if="{{showMore}}">
-          <view class="field-label field-required">系列</view>
-          <input class="field-input" value="{{form.series}}" maxlength="20" placeholder="例如：日常" data-field="series" bindinput="onInput" aria-label="系列" />
-          <view class="chip-row" wx:if="{{seriesOptions.length}}">
-            <view class="chip {{form.series === item ? 'active' : ''}}" wx:for="{{seriesOptions}}" wx:key="*this" data-series="{{item}}" bindtap="pickSeries">{{item}}</view>
-          </view>
-          <view class="field-label spaced-label">成就说明（选填）</view>
-          <textarea class="description-input" value="{{form.description}}" maxlength="100" placeholder="{{ruleDescription}}" data-field="description" bindinput="onInput" aria-label="成就说明" />
-          <view class="field-hint">仅描述当前这枚成就，留空则使用达成条件作为说明。</view>
-        </view>
-      </view>
     </block>
 
     <view class="field-hint generation-status" wx:if="{{generation}}">

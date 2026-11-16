@@ -1,10 +1,5 @@
 @import "/pages/public/wxss/form.wxss";
 
-.rule-summary {
-  color: var(--color-black-light);
-  font-size: 29rpx;
-  line-height: 1.6;
-}
 
 .face-grid {
   display: grid;
@@ -63,3 +58,26 @@
 }
 
 .generation-status { margin: var(--space-md) 0; }
+
+/* 所属分类：系列 › 类别 并排，箭头表达层级 */
+.path-row {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--space-sm);
+}
+.path-col {
+  flex: 1;
+  min-width: 0;
+}
+.path-sep {
+  flex-shrink: 0;
+  padding-bottom: 20rpx;
+  color: var(--color-gray-max);
+  font-size: 36rpx;
+  line-height: 48rpx;
+}
+.field-picker.locked,
+.count-field.locked .count-input,
+.count-field.locked .count-unit {
+  color: var(--color-gray-max);
+}
