@@ -36,8 +36,13 @@
   overflow: hidden;
   width: calc(100% + 48rpx);
   margin-left: -24rpx;
-  height: 550rpx;
+  /* 高度贴合内容：徽章 + 名称 + 一行说明；说明较长时加高一行 */
+  height: 510rpx;
   margin-top: 12rpx;
+}
+
+.unlock-swiper.tall {
+  height: 548rpx;
 }
 
 .unlock-badge {
@@ -78,6 +83,10 @@
 }
 
 .unlock-description {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
   margin-top: 12rpx;
   color: var(--color-gray-max);
   font-size: 25rpx;
