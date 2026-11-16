@@ -4,55 +4,64 @@
 <wxs src="/utils/catStatus.wxs" module="cs" />
 
 <!-- 搜索栏浮在卡片列表上方，卡片滚动时从磨砂玻璃下面经过 -->
-<view id='search' style='height: {{heights.filters}}px'>
+<view id='search' class='{{filters_show ? "panel-open" : ""}}'>
   <!-- 胶囊搜索框：识别收进框尾，筛选为独立圆形按钮，生效时显示已筛项数 -->
-  <view class='input-block'>
-    <view class='input-icon iconfont icon-search'></view>
-    <input class='name' placeholder='{{text_cfg.genealogy.search_tip}}' placeholder-class='searchPlaceholderStyle' value='{{filters_input}}' maxlength='20' confirm-type='search' bindinput='fSearchInput' bindconfirm='fSearch'></input>
+  <search-bar class='search-field' variant='glass' placeholder='{{text_cfg.genealogy.search_tip}}' value='{{filters_input}}' bind:input='fSearchInput' bind:confirm='fSearch' bind:clear='fSearchClear'>
     <view class='recognize-btn' bind:tap='clickRecognize' wx:if="{{showRecognize}}" aria-role="button" aria-label="拍照识别">
       <view class='iconfont icon-camera'></view>
     </view>
-  </view>
+  </search-bar>
 
-  <view class='filter-btn {{filters_count ? "active" : ""}}' bind:tap='fToggle' aria-role="button" aria-label="{{filters_count ? '筛选，已选 ' + filters_count + ' 项' : '筛选'}}">
+  <view class='filter-btn {{filters_show ? "open" : (filters_count ? "active" : "")}}' bind:tap='fToggle' aria-role="button" aria-label="{{filters_count ? '筛选，已选 ' + filters_count + ' 项' : '筛选'}}">
     <view class='iconfont icon-filtering'></view>
     <view class='filter-count' wx:if="{{filters_count}}">{{filters_count}}</view>
   </view>
 </view>
 
-<!-- 点击过滤按钮出来的块 -->
-<view id='filter-block' style='top: {{heights.filters}}px; height: {{heights.windowHeight - heights.filters}}px;' catchtouchmove="voidMove" hidden='{{!filters_show}}' bindtap='fHide'>
-  <!-- filter选择部分 -->
-  <view class='filters' catchtap='voidMove'>
-    <scroll-view class='f-column f-column-1 main' scroll-y='1'>
-      <view class='padding-block'></view>
-      <view class='item {{item.active? "active": ""}}' wx:for='{{filters}}' wx:key='name' bindtap='fClickMain' data-index='{{index}}'>
-        <text>{{item.name}}</text>
-        <view class='right-arrow iconfont icon-chevrons-right' wx:if='{{item.active}}'></view>
-      </view>
-    </scroll-view>
-    <scroll-view class='f-column f-column-3' scroll-y='1'>
-      <view class='padding-block'></view>
-      <view wx:for='{{filters[filters_sub].category}}' wx:key='name' data-index='{{index}}'>
-        <view class='item {{item.all_active? "active": ""}}' bindtap='fClickCategory' data-index='{{index}}'>{{item.name}}</view>
-        <view wx:for='{{item.items}}' wx:key='name' wx:for-index='innerindex' wx:for-item='inneritem' class='item {{inneritem.active? "active": ""}}' bindtap='fClickSub' data-index="{{index}}" data-innerindex="{{innerindex}}">{{inneritem.name}}</view>
-        <!-- 来一条分割线 -->
-        <view wx:if='{{index != (filters[filters_sub].category.length - 1)}}' class='divider'></view>
-      </view>
-    </scroll-view>
+<!-- 筛选：从筛选按钮下方展开的卡片。点蒙层或再点筛选按钮放弃本次修改，点「完成」才应用 -->
+<view class='filter-mask {{filters_show ? "show" : ""}}' bindtap='fCancel' catchtouchmove='voidMove'></view>
+<view class='filter-card {{filters_show ? "show" : ""}}' aria-hidden="{{!filters_show}}">
+  <!-- 分组标签：数字为该组已选项数 -->
+  <view class='filter-tabs'>
+    <view class='filter-tab {{filters_sub == index ? "active" : ""}}' wx:for='{{filters}}' wx:key='name' bindtap='fClickMain' data-index='{{index}}' aria-role="tab" aria-selected="{{filters_sub == index}}">
+      {{item.name}}<text class='filter-tab-count' wx:if='{{filters_tab_counts[index]}}'>{{filters_tab_counts[index]}}</text>
+    </view>
+    <view class='filter-tab-indicator' style='left: calc({{(filters_sub + 0.5) * 100 / filters.length}}% - 14rpx);'></view>
   </view>
-  <!-- 来一条分割线 -->
-  <view class='divider'  catchtap='voidMove'></view>
-  <!-- 按钮部分 -->
-  <view class='buttons'  catchtap='voidMove'>
-    <view class='btn' bindtap='fReset'>重 置</view>
-    <view class='btn {{filters_legal? "active": ""}}' bindtap='fComfirm'>完 成</view>
+
+  <scroll-view class='filter-body' scroll-y='1'>
+    <block wx:for='{{filters[filters_sub].category}}' wx:key='name' wx:for-item='cat' wx:for-index='ci'>
+      <!-- 第一项「全部 X」单独一行；校区把各校区放在同一行，选中后在下方展开区域 -->
+      <view class='filter-chip-row' wx:if='{{ci == 0}}'>
+        <view class='filter-chip {{cat.all_active ? "active" : ""}}' bindtap='fPick' data-cat='{{0}}' aria-role="button" aria-selected="{{cat.all_active}}">{{cat.name}}</view>
+        <block wx:if='{{filters[filters_sub].cateKey}}'>
+          <view wx:for='{{filters[filters_sub].category}}' wx:key='name' wx:for-item='campus' wx:for-index='ki' wx:if='{{ki > 0}}' class='filter-chip {{campus_on[ki] ? "active" : ""}}' bindtap='fPick' data-cat='{{ki}}' aria-role="button" aria-selected="{{campus_on[ki]}}">{{campus.name}}</view>
+        </block>
+        <block wx:elif='{{cat.items.length}}'>
+          <view wx:for='{{cat.items}}' wx:key='name' class='filter-chip {{item.active ? "active" : ""}}' bindtap='fPick' data-cat='{{0}}' data-item='{{index}}' aria-role="button" aria-selected="{{item.active}}">{{item.name}}</view>
+        </block>
+      </view>
+      <view class='filter-group' wx:elif='{{cat.items.length && (!filters[filters_sub].cateKey || campus_on[ci])}}'>
+        <view class='filter-group-title'>
+          <text>{{cat.name}}</text>
+          <text class='filter-group-hint' wx:if='{{filters[filters_sub].cateKey}}'>{{cat.all_active ? '不选区域即整个校区' : '已选部分区域'}}</text>
+        </view>
+        <view class='filter-chip-row'>
+          <view wx:for='{{cat.items}}' wx:key='name' class='filter-chip {{item.active ? "active" : ""}}' bindtap='fPick' data-cat='{{ci}}' data-item='{{index}}' aria-role="button" aria-selected="{{item.active}}">{{item.name}}</view>
+        </view>
+      </view>
+    </block>
+  </scroll-view>
+
+  <view class='filter-actions'>
+    <button class='form-button reset-button' bindtap='fResetPanel'>重置</button>
+    <button class='form-button primary' bindtap='fConfirm'>完成</button>
   </view>
 </view>
 
-<scroll-view enable-flex='1' class='cards' style='height: {{heights.windowHeight}}px;' scroll-y='true' enable-back-to-top='true' bindscrolltolower='onReachBottom' bindscroll='fScroll' lower-threshold='{{main_lower_threshold}}' scroll-top='{{targetScrollTop}}' scroll-with-animation='true'>
+<scroll-view enable-flex='1' class='cards' scroll-y='true' enable-back-to-top='true' bindscrolltolower='onReachBottom' lower-threshold='{{main_lower_threshold}}' scroll-top='{{targetScrollTop}}' scroll-with-animation='true'>
   <!-- 给浮动搜索栏让出位置 -->
-  <view class='search-spacer' style='height: {{heights.filters}}px;'></view>
+  <view class='search-spacer'></view>
   <!-- 校区外显筛选 -->
   <scroll-view class="h-filter-list h-filter-scroll" scroll-x="1" wx:if="{{filters[0].category.length > 1}}">
     <view class="h-filter-content">
@@ -170,7 +179,7 @@
   <image class="back-btn" src="/pages/public/images/button/back_to_first_page.png"></image>
 </view>
 <!-- 点击漂浮后的提示 -->
-<view class="adopt-filter-tip {{show_filter_tip? '': 'hide'}}" style="top: {{heights.filters}}px;">
+<view class="adopt-filter-tip {{show_filter_tip? '': 'hide'}}">
   <view class="tri"></view>
   <view class="content">{{text_cfg.genealogy.filter_tip}}</view>
 </view>

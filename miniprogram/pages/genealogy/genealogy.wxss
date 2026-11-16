@@ -3,10 +3,13 @@ page {
   --genealogy-btn-upload: #6FB58A;
   --genealogy-btn-comment: #E89B6C;
   --genealogy-btn-detail: #F0C04A;
+  /* 浮动搜索区高度：上 24 + 搜索框 80 + 下 16（校区行自带 8rpx 内边距，合起来也是 24） */
+  --search-area: 120rpx;
 }
 
 /* miniprogram/pages/genealogy/genealogy.wxss */
 @import "/pages/public/wxss/hFilter.wxss";
+@import "/pages/public/wxss/button.wxss";
 
 page {
   height: 100%;
@@ -19,7 +22,8 @@ scroll-view {
   background-color: var(--color-gray-light);
 }
 
-.cards{
+.cards {
+  height: 100vh;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
@@ -29,12 +33,13 @@ scroll-view {
 /* 浮动搜索栏的占位：纵向 flex 里不允许被压缩 */
 .search-spacer {
   flex-shrink: 0;
+  height: var(--search-area);
   width: 100%;
 }
 
-/* 补齐筛选胶囊下方留白，与搜索框下方的视觉间距接近。 */
+/* 校区行自带 8rpx 内边距，再加 16rpx，胶囊到卡片的可见间距为 24rpx */
 .cards .h-filter-list {
-  margin-bottom: 20rpx;
+  margin-bottom: var(--space-sm);
 }
 
 .card {
@@ -397,48 +402,27 @@ scroll-view {
   left: 0;
   z-index: 3;
   width: 750rpx;
+  height: var(--search-area);
   box-sizing: border-box;
-  padding: 0 var(--space-lg);
+  padding: var(--space-md) var(--space-lg) 0;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: var(--space-sm);
 }
 
-/* 胶囊搜索框：高 80rpx，图标统一 line-height: 1 并用 flex 居中，避免字体图标基线偏移 */
-#search .input-block {
-  flex: 1;
-  min-width: 0;
-  height: 80rpx;
-  display: flex;
-  align-items: center;
-  padding: 0 8rpx 0 28rpx;
-  border-radius: var(--radius-pill);
-  border: 1rpx solid var(--glass-border);
-  background-color: var(--glass-bg);
-  -webkit-backdrop-filter: var(--glass-blur);
-  backdrop-filter: var(--glass-blur);
-  box-sizing: border-box;
+/* 筛选卡片展开时，搜索栏抬到蒙层之上，保持可见可用 */
+#search.panel-open {
+  z-index: 61;
 }
 
-#search .input-icon {
-  flex-shrink: 0;
-  margin-right: 14rpx;
-  color: var(--color-gray-max);
-  font-size: 34rpx;
-  line-height: 1;
-}
-
-#search input.name {
+/* 搜索框本体见 components/searchBar */
+.search-field {
   flex: 1;
   min-width: 0;
-  height: 80rpx;
-  line-height: 80rpx;
-  margin: 0;
-  font-size: 28rpx;
 }
 
 /* 拍照识别：框内尾部图标，前面一道短分隔线 */
-#search .recognize-btn {
+.recognize-btn {
   position: relative;
   flex-shrink: 0;
   display: flex;
@@ -450,7 +434,7 @@ scroll-view {
   color: var(--color-black-min);
 }
 
-#search .recognize-btn::before {
+.recognize-btn::before {
   content: '';
   position: absolute;
   left: 0;
@@ -461,7 +445,7 @@ scroll-view {
   background-color: var(--color-gray-normal);
 }
 
-#search .recognize-btn .iconfont {
+.recognize-btn .iconfont {
   display: block;
   font-size: 40rpx;
   line-height: 1;
@@ -493,6 +477,13 @@ scroll-view {
   transform: translateX(4rpx);
 }
 
+/* 卡片展开中：白底黄描边 */
+.filter-btn.open {
+  border: 3rpx solid var(--color-primary);
+  background-color: var(--color-surface);
+  color: var(--color-primary-text);
+}
+
 .filter-btn.active {
   border: 3rpx solid var(--color-primary);
   background-color: var(--color-primary-light);
@@ -517,99 +508,177 @@ scroll-view {
   box-sizing: border-box;
 }
 
-/* 过滤器点开的部分 */
-#filter-block {
-  width: 750rpx;
+/* 筛选蒙层：浅色，只用来提示「点外面收起」 */
+.filter-mask {
   position: fixed;
-  z-index: 2;
-  background-color: rgba(0, 0, 0, .8);
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 60;
+  background-color: rgba(0, 0, 0, 0.35);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
 }
 
+.filter-mask.show {
+  opacity: 1;
+  pointer-events: auto;
+}
 
-#filter-block .filters {
-  width: 100%;
-  background-color: var(--color-surface);
+/* 筛选卡片：从筛选按钮下方展开，左右与搜索栏对齐；蒙层 z 60，搜索栏 61，卡片 62 */
+.filter-card {
+  position: fixed;
+  top: var(--search-area);
+  left: var(--space-lg);
+  right: var(--space-lg);
+  z-index: 62;
   display: flex;
-  flex-wrap: nowrap;
+  flex-direction: column;
+  overflow: hidden;
+  border-radius: var(--radius-xl);
+  background-color: var(--color-surface);
+  box-shadow: 0 24rpx 64rpx rgba(0, 0, 0, 0.18);
+  transform-origin: top right;
+  opacity: 0;
+  transform: translateY(-12rpx) scale(0.97);
+  pointer-events: none;
+  transition: opacity 0.2s ease, transform 0.25s cubic-bezier(.3, .7, .2, 1);
 }
 
-.f-column {
-  padding: 0rpx 10rpx;
-  height: 400rpx;
+.filter-card.show {
+  opacity: 1;
+  transform: none;
+  pointer-events: auto;
 }
-.f-column .padding-block {
-  height: 20rpx;
+
+/* 分组标签：与榜单频道栏同一套下划线 */
+.filter-tabs {
+  position: relative;
+  flex-shrink: 0;
+  display: flex;
+  height: 84rpx;
+  border-bottom: 1rpx solid var(--color-gray-normal);
 }
-.f-column-1 {
-  width: 31%;
+
+.filter-tab {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8rpx;
+  color: var(--color-gray-max);
+  font-size: var(--font-size-body);
+}
+
+.filter-tab.active {
+  color: var(--color-black-light);
+  font-weight: 600;
+}
+
+.filter-tab-count {
+  min-width: 30rpx;
+  height: 30rpx;
+  padding: 0 8rpx;
+  border-radius: var(--radius-pill);
+  background-color: var(--color-primary);
+  color: var(--color-primary-text);
+  font-size: 19rpx;
+  font-weight: 700;
+  line-height: 30rpx;
+  text-align: center;
   box-sizing: border-box;
 }
 
-.f-column .item {
-  height: 40rpx;
-  font-size: 30rpx;
-  line-height: 40rpx;
-  margin: 10rpx;
-  padding: 2rpx 20rpx;
-  display: inline-flex;
-  flex-wrap: nowrap;
-  border: 3rpx solid transparent;
+.filter-tab-indicator {
+  position: absolute;
+  bottom: 10rpx;
+  width: 28rpx;
+  height: 6rpx;
+  border-radius: 3rpx;
+  background-color: var(--color-primary-dark);
+  transition: left 300ms cubic-bezier(.3, .7, .2, 1);
 }
 
-.f-column .item.active {
-  color: var(--color-primary-text);
-  border: 3rpx solid var(--color-primary);
-  border-radius: 40rpx;
-}
-
-.f-column.main .item.active {
-  color:var(--color-text-onPrimary);
-  background-color: var(--color-primary);
-  border-radius: 40rpx;
-}
-
-.f-column .item .right-arrow {
-  width: 20rpx;
-  height: 40rpx;
-  margin-left: 10rpx;
-
-  display: inline-block;
-}
-
-.right-arrow.iconfont {
-  color: var(--color-black-min)
-}
-
-#filter-block .divider {
-  width: 100%;
-  height: 1rpx;
-  background-color: var(--color-gray);
-}
-
-#filter-block .buttons {
-  width: 100%;
-  background-color: var(--color-gray);
-  display: flex;
-  justify-content: space-between;
-}
-
-#filter-block .buttons .btn {
-  /* 留1rpx给中间的分割线 */
-  width: 374.8rpx;
-  height: 80rpx;
-  line-height: 80rpx;
-  font-size: 30rpx;
+/* 页面给所有 scroll-view 铺了灰底，这里改回卡片白 */
+.filter-body {
   background-color: var(--color-surface);
-  color: var(--color-gray-dark);
-  text-align: center;
+  /* 卡片最高到窗口底部留 32rpx：减去分组标签 84rpx 和按钮区 116rpx */
+  max-height: calc(100vh - var(--search-area) - 232rpx);
+  flex: 1;
+  min-height: 0;
+  box-sizing: border-box;
 }
 
-#filter-block .buttons .active {
-  color: var(--color-primary-text);
-}
-
-.searchPlaceholderStyle{
+.filter-chip-row {
   display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm) 12rpx;
+  padding: var(--space-md);
+}
+
+.filter-group {
+  border-top: 1rpx solid var(--color-gray-normal);
+}
+
+.filter-group .filter-chip-row {
+  padding-top: var(--space-sm);
+}
+
+.filter-group-title {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding: var(--space-md) var(--space-md) 0;
+  color: var(--color-black-light);
+  font-size: 26rpx;
+  font-weight: 600;
+}
+
+.filter-group-hint {
+  color: var(--color-gray-max);
+  font-size: 22rpx;
+  font-weight: 400;
+}
+
+/* 选项胶囊：与外显校区行一致，未选灰描边，选中黄描边浅黄底 */
+.filter-chip {
+  display: flex;
+  align-items: center;
+  height: 60rpx;
+  padding: 0 24rpx;
+  border: 2rpx solid var(--color-gray-normal);
+  border-radius: var(--radius-pill);
+  color: var(--color-black-min);
+  font-size: var(--font-size-chip);
+  box-sizing: border-box;
+}
+
+.filter-chip.active {
+  border-color: var(--color-primary);
+  background-color: var(--color-primary-light);
+  color: var(--color-primary-text);
+  font-weight: 600;
+}
+
+.filter-actions {
+  flex-shrink: 0;
+  display: flex;
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-md) var(--space-md);
+  border-top: 1rpx solid var(--color-gray-normal);
+}
+
+/* 按钮样式见 public/wxss/button.wxss，这里只管两颗按钮的宽度分配 */
+.filter-actions .form-button {
+  /* 卡片内按钮比公共默认 88rpx 稍矮 */
+  --form-button-height: 76rpx;
+  flex: 1;
+}
+
+.filter-actions .reset-button {
+  flex: 0 0 34%;
 }
 
 /* 寻找领养按钮 */
@@ -654,6 +723,7 @@ scroll-view {
 
 .adopt-filter-tip {
   position: fixed;
+  top: var(--search-area);
   right: 20rpx;
   opacity: 1;
 
