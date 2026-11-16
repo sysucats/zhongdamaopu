@@ -194,7 +194,7 @@ Page({
     }
     const confirmed = await new Promise(resolve => wx.showModal({
       title: '重新生成素材',
-      content: `将重新生成 ${badges.length} 枚徽章的背面图、3D 轮廓与历史编号，过程中请保持页面打开。`,
+      content: `将重新生成 ${badges.length} 枚徽章的背面图、3D 轮廓，并补齐缺失的历史编号，过程中请保持页面打开。`,
       success: res => resolve(res.confirm),
       fail: () => resolve(false),
     }));

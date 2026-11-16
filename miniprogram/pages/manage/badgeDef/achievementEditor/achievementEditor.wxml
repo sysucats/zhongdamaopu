@@ -98,14 +98,14 @@
 
     </block>
 
-    <view class="field-hint generation-status" wx:if="{{generation}}">
-      <view>{{generation.label}}{{generation.total ? '（' + generation.step + '/' + generation.total + '）' : ''}}</view>
-      <view wx:if="{{generation.error}}">{{generation.error}}</view>
-    </view>
     <view class="form-error" wx:if="{{formError}}">{{formError}}</view>
     <view class="save-bar">
+      <!-- 保存进度跟着按钮走：按钮文字显示当前步骤，顶边细条显示完成比例 -->
+      <view class="save-progress" wx:if="{{saving && !deleting && generation}}">
+        <view class="save-progress-fill {{generation.status === 'complete' ? 'done' : ''}}" style="width: {{generation.status === 'complete' ? 100 : (generation.total ? (generation.step + 1) * 100 / (generation.total + 1) : 8)}}%"></view>
+      </view>
       <button class="form-button danger delete-button" wx:if="{{mode === 'badge' && !isNew && holders === 0}}" bindtap="remove" loading="{{deleting}}" disabled="{{saving || uploading}}">{{deleting ? '删除中' : '删除成就'}}</button>
-      <button class="form-button primary save-button" bindtap="save" loading="{{(saving && !deleting) || uploading}}" disabled="{{saving || uploading}}">{{uploading ? '图片上传中' : (mode === 'material' ? '保存材质' : (isNew ? (form.status === 'active' ? '保存并上线' : '保存草稿') : '保存修改'))}}</button>
+      <button class="form-button primary save-button" bindtap="save" loading="{{(saving && !deleting && generation.status !== 'complete') || uploading}}" disabled="{{saving || uploading}}">{{uploading ? '图片上传中' : (saving && !deleting && generation ? generation.label : (mode === 'material' ? '保存材质' : (isNew ? (form.status === 'active' ? '保存并上线' : '保存草稿') : '保存修改')))}}</button>
     </view>
   </view>
 </block>

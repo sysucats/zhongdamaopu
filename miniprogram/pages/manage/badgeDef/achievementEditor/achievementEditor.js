@@ -206,7 +206,7 @@ Page({
         let batch = result;
         let rounds = 0;
         while (batch.hasMore && rounds++ < 200) {
-          this.setData({ generation: { label: `正在生成背面图 ${batch.done}/${batch.total}` } });
+          this.setData({ generation: { label: `生成背面图 ${batch.done}/${batch.total}`, step: batch.done, total: batch.total } });
           batch = await callCatalog('regenerateMaterialBacks', { key: form.key, generationId });
           regenerated += batch.regenerated || 0;
           failed += batch.failed || 0;
@@ -215,11 +215,14 @@ Page({
         if (failed) throw new Error(`材质已保存，${failed} 枚生成失败，请再次保存重试`);
       } else {
         let pending = result.pending;
+        // 素材已生成完，停止轮询，避免进度被旧状态覆盖
+        if (pending) stopGenerationWatch(this);
         while (pending) {
-          this.setData({ generation: { label: '素材已就绪，正在整理历史编号' } });
+          this.setData({ generation: { label: '整理历史编号', step: 5, total: 6 } });
           pending = (await callCatalog('prepareBadge', { key: form.key, generationId })).pending;
         }
       }
+      stopGenerationWatch(this);
       this.setData({ generation: { label: '保存完成', status: 'complete' } });
       clearAchievementCache();
       if (mode === 'material' && (regenerated || failed)) {

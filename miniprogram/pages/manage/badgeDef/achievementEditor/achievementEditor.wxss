@@ -57,7 +57,25 @@
   line-height: 1.5;
 }
 
-.generation-status { margin: var(--space-md) 0; }
+/* 保存进度：贴在底栏顶边的细条 */
+.save-progress {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4rpx;
+  background: var(--color-gray-light);
+}
+
+.save-progress-fill {
+  height: 100%;
+  background: var(--color-primary);
+  transition: width .4s ease;
+}
+
+.save-progress-fill.done { background: var(--color-green); }
+
+.save-button { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
 /* 所属分类：系列 › 类别 并排，箭头表达层级 */
 .path-row {
