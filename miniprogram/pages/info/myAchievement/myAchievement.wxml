@@ -45,6 +45,7 @@
         <view class="tier-cell {{t.unlocked ? 'unlocked' : 'locked'}}" wx:for="{{item.tiers}}" wx:for-item="t" wx:key="key" bindtap="openBadge" data-key="{{t.key}}">
           <view class="medal">
             <image class="medal-image" src="{{t.frontImage}}" mode="aspectFit" />
+            <view class="new-tag" wx:if="{{t.isNew}}">新</view>
           </view>
           <view class="tier-name">{{t.tierName}}</view>
           <view class="tier-threshold">{{t.threshold}}{{item.unit}}</view>

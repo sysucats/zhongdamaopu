@@ -212,6 +212,39 @@ async function getMyAchievementCount() {
   return (await syncAchievements()).unlocked.length;
 }
 
+// 新点亮：解锁不满 7 天且本机还没点开看过详情
+const NEW_BADGE_MS = 7 * 24 * 60 * 60 * 1000;
+const SEEN_NEW_KEY = 'achv_seen_new';
+
+function readSeenNew() {
+  try {
+    return new Set(wx.getStorageSync(SEEN_NEW_KEY) || []);
+  } catch (error) {
+    return new Set();
+  }
+}
+
+function isNewBadge(badge, seen = readSeenNew()) {
+  if (!badge?.unlocked || !badge.unlock_time || seen.has(badge.key)) return false;
+  return Date.now() - new Date(badge.unlock_time).getTime() < NEW_BADGE_MS;
+}
+
+function markBadgeSeen(key) {
+  const seen = readSeenNew();
+  if (!key || seen.has(key)) return;
+  seen.add(key);
+  try {
+    wx.setStorageSync(SEEN_NEW_KEY, [...seen]);
+  } catch (error) {
+    console.warn('记录已看徽章失败', error);
+  }
+}
+
+async function getNewBadgeCount() {
+  const seen = readSeenNew();
+  return (await getUnlockedList()).filter(badge => isNewBadge(badge, seen)).length;
+}
+
 async function getUnlockedList() {
   const [data, user] = await Promise.all([syncAchievements(), getUser()]);
   return buildLadders(data, data.unlocked, data.counts, user?.userInfo?.nickName || '').flatMap(ladder => ladder.tiers).filter(item => item.unlocked);
@@ -301,6 +334,9 @@ module.exports = {
   getMyAchievements,
   getMyAchievementCount,
   getUnlockedList,
+  isNewBadge,
+  markBadgeSeen,
+  getNewBadgeCount,
   getShowcase,
   getUserShowcase,
   highestUnlockedByCategory,

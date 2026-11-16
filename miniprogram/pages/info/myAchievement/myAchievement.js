@@ -1,4 +1,4 @@
-import { getMyAchievements } from "../../../utils/achievement";
+import { getMyAchievements, isNewBadge, markBadgeSeen } from "../../../utils/achievement";
 import { formatDate } from "../../../utils/utils";
 
 Page({
@@ -14,15 +14,21 @@ Page({
 
   openBadge(e) {
     const key = e.currentTarget.dataset.key;
-    for (const category of this.data.list) {
-      const tier = category.tiers.find(item => item.key === key);
-      if (tier) {
-        this.setData({
-          selectedBadge: { ...tier, name: tier.tierName, unit: category.unit },
-          showBadgeDetail: true,
-        });
-        return;
+    for (const [index, category] of this.data.list.entries()) {
+      const tierIndex = category.tiers.findIndex(item => item.key === key);
+      if (tierIndex < 0) continue;
+      const tier = category.tiers[tierIndex];
+      const update = {
+        selectedBadge: { ...tier, name: tier.tierName, unit: category.unit },
+        showBadgeDetail: true,
+      };
+      // 点开详情即算看过，去掉「新」角标
+      if (tier.isNew) {
+        markBadgeSeen(key);
+        update[`list[${index}].tiers[${tierIndex}].isNew`] = false;
       }
+      this.setData(update);
+      return;
     }
   },
 
@@ -41,6 +47,7 @@ Page({
         ladder.showSeries = index === 0 || list[index - 1].series !== ladder.series;
         ladder.tiers.forEach(t => {
           t.unlock_time_text = t.unlock_time ? formatDate(new Date(t.unlock_time), 'yyyy-MM-dd') : '';
+          t.isNew = isNewBadge(t);
           if (t.unlocked) unlockedCount++;
         });
         // 当前达到的阶梯位置（0 = 未解锁）

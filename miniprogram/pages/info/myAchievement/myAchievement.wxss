@@ -157,10 +157,11 @@ page {
   background: var(--grad-achievement-gold);
 }
 
-/* 三档奖牌 */
+/* 奖牌固定三列，超过三档换行。 */
 .tier-row {
   display: flex;
-  justify-content: space-between;
+  flex-wrap: wrap;
+  row-gap: var(--space-lg);
 }
 
 .tier-cell {
@@ -239,4 +240,22 @@ page {
   margin-top: var(--space-lg);
   padding: 0 var(--space-lg);
   line-height: 1.5;
+}
+
+/* 新点亮：奖牌右上角的红签，三角大圆角、左下小圆角，略向左倾 */
+.new-tag {
+  position: absolute;
+  z-index: 2;
+  top: -12rpx;
+  right: -24rpx;
+  height: 32rpx;
+  padding: 0 14rpx 0 12rpx;
+  border-radius: 16rpx 16rpx 16rpx 6rpx;
+  background: linear-gradient(135deg, var(--color-red) 0%, var(--color-red-dark) 100%);
+  box-shadow: 0 4rpx 8rpx rgba(233, 21, 45, 0.28);
+  color: var(--color-text-inverse);
+  font-size: 22rpx;
+  font-weight: 700;
+  line-height: 32rpx;
+  transform: rotate(-7deg);
 }
