@@ -3,6 +3,7 @@
   "usingComponents": {
     "popup": "/components/popup/popup",
     "searchCat": "/components/searchCat/searchCat",
-    "popup-header": "/components/popupHeader/popupHeader"
+    "popup-header": "/components/popupHeader/popupHeader",
+    "search-bar": "/components/searchBar/searchBar"
   }
 }

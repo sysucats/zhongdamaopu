@@ -56,23 +56,6 @@ page {
   padding: 0 var(--space-lg) calc(var(--space-md) + env(safe-area-inset-bottom));
 }
 
-.search-field {
-  position: relative;
-}
-
-.search-input {
-  padding-left: var(--space-section);
-}
-
-.search-icon {
-  position: absolute;
-  top: 50%;
-  left: var(--space-sm);
-  color: var(--color-gray-max);
-  font-size: 32rpx;
-  transform: translateY(-50%);
-}
-
 .user-filters {
   display: flex;
   flex-wrap: wrap;

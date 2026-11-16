@@ -1,0 +1,79 @@
+@import "/pages/public/wxss/iconfont.wxss";
+
+:host {
+  display: block;
+}
+
+/* 胶囊框高 80rpx；字体图标统一 line-height: 1 并用 flex 居中，避免基线偏移 */
+.search-bar {
+  display: flex;
+  align-items: center;
+  height: 80rpx;
+  padding: 0 8rpx 0 28rpx;
+  border-radius: var(--radius-pill);
+  box-sizing: border-box;
+}
+
+.search-bar.glass {
+  border: 1rpx solid var(--glass-border);
+  background-color: var(--glass-bg);
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
+}
+
+.search-bar.surface {
+  border: 1rpx solid var(--color-gray-normal);
+  background-color: var(--color-surface);
+}
+
+.search-bar.fill {
+  background-color: var(--color-gray-light);
+}
+
+.search-icon {
+  flex-shrink: 0;
+  margin-right: 14rpx;
+  color: var(--color-gray-max);
+  font-size: 34rpx;
+  line-height: 1;
+}
+
+.search-input {
+  flex: 1;
+  min-width: 0;
+  height: 80rpx;
+  line-height: 80rpx;
+  margin: 0;
+  color: var(--color-black-min);
+  font-size: var(--font-size-body);
+}
+
+.search-placeholder {
+  color: var(--color-gray-max);
+}
+
+/* 清除：64rpx 点击区，里面是灰色小圆点 */
+.search-clear {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 64rpx;
+  height: 64rpx;
+}
+
+.search-clear-dot {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32rpx;
+  height: 32rpx;
+  border-radius: 50%;
+  background-color: var(--color-gray-max);
+  color: var(--color-surface);
+}
+
+.search-clear-dot .iconfont {
+  font-size: 20rpx;
+  line-height: 1;
+}

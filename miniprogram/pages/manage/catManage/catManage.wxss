@@ -10,35 +10,8 @@
 /* 搜索框 */
 .search-box {
   width: 100%;
-  display: flex;
-  justify-content: center;
   box-sizing: border-box;
-  padding: 30rpx;
-}
-
-.input-block {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  background-color: var(--color-surface);
-  border-radius: 50rpx;
-  padding: 10rpx 30rpx;
-  box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.05);
-}
-
-.search-logo {
-  width: 50rpx;
-  height: 50rpx;
-  margin-right: 20rpx;
-  display: flex;
-  justify-content: center;
-}
-
-.search-input {
-  flex: 1;
-  height: 70rpx;
-  font-size: 28rpx;
-  margin-right: 20rpx;
+  padding: var(--space-lg);
 }
 
 /* 选项卡 */

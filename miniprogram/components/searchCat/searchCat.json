@@ -2,6 +2,7 @@
   "component": true,
   "usingComponents": {
     "popup": "/components/popup/popup",
-    "popup-header": "/components/popupHeader/popupHeader"
+    "popup-header": "/components/popupHeader/popupHeader",
+    "search-bar": "/components/searchBar/searchBar"
   }
 }
