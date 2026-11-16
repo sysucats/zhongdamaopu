@@ -124,14 +124,14 @@ Component({
       });
     },
 
-    getUInfo: function () {
-      this.setData({
-        showEdit: true
-      });
+    // 与成就榜一致：点「我的」卡片进入自己的照片
+    toMyPhotos() {
+      wx.navigateTo({ url: '/pages/info/myFootprint/myFootprint?type=photos' });
     },
 
-    closeEdit() {
-      this.setData({ showEdit: false });
+    // 编辑弹窗由页面承载：swiper 内的 fixed 定位会被裁在滑动区里
+    getUInfo() {
+      this.triggerEvent('editprofile');
     },
   }
 })
