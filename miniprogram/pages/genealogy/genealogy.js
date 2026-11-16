@@ -34,7 +34,8 @@ Page({
     filters_input: '',
     filters_show_shadow: false,
     filters_empty: true,
-    heights: { filters: 40 },
+    filters_count: 0,
+    heights: { filters: 60 },
     catsMax: 0,
     loading: false,
     loadnomore: false,
@@ -614,9 +615,9 @@ Page({
         const svRect = res[2];          // scroll-view 相对视口的位置
         // card 在 scroll-view 内容流中的偏移
         const cardOffsetTop = cardRect.top - svRect.top + scrollInfo.scrollTop;
-        // 顶部余量 40rpx 转 px
+        // 顶部余量 40rpx 转 px，再让出浮在列表上方的搜索栏高度
         const rpxToPx = wx.getWindowInfo().windowWidth / 750;
-        const offset = 40 * rpxToPx;
+        const offset = 40 * rpxToPx + (this.data.heights.filters || 0);
         const targetScrollTop = Math.max(0, cardOffsetTop - offset);
         this.setData({ targetScrollTop });
       });
@@ -668,7 +669,7 @@ Page({
     wx.getSystemInfo({
       success: res => {
         this.setData({
-          "heights.filters": res.screenHeight * 0.065,
+          "heights.filters": 60,
           "heights.screenHeight": res.screenHeight,
           "heights.windowHeight": res.windowHeight,
           "heights.statusBarHeight": res.statusBarHeight,
@@ -767,7 +768,8 @@ Page({
       let count = 0;
       for (const category of mainF.category) {
         if (category.all_active) {
-          count += category.items.length;
+          // 校区整体选中即有效，即使它还没有二级地址
+          count += mainF.cateKey ? 1 : category.items.length;
         } else {
           count += category.items.filter(item => item.active).length;
         }
@@ -864,14 +866,24 @@ Page({
       
       // 处理其他过滤器 (area, colour)
       if (mainF.category[0].all_active) return;
-      
+
+      // 校区：整校区选中按 campus 过滤（没有二级地址的校区也能筛），只选了部分区域时按「校区+区域」过滤
+      if (mainF.cateKey) {
+        const campusConds = [];
+        mainF.category.slice(1).forEach(category => {
+          if (category.all_active) {
+            campusConds.push({ [mainF.cateKey]: category.name });
+            return;
+          }
+          const areas = category.items.filter(item => item.active).map(item => item.name);
+          if (areas.length) campusConds.push({ [mainF.cateKey]: category.name, [key]: { $in: areas } });
+        });
+        if (campusConds.length) conditions.push(campusConds.length > 1 ? { $or: campusConds } : campusConds[0]);
+        return;
+      }
+
       const selected = [];
-      let cateSelected = [];
-      const cateFilter = Boolean(mainF.cateKey);
-      
       mainF.category.forEach(category => {
-        let cateKeyPushed = false;
-        
         category.items.forEach(item => {
           if (category.all_active || item.active) {
             let choice = item.name;
@@ -883,11 +895,6 @@ Page({
             }
             
             selected.push(choice);
-            
-            if (cateFilter && !cateKeyPushed && category.name) {
-              cateSelected.push(category.name);
-              cateKeyPushed = true;
-            }
           }
         });
       });
@@ -909,10 +916,6 @@ Page({
         } else if (fieldCondition.length === 1) {
           conditions.push(fieldCondition[0]);
         }
-        
-        if (cateFilter && cateSelected.length > 0) {
-          conditions.push({ [mainF.cateKey]: { $in: cateSelected } });
-        }
       }
     });
     
@@ -932,9 +935,14 @@ Page({
     
     // 检查是否有用户定义的过滤条件
     const hasUserFilters = conditions.length > 0;
+    // 筛选按钮角标：面板里生效的维度数（校区在外显胶囊里已可见，不计入）
+    const filters_count = filters.filter((mainF, index) => index > 0 && (
+      mainF.key === 'status' ? this.buildStatusConditions(mainF).length > 0 : !mainF.category?.[0]?.all_active
+    )).length;
     this.setData({ 
       filters_active: hasUserFilters,
-      filters_empty: !hasUserFilters
+      filters_empty: !hasUserFilters,
+      filters_count,
     });
     
     // 添加软删除过滤条件
@@ -985,6 +993,8 @@ Page({
   
   fClickCampus: async function(e) {
     if (this.jsData.pageLoadingLock) return false;
+    // 外显校区是单选：再点已选中的不取消，避免一个都不亮
+    if (this.data.filters[0].category[e.currentTarget.dataset.index]?.all_active) return false;
     await this.fClickCategory(e, true);
     await this.fComfirm();
   },

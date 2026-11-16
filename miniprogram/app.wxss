@@ -39,6 +39,10 @@ page {
   --color-bg-subtle: #f8f8f8;
   /* 浅边框（列表分隔、卡片描边）。 */
   --color-border: #e5e5e5;
+  /* 磨砂玻璃：浮在滚动内容上方的控件（搜索框等），半透明白 + 背景模糊 + 细描边。 */
+  --glass-bg: rgba(255, 255, 255, 0.6);
+  --glass-border: rgba(0, 0, 0, 0.08);
+  --glass-blur: blur(20rpx) saturate(1.6);
 
   --color-black-min:#414141;
   --color-black-light: #222222;

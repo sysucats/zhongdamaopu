@@ -3,25 +3,25 @@
 <!-- 猫猫状态标签：文案与色调统一由 catStatus.wxs 产出 -->
 <wxs src="/utils/catStatus.wxs" module="cs" />
 
-<view id='search' class='{{filters_show_shadow? "shadow": ""}}' style='height: {{heights.filters}}px'>
+<!-- 搜索栏浮在卡片列表上方，卡片滚动时从磨砂玻璃下面经过 -->
+<view id='search' style='height: {{heights.filters}}px'>
+  <!-- 胶囊搜索框：识别收进框尾，筛选为独立圆形按钮，生效时显示已筛项数 -->
   <view class='input-block'>
-    <view class='input-icon iconfont icon-search gray'></view>
+    <view class='input-icon iconfont icon-search'></view>
     <input class='name' placeholder='{{text_cfg.genealogy.search_tip}}' placeholder-class='searchPlaceholderStyle' value='{{filters_input}}' maxlength='20' confirm-type='search' bindinput='fSearchInput' bindconfirm='fSearch'></input>
+    <view class='recognize-btn' bind:tap='clickRecognize' wx:if="{{showRecognize}}" aria-role="button" aria-label="拍照识别">
+      <view class='iconfont icon-camera'></view>
+    </view>
   </view>
 
-  <view class='filter-btn' bind:tap='clickRecognize' wx:if="{{showRecognize}}">
-    <view class='iconfont icon-camera gray'></view>
-    <view>识别</view>
-  </view>
-  
-  <view class='filter-btn' bind:tap='fToggle'>
-    <view class='iconfont icon-filtering {{filters_active? "primary": "gray"}}'></view>
-    <view>筛选</view>
+  <view class='filter-btn {{filters_count ? "active" : ""}}' bind:tap='fToggle' aria-role="button" aria-label="{{filters_count ? '筛选，已选 ' + filters_count + ' 项' : '筛选'}}">
+    <view class='iconfont icon-filtering'></view>
+    <view class='filter-count' wx:if="{{filters_count}}">{{filters_count}}</view>
   </view>
 </view>
 
 <!-- 点击过滤按钮出来的块 -->
-<view id='filter-block' style='height: {{heights.windowHeight - heights.filters}}px;' catchtouchmove="voidMove" hidden='{{!filters_show}}' bindtap='fHide'>
+<view id='filter-block' style='top: {{heights.filters}}px; height: {{heights.windowHeight - heights.filters}}px;' catchtouchmove="voidMove" hidden='{{!filters_show}}' bindtap='fHide'>
   <!-- filter选择部分 -->
   <view class='filters' catchtap='voidMove'>
     <scroll-view class='f-column f-column-1 main' scroll-y='1'>
@@ -50,7 +50,9 @@
   </view>
 </view>
 
-<scroll-view enable-flex='1' class='cards' style='height: {{heights.windowHeight - heights.filters}}px;' scroll-y='true' enable-back-to-top='true' bindscrolltolower='onReachBottom' bindscroll='fScroll' lower-threshold='{{main_lower_threshold}}' scroll-top='{{targetScrollTop}}' scroll-with-animation='true'>
+<scroll-view enable-flex='1' class='cards' style='height: {{heights.windowHeight}}px;' scroll-y='true' enable-back-to-top='true' bindscrolltolower='onReachBottom' bindscroll='fScroll' lower-threshold='{{main_lower_threshold}}' scroll-top='{{targetScrollTop}}' scroll-with-animation='true'>
+  <!-- 给浮动搜索栏让出位置 -->
+  <view class='search-spacer' style='height: {{heights.filters}}px;'></view>
   <!-- 校区外显筛选 -->
   <scroll-view class="h-filter-list h-filter-scroll" scroll-x="1" wx:if="{{filters[0].category.length > 1}}">
     <view class="h-filter-content">
@@ -168,7 +170,7 @@
   <image class="back-btn" src="/pages/public/images/button/back_to_first_page.png"></image>
 </view>
 <!-- 点击漂浮后的提示 -->
-<view class="adopt-filter-tip {{show_filter_tip? '': 'hide'}}">
+<view class="adopt-filter-tip {{show_filter_tip? '': 'hide'}}" style="top: {{heights.filters}}px;">
   <view class="tri"></view>
   <view class="content">{{text_cfg.genealogy.filter_tip}}</view>
 </view>

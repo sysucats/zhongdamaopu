@@ -26,6 +26,12 @@ scroll-view {
   align-items: center;
 }
 
+/* 浮动搜索栏的占位：纵向 flex 里不允许被压缩 */
+.search-spacer {
+  flex-shrink: 0;
+  width: 100%;
+}
+
 /* 补齐筛选胶囊下方留白，与搜索框下方的视觉间距接近。 */
 .cards .h-filter-list {
   margin-bottom: 20rpx;
@@ -386,64 +392,129 @@ scroll-view {
 
 /* 顶部的搜索框还有筛选 */
 #search {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 3;
   width: 750rpx;
-  background-color: var(--color-gray-light);
   box-sizing: border-box;
-
+  padding: 0 var(--space-lg);
   display: flex;
-  justify-content: space-around;
   align-items: center;
-  flex-wrap: nowrap;
-
+  gap: var(--space-sm);
 }
 
-#search.shadow {
-  box-shadow: 0 0 10rpx var(--color-gray);
-}
-
+/* 胶囊搜索框：高 80rpx，图标统一 line-height: 1 并用 flex 居中，避免字体图标基线偏移 */
 #search .input-block {
-  width: 75%;
+  flex: 1;
+  min-width: 0;
+  height: 80rpx;
   display: flex;
   align-items: center;
-  flex-wrap: nowrap;
-  background-color: var(--color-surface);
+  padding: 0 8rpx 0 28rpx;
+  border-radius: var(--radius-pill);
+  border: 1rpx solid var(--glass-border);
+  background-color: var(--glass-bg);
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
+  box-sizing: border-box;
 }
 
 #search .input-icon {
-  font-size: 100%;
-  margin: 0 10rpx;
+  flex-shrink: 0;
+  margin-right: 14rpx;
+  color: var(--color-gray-max);
+  font-size: 34rpx;
+  line-height: 1;
 }
 
 #search input.name {
-  width: 90%;
-  height: 2.2rem;
-  line-height: 2.2rem;
-  background-color: var(--color-surface);
-  border-top-right-radius: 10rpx;
-  border-bottom-right-radius: 10rpx;
-  display: inline-block;
-  box-sizing: border-box;
+  flex: 1;
+  min-width: 0;
+  height: 80rpx;
+  line-height: 80rpx;
   margin: 0;
-
-  font-size: 80%;
+  font-size: 28rpx;
 }
 
-.filter-btn {
-  width: 7%;
-  height: 55%;
+/* 拍照识别：框内尾部图标，前面一道短分隔线 */
+#search .recognize-btn {
+  position: relative;
+  flex-shrink: 0;
   display: flex;
-  flex-direction: column;
-  justify-content: center;
   align-items: center;
-  font-size: 20rpx;
-  text-align: center;
+  justify-content: center;
+  width: 80rpx;
+  height: 64rpx;
+  margin-left: 8rpx;
   color: var(--color-black-min);
 }
 
+#search .recognize-btn::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 1rpx;
+  height: 32rpx;
+  margin-top: -16rpx;
+  background-color: var(--color-gray-normal);
+}
+
+#search .recognize-btn .iconfont {
+  display: block;
+  font-size: 40rpx;
+  line-height: 1;
+}
+
+/* 筛选：圆形按钮；生效时浅黄底黄描边，角标显示已筛项数 */
+.filter-btn {
+  position: relative;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 50%;
+  border: 1rpx solid var(--glass-border);
+  background-color: var(--glass-bg);
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
+  color: var(--color-black-min);
+  box-sizing: border-box;
+}
+
 .filter-btn .iconfont {
-  font-size: 36rpx;
-  line-height: 36rpx;
-  margin: 0;
+  display: block;
+  font-size: 38rpx;
+  line-height: 1;
+  /* 漏斗字形右侧留白较多，视觉上偏左，补回约 2px */
+  transform: translateX(4rpx);
+}
+
+.filter-btn.active {
+  border: 3rpx solid var(--color-primary);
+  background-color: var(--color-primary-light);
+  color: var(--color-primary-text);
+}
+
+.filter-count {
+  position: absolute;
+  top: -6rpx;
+  right: -6rpx;
+  min-width: 32rpx;
+  height: 32rpx;
+  padding: 0 6rpx;
+  border-radius: var(--radius-pill);
+  border: 3rpx solid var(--color-surface);
+  background-color: var(--color-primary);
+  color: var(--color-black-light);
+  font-size: 18rpx;
+  font-weight: 700;
+  line-height: 26rpx;
+  text-align: center;
+  box-sizing: border-box;
 }
 
 /* 过滤器点开的部分 */
@@ -583,16 +654,15 @@ scroll-view {
 
 .adopt-filter-tip {
   position: fixed;
-  top: 100rpx;
   right: 20rpx;
   opacity: 1;
 
-  transition: top 1s, opacity 1s;
+  transition: transform 1s, opacity 1s;
 }
 
 .adopt-filter-tip.hide {
   opacity: 0;
-  top: 50rpx;
+  transform: translateY(-25px);
 }
 
 .adopt-filter-tip .tri {
@@ -728,4 +798,10 @@ scroll-view {
   text-align: center;
   color: var(--color-primary);
   font-weight: bold;
+}
+
+/* 校区胶囊行与搜索栏对齐：首尾胶囊距屏幕边缘 32rpx（页面通用边距 --space-lg），扣掉胶囊自带的 8rpx 外边距 */
+.h-filter-scroll .h-filter-content {
+  padding-left: calc(var(--space-lg) - var(--space-xs));
+  padding-right: calc(var(--space-lg) - var(--space-xs));
 }
