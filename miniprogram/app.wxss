@@ -40,6 +40,8 @@ page {
   /* 浅边框（列表分隔、卡片描边）。 */
   --color-border: #e5e5e5;
   /* 磨砂玻璃：浮在滚动内容上方的控件（搜索框等），半透明白 + 背景模糊 + 细描边。 */
+  /* 自定义 tabBar 的实际高度，与 custom-tab-bar/index.wxss 保持一致：96rpx + 底部安全区（至少 16rpx） */
+  --tab-bar-height: calc(96rpx + max(16rpx, env(safe-area-inset-bottom)));
   --glass-bg: rgba(255, 255, 255, 0.6);
   --glass-border: rgba(0, 0, 0, 0.08);
   --glass-blur: blur(20rpx) saturate(1.6);
@@ -195,3 +197,9 @@ page {
 
 @import '/packages/weui/weui-wxss/dist/style/weui.wxss';
 @import "./pages/public/wxss/iconfont.wxss"
+
+/* tab 页底部占位：给自定义 tabBar 让出位置 */
+.tab-bar-spacer {
+  flex-shrink: 0;
+  height: var(--tab-bar-height);
+}

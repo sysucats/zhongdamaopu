@@ -20,7 +20,6 @@ Page({
     markers: [],
     showDetail: false,
     currentCat: null,
-    tabBarHeight: 0,
     text_cfg: config.text,
     loading: true,
     demoMode: false,

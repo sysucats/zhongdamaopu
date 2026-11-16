@@ -1,10 +1,10 @@
 <!-- 频道切换：四格平分，共用一根滑动指示条 -->
-<view class="thread-list" style="height: {{heights.threads}}px;">
+<view class="thread-list">
   <view class='thread-item {{threadsActive == index? "active": ""}}' bindtap='fClickThread' data-index='{{index}}' wx:for="{{threads}}" wx:key="*this" aria-role="tab" aria-selected="{{threadsActive == index}}">{{item}}</view>
   <view class="thread-indicator" style="left: calc({{(threadsActive + 0.5) * 100 / threads.length}}% - 14rpx);"></view>
 </view>
 
-<swiper current="{{threadsActive}}" indicator-dots="{{false}}" bindchange="onSwiperChange" style="height: {{heights.windowHeight - heights.threads - tabBarHeight}}px;">
+<swiper class="rank-swiper" current="{{threadsActive}}" indicator-dots="{{false}}" bindchange="onSwiperChange">
   <!-- 徽章榜 -->
   <swiper-item>
     <scroll-view scroll-y="1" style="height: 100%;">
@@ -102,6 +102,6 @@
 </popup>
 
 <!-- 底tab占位 -->
-<view style="height: {{tabBarHeight}}px;"></view>
+<view class="tab-bar-spacer"></view>
 
 <achievement-unlock id="achievement-unlock" />

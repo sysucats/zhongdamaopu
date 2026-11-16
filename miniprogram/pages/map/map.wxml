@@ -17,7 +17,7 @@ module.exports = {
   <view class="demo-badge" wx:if="{{demoMode}}">Demo</view>
 
   <!-- 地图容器 -->
-  <view class="map-container" style="height: calc(100vh - {{tabBarHeight}}px);">
+  <view class="map-container">
     <map
       id="campusMap"
       class="campus-map"

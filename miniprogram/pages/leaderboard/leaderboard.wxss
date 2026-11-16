@@ -6,9 +6,19 @@ page {
   background: var(--color-gray-light);
 }
 
+/* 榜单区高度 = 窗口 - 频道栏 - tabBar；swiper 必须给定高度才能滑动 */
+page {
+  --thread-list-height: 42px;
+}
+
+.rank-swiper {
+  height: calc(100vh - var(--thread-list-height) - var(--tab-bar-height));
+}
+
 .thread-list {
   position: relative;
   display: flex;
+  height: var(--thread-list-height);
   background-color: var(--color-surface);
   border-bottom: 1rpx solid var(--color-gray-normal);
   box-sizing: border-box;

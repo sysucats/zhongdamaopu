@@ -166,7 +166,7 @@
     <image src='/pages/public/images/system/nomore.png'></image>
   </view>
   <!-- 底tab占位 -->
-  <view style="height: {{tabBarHeight}}px;"></view>
+  <view class="tab-bar-spacer"></view>
 </scroll-view>
 
 <!-- 漂浮的领养logo -->
