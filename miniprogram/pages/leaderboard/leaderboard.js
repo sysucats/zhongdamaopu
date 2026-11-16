@@ -383,7 +383,7 @@ Page({
       success: res => {
         // console.log(res);
         this.setData({
-          "heights.threads": 35,
+          "heights.threads": 42,
           "heights.screenHeight": res.screenHeight,
           "heights.windowHeight": res.windowHeight,
           "heights.statusBarHeight": res.statusBarHeight,
