@@ -95,14 +95,7 @@
             <view class="section-subtitle">立体厚度</view>
             <view class="thickness-value">{{thicknessMm}}<text class="thickness-unit">mm</text></view>
           </view>
-          <view class="thickness-control" catchtouchstart="onThicknessTouchStart" catchtouchmove="onThicknessTouchMove" catchtouchend="onThicknessTouchEnd" catchtouchcancel="onThicknessTouchEnd">
-            <view class="thickness-appearance" aria-hidden="true">
-              <view class="thickness-track"><view class="thickness-fill" style="width: {{thicknessMm * 50}}%;"></view></view>
-              <view class="thickness-thumb" style="left: {{thicknessMm * 50}}%;"></view>
-              <view class="thickness-tick" wx:for="{{thicknessTicks}}" wx:key="*this" style="left: {{item * 5}}%;"></view>
-            </view>
-            <slider class="thickness-slider" min="0" max="20" step="1" value="{{thicknessMm * 10}}" block-size="28" disabled="{{savingDisplaySettings}}" bindchanging="onThicknessChange" bindchange="onThicknessChange" aria-label="立体厚度，当前 {{thicknessMm}} 毫米，范围 0 到 2 毫米，每步 0.1 毫米" />
-          </view>
+          <slider-control class="thickness-control" min="0" max="20" step="1" value="{{thicknessMm * 10}}" ticks="{{thicknessTicks}}" disabled="{{savingDisplaySettings}}" bind:changing="onThicknessChange" bind:change="onThicknessChange" aria-label="立体厚度，当前 {{thicknessMm}} 毫米，范围 0 到 2 毫米，每步 0.1 毫米" />
           <view class="thickness-limits" aria-hidden="true"><text>0 mm</text><text>2 mm</text></view>
           <view class="thickness-actions">
             <button class="form-button compact with-icon {{savingDisplaySettings || thicknessMm <= 0 ? 'is-disabled' : ''}}" data-delta="-0.1" bindtap="stepThickness" disabled="{{savingDisplaySettings || thicknessMm <= 0}}" aria-label="厚度减少 0.1 毫米"><text aria-hidden="true">−</text><text>0.1</text></button>

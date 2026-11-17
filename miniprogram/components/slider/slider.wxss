@@ -1,0 +1,74 @@
+/* 公共滑杆：外观沿用成就展示的立体厚度滑杆 */
+.slider {
+  position: relative;
+  height: 44px;
+}
+
+/* 左右各让出半个滑块宽，滑块中心能走到两端 */
+.slider-appearance {
+  position: absolute;
+  top: 0;
+  right: 17px;
+  bottom: 0;
+  left: 17px;
+  pointer-events: none;
+}
+
+.slider-track {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 8px;
+  transform: translateY(-50%);
+  overflow: hidden;
+  border-radius: var(--radius-pill);
+  background: var(--color-gray);
+}
+
+.slider-fill {
+  height: 100%;
+  border-radius: inherit;
+  background: var(--color-primary);
+}
+
+.slider-thumb {
+  position: absolute;
+  top: 50%;
+  width: 32px;
+  height: 24px;
+  box-sizing: border-box;
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  border-radius: 14px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.86), rgba(255, 255, 255, 0.62));
+  -webkit-backdrop-filter: blur(4px) saturate(1.15);
+  backdrop-filter: blur(4px) saturate(1.15);
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.8), 0 1px 4px rgba(0, 0, 0, 0.12);
+  transform: translate(-50%, -50%);
+}
+
+.slider-tick {
+  position: absolute;
+  top: 38px;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: var(--color-gray-dark);
+  transform: translateX(-50%);
+}
+
+/* 原生 slider 只给读屏用 */
+.slider-native {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 44px;
+  margin: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.slider.is-disabled .slider-appearance {
+  opacity: 0.45;
+}

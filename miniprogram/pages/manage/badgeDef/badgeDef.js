@@ -121,40 +121,6 @@ Page({
     }
   },
 
-  onThicknessTouchStart(e) {
-    if (this.data.savingDisplaySettings || !e.touches?.length) return;
-    const gesture = { clientX: e.touches[0].clientX, active: true };
-    this._thicknessGesture = gesture;
-    this.createSelectorQuery().select('.thickness-appearance').boundingClientRect(rect => {
-      if (this._thicknessGesture !== gesture || !rect?.width) return;
-      gesture.rect = rect;
-      this.updateThicknessFromTouch(gesture);
-    }).exec();
-  },
-
-  onThicknessTouchMove(e) {
-    const gesture = this._thicknessGesture;
-    if (!gesture?.active || !e.touches?.length) return;
-    gesture.clientX = e.touches[0].clientX;
-    this.updateThicknessFromTouch(gesture);
-  },
-
-  onThicknessTouchEnd(e) {
-    const gesture = this._thicknessGesture;
-    if (!gesture?.active) return;
-    if (e.changedTouches?.length) gesture.clientX = e.changedTouches[0].clientX;
-    gesture.active = false;
-    this.updateThicknessFromTouch(gesture);
-  },
-
-  updateThicknessFromTouch(gesture) {
-    if (this.data.savingDisplaySettings || !gesture.rect) return;
-    const { left, width } = gesture.rect;
-    const ratio = Math.max(0, Math.min(1, (gesture.clientX - left) / width));
-    const thicknessMm = Math.round(ratio * 20) / 10;
-    if (thicknessMm !== this.data.thicknessMm) this.setData({ thicknessMm });
-  },
-
   onThicknessChange(e) {
     if (this.data.savingDisplaySettings) return;
     const value = Number(e.detail.value);
