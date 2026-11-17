@@ -98,8 +98,17 @@ module.exports = async ctx => {
   const db = ctx.mpserverless.db;
   const { result: secretDoc } = await db.collection('app_secret').findOne();
   if (!secretDoc?.IMPORT_KEY) return { success: false, error: '当前服务空间的 app_secret 未配置 IMPORT_KEY' };
-  if (typeof args.secret !== 'string' || args.secret !== secretDoc.IMPORT_KEY) {
-    return { success: false, error: 'secret 缺失或与 app_secret.IMPORT_KEY 不匹配' };
+  // 统一转字符串、去首尾空白再比；报错只说明原因，不回显密钥
+  if (args.secret === undefined || args.secret === null || String(args.secret).trim() === '') {
+    return { success: false, error: '缺少 secret 参数：请传入 app_secret.IMPORT_KEY 的实际值（不是占位符）' };
+  }
+  if (/^<.*>$/.test(String(args.secret).trim())) {
+    return { success: false, error: 'secret 还是占位符：请把 <IMPORT_KEY> 换成 app_secret 集合里 IMPORT_KEY 字段的实际值' };
+  }
+  if (String(args.secret).trim() !== String(secretDoc.IMPORT_KEY).trim()) {
+    const typeHint = typeof args.secret !== typeof secretDoc.IMPORT_KEY
+      ? `（类型不同：传入 ${typeof args.secret}，库里 ${typeof secretDoc.IMPORT_KEY}）` : '';
+    return { success: false, error: `secret 与 app_secret.IMPORT_KEY 不一致${typeHint}` };
   }
   const mode = args.mode || 'preview';
   if (!['preview', 'migrate', 'cleanup'].includes(mode)) return { success: false, error: '未知模式' };
