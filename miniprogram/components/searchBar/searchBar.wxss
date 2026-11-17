@@ -8,7 +8,8 @@
 .search-bar {
   display: flex;
   align-items: center;
-  height: 80rpx;
+  /* 高度可由外部 --search-h 覆盖（首页上滑时收矮） */
+  height: var(--search-h, 80rpx);
   padding: 0 8rpx 0 28rpx;
   border-radius: var(--radius-pill);
   box-sizing: border-box;
@@ -41,8 +42,8 @@
 .search-input {
   flex: 1;
   min-width: 0;
-  height: 80rpx;
-  line-height: 80rpx;
+  height: var(--search-h, 80rpx);
+  line-height: var(--search-h, 80rpx);
   margin: 0;
   color: var(--color-black-min);
   font-size: var(--font-size-body);

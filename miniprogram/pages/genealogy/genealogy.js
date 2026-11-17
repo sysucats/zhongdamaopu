@@ -31,6 +31,10 @@ Page({
     filters_show: false,
     filters_tab_counts: [],
     campus_on: [],
+    // 自定义导航栏：尺寸变量（挂在根节点）、折叠参数（给 collapseNav.wxs）、筛选卡片起点
+    navVars: '',
+    navM: {},
+    filterTop: 0,
     filters_input: '',
     filters_empty: true,
     filters_count: 0,
@@ -75,6 +79,8 @@ Page({
         pendingScene: null
       };
     }
+
+    this.initNavMetrics();
     
     // 保存scene参数，但不立即处理
     if (options.scene) {
@@ -452,12 +458,14 @@ Page({
     const today = new Date();
     new_cats.forEach(d => {
       d.photo = undefined; // 首图稍后由 loadCatPhoto 按需拉取
-      d.characteristics_string = [(d.colour || '') + ''].concat(d.characteristics || []).join('，');
+      // 卡片上花色单独成胶囊，特征行只放其余描述
+      d.traits_string = [].concat(d.characteristics || []).filter(Boolean).join('，'); // 可能是数组也可能是字符串
       
       if (d.mphoto) {
         const modified_date = new Date(d.mphoto);
         const delta_days = (today - modified_date) / (1000 * 3600 * 24);
         d.mphoto_new = delta_days < 7;
+        d.mphoto_ago = delta_days < 1 ? '今天' : delta_days < 2 ? '昨天' : `${Math.floor(delta_days)} 天前`;
         
         const visit_date = getVisitedDate(d._id);
         if (visit_date >= modified_date) {
@@ -605,9 +613,9 @@ Page({
         const svRect = res[2];          // scroll-view 相对视口的位置
         // card 在 scroll-view 内容流中的偏移
         const cardOffsetTop = cardRect.top - svRect.top + scrollInfo.scrollTop;
-        // 顶部余量 40rpx 转 px，再让出浮在列表上方的搜索区高度
+        // 卡片停在搜索栏当前下沿往下 24rpx（搜索栏可能已收进导航栏）
         const rpxToPx = wx.getWindowInfo().windowWidth / 750;
-        const offset = 40 * rpxToPx + (res[3] ? res[3].height : 0);
+        const offset = 24 * rpxToPx + (res[3] ? res[3].bottom : 0);
         const targetScrollTop = Math.max(0, cardOffsetTop - offset);
         this.setData({ targetScrollTop });
       });
@@ -675,7 +683,47 @@ Page({
 
   fShow: function () {
     this.jsData.filtersSnapshot = JSON.parse(JSON.stringify(this.data.filters));
-    this.setFilters(this.data.filters, { filters_show: true });
+    // 搜索栏可能已收进导航栏：卡片从「搜索栏下沿」和「导航栏下沿」中较低的那个往下 16rpx 展开
+    this.createSelectorQuery().select('#search').boundingClientRect().exec(res => {
+      const rect = res && res[0];
+      const rpx = wx.getWindowInfo().windowWidth / 750;
+      const filterTop = rect ? Math.round(Math.max(rect.bottom, this.jsData.navBottom || 0) + 16 * rpx) : 0;
+      this.setFilters(this.data.filters, { filters_show: true, filterTop });
+    });
+  },
+
+  // collapseNav.wxs 在滚动停在半收起时调用：滚到完全展开（0）或完全收起（d）
+  snapNav: function ({ top }) {
+    // scroll-top 与上次相同时不会触发滚动，加一个极小偏移强制生效
+    const same = Math.abs(this.data.targetScrollTop - top) < 0.5;
+    this.setData({ targetScrollTop: same ? top + 0.1 : top });
+  },
+
+  // 胶囊位置因机型而异，只能在 JS 里读；算好后以 CSS 变量挂到根节点，折叠参数交给 WXS
+  initNavMetrics: function () {
+    const win = wx.getWindowInfo();
+    const capsule = wx.getMenuButtonBoundingClientRect();
+    const rpx = win.windowWidth / 750;
+    const statusBar = win.statusBarHeight || 20;
+    // 和系统导航栏同高：状态栏 + iOS 44 / 安卓 48；胶囊在这一行里偏上，不能按胶囊上下对称算
+    const platform = (wx.getDeviceInfo ? wx.getDeviceInfo() : wx.getSystemInfoSync()).platform;
+    const rowHeight = platform === 'android' ? 48 : 44;
+    const navBottom = Math.max(statusBar + rowHeight, capsule.bottom + (capsule.top - statusBar));
+    this.jsData.navBottom = navBottom;
+    const searchTop = navBottom + 24 * rpx;            // 展开：导航栏下方 24rpx
+    const searchArea = searchTop + 80 * rpx + 16 * rpx; // 下方 16rpx + 校区行自带 8rpx，合起来 24rpx
+    this.setData({
+      navVars: `--cap-top: ${capsule.top}px; --cap-h: ${capsule.height}px; --nav-bottom: ${navBottom}px; --search-top: ${searchTop}px; --search-area: ${searchArea}px;`,
+      navM: {
+        d: searchTop - capsule.top,                       // 收起时搜索框顶边对齐胶囊顶边
+        eh: 80 * rpx,
+        ch: capsule.height,
+        epl: 32 * rpx,                                     // 展开：左右边距同页面边距
+        epr: 32 * rpx,
+        cpl: win.windowWidth - capsule.right,              // 收起：左边距与胶囊右侧留白相同，左右对称
+        cpr: win.windowWidth - capsule.left + 16 * rpx,    // 收起：筛选按钮离胶囊 16rpx
+      },
+    });
   },
 
   fHide: function () {
@@ -912,8 +960,9 @@ Page({
     
     // 检查是否有用户定义的过滤条件
     const hasUserFilters = conditions.length > 0;
-    // 筛选按钮角标：面板里生效的维度数（校区在外显胶囊里已可见，不计入）
-    const filters_count = filters.filter((mainF, index) => index > 0 && (
+    // 筛选按钮角标：生效的筛选维度数（校区、花色、状态各算一个）。
+    // 校区也计入：上滑后校区行会滚出屏幕，且筛选卡片的「校区」标签同样显示数量
+    const filters_count = filters.filter(mainF => (
       mainF.key === 'status' ? this.buildStatusConditions(mainF).length > 0 : !mainF.category?.[0]?.all_active
     )).length;
     this.setData({ 
@@ -1004,10 +1053,6 @@ Page({
     this.changeState(e.currentTarget.dataset.ad_id, false);
   },
   
-  adClose(e) {
-    this.changeState(e.currentTarget.dataset.ad_id, false);
-  },
-
   async countWaitingAdopt() {
     const target = config.cat_status_adopt_target;
     const value = config.cat_status_adopt.indexOf(target);

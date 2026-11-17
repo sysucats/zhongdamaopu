@@ -1,8 +1,4 @@
-/* 卡片操作按钮配色：仅本页使用（鼠尾草绿 / 杏橙 / 柔和黄） */
 page {
-  --genealogy-btn-upload: #6FB58A;
-  --genealogy-btn-comment: #E89B6C;
-  --genealogy-btn-detail: #F0C04A;
   /* 浮动搜索区高度：上 24 + 搜索框 80 + 下 16（校区行自带 8rpx 内边距，合起来也是 24） */
   --search-area: 120rpx;
 }
@@ -43,37 +39,33 @@ scroll-view {
 }
 
 .card {
-  margin-bottom: 50rpx;
-  font-size: 24rpx;
-  line-height: 24rpx;
+  position: relative;
+  z-index: 1;
   width: 625rpx;
-  border-radius: 15rpx;
-
+  margin-bottom: 50rpx;
+  border-radius: var(--radius-xl);
   box-sizing: border-box;
   background-color: var(--color-surface);
-
-  box-shadow: 13rpx 13rpx 30rpx var(--color-gray);
-  position: relative;
-  /* TODO：重写为flex布局 */
-
-  /* 平滑过渡：宽度、阴影、上浮、圆角在展开/收起时动画 */
+  /* 均匀轻投影，不再向右下偏移 */
+  box-shadow: var(--shadow-card);
+  font-size: 24rpx;
+  /* 平滑过渡：宽度、阴影、上浮在展开/收起时动画 */
   transition: width 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease, margin 0.3s ease;
-  z-index: 1;
 }
 
 .card.wide {
-  width: 700rpx;
-  /* 高级感：更强的投影 + 主题色高光 + 轻微上浮 */
-  box-shadow: 0 16rpx 48rpx rgba(0, 0, 0, 0.22), 0 4rpx 12rpx rgba(255, 209, 1, 0.25);
-  transform: translateY(-6rpx);
   z-index: 100;
+  width: 700rpx;
+  /* 展开后浮起一层 */
+  box-shadow: var(--shadow-float);
+  transform: translateY(-6rpx);
 }
 
 .card view.image {
-  height:590rpx;
-  border-radius: 15rpx 15rpx 0 0;
   position: relative;
+  height: 590rpx;
   overflow: hidden;
+  border-radius: var(--radius-xl) var(--radius-xl) 0 0;
   background-color: var(--color-gray-light);
   background-image: var(--img-default);
   background-position: center center;
@@ -82,22 +74,10 @@ scroll-view {
 }
 
 .card.wide view.image {
-  height:500rpx;
+  height: 500rpx;
 }
 
-.card view.image .image-title{
-  width: 100%;
-  height: 40rpx;
-  line-height: 40rpx;
-  background-color: var(--color-black-light);
-  opacity: .4;
-  text-align: center;
-  color: var(--color-text-inverse);
-  position: absolute;
-  bottom: 0;
-}
-
-.card view.image image {
+.card view.image > image {
   width: 100%;
   /* widthFix 模式下高度按图片比例自适应，移除固定 height */
   position: absolute;
@@ -108,13 +88,13 @@ scroll-view {
 }
 
 /* aspectFill 模式（横屏照片填满容器）：需明确高度 100% 才能填满 */
-.card view.image image.mode-fill {
+.card view.image > image.mode-fill {
   height: 100%;
 }
 
 /* 竖屏照片自动上下往返：CSS animation infinite alternate 由渲染引擎驱动，
    无需 JS transitionend 切换方向，避免到顶/底时因 setData 异步导致的闪烁 */
-.card view.image image.pan-animate {
+.card view.image > image.pan-animate {
   animation: cardPhotoPan var(--pan-duration, 6s) ease-in-out infinite alternate;
 }
 
@@ -123,141 +103,204 @@ scroll-view {
   to   { transform: translateY(calc(var(--pan-distance, 0px) * -1)); }
 }
 
-.card view.image.to_star image {
+.card view.image.to_star > image {
   filter: grayscale(100%);
 }
 
-.card .info {
-  padding: 35rpx 35rpx 20rpx 35rpx;
-}
-
-.card .hoverInfo{
-  background-color: var(--color-gray-light);
-  border-radius: 15rpx;
-}
-
-.card .info .name {
-  height: 30rpx;
-  font-size: 33rpx;
-  line-height: 30rpx;
-
+/* 照片上的磨砂胶囊：左上「新照片」、右上「管理」 */
+.photo-chip {
+  position: absolute;
+  top: 20rpx;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  height: 44rpx;
+  padding: 0 18rpx 0 16rpx;
+  border: 1rpx solid var(--glass-dark-border);
+  border-radius: var(--radius-pill);
+  background-color: var(--glass-dark-bg);
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
+  color: var(--color-text-inverse);
+  font-size: 22rpx;
   font-weight: 600;
-  letter-spacing: 2rpx;
+  box-sizing: border-box;
+}
 
-  /* 猫咪名字过长时，省略号处理 */
-  max-width: 250rpx;
+.photo-chip.new-photo {
+  left: 20rpx;
+}
+
+.new-dot {
+  width: 12rpx;
+  height: 12rpx;
+  margin-right: 10rpx;
+  border-radius: 50%;
+  background-color: var(--color-primary);
+}
+
+.new-photo-time {
+  margin-left: 6rpx;
+  font-weight: 400;
+  opacity: 0.8;
+}
+
+.photo-chip.card-manage-btn {
+  right: 20rpx;
+  padding: 0 22rpx;
+  font-weight: 500;
+  animation: cardBtnFadeIn 0.3s ease 0.1s both;
+}
+
+.photo-chip.card-manage-btn:active {
+  background-color: rgba(20, 18, 12, 0.56);
+}
+
+/* 照片底部渐隐：名字、状态胶囊、拍摄者压在上面 */
+.photo-overlay {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12rpx;
+  padding: 92rpx 28rpx 20rpx;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.66) 0%, rgba(0, 0, 0, 0.35) 55%, rgba(0, 0, 0, 0) 100%);
+  color: var(--color-text-inverse);
+}
+
+.overlay-head {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+}
+
+.overlay-head .name {
+  max-width: 300rpx;
   overflow: hidden;
+  font-size: 40rpx;
+  font-weight: 700;
+  line-height: 1.2;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.card .info image.gender {
-  height: 27rpx;
-  width: 27rpx;
-  margin-right: 15rpx;
-  margin-left: 8rpx;
+.overlay-head image.gender {
+  flex-shrink: 0;
+  width: 28rpx;
+  height: 28rpx;
+  margin-left: 10rpx;
 }
 
-.card .info .line.cat-heading {
-  display: block;
-}
-.cat-heading::after {
-  content: "";
-  display: block;
-  clear: both;
-}
-.cat-heading-counts {
-  float: right;
+.overlay-counts {
   display: flex;
-  align-items: center;
   flex-shrink: 0;
-  min-height: 64rpx;
-  white-space: nowrap;
-  margin-left: var(--space-sm);
-}
-.cat-heading .cat-status-rows {
-  display: inline-flex;
-  max-width: 100%;
-  vertical-align: middle;
-}
-.cat-name-group {
-  display: inline-flex;
   align-items: center;
-  flex-shrink: 0;
-  max-width: 100%;
-  min-height: 64rpx;
-  margin-right: var(--space-xs);
-  vertical-align: middle;
-}
-
-.card .info .popularity {
+  gap: 20rpx;
   margin-left: auto;
-  order: 2;
+  color: var(--color-text-inverse);
+  font-size: 24rpx;
+  font-weight: 600;
+}
+
+.overlay-counts .count {
   display: flex;
   align-items: center;
 }
+
+/* 热度、留言图标都用主题黄 */
+.overlay-counts .iconfont {
+  margin-right: 6rpx;
+  color: var(--color-primary);
+  font-size: 26rpx;
+  line-height: 1;
+}
+
+.overlay-chips {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12rpx;
+}
+
+.overlay-chips .cat-status-rows {
+  display: flex;
+}
+
+/* 花色、位置：白色半透明胶囊 */
+.overlay-chip {
+  display: flex;
+  align-items: center;
+  height: 40rpx;
+  padding: 0 16rpx;
+  border-radius: var(--radius-pill);
+  background-color: rgba(255, 255, 255, 0.2);
+  -webkit-backdrop-filter: blur(12rpx);
+  backdrop-filter: blur(12rpx);
+  font-size: 22rpx;
+  box-sizing: border-box;
+}
+
+.overlay-chip .iconfont {
+  margin-right: 6rpx;
+  font-size: 22rpx;
+  line-height: 1;
+}
+
+.overlay-credit {
+  color: rgba(255, 255, 255, 0.65);
+  font-size: 20rpx;
+}
+
+/* 照片下方：生日、特征、性格逐行，底栏左评分右序号 */
+.card .info {
+  display: flex;
+  flex-direction: column;
+  gap: 14rpx;
+  padding: 28rpx 32rpx 32rpx;
+}
+
+.card .hoverInfo {
+  background-color: var(--color-gray-light);
+  border-radius: 0 0 var(--radius-xl) var(--radius-xl);
+}
+
 .iconfont {
   font-size: 25rpx;
-  margin-right: 8rpx;
-}
-.iconfont.gray {
-  color: var(--color-gray-dark);
-}
-.iconfont.primary {
-  color: var(--color-primary);
-}
-
-.card .info .comment {
-  margin-left: 15rpx;
-  order: 2;
-  display: flex;
-  align-items: center;
-}
-.comment image {
-  height: 27rpx;
-  width: 27rpx;
   margin-right: 8rpx;
 }
 
 .card .line {
   display: flex;
-  /* align-items: flex-start; */
-  vertical-align: baseline;
-  margin-bottom: 10rpx;
-
+  align-items: flex-start;
   color: var(--color-black-min);
-  line-height: 1.05rem;
+  font-size: 26rpx;
+  line-height: 1.55;
 }
 
-.card .line:first-child{
+.card .line .iconfont {
+  flex-shrink: 0;
+  margin-right: 12rpx;
+  color: var(--color-gray-dark);
+  font-size: 26rpx;
+  line-height: 40rpx;
+}
+
+.info-foot {
   display: flex;
   align-items: center;
-  margin-bottom: 20rpx;
-  margin-left: 3rpx;
+  min-height: 36rpx;
+  padding-top: 18rpx;
+  border-top: 1rpx solid var(--color-gray-normal);
 }
 
-.card .line image.icon {
-  height: 28rpx;
-  width: 28rpx;
-  min-width: 26rpx;
-  margin-right: 20rpx;
-  vertical-align: text-top;
-}
-
-.card .line .index {
-  margin-left:auto;
-  order:2;
+.info-foot .index {
+  margin-left: auto;
   color: var(--color-gray);
-}
-
-.card .line .characteristics{
-  line-height: 1.05rem;
-  vertical-align: text-top;
-}
-
-.card .line .habit{
-  line-height: 1.05rem;
-  vertical-align: text-top;
+  font-size: 22rpx;
+  font-variant-numeric: tabular-nums;
 }
 
 .loading image {
@@ -271,100 +314,21 @@ scroll-view {
   margin: 10rpx 0 200rpx 0;
 }
 
-/* 新图标签 */
-.card .label {
-  display: inline-block;
-  text-align: left;
-  background-color: var(--color-primary);
-  border-color: var(--color-primary-dark);
-  color: var(--color-text-onPrimary);
-  border-radius: 0 10rpx 10rpx 0;
-  padding: 10rpx;
-  font-size: 22rpx;
-  position: absolute;
-  top: 30rpx;
-  left: -17.5rpx;
-  z-index: 1;
-}
-
-.card .label::after {
-    position: absolute;
-    top: 100%;
-    right: auto;
-    left: 0;
-
-    border-style: solid;
-    border-width: 0 17.5rpx 17.5rpx 0;
-    border-color: transparent;
-    border-top-color: inherit!important;
-    background-color: transparent!important;
-    border-right-color: inherit!important;
-
-    content: '';
-    width: 0;
-    height: 0;
-}
-
 /* 展开卡片的动作按钮组：底部三个按钮（上传喵照 / 便利贴墙 / 猫猫详情） */
 .card-action-row {
   display: flex;
-  margin: 24rpx 0 8rpx;
+  margin-top: 8rpx;
   gap: 16rpx;
   z-index: 5;
   animation: cardBtnFadeIn 0.3s ease 0.1s both;
 }
 
+/* 两个次按钮灰底、「详情相册」黄底，样式见 public/wxss/button.wxss */
 .card-action-btn {
+  --form-button-height: 72rpx;
   flex: 1;
-  text-align: center;
   font-size: 26rpx;
   font-weight: 600;
-  letter-spacing: 2rpx;
-  padding: 20rpx 0;
-  border-radius: 14rpx;
-  color: var(--color-text-inverse);
-}
-
-.card-action-btn:active {
-  opacity: 0.85;
-  transform: scale(0.97);
-}
-
-/* 上传喵照：柔和绿（鼠尾草绿） */
-.card-action-btn.btn-upload {
-  background: var(--genealogy-btn-upload);
-  box-shadow: 0 4rpx 12rpx rgba(111, 181, 138, 0.35);
-}
-
-/* 便利贴墙：柔和橙（杏橙） */
-.card-action-btn.btn-comment {
-  background: var(--genealogy-btn-comment);
-  box-shadow: 0 4rpx 12rpx rgba(232, 155, 108, 0.35);
-}
-
-/* 猫猫详情：柔和黄 */
-.card-action-btn.btn-detail {
-  background: var(--genealogy-btn-detail);
-  box-shadow: 0 4rpx 12rpx rgba(240, 192, 74, 0.4);
-}
-
-/* 右上角"管理"按钮（仅管理员） */
-.card-manage-btn {
-  position: absolute;
-  top: 24rpx;
-  right: 24rpx;
-  background: rgba(0, 0, 0, 0.5);
-  color: var(--color-text-inverse);
-  font-size: 22rpx;
-  padding: 8rpx 22rpx;
-  border-radius: 24rpx;
-  z-index: 5;
-  animation: cardBtnFadeIn 0.3s ease 0.1s both;
-}
-
-.card-manage-btn:active {
-  opacity: 0.8;
-  background: rgba(0, 0, 0, 0.7);
 }
 
 @keyframes cardBtnFadeIn {
@@ -375,44 +339,75 @@ scroll-view {
 /* 广告栏 */
 
 .card-ad {
-  margin-bottom: 50rpx;
-  width: 635rpx;
-  border-radius: 15rpx;
-  background-color: var(--color-surface);
-  box-shadow: 13rpx 13rpx 30rpx var(--color-gray);
-  overflow: hidden;
-
+  /* 原生模板广告：外层与猫卡片同宽，圆角、投影同猫卡片。
+     优选模式下有的样式只画约 300px，不能铺满，所以广告按自身宽度在卡片里水平居中，两侧留白对称。
+     外层不能 overflow: hidden：容器初始高度为 0 时广告被整个裁掉，不会加载 */
   display: flex;
-  justify-content: center;
+  flex-direction: column;
   align-items: center;
+  width: 625rpx;
+  margin-bottom: 50rpx;
+  border-radius: var(--radius-xl);
+  background-color: var(--color-surface);
+  box-shadow: var(--shadow-card);
+}
 
-  min-height: 200rpx;
-  box-sizing: border-box;
-
+/* 不定宽度：样式能铺满时自然铺满，画不满时按实际宽度居中 */
+.card-ad-inner {
+  display: block;
+  max-width: 100%;
+  /* 圆角裁在广告组件自身上，同猫卡片 */
+  border-radius: var(--radius-xl);
+  overflow: hidden;
 }
 
 .card-ad.hidden {
   display: none;
 }
 
-/* 顶部的搜索框还有筛选 */
-#search {
-  position: absolute;
+/* 自定义导航栏：状态栏 + 胶囊行，名字靠左；层级高于筛选蒙层（60） */
+.nav-bar {
+  position: fixed;
   top: 0;
   left: 0;
-  z-index: 3;
-  width: 750rpx;
-  height: var(--search-area);
-  box-sizing: border-box;
-  padding: var(--space-md) var(--space-lg) 0;
-  display: flex;
-  align-items: flex-start;
-  gap: var(--space-sm);
+  right: 0;
+  z-index: 61;
+  height: var(--nav-bottom, 176rpx);
+  background-color: var(--color-primary);
+  transition: box-shadow 0.2s ease;
 }
 
-/* 筛选卡片展开时，搜索栏抬到蒙层之上，保持可见可用 */
-#search.panel-open {
-  z-index: 61;
+.nav-bar.collapsed {
+  box-shadow: var(--shadow-card);
+}
+
+.nav-title {
+  position: absolute;
+  /* 和胶囊同高、顶边对齐 */
+  top: var(--cap-top, 48rpx);
+  height: var(--cap-h, 64rpx);
+  left: var(--space-lg);
+  display: flex;
+  align-items: center;
+  color: var(--color-text-main);
+  font-size: 38rpx;
+  font-weight: 800;
+  letter-spacing: 2rpx;
+}
+
+/* 搜索行：展开时在导航栏下方，上滑时由 collapseNav.wxs 平移、缩高、收窄到胶囊左侧 */
+#search {
+  position: fixed;
+  top: var(--search-top, 0);
+  left: 0;
+  z-index: 62;
+  width: 750rpx;
+  box-sizing: border-box;
+  padding: 0 var(--space-lg);
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  will-change: transform;
 }
 
 /* 搜索框本体见 components/searchBar */
@@ -429,7 +424,7 @@ scroll-view {
   align-items: center;
   justify-content: center;
   width: 80rpx;
-  height: 64rpx;
+  height: calc(var(--search-h, 80rpx) - 16rpx);
   margin-left: 8rpx;
   color: var(--color-black-min);
 }
@@ -458,8 +453,8 @@ scroll-view {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 80rpx;
-  height: 80rpx;
+  width: var(--search-h, 80rpx);
+  height: var(--search-h, 80rpx);
   border-radius: 50%;
   border: 1rpx solid var(--glass-border);
   background-color: var(--glass-bg);
@@ -530,16 +525,16 @@ scroll-view {
 /* 筛选卡片：从筛选按钮下方展开，左右与搜索栏对齐；蒙层 z 60，搜索栏 61，卡片 62 */
 .filter-card {
   position: fixed;
-  top: var(--search-area);
+  top: var(--filter-top, var(--search-area));
   left: var(--space-lg);
   right: var(--space-lg);
-  z-index: 62;
+  z-index: 63;
   display: flex;
   flex-direction: column;
   overflow: hidden;
   border-radius: var(--radius-xl);
   background-color: var(--color-surface);
-  box-shadow: 0 24rpx 64rpx rgba(0, 0, 0, 0.18);
+  box-shadow: var(--shadow-float);
   transform-origin: top right;
   opacity: 0;
   transform: translateY(-12rpx) scale(0.97);
@@ -605,7 +600,7 @@ scroll-view {
 .filter-body {
   background-color: var(--color-surface);
   /* 卡片最高到窗口底部留 32rpx：减去分组标签 84rpx 和按钮区 116rpx */
-  max-height: calc(100vh - var(--search-area) - 232rpx);
+  max-height: calc(100vh - var(--filter-top, var(--search-area)) - 232rpx - var(--tab-bar-height));
   flex: 1;
   min-height: 0;
   box-sizing: border-box;

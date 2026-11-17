@@ -63,7 +63,7 @@ module.exports = {
       share_tip: "发现身边校园猫咪",
       search_tip: "搜索猫猫名字或昵称",
       filter_tip: "点此进行筛选",
-      new_photo_tip: "有新相片！",
+      new_photo_tip: "新照片",
       no_photo_tip: "暂无封面照片...",
       photo_by_tip: "Photo by ",
       photo_by_unknow_tip: "匿名猫友",

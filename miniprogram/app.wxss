@@ -45,6 +45,9 @@ page {
   --glass-bg: rgba(255, 255, 255, 0.6);
   --glass-border: rgba(0, 0, 0, 0.08);
   --glass-blur: blur(20rpx) saturate(1.6);
+  /* 深色磨砂：压在照片上的小控件（新照片、管理等），配白字 */
+  --glass-dark-bg: rgba(20, 18, 12, 0.36);
+  --glass-dark-border: rgba(255, 255, 255, 0.18);
 
   --color-black-min:#414141;
   --color-black-light: #222222;
