@@ -1,12 +1,13 @@
 // 管理员维护成就目录：材质库 achievement_material、徽章 achievement_def
 const { createInternalCtx } = require('./_helper.js');
 const isManager = require('./isManager.js');
-const { generateAssets } = require('./achievementBack.js');
+const { generateAssets, materialTextColor } = require('./achievementBack.js');
 const { METRICS, findAll, loadDisplaySettings } = require('./achievement.js');
 const serials = require('./achievementSerial');
 const { randomUUID } = require('crypto');
 
 const KEY_PATTERN = /^[a-z][a-z0-9_-]{1,39}$/;
+const COLOR_PATTERN = /^#[0-9a-f]{6}$/i;
 const STATUSES = ['draft', 'active'];
 
 function clean(value, max = 200) {
@@ -65,7 +66,41 @@ async function generateTrackedAssets(ctx, front, material, key, generationId = r
   }
 }
 
-async function list(db) {
+// 材质文字色：autoColor 始终按材质图取色并保存（后台「自动」预览用）；color 是实际生效的颜色，
+// 手选时为手选色（colorAuto=false），否则等于 autoColor。取色失败不影响保存，autoColor 为空串（前端用默认色）
+async function pickAutoColor(ctx, image) {
+  try {
+    return await materialTextColor(ctx, image);
+  } catch (error) {
+    console.warn('[achievement] material color failed', error?.message || error);
+    return '';
+  }
+}
+
+async function resolveMaterialColor(ctx, image, manualColor, knownAutoColor) {
+  const autoColor = knownAutoColor || await pickAutoColor(ctx, image);
+  if (COLOR_PATTERN.test(manualColor || '')) return { color: manualColor.toLowerCase(), colorAuto: false, autoColor };
+  return { color: autoColor, colorAuto: true, autoColor };
+}
+
+// 金银铜三种初始材质沿用原来前端的文字色，补字段时不改变现有观感
+const LEGACY_COLORS = { gold: '#e6a823', silver: '#9aa5b1', bronze: '#c88a4b' };
+
+// 旧材质缺颜色字段：打开后台时补一次（材质很少，只在缺字段时取色）
+async function backfillMaterialColors(ctx, materials) {
+  const db = ctx.mpserverless.db;
+  await Promise.all(materials.filter(item => item.autoColor === undefined && isCosUrl(item.image)).map(async item => {
+    // 已有颜色（含之前补的金银铜手选色）保持不变，只补自动色
+    const manual = item.color === undefined ? LEGACY_COLORS[item.key] : (item.colorAuto === false ? item.color : '');
+    const color = await resolveMaterialColor(ctx, item.image, manual);
+    if (!color.autoColor && !color.color) return;
+    await db.collection('achievement_material').updateOne({ _id: item._id }, { $set: color });
+    Object.assign(item, color);
+  }));
+}
+
+async function list(ctx) {
+  const db = ctx.mpserverless.db;
   const [materials, badges, counts, sequences, progress, displaySettings, missingSerials] = await Promise.all([
     findAll(db.collection('achievement_material')),
     findAll(db.collection('achievement_def')),
@@ -75,6 +110,7 @@ async function list(db) {
     loadDisplaySettings(db),
     findAll(db.collection('achievement'), { $or: [{ serialNo: { $exists: false } }, { serialNo: null }, { serialNo: { $lte: 0 } }] }, { projection: { key: 1 } }),
   ]);
+  await backfillMaterialColors(ctx, materials);
   return {
     ok: true,
     metrics: METRICS,
@@ -144,7 +180,12 @@ async function saveMaterial(ctx, input) {
   const current = (await collection.findOne({ key })).result;
   if (input.isNew && current) return { ok: false, error: '材质标识已存在' };
   if (!input.isNew && !current) return { ok: false, error: '材质不存在' };
-  const data = { key, name, image, updated_at: new Date() };
+  // 文字色：传了色值即手选，否则用自动色
+  const manualColor = clean(input.color, 7);
+  // 材质图没换就沿用已取的自动色，不重复下载
+  const knownAutoColor = current && current.image === image ? current.autoColor : '';
+  const color = await resolveMaterialColor(ctx, image, manualColor, knownAutoColor);
+  const data = { key, name, image, ...color, updated_at: new Date() };
   if (current) await collection.updateOne({ _id: current._id }, { $set: data });
   else await collection.insertOne({ ...data, created_at: new Date() });
   return { ok: true, ...(await regenerateBacks(ctx, data, input.generationId)) };
@@ -293,7 +334,7 @@ module.exports = async (ctx) => {
   }
   const input = ctx.args?.data || {};
   try {
-    if (action === 'list') return await list(ctx.mpserverless.db);
+    if (action === 'list') return await list(ctx);
     if (action === 'saveDisplaySettings') {
       const thicknessMm = Number(input.thicknessMm);
       if (!Number.isFinite(thicknessMm) || thicknessMm < 0 || thicknessMm > 2) return { ok: false, error: '厚度需在 0～2 mm 之间' };

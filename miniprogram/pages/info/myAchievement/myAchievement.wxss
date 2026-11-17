@@ -142,21 +142,6 @@ page {
   font-weight: 400;
 }
 
-.achv-cur.material-bronze {
-  color: var(--color-text-inverse);
-  background: var(--grad-achievement-bronze);
-}
-
-.achv-cur.material-silver {
-  color: var(--color-black-light);
-  background: var(--grad-achievement-silver);
-}
-
-.achv-cur.material-gold {
-  color: var(--color-black-light);
-  background: var(--grad-achievement-gold);
-}
-
 /* 奖牌固定三列，超过三档换行。 */
 .tier-row {
   display: flex;

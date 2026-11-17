@@ -1,7 +1,7 @@
 import { checkAuth } from "../../../../utils/user";
 import { uploadFile, signCosUrl } from "../../../../utils/common";
 import { generateUUID } from "../../../../utils/utils";
-import { clearAchievementCache } from "../../../../utils/achievement";
+import { clearAchievementCache, materialPillStyle } from "../../../../utils/achievement";
 
 import { watchGeneration, stopGenerationWatch } from "../generationProgress";
 
@@ -18,8 +18,41 @@ async function callCatalog(action, data) {
   return result;
 }
 
+// 颜色换算：滑杆用 HSL（h 0-359，s/l 0-100），存储用 #rrggbb
+function hexToHsl(hex) {
+  const [r, g, b] = [1, 3, 5].map(i => parseInt(hex.slice(i, i + 2), 16) / 255);
+  const max = Math.max(r, g, b), min = Math.min(r, g, b), l = (max + min) / 2, d = max - min;
+  if (!d) return { h: 0, s: 0, l: Math.round(l * 100) };
+  const s = d / (1 - Math.abs(2 * l - 1));
+  let h = max === r ? ((g - b) / d) % 6 : max === g ? (b - r) / d + 2 : (r - g) / d + 4;
+  h = Math.round(h * 60 + 360) % 360;
+  return { h, s: Math.round(s * 100), l: Math.round(l * 100) };
+}
+
+function hslToHex({ h, s, l }) {
+  s /= 100; l /= 100;
+  const c = (1 - Math.abs(2 * l - 1)) * s, x = c * (1 - Math.abs((h / 60) % 2 - 1)), m = l - c / 2;
+  const [r, g, b] = h < 60 ? [c, x, 0] : h < 120 ? [x, c, 0] : h < 180 ? [0, c, x] : h < 240 ? [0, x, c] : h < 300 ? [x, 0, c] : [c, 0, x];
+  return '#' + [r, g, b].map(v => Math.round((v + m) * 255).toString(16).padStart(2, '0')).join('');
+}
+
+// 与白底的对比度（WCAG），低于 3 提示名称可能看不清
+function contrastOnWhite(hex) {
+  const lin = c => (c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4);
+  const [r, g, b] = [1, 3, 5].map(i => lin(parseInt(hex.slice(i, i + 2), 16) / 255));
+  return 1.05 / (0.2126 * r + 0.7152 * g + 0.0722 * b + 0.05);
+}
+
 Page({
   data: {
+    autoColor: '',
+    imageChanged: false,
+    customColor: false,
+    pillStyle: '',
+    hexInput: '',
+    hsl: { h: 0, s: 0, l: 0 },
+    hslTracks: {},
+    lowContrast: false,
     mode: 'badge',
     isNew: true,
     form: {},
@@ -62,8 +95,16 @@ Page({
       if (mode === 'material') {
         const current = materialOptions.find(item => item.key === key);
         if (key && !current) throw new Error('材质不存在');
-        const form = current ? { key, name: current.name, image: current.image } : { key: `mat_${generateUUID().replace(/-/g, '')}`, name: '', image: '' };
-        this.setData({ mode, isNew: !current, form, generation: current?.generation || null });
+        // color 为空表示自动取色；手选过的颜色回填到表单
+        const form = current
+          ? { key, name: current.name, image: current.image, color: current.colorAuto === false ? current.color || '' : '' }
+          : { key: `mat_${generateUUID().replace(/-/g, '')}`, name: '', image: '', color: '' };
+        // 自动色由云函数按材质图取好；旧数据没有 autoColor 时，自动模式下的 color 就是自动色
+        const autoColor = current?.autoColor || (current && current.colorAuto !== false ? current.color || '' : '');
+        this.setData({ mode, isNew: !current, form, autoColor, originalImage: form.image, imageChanged: false, generation: current?.generation || null });
+        this.updatePill();
+        // 手选过颜色：直接展开自定义
+        if (form.color) this.setCustomColor(form.color);
         await this.loadPreviews({ image: form.image });
         return;
       }
@@ -112,6 +153,54 @@ Page({
     if (this.data.ruleLocked && field === 'rule.count') return;
     this.setData({ [`form.${field}`]: e.detail.value, formError: '' });
     if (field === 'rule.count') this.updateDerived();
+  },
+
+  // 名称文字色：空串 = 自动取色
+  useAutoColor() {
+    this.setData({ 'form.color': '', customColor: false, lowContrast: false });
+    this.updatePill();
+  },
+
+  // 胶囊预览与「我的成就」同一套规则
+  updatePill() {
+    const { form, autoColor } = this.data;
+    this.setData({ pillStyle: materialPillStyle(form.color || autoColor) });
+  },
+
+  // 自定义颜色：从当前颜色（或自动色）起步
+  openCustomColor() {
+    const start = this.data.form.color || this.data.autoColor || '#8a5cd0';
+    this.setCustomColor(start);
+  },
+
+  onHsl(e) {
+    const key = e.currentTarget.dataset.key;
+    if (this.data.hsl[key] === e.detail.value) return;
+    const hsl = { ...this.data.hsl, [key]: e.detail.value };
+    this.setCustomColor(hslToHex(hsl), hsl);
+  },
+
+  onHexInput(e) {
+    let value = e.detail.value.trim();
+    if (value && value[0] !== '#') value = '#' + value;
+    if (/^#[0-9a-f]{6}$/i.test(value)) this.setCustomColor(value.toLowerCase());
+    else this.setData({ hexInput: value });
+  },
+
+  setCustomColor(hex, hsl = hexToHsl(hex)) {
+    this.setData({
+      customColor: true,
+      'form.color': hex,
+      hexInput: hex.toUpperCase(),
+      hsl,
+      hslTracks: {
+        s0: hslToHex({ h: hsl.h, s: 0, l: hsl.l }),
+        s1: hslToHex({ h: hsl.h, s: 100, l: hsl.l }),
+        l50: hslToHex({ h: hsl.h, s: hsl.s, l: 50 }),
+      },
+      lowContrast: contrastOnWhite(hex) < 3,
+    });
+    this.updatePill();
   },
 
   retryLoad() { this.onLoad(this.editorOptions || {}); },
@@ -165,6 +254,7 @@ Page({
       const uploaded = await uploadFile({ cloudPath: `/achievement/${folder}/${generateUUID()}.png`, filePath: path });
       if (!uploaded.fileUrl) throw new Error('上传失败');
       this.setData({ [`form.${field}`]: uploaded.fileUrl.split('?')[0], [`previews.${field}`]: path });
+      if (this.data.mode === 'material') this.setData({ imageChanged: this.data.form.image !== this.data.originalImage });
       this.setData({ formError: '' });
       if (this.data.mode === 'badge') this.updateDerived();
     } catch (error) {

@@ -12,7 +12,7 @@
           <view class="unlock-art">
             <achievement-badge id="unlock-badge-{{index}}" rotation-mode="intro" wx:if="{{visible}}" badge="{{item}}" size="360" active="{{index === activeIndex && !swiping}}" />
           </view>
-          <view class="unlock-name material-{{item.materialKey}}">{{item.name}}</view>
+          <view class="unlock-name material-{{item.materialKey}}" style="{{item.materialColor ? 'color: ' + item.materialColor : ''}}">{{item.name}}</view>
           <view class="unlock-description">{{item.description}}</view>
         </view>
       </swiper-item>

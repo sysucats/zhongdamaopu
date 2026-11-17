@@ -96,7 +96,7 @@
             <view class="achievement-showcase-shadow"></view>
             <achievementBadge class="achievement-showcase-badge" front="{{item.frontImage}}" back="{{item.backImage}}" size="{{item.displaySize}}" />
           </view>
-          <view class="achievement-showcase-name material-{{item.materialKey}}">{{item.tierName}}</view>
+          <view class="achievement-showcase-name material-{{item.materialKey}}" style="{{item.materialColor ? 'color: ' + item.materialColor : ''}}">{{item.tierName}}</view>
         </view>
       </view>
     </view>

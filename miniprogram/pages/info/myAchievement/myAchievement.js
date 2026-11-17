@@ -1,4 +1,4 @@
-import { getMyAchievements, isNewBadge, markBadgeSeen } from "../../../utils/achievement";
+import { getMyAchievements, isNewBadge, markBadgeSeen, materialPillStyle } from "../../../utils/achievement";
 import { formatDate } from "../../../utils/utils";
 
 Page({
@@ -52,7 +52,8 @@ Page({
         });
         // 当前达到的阶梯位置（0 = 未解锁）
         ladder.currentTier = ladder.tiers.reduce((acc, t) => t.unlocked ? t.tier : acc, 0);
-        ladder.currentMaterial = ladder.currentTier ? ladder.tiers[ladder.currentTier - 1].materialKey : '';
+        const currentColor = ladder.currentTier ? ladder.tiers[ladder.currentTier - 1].materialColor : '';
+        ladder.currentStyle = ladder.currentTier ? materialPillStyle(currentColor) : '';
         if (ladder.currentTier && ladder.currentTier === ladder.tiers.length) goldCount++;
         const nextCondition = ladder.tiers.find(t => !t.unlocked && t.currentCount !== null && t.currentCount < t.threshold);
         const firstLocked = ladder.tiers.find(t => !t.unlocked);

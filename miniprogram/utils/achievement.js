@@ -183,6 +183,7 @@ function buildLadders({ metrics, defs, displaySettings }, unlocked = [], counts 
       categoryName: ladder.name,
       series: ladder.series,
       materialKey: def.materialKey,
+      materialColor: def.materialColor || '',
       frontImage: def.frontImage,
       backImage: def.backImage,
       model3dUrl: def.model3dUrl || '',
@@ -327,7 +328,22 @@ async function setShowcase(keys) {
   }
 }
 
+// 成就档位胶囊（我的成就卡片右侧、后台材质预览共用）：材质色往白色提亮 30% 作起点、到材质色本身，135° 渐变；
+// 文字按底色深浅选白字或深字
+function materialPillStyle(hex) {
+  if (!/^#[0-9a-f]{6}$/i.test(hex || '')) return '';
+  const rgb = [1, 3, 5].map(i => parseInt(hex.slice(i, i + 2), 16));
+  const light = rgb.map(c => Math.round(c + (255 - c) * 0.3));
+  const toHex = list => '#' + list.map(c => c.toString(16).padStart(2, '0')).join('');
+  const lin = c => { c /= 255; return c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4; };
+  const mid = rgb.map((c, i) => (c + light[i]) / 2);
+  const luminance = 0.2126 * lin(mid[0]) + 0.7152 * lin(mid[1]) + 0.0722 * lin(mid[2]);
+  const text = 1.05 / (luminance + 0.05) >= 3 ? 'var(--color-text-inverse)' : 'var(--color-black-light)';
+  return `color: ${text}; background: linear-gradient(135deg, ${toHex(light)} 0%, ${hex} 100%);`;
+}
+
 module.exports = {
+  materialPillStyle,
   syncAchievements,
   refreshAchievements,
   trackViewCat,

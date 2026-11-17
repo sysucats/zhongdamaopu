@@ -83,12 +83,6 @@ page {
   --color-achievement-silver-bg: #eef1f5;
   --color-achievement-bronze-bg: #f8eee3;
 
-  /* 成就奖牌渐变（铜/银/金/未解锁） */
-  --grad-achievement-bronze: linear-gradient(135deg, #e3ad74 0%, #b06f32 100%);
-  --grad-achievement-silver: linear-gradient(135deg, #cdd6e0 0%, #8795a4 100%);
-  --grad-achievement-gold: linear-gradient(135deg, #f8d87c 0%, #de9f12 100%);
-  --grad-achievement-locked: linear-gradient(135deg, #eef0f3 0%, #d9dde3 100%);
-
   /* 浅橙横幅渐变（领养入口等暖色 CTA）。 */
   --grad-warm-banner: linear-gradient(90deg, #fff7e6, #ffe7ba);
 

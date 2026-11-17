@@ -38,7 +38,7 @@
           <view class="achv-name">{{item.name}}</view>
           <view class="achv-desc">{{item.nextCondition}}</view>
         </view>
-        <view class="achv-cur material-{{item.currentMaterial}}" wx:if="{{item.currentTier > 0}}">{{item.tiers[item.currentTier - 1].tierName}}</view>
+        <view class="achv-cur" style="{{item.currentStyle}}" wx:if="{{item.currentTier > 0}}">{{item.tiers[item.currentTier - 1].tierName}}</view>
       </view>
 
       <view class="tier-row">

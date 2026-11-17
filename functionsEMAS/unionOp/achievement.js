@@ -37,6 +37,7 @@ function publicDef(def) {
     name: def.name,
     description: describe(def),
     materialKey: def.materialKey,
+    materialColor: def.materialColor || '',
     frontImage: def.frontImage,
     backImage: def.backImage,
     model3dUrl: def.model3dUrl || '',
@@ -49,8 +50,16 @@ function bySeriesAndSort(a, b) {
 }
 
 async function loadActiveDefs(db) {
-  const defs = await findAll(db.collection('achievement_def'), { status: 'active' });
-  return defs.filter(def => METRICS[def.rule?.metric] && def.frontImage && def.backImage).sort(bySeriesAndSort);
+  const [defs, materials] = await Promise.all([
+    findAll(db.collection('achievement_def'), { status: 'active' }),
+    findAll(db.collection('achievement_material')),
+  ]);
+  // 成就名称按材质着色：带上材质的文字色（旧材质未取色时为空，前端用默认色）
+  const colors = Object.fromEntries(materials.map(item => [item.key, item.color || '']));
+  return defs
+    .filter(def => METRICS[def.rule?.metric] && def.frontImage && def.backImage)
+    .map(def => ({ ...def, materialColor: colors[def.materialKey] || '' }))
+    .sort(bySeriesAndSort);
 }
 
 function uniqueCount(list) {
