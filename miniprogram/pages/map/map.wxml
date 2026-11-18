@@ -70,7 +70,7 @@ module.exports = {
 
   <!-- 底部详情卡片 -->
   <popup show="{{showDetail}}" bind:close="closeDetail">
-<popup-header title="{{currentCat.name || '未知猫咪'}}" align="left" bind:close="closeDetail" />
+    <popup-header slot="header" title="{{currentCat.name || '未知猫咪'}}" align="left" bind:close="closeDetail" />
     <view class="detail-card">
       <!-- 头部 -->
       <view class="detail-header">

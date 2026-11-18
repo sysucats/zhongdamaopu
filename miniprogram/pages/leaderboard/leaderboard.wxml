@@ -81,21 +81,19 @@
 
 </swiper>
 
-<popup show="{{showAchievementShowcase}}" position="center" bind:close="closeAchievementShowcase">
-  <view class="achievement-showcase-dialog">
-    <popup-header title="{{achievementShowcaseName}}展示的成就" bind:close="closeAchievementShowcase" />
-    <view class="achievement-showcase-state" wx:if="{{achievementShowcaseLoading}}">加载中...</view>
-    <view class="achievement-showcase-state" wx:elif="{{achievementShowcaseError}}">加载失败，请稍后重试</view>
-    <view class="achievement-showcase-state" wx:elif="{{achievementShowcase.length === 0}}">还没有展示成就</view>
-    <view class="achievement-showcase-board count-{{achievementShowcase.length}}" wx:else>
-      <view class="achievement-showcase-placement" wx:for="{{achievementShowcase}}" wx:key="key" style="{{item.placementStyle}}">
-        <view class="achievement-showcase-entry" style="{{item.entryStyle}}">
-          <view class="achievement-showcase-art">
-            <view class="achievement-showcase-shadow"></view>
-            <achievementBadge class="achievement-showcase-badge" front="{{item.frontImage}}" back="{{item.backImage}}" size="{{item.displaySize}}" />
-          </view>
-          <view class="achievement-showcase-name material-{{item.materialKey}}" style="{{item.materialColor ? 'color: ' + item.materialColor : ''}}">{{item.tierName}}</view>
+<popup style="--popup-background: var(--color-surface);" show="{{showAchievementShowcase}}" position="center" max-height="78vh" bind:close="closeAchievementShowcase">
+  <popup-header slot="header" title="{{achievementShowcaseName}}展示的成就" bind:close="closeAchievementShowcase" />
+  <view class="achievement-showcase-state" wx:if="{{achievementShowcaseLoading}}">加载中...</view>
+  <view class="achievement-showcase-state" wx:elif="{{achievementShowcaseError}}">加载失败，请稍后重试</view>
+  <view class="achievement-showcase-state" wx:elif="{{achievementShowcase.length === 0}}">还没有展示成就</view>
+  <view class="achievement-showcase-board count-{{achievementShowcase.length}}" wx:else>
+    <view class="achievement-showcase-placement" wx:for="{{achievementShowcase}}" wx:key="key" style="{{item.placementStyle}}">
+      <view class="achievement-showcase-entry" style="{{item.entryStyle}}">
+        <view class="achievement-showcase-art">
+          <view class="achievement-showcase-shadow"></view>
+          <achievementBadge class="achievement-showcase-badge" front="{{item.frontImage}}" back="{{item.backImage}}" size="{{item.displaySize}}" />
         </view>
+        <view class="achievement-showcase-name material-{{item.materialKey}}" style="{{item.materialColor ? 'color: ' + item.materialColor : ''}}">{{item.tierName}}</view>
       </view>
     </view>
   </view>

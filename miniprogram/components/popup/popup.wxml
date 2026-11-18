@@ -1,5 +1,10 @@
 <mask zindex="{{layerZ}}" show="{{show && !closing}}" bind:close="onMaskTap"></mask>
 <view class="popup-decoration" style="z-index: {{layerZ + 3}};" wx:if="{{show && !closing}}"><slot name="decoration"></slot></view>
+<!-- 三段结构：标题栏（固定）/ 正文（唯一滚动区）/ 底栏（可选，固定）。四周留白、滚动、底部安全区都由这里负责，页面只放内容 -->
 <view class="popup-container {{position}} {{show ? 'show' : ''}} {{closing ? 'hide' : ''}}" style="z-index: {{layerZ + 2}}; max-height: {{maxHeight}};" wx:if="{{internalShow || show}}">
-  <slot></slot>
+  <view class="popup-header-area"><slot name="header"></slot></view>
+  <scroll-view class="popup-body" style="{{bodyMaxHeight ? 'max-height: ' + bodyMaxHeight + 'px;' : ''}}" scroll-y="1" scroll-into-view="{{scrollIntoView}}" scroll-with-animation="1">
+    <view class="popup-body-inner {{footer ? '' : 'to-bottom'}}"><slot></slot></view>
+  </scroll-view>
+  <view class="popup-footer-area" wx:if="{{footer}}"><slot name="footer"></slot></view>
 </view>

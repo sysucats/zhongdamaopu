@@ -58,8 +58,7 @@ button.primary {
 /* pages/manage/badgeDef/badgeDef.wxss 内容拷贝结束 */
 
 .modal {
-  width: 500rpx;
-  padding: 0 20rpx 20rpx;
+  /* 宽度与留白由弹窗统一给出 */
   display: flex;
   flex-direction: column;
   align-items: center;

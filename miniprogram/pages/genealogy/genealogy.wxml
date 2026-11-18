@@ -64,8 +64,8 @@
   </scroll-view>
 
   <view class='filter-actions'>
-    <button class='form-button reset-button' bindtap='fResetPanel'>重置</button>
-    <button class='form-button primary' bindtap='fConfirm'>完成</button>
+    <button class='form-button medium reset-button' bindtap='fResetPanel'>重置</button>
+    <button class='form-button medium primary' bindtap='fConfirm'>完成</button>
   </view>
 </view>
 
@@ -163,9 +163,9 @@
 
         <!-- 展开时底部动作按钮：上传喵照（可选）/ 便利贴墙（可选）/ 详情相册（始终显示，主操作） -->
         <view wx:if="{{expandedCatIndex === index}}" class="card-action-row">
-          <button wx:if="{{canUpload}}" class="form-button card-action-btn" catchtap='clickUploadBtn' data-cat_id='{{item._id}}'>上传喵照</button>
-          <button wx:if="{{canComment}}" class="form-button card-action-btn" catchtap='clickCommentBtn' data-cat_id='{{item._id}}'>便利贴墙</button>
-          <button class="form-button primary card-action-btn" catchtap='clickDetailBtn' data-cat_id='{{item._id}}'>详情相册</button>
+          <button wx:if="{{canUpload}}" class="form-button medium card-action-btn" catchtap='clickUploadBtn' data-cat_id='{{item._id}}'>上传喵照</button>
+          <button wx:if="{{canComment}}" class="form-button medium card-action-btn" catchtap='clickCommentBtn' data-cat_id='{{item._id}}'>便利贴墙</button>
+          <button class="form-button medium primary card-action-btn" catchtap='clickDetailBtn' data-cat_id='{{item._id}}'>详情相册</button>
         </view>
       </view>
     </view>

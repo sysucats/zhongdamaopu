@@ -278,33 +278,17 @@ page {
   margin: var(--space-sm) auto 0;
 }
 
-/* 成就选择器 */
-.achv-picker {
-  width: 620rpx;
-  max-height: 70vh;
-  box-sizing: border-box;
-  background: var(--color-surface);
-  border-radius: var(--radius-modal);
-  padding: 0 30rpx 30rpx;
-  display: flex;
-  flex-direction: column;
-}
-
 .achv-picker-meta {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin: 18rpx 0;
+  margin: 0 0 18rpx;
 }
 
 .achv-picker-tip {
   font-size: var(--font-size-caption);
   color: var(--color-gray-max);
   line-height: 1.5;
-}
-
-.achv-picker-list {
-  max-height: 44vh;
 }
 
 .achv-pick-item {
@@ -351,3 +335,4 @@ page {
 
 .menu-item:active { background: var(--color-gray-light); }
 .right-arrow .iconfont { margin: 0; font-size: 28rpx; color: var(--color-gray-max); }
+

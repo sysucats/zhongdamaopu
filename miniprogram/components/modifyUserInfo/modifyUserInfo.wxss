@@ -1,14 +1,6 @@
 @import "/pages/public/wxss/formControls.wxss";
 @import "/pages/public/wxss/iconfont.wxss";
 
-.profile-editor {
-  padding: 0 var(--space-sm) var(--space-md);
-}
-
-.profile-fields {
-  padding-bottom: var(--space-md);
-}
-
 .avatar-wrapper::after {
   border: none;
 }

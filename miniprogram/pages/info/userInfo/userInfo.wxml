@@ -75,24 +75,21 @@
 <modifyUserInfo bind:userInfoUpdated="onUserInfoUpdated" show="{{showEdit}}" bind:close="closeEdit"></modifyUserInfo>
 
 <!-- 成就展示位选择器 -->
-<popup show="{{showAchvPicker}}" position="center" bind:close="closeAchvPicker">
-  <view class="achv-picker">
+<popup style="--popup-background: var(--color-surface);" show="{{showAchvPicker}}" position="center" max-height="70vh" bind:close="closeAchvPicker">
+  <view slot="header">
     <popup-header title="选择展示成就" close-position="left" confirm="{{true}}" disabled="{{!pickerDirty}}" busy="{{savingPicker}}" bind:close="closeAchvPicker" bind:confirm="saveAchvPicker" />
     <view class="achv-picker-meta">
       <view class="achv-picker-tip">已选 {{pickerSelected.length}}/3</view>
     </view>
-    <scroll-view scroll-y="1" class="achv-picker-list" style="height: {{pickerListHeight}}rpx;">
-      <view class="achv-pick-item {{item.selected ? 'selected' : ''}}" wx:for="{{unlockedAchv}}" wx:key="key" bindtap="toggleAchvPick" data-key="{{item.key}}">
-        <image class="showcase-medal small" src="{{item.frontImage}}" mode="aspectFit" />
-        <view class="achv-pick-info">
-          <view class="achv-pick-name">{{item.name}}</view>
-          <view class="achv-pick-desc">{{item.desc}}</view>
-        </view>
-        <view class="achv-pick-check">{{item.selected ? '✓' : ''}}</view>
-      </view>
-    </scroll-view>
-
   </view>
+    <view class="achv-pick-item {{item.selected ? 'selected' : ''}}" wx:for="{{unlockedAchv}}" wx:key="key" bindtap="toggleAchvPick" data-key="{{item.key}}">
+      <image class="showcase-medal small" src="{{item.frontImage}}" mode="aspectFit" />
+      <view class="achv-pick-info">
+        <view class="achv-pick-name">{{item.name}}</view>
+        <view class="achv-pick-desc">{{item.desc}}</view>
+      </view>
+      <view class="achv-pick-check">{{item.selected ? '✓' : ''}}</view>
+    </view>
 </popup>
 
 <popup id="achievement-detail-popup" style="--popup-background: var(--color-surface);" show="{{showAchvDetail}}" position="center" bind:close="closeAchvDetail">

@@ -287,101 +287,95 @@
   </view>
 
   <!-- 未知性别猫猫弹窗 -->
-  <popup show="{{showUnknownCatsPopup}}" bind:close="closeUnknownCatsPopup" position="center">
-    <view class="popup-content">
-      <popup-header title="未知性别" bind:close="closeUnknownCatsPopup" />
-      <view class="unknown-cats-popup-content">
-        <view class="unknown-cats-list-popup">
-          <view wx:for="{{stats.gender.unknown.cats}}" wx:key="*this" class="unknown-cat-name-popup">{{item}}</view>
-        </view>
+  <popup style="--popup-background: var(--color-surface);" show="{{showUnknownCatsPopup}}" bind:close="closeUnknownCatsPopup" position="center">
+    <popup-header slot="header" title="未知性别" bind:close="closeUnknownCatsPopup" />
+    <view class="unknown-cats-popup-content">
+      <view class="unknown-cats-list-popup">
+        <view wx:for="{{stats.gender.unknown.cats}}" wx:key="*this" class="unknown-cat-name-popup">{{item}}</view>
       </view>
     </view>
   </popup>
 
   <!-- 最新事件完整列表弹窗 -->
-  <popup show="{{showEventsPopup}}" bind:close="closeEventsPopup" position="center">
-    <view class="popup-content">
-      <popup-header title="本月事件记录" bind:close="closeEventsPopup" />
-       <view class="details-content">
-          <view wx:for="{{stats.events}}" wx:key="index" class="event-item">
-            <view class="status-tag event-type {{item.className}}">{{item.type}}</view>
-            <view class="event-cat-name">{{item.name}}</view>
-            <view class="event-date">{{item.date}}</view>
-          </view>
-          <view wx:if="{{!stats.events || stats.events.length === 0}}" class="empty-events">暂无事件记录</view>
+  <popup style="--popup-background: var(--color-surface);" show="{{showEventsPopup}}" bind:close="closeEventsPopup" position="center">
+    <popup-header slot="header" title="本月事件记录" bind:close="closeEventsPopup" />
+     <view class="details-content">
+        <view wx:for="{{stats.events}}" wx:key="index" class="event-item">
+          <view class="status-tag event-type {{item.className}}">{{item.type}}</view>
+          <view class="event-cat-name">{{item.name}}</view>
+          <view class="event-date">{{item.date}}</view>
         </view>
-    </view>
+        <view wx:if="{{!stats.events || stats.events.length === 0}}" class="empty-events">暂无事件记录</view>
+      </view>
   </popup>
   
   <!-- 区域tnr详情弹窗 -->
-  <popup show="{{showAreaDetailsPopup}}" bind:close="closeAreaDetailsPopup" position="center">
-    <view class="popup-content">
-      <popup-header title="{{currentAreaDetails.area}}区域详情" bind:close="closeAreaDetailsPopup" />
-      <view class="details-content">
-        <!-- TNR指数详情 -->
-        <view class="tnr-value {{currentAreaDetails.tnrIndex >= 60 ? 'status-good' : (currentAreaDetails.tnrIndex >= 40 ? 'status-medium' : 'status-poor')}}">TNR指数: {{currentAreaDetails.tnrIndex}}</view>
-        
-        <view class="info-panel default">
-          <view class="section-title">计算公式</view>
-          <view class="section-content">
-            <view>基础分 = NS × 0.4</view>
-            <view>质量分 = [0.4(1-G)+0.3A+0.2s+0.1R] × 0.6</view>
-            <view>TNR指数 = 基础分 + 质量分</view>
-          </view>
+  <popup style="--popup-background: var(--color-surface);" show="{{showAreaDetailsPopup}}" bind:close="closeAreaDetailsPopup" position="center">
+    <popup-header slot="header" title="{{currentAreaDetails.area}}区域详情" bind:close="closeAreaDetailsPopup" />
+    <view class="details-content">
+      <!-- TNR指数详情 -->
+      <view class="tnr-value {{currentAreaDetails.tnrIndex >= 60 ? 'status-good' : (currentAreaDetails.tnrIndex >= 40 ? 'status-medium' : 'status-poor')}}">TNR指数: {{currentAreaDetails.tnrIndex}}</view>
+      
+      <view class="info-panel default">
+        <view class="section-title">计算公式</view>
+        <view class="section-content">
+          <view>基础分 = NS × 0.4</view>
+          <view>质量分 = [0.4(1-G)+0.3A+0.2s+0.1R] × 0.6</view>
+          <view>TNR指数 = 基础分 + 质量分</view>
+        </view>
+      </view>
+      
+      <view class="info-panel highlight">
+        <view class="param-item">
+          <text class="param-label">NS (净绝育)</text>
+          <text wx:if="{{currentAreaDetails.tnrDetail.adoption_rate == 100}}" class="param-value">-%</text>
+          <text wx:else class="param-value">{{currentAreaDetails.tnrDetail.net_sterilization_rate}}%</text>
+          <text class="param-desc">现存绝育/现存</text>
         </view>
         
-        <view class="info-panel highlight">
-          <view class="param-item">
-            <text class="param-label">NS (净绝育)</text>
-            <text wx:if="{{currentAreaDetails.tnrDetail.adoption_rate == 100}}" class="param-value">-%</text>
-            <text wx:else class="param-value">{{currentAreaDetails.tnrDetail.net_sterilization_rate}}%</text>
-            <text class="param-desc">现存绝育/现存</text>
-          </view>
-          
-          <view class="param-item">
-            <text class="param-label">G (增长率)</text>
-            <text class="param-value">{{currentAreaDetails.tnrDetail.growth_rate}}%</text>
-            <text class="param-desc">本月净增长/上月存活</text>
-          </view>
-          
-          <view class="param-item">
-            <text class="param-label">A (领养率)</text>
-            <text class="param-value">{{currentAreaDetails.tnrDetail.adoption_rate}}%</text>
-            <text class="param-desc">已领养数/总猫数</text>
-          </view>
-          
-          <view class="param-item">
-            <text class="param-label">s (生存率)</text>
-            <text class="param-value">{{currentAreaDetails.tnrDetail.survival_rate}}%</text>
-            <text class="param-desc">1-去世数/未领养数</text>
-          </view>
-          
-          <view class="param-item">
-            <text class="param-label">R (在册率)</text>
-            <text class="param-value">{{currentAreaDetails.tnrDetail.registration_rate}}%</text>
-            <text class="param-desc">1-失踪数/存活数</text>
-          </view>
+        <view class="param-item">
+          <text class="param-label">G (增长率)</text>
+          <text class="param-value">{{currentAreaDetails.tnrDetail.growth_rate}}%</text>
+          <text class="param-desc">本月净增长/上月存活</text>
         </view>
         
-        <view class="info-panel default">
-          <view class="section-title">计算过程</view>
-          <view class="section-content">
-            <view wx:if="{{currentAreaDetails.tnrDetail.adoption_rate == 100}}">基础分 = {{currentAreaDetails.tnrDetail.base_score}}</view>
-            <view wx:else>基础分 = {{currentAreaDetails.tnrDetail.net_sterilization_rate}} × 0.4 = {{currentAreaDetails.tnrDetail.base_score}}</view>
-            <view>质量分 = (0.4×(1-{{currentAreaDetails.tnrDetail.growth_rate}}) + 0.3×{{currentAreaDetails.tnrDetail.adoption_rate}} + 0.2×{{currentAreaDetails.tnrDetail.survival_rate}} + 0.1×{{currentAreaDetails.tnrDetail.registration_rate}}) × 60 = {{currentAreaDetails.tnrDetail.quality_score}}</view>
-            <view>TNR指数 = {{currentAreaDetails.tnrDetail.base_score}} + {{currentAreaDetails.tnrDetail.quality_score}} = {{currentAreaDetails.tnrIndex}}</view>
-          </view>
+        <view class="param-item">
+          <text class="param-label">A (领养率)</text>
+          <text class="param-value">{{currentAreaDetails.tnrDetail.adoption_rate}}%</text>
+          <text class="param-desc">已领养数/总猫数</text>
         </view>
         
-        <view class="tnr-explanation">
-          <view class="section-title">指标说明</view>
-          <view class="section-content">
-            <view class="list-item">· TNR指数满分为100分，分为基础分(40分)和质量分(60分)</view>
-            <view class="list-item">· 基础分由净绝育率决定，若当区域猫动态清零时，基础分赋满</view>
-            <view class="list-item">· 质量分由四个指标加权计算：增长率(40%)、领养率(30%)、生存率(20%)、在册率(10%)</view>
-            <view class="list-item">· 已领养的猫咪即使后续死亡或失踪，也不会计入死亡率或失踪率</view>
-            <view class="list-item">· 现存为总数减去失踪、死亡、领养；存活数为总数减去死亡、领养</view>
-          </view>
+        <view class="param-item">
+          <text class="param-label">s (生存率)</text>
+          <text class="param-value">{{currentAreaDetails.tnrDetail.survival_rate}}%</text>
+          <text class="param-desc">1-去世数/未领养数</text>
+        </view>
+        
+        <view class="param-item">
+          <text class="param-label">R (在册率)</text>
+          <text class="param-value">{{currentAreaDetails.tnrDetail.registration_rate}}%</text>
+          <text class="param-desc">1-失踪数/存活数</text>
+        </view>
+      </view>
+      
+      <view class="info-panel default">
+        <view class="section-title">计算过程</view>
+        <view class="section-content">
+          <view wx:if="{{currentAreaDetails.tnrDetail.adoption_rate == 100}}">基础分 = {{currentAreaDetails.tnrDetail.base_score}}</view>
+          <view wx:else>基础分 = {{currentAreaDetails.tnrDetail.net_sterilization_rate}} × 0.4 = {{currentAreaDetails.tnrDetail.base_score}}</view>
+          <view>质量分 = (0.4×(1-{{currentAreaDetails.tnrDetail.growth_rate}}) + 0.3×{{currentAreaDetails.tnrDetail.adoption_rate}} + 0.2×{{currentAreaDetails.tnrDetail.survival_rate}} + 0.1×{{currentAreaDetails.tnrDetail.registration_rate}}) × 60 = {{currentAreaDetails.tnrDetail.quality_score}}</view>
+          <view>TNR指数 = {{currentAreaDetails.tnrDetail.base_score}} + {{currentAreaDetails.tnrDetail.quality_score}} = {{currentAreaDetails.tnrIndex}}</view>
+        </view>
+      </view>
+      
+      <view class="tnr-explanation">
+        <view class="section-title">指标说明</view>
+        <view class="section-content">
+          <view class="list-item">· TNR指数满分为100分，分为基础分(40分)和质量分(60分)</view>
+          <view class="list-item">· 基础分由净绝育率决定，若当区域猫动态清零时，基础分赋满</view>
+          <view class="list-item">· 质量分由四个指标加权计算：增长率(40%)、领养率(30%)、生存率(20%)、在册率(10%)</view>
+          <view class="list-item">· 已领养的猫咪即使后续死亡或失踪，也不会计入死亡率或失踪率</view>
+          <view class="list-item">· 现存为总数减去失踪、死亡、领养；存活数为总数减去死亡、领养</view>
         </view>
       </view>
     </view>

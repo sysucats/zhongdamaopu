@@ -685,30 +685,9 @@
 }
 
 /* ==================== 6. 弹窗样式 ==================== */
-/* 6.1 基础弹窗样式 */
-.popup-content {
-  width: 560rpx;
-  max-height: 80vh;
-  box-sizing: border-box;
-  background-color: var(--color-surface);
-  border-radius: 40rpx;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-}
-
-.details-content {
-  padding: 0 30rpx 20rpx;
-  max-height: 60vh;
-  overflow-y: auto;
-}
-
 /* 6.2 未知猫咪弹窗 */
 .unknown-cats-popup-content {
-  max-height: calc(70vh - 100rpx);
-  overflow-y: auto;
   display: flex;
-  padding: 20rpx 30rpx;
 }
 
 .unknown-cats-list-popup {
@@ -726,7 +705,7 @@
 }
 
 /* 6.3 事件弹窗 */
-.details-content .event-item {
+.details-content .event-item + .event-item {
   margin-top: 20rpx;
 }
 

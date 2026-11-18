@@ -241,29 +241,13 @@
   }
 }
 
-/* 弹窗 */
-#search .popup-container {
-  width: 100%;
-  max-height: 80vh;
-  background-color: var(--color-surface);
-  border-radius: 20rpx 20rpx 0 0;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-}
-
-.search-results {
-  flex: 1;
-  max-height: 600rpx;
-}
-
 /* 关系卡片 */
 .relation-grid {
   display: flex;
   flex-wrap: wrap;
   gap: 16rpx;
   /* 左右不再缩进，和上方搜索框对齐 */
-  padding: 20rpx 0;
+  padding: 20rpx 0 0;
 }
 
 .relation-card {
@@ -342,12 +326,8 @@
 
 /* 滚动区域 */
 .popup-body {
-  flex: 1;
-  background: var(--color-gray-light);
-  box-sizing: border-box;
-  overflow-y: auto;
-  padding: 20rpx;
-  max-height: 70vh;
+  /* 只作为卡片样式的作用域；滚动与留白由弹窗统一给出 */
+  display: block;
 }
 
 .popup-body .card {
@@ -356,6 +336,9 @@
   padding: 20rpx;
   margin-bottom: 30rpx;
   box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.02);
+}
+.popup-body .card:last-child {
+  margin-bottom: 0;
 }
 .popup-body .card .card-label {
   font-size: 24rpx;
@@ -573,3 +556,4 @@
   flex-wrap: wrap;
   gap: 16rpx;
 }
+

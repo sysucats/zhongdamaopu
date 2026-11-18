@@ -58,19 +58,15 @@
 </view>
 
 <!-- 底部弹窗 -->
-<popup show="{{showMoreRelation}}" position="bottom" bind:close="closeMoreRelation">
-  <view class="popup-container">
-    <popup-header title="更多关系" close-position="none" />
-    <scroll-view scroll-y class="popup-body">
-      <view class="sheet-grid">
-        <view wx:for="{{currentOverflowList}}" wx:key="key" class="sheet-card" bindtap="onOverflowCardTap" data-id="{{item.id}}">
-          <image class="sheet-card-avatar" src="{{item.avatar}}" mode="aspectFill"></image>
-          <view class="sheet-card-info">
-            <text class="sheet-card-name">{{item.name}}</text>
-            <view class="relation-tag">{{item.relation}}</view>
-          </view>
-        </view>
+<popup show="{{showMoreRelation}}" position="bottom" max-height="50vh" bind:close="closeMoreRelation">
+  <popup-header slot="header" title="更多关系" close-position="none" />
+  <view class="sheet-grid">
+    <view wx:for="{{currentOverflowList}}" wx:key="key" class="sheet-card" bindtap="onOverflowCardTap" data-id="{{item.id}}">
+      <image class="sheet-card-avatar" src="{{item.avatar}}" mode="aspectFill"></image>
+      <view class="sheet-card-info">
+        <text class="sheet-card-name">{{item.name}}</text>
+        <view class="relation-tag">{{item.relation}}</view>
       </view>
-    </scroll-view>
+    </view>
   </view>
 </popup>

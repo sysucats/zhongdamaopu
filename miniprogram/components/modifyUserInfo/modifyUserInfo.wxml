@@ -1,26 +1,24 @@
 <popup style="--popup-background: var(--color-surface);" show="{{show}}" bind:close="hide">
-  <view class="profile-editor">
-    <popup-header title="个人信息" close-position="left" confirm="{{true}}" disabled="{{!canSaveProfile}}" busy="{{saving}}" bind:close="hide" bind:confirm="clickUpload" />
-    <block wx:if="{{user}}">
-      <view class="profile-fields">
-        <view class="profile-avatar-row">
-          <view class="profile-avatar-copy">
-            <view class="field-label">头像</view>
-            <view class="field-hint">点击头像更换</view>
-          </view>
-          <button wx:if="{{privacyAuthorized}}" class="avatar-wrapper" open-type="chooseAvatar" bind:chooseavatar="onChooseAvatar" disabled="{{saving}}" aria-label="更换头像">
-            <image class="avatar" src="{{user.userInfo.avatarUrl || defaultAvatarUrl}}" mode="aspectFill"></image>
-            <view class="avatar-edit"><text class="iconfont icon-photo"></text></view>
-          </button>
-          <button wx:else class="avatar-wrapper" bindtap="onTapAvatarBeforeAuth" disabled="{{saving}}" aria-label="授权并更换头像">
-            <image class="avatar" src="{{user.userInfo.avatarUrl || defaultAvatarUrl}}" mode="aspectFill"></image>
-            <view class="avatar-edit"><text class="iconfont icon-photo"></text></view>
-          </button>
+  <popup-header slot="header" title="个人信息" close-position="left" confirm="{{true}}" disabled="{{!canSaveProfile}}" busy="{{saving}}" bind:close="hide" bind:confirm="clickUpload" />
+  <block wx:if="{{user}}">
+    <view class="profile-fields">
+      <view class="profile-avatar-row">
+        <view class="profile-avatar-copy">
+          <view class="field-label">头像</view>
+          <view class="field-hint">点击头像更换</view>
         </view>
-        <view class="field-label field-required spaced-label">昵称</view>
-        <input type="nickname" class="field-input" placeholder="请输入昵称" value="{{user.userInfo.nickName}}" bindinput="onChangeNickName" bindblur="onChangeNickName" disabled="{{saving}}" />
+        <button wx:if="{{privacyAuthorized}}" class="avatar-wrapper" open-type="chooseAvatar" bind:chooseavatar="onChooseAvatar" disabled="{{saving}}" aria-label="更换头像">
+          <image class="avatar" src="{{user.userInfo.avatarUrl || defaultAvatarUrl}}" mode="aspectFill"></image>
+          <view class="avatar-edit"><text class="iconfont icon-photo"></text></view>
+        </button>
+        <button wx:else class="avatar-wrapper" bindtap="onTapAvatarBeforeAuth" disabled="{{saving}}" aria-label="授权并更换头像">
+          <image class="avatar" src="{{user.userInfo.avatarUrl || defaultAvatarUrl}}" mode="aspectFill"></image>
+          <view class="avatar-edit"><text class="iconfont icon-photo"></text></view>
+        </button>
       </view>
-    </block>
-    <view class="profile-loading" wx:else>加载中...</view>
-  </view>
+      <view class="field-label field-required spaced-label">昵称</view>
+      <input type="nickname" class="field-input" placeholder="请输入昵称" value="{{user.userInfo.nickName}}" bindinput="onChangeNickName" bindblur="onChangeNickName" disabled="{{saving}}" />
+    </view>
+  </block>
+  <view class="profile-loading" wx:else>加载中...</view>
 </popup>

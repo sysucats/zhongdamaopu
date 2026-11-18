@@ -155,14 +155,12 @@
 
 /* 底部详情面板：结构对齐猫咪详情页的 popup */
 .detail-card {
-  padding: 0 10rpx 20rpx;
-  max-height: 70vh;
-  overflow-y: auto;
+  /* 滚动与留白由弹窗统一给出 */
   box-sizing: border-box;
 }
 
 .detail-header {
-  padding: 4rpx 4rpx 22rpx;
+  padding: 0 0 22rpx;
 }
 
 .detail-title {
@@ -326,8 +324,6 @@
   display: flex;
   align-items: center;
   gap: 20rpx;
-  padding: 0 30rpx;
-  margin-bottom: 25rpx;
 }
 
 /* 详情卡内「查看轨迹」按钮 */

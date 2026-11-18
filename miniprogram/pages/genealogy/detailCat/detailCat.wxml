@@ -322,49 +322,45 @@
 <mp-gallery show="{{showGallery}}" gallery-photos="{{galleryPhotos}}" img-compressed-urls="{{imgCompressedUrls}}" img-urls="{{imgUrls}}" current="{{currentImg}}" hide-on-click="{{true}}" cat="{{cat}}" bindchange="bindGalleryChange" bindlikecountchanged="likeCountChanged"></mp-gallery>
 
 <!-- 赠予徽章弹出框 -->
-<popup show="{{showGiveBadge}}" bind:close="hideGiveBadge">
-  <popup-header title="赠予徽章" close-position="none" />
-  <scroll-view class="user-badge-list" scroll-y="1" enable-flex="1">
+<popup show="{{showGiveBadge}}" footer="{{true}}" bind:close="hideGiveBadge">
+  <popup-header slot="header" title="赠予徽章" close-position="none" />
+  <view class="user-badge-list">
     <view class="user-badge-item badge-level-{{item.level}} {{item.count === 0? 'zero-count': ''}} {{activeUserBadge === index? 'active': ''}}" wx:for="{{userBadges}}" wx:key="name" bindtap="bindTapUserBadge" data-index="{{index}}">
       <image class="user-badge-item-avatar" src="{{item.img}}" mode="aspectFill" />
       <view class="user-badge-item-count">x{{item.count}}</view>
       <view class="user-badge-item-name">[{{item.level}}]{{item.name}}</view>
     </view>
-  </scroll-view>
-  <view class="search-buttons">
-    <view class="search-btn" bindtap="toGetBadge">获取徽章</view>
-    <view class="search-btn {{activeUserBadge != -1 ? 'active': 'disabled'}}" hover-class="hover" bindtap="toGiveBadge">赠予</view>
+  </view>
+  <view slot="footer" class="form-actions">
+    <button class="form-button" bindtap="toGetBadge">获取徽章</button>
+    <button class="form-button primary {{activeUserBadge == -1 ? 'is-disabled' : ''}}" disabled="{{activeUserBadge == -1}}" bindtap="toGiveBadge">赠予</button>
   </view>
 </popup>
 
 <!-- 医疗记录时间线弹出层 -->
 <popup show="{{showMedicalHistory}}" position="center" bind:close="hideMedicalHistory">
-  <view class="modal-content-wrapper">
-    <popup-header title="{{cat.name}}的医疗记录" bind:close="hideMedicalHistory" />
-    <scroll-view class="modal-body" scroll-y="1">
-      <view class="medical-timeline" wx:if="{{medicalTimeline && medicalTimeline.length}}">
-        <view class="timeline-item" wx:for="{{medicalTimeline}}" wx:key="_id">
-          <view class="timeline-node {{index === 0 ? 'recent iconfont icon-check' : ''}}"></view>
-          <view class="timeline-connector" wx:if="{{index !== medicalTimeline.length - 1}}"></view>
-          <view class="timeline-content">
-            <view class="timeline-meta">
-              <text class="medical-type-tag {{index === 0 ? 'recent' : ''}}">{{medicalTypeName[item.type]}}</text>
-              <text class="timeline-title">{{item.title}}</text>
-              <text class="timeline-date">{{item.record_date_formatted}}</text>
-            </view>
-            <view class="timeline-body" wx:if="{{item.hospital || item.expire_date_formatted || item.is_expired || item.next_vaccine_date_formatted || item.description}}">
-              <view class="timeline-info" wx:if="{{item.hospital}}">{{item.type === 'vaccine' ? '接种地点' : '医院/地点'}}：{{item.hospital}}</view>
-              <view class="timeline-info" wx:if="{{item.expire_date_formatted && !item.is_expired}}">有效期至：{{item.expire_date_formatted}}</view>
-              <view class="timeline-info expired" wx:if="{{item.is_expired}}">已过期</view>
-              <view class="timeline-info" wx:if="{{item.next_vaccine_date_formatted}}">{{item.type === 'deworm' ? '下次驱虫' : '下次接种'}}：{{item.next_vaccine_date_formatted}}</view>
-              <view class="timeline-info" wx:if="{{item.description}}">备注：{{item.description}}</view>
-            </view>
-          </view>
+  <popup-header slot="header" title="{{cat.name}}的医疗记录" bind:close="hideMedicalHistory" />
+  <view class="medical-timeline" wx:if="{{medicalTimeline && medicalTimeline.length}}">
+    <view class="timeline-item" wx:for="{{medicalTimeline}}" wx:key="_id">
+      <view class="timeline-node {{index === 0 ? 'recent iconfont icon-check' : ''}}"></view>
+      <view class="timeline-connector" wx:if="{{index !== medicalTimeline.length - 1}}"></view>
+      <view class="timeline-content">
+        <view class="timeline-meta">
+          <text class="medical-type-tag {{index === 0 ? 'recent' : ''}}">{{medicalTypeName[item.type]}}</text>
+          <text class="timeline-title">{{item.title}}</text>
+          <text class="timeline-date">{{item.record_date_formatted}}</text>
+        </view>
+        <view class="timeline-body" wx:if="{{item.hospital || item.expire_date_formatted || item.is_expired || item.next_vaccine_date_formatted || item.description}}">
+          <view class="timeline-info" wx:if="{{item.hospital}}">{{item.type === 'vaccine' ? '接种地点' : '医院/地点'}}：{{item.hospital}}</view>
+          <view class="timeline-info" wx:if="{{item.expire_date_formatted && !item.is_expired}}">有效期至：{{item.expire_date_formatted}}</view>
+          <view class="timeline-info expired" wx:if="{{item.is_expired}}">已过期</view>
+          <view class="timeline-info" wx:if="{{item.next_vaccine_date_formatted}}">{{item.type === 'deworm' ? '下次驱虫' : '下次接种'}}：{{item.next_vaccine_date_formatted}}</view>
+          <view class="timeline-info" wx:if="{{item.description}}">备注：{{item.description}}</view>
         </view>
       </view>
-      <view wx:else style="text-align:center;color:#999;padding:60rpx 0;">暂无医疗记录</view>
-    </scroll-view>
+    </view>
   </view>
+  <view wx:else style="text-align:center;color:#999;padding:60rpx 0;">暂无医疗记录</view>
 </popup>
 
 <badgeModal zindex="2" show="{{modal.show}}" title="{{modal.title}}" name="{{modal.name}}" img="{{modal.img}}" desc="{{modal.desc}}" tip="{{modal.tip}}" level="{{modal.level}}" bind:close="hideBadgeModal"></badgeModal>

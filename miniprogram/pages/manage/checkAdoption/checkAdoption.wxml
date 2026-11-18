@@ -58,8 +58,8 @@
 <no-auth wx:else tip-text="{{tipText}}" />
 
 <popup style="--popup-background: var(--color-surface);" show="{{showReviewPanel}}" bind:close="closeReview" close-on-mask="{{!submitting}}">
+  <popup-header slot="header" title="{{reviewAction === 'approve' ? '通过申请' : reviewAction === 'reject' ? '拒绝申请' : reviewAction === 'processing' ? '开始审核' : '记录进度'}}" close-position="left" confirm="{{true}}" disabled="{{!canConfirm}}" busy="{{submitting}}" bind:close="closeReview" bind:confirm="confirmReview" />
   <view class="adoption-editor" wx:if="{{reviewTarget}}">
-    <popup-header title="{{reviewAction === 'approve' ? '通过申请' : reviewAction === 'reject' ? '拒绝申请' : reviewAction === 'processing' ? '开始审核' : '记录进度'}}" close-position="left" confirm="{{true}}" disabled="{{!canConfirm}}" busy="{{submitting}}" bind:close="closeReview" bind:confirm="confirmReview" />
     <view class="editor-body">
       <view class="content-title editor-parties"><text>{{reviewTarget.applicant_name}}</text><text class="iconfont icon-chevrons-right"></text><text>{{reviewTarget.cat_name}}</text></view>
       <view class="field-label {{reviewAction === 'note' ? 'field-required' : ''}}">{{reviewAction === 'note' ? '进度说明' : '审核说明（选填）'}}</view>

@@ -1,7 +1,6 @@
 .achievement-detail {
+  /* 宽度、留白与滚动由弹窗统一给出（标题栏在组件内，随正文滚动） */
   box-sizing: border-box;
-  width: 620rpx;
-  padding: 0 var(--space-lg) var(--space-lg);
 }
 
 .badge-hero {

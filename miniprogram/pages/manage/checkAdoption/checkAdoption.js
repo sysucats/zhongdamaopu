@@ -147,7 +147,8 @@ Page({
   async closeReview() {
     if (this.data.submitting) return false;
     if (!await confirmDiscard(this, '', this.data.reviewNote)) return false;
-    this.setData({ showReviewPanel: false, reviewTarget: null });
+    // 只收起不清空内容，下滑动画期间标题和正文保持可见；下次打开会覆盖
+    this.setData({ showReviewPanel: false });
     return true;
   },
 
@@ -192,7 +193,7 @@ Page({
       const res = await api.adoptionOp(request);
       wx.showToast({ title: res.msg || (res.result ? '操作成功' : '操作失败'), icon: 'none' });
       if (res.result) {
-        this.setData({ showReviewPanel: false, reviewTarget: null });
+        this.setData({ showReviewPanel: false });
         await this.loadList();
       }
     } catch (err) {

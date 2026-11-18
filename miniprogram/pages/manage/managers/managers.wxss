@@ -130,21 +130,8 @@ page {
   font-size: 22rpx;
 }
 
-.user-editor {
-  display: flex;
-  flex-direction: column;
-  max-height: calc(80vh - max(20rpx, env(safe-area-inset-bottom)));
-}
-
-.user-editor-body {
-  min-height: 0;
-  overflow-y: auto;
-  margin: 0 -20rpx;
-  padding: 0 calc(20rpx + var(--space-xs));
-}
-
 .editor-user {
-  margin: var(--space-sm) var(--space-md) var(--space-md);
+  margin: 0 0 var(--space-md);
 }
 
 .manager-option {

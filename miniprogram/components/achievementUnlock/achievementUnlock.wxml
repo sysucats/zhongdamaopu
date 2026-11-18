@@ -1,11 +1,13 @@
-<popup show="{{visible}}" position="center" zindex="{{2147483000}}" max-height="88vh" bind:close="close">
+<popup style="--popup-background: var(--color-surface);" show="{{visible}}" position="center" footer="{{true}}" zindex="{{2147483000}}" max-height="88vh" bind:close="close">
   <view slot="decoration" class="unlock-confetti" aria-hidden="true">
     <view class="confetti-piece" wx:for="{{confetti}}" wx:key="id" style="{{item.style}}"></view>
   </view>
   <!-- 左右滑动切换挂在整张卡片上；徽章画布自己拦截触摸用于转动，不会触发切换 -->
-  <view class="unlock-card" bindtouchstart="onSwipeStart" bindtouchmove="onSwipeMove" bindtouchend="onSwipeEnd" bindtouchcancel="onSwipeCancel" aria-role="dialog" aria-modal="true" aria-label="成就解锁">
+  <view slot="header" class="unlock-head">
     <popup-header title="成就解锁！" close-position="none" />
     <view class="unlock-subtitle">{{unlocks.length > 1 ? '这次点亮了 ' + unlocks.length + ' 枚成就' : '已加入你的成就收藏'}}</view>
+  </view>
+  <view class="unlock-card" bindtouchstart="onSwipeStart" bindtouchmove="onSwipeMove" bindtouchend="onSwipeEnd" bindtouchcancel="onSwipeCancel" aria-role="dialog" aria-modal="true" aria-label="成就解锁">
     <swiper class="unlock-swiper {{tall ? 'tall' : ''}}" current="{{activeIndex}}" bindchange="onBadgeChange" bindtransition="onBadgeTransition" bindanimationfinish="onBadgeSettled" indicator-dots="{{false}}">
       <swiper-item wx:for="{{unlocks}}" wx:key="key" catchtouchmove="onSwipeMove">
         <view class="unlock-badge">
@@ -22,6 +24,8 @@
         <view class="unlock-page-mark {{activeIndex === index ? 'active' : ''}}"></view>
       </view>
     </view>
+  </view>
+  <view slot="footer" class="unlock-foot">
     <button class="form-button unlock-continue" bindtap="close">耶！！</button>
   </view>
 </popup>

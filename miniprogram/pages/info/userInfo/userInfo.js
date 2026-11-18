@@ -25,7 +25,6 @@ Page({
     selectedAchievement: null,
     unlockedAchv: [],
     pickerSelected: [],
-    pickerListHeight: 0,
 
     // 一些菜单选项
     menu: [
@@ -168,7 +167,6 @@ Page({
       showAchvPicker: true,
       unlockedAchv: unlocked,
       pickerSelected: curKeys,
-      pickerListHeight: Math.min(unlocked.length * 136, 520),
     });
     this._refreshPickerList();
   },

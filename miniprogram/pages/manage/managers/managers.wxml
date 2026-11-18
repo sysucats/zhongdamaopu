@@ -55,28 +55,24 @@
     </scroll-view>
   </view>
   <popup show="{{showUserEditor}}" position="bottom" bind:close="closeUserEditor">
-    <view class="user-editor">
-      <popup-header title="人员设置" close-position="left" confirm="{{true}}" disabled="{{!userDraftDirty}}" busy="{{savingUser}}" bind:close="closeUserEditor" bind:confirm="updateUserSettings" />
-      <view class="user-editor-body">
-        <view class="form-context editor-user">
-          <image class="context-avatar" src="{{editingUser.avatar}}" mode="aspectFill" />
-          <view class="context-copy user-name">{{editingUser.name}}</view>
-        </view>
-        <view class="form-section">
-          <view class="section-title">管理员等级</view>
-          <radio-group bindchange="onManagerChange">
-            <label class="manager-option {{userDraft.level === index ? 'selected' : ''}}" wx:for="{{manager_types}}" wx:key="*this">
-              <view class="context-copy"><view class="status-title">{{item}}</view><view class="field-hint">{{manager_descriptions[index]}}</view></view>
-              <radio value="{{index}}" checked="{{userDraft.level === index}}" color="var(--color-primary)" disabled="{{savingUser}}" />
-            </label>
-          </radio-group>
-        </view>
-        <view class="form-section">
-          <view class="section-title">角色</view>
-          <view class="chip-row">
-            <view class="h-filter-item {{userDraft.role === index ? 'active' : ''}}" wx:for="{{role_types}}" wx:key="*this" data-role="{{index}}" bindtap="onRoleChange" aria-role="button" aria-label="{{item}}">{{item}}</view>
-          </view>
-        </view>
+    <popup-header slot="header" title="人员设置" close-position="left" confirm="{{true}}" disabled="{{!userDraftDirty}}" busy="{{savingUser}}" bind:close="closeUserEditor" bind:confirm="updateUserSettings" />
+    <view class="form-context editor-user">
+      <image class="context-avatar" src="{{editingUser.avatar}}" mode="aspectFill" />
+      <view class="context-copy user-name">{{editingUser.name}}</view>
+    </view>
+    <view class="form-section">
+      <view class="section-title">管理员等级</view>
+      <radio-group bindchange="onManagerChange">
+        <label class="manager-option {{userDraft.level === index ? 'selected' : ''}}" wx:for="{{manager_types}}" wx:key="*this">
+          <view class="context-copy"><view class="status-title">{{item}}</view><view class="field-hint">{{manager_descriptions[index]}}</view></view>
+          <radio value="{{index}}" checked="{{userDraft.level === index}}" color="var(--color-primary)" disabled="{{savingUser}}" />
+        </label>
+      </radio-group>
+    </view>
+    <view class="form-section">
+      <view class="section-title">角色</view>
+      <view class="chip-row">
+        <view class="h-filter-item {{userDraft.role === index ? 'active' : ''}}" wx:for="{{role_types}}" wx:key="*this" data-role="{{index}}" bindtap="onRoleChange" aria-role="button" aria-label="{{item}}">{{item}}</view>
       </view>
     </view>
   </popup>
