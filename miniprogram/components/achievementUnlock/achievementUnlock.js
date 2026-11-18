@@ -81,6 +81,8 @@ Component({
       this.setData({
         visible: true,
         unlocks,
+        // 说明超过一行（约 22 字）时加高，避免截断
+        tall: unlocks.some(item => (item.description || '').length > 22),
         activeIndex: Math.min(this.data.activeIndex, unlocks.length - 1),
         ...(opening ? { swiping: false, confetti: makeConfetti() } : {}),
       });

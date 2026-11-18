@@ -1,12 +1,3 @@
-/* 统计图配色：仅本页使用（iOS 系彩色 + 深绿变体） */
-page {
-  --dash-green: #4cd964;
-  --dash-green-dark: #24803d;
-  --dash-blue: #32ade6;
-  --dash-gray: #8e8e93;
-  --dash-yellow: #ffcc00;
-}
-
 @import "/pages/public/wxss/button.wxss";
 @import "/pages/public/wxss/tag.wxss";
 @import "/pages/public/wxss/card.wxss";
@@ -254,19 +245,19 @@ page {
 
 /* 进度条变体 */
 .progress-bar.current-bg {
-  background-color: rgba(36, 128, 61, 0.15);
+  background-color: rgba(0, 137, 50, 0.15);
 }
 
 .progress-bar.adoption-bg {
-  background-color: rgba(50, 173, 230, 0.15);
+  background-color: rgba(0, 136, 255, 0.15);
 }
 
 .progress-fill.current {
-  background-color: var(--dash-green-dark);
+  background-color: var(--color-green-dark);
 }
 
 .progress-fill.adoption {
-  background-color: var(--dash-blue);
+  background-color: var(--color-blue);
 }
 
 /* 5.3 数据网格样式 */
@@ -345,7 +336,7 @@ page {
 .gender-icon.unknown {
   font-size: 40rpx;
   font-weight: 600;
-  background-color: var(--dash-gray);
+  background-color: var(--color-system-gray);
   color: var(--color-text-inverse);
 }
 
@@ -682,11 +673,11 @@ page {
 
 /* TNR */
 .tnr-good {
-  background-color: var(--dash-green);
+  background-color: var(--color-green);
 }
 
 .tnr-medium {
-  background-color: var(--dash-yellow);
+  background-color: var(--color-yellow);
 }
 
 .tnr-poor {
@@ -753,7 +744,7 @@ page {
 
 .info-panel.highlight {
   background-color: var(--color-status-success-bg);
-  border-left: 4rpx solid var(--color-brand-wechat);
+  border-left: 4rpx solid var(--color-green);
 }
 
 /* 列表项样式 */

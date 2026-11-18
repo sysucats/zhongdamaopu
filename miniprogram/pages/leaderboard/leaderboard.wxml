@@ -70,14 +70,14 @@
   <!-- 拍照月榜 -->
   <swiper-item>
     <scroll-view scroll-y="1" style="height: 100%;">
-      <photoRank id="photo-rank"></photoRank>
+      <photoRank id="photo-rank" bind:editprofile="openProfileEditor"></photoRank>
     </scroll-view>
   </swiper-item><!-- 拍照月榜 end -->
 
   <!-- 成就榜 -->
   <swiper-item>
     <scroll-view scroll-y="1" style="height: 100%;">
-      <achievementRank id="achievement-rank" bind:showcase="openAchievementShowcase"></achievementRank>
+      <achievementRank id="achievement-rank" bind:showcase="openAchievementShowcase" bind:editprofile="openProfileEditor"></achievementRank>
     </scroll-view>
   </swiper-item><!-- 成就榜 end -->
 
@@ -96,12 +96,15 @@
             <view class="achievement-showcase-shadow"></view>
             <achievementBadge class="achievement-showcase-badge" front="{{item.frontImage}}" back="{{item.backImage}}" size="{{item.displaySize}}" />
           </view>
-          <view class="achievement-showcase-name material-{{item.materialKey}}">{{item.tierName}}</view>
+          <view class="achievement-showcase-name material-{{item.materialKey}}" style="{{item.materialColor ? 'color: ' + item.materialColor : ''}}">{{item.tierName}}</view>
         </view>
       </view>
     </view>
   </view>
 </popup>
+
+<!-- 个人信息编辑放在页面根部，放进 swiper 会被裁在滑动区内 -->
+<modifyUserInfo show="{{showProfileEditor}}" bind:close="closeProfileEditor"></modifyUserInfo>
 
 <!-- 底tab占位 -->
 <view style="height: {{tabBarHeight}}px;"></view>

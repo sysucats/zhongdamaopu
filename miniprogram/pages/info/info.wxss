@@ -40,6 +40,7 @@ page {
   box-shadow: 0rpx 1rpx 10rpx var(--color-ltblack-transparent);
   background-color: white;
 }
+/* 卡片底部主题色横条，暂停使用
 .card:after {
   content: '';
   position: absolute;
@@ -50,6 +51,31 @@ page {
   border-bottom-right-radius: 10rpx;
   border-bottom-left-radius: 10rpx;
   background-color: var(--color-primary);
+}
+*/
+
+/* 图标右上角红点：有新点亮的成就 */
+.icon-wrap {
+  position: relative;
+  flex-shrink: 0;
+  margin-right: 20rpx;
+  line-height: 0;
+}
+
+.icon-wrap .icon {
+  display: block;
+  margin-right: 0;
+}
+
+.icon-dot {
+  position: absolute;
+  top: -4rpx;
+  right: -4rpx;
+  width: 14rpx;
+  height: 14rpx;
+  border-radius: 50%;
+  background-color: var(--color-red);
+  box-shadow: 0 0 0 3rpx var(--color-surface);
 }
 
 .card.long {

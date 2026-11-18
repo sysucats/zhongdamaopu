@@ -38,13 +38,14 @@
           <view class="achv-name">{{item.name}}</view>
           <view class="achv-desc">{{item.nextCondition}}</view>
         </view>
-        <view class="achv-cur material-{{item.currentMaterial}}" wx:if="{{item.currentTier > 0}}">{{item.tiers[item.currentTier - 1].tierName}}</view>
+        <view class="achv-cur" style="{{item.currentStyle}}" wx:if="{{item.currentTier > 0}}">{{item.tiers[item.currentTier - 1].tierName}}</view>
       </view>
 
       <view class="tier-row">
         <view class="tier-cell {{t.unlocked ? 'unlocked' : 'locked'}}" wx:for="{{item.tiers}}" wx:for-item="t" wx:key="key" bindtap="openBadge" data-key="{{t.key}}">
           <view class="medal">
             <image class="medal-image" src="{{t.frontImage}}" mode="aspectFit" />
+            <view class="new-tag" wx:if="{{t.isNew}}">新</view>
           </view>
           <view class="tier-name">{{t.tierName}}</view>
           <view class="tier-threshold">{{t.threshold}}{{item.unit}}</view>

@@ -47,4 +47,3 @@
   <view class="leaderboard-state" wx:if="{{loading}}">加载中...</view>
 </view>
 
-<modifyUserInfo show="{{showEdit}}" bind:close="closeEdit"></modifyUserInfo>

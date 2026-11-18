@@ -12,15 +12,15 @@
 }
 .rank-ticket.rank-ticket-1 {
   --rank-ticket-accent: var(--color-achievement-gold);
-  background: var(--color-primary-light);
+  background: var(--color-achievement-gold-bg);
 }
 .rank-ticket.rank-ticket-2 {
   --rank-ticket-accent: var(--color-achievement-silver);
-  background: var(--color-gray-light);
+  background: var(--color-achievement-silver-bg);
 }
 .rank-ticket.rank-ticket-3 {
   --rank-ticket-accent: var(--color-achievement-bronze);
-  background: var(--color-warm-bg);
+  background: var(--color-achievement-bronze-bg);
 }
 .rank-ticket-label {
   color: var(--rank-ticket-accent);
