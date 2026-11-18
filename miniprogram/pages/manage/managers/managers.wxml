@@ -73,8 +73,8 @@
         </view>
         <view class="form-section">
           <view class="section-title">角色</view>
-          <view class="chip-row role-choices">
-            <button class="chip role-choice {{userDraft.role === index ? 'active' : ''}}" wx:for="{{role_types}}" wx:key="*this" data-role="{{index}}" bindtap="onRoleChange" disabled="{{savingUser}}">{{item}}</button>
+          <view class="chip-row">
+            <view class="h-filter-item {{userDraft.role === index ? 'active' : ''}}" wx:for="{{role_types}}" wx:key="*this" data-role="{{index}}" bindtap="onRoleChange" aria-role="button" aria-label="{{item}}">{{item}}</view>
           </view>
         </view>
       </view>
