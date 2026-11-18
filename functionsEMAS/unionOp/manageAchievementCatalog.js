@@ -33,18 +33,21 @@ async function holderCounts(db) {
   return (result || []).reduce((map, row) => { map[row._id] = row.count; return map; }, {});
 }
 
-const progressId = key => `achievement_assets:${key}`;
+// 素材生成进度只供管理端轮询，单独存放；_id 为徽章 key 或 material:<材质 key>。
+const JOBS = 'achievement_job';
+// 超过该时长未更新的 running 视为云函数已中断，list 不再返回。
+const STALE_JOB_MS = 15 * 60 * 1000;
 const needsAssets = (badge, material) => !badge.backImage || !badge.model3dUrl || !material?.image || badge.backMaterialImage !== material.image;
 
 async function beginProgress(db, key, generationId, init = {}) {
-  const collection = db.collection('setting');
+  const collection = db.collection(JOBS);
   const gid = generationId || randomUUID();
-  await collection.updateOne({ _id: progressId(key) }, { $set: {
+  await collection.updateOne({ _id: key }, { $set: {
     generationId: gid, status: 'running', step: init.step || 0, total: init.total || 6,
     label: init.label || '读取素材', error: '', updated_at: new Date(),
   } }, { upsert: true });
   return async (step, label, status = 'running', error = '') => {
-    await collection.updateOne({ _id: progressId(key), generationId: gid }, { $set: { step, label, status, error, updated_at: new Date() } });
+    await collection.updateOne({ _id: key, generationId: gid }, { $set: { step, label, status, error, updated_at: new Date() } });
   };
 }
 
@@ -99,25 +102,37 @@ async function backfillMaterialColors(ctx, materials) {
   }));
 }
 
+// 只返回进行中和失败的进度；已完成或中断已久的不再下发。
+async function activeJobs(db) {
+  const since = Date.now() - STALE_JOB_MS;
+  const jobs = await findAll(db.collection(JOBS), { status: { $ne: 'complete' } });
+  return new Map(jobs
+    .filter(job => job.status !== 'running' || +new Date(job.updated_at || 0) >= since)
+    .map(job => [job._id, job]));
+}
+
+const serialReady = (sequences, missingSerials, key) =>
+  !!sequences.get(key)?.ready && !missingSerials.some(record => record.key === key);
+
 async function list(ctx) {
   const db = ctx.mpserverless.db;
-  const [materials, badges, counts, sequences, progress, displaySettings, missingSerials] = await Promise.all([
+  const [materials, badges, counts, jobs, displaySettings, missingSerials] = await Promise.all([
     findAll(db.collection('achievement_material')),
     findAll(db.collection('achievement_def')),
     holderCounts(db),
-    findAll(db.collection('setting'), { _id: { $regex: '^achievement_serial:' } }),
-    findAll(db.collection('setting'), { _id: { $regex: '^achievement_assets:' } }),
+    activeJobs(db),
     loadDisplaySettings(db),
     findAll(db.collection('achievement'), { $or: [{ serialNo: { $exists: false } }, { serialNo: null }, { serialNo: { $lte: 0 } }] }, { projection: { key: 1 } }),
   ]);
   await backfillMaterialColors(ctx, materials);
+  const sequences = await serials.states(db);
   return {
     ok: true,
     metrics: METRICS,
     numberingRevision: serials.revision,
     displaySettings,
-    materials: materials.map(item => ({ ...item, generation: progress.find(p => p._id === progressId(`material:${item.key}`)) || null })).sort((a, b) => a.key.localeCompare(b.key)),
-    badges: badges.map(badge => ({ ...badge, needsAssets: needsAssets(badge, materials.find(m => m.key === badge.materialKey)), generation: progress.find(p => p._id === progressId(badge.key)) || null, holders: counts[badge.key] || 0, serialReady: sequences.some(seq => seq._id === serials.counterId(badge.key) && seq.ready) && !missingSerials.some(record => record.key === badge.key) })),
+    materials: materials.map(item => ({ ...item, generation: jobs.get(`material:${item.key}`) || null })).sort((a, b) => a.key.localeCompare(b.key)),
+    badges: badges.map(badge => ({ ...badge, needsAssets: needsAssets(badge, materials.find(m => m.key === badge.materialKey)), generation: jobs.get(badge.key) || null, holders: counts[badge.key] || 0, serialReady: serialReady(sequences, missingSerials, badge.key) })),
   };
 }
 
@@ -286,12 +301,12 @@ async function prepareBadge(ctx, input) {
 // 批量上线：逐枚校验素材与编号，只放行齐备的草稿徽章
 async function activateAll(ctx) {
   const db = ctx.mpserverless.db;
-  const [badges, materials, sequences, missingSerials] = await Promise.all([
+  const [badges, materials, missingSerials] = await Promise.all([
     findAll(db.collection('achievement_def')),
     findAll(db.collection('achievement_material')),
-    findAll(db.collection('setting'), { _id: { $regex: '^achievement_serial:' } }),
     findAll(db.collection('achievement'), { $or: [{ serialNo: { $exists: false } }, { serialNo: null }, { serialNo: { $lte: 0 } }] }, { projection: { key: 1 } }),
   ]);
+  const sequences = await serials.states(db);
   const materialByKey = new Map(materials.map(item => [item.key, item]));
   const ready = [], blocked = [];
   let already = 0;
@@ -302,7 +317,7 @@ async function activateAll(ctx) {
     if (!isCosUrl(badge.frontImage)) reason = '正面图未上传';
     else if (!material?.image) reason = '材质图片缺失';
     else if (!badge.backImage || !badge.model3dUrl || badge.backMaterialImage !== material.image) reason = '背面或 3D 素材未更新';
-    else if (!sequences.some(seq => seq._id === serials.counterId(badge.key) && seq.ready) || missingSerials.some(row => row.key === badge.key)) reason = '历史编号未就绪';
+    else if (!serialReady(sequences, missingSerials, badge.key)) reason = '历史编号未就绪';
     if (reason) blocked.push({ key: badge.key, name: badge.name, reason });
     else ready.push(badge);
   }
@@ -342,7 +357,7 @@ module.exports = async (ctx) => {
       return { ok: true, displaySettings: { thicknessMm } };
     }
     if (action === 'generationStatus') {
-      const { result } = await ctx.mpserverless.db.collection('setting').findOne({ _id: progressId(clean(input.key, 60)) });
+      const { result } = await ctx.mpserverless.db.collection(JOBS).findOne({ _id: clean(input.key, 60) });
       return { ok: true, progress: result || null };
     }
     if (action === 'saveMaterial') return await saveMaterial(ctx, input);
