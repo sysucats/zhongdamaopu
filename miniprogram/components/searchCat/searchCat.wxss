@@ -8,36 +8,6 @@
   flex-direction: column;
 }
 
-.search-input {
-  display: flex;
-  align-items: center;
-  padding: 20rpx;
-  background-color: var(--color-gray-light);
-}
-
-.input-icon {
-  margin-right: 15rpx;
-}
-
-.search-icon {
-  width: 36rpx;
-  height: 36rpx;
-}
-
-.input-field {
-  flex: 1;
-  height: 72rpx;
-  background-color: var(--color-surface);
-  border-radius: 36rpx;
-  padding: 0 20rpx;
-  font-size: 26rpx;
-  box-shadow: 0 2rpx 5rpx rgba(0, 0, 0, 0.05);
-}
-
-.placeholder {
-  color: var(--color-gray-dark);
-}
-
 .search-results {
   flex: 1;
   max-height: 600rpx;

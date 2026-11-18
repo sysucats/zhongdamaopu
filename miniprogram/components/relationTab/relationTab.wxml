@@ -62,16 +62,7 @@
   <view class="popup-container">
     <popup-header title="{{relationTitle || '选择关系类型'}}" close-position="{{isAddingNewRelation ? 'right' : 'left'}}" confirm="{{!isAddingNewRelation}}" disabled="{{pendingRelationTypeIdx === null}}" busy="{{savingRelationType}}" bind:close="cancelSelectedRelationType" bind:confirm="saveSelectedRelationType" />
     <!-- 输入栏 -->
-    <view class="search-input">
-      <view class='input-icon'>
-        <image class="search-icon" mode='aspectFit' src="/pages/public/images/card/card/cat.png"></image>
-      </view>
-      <input class="input-field" placeholder="输入关系名，如不存在则自动新建"
-             value="{{typeInputValue}}"
-             bindinput="onTypeInput"
-             bindconfirm="onTypeConfirm"
-             confirm-type="done" />
-    </view>
+    <search-bar placeholder="输入关系名，如不存在则自动新建" value="{{typeInputValue}}" confirm-type="done" bind:input="onTypeInput" bind:confirm="onTypeConfirm"></search-bar>
     <scroll-view class="search-results" scroll-y="1" scroll-into-view="{{scrollIntoView}}">
       <view class="relation-grid">
         <!-- 若存在未迁移类型 -->

@@ -2,55 +2,76 @@
 
 <!-- 猫猫状态标签：文案与色调统一由 catStatus.wxs 产出 -->
 <wxs src="/utils/catStatus.wxs" module="cs" />
+<!-- 上滑时把搜索栏收进胶囊那一行 -->
+<wxs src="./collapseNav.wxs" module="nav" />
 
-<view id='search' class='{{filters_show_shadow? "shadow": ""}}' style='height: {{heights.filters}}px'>
-  <view class='input-block'>
-    <view class='input-icon iconfont icon-search gray'></view>
-    <input class='name' placeholder='{{text_cfg.genealogy.search_tip}}' placeholder-class='searchPlaceholderStyle' value='{{filters_input}}' maxlength='20' confirm-type='search' bindinput='fSearchInput' bindconfirm='fSearch'></input>
-  </view>
+<!-- 根节点挂着按胶囊位置算出的尺寸变量（--nav-bottom、--search-top、--search-area） -->
+<view class='genealogy-root' style='{{navVars}}'>
 
-  <view class='filter-btn' bind:tap='clickRecognize' wx:if="{{showRecognize}}">
-    <view class='iconfont icon-camera gray'></view>
-    <view>识别</view>
-  </view>
-  
-  <view class='filter-btn' bind:tap='fToggle'>
-    <view class='iconfont icon-filtering {{filters_active? "primary": "gray"}}'></view>
-    <view>筛选</view>
+<!-- 自定义导航栏：小程序名字靠左，和胶囊同一行 -->
+<view class='nav-bar'>
+  <view class='nav-title'>{{text_cfg.app_name}}</view>
+</view>
+
+<!-- 搜索栏浮在卡片列表上方，卡片滚动时从磨砂玻璃下面经过；上滑时跟手收进导航栏，停在半路自动吸附（见 collapseNav.wxs） -->
+<view id='search'>
+  <!-- 胶囊搜索框：识别收进框尾，筛选为独立圆形按钮，生效时显示已筛项数 -->
+  <search-bar class='search-field' variant='glass' placeholder='{{text_cfg.genealogy.search_tip}}' value='{{filters_input}}' bind:input='fSearchInput' bind:confirm='fSearch' bind:clear='fSearchClear'>
+    <view class='recognize-btn' bind:tap='clickRecognize' wx:if="{{showRecognize}}" aria-role="button" aria-label="拍照识别">
+      <view class='iconfont icon-camera'></view>
+    </view>
+  </search-bar>
+
+  <view class='filter-btn {{filters_show ? "open" : (filters_count ? "active" : "")}}' bind:tap='fToggle' aria-role="button" aria-label="{{filters_count ? '筛选，已选 ' + filters_count + ' 项' : '筛选'}}">
+    <view class='iconfont icon-filtering'></view>
+    <view class='filter-count' wx:if="{{filters_count}}">{{filters_count}}</view>
   </view>
 </view>
 
-<!-- 点击过滤按钮出来的块 -->
-<view id='filter-block' style='height: {{heights.windowHeight - heights.filters}}px;' catchtouchmove="voidMove" hidden='{{!filters_show}}' bindtap='fHide'>
-  <!-- filter选择部分 -->
-  <view class='filters' catchtap='voidMove'>
-    <scroll-view class='f-column f-column-1 main' scroll-y='1'>
-      <view class='padding-block'></view>
-      <view class='item {{item.active? "active": ""}}' wx:for='{{filters}}' wx:key='name' bindtap='fClickMain' data-index='{{index}}'>
-        <text>{{item.name}}</text>
-        <view class='right-arrow iconfont icon-chevrons-right' wx:if='{{item.active}}'></view>
-      </view>
-    </scroll-view>
-    <scroll-view class='f-column f-column-3' scroll-y='1'>
-      <view class='padding-block'></view>
-      <view wx:for='{{filters[filters_sub].category}}' wx:key='name' data-index='{{index}}'>
-        <view class='item {{item.all_active? "active": ""}}' bindtap='fClickCategory' data-index='{{index}}'>{{item.name}}</view>
-        <view wx:for='{{item.items}}' wx:key='name' wx:for-index='innerindex' wx:for-item='inneritem' class='item {{inneritem.active? "active": ""}}' bindtap='fClickSub' data-index="{{index}}" data-innerindex="{{innerindex}}">{{inneritem.name}}</view>
-        <!-- 来一条分割线 -->
-        <view wx:if='{{index != (filters[filters_sub].category.length - 1)}}' class='divider'></view>
-      </view>
-    </scroll-view>
+<!-- 筛选：从筛选按钮下方展开的卡片。点蒙层或再点筛选按钮放弃本次修改，点「完成」才应用 -->
+<view class='filter-mask {{filters_show ? "show" : ""}}' bindtap='fCancel' catchtouchmove='voidMove'></view>
+<view class='filter-card {{filters_show ? "show" : ""}}' style='{{filterTop ? "--filter-top: " + filterTop + "px;" : ""}}' aria-hidden="{{!filters_show}}">
+  <!-- 分组标签：数字为该组已选项数 -->
+  <view class='filter-tabs'>
+    <view class='filter-tab {{filters_sub == index ? "active" : ""}}' wx:for='{{filters}}' wx:key='name' bindtap='fClickMain' data-index='{{index}}' aria-role="tab" aria-selected="{{filters_sub == index}}">
+      {{item.name}}<text class='filter-tab-count' wx:if='{{filters_tab_counts[index]}}'>{{filters_tab_counts[index]}}</text>
+    </view>
+    <view class='filter-tab-indicator' style='left: calc({{(filters_sub + 0.5) * 100 / filters.length}}% - 14rpx);'></view>
   </view>
-  <!-- 来一条分割线 -->
-  <view class='divider'  catchtap='voidMove'></view>
-  <!-- 按钮部分 -->
-  <view class='buttons'  catchtap='voidMove'>
-    <view class='btn' bindtap='fReset'>重 置</view>
-    <view class='btn {{filters_legal? "active": ""}}' bindtap='fComfirm'>完 成</view>
+
+  <scroll-view class='filter-body' scroll-y='1'>
+    <block wx:for='{{filters[filters_sub].category}}' wx:key='name' wx:for-item='cat' wx:for-index='ci'>
+      <!-- 第一项「全部 X」单独一行；校区把各校区放在同一行，选中后在下方展开区域 -->
+      <view class='filter-chip-row' wx:if='{{ci == 0}}'>
+        <view class='filter-chip {{cat.all_active ? "active" : ""}}' bindtap='fPick' data-cat='{{0}}' aria-role="button" aria-selected="{{cat.all_active}}">{{cat.name}}</view>
+        <block wx:if='{{filters[filters_sub].cateKey}}'>
+          <view wx:for='{{filters[filters_sub].category}}' wx:key='name' wx:for-item='campus' wx:for-index='ki' wx:if='{{ki > 0}}' class='filter-chip {{campus_on[ki] ? "active" : ""}}' bindtap='fPick' data-cat='{{ki}}' aria-role="button" aria-selected="{{campus_on[ki]}}">{{campus.name}}</view>
+        </block>
+        <block wx:elif='{{cat.items.length}}'>
+          <view wx:for='{{cat.items}}' wx:key='name' class='filter-chip {{item.active ? "active" : ""}}' bindtap='fPick' data-cat='{{0}}' data-item='{{index}}' aria-role="button" aria-selected="{{item.active}}">{{item.name}}</view>
+        </block>
+      </view>
+      <view class='filter-group' wx:elif='{{cat.items.length && (!filters[filters_sub].cateKey || campus_on[ci])}}'>
+        <view class='filter-group-title'>
+          <text>{{cat.name}}</text>
+          <text class='filter-group-hint' wx:if='{{filters[filters_sub].cateKey}}'>{{cat.all_active ? '不选区域即整个校区' : '已选部分区域'}}</text>
+        </view>
+        <view class='filter-chip-row'>
+          <view wx:for='{{cat.items}}' wx:key='name' class='filter-chip {{item.active ? "active" : ""}}' bindtap='fPick' data-cat='{{ci}}' data-item='{{index}}' aria-role="button" aria-selected="{{item.active}}">{{item.name}}</view>
+        </view>
+      </view>
+    </block>
+  </scroll-view>
+
+  <view class='filter-actions'>
+    <button class='form-button reset-button' bindtap='fResetPanel'>重置</button>
+    <button class='form-button primary' bindtap='fConfirm'>完成</button>
   </view>
 </view>
 
-<scroll-view enable-flex='1' class='cards' style='height: {{heights.windowHeight - heights.filters}}px;' scroll-y='true' enable-back-to-top='true' bindscrolltolower='onReachBottom' bindscroll='fScroll' lower-threshold='{{main_lower_threshold}}' scroll-top='{{targetScrollTop}}' scroll-with-animation='true'>
+<scroll-view enable-flex='1' class='cards' scroll-y='true' enable-back-to-top='true' bindscrolltolower='onReachBottom' bindscroll='{{nav.onScroll}}' bindtouchstart='{{nav.onTouchStart}}' bindtouchend='{{nav.onTouchEnd}}' bindtouchcancel='{{nav.onTouchEnd}}' data-m='{{navM}}' lower-threshold='{{main_lower_threshold}}' scroll-top='{{targetScrollTop}}' scroll-with-animation='true'>
+  <!-- 给浮动搜索栏让出位置 -->
+  <view class='search-spacer'></view>
   <!-- 校区外显筛选 -->
   <scroll-view class="h-filter-list h-filter-scroll" scroll-x="1" wx:if="{{filters[0].category.length > 1}}">
     <view class="h-filter-content">
@@ -65,9 +86,6 @@
 
   <block wx:for='{{cats}}' wx:key="_id">
     <view class='card {{expandedCatIndex === index ? "wide" : ""}}' id="card-{{index}}" bindtap='clickCatCard' bindlongpress='bindManageCat' data-cat_id='{{item._id}}' data-index='{{index}}'>
-      <view class='label' wx:if="{{item.mphoto_new}}">{{text_cfg.genealogy.new_photo_tip}}</view>
-      <!-- 展开时右上角"管理"按钮（仅管理员） -->
-      <view wx:if="{{expandedCatIndex === index && isManager}}" class="card-manage-btn" catchtap='clickManageBtn' data-cat_id='{{item._id}}'>管理</view>
       <view class='image {{item.to_star? "to_star": ""}}'>
         <image
           bindload="bindImageLoaded"
@@ -77,74 +95,81 @@
           class="{{expandedCatIndex === index && item.panDistance > 0 ? 'pan-animate' : 'mode-fill'}}"
           style="--pan-distance: {{item.panDistance || 0}}px; --pan-duration: {{item.panDuration || 6}}s;"
         ></image>
-        <view class='image-title' wx:if='{{!item.photo_count_best || item.photo_count_best === 0}}'>{{text_cfg.genealogy.no_photo_tip}}</view>
-        <view class='image-title' wx:else>{{item.photo.photo_id? (text_cfg.genealogy.photo_by_tip + (item.photo.photographer ||(item.photo.userInfo? item.photo.userInfo.nickName: text_cfg.genealogy.photo_by_unknow_tip))): text_cfg.genealogy.photo_loading_tip}}</view>
-      </view>
-      <view class='info' hover-class="hoverInfo">
-        <view class='line cat-heading'>
-          <view class="cat-heading-counts">
-          <view class='popularity'>
-            <view class='iconfont icon-fire primary'></view>
-            <text> {{item.popularity + (item.photo_count_total? item.photo_count_total * photoPopWeight: 0) }}</text>
-          </view>
-          <view class='comment' wx:if="{{item.comment_count}}">
-            <view class='iconfont icon-chat primary'></view>
-            <text> {{item.comment_count}}</text>
-          </view>
-          </view>
-          <view class="cat-name-group">
-          <text class='name'>{{item.name}}</text>
-          <block wx:if='{{item.gender}}'>
-            <image mode='aspectFill' class='gender' wx:if='{{item.gender === "公"}}' src="/pages/public/images/card/card/male.png"></image>
-            <image mode='aspectFill' class='gender' wx:if='{{item.gender === "母"}}' src="/pages/public/images/card/card/female.png"></image>
-          </block>
-          </view>
-          <view class="cat-status-rows" aria-label="{{cs.label(cs.list(item, 'list', text_cfg, adopt_desc))}}">
-            <view wx:for="{{cs.rows(item, 'list', text_cfg, adopt_desc)}}" wx:for-item="row" wx:key="key"
-                  class="cat-status-list cat-status-joined">
-              <view wx:for="{{row.items}}" wx:for-item="status" wx:key="key"
-                    class="tag-pill cat-status-tag status-{{status.tone}}"><text>{{status.text}}</text></view>
+        <!-- 新照片：左上角磨砂胶囊，点「详情相册」后消失 -->
+        <view class='photo-chip new-photo' wx:if="{{item.mphoto_new}}"><view class='new-dot'></view>{{text_cfg.genealogy.new_photo_tip}}<text class='new-photo-time' wx:if="{{item.mphoto_ago}}">· {{item.mphoto_ago}}</text></view>
+        <!-- 展开时右上角"管理"按钮（仅管理员） -->
+        <view wx:if="{{expandedCatIndex === index && isManager}}" class="photo-chip card-manage-btn" catchtap='clickManageBtn' data-cat_id='{{item._id}}'>管理</view>
+
+        <!-- 照片底部渐隐：名字 / 状态·花色·位置 / 拍摄者 -->
+        <view class='photo-overlay'>
+          <view class='overlay-head'>
+            <text class='name'>{{item.name}}</text>
+            <block wx:if='{{item.gender}}'>
+              <image mode='aspectFill' class='gender' wx:if='{{item.gender === "公"}}' src="/pages/public/images/card/card/male.png"></image>
+              <image mode='aspectFill' class='gender' wx:if='{{item.gender === "母"}}' src="/pages/public/images/card/card/female.png"></image>
+            </block>
+            <view class='overlay-counts'>
+              <view class='count'>
+                <view class='iconfont icon-fire'></view>
+                <text>{{item.popularity + (item.photo_count_total? item.photo_count_total * photoPopWeight: 0) }}</text>
+              </view>
+              <view class='count' wx:if="{{item.comment_count}}">
+                <view class='iconfont icon-chat'></view>
+                <text>{{item.comment_count}}</text>
+              </view>
             </view>
           </view>
+          <view class='overlay-chips'>
+            <view class="cat-status-rows" wx:if="{{cs.list(item, 'list', text_cfg, adopt_desc).length}}" aria-label="{{cs.label(cs.list(item, 'list', text_cfg, adopt_desc))}}">
+              <view wx:for="{{cs.rows(item, 'list', text_cfg, adopt_desc)}}" wx:for-item="row" wx:key="key"
+                    class="cat-status-list cat-status-joined">
+                <view wx:for="{{row.items}}" wx:for-item="status" wx:key="key"
+                      class="tag-pill cat-status-tag status-{{status.tone}}"><text>{{status.text}}</text></view>
+              </view>
+            </view>
+            <view class='overlay-chip' wx:if="{{item.colour}}">{{item.colour}}</view>
+            <view class='overlay-chip' wx:if="{{item.campus || item.area}}"><view class='iconfont icon-map-pin'></view>{{item.campus}}{{item.area}}</view>
+          </view>
+          <view class='overlay-credit' wx:if='{{!item.photo_count_best || item.photo_count_best === 0}}'>{{text_cfg.genealogy.no_photo_tip}}</view>
+          <view class='overlay-credit' wx:else>{{item.photo.photo_id? (text_cfg.genealogy.photo_by_tip + (item.photo.photographer ||(item.photo.userInfo? item.photo.userInfo.nickName: text_cfg.genealogy.photo_by_unknow_tip))): text_cfg.genealogy.photo_loading_tip}}</view>
         </view>
+      </view>
 
-        <view class='line' wx:if="{{item.rating}}">
-          <view class="stars">
+      <view class='info' hover-class="hoverInfo">
+        <view class='line' wx:if="{{item.birthday}}">
+          <view class='iconfont icon-clock'></view>
+          <text>{{item.birthday}}</text>
+        </view>
+        <view class='line' wx:if="{{item.traits_string}}">
+          <view class='iconfont icon-relation'></view>
+          <text>{{item.traits_string}}</text>
+        </view>
+        <view class='line' wx:if="{{item.habit}}">
+          <view class='iconfont icon-heart'></view>
+          <text>{{item.habit}}</text>
+        </view>
+        <!-- 底栏：左评分，右序号 -->
+        <view class='info-foot'>
+          <view class="stars" wx:if="{{item.rating}}">
             <view class="one-star {{item.rating.avgScore >= j+1 ? '' : 'gray'}}"  wx:for="*****" wx:key="*this" wx:for-item="y" wx:for-index="j">
               <image src="/pages/public/images/button/rating_star.svg" mode="aspectFill"/>
             </view>
             <view class="score">{{item.rating.avgScoreDisp || '0.0'}}</view>
           </view>
-        </view>
-        <view class='line' wx:if="{{item.birthday}}">
-          <view class='iconfont icon-clock gray'></view>
-          <text>{{item.birthday}}</text>
-        </view>
-        <view class='line'>
-          <view class='iconfont icon-relation gray'></view>
-          <text class="characteristics">{{item.characteristics_string}}</text>
-        </view>
-        <view class='line' wx:if="{{item.habit}}">
-          <view class='iconfont icon-heart gray'></view>
-          <text class="habit">{{item.habit}}</text>
-        </view>
-        <view class='line'>
-          <view class='iconfont icon-map-pin gray'></view>
-          <text>{{(item.campus + item.area) || '-'}}</text>
-          <view class='index'><text decode='true'>&lt; {{index+1}}/{{catsMax}} &gt;</text></view>
+          <view class='index'>{{index+1}} / {{catsMax}}</view>
         </view>
 
-        <!-- 展开时底部动作按钮：上传喵照（可选）/ 便利贴墙（可选）/ 详情相册（始终显示） -->
+        <!-- 展开时底部动作按钮：上传喵照（可选）/ 便利贴墙（可选）/ 详情相册（始终显示，主操作） -->
         <view wx:if="{{expandedCatIndex === index}}" class="card-action-row">
-          <view wx:if="{{canUpload}}" class="card-action-btn btn-upload" catchtap='clickUploadBtn' data-cat_id='{{item._id}}'>上传喵照</view>
-          <view wx:if="{{canComment}}" class="card-action-btn btn-comment" catchtap='clickCommentBtn' data-cat_id='{{item._id}}'>便利贴墙</view>
-          <view class="card-action-btn btn-detail" catchtap='clickDetailBtn' data-cat_id='{{item._id}}'>详情相册</view>
+          <button wx:if="{{canUpload}}" class="form-button card-action-btn" catchtap='clickUploadBtn' data-cat_id='{{item._id}}'>上传喵照</button>
+          <button wx:if="{{canComment}}" class="form-button card-action-btn" catchtap='clickCommentBtn' data-cat_id='{{item._id}}'>便利贴墙</button>
+          <button class="form-button primary card-action-btn" catchtap='clickDetailBtn' data-cat_id='{{item._id}}'>详情相册</button>
         </view>
       </view>
     </view>
     <view wx:if="{{adStep && (index+1)%adStep===0}}" class="card-ad {{ad_show['ad-'+(index+1)]? '': 'hidden'}}">
-      <ad unit-id="{{ad.banner}}" ad-intervals="120"
-      bindload="adLoad" binderror="adError" bindclose="adClose" data-ad_id='ad-{{(index+1)}}'></ad>
+      <ad-custom class="card-ad-inner" unit-id="{{ad.banner}}" ad-intervals="120"
+      bind:load="adLoad" bind:error="adError" data-ad_id='ad-{{(index+1)}}'></ad-custom>
     </view>
   </block>
 
@@ -155,7 +180,7 @@
     <image src='/pages/public/images/system/nomore.png'></image>
   </view>
   <!-- 底tab占位 -->
-  <view style="height: {{tabBarHeight}}px;"></view>
+  <view class="tab-bar-spacer"></view>
 </scroll-view>
 
 <!-- 漂浮的领养logo -->
@@ -185,4 +210,6 @@
       bind:cancelEvent="_cancelEvent"  
       bind:confirmEvent="_confirmEvent">
     </newsModal>
+</view>
+
 </view>

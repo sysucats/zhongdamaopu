@@ -255,7 +255,6 @@ Page({
   },
   onLoad: function () {
     this.loadData();
-    this.getHeights();
   },
   onReachBottom: function () {
     if (this.data.threadsActive != 1) {
@@ -377,19 +376,4 @@ Page({
     }
   },
 
-  // 开始计算各个东西高度
-  getHeights() {
-    wx.getSystemInfo({
-      success: res => {
-        // console.log(res);
-        this.setData({
-          "heights.threads": 35,
-          "heights.screenHeight": res.screenHeight,
-          "heights.windowHeight": res.windowHeight,
-          "heights.statusBarHeight": res.statusBarHeight,
-          "heights.rpx2px": res.windowWidth / 750,
-        });
-      }
-    });
-  },
 })

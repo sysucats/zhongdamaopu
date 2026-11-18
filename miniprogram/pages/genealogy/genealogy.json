@@ -1,6 +1,9 @@
 {
   "usingComponents": {
-    "newsModal": "/components/newsModal/newsModal"
+    "newsModal": "/components/newsModal/newsModal",
+    "search-bar": "/components/searchBar/searchBar"
   },
-  "disableScroll": true
+  "disableScroll": true,
+  "navigationStyle": "custom",
+  "navigationBarTextStyle": "black"
 }

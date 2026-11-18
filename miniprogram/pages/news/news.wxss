@@ -2,8 +2,8 @@
 @import "/pages/public/wxss/card.wxss";
 page {
   box-sizing: border-box;
-  padding: var(--space-md) var(--space-lg)
-    calc(var(--space-lg) + env(safe-area-inset-bottom));
+  /* 底部不留内边距：页尾的 .tab-bar-spacer 已让出 tabBar 和安全区，最后一张卡片自带 24rpx 下边距 */
+  padding: var(--space-md) var(--space-lg) 0;
   background: var(--color-gray-light);
 }
 

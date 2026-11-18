@@ -1,6 +1,7 @@
 @import "/pages/public/wxss/formControls.wxss";
 @import "../adminPage.wxss";
 @import "/pages/public/wxss/review.wxss";
+@import "/pages/public/wxss/hFilter.wxss";
 
 page {
   background: var(--color-gray-light);
@@ -54,23 +55,6 @@ page {
 
 .list-content {
   padding: 0 var(--space-lg) calc(var(--space-md) + env(safe-area-inset-bottom));
-}
-
-.search-field {
-  position: relative;
-}
-
-.search-input {
-  padding-left: var(--space-section);
-}
-
-.search-icon {
-  position: absolute;
-  top: 50%;
-  left: var(--space-sm);
-  color: var(--color-gray-max);
-  font-size: 32rpx;
-  transform: translateY(-50%);
 }
 
 .user-filters {
@@ -185,22 +169,6 @@ page {
 
 .manager-option.selected {
   background: var(--color-primary-bg);
-}
-
-.role-choices {
-  margin-top: 0;
-}
-
-.role-choice {
-  flex: 1;
-  min-width: 140rpx;
-  margin: 0;
-  padding: 12rpx 16rpx;
-  text-align: center;
-}
-
-.role-choice::after {
-  border: none;
 }
 
 .application-stats {

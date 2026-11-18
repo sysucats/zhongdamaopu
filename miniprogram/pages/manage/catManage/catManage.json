@@ -4,6 +4,7 @@
     "relation-tab": "/components/relationTab/relationTab",
     "medical-records": "/components/medicalRecords/medicalRecords",
     "cat-info-tab": "/components/catInfoTab/catInfoTab",
-    "no-auth": "/components/noAuth/noAuth"
+    "no-auth": "/components/noAuth/noAuth",
+    "search-bar": "/components/searchBar/searchBar"
   }
 }

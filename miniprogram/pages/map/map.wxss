@@ -23,6 +23,7 @@
 
 .map-container {
   width: 100%;
+  height: calc(100vh - var(--tab-bar-height));
   position: relative;
 }
 
