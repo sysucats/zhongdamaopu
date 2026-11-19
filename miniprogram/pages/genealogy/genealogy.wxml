@@ -126,11 +126,11 @@
               <view wx:for="{{cs.rows(item, 'list', text_cfg, adopt_desc)}}" wx:for-item="row" wx:key="key"
                     class="cat-status-list cat-status-joined">
                 <view wx:for="{{row.items}}" wx:for-item="status" wx:key="key"
-                      class="tag-pill cat-status-tag status-{{status.tone}}"><text>{{status.text}}</text></view>
+                      class="tag cat-status-tag status-{{status.tone}}"><text>{{status.text}}</text></view>
               </view>
             </view>
-            <view class='overlay-chip' wx:if="{{item.colour}}">{{item.colour}}</view>
-            <view class='overlay-chip' wx:if="{{item.campus || item.area}}"><view class='iconfont icon-map-pin'></view>{{item.campus}}{{item.area}}</view>
+            <view class='tag overlay-chip' wx:if="{{item.colour}}">{{item.colour}}</view>
+            <view class='tag overlay-chip' wx:if="{{item.campus || item.area}}"><view class='iconfont icon-map-pin'></view>{{item.campus}}{{item.area}}</view>
           </view>
           <view class='overlay-credit' wx:if='{{!item.photo_count_best || item.photo_count_best === 0}}'>{{text_cfg.genealogy.no_photo_tip}}</view>
           <view class='overlay-credit' wx:else>{{item.photo.photo_id? (text_cfg.genealogy.photo_by_tip + (item.photo.photographer ||(item.photo.userInfo? item.photo.userInfo.nickName: text_cfg.genealogy.photo_by_unknow_tip))): text_cfg.genealogy.photo_loading_tip}}</view>

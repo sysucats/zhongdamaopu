@@ -245,17 +245,14 @@ scroll-view {
 }
 
 /* 花色、位置：白色半透明胶囊 */
+/* 尺寸同猫猫状态，只换成玻璃底、沿用照片上的白字 */
 .overlay-chip {
-  display: flex;
-  align-items: center;
-  height: 40rpx;
-  padding: 0 16rpx;
-  border-radius: var(--radius-pill);
   background-color: var(--glass-light-bg);
   -webkit-backdrop-filter: blur(12rpx);
   backdrop-filter: blur(12rpx);
+  color: inherit;
   font-size: 22rpx;
-  box-sizing: border-box;
+  line-height: 1.4;
 }
 
 .overlay-chip .iconfont {

@@ -16,7 +16,7 @@
         <view class="review-subject-copy"><view class="review-name">{{item.cat_name}}</view><view class="review-location" wx:if="{{item.cat_campus || item.cat_area}}">{{item.cat_campus}} {{item.cat_area}}</view></view>
         <text class="iconfont icon-chevron-right review-chevron"></text>
       </view>
-      <view class="status-tag review-state status-{{item.status}}">{{statusDesc[item.status]}}</view>
+      <view class="tag review-state status-{{item.status}}">{{statusDesc[item.status]}}</view>
     </view>
     <view class="review-meta applicant-meta"><text>申请人：{{item.applicant_name}}</text><text>{{item.apply_time_formatted}}</text></view>
     <view class="review-bubble user-bubble"><text class="review-content" selectable="{{true}}">{{item.reason}}</text></view>

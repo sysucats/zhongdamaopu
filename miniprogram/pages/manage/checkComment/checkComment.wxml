@@ -44,7 +44,7 @@
   <block wx:else>
     <view class="admin-page-hint">展示已通过且未删除的便利贴，早期记录可能没有审核人和时间。</view>
     <view class="review-card" wx:for="{{historyList}}" wx:key="_id">
-      <view class="review-heading"><text class="review-object">{{item.cat.name || '猫猫已移除'}}{{item.cat.campus ? '（' + item.cat.campus + '）' : ''}}</text><text class="status-tag status-approved">通过</text></view>
+      <view class="review-heading"><text class="review-object">{{item.cat.name || '猫猫已移除'}}{{item.cat.campus ? '（' + item.cat.campus + '）' : ''}}</text><text class="tag status-approved">通过</text></view>
       <view class="review-meta"><text>{{item.userInfo.nickName || '未知用户'}}</text><text>审核人：{{item.managerInfo.nickName || '未知'}}</text><text>{{item.checkedAt}}</text></view>
       <view class="review-content"><text selectable="{{true}}">{{item.content}}</text></view>
       <view class="card-actions history-actions">

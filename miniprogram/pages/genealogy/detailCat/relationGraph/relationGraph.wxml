@@ -65,7 +65,7 @@
       <image class="sheet-card-avatar" src="{{item.avatar}}" mode="aspectFill"></image>
       <view class="sheet-card-info">
         <text class="sheet-card-name">{{item.name}}</text>
-        <view class="relation-tag">{{item.relation}}</view>
+        <view class="tag relation-tag">{{item.relation}}</view>
       </view>
     </view>
   </view>

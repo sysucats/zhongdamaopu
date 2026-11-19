@@ -59,7 +59,7 @@
         bindtouchstart="touchStart" bindtouchmove="touchMove" bindtouchend="touchEnd" bindtouchcancel="touchEnd"
         data-index="{{index}}" data-id="{{item._id}}" bindtap="tapRecord">
         <view class="record-header">
-          <view class="record-type">{{typeNames[item.type]}}</view>
+          <view class="tag record-type">{{typeNames[item.type]}}</view>
           <view class="record-date">{{item.record_date_formatted}}</view>
         </view>
         <view class="record-title">{{item.title}}</view>

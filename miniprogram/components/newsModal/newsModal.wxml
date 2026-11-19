@@ -4,7 +4,7 @@
     <image class="wx-modal-catlogo" mode='heightFix' src='/pages/public/images/news/cat.png'></image>
     <popup-header title="{{title}}" close-position="none" />
     <view class="wx-modal-row">
-      <view class='tag-pill wx-modal-class' wx:if="{{newsClass}}">{{ newsClass }}</view>
+      <view class='tag wx-modal-class' wx:if="{{newsClass}}">{{ newsClass }}</view>
       <view class='wx-modal-user'>{{ user }}</view>
       <view class='wx-modal-time'>{{ time }}</view>
     </view>

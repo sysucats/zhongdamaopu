@@ -88,7 +88,7 @@
             <view wx:for="{{cs.rows(item, 'recognize', text_cfg, adopt_desc)}}" wx:for-item="row" wx:key="key"
                   class="cat-status-list cat-status-joined">
               <view wx:for="{{row.items}}" wx:for-item="status" wx:key="key"
-                    class="tag-pill cat-status-tag status-{{status.tone}}"><text>{{status.text}}</text></view>
+                    class="tag cat-status-tag status-{{status.tone}}"><text>{{status.text}}</text></view>
             </view>
           </view>
         </view>

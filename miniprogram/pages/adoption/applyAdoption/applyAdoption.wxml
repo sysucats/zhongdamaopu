@@ -12,7 +12,7 @@
   <view class="form-section status-card" wx:if="{{existing}}">
     <view class="application-status-heading">
       <text class="status-label">你的申请状态</text>
-      <view class="status-tag {{existing.statusClass}}">{{existing.statusDesc}}</view>
+      <view class="tag {{existing.statusClass}}">{{existing.statusDesc}}</view>
     </view>
     <view class="status-line">申请时间：{{existing.apply_time_formatted}}</view>
     <view class="status-line" wx:if="{{existing.review_time_formatted}}">处理时间：{{existing.review_time_formatted}}</view>

@@ -106,7 +106,7 @@
           <view class="latest-events-list-summary">
             <block wx:if="{{stats.events && stats.events.length > 0}}">
               <view class="event-item">
-                <view class="status-tag event-type {{stats.events[0].className}}">{{stats.events[0].type}}</view>
+                <view class="tag event-type {{stats.events[0].className}}">{{stats.events[0].type}}</view>
                 <view class="event-cat-name">{{stats.events[0].name}}</view>
                 <view class="event-date">{{stats.events[0].date}}</view>
               </view>
@@ -301,7 +301,7 @@
     <popup-header slot="header" title="本月事件记录" bind:close="closeEventsPopup" />
      <view class="details-content">
         <view wx:for="{{stats.events}}" wx:key="index" class="event-item">
-          <view class="status-tag event-type {{item.className}}">{{item.type}}</view>
+          <view class="tag event-type {{item.className}}">{{item.type}}</view>
           <view class="event-cat-name">{{item.name}}</view>
           <view class="event-date">{{item.date}}</view>
         </view>
