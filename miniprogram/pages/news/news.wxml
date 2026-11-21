@@ -39,4 +39,4 @@
 </view>
 
 <!-- 底tab占位 -->
-<view style="height: {{tabBarHeight}}px;"></view>
+<view class="tab-bar-spacer"></view>

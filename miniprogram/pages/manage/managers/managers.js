@@ -191,6 +191,7 @@ Page({
   },
 
   onRoleChange(e) {
+    if (this.data.savingUser) return;
     this.changeUserDraft({ role: Number(e.currentTarget.dataset.role) });
   },
 

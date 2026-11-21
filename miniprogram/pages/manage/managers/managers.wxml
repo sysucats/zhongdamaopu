@@ -6,10 +6,7 @@
 
   <view class="management-panel" wx:if="{{currentTab === 'users'}}">
     <view class="form-section filter-section">
-      <view class="search-field">
-        <text class="iconfont icon-search search-icon"></text>
-        <input class="field-input search-input" placeholder="搜索用户" value="{{userSearch}}" maxlength="20" confirm-type="search" bindinput="fSearchInput" bindconfirm="fSearch" />
-      </view>
+      <search-bar variant="fill" placeholder="搜索用户" value="{{userSearch}}" bind:input="fSearchInput" bind:confirm="fSearch" bind:clear="fSearch"></search-bar>
       <checkbox-group class="user-filters" bindchange="filterChange">
         <label class="filter-choice"><checkbox value="manager-only" checked="{{managerOnly}}" color="var(--color-primary)" />只看管理员</label>
         <label class="filter-choice"><checkbox value="role1-only" checked="{{role1Only}}" color="var(--color-primary)" />只看特邀</label>
@@ -76,8 +73,8 @@
         </view>
         <view class="form-section">
           <view class="section-title">角色</view>
-          <view class="chip-row role-choices">
-            <button class="chip role-choice {{userDraft.role === index ? 'active' : ''}}" wx:for="{{role_types}}" wx:key="*this" data-role="{{index}}" bindtap="onRoleChange" disabled="{{savingUser}}">{{item}}</button>
+          <view class="chip-row">
+            <view class="h-filter-item {{userDraft.role === index ? 'active' : ''}}" wx:for="{{role_types}}" wx:key="*this" data-role="{{index}}" bindtap="onRoleChange" aria-role="button" aria-label="{{item}}">{{item}}</view>
           </view>
         </view>
       </view>

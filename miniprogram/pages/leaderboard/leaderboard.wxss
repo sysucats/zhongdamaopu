@@ -6,39 +6,49 @@ page {
   background: var(--color-gray-light);
 }
 
+/* 榜单区高度 = 窗口 - 频道栏 - tabBar；swiper 必须给定高度才能滑动 */
+page {
+  --thread-list-height: 42px;
+}
+
+.rank-swiper {
+  height: calc(100vh - var(--thread-list-height) - var(--tab-bar-height));
+}
+
 .thread-list {
+  position: relative;
   display: flex;
-  justify-content: space-around;
-  padding: 10rpx 100rpx 0 100rpx;
-  overflow: hidden;
+  height: var(--thread-list-height);
   background-color: var(--color-surface);
+  border-bottom: 1rpx solid var(--color-gray-normal);
   box-sizing: border-box;
-  box-shadow: 0rpx 0rpx 10rpx var(--color-gray);
 }
 
+/* 四格平分整行；选中加粗变黑 */
 .thread-item {
-  display: inline-flex;
-  flex-direction: column;
+  flex: 1;
+  display: flex;
   align-items: center;
-}
-
-.thread-item-name {
-  font-size: 28rpx;
+  justify-content: center;
   color: var(--color-gray-max);
+  font-size: 28rpx;
+  transition: color 200ms ease;
 }
 
-.thread-item-bar {
-  width: 100rpx;
-  height: 4rpx;
-  border-radius: 10rpx;
-}
-
-.thread-item.active .thread-item-bar {
-  background-color: var(--color-primary);
-}
-
-.thread-item.active .thread-item-name {
+.thread-item.active {
   color: var(--color-black-light);
+  font-weight: 600;
+}
+
+/* 共用一根短指示条，切换时滑到对应格 */
+.thread-indicator {
+  position: absolute;
+  bottom: 8rpx;
+  width: 28rpx;
+  height: 6rpx;
+  border-radius: 6rpx;
+  background-color: var(--color-primary-dark);
+  transition: left 300ms cubic-bezier(.3, .7, .2, 1);
 }
 
 /* 左右滑动的频道内容 */

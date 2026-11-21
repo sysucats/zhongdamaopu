@@ -28,6 +28,7 @@ Component({
    */
   data: {
     focusSearch: false,
+    filters_input: '',
 
     text_cfg: config.text,
 
