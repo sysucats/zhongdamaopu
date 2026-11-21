@@ -54,7 +54,8 @@ scroll-view {
 }
 
 .card.wide {
-  z-index: 100;
+  /* 只压住相邻卡片（1）；根节点 fixed 浮层为 50~63，滑动时不能被展开卡片盖过 */
+  z-index: 2;
   width: 700rpx;
   /* 展开后浮起一层 */
   box-shadow: var(--shadow-float);
@@ -75,6 +76,20 @@ scroll-view {
 
 .card.wide view.image {
   height: 500rpx;
+}
+
+/* 无封面照片：暖色插画铺满占位区（aspectFill），文字压在底部渐隐层上 */
+.card view.image.no-photo {
+  height: 240rpx;
+  background-image: none;
+}
+
+.card view.image.no-photo .no-cover-art {
+  height: 100%;
+}
+
+.card view.image.no-photo .photo-overlay {
+  padding-top: 28rpx;
 }
 
 .card view.image > image {
@@ -153,7 +168,7 @@ scroll-view {
 }
 
 .photo-chip.card-manage-btn:active {
-  background-color: rgba(20, 18, 12, 0.56);
+  background-color: var(--glass-dark-bg-active);
 }
 
 /* 照片底部渐隐：名字、状态胶囊、拍摄者压在上面 */
@@ -167,7 +182,7 @@ scroll-view {
   flex-direction: column;
   gap: 12rpx;
   padding: 92rpx 28rpx 20rpx;
-  background: linear-gradient(to top, rgba(0, 0, 0, 0.66) 0%, rgba(0, 0, 0, 0.35) 55%, rgba(0, 0, 0, 0) 100%);
+  background: var(--grad-photo-overlay);
   color: var(--color-text-inverse);
 }
 
@@ -236,7 +251,7 @@ scroll-view {
   height: 40rpx;
   padding: 0 16rpx;
   border-radius: var(--radius-pill);
-  background-color: rgba(255, 255, 255, 0.2);
+  background-color: var(--glass-light-bg);
   -webkit-backdrop-filter: blur(12rpx);
   backdrop-filter: blur(12rpx);
   font-size: 22rpx;
@@ -250,7 +265,7 @@ scroll-view {
 }
 
 .overlay-credit {
-  color: rgba(255, 255, 255, 0.65);
+  color: var(--color-text-inverse-secondary);
   font-size: 20rpx;
 }
 
@@ -294,6 +309,12 @@ scroll-view {
   min-height: 36rpx;
   padding-top: 18rpx;
   border-top: 1rpx solid var(--color-gray-normal);
+}
+
+/* 上方没有生日/特征/性格行时，分割线与上留白都多余，底栏直接展示页码 */
+.info-foot.no-detail {
+  padding-top: 0;
+  border-top: none;
 }
 
 .info-foot .index {
@@ -511,7 +532,7 @@ scroll-view {
   right: 0;
   bottom: 0;
   z-index: 60;
-  background-color: rgba(0, 0, 0, 0.35);
+  background-color: var(--color-mask);
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.25s ease;

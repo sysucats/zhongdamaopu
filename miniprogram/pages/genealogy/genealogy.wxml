@@ -86,7 +86,9 @@
 
   <block wx:for='{{cats}}' wx:key="_id">
     <view class='card {{expandedCatIndex === index ? "wide" : ""}}' id="card-{{index}}" bindtap='clickCatCard' bindlongpress='bindManageCat' data-cat_id='{{item._id}}' data-index='{{index}}'>
-      <view class='image {{item.to_star? "to_star": ""}}'>
+      <view class='image {{item.to_star? "to_star": ""}} {{!item.photo_count_best ? "no-photo" : ""}}'>
+        <!-- 无封面：暖色插画铺满占位区，有照片的猫不渲染 -->
+        <image wx:if='{{!item.photo_count_best}}' class='no-cover-art' src='/pages/public/images/card/no_cover.jpg' mode='aspectFill'></image>
         <image
           bindload="bindImageLoaded"
           mode='{{expandedCatIndex === index && item.panDistance > 0 ? "widthFix" : "aspectFill"}}'
@@ -148,8 +150,8 @@
           <view class='iconfont icon-heart'></view>
           <text>{{item.habit}}</text>
         </view>
-        <!-- 底栏：左评分，右序号 -->
-        <view class='info-foot'>
+        <!-- 上方无任何信息行时去掉分割线与上留白，只留底栏页码 -->
+        <view class='info-foot {{(item.birthday || item.traits_string || item.habit) ? "" : "no-detail"}}'>
           <view class="stars" wx:if="{{item.rating}}">
             <view class="one-star {{item.rating.avgScore >= j+1 ? '' : 'gray'}}"  wx:for="*****" wx:key="*this" wx:for-item="y" wx:for-index="j">
               <image src="/pages/public/images/button/rating_star.svg" mode="aspectFill"/>
