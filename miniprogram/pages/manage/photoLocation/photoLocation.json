@@ -1,0 +1,7 @@
+{
+  "usingComponents": {
+    "no-auth": "/components/noAuth/noAuth"
+  },
+  "navigationBarTitleText": "定位体检",
+  "enablePullDownRefresh": true
+}

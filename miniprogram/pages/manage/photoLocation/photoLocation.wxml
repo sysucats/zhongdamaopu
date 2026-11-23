@@ -1,0 +1,172 @@
+<!-- 地图选点打开时禁用页面滚动 -->
+<page-meta page-style="{{pageMetaStyle}}"></page-meta>
+
+<block wx:if="{{auth}}">
+  <view class="loc-hint">
+    喵地图只认「已过审 + 有经纬度」的照片，每只猫只用<b>拍摄日期最新</b>的那张当标记位置，其余只算轨迹点。锚点错了，猫的位置就整个跳走。
+  </view>
+
+  <view class="loc-stat">
+    <view class="stat-cell">
+      <view class="stat-num">{{stat.cats}}</view>
+      <view class="stat-label">只猫</view>
+    </view>
+    <view class="stat-cell">
+      <view class="stat-num">{{stat.photos}}</view>
+      <view class="stat-label">张有定位</view>
+    </view>
+    <view class="stat-cell {{stat.suspect ? 'bad' : 'ok'}}">
+      <view class="stat-num">{{stat.suspect}}</view>
+      <view class="stat-label">处可疑</view>
+    </view>
+    <view class="stat-cell {{stat.missing ? 'warn' : 'ok'}}">
+      <view class="stat-num">{{stat.missing}}</view>
+      <view class="stat-label">张缺定位</view>
+    </view>
+  </view>
+
+  <view class="loc-tip" wx:if="{{!campusCount}}">没有读到校区中心坐标，暂时跳过「不在任何校区范围内」这一项判断。</view>
+  <view class="loc-tip" wx:if="{{truncated}}">照片超过 {{maxShown}} 张，只体检了最近的一部分。</view>
+  <view class="loc-tip" wx:if="{{renderTruncated}}">列表太长，只渲染了一部分。切到「只看可疑」能看全所有问题点。</view>
+
+  <view class="search-wrap">
+    <view class="search-box">
+      <view class="search-glyph"></view>
+      <input class="search-input" value="{{keywordInput}}" placeholder="搜猫名或校区" placeholder-class="search-ph"
+        confirm-type="search" bindinput="onKeywordInput" />
+      <view class="search-clear" wx:if="{{keywordInput}}" bindtap="clearKeyword">×</view>
+    </view>
+  </view>
+
+  <view class="admin-segments">
+    <view class="admin-segment {{mode === 'suspect' ? 'active' : ''}}" data-mode="suspect" bindtap="switchMode">可疑 {{stat.suspect}}</view>
+    <view class="admin-segment {{mode === 'all' ? 'active' : ''}}" data-mode="all" bindtap="switchMode">全部 {{stat.photos}}</view>
+    <view class="admin-segment {{mode === 'missing' ? 'active' : ''}}" data-mode="missing" bindtap="switchMode">缺定位 {{stat.missing}}</view>
+  </view>
+
+  <!-- ============ 缺定位：已过审但没写坐标，地图上永远看不到 ============ -->
+  <block wx:if="{{mode === 'missing'}}">
+    <view class="loc-empty" wx:if="{{loading}}">加载中...</view>
+    <view class="loc-empty" wx:elif="{{!missingGroups.length}}">
+      <block wx:if="{{keyword}}">没有匹配「{{keyword}}」的猫猫。</block>
+      <block wx:else>所有已过审的照片都带定位，地图上没有漏掉的照片。</block>
+    </view>
+
+    <view class="missing-note" wx:if="{{missingGroups.length}}">
+      这些照片已经过审，但没有坐标，所以不会出现在喵地图上。如果是近期那张，补上位置后这只猫的标记就会更新。
+    </view>
+
+    <block wx:for="{{missingGroups}}" wx:for-item="g" wx:key="cat_id">
+      <view class="loc-card">
+        <view class="card-head">
+          <view class="card-title">{{g.cat_name}}</view>
+          <view class="card-count warn">{{g.total}} 张缺定位</view>
+        </view>
+        <view class="card-sub">{{g.subtitle}}</view>
+
+        <view class="point-row" wx:for="{{g.points}}" wx:for-item="p" wx:key="_id">
+          <image wx:if="{{p.thumb && !p.thumbBad}}" class="point-thumb" src="{{p.thumb}}" mode="aspectFill" lazy-load
+            data-src="{{p.thumb}}" data-id="{{p._id}}" bindtap="previewPhoto" binderror="onThumbError"></image>
+          <view wx:else class="point-thumb point-thumb-empty" data-id="{{p._id}}">
+            <text class="thumb-empty-text">{{p.thumbBad ? '图打不开' : '无图'}}</text>
+          </view>
+          <view class="point-main">
+            <view class="point-top">
+              <text class="point-date">{{p.date}}</text>
+            </view>
+            <view class="point-coord">{{p.photographer ? '摄影：' + p.photographer : '没有坐标'}}</view>
+          </view>
+          <view class="point-actions">
+            <button class="mini-btn primary" data-id="{{p._id}}" data-cat="{{g.cat_id}}" data-from="missing"
+              bindtap="fixLocation">补位置</button>
+          </view>
+        </view>
+      </view>
+    </block>
+  </block>
+
+  <!-- ============ 有定位：可疑 / 全部 ============ -->
+  <block wx:else>
+    <view class="loc-empty" wx:if="{{loading}}">加载中...</view>
+    <view class="loc-empty" wx:elif="{{!viewGroups.length}}">
+      <block wx:if="{{keyword}}">没有匹配「{{keyword}}」的猫猫。</block>
+      <block wx:elif="{{mode === 'suspect'}}">没有发现可疑定位，地图上的点都在合理范围内。</block>
+      <block wx:else>还没有带定位的照片。</block>
+    </view>
+
+    <block wx:for="{{viewGroups}}" wx:for-item="g" wx:key="cat_id">
+      <view class="loc-card">
+        <view class="card-head">
+          <view class="card-title">{{g.cat_name}}</view>
+          <view class="card-count {{g.suspectCount ? 'bad' : 'ok'}}">{{g.suspectCount ? g.suspectCount + ' 可疑 / ' : ''}}{{g.total}} 张</view>
+        </view>
+        <view class="card-sub">{{g.subtitle}}</view>
+        <view class="anchor-row {{g.anchorSuspect ? 'is-bad' : ''}}" wx:if="{{g.anchorDate}}">
+          地图位置取 {{g.anchorDate}} 那张{{g.anchorSuspect ? '，这张已标可疑' : ''}}
+        </view>
+
+        <view class="point-row {{p.suspect ? 'is-bad' : ''}}" wx:for="{{g.points}}" wx:for-item="p" wx:key="_id">
+          <image wx:if="{{p.thumb && !p.thumbBad}}" class="point-thumb" src="{{p.thumb}}" mode="aspectFill" lazy-load
+            data-src="{{p.thumb}}" data-id="{{p._id}}" bindtap="previewPhoto" binderror="onThumbError"></image>
+          <view wx:else class="point-thumb point-thumb-empty" data-id="{{p._id}}">
+            <text class="thumb-empty-text">{{p.thumbBad ? '图打不开' : '无图'}}</text>
+          </view>
+          <view class="point-main">
+            <view class="point-top">
+              <text class="point-date">{{p.date}}</text>
+              <text class="point-dist" wx:if="{{p.distText}}">偏离 {{p.distText}}</text>
+            </view>
+            <view class="point-coord">{{p.coordText}}</view>
+            <view class="point-tags" wx:if="{{p.isAnchor || p.tags.length}}">
+              <text wx:if="{{p.isAnchor}}" class="tag anchor">决定地图位置</text>
+              <text wx:for="{{p.tags}}" wx:for-item="t" wx:key="text" class="tag {{t.kind}}">{{t.text}}</text>
+            </view>
+            <view class="snap-line" wx:if="{{p.suspect}}" data-id="{{p._id}}" data-cat="{{g.cat_id}}" bindtap="snapToCenter">
+              挪到这只猫其它照片的中心 ›
+            </view>
+          </view>
+          <view class="point-actions">
+            <button class="mini-btn primary" data-id="{{p._id}}" data-cat="{{g.cat_id}}" data-lat="{{p.latitude}}" data-lng="{{p.longitude}}" bindtap="fixLocation">修正</button>
+            <button class="mini-btn danger" data-id="{{p._id}}" data-cat="{{g.cat_id}}" bindtap="clearLocation">清除</button>
+          </view>
+        </view>
+      </view>
+    </block>
+  </block>
+</block>
+
+<no-auth wx:else tip-text="{{tipText}}" tip-btn="{{tipBtn}}" />
+
+<!-- 地图选点浮层：与 addPhoto 的选点交互保持一致，拖地图 + 准星取中心 -->
+<map
+  wx:if="{{mapPickerVisible}}"
+  id="photoLocationPicker"
+  class="picker-map"
+  latitude="{{mapPickerInitLat}}"
+  longitude="{{mapPickerInitLng}}"
+  scale="{{mapPickerScale}}"
+  min-scale="3"
+  max-scale="20"
+  enable-zoom="{{true}}"
+  enable-scroll="{{true}}"
+  bindregionchange="onMapRegionChange"
+  show-location="{{false}}"
+>
+  <cover-view class="picker-crosshair">
+    <cover-view class="crosshair-v"></cover-view>
+    <cover-view class="crosshair-h"></cover-view>
+  </cover-view>
+  <cover-view class="picker-zoom-bar">
+    <cover-view class="zoom-btn" bindtap="zoomMapIn">+</cover-view>
+    <cover-view class="zoom-divider"></cover-view>
+    <cover-view class="zoom-btn" bindtap="zoomMapOut">−</cover-view>
+  </cover-view>
+  <cover-view class="picker-bottom-bar">
+    <cover-view class="picker-title">选择照片拍摄位置</cover-view>
+    <cover-view class="picker-hint">拖动地图，将准星对准这张照片实际拍摄的位置</cover-view>
+    <cover-view class="picker-actions">
+      <cover-view class="picker-btn" bindtap="cancelMapPicker">取消</cover-view>
+      <cover-view class="picker-btn primary" bindtap="confirmMapPicker">{{mapPickerConfirming ? '确认中…' : '确定位置'}}</cover-view>
+    </cover-view>
+  </cover-view>
+</map>

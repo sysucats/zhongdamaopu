@@ -1,0 +1,488 @@
+@import "../adminPage.wxss";
+
+page {
+  width: 750rpx;
+  padding: 35rpx 35rpx 120rpx 35rpx;
+  box-sizing: border-box;
+  background: var(--color-gray-light);
+}
+
+.loc-hint {
+  margin-bottom: var(--space-md);
+  padding: 0 4rpx;
+  color: var(--color-gray-max);
+  font-size: 24rpx;
+  line-height: 1.6;
+}
+
+.loc-hint b {
+  color: var(--color-black-light);
+  font-weight: 600;
+}
+
+/* 顶部四项统计 */
+.loc-stat {
+  display: flex;
+  align-items: center;
+  margin-bottom: var(--space-sm);
+  padding: var(--space-sm) 0;
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+}
+
+.stat-cell {
+  flex: 1;
+  min-width: 0;
+  text-align: center;
+}
+
+.stat-cell + .stat-cell {
+  border-left: 1rpx solid var(--color-gray-light);
+}
+
+.stat-num {
+  color: var(--color-black-light);
+  font-size: 40rpx;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.stat-cell.bad .stat-num {
+  color: var(--color-red);
+}
+
+.stat-cell.ok .stat-num {
+  color: var(--color-primary);
+}
+
+.stat-cell.warn .stat-num {
+  color: #b08a52;
+}
+
+.stat-label {
+  margin-top: 4rpx;
+  color: var(--color-gray-max);
+  font-size: 21rpx;
+}
+
+.loc-tip {
+  margin-bottom: var(--space-xs);
+  padding: 0 4rpx;
+  color: #b08a52;
+  font-size: 22rpx;
+  line-height: 1.5;
+}
+
+.loc-empty {
+  padding: 80rpx 0;
+  color: var(--color-gray-max);
+  font-size: 26rpx;
+  text-align: center;
+}
+
+/* 搜索 */
+.search-wrap {
+  margin-top: var(--space-md);
+}
+
+.search-box {
+  display: flex;
+  align-items: center;
+  gap: 14rpx;
+  height: 72rpx;
+  padding: 0 24rpx;
+  border-radius: var(--radius-pill);
+  background: var(--color-surface);
+}
+
+.search-glyph {
+  position: relative;
+  flex-shrink: 0;
+  width: 22rpx;
+  height: 22rpx;
+  border: 3rpx solid #bdbdbd;
+  border-radius: 50%;
+}
+
+.search-glyph::after {
+  content: "";
+  position: absolute;
+  right: -9rpx;
+  bottom: -7rpx;
+  width: 13rpx;
+  height: 3rpx;
+  background: #bdbdbd;
+  border-radius: 2rpx;
+  transform: rotate(45deg);
+}
+
+.search-input {
+  flex: 1;
+  min-width: 0;
+  height: 72rpx;
+  color: var(--color-black-light);
+  font-size: 26rpx;
+}
+
+.search-ph {
+  color: #b5b5b5;
+}
+
+.search-clear {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 40rpx;
+  height: 40rpx;
+  border-radius: 50%;
+  background: var(--color-gray-light);
+  color: #999;
+  font-size: 26rpx;
+  line-height: 1;
+}
+
+/* 猫咪分组卡片 */
+.loc-card {
+  margin-top: var(--space-md);
+  padding: var(--space-md) var(--space-md) var(--space-xs);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+}
+
+.card-head {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.card-title {
+  flex: 1;
+  min-width: 0;
+  color: var(--color-black-light);
+  font-size: 30rpx;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.card-count {
+  flex-shrink: 0;
+  padding: 2rpx 14rpx;
+  border-radius: var(--radius-pill);
+  font-size: 22rpx;
+  font-weight: 600;
+}
+
+.card-count.bad {
+  background: #fdecec;
+  color: var(--color-red);
+}
+
+.card-count.ok {
+  background: #eef6e9;
+  color: var(--color-primary-text);
+}
+
+.card-count.warn {
+  background: #fdf8ef;
+  color: #8a6a35;
+}
+
+.card-sub {
+  margin-top: 4rpx;
+  color: var(--color-gray-max);
+  font-size: 22rpx;
+  line-height: 1.5;
+}
+
+/* 锚点说明：这一行决定猫在哪儿 */
+.anchor-row {
+  margin-top: 4rpx;
+  color: var(--color-gray-max);
+  font-size: 21rpx;
+  line-height: 1.5;
+}
+
+.anchor-row.is-bad {
+  color: var(--color-red);
+  font-weight: 500;
+}
+
+.missing-note {
+  margin-top: var(--space-md);
+  padding: 16rpx 20rpx;
+  border-radius: var(--radius-md);
+  background: #fdf8ef;
+  color: #8a6a35;
+  font-size: 22rpx;
+  line-height: 1.55;
+}
+
+/* 单张照片 */
+.point-row {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-sm);
+  padding: var(--space-sm) 0;
+  border-top: 1rpx solid var(--color-gray-light);
+  margin-top: var(--space-sm);
+}
+
+.point-thumb {
+  flex-shrink: 0;
+  width: 96rpx;
+  height: 96rpx;
+  border-radius: 12rpx;
+  background: var(--color-gray-light);
+}
+
+.point-row.is-bad .point-thumb {
+  box-shadow: 0 0 0 2rpx #f5cdcd;
+}
+
+/* 没有图 / 图签不出来：灰底 + 一行小字，别让它看起来像「一直在加载」 */
+.point-thumb-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+}
+
+.thumb-empty-text {
+  font-size: 18rpx;
+  line-height: 1.2;
+  color: var(--color-gray-max);
+  text-align: center;
+}
+
+.point-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.point-top {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-xs);
+}
+
+.point-date {
+  color: var(--color-black-light);
+  font-size: 26rpx;
+  font-weight: 500;
+}
+
+.point-dist {
+  color: var(--color-gray-max);
+  font-size: 21rpx;
+}
+
+.point-coord {
+  margin-top: 2rpx;
+  color: var(--color-gray-max);
+  font-size: 21rpx;
+  font-family: ui-monospace, Menlo, monospace;
+  overflow-wrap: anywhere;
+}
+
+.point-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8rpx;
+  margin-top: 8rpx;
+}
+
+.tag {
+  padding: 2rpx 12rpx;
+  border-radius: var(--radius-pill);
+  font-size: 20rpx;
+  line-height: 1.6;
+}
+
+/* 锚点用中性灰，避免绿色被误读成「这张没问题」 */
+.tag.anchor {
+  background: var(--color-gray-normal);
+  color: #555;
+}
+
+.tag.danger {
+  background: #fdecec;
+  color: var(--color-red-dark);
+}
+
+.tag.warn {
+  background: #fdf8ef;
+  color: #8a6a35;
+}
+
+/* 可疑行的快捷归位 */
+.snap-line {
+  display: inline-block;
+  margin-top: 10rpx;
+  color: var(--color-primary-text);
+  font-size: 22rpx;
+  line-height: 1.4;
+}
+
+.point-actions {
+  display: flex;
+  flex-shrink: 0;
+  flex-direction: column;
+  gap: 8rpx;
+}
+
+.mini-btn {
+  min-width: 108rpx;
+  margin: 0;
+  padding: 0 var(--space-sm);
+  height: 52rpx;
+  line-height: 52rpx;
+  border: 1rpx solid var(--color-gray-normal);
+  border-radius: var(--radius-pill);
+  background: var(--color-surface);
+  color: var(--color-black-light);
+  font-size: 22rpx;
+  font-weight: 500;
+}
+
+.mini-btn.primary {
+  border-color: transparent;
+  background: var(--color-primary);
+  color: #fff;
+}
+
+.mini-btn.danger {
+  border-color: #f5cdcd;
+  color: var(--color-red-dark);
+}
+
+.mini-btn::after {
+  border: none;
+}
+
+/* ========== 地图选点浮层（与 addPhoto 保持一致） ========== */
+.picker-map {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1000;
+}
+
+.picker-crosshair {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  margin-left: -30rpx;
+  margin-top: -30rpx;
+  width: 60rpx;
+  height: 60rpx;
+  pointer-events: none;
+}
+
+.crosshair-v {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  width: 4rpx;
+  height: 100%;
+  background: var(--color-primary);
+  margin-left: -2rpx;
+  border-radius: 2rpx;
+}
+
+.crosshair-h {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  height: 4rpx;
+  width: 100%;
+  background: var(--color-primary);
+  margin-top: -2rpx;
+  border-radius: 2rpx;
+}
+
+.picker-zoom-bar {
+  position: fixed;
+  right: var(--space-md);
+  top: 50%;
+  margin-top: -80rpx;
+  width: 88rpx;
+  background: var(--color-surface);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-card);
+  overflow: hidden;
+}
+
+.zoom-btn {
+  width: 88rpx;
+  height: 88rpx;
+  line-height: 88rpx;
+  text-align: center;
+  font-size: 40rpx;
+  font-weight: 300;
+  color: var(--color-black-min);
+  background: transparent;
+}
+
+.zoom-divider {
+  width: 52rpx;
+  height: 1rpx;
+  background: var(--color-gray-normal);
+  margin: 0 auto;
+}
+
+.picker-bottom-bar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  box-sizing: border-box;
+  width: 100%;
+  padding: var(--space-md) var(--space-lg)
+    calc(var(--space-md) + env(safe-area-inset-bottom));
+  border-top-left-radius: var(--radius-xl);
+  border-top-right-radius: var(--radius-xl);
+  background: var(--color-surface);
+}
+
+.picker-title {
+  color: var(--color-black-light);
+  font-size: 30rpx;
+  font-weight: 600;
+  line-height: 44rpx;
+}
+
+.picker-hint {
+  margin-top: var(--space-xs);
+  color: var(--color-gray-max);
+  font-size: 24rpx;
+  line-height: 36rpx;
+}
+
+.picker-actions {
+  display: flex;
+  margin-top: var(--space-md);
+}
+
+.picker-btn {
+  flex: 1;
+  height: 88rpx;
+  border-radius: var(--radius-pill);
+  background: var(--color-gray-normal);
+  color: var(--color-black-light);
+  font-size: 29rpx;
+  line-height: 88rpx;
+  text-align: center;
+}
+
+.picker-btn + .picker-btn {
+  margin-left: var(--space-sm);
+}
+
+.picker-btn.primary {
+  background: var(--color-primary);
+  color: var(--color-text-onPrimary);
+}
