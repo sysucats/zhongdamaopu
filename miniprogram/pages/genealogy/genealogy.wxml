@@ -22,6 +22,11 @@
     </view>
   </search-bar>
 
+  <!-- 排序：与筛选同款圆形按钮，生效时高亮 -->
+  <view class='sort-btn {{sort_show ? "open" : (sort_key != "default" ? "active" : "")}}' bind:tap='sToggle' aria-role="button" aria-label="排序，当前：{{sort_name}}">
+    <view class='sort-glyph'></view>
+  </view>
+
   <view class='filter-btn {{filters_show ? "open" : (filters_count ? "active" : "")}}' bind:tap='fToggle' aria-role="button" aria-label="{{filters_count ? '筛选，已选 ' + filters_count + ' 项' : '筛选'}}">
     <view class='iconfont icon-filtering'></view>
     <view class='filter-count' wx:if="{{filters_count}}">{{filters_count}}</view>
@@ -66,6 +71,26 @@
   <view class='filter-actions'>
     <button class='form-button reset-button' bindtap='fResetPanel'>重置</button>
     <button class='form-button primary' bindtap='fConfirm'>完成</button>
+  </view>
+</view>
+
+<!-- 排序：与筛选同一套展开/收起动作，单选，点「完成」才生效 -->
+<view class='filter-mask {{sort_show ? "show" : ""}}' bindtap='sCancel' catchtouchmove='voidMove'></view>
+<view class='filter-card sort-card {{sort_show ? "show" : ""}}' style='{{filterTop ? "--filter-top: " + filterTop + "px;" : ""}}' aria-hidden="{{!sort_show}}">
+  <view class='sort-title'>排序方式</view>
+  <view class='sort-list'>
+    <view class='sort-item {{sort_pick == item.key ? "active" : ""}}' wx:for='{{sorts}}' wx:key='name' bindtap='sPick' data-key='{{item.key}}' aria-role="radio" aria-checked="{{sort_pick == item.key}}">
+      <view class='sort-item-text'>
+        <text class='sort-item-name'>{{item.name}}</text>
+        <text class='sort-item-hint'>{{item.hint}}</text>
+      </view>
+      <view class='iconfont icon-check sort-item-check'></view>
+    </view>
+  </view>
+
+  <view class='filter-actions'>
+    <button class='form-button reset-button' bindtap='sReset'>重置</button>
+    <button class='form-button primary' bindtap='sConfirm'>完成</button>
   </view>
 </view>
 

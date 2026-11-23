@@ -467,8 +467,9 @@ scroll-view {
   line-height: 1;
 }
 
-/* 筛选：圆形按钮；生效时浅黄底黄描边，角标显示已筛项数 */
-.filter-btn {
+/* 筛选 / 排序：同一套圆形玻璃按钮；生效时浅黄底黄描边，筛选另有已筛项数角标 */
+.filter-btn,
+.sort-btn {
   position: relative;
   flex-shrink: 0;
   display: flex;
@@ -493,14 +494,55 @@ scroll-view {
   transform: translateX(4rpx);
 }
 
+/* 排序图标：双箭头 SVG 走 mask，颜色由 background-color: currentColor 决定，
+   这样 .open / .active 状态下和漏斗一样跟着变绿；转 PNG 就没法改色了。
+   取 36rpx 是为了跟 38rpx 的漏斗字形视觉等重（SVG 内容铺满 viewBox，实际占位偏大，不能直接照抄字号） */
+.sort-btn .sort-glyph {
+  width: 36rpx;
+  height: 36rpx;
+  background-color: currentColor;
+  -webkit-mask-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDI0IDEwMjQiPjxwYXRoIGQ9Ik0xNTYuMzkyNzI3IDY1Ni41MjM2MzZhNDMuNTIgNDMuNTIgMCAwIDEgNjEuMjA3MjczIDcuMjE0NTQ2bDExMy4xMDU0NTUgMTQ0LjA1ODE4MlY5MC4yOTgxODJhNDMuNzUyNzI3IDQzLjc1MjcyNyAwIDEgMSA4Ny4yNzI3MjcgMHY4NDMuNDAzNjM2YTQzLjc1MjcyNyA0My43NTI3MjcgMCAwIDEtMjkuMzIzNjM3IDQxLjQyNTQ1NSA0Mi4xMjM2MzYgNDIuMTIzNjM2IDAgMCAxLTE0LjE5NjM2MyAyLjMyNzI3MiA0My4yODcyNzMgNDMuMjg3MjczIDAgMCAxLTM0LjIxMDkwOS0xNi43NTYzNjNMMTQ4Ljk0NTQ1NSA3MTcuNzMwOTA5YTQzLjUyIDQzLjUyIDAgMCAxIDcuNDQ3MjcyLTYxLjIwNzI3M3pNNjM0LjQxNDU0NSA0OC44NzI3MjdhNDMuNzUyNzI3IDQzLjc1MjcyNyAwIDAgMSA0OC42NCAxNC40MjkwOTFsMTkxLjA2OTA5MSAyNDIuOTY3MjczYTQzLjc1MjcyNyA0My43NTI3MjcgMCAxIDEtNjkuODE4MTgxIDUzLjk5MjcyN2wtMTExLjk0MTgxOS0xNDQuMDU4MTgydjcxNy40OTgxODJhNDMuNzUyNzI3IDQzLjc1MjcyNyAwIDEgMS04Ny4yNzI3MjcgMFY5MC4yOTgxODJhNDQuMjE4MTgyIDQ0LjIxODE4MiAwIDAgMSAyOS4zMjM2MzYtNDEuNDI1NDU1eiIvPjwvc3ZnPg==");
+  mask-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDI0IDEwMjQiPjxwYXRoIGQ9Ik0xNTYuMzkyNzI3IDY1Ni41MjM2MzZhNDMuNTIgNDMuNTIgMCAwIDEgNjEuMjA3MjczIDcuMjE0NTQ2bDExMy4xMDU0NTUgMTQ0LjA1ODE4MlY5MC4yOTgxODJhNDMuNzUyNzI3IDQzLjc1MjcyNyAwIDEgMSA4Ny4yNzI3MjcgMHY4NDMuNDAzNjM2YTQzLjc1MjcyNyA0My43NTI3MjcgMCAwIDEtMjkuMzIzNjM3IDQxLjQyNTQ1NSA0Mi4xMjM2MzYgNDIuMTIzNjM2IDAgMCAxLTE0LjE5NjM2MyAyLjMyNzI3MiA0My4yODcyNzMgNDMuMjg3MjczIDAgMCAxLTM0LjIxMDkwOS0xNi43NTYzNjNMMTQ4Ljk0NTQ1NSA3MTcuNzMwOTA5YTQzLjUyIDQzLjUyIDAgMCAxIDcuNDQ3MjcyLTYxLjIwNzI3M3pNNjM0LjQxNDU0NSA0OC44NzI3MjdhNDMuNzUyNzI3IDQzLjc1MjcyNyAwIDAgMSA0OC42NCAxNC40MjkwOTFsMTkxLjA2OTA5MSAyNDIuOTY3MjczYTQzLjc1MjcyNyA0My43NTI3MjcgMCAxIDEtNjkuODE4MTgxIDUzLjk5MjcyN2wtMTExLjk0MTgxOS0xNDQuMDU4MTgydjcxNy40OTgxODJhNDMuNzUyNzI3IDQzLjc1MjcyNyAwIDEgMS04Ny4yNzI3MjcgMFY5MC4yOTgxODJhNDQuMjE4MTgyIDQ0LjIxODE4MiAwIDAgMSAyOS4zMjM2MzYtNDEuNDI1NDU1eiIvPjwvc3ZnPg==");
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  mask-position: center;
+  -webkit-mask-size: 100% 100%;
+  mask-size: 100% 100%;
+}
+
+/* 收起态（class 由 collapseNav.wxs 在 p 到 1 时挂上）：宽度全留给输入框。
+   收起后一行里塞了「搜索框 + 排序 + 筛选」和右侧系统胶囊，横向本来就不够，
+   拍照识猫固定 40px 宽且不随高度缩放，不藏起来占位文案（9 个字约 126px）就会被截断。
+   展开态它照常显示 —— 那时搜索栏独占一行，空间充足。 */
+#search.collapsed {
+  gap: 8rpx;
+}
+
+/* 收窄到 0 而不是 display:none：多一点过渡，收起那一下输入框是撑开而不是跳一下。
+   不给 #search 本身加 transition —— padding 是 wxs 逐帧写的，带动画会跟手变卡。 */
+.recognize-btn {
+  transition: width 0.16s ease, margin-left 0.16s ease, opacity 0.16s ease;
+  overflow: hidden;
+}
+
+#search.collapsed .recognize-btn {
+  width: 0;
+  margin-left: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+
 /* 卡片展开中：白底黄描边 */
-.filter-btn.open {
+.filter-btn.open,
+.sort-btn.open {
   border: 3rpx solid var(--color-primary);
   background-color: var(--color-surface);
   color: var(--color-primary-text);
 }
 
-.filter-btn.active {
+.filter-btn.active,
+.sort-btn.active {
   border: 3rpx solid var(--color-primary);
   background-color: var(--color-primary-light);
   color: var(--color-primary-text);
@@ -695,6 +737,73 @@ scroll-view {
 
 .filter-actions .reset-button {
   flex: 0 0 34%;
+}
+
+/* ---------- 排序面板：与筛选共用 .filter-card / .filter-actions，只是内部是单选列表 ---------- */
+.sort-title {
+  flex-shrink: 0;
+  padding: var(--space-md) var(--space-md) var(--space-xs);
+  color: var(--color-gray-max);
+  font-size: 24rpx;
+}
+
+/* 六项按最低 96rpx 排，合计约 576rpx，加标题与按钮在小屏上也放得下 */
+.sort-list {
+  flex-shrink: 0;
+  padding: 0 var(--space-md) var(--space-sm);
+}
+
+.sort-item {
+  display: flex;
+  align-items: center;
+  min-height: 96rpx;
+  padding: 8rpx 0;
+  border-bottom: 1rpx solid var(--color-gray-normal);
+  box-sizing: border-box;
+}
+
+.sort-item:last-child {
+  border-bottom: none;
+}
+
+.sort-item-text {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4rpx;
+}
+
+.sort-item-name {
+  color: var(--color-black-min);
+  font-size: var(--font-size-body);
+  line-height: 1.3;
+}
+
+/* 副标题说明这一项按什么排，避免「照片数」和「照片更新」被混读 */
+.sort-item-hint {
+  color: var(--color-gray-max);
+  font-size: 22rpx;
+  line-height: 1.3;
+}
+
+/* 勾选标记：未选中时透明占位，避免选中时文字左右跳动 */
+.sort-item-check {
+  flex-shrink: 0;
+  width: 40rpx;
+  color: transparent;
+  font-size: 32rpx;
+  line-height: 1;
+  text-align: center;
+}
+
+.sort-item.active .sort-item-name {
+  color: var(--color-primary-text);
+  font-weight: 600;
+}
+
+.sort-item.active .sort-item-check {
+  color: var(--color-primary-text);
 }
 
 /* 寻找领养按钮 */
