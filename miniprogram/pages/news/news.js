@@ -4,6 +4,7 @@ import { text as text_cfg, science_imgs } from "../../config";
 import { checkAuth } from "../../utils/user";
 import { showTab } from "../../utils/page";
 import { signCosUrl } from "../../utils/common";
+import { getAvatar, getCatItemMulti } from "../../utils/cat";
 const share_text = text_cfg.app_name + ' - ' + text_cfg.science.share_tip;
 
 const app = getApp();
@@ -55,6 +56,8 @@ Page({
         result[i].coverPath = await signCosUrl(result[i].coverPath);
       }
     }
+
+    await this.attachCatInfo(result);
 
     this.setData({
       newsList: result,
@@ -112,6 +115,8 @@ Page({
       }
     }
 
+    await this.attachCatInfo(result);
+
     this.setData({
       newsList: result,
     });
@@ -131,6 +136,56 @@ Page({
     const detail_url = '/pages/news/detailNews/detailNews';
     wx.navigateTo({
       url: detail_url + '?news_id=' + news_id,
+    });
+  },
+
+  // 关联猫猫：批量补全名字 + 随机精选头像
+  async attachCatInfo(list) {
+    if (!Array.isArray(list) || !list.length) {
+      return list;
+    }
+    const ids = [];
+    for (const item of list) {
+      if (item && item.cat_id && ids.indexOf(item.cat_id) < 0) {
+        ids.push(item.cat_id);
+      }
+    }
+    if (!ids.length) {
+      return list;
+    }
+
+    const [cats, avatars] = await Promise.all([
+      getCatItemMulti(ids),
+      getAvatar(ids)
+    ]);
+    const infoMap = {};
+    ids.forEach((id, i) => {
+      const cat = cats ? cats[i] : null;
+      const avatar = avatars ? avatars[i] : null;
+      infoMap[id] = {
+        name: cat ? cat.name : "",
+        avatar: avatar ? (avatar.photo_compressed || avatar.photo_id) : "",
+        initial: cat && cat.name ? String(cat.name).slice(0, 1) : "",
+      };
+    });
+
+    for (const item of list) {
+      const info = item && item.cat_id ? infoMap[item.cat_id] : null;
+      item.catName = info ? info.name : "";
+      item.catAvatar = info ? info.avatar : "";
+      item.catInitial = info ? info.initial : "";
+    }
+    return list;
+  },
+
+  // 点击公告卡片上的猫猫头像/名字，进入猫咪主页
+  clickCatAvatar(e) {
+    const cat_id = e.currentTarget.dataset.cat_id;
+    if (!cat_id) {
+      return;
+    }
+    wx.navigateTo({
+      url: `/pages/genealogy/detailCat/detailCat?cat_id=${cat_id}`,
     });
   },
 

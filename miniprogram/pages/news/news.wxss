@@ -29,6 +29,49 @@ page {
   margin-bottom: var(--space-xs);
 }
 
+/* 关联猫猫标识（头像为随机精选图） */
+.news-cat-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+  align-self: flex-start;
+  max-width: 100%;
+  padding: 4rpx 16rpx 4rpx 4rpx;
+  margin-bottom: var(--space-xs);
+  border-radius: var(--radius-pill);
+  background: var(--color-primary-bg);
+}
+
+.news-cat-chip-avatar {
+  width: 44rpx;
+  height: 44rpx;
+  border-radius: 50%;
+  background: var(--color-gray-normal);
+  flex-shrink: 0;
+}
+
+.news-cat-chip-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24rpx;
+  font-weight: 600;
+  color: var(--color-text-inverse);
+  background: var(--color-primary);
+}
+
+.news-cat-chip-name {
+  font-size: 22rpx;
+  color: var(--color-primary-text);
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.news-cat-chip-hover {
+  opacity: 0.75;
+}
+
 .news .row-container{
   display: flex;
   flex-direction: row;

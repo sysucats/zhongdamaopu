@@ -16,6 +16,21 @@
         <view class="chip-row news-choices">
           <button class="chip news-choice {{item.checked ? 'active' : ''}}" wx:for="{{buttons}}" wx:key="id" data-id="{{item.id}}" bindtap="radioButtonTap">{{item.name}}</button>
         </view>
+        <view class="field-label spaced-label">关联猫猫（选填）</view>
+        <view class="field-hint news-media-hint">关联后公告会展示这只猫的名字和头像，点击头像可进入猫咪主页</view>
+        <view wx:if="{{cat_id}}" class="news-cat-selected" bindtap="openCatPicker" hover-class="news-cat-hover">
+          <image wx:if="{{cat_avatar}}" class="news-cat-avatar" mode="aspectFill" src="{{cat_avatar}}" />
+          <view wx:else class="news-cat-avatar news-cat-avatar-empty">{{cat_initial}}</view>
+          <view class="news-cat-meta">
+            <view class="news-cat-name">{{cat_name}}</view>
+            <view class="news-cat-sub">点击可更换</view>
+          </view>
+          <view class="news-cat-clear" catchtap="clearCat">×</view>
+        </view>
+        <view wx:else class="news-cat-add" bindtap="openCatPicker" hover-class="news-cat-hover">
+          <text class="news-cat-add-icon">＋</text>
+          <text>选择猫猫</text>
+        </view>
         <view class="field-label spaced-label">正文（选填）</view>
         <textarea class="description-input long-input" name="mainContent" value="{{news.mainContent}}" maxlength="{{maxlength}}" bindinput="bindInput"></textarea>
         <view class="field-counter">字数：{{length}}/{{maxlength}}</view>
@@ -43,4 +58,5 @@
       <view class="save-bar"><button class="form-button primary save-button" form-type="submit">提交修改</button></view>
     </block>
   </form>
+  <searchCat id="newsCatPicker" show="{{showCatPicker}}" bind:select="onCatSelected" bind:close="closeCatPicker"></searchCat>
 </view>
