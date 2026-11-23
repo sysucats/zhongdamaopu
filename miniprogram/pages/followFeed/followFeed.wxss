@@ -580,3 +580,169 @@ image {
 .interact-num {
   font-size: 26rpx;
 }
+
+/* ===== 推荐关注 ===== */
+.rec-section {
+  width: 100%;
+  box-sizing: border-box;
+  padding: var(--space-lg);
+  background: var(--color-surface);
+  border-top: 1rpx solid var(--color-gray);
+}
+
+.rec-head {
+  margin-bottom: var(--space-md);
+}
+
+.rec-title {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: var(--color-text-main);
+}
+
+.rec-sub {
+  margin-top: var(--space-xs);
+  font-size: 24rpx;
+  color: var(--color-text-muted);
+}
+
+.rec-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-sm);
+}
+
+.rec-card {
+  box-sizing: border-box;
+  padding: var(--space-sm);
+  border-radius: var(--radius-lg);
+  background: var(--color-primary-bg);
+  border: 1rpx solid var(--color-border);
+}
+
+.rec-card-hover {
+  opacity: 0.85;
+}
+
+/* 已去喵星：整卡降饱和，配合理由标签做标记 */
+.rec-card.is-star {
+  background: var(--color-bg-subtle);
+}
+
+.rec-card-top {
+  display: flex;
+  align-items: center;
+}
+
+.rec-avatar {
+  width: 72rpx;
+  height: 72rpx;
+  border-radius: 50%;
+  background: var(--color-gray-normal);
+  flex-shrink: 0;
+}
+
+.rec-card-name {
+  flex: 1;
+  min-width: 0;
+  margin-left: var(--space-xs);
+}
+
+.rec-name {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: var(--color-text-main);
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.rec-campus {
+  margin-top: 2rpx;
+  font-size: 20rpx;
+  color: var(--color-text-muted);
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.rec-reason {
+  display: inline-block;
+  max-width: 100%;
+  margin-top: var(--space-xs);
+  padding: 4rpx 12rpx;
+  border-radius: var(--radius-pill);
+  font-size: 20rpx;
+  line-height: 1.6;
+  box-sizing: border-box;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.rec-reason.green {
+  color: var(--color-primary-text);
+  background: var(--color-primary-light);
+}
+
+.rec-reason.amber {
+  color: #8a5a00;
+  background: #fdf3e2;
+}
+
+.rec-reason.pink {
+  color: #a3415f;
+  background: #fdeef3;
+}
+
+.rec-reason.gray {
+  color: var(--color-text-muted);
+  background: var(--color-gray-light);
+}
+
+.rec-btn {
+  margin-top: var(--space-sm);
+  padding: 8rpx 0;
+  text-align: center;
+  font-size: 24rpx;
+  border-radius: var(--radius-pill);
+  color: var(--color-primary);
+  border: 1rpx solid var(--color-primary);
+  background: var(--color-surface);
+}
+
+.rec-btn-hover {
+  opacity: 0.7;
+}
+
+.rec-btn.followed {
+  color: var(--color-text-muted);
+  border-color: var(--color-gray);
+  background: transparent;
+}
+
+.rec-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: var(--space-md);
+}
+
+.rec-shuffle {
+  font-size: 24rpx;
+  color: var(--color-text-secondary);
+}
+
+.rec-link {
+  font-size: 24rpx;
+  color: var(--color-primary);
+}
+
+.rec-loading {
+  width: 100%;
+  box-sizing: border-box;
+  padding: var(--space-xl) 0;
+  text-align: center;
+  font-size: 24rpx;
+  color: var(--color-text-muted);
+}
