@@ -73,6 +73,75 @@
 .record-body view {
   margin-top: 6rpx;
 }
+.record-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 14rpx;
+}
+.record-photo-count {
+  font-size: 24rpx;
+  color: var(--color-primary);
+}
+.record-open-hint {
+  margin-left: auto;
+  font-size: 24rpx;
+  color: var(--color-gray-max);
+}
+
+/* 疫苗照片编辑区 */
+.photo-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16rpx;
+}
+.photo-cell {
+  position: relative;
+  width: 150rpx;
+  height: 150rpx;
+  border-radius: 12rpx;
+  overflow: hidden;
+  background: var(--color-gray-light);
+}
+.photo-thumb {
+  width: 100%;
+  height: 100%;
+  /* 签名完成前先占位，避免出现裂图 */
+  background: var(--color-gray-light);
+}
+.photo-remove {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 40rpx;
+  height: 40rpx;
+  line-height: 36rpx;
+  text-align: center;
+  font-size: 30rpx;
+  color: #fff;
+  background: rgba(0, 0, 0, 0.55);
+  border-bottom-left-radius: 12rpx;
+}
+.photo-add {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 150rpx;
+  height: 150rpx;
+  border-radius: 12rpx;
+  border: 2rpx dashed var(--color-gray);
+  background: var(--color-gray-light);
+  color: var(--color-gray-max);
+}
+.photo-add-plus {
+  font-size: 40rpx;
+  line-height: 1;
+}
+.photo-add-text {
+  margin-top: 8rpx;
+  font-size: 22rpx;
+}
 .empty {
   padding: 100rpx 30rpx;
   text-align: center;
@@ -104,4 +173,95 @@
 
 .medical-field:last-child {
   margin-bottom: 0;
+}
+
+/* 主导人：手输 + 从用户中勾选（非必填） */
+.owner-row {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+}
+.owner-input-wrap {
+  position: relative;
+  flex: 1 1 0%;
+  min-width: 0;
+}
+.owner-input {
+  width: 100%;
+  padding-right: 60rpx;
+}
+.owner-clear {
+  position: absolute;
+  top: 50%;
+  right: 10rpx;
+  transform: translateY(-50%);
+  width: 44rpx;
+  height: 44rpx;
+  line-height: 44rpx;
+  text-align: center;
+  font-size: 32rpx;
+  color: var(--color-gray-max);
+}
+.owner-pick {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  height: 88rpx;
+  padding: 0 24rpx;
+  border-radius: var(--radius-md);
+  background: var(--color-primary-bg);
+  color: var(--color-primary-text);
+  font-size: 26rpx;
+  font-weight: 500;
+}
+.owner-pick.active {
+  background: var(--color-primary);
+  color: #fff;
+}
+.user-picker {
+  margin-top: 12rpx;
+  padding: 16rpx;
+  border-radius: var(--radius-md);
+  background: var(--color-gray-light);
+}
+.user-picker-search {
+  box-sizing: border-box;
+  width: 100%;
+  height: 72rpx;
+  padding: 0 20rpx;
+  margin-bottom: 12rpx;
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  font-size: 26rpx;
+  color: var(--color-black-light);
+}
+.user-picker-list {
+  max-height: 420rpx;
+}
+.user-picker-item {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  padding: 14rpx 8rpx;
+  border-bottom: 1rpx solid var(--color-border);
+}
+.user-picker-item:last-child {
+  border-bottom: none;
+}
+.user-picker-avatar {
+  width: 56rpx;
+  height: 56rpx;
+  border-radius: 50%;
+  background: var(--color-surface);
+  flex-shrink: 0;
+}
+.user-picker-name {
+  font-size: 27rpx;
+  color: var(--color-black-light);
+}
+.user-picker-tip {
+  padding: 28rpx 0;
+  text-align: center;
+  font-size: 25rpx;
+  color: var(--color-gray-max);
 }

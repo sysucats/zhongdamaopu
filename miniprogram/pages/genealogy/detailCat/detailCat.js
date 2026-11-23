@@ -1006,6 +1006,7 @@ Page({
       if (result?.result === true && Array.isArray(result.data)) {
         const medicalTimeline = result.data.map(record => ({
           ...record,
+          photoCount: Array.isArray(record.photos) ? record.photos.length : 0,
           record_date_formatted: record.record_date ? formatDate(record.record_date, "yyyy-MM-dd") : '',
           expire_date_formatted: record.expire_date ? formatDate(record.expire_date, "yyyy-MM-dd") : '',
           next_vaccine_date_formatted: record.next_vaccine_date ? formatDate(record.next_vaccine_date, "yyyy-MM-dd") : '',
@@ -1035,6 +1036,15 @@ Page({
   hideMedicalHistory() {
     this.setData({
       showMedicalHistory: false
+    });
+  },
+
+  // 打开单条医疗记录详情页（疫苗照片在这里查看，列表不默认展开图片）
+  openMedicalRecord(e) {
+    const recordId = e.currentTarget.dataset.id;
+    if (!recordId) return;
+    wx.navigateTo({
+      url: '/pages/genealogy/detailCat/medicalDetail/medicalDetail?record_id=' + recordId + '&cat_id=' + this.jsData.cat_id,
     });
   },
 

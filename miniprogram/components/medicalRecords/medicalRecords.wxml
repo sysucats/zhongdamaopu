@@ -38,10 +38,49 @@
             </view>
           </block>
 
+          <!-- 照片：所有医疗类型通用，1-3 张；列表不铺图，点开记录详情查看 -->
+          <view class="medical-field">
+            <view class="field-label">{{types[form.typeIndex].name}}照片（最多 3 张，可不填）</view>
+            <view class="photo-grid">
+              <view class="photo-cell" wx:for="{{form.photos}}" wx:key="*this">
+                <image class="photo-thumb" src="{{photoViews[index]}}" mode="aspectFill" data-index="{{index}}" bindtap="previewFormPhoto" />
+                <view class="photo-remove" data-index="{{index}}" catchtap="removeFormPhoto">×</view>
+              </view>
+              <view class="photo-add" wx:if="{{form.photos.length < 3}}" bindtap="chooseRecordPhotos">
+                <view class="photo-add-plus">＋</view>
+                <view class="photo-add-text">{{form.photos.length ? '再加一张' : '添加照片'}}</view>
+              </view>
+            </view>
+          </view>
+
           <view class="medical-field">
             <view class="field-label">{{types[form.typeIndex].key === 'vaccine' ? '接种地点' : '医院/地点'}}</view>
             <input class="field-input" value="{{form.hospital}}" data-field="hospital" bindinput="onInput" placeholder="请输入地点" />
           </view>
+
+          <view class="medical-field">
+            <view class="field-label">主导人</view>
+            <view class="owner-row">
+              <view class="owner-input-wrap">
+                <input class="field-input owner-input" value="{{form.owner}}" bindinput="onOwnerInput" maxlength="30" placeholder="可不填，直接输入用户名" />
+                <view class="owner-clear" wx:if="{{form.owner}}" catchtap="clearOwner">×</view>
+              </view>
+              <view class="owner-pick {{showUserPicker ? 'active' : ''}}" bindtap="openUserPicker">选择用户</view>
+            </view>
+            <view class="user-picker" wx:if="{{showUserPicker}}">
+              <input class="user-picker-search" value="{{pickerKeyword}}" bindinput="onPickerKeyword" confirm-type="search" placeholder="搜索用户的昵称" />
+              <view class="user-picker-tip" wx:if="{{pickerLoading}}">加载中...</view>
+              <scroll-view class="user-picker-list" scroll-y="1" wx:else>
+                <view class="user-picker-item" wx:for="{{pickerUsers}}" wx:key="openid"
+                  data-openid="{{item.openid}}" data-name="{{item.name}}" bindtap="pickUser">
+                  <image class="user-picker-avatar" src="{{item.avatar || '/pages/public/images/system/user.png'}}" mode="aspectFill" />
+                  <text class="user-picker-name">{{item.name}}</text>
+                </view>
+                <view class="user-picker-tip" wx:if="{{!pickerUsers.length}}">没有匹配的用户</view>
+              </scroll-view>
+            </view>
+          </view>
+
           <view class="medical-field">
             <view class="field-label">备注</view>
             <textarea class="description-input" value="{{form.description}}" data-field="description" bindinput="onInput" maxlength="300" placeholder="请输入相关信息"></textarea>
@@ -69,9 +108,14 @@
         <view class="record-title">{{item.title}}</view>
         <view class="record-body">
           <view wx:if="{{item.hospital}}">{{item.type === 'vaccine' ? '接种地点' : '医院/地点'}}：{{item.hospital}}</view>
+          <view wx:if="{{item.owner}}">主导人：{{item.owner}}</view>
           <view wx:if="{{item.expire_date_formatted}}">有效期至：{{item.expire_date_formatted}}</view>
           <view wx:if="{{item.next_vaccine_date_formatted}}">下次接种：{{item.next_vaccine_date_formatted}}</view>
           <view wx:if="{{item.description}}">{{item.description}}</view>
+        </view>
+        <view class="record-footer">
+          <text class="record-photo-count" wx:if="{{item.photoCount}}">{{typeNames[item.type]}}照片 {{item.photoCount}} 张</text>
+          <text class="record-open-hint">查看详情 ›</text>
         </view>
       </view>
     </view>

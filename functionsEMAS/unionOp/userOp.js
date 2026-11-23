@@ -88,6 +88,41 @@ module.exports = async (ctx) => {
       console.log('[userOp] updateRole by ' + openid + ' -> ' + targetOpenid + ' fields=' + JSON.stringify(Object.keys(user)));
       return result;
     }
+    case 'list': {
+      // 管理员在医疗记录里选「主导人」用：按昵称搜索用户（只返回昵称/头像，供勾选）
+      const { result: me } = await ctx.mpserverless.db.collection('user').findOne({ openid });
+      const myLevel = (me && me.manager) ? me.manager : 0;
+      if (myLevel < 1) {
+        return { ok: false, errMsg: 'not a manager', result: [] };
+      }
+      const keyword = String(ctx.args.keyword || '').trim().slice(0, 20);
+      const limit = Math.min(Math.max(Number(ctx.args.limit) || 30, 1), 50);
+      let users = [];
+      try {
+        const query = {};
+        if (keyword) {
+          // 转义正则元字符，避免用户输入被当作模式
+          const safe = keyword.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+          query['userInfo.nickName'] = { $regex: safe, $options: 'i' };
+        }
+        const { result } = await ctx.mpserverless.db.collection('user').find(query, { limit });
+        users = result || [];
+      } catch (error) {
+        // 个别环境不支持 $regex：退回「取一批再本地过滤」
+        console.warn('[userOp] list 模糊查询失败，改用本地过滤:', error && error.message);
+        const { result } = await ctx.mpserverless.db.collection('user').find({}, { limit: 200 });
+        const all = result || [];
+        users = keyword
+          ? all.filter(u => String((u.userInfo && u.userInfo.nickName) || '').includes(keyword))
+          : all;
+      }
+      const list = users.map(u => ({
+        openid: u.openid || '',
+        name: (u.userInfo && u.userInfo.nickName) || '',
+        avatarUrl: (u.userInfo && u.userInfo.avatarUrl) || '',
+      })).filter(u => u.openid && u.name).slice(0, limit);
+      return { ok: true, result: list };
+    }
     default: {
       return "unknown op: " + op;
     }

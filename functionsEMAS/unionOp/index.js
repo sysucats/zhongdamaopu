@@ -69,7 +69,7 @@ const actionMap = {
 
 module.exports = async (ctx) => {
     if (ctx.args?.deploy_test === true) {
-        return "v1.6"
+        return "v1.9"
     }
 
     // ===== 安全加固：身份只能来自平台，客户端传入的 openid 一律忽略 =====

@@ -1,0 +1,146 @@
+/* pages/genealogy/detailCat/medicalDetail/medicalDetail.wxss */
+.page {
+  box-sizing: border-box;
+  min-height: 100vh;
+  padding: 24rpx 24rpx 60rpx;
+  background: var(--color-gray-light);
+}
+
+.state-tip {
+  padding: 120rpx 0;
+  text-align: center;
+  font-size: 28rpx;
+  color: var(--color-gray-max);
+}
+
+.retry-btn {
+  display: inline-block;
+  margin-top: 24rpx;
+  padding: 14rpx 44rpx;
+  border-radius: 999rpx;
+  font-size: 26rpx;
+  color: #fff;
+  background: var(--color-primary);
+}
+
+.record-card,
+.photo-card {
+  padding: 28rpx 30rpx;
+  border-radius: 20rpx;
+  background: var(--color-surface);
+  box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.05);
+}
+
+.photo-card {
+  margin-top: 24rpx;
+}
+
+.record-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.type-tag {
+  padding: 6rpx 18rpx;
+  border-radius: 999rpx;
+  font-size: 24rpx;
+  color: var(--color-primary);
+  background: var(--color-primary-bg);
+}
+
+.type-tag-expired {
+  color: var(--color-red);
+  background: rgba(255, 56, 60, 0.1);
+}
+
+.record-date {
+  font-size: 24rpx;
+  color: var(--color-gray-max);
+}
+
+.record-title {
+  margin-top: 16rpx;
+  font-size: 36rpx;
+  font-weight: 500;
+  line-height: 1.4;
+  color: var(--color-black-light);
+  word-break: break-all;
+}
+
+.info-list {
+  margin-top: 24rpx;
+  padding-top: 8rpx;
+  border-top: 2rpx solid var(--color-border);
+}
+
+.info-row {
+  display: flex;
+  align-items: flex-start;
+  margin-top: 16rpx;
+  font-size: 28rpx;
+  line-height: 1.6;
+}
+
+.info-label {
+  flex: 0 0 150rpx;
+  color: var(--color-gray-max);
+}
+
+.info-value {
+  flex: 1 1 0%;
+  min-width: 0;
+  color: var(--color-black-light);
+  word-break: break-all;
+}
+
+.info-expired {
+  color: var(--color-red);
+}
+
+.photo-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.photo-title {
+  font-size: 30rpx;
+  font-weight: 500;
+  color: var(--color-black-light);
+}
+
+.photo-count {
+  font-size: 24rpx;
+  color: var(--color-gray-max);
+}
+
+.photo-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16rpx;
+  margin-top: 20rpx;
+}
+
+.photo-item {
+  width: 200rpx;
+  height: 200rpx;
+  border-radius: 14rpx;
+  background: var(--color-gray-light);
+}
+
+.photo-empty {
+  margin-top: 20rpx;
+  padding: 48rpx 0;
+  border-radius: 14rpx;
+  text-align: center;
+  font-size: 26rpx;
+  color: var(--color-gray-max);
+  background: var(--color-gray-light);
+}
+
+.photo-empty-tip {
+  margin-top: 10rpx;
+  font-size: 22rpx;
+  color: var(--color-gray);
+}

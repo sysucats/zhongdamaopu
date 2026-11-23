@@ -1,0 +1,61 @@
+<!--pages/genealogy/detailCat/medicalDetail/medicalDetail.wxml-->
+<view class="page">
+  <view class="state-tip" wx:if="{{loading}}">加载中...</view>
+
+  <view class="state-tip" wx:elif="{{!record}}">
+    <view>{{errorText || '加载失败'}}</view>
+    <view class="retry-btn" bindtap="retry">重新加载</view>
+  </view>
+
+  <block wx:else>
+    <view class="record-card">
+      <view class="record-head">
+        <view class="type-tag {{record.is_expired ? 'type-tag-expired' : ''}}">{{record.typeName}}</view>
+        <view class="record-date">{{record.record_date_formatted}}</view>
+      </view>
+      <view class="record-title">{{record.title}}</view>
+
+      <view class="info-list">
+        <view class="info-row" wx:if="{{record.hospital}}">
+          <text class="info-label">{{record.type === 'vaccine' ? '接种地点' : '医院/地点'}}</text>
+          <text class="info-value">{{record.hospital}}</text>
+        </view>
+        <view class="info-row" wx:if="{{record.is_expired}}">
+          <text class="info-label">有效期至</text>
+          <text class="info-value info-expired">{{record.expire_date_formatted}}（已过期）</text>
+        </view>
+        <view class="info-row" wx:elif="{{record.expire_date_formatted}}">
+          <text class="info-label">有效期至</text>
+          <text class="info-value">{{record.expire_date_formatted}}</text>
+        </view>
+        <view class="info-row" wx:if="{{record.next_vaccine_date_formatted}}">
+          <text class="info-label">{{record.type === 'deworm' ? '下次驱虫' : '下次接种'}}</text>
+          <text class="info-value">{{record.next_vaccine_date_formatted}}</text>
+        </view>
+        <view class="info-row" wx:if="{{record.owner}}">
+          <text class="info-label">主导人</text>
+          <text class="info-value">{{record.owner}}</text>
+        </view>
+        <view class="info-row" wx:if="{{record.description}}">
+          <text class="info-label">备注</text>
+          <text class="info-value">{{record.description}}</text>
+        </view>
+      </view>
+    </view>
+
+    <view class="photo-card" wx:if="{{photos.length || isManager}}">
+      <view class="photo-head">
+        <text class="photo-title">{{record.typeName}}照片</text>
+        <text class="photo-count" wx:if="{{photos.length}}">{{photos.length}}/3</text>
+      </view>
+      <view class="photo-grid" wx:if="{{photos.length}}">
+        <image class="photo-item" wx:for="{{photos}}" wx:key="*this" src="{{item}}" mode="aspectFill"
+          data-src="{{item}}" bindtap="previewPhoto"></image>
+      </view>
+      <view class="photo-empty" wx:else>
+        <view>暂无{{record.typeName}}照片</view>
+        <view class="photo-empty-tip">管理员可在「猫猫管理 → 医疗」左滑该条记录 → 编辑，补充照片</view>
+      </view>
+    </view>
+  </block>
+</view>

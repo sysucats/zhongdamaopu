@@ -874,14 +874,18 @@ one-rating-title {
   gap: 12rpx;
 }
 
+/* 最新一条记录：实心主题色配白字，与其余浅底标签区分开。
+   底色取 primary-dark 而非 primary —— #529235 配白字只有 3.8:1，
+   标签是 24rpx 小字，用 #417D26 能到 5.0:1，够 AA。
+   原来用琥珀 --color-vaccine，与卡片里其余绿色元素（照片标签、浅底）不搭。 */
 .medical-type-tag.recent {
-  background-color: var(--color-vaccine);
-  color: var(--color-black-min);
+  background-color: var(--color-primary-dark);
+  color: var(--color-text-onPrimary);
 }
 
 .medical-summary-check {
   flex: none;
-  color: var(--color-vaccine);
+  color: var(--color-primary);
   font-size: 40rpx;
 }
 
@@ -932,6 +936,40 @@ one-rating-title {
   overflow-y: auto;
 }
 
+/* 弹层自绘头部：关闭按钮内缩，避免贴/压卡片圆角 */
+.modal-header {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  min-height: 120rpx;
+  padding: 0 112rpx;
+}
+.modal-title {
+  font-size: 30rpx;
+  font-weight: 600;
+  line-height: 1.4;
+  text-align: center;
+  color: var(--color-black-light);
+}
+.modal-close {
+  position: absolute;
+  top: 50%;
+  right: 24rpx;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 72rpx;
+  height: 72rpx;
+  border-radius: 50%;
+  color: var(--color-black-min);
+}
+.modal-close .iconfont {
+  font-size: 38rpx;
+}
+
 .medical-timeline {
   padding: 0 30rpx 20rpx 48rpx;
   position: relative;
@@ -963,12 +1001,12 @@ one-rating-title {
   height: 40rpx;
   border: none;
   border-radius: 50%;
-  background-color: var(--color-vaccine-light);
-  color: var(--color-vaccine);
+  background-color: var(--color-primary);
+  color: var(--color-text-onPrimary);
   font-size: 26rpx;
   line-height: 40rpx;
   text-align: center;
-  box-shadow: 0 0 0 6rpx rgba(255, 192, 67, 0.12);
+  box-shadow: 0 0 0 6rpx var(--color-primary-light);
 }
 
 .timeline-connector {
@@ -1000,7 +1038,7 @@ one-rating-title {
 }
 
 .timeline-item:first-child .timeline-content {
-  border-color: var(--color-vaccine);
+  border-color: var(--color-primary);
   background-color: var(--color-primary-bg);
 }
 
@@ -1024,6 +1062,28 @@ one-rating-title {
 
 .timeline-info.expired {
   color: var(--color-red-dark);
+}
+
+/* 时间线底部：照片张数 + 查看详情入口 */
+.timeline-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 10rpx;
+}
+
+.timeline-photo-tag {
+  padding: 2rpx 14rpx;
+  border-radius: 999rpx;
+  font-size: 22rpx;
+  color: var(--color-primary);
+  background: var(--color-primary-bg);
+}
+
+.timeline-open-hint {
+  margin-left: auto;
+  font-size: 22rpx;
+  color: var(--color-gray-max);
 }
 
 /* 领养入口保留原来的浅橙渐变，内容居中。 */
