@@ -34,7 +34,8 @@
         "badgeCode/badgeCode",
         "badgeCode/addBadgeCode/addBadgeCode",
         "catManage/catManage",
-        "checkAdoption/checkAdoption"
+        "checkAdoption/checkAdoption",
+        "photoLocation/photoLocation"
       ]
     },
     {

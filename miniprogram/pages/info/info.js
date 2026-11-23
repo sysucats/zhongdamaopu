@@ -78,6 +78,11 @@ Page({
             icon: "icon-photo-search"
           },
           {
+            name: "定位体检",
+            path: "/pages/manage/photoLocation/photoLocation",
+            icon: "icon-map-pin"
+          },
+          {
             name: "领养审核",
             path: "/pages/manage/checkAdoption/checkAdoption",
             num: "numChkAdoptions",
