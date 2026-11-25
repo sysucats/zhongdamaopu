@@ -35,6 +35,7 @@
 .h-filter-item:active:not([disabled]) { background: var(--color-gray-normal); }
 .chip.active:active:not([disabled]),
 .h-filter-item.active:active:not([disabled]) { background: var(--color-primary); color: var(--color-text-onPrimary); }
+button.chip[disabled],
 .chip[disabled],
 .h-filter-item[disabled] { background: var(--color-gray-normal); color: var(--color-gray-max); }
 

@@ -58,6 +58,9 @@
           <text class="iconfont icon-circle-plus"></text>
           <text>添加成就</text>
         </view>
+        <view class="batch-progress progress-line bare" wx:if="{{preparing}}">
+          <view class="progress-line-fill" style="width: {{(prepareIndex + (generation.status === 'complete' ? 1 : (generation.total ? (generation.step + 1) / (generation.total + 1) : 0))) * 100 / prepareCount}}%"></view>
+        </view>
       </view>
       <view class="batch-actions" wx:if="{{allBadges.length}}">
         <button class="form-button compact batch-button" bindtap="refreshBadges" loading="{{preparing}}" disabled="{{preparing || activating}}">{{preparing ? '生成中' : '重新生成素材'}}</button>

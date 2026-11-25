@@ -1,6 +1,7 @@
 /* pages/manage/badgeDef/badgeDef.wxss */
 @import "../adminPage.wxss";
 @import "/pages/public/wxss/formControls.wxss";
+@import "/pages/public/wxss/progress.wxss";
 .batch-actions {
   display: flex;
   gap: var(--space-md);
@@ -48,6 +49,7 @@ page {
   font-weight: 400;
 }
 .catalog-main-heading {
+  position: relative;
   margin-top: 36rpx;
   padding-bottom: 12rpx;
   border-bottom: 1rpx solid var(--color-gray-normal);
@@ -159,6 +161,13 @@ page {
 }
 .tile-status.is-draft {
   color: var(--color-status-pending-text);
+}
+/* 批量生成总进度：贴在标题分割线上，已完成枚数 + 当前这枚的步骤 */
+.batch-progress {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
 }
 .tile-holders {
   margin-top: 4rpx;

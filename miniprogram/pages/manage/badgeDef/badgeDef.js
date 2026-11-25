@@ -31,6 +31,8 @@ Page({
     activating: false,
     generation: null,
     prepareSummary: '',
+    prepareIndex: 0,
+    prepareCount: 1,
   },
 
   /**
@@ -165,11 +167,11 @@ Page({
       fail: () => resolve(false),
     }));
     if (!confirmed) return;
-    this.setData({ preparing: true, catalogError: '', prepareSummary: '', generation: { label: '开始生成' } });
+    this.setData({ preparing: true, catalogError: '', prepareSummary: '', prepareIndex: 0, prepareCount: badges.length, generation: { label: '开始生成' } });
     const failed = [];
     try {
       for (let index = 0; index < badges.length; index++) {
-        this.setData({ prepareSummary: `第 ${index + 1}/${badges.length} 枚 · ${badges[index].name}`, generation: { label: '开始生成' } });
+        this.setData({ prepareSummary: `第 ${index + 1}/${badges.length} 枚 · ${badges[index].name}`, prepareIndex: index, generation: { label: '开始生成' } });
         const generationId = generateUUID();
         watchGeneration(this, badges[index].key, generationId);
         try {
@@ -180,7 +182,7 @@ Page({
             });
             if (!result?.ok) throw new Error(result?.error || '生成失败');
             pending = result.pending;
-            if (pending) this.setData({ generation: { label: '素材已就绪，正在整理历史编号' } });
+            if (pending) this.setData({ generation: { label: '素材已就绪，正在整理历史编号', status: 'complete' } });
           } while (pending);
         } catch (error) {
           failed.push(`${badges[index].name}：${error.message || '生成失败'}`);
