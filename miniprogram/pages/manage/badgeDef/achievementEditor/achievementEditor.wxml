@@ -89,13 +89,56 @@
         <view class="chip-row" wx:if="{{seriesOptions.length}}">
           <view class="chip {{form.series === item ? 'active' : ''}}" wx:for="{{seriesOptions}}" wx:key="*this" data-series="{{item}}" bindtap="pickSeries">{{item}}</view>
         </view>
+        <!-- 统计方式：统计项支持按天数或不同猫数时才出现 -->
+        <view class="chip-row" wx:if="{{aggOptions.length}}">
+          <view class="chip {{(form.rule.agg || 'total') === item.key ? 'active' : ''}}" wx:for="{{aggOptions}}" wx:key="key" data-agg="{{item.key}}" bindtap="onAgg" disabled="{{ruleLocked}}" aria-role="button" aria-label="{{item.name}}">{{item.name}}</view>
+        </view>
         <view class="quantity-row">
-          <view class="quantity-label {{ruleLocked ? '' : 'field-required'}}">{{metricOptions[metricIndex].label}}</view>
+          <view class="quantity-label {{ruleLocked ? '' : 'field-required'}}">{{countLabel}}</view>
           <view class="count-field {{ruleLocked ? 'locked' : ''}}">
             <input class="count-input" type="number" maxlength="6" value="{{form.rule.count}}" disabled="{{ruleLocked}}" data-field="rule.count" bindinput="onInput" aria-label="达成数量" />
-            <text class="count-unit">{{metricOptions[metricIndex].unit}}</text>
+            <text class="count-unit">{{countUnit}}</text>
           </view>
         </view>
+
+        <!-- 时间限定：只统计窗口内产生的记录，日期按北京时间，含首尾两天 -->
+        <view class="condition-block" wx:if="{{supportsWindow}}">
+          <view class="status-row">
+            <view class="status-copy">
+              <view class="status-title">时间限定</view>
+              <view class="field-hint">{{form.rule.window ? '只统计这段日期内的记录，含首尾两天' : '不限时间，累计统计'}}</view>
+            </view>
+            <switch checked="{{form.rule.window ? true : false}}" disabled="{{ruleLocked}}" color="var(--color-green)" bindchange="onWindowToggle" aria-label="时间限定" />
+          </view>
+          <view class="path-row window-row" wx:if="{{form.rule.window}}">
+            <view class="path-col">
+              <view class="field-label">开始日期</view>
+              <picker mode="date" value="{{form.rule.window.start}}" data-field="start" bindchange="onWindowDate" disabled="{{ruleLocked}}">
+                <view class="field-picker {{ruleLocked ? 'locked' : ''}}">{{form.rule.window.start}}<view class="picker-arrow" wx:if="{{!ruleLocked}}"></view></view>
+              </picker>
+            </view>
+            <text class="path-sep">–</text>
+            <view class="path-col">
+              <view class="field-label">结束日期</view>
+              <picker mode="date" value="{{form.rule.window.end}}" data-field="end" bindchange="onWindowDate" disabled="{{ruleLocked}}">
+                <view class="field-picker {{ruleLocked ? 'locked' : ''}}">{{form.rule.window.end}}<view class="picker-arrow" wx:if="{{!ruleLocked}}"></view></view>
+              </picker>
+            </view>
+          </view>
+        </view>
+
+        <!-- 指定猫猫：只统计与这只猫相关的记录 -->
+        <view class="condition-block" wx:if="{{supportsCat && form.rule.agg !== 'cats'}}">
+          <view class="status-row">
+            <view class="status-copy">
+              <view class="status-title">指定猫猫</view>
+              <view class="field-hint">{{form.rule.filter ? '只统计与这只猫相关的记录' : '不限猫猫'}}</view>
+            </view>
+            <view class="chip {{form.rule.filter ? 'active' : ''}}" bindtap="openCatSelect" disabled="{{ruleLocked}}" aria-role="button" aria-label="选择猫猫">{{form.rule.filter ? filterCatName || '已选择' : '选择猫猫'}}</view>
+            <text class="clear-cat" wx:if="{{form.rule.filter && !ruleLocked}}" bindtap="clearFilterCat" aria-role="button" aria-label="取消指定猫猫">取消</text>
+          </view>
+        </view>
+        <view class="field-hint rule-preview" wx:if="{{ruleDescription}}">规则：{{ruleDescription}}</view>
       </view>
 
       <view class="form-section">
@@ -147,5 +190,6 @@
       <button class="form-button primary save-button" bindtap="save" loading="{{(saving && !deleting && generation.status !== 'complete') || uploading}}" disabled="{{saving || uploading}}">{{uploading ? '图片上传中' : (saving && !deleting && generation ? generation.label : (mode === 'material' ? '保存材质' : (isNew ? (form.status === 'active' ? '保存并上线' : '保存草稿') : '保存修改')))}}</button>
     </view>
   </view>
+  <search-cat show="{{showCatSelect}}" bind:select="onCatSelect" bind:close="onCatSelectClose"></search-cat>
 </block>
 <no-auth wx:else tip-text="{{tipText}}"></no-auth>

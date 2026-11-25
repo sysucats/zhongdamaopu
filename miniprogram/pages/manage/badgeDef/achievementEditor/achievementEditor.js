@@ -1,7 +1,7 @@
 import { checkAuth } from "../../../../utils/user";
 import { uploadFile, signCosUrl } from "../../../../utils/common";
 import { generateUUID } from "../../../../utils/utils";
-import { clearAchievementCache, materialPillStyle } from "../../../../utils/achievement";
+import { clearAchievementCache, materialPillStyle, describeRule } from "../../../../utils/achievement";
 
 import { watchGeneration, stopGenerationWatch } from "../generationProgress";
 
@@ -16,6 +16,30 @@ async function callCatalog(action, data) {
   const result = response.result;
   if (!result?.ok) throw new Error(result?.error || '操作失败');
   return result;
+}
+
+// 统计方式：total 按次数（默认），days / cats 需统计项支持
+const AGG_OPTIONS = [
+  { key: 'total', name: '按次数' },
+  { key: 'days', name: '按天数', unit: '天' },
+  { key: 'cats', name: '按不同猫数', unit: '只' },
+];
+
+// 设备本地日期 YYYY-MM-DD，作为时间窗口的默认值
+function today() {
+  const now = new Date();
+  return [now.getFullYear(), now.getMonth() + 1, now.getDate()].map(n => String(n).padStart(2, '0')).join('-');
+}
+
+// 提交给云函数的规则：只带已设置的条件
+function ruleForSave(rule) {
+  return {
+    metric: rule.metric,
+    count: Number(rule.count),
+    ...(rule.window && { window: { start: rule.window.start, end: rule.window.end } }),
+    ...(rule.agg && rule.agg !== 'total' && { agg: rule.agg }),
+    ...(rule.filter?.catId && { filter: { catId: rule.filter.catId } }),
+  };
 }
 
 // 颜色换算：滑杆用 HSL（h 0-359，s/l 0-100），存储用 #rrggbb
@@ -66,6 +90,13 @@ Page({
     loadError: '',
     formError: '',
     ruleDescription: '',
+    aggOptions: [],
+    supportsWindow: false,
+    supportsCat: false,
+    countLabel: '',
+    countUnit: '',
+    filterCatName: '',
+    showCatSelect: false,
     selectedMaterial: null,
     backPending: false,
     generation: null,
@@ -114,7 +145,7 @@ Page({
       this.originalBadge = current || null;
       if (key && !current) throw new Error('徽章不存在');
       const form = current
-        ? { key, series: current.series, name: current.name, description: current.description || '', materialKey: current.materialKey, frontImage: current.frontImage, backImage: current.backImage, rule: { ...current.rule }, sort: current.sort || 0, status: current.status }
+        ? { key, series: current.series, name: current.name, description: current.description || '', materialKey: current.materialKey, frontImage: current.frontImage, backImage: current.backImage, rule: ruleForSave(current.rule), sort: current.sort || 0, status: current.status }
         : { key: `ach_${generateUUID().replace(/-/g, '')}`, series: decodeOption(options.series) || '日常', name: '', description: '', materialKey: materialOptions[0]?.key || '', frontImage: '', backImage: '', rule: { metric: initialMetric, count: 1 }, sort: badges.length ? Math.max(...badges.map(item => Number(item.sort) || 0)) + 1 : 0, status: 'draft' };
       this.setData({
         mode,
@@ -130,6 +161,7 @@ Page({
         materialIndex: Math.max(0, materialOptions.findIndex(item => item.key === form.materialKey)),
       });
       this.updateDerived();
+      this.loadFilterCatName();
       await this.loadPreviews({ frontImage: form.frontImage, backImage: form.backImage });
     } catch (error) {
       this.setData({ loadError: error.message || '读取失败，请重试' });
@@ -210,8 +242,17 @@ Page({
     const metric = metricOptions.find(item => item.key === form.rule?.metric);
     const selectedMaterial = materialOptions.find(item => item.key === form.materialKey) || null;
     const original = this.originalBadge;
+    const supports = metric?.supports || [];
+    const aggOptions = AGG_OPTIONS.filter(item => item.key === 'total' || supports.includes(item.key));
+    const agg = AGG_OPTIONS.find(item => item.key === (form.rule?.agg || 'total'));
+    const metrics = Object.fromEntries(metricOptions.map(item => [item.key, item]));
     this.setData({
-      ruleDescription: (metric?.desc || '').replace('{}', form.rule?.count || '…'),
+      ruleDescription: describeRule(form.rule, metrics),
+      supportsWindow: supports.includes('window'),
+      supportsCat: supports.includes('catId'),
+      aggOptions: aggOptions.length > 1 ? aggOptions : [],
+      countLabel: agg?.key === 'days' ? `${metric?.label || ''}的天数` : agg?.key === 'cats' ? `${metric?.label || ''}的不同猫数` : metric?.label || '',
+      countUnit: agg?.unit || metric?.unit || '',
       selectedMaterial,
       backPending: !original?.backImage || form.frontImage !== original.frontImage || form.materialKey !== original.materialKey || selectedMaterial?.image !== original.backMaterialImage,
     });
@@ -226,12 +267,89 @@ Page({
     const index = Number(e.detail.value);
     if (field === 'metric' && this.data.metricOptions[index]) {
       if (this.data.ruleLocked) return;
-      this.setData({ 'form.rule.metric': this.data.metricOptions[index].key, metricIndex: index });
+      // 换统计项时去掉新统计项不支持的条件
+      const metric = this.data.metricOptions[index];
+      const supports = metric.supports || [];
+      const rule = { ...this.data.form.rule, metric: metric.key };
+      if (!supports.includes('window')) delete rule.window;
+      if (rule.agg && !supports.includes(rule.agg)) delete rule.agg;
+      if (!supports.includes('catId')) delete rule.filter;
+      this.setData({ 'form.rule': rule, metricIndex: index, filterCatName: rule.filter ? this.data.filterCatName : '' });
     } else if (field === 'material' && this.data.materialOptions[index]) {
       this.setData({ 'form.materialKey': this.data.materialOptions[index].key, materialIndex: index });
     }
     this.setData({ formError: '' });
     this.updateDerived();
+  },
+
+  onAgg(e) {
+    if (this.data.ruleLocked) return;
+    const agg = e.currentTarget.dataset.agg;
+    const rule = { ...this.data.form.rule };
+    if (agg === 'total') delete rule.agg;
+    else rule.agg = agg;
+    // 按不同猫数统计时不能再限定单只猫
+    if (agg === 'cats') delete rule.filter;
+    this.setData({ 'form.rule': rule, filterCatName: rule.filter ? this.data.filterCatName : '', formError: '' });
+    this.updateDerived();
+  },
+
+  onWindowToggle(e) {
+    if (this.data.ruleLocked) return;
+    const rule = { ...this.data.form.rule };
+    if (e.detail.value) rule.window = { start: today(), end: today() };
+    else delete rule.window;
+    this.setData({ 'form.rule': rule, formError: '' });
+    this.updateDerived();
+  },
+
+  // 日期选择：开始晚于结束时联动另一端，保证窗口有效
+  onWindowDate(e) {
+    if (this.data.ruleLocked || !this.data.form.rule.window) return;
+    const field = e.currentTarget.dataset.field;
+    const window = { ...this.data.form.rule.window, [field]: e.detail.value };
+    if (window.start > window.end) {
+      if (field === 'start') window.end = window.start;
+      else window.start = window.end;
+    }
+    this.setData({ 'form.rule.window': window, formError: '' });
+    this.updateDerived();
+  },
+
+  openCatSelect() {
+    if (this.data.ruleLocked) return;
+    this.setData({ showCatSelect: true });
+  },
+
+  onCatSelect(e) {
+    const cat = e.detail;
+    this.setData({ showCatSelect: false });
+    if (!cat?._id) return;
+    this.setData({ 'form.rule.filter': { catId: cat._id }, filterCatName: cat.name || cat._id, formError: '' });
+    this.updateDerived();
+  },
+
+  onCatSelectClose() {
+    this.setData({ showCatSelect: false });
+  },
+
+  clearFilterCat() {
+    if (this.data.ruleLocked) return;
+    const rule = { ...this.data.form.rule };
+    delete rule.filter;
+    this.setData({ 'form.rule': rule, filterCatName: '', formError: '' });
+    this.updateDerived();
+  },
+
+  async loadFilterCatName() {
+    const catId = this.data.form.rule?.filter?.catId;
+    if (!catId) return;
+    try {
+      const { result: cat } = await app.mpServerless.db.collection('cat').findOne({ _id: catId });
+      this.setData({ filterCatName: cat?.name || '猫猫已删除' });
+    } catch (error) {
+      this.setData({ filterCatName: catId });
+    }
   },
 
   onStatusChange(e) {
@@ -274,6 +392,7 @@ Page({
     else if (mode === 'badge') {
       if (!form.series?.trim()) error = '请填写系列';
       else if (!this.data.metricOptions.some(item => item.key === form.rule.metric) || !Number.isInteger(Number(form.rule.count)) || Number(form.rule.count) < 1 || Number(form.rule.count) > 100000) error = '达成数量需为 1～100000 的整数';
+      else if (form.rule.window && !(form.rule.window.start <= form.rule.window.end)) error = '时间窗口的开始日期不能晚于结束日期';
       else if (!this.data.selectedMaterial?.image) error = '请选择已上传图片的材质';
       else if (!form.frontImage) error = '请上传成就正面图片';
     }
@@ -288,7 +407,7 @@ Page({
     try {
       const data = mode === 'material'
         ? { ...form, isNew, generationId }
-        : { ...form, isNew, generationId, sort: Number(form.sort) || 0, rule: { metric: form.rule.metric, count: Number(form.rule.count) } };
+        : { ...form, isNew, generationId, sort: Number(form.sort) || 0, rule: ruleForSave(form.rule) };
       const result = await callCatalog(mode === 'material' ? 'saveMaterial' : 'saveBadge', data);
       let regenerated = result.regenerated || 0;
       let failed = result.failed || 0;

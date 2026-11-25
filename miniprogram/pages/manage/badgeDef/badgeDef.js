@@ -1,10 +1,12 @@
 import { checkAuth } from "../../../utils/user";
 import { signCosUrl } from "../../../utils/common";
 import { levelOrderMap } from "../../../utils/badge";
-import { clearAchievementCache } from "../../../utils/achievement";
+import { clearAchievementCache, describeRule } from "../../../utils/achievement";
 import { generateUUID } from "../../../utils/utils";
 import { watchGeneration, stopGenerationWatch } from "./generationProgress";
 const app = getApp();
+
+
 Page({
 
   /**
@@ -82,7 +84,10 @@ Page({
           ? `${badge.generation.label} ${badge.generation.step}/${badge.generation.total}`
           : badge.generation?.status === 'failed' ? '素材更新失败'
           : (badge.needsAssets || !badge.backImage || !badge.model3dUrl) ? '素材待更新' : '背面及 3D 已就绪',
-        thresholdText: `${badge.rule?.count || 0}${metrics[badge.rule?.metric]?.unit || ''}`,
+        // 带条件的规则显示完整说明，普通累计规则只显示门槛
+        thresholdText: badge.rule?.window || badge.rule?.agg || badge.rule?.filter
+          ? describeRule(badge.rule, metrics)
+          : `${badge.rule?.count || 0}${metrics[badge.rule?.metric]?.unit || ''}`,
         statusText: `${badge.status === 'active' ? '上线' : '草稿'} · ${materialName[badge.materialKey] || '无材质'}`,
         needsUpload: !/^https:\/\//.test(badge.frontImage || ''),
       })));

@@ -342,7 +342,25 @@ function materialPillStyle(hex) {
   return `color: ${text}; background: linear-gradient(135deg, ${toHex(light)} 0%, ${hex} 100%);`;
 }
 
+// 规则说明，与云函数 achievementRules.describeRule 保持一致
+function describeRule(rule, metrics = {}) {
+  const metric = metrics[rule?.metric];
+  if (!metric) return '';
+  const count = rule.count || '…';
+  let text;
+  if (rule.agg === 'days') text = `${metric.label}累计 ${count} 天`;
+  else if (rule.agg === 'cats') text = `为 ${count} 只不同的猫猫${metric.label}`;
+  else text = (metric.desc || '').replace('{}', count);
+  if (rule.filter?.catId) text = `${text}（限指定猫猫）`;
+  if (rule.window) {
+    const span = rule.window.start === rule.window.end ? rule.window.start : `${rule.window.start} 至 ${rule.window.end}`;
+    text = `${span} 期间${text}`;
+  }
+  return text;
+}
+
 module.exports = {
+  describeRule,
   materialPillStyle,
   syncAchievements,
   refreshAchievements,

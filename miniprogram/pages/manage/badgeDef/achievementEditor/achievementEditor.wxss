@@ -171,3 +171,21 @@
 .count-field.locked .count-unit {
   color: var(--color-gray-max);
 }
+
+/* 规则条件：时间限定、指定猫猫 */
+.condition-block {
+  margin-top: var(--space-md);
+  padding-top: var(--space-md);
+  border-top: 1rpx solid var(--color-gray-normal);
+}
+.window-row {
+  margin-top: var(--space-sm);
+}
+.clear-cat {
+  flex-shrink: 0;
+  color: var(--color-gray-max);
+  font-size: 24rpx;
+}
+.rule-preview {
+  margin-top: var(--space-md);
+}

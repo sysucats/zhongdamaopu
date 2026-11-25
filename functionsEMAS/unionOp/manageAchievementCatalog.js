@@ -2,7 +2,8 @@
 const { createInternalCtx } = require('./_helper.js');
 const isManager = require('./isManager.js');
 const { generateAssets, materialTextColor } = require('./achievementBack.js');
-const { METRICS, findAll, loadDisplaySettings } = require('./achievement.js');
+const { findAll, loadDisplaySettings } = require('./achievement.js');
+const { metricsMeta, normalizeRule, sameRule } = require('./achievementRules');
 const serials = require('./achievementSerial');
 const { randomUUID } = require('crypto');
 
@@ -16,10 +17,6 @@ function clean(value, max = 200) {
 
 function isCosUrl(url) {
   return /^https:\/\//.test(url || '');
-}
-
-function sameRule(a, b) {
-  return a?.metric === b?.metric && a?.count === b?.count;
 }
 
 async function holderCount(db, key) {
@@ -132,7 +129,7 @@ async function list(ctx) {
   await backfillMaterialColors(ctx, materials);
   return {
     ok: true,
-    metrics: METRICS,
+    metrics: metricsMeta(),
     numberingRevision: serials.revision,
     displaySettings,
     materials: materials.map(item => ({ ...item, generation: progress[`material:${item.key}`] || null })).sort((a, b) => a.key.localeCompare(b.key)),
@@ -227,10 +224,8 @@ async function saveBadge(ctx, input) {
   if (!input.isNew && !current) return { ok: false, error: '徽章不存在' };
   const holders = current ? await holderCount(db, key) : 0;
 
-  const rule = { metric: clean(input.rule?.metric, 20), count: Number(input.rule?.count) };
-  if (!METRICS[rule.metric] || !Number.isInteger(rule.count) || rule.count < 1 || rule.count > 100000) {
-    return { ok: false, error: '请选择统计项并填写 1 以上的整数门槛' };
-  }
+  const { rule, error: ruleError } = normalizeRule(input.rule);
+  if (ruleError) return { ok: false, error: ruleError };
   if (current && (current.status === 'active' || holders > 0) && !sameRule(current.rule, rule)) {
     return { ok: false, error: '徽章上线或已有人获得后，规则不能修改' };
   }
