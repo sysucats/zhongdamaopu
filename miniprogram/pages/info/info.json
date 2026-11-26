@@ -1,5 +1,6 @@
 {
   "usingComponents": {
+    "achievement-unlock": "/components/achievementUnlock/achievementUnlock"
   },
   "navigationBarTitleText": "关于",
   "backgroundColor": "#f7f7f7"

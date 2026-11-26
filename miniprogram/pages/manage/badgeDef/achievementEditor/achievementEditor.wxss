@@ -130,14 +130,6 @@
   border-radius: var(--radius-md);
 }
 
-.holder-note {
-  margin-top: 20rpx;
-  padding-top: 18rpx;
-  border-top: 1rpx solid var(--color-gray-normal);
-  color: var(--color-gray-max);
-  font-size: 23rpx;
-  line-height: 1.5;
-}
 
 /* 保存进度：贴在底栏顶边 */
 .save-progress {
@@ -181,10 +173,22 @@
 .window-row {
   margin-top: var(--space-sm);
 }
+/* 取消指定猫猫：图标按钮，留出触控范围 */
 .clear-cat {
   flex-shrink: 0;
+  margin: -16rpx;
+  padding: 16rpx;
   color: var(--color-gray-max);
-  font-size: 24rpx;
+  font-size: 28rpx;
+}
+/* 锁定类标签：规则已锁定、已有人获得，统一浅灰底加锁图标 */
+.lock-tag {
+  background: var(--color-gray-light);
+  color: var(--color-gray-max);
+}
+.lock-tag .iconfont {
+  margin-right: 6rpx;
+  font-size: 22rpx;
 }
 .rule-preview {
   margin-top: var(--space-md);

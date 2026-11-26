@@ -82,3 +82,5 @@
 
 <!-- 底tab占位 -->
 <view class="tab-bar-spacer"></view>
+
+<achievement-unlock id="achievement-unlock" />

@@ -83,7 +83,7 @@
               <view class="badge-preview image-placeholder" wx:else>待上传</view>
               <view class="tile-name">{{badge.name}}</view>
               <view class="tile-condition">{{badge.description || badge.thresholdText}}</view>
-              <view class="tile-status {{badge.status === 'draft' ? 'is-draft' : ''}}">{{badge.statusText}}</view>
+              <view class="tile-status {{badge.status === 'draft' ? 'is-draft' : (badge.status === 'test' ? 'is-test' : '')}}">{{badge.statusText}}</view>
               <view class="tile-asset-status {{badge.generation.status === 'failed' ? 'is-error' : ''}}">{{badge.assetStatusText}}</view>
               <view class="tile-asset-error" wx:if="{{badge.generation.error}}">{{badge.generation.error}}</view>
               <view class="tile-holders">{{badge.holders}} 人获得{{badge.needsUpload ? ' · 待上传' : ''}}</view>

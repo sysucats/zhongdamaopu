@@ -9,7 +9,8 @@ const { randomUUID } = require('crypto');
 
 const KEY_PATTERN = /^[a-z][a-z0-9_-]{1,39}$/;
 const COLOR_PATTERN = /^#[0-9a-f]{6}$/i;
-const STATUSES = ['draft', 'active'];
+// test：只对超级管理员（99）展示和发放，用于在正式环境验收
+const STATUSES = ['draft', 'test', 'active'];
 
 function clean(value, max = 200) {
   return typeof value === 'string' ? value.trim().slice(0, max) : '';
@@ -214,6 +215,14 @@ async function continueRegenerateBacks(ctx, input) {
   return { ok: true, ...(await regenerateBacks(ctx, material, input.generationId)) };
 }
 
+// 已有人获得后：上线的不能下线；测试的只能上线（测试记录保留），或删除连同测试记录一起清掉
+function statusChangeError(from, to, holders) {
+  if (!from || from === to || holders === 0) return '';
+  if (from === 'active') return '已有人获得的徽章不能下线';
+  if (from === 'test' && to !== 'active') return '已有测试记录的徽章只能上线，或删除后重建';
+  return '';
+}
+
 async function saveBadge(ctx, input) {
   const db = ctx.mpserverless.db;
   const key = clean(input.key, 40);
@@ -235,9 +244,8 @@ async function saveBadge(ctx, input) {
   const sort = Number(input.sort) || 0;
   const status = STATUSES.includes(input.status) ? input.status : 'draft';
   if (!series || !name) return { ok: false, error: '请填写系列和名称' };
-  if (current?.status === 'active' && status === 'draft' && holders > 0) {
-    return { ok: false, error: '已有人获得的徽章不能退回草稿' };
-  }
+  const statusError = statusChangeError(current?.status, status, holders);
+  if (statusError) return { ok: false, error: statusError };
 
   const materialKey = clean(input.materialKey, 40);
   const material = (await db.collection('achievement_material').findOne({ key: materialKey })).result;
@@ -266,7 +274,8 @@ async function saveBadge(ctx, input) {
         if (+new Date(latest.updated_at || 0) !== +new Date(current.updated_at || 0)) throw new Error('徽章已更新，请刷新后重试');
         const holders = await holderCount(db, key);
         if ((latest.status === 'active' || holders > 0) && !sameRule(latest.rule, rule)) throw new Error('徽章上线或已有人获得后，规则不能修改');
-        if (latest.status === 'active' && status === 'draft' && holders > 0) throw new Error('已有人获得的徽章不能退回草稿');
+        const statusError = statusChangeError(latest.status, status, holders);
+        if (statusError) throw new Error(statusError);
         await collection.updateOne({ _id: latest._id }, { $set: data, $unset: { thicknessMm: '' } });
       } else await collection.insertOne({ ...data, created_at: new Date() });
     });
@@ -297,7 +306,7 @@ async function prepareBadge(ctx, input) {
   return { ok: true, ...(await serials.prepare(db, key)) };
 }
 
-// 批量上线：逐枚校验素材与编号，只放行齐备的草稿徽章
+// 批量上线：逐枚校验素材与编号，只放行齐备的草稿徽章；测试中的徽章需单独上线
 async function activateAll(ctx) {
   const db = ctx.mpserverless.db;
   const [badges, materials, sequences, missingSerials] = await Promise.all([
@@ -311,6 +320,7 @@ async function activateAll(ctx) {
   let already = 0;
   for (const badge of badges) {
     if (badge.status === 'active') { already++; continue; }
+    if (badge.status === 'test') continue;
     const material = materialByKey.get(badge.materialKey);
     let reason = '';
     if (!isCosUrl(badge.frontImage)) reason = '正面图未上传';
@@ -334,8 +344,12 @@ async function deleteBadge(ctx, input) {
   const current = (await db.collection('achievement_def').findOne({ key })).result;
   if (!current) return { ok: false, error: '徽章不存在' };
   return serials.withLock(db, key, async () => {
-    if (await holderCount(db, key) > 0) return { ok: false, error: '已有人获得的徽章不能删除' };
-    await db.collection('achievement_def').deleteOne({ _id: current._id });
+    const { result: latest } = await db.collection('achievement_def').findOne({ key });
+    if (!latest) return { ok: false, error: '徽章不存在' };
+    // 测试中的徽章只发给过管理员，删除时连同测试记录一起清掉
+    if (latest.status !== 'test' && await holderCount(db, key) > 0) return { ok: false, error: '已有人获得的徽章不能删除' };
+    if (latest.status === 'test') await db.collection('achievement').deleteMany({ key });
+    await db.collection('achievement_def').deleteOne({ _id: latest._id });
     return { ok: true };
   });
 }

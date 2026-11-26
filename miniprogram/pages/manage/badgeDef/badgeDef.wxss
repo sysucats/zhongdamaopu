@@ -162,6 +162,9 @@ page {
 .tile-status.is-draft {
   color: var(--color-status-pending-text);
 }
+.tile-status.is-test {
+  color: var(--color-primary);
+}
 /* 批量生成总进度：贴在标题分割线上，已完成枚数 + 当前这枚的步骤 */
 .batch-progress {
   position: absolute;

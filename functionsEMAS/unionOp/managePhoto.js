@@ -2,6 +2,7 @@ const { createInternalCtx } = require('./_helper.js')
 const isManagerHandler = require('./isManager.js')
 const deleteFilesHandler = require('./deleteFiles.js')
 const deleteCosFilesHandler = require('./deleteCosFiles.js')
+const { awardMetric } = require('./achievement.js')
 
 module.exports = async (ctx) => {
   const is_manager = await isManagerHandler(createInternalCtx(ctx, {
@@ -120,6 +121,10 @@ module.exports = async (ctx) => {
 
     // 重新计算精选照片数量
     await recountBestPhotos(photo.cat_id);
+
+    // 上传者的照片类成就随之检查（按照片上传时间判断时间窗口）
+    const { result: checked } = await ctx.mpserverless.db.collection('photo').findOne({ _id: photo._id });
+    await awardMetric(ctx.mpserverless.db, checked?._openid, 'photo');
   } else if (opType == "delete") {
     // 记录照片是否是精选
     const wasBest = photo.best;

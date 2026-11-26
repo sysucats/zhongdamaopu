@@ -1,6 +1,7 @@
 const { createHash } = require('crypto')
 const { updateUser } = require('./userOp.js')
 const serials = require('./achievementSerial.js')
+const { awardMetric } = require('./achievement.js')
 const { createInternalCtx } = require('./_helper.js')
 const isManagerHandler = require('./isManager.js')
 const deleteFilesHandler = require('./deleteFiles.js')
@@ -176,15 +177,20 @@ module.exports = async (ctx) => {
         return await ctx.mpserverless.db.collection(collection).insertOne(data);
     }
     else if (operation == "update") {  // 更新记录
+        let approvedComment = null;
         if (collection === 'comment') {
             const { result: current } = await ctx.mpserverless.db.collection('comment').findOne({ _id: item_id });
             if (wasApproved(current) || data.review_action === 'pass'
                 || (data.needVerify === false && data.deleted !== true && data.review_action !== 'delete')) {
                 data.approvedOnce = true;
+                // 首次通过审核：作者的便利贴类成就随之检查
+                if (current && !wasApproved(current)) approvedComment = current;
             } else delete data.approvedOnce;
         }
         data.mdate = new Date();
-        return await ctx.mpserverless.db.collection(collection).updateOne({ _id: item_id }, { $set: data })
+        const updated = await ctx.mpserverless.db.collection(collection).updateOne({ _id: item_id }, { $set: data });
+        if (approvedComment) await awardMetric(ctx.mpserverless.db, approvedComment._openid || approvedComment.user_openid, 'comment');
+        return updated;
     }
     else if (operation == "remove") {  // 移除记录
         if (collection === 'comment') {
@@ -294,6 +300,7 @@ async function addLike(ctx, input) {
         throw error;
     }
     await db.collection(targetType).updateOne({ _id: input.item_id }, { $inc: { like_count: 1 } });
+    await awardMetric(db, openid, 'like');
     return { ...inserted, ok: true };
 }
 

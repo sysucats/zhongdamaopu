@@ -88,7 +88,7 @@ Page({
         thresholdText: badge.rule?.window || badge.rule?.agg || badge.rule?.filter
           ? describeRule(badge.rule, metrics)
           : `${badge.rule?.count || 0}${metrics[badge.rule?.metric]?.unit || ''}`,
-        statusText: `${badge.status === 'active' ? '上线' : '草稿'} · ${materialName[badge.materialKey] || '无材质'}`,
+        statusText: `${{ active: '上线', test: '测试' }[badge.status] || '草稿'} · ${materialName[badge.materialKey] || '无材质'}`,
         needsUpload: !/^https:\/\//.test(badge.frontImage || ''),
       })));
       badges.sort((a, b) => (a.sort || 0) - (b.sort || 0) || a.key.localeCompare(b.key));
@@ -106,7 +106,7 @@ Page({
         savedThicknessMm: result.displaySettings?.thicknessMm ?? .6,
         pendingBadges: badges.filter(badge => badge.needsAssets || !badge.model3dUrl || !badge.backImage || !badge.serialReady).map(badge => ({ key: badge.key, name: badge.name })),
         allBadges: badges.map(badge => ({ key: badge.key, name: badge.name, status: badge.status })),
-        draftCount: badges.filter(badge => badge.status !== 'active').length,
+        draftCount: badges.filter(badge => badge.status === 'draft').length,
         userSeries: seriesNames.map(name => {
           const items = badges.filter(item => item.series === name);
           const metricKeys = [...new Set([...Object.keys(metrics), ...items.map(item => item.rule?.metric)])];

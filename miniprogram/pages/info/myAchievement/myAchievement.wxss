@@ -218,6 +218,7 @@ page {
   color: var(--color-gray-dark);
 }
 
+
 .footer-tip {
   text-align: center;
   font-size: var(--font-size-caption);
@@ -243,4 +244,11 @@ page {
   font-weight: 700;
   line-height: 32rpx;
   transform: rotate(-7deg);
+}
+
+/* 限时徽章进行中：剩余天数挂在右上角，沿用「新」标签的形状，换成橙色 */
+.window-tag {
+  background: linear-gradient(135deg, var(--color-orange) 0%, var(--color-orange-dark) 100%);
+  box-shadow: 0 4rpx 8rpx rgba(197, 83, 0, 0.28);
+  white-space: nowrap;
 }

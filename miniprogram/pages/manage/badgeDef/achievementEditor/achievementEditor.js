@@ -26,6 +26,19 @@ const AGG_OPTIONS = [
 ];
 
 // 设备本地日期 YYYY-MM-DD，作为时间窗口的默认值
+// 测试：只对超级管理员展示和发放，用于在正式环境验收
+const STATUS_OPTIONS = [
+  { key: 'draft', name: '草稿' },
+  { key: 'test', name: '超管测试' },
+  { key: 'active', name: '上线' },
+];
+
+// 与后端一致：已有人获得后，上线的不能下线，测试的只能上线
+function statusAllowed(from, to, holders) {
+  if (!from || from === to || !holders) return true;
+  return from === 'test' && to === 'active';
+}
+
 function today() {
   const now = new Date();
   return [now.getFullYear(), now.getMonth() + 1, now.getDate()].map(n => String(n).padStart(2, '0')).join('-');
@@ -69,8 +82,11 @@ function contrastOnWhite(hex) {
 
 Page({
   data: {
+    statusOptions: STATUS_OPTIONS,
+    originalStatus: '',
     autoColor: '',
     imageChanged: false,
+    materialUsage: 0,
     customColor: false,
     pillStyle: '',
     hexInput: '',
@@ -132,7 +148,9 @@ Page({
           : { key: `mat_${generateUUID().replace(/-/g, '')}`, name: '', image: '', color: '' };
         // 自动色由云函数按材质图取好；旧数据没有 autoColor 时，自动模式下的 color 就是自动色
         const autoColor = current?.autoColor || (current && current.colorAuto !== false ? current.color || '' : '');
-        this.setData({ mode, isNew: !current, form, autoColor, originalImage: form.image, imageChanged: false, generation: current?.generation || null });
+        // 引用该材质的徽章数：换图后保存会重新生成它们的背面，写在保存按钮上
+        const materialUsage = current ? (result.badges || []).filter(item => item.materialKey === key).length : 0;
+        this.setData({ mode, isNew: !current, form, autoColor, materialUsage, originalImage: form.image, imageChanged: false, generation: current?.generation || null });
         this.updatePill();
         // 手选过颜色：直接展开自定义
         if (form.color) this.setCustomColor(form.color);
@@ -155,6 +173,8 @@ Page({
         materialOptions,
         seriesOptions: [...new Set(badges.map(item => item.series).filter(Boolean))],
         holders: current?.holders || 0,
+        originalStatus: current?.status || '',
+        statusOptions: STATUS_OPTIONS.map(item => ({ ...item, disabled: !statusAllowed(current?.status, item.key, current?.holders || 0) })),
         generation: current?.generation || null,
         ruleLocked: Boolean(current && (current.status === 'active' || current.holders > 0)),
         metricIndex: Math.max(0, metricOptions.findIndex(item => item.key === form.rule.metric)),
@@ -250,6 +270,7 @@ Page({
       ruleDescription: describeRule(form.rule, metrics),
       supportsWindow: supports.includes('window'),
       supportsCat: supports.includes('catId'),
+      fixedCount: Boolean(metric?.catDesc && form.rule?.filter),
       aggOptions: aggOptions.length > 1 ? aggOptions : [],
       countLabel: agg?.key === 'days' ? `${metric?.label || ''}的天数` : agg?.key === 'cats' ? `${metric?.label || ''}的不同猫数` : metric?.label || '',
       countUnit: agg?.unit || metric?.unit || '',
@@ -274,6 +295,7 @@ Page({
       if (!supports.includes('window')) delete rule.window;
       if (rule.agg && !supports.includes(rule.agg)) delete rule.agg;
       if (!supports.includes('catId')) delete rule.filter;
+      if (rule.filter && metric.catDesc) rule.count = 1;
       this.setData({ 'form.rule': rule, metricIndex: index, filterCatName: rule.filter ? this.data.filterCatName : '' });
     } else if (field === 'material' && this.data.materialOptions[index]) {
       this.setData({ 'form.materialKey': this.data.materialOptions[index].key, materialIndex: index });
@@ -325,7 +347,9 @@ Page({
     const cat = e.detail;
     this.setData({ showCatSelect: false });
     if (!cat?._id) return;
-    this.setData({ 'form.rule.filter': { catId: cat._id }, filterCatName: cat.name || cat._id, formError: '' });
+    const metric = this.data.metricOptions.find(item => item.key === this.data.form.rule.metric);
+    // 浏览、关注指定猫猫只有看过 / 没看过，数量固定为 1
+    this.setData({ 'form.rule.filter': { catId: cat._id }, ...(metric?.catDesc ? { 'form.rule.count': 1 } : {}), filterCatName: cat.name || cat._id, formError: '' });
     this.updateDerived();
   },
 
@@ -353,8 +377,9 @@ Page({
   },
 
   onStatusChange(e) {
-    if (this.data.form.status === 'active' && this.data.holders > 0) return;
-    this.setData({ 'form.status': e.detail.value ? 'active' : 'draft', formError: '' });
+    const status = e.currentTarget.dataset.status;
+    if (!statusAllowed(this.data.originalStatus, status, this.data.holders)) return;
+    this.setData({ 'form.status': status, formError: '' });
   },
 
   async chooseImage(e) {
@@ -453,10 +478,13 @@ Page({
 
   async remove() {
     if (this.data.saving || this.data.uploading || this.data.loading) return;
-    if (this.data.mode !== 'badge' || this.data.isNew || this.data.holders > 0) return;
+    const testing = this.data.originalStatus === 'test';
+    if (this.data.mode !== 'badge' || this.data.isNew || (this.data.holders > 0 && !testing)) return;
     const confirmed = await new Promise(resolve => wx.showModal({
       title: '删除成就',
-      content: `确定删除「${this.data.form.name}」吗？`,
+      content: testing && this.data.holders > 0
+        ? `确定删除「${this.data.form.name}」吗？${this.data.holders} 条测试记录会一并清掉。`
+        : `确定删除「${this.data.form.name}」吗？`,
       success: res => resolve(res.confirm),
       fail: () => resolve(false),
     }));

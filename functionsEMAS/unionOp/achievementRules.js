@@ -68,12 +68,12 @@ function listCounter(field) {
 // supports：该统计项可用的规则条件。window 时间窗口、days / cats 聚合、catId 按猫筛选
 const METRICS = {
   view: {
-    label: '浏览猫猫', name: '猫口普查', unit: '只', desc: '看过 {} 只不同的猫猫',
+    label: '浏览猫猫', name: '猫口普查', unit: '只', desc: '看过 {} 只不同的猫猫', catDesc: '看过指定的猫猫',
     supports: ['catId'],
     count: listCounter('viewedCats'),
   },
   follow: {
-    label: '关注猫猫', name: '吸猫', unit: '只', desc: '关注 {} 只猫猫',
+    label: '关注猫猫', name: '吸猫', unit: '只', desc: '关注 {} 只猫猫', catDesc: '关注指定的猫猫',
     supports: ['catId'],
     count: listCounter('followCats'),
   },
@@ -137,6 +137,8 @@ function normalizeRule(input) {
   if (catId) {
     if (!metric.supports.includes('catId')) return { error: `「${metric.label}」不支持按猫筛选` };
     if (rule.agg === 'cats') return { error: '按猫筛选时不能再按不同猫数统计' };
+    // 浏览、关注指定猫猫只有看过 / 没看过两种结果
+    if (metric.catDesc && count !== 1) return { error: `指定猫猫时「${metric.label}」的数量只能为 1` };
     rule.filter = { catId };
   }
   return { rule };
@@ -190,13 +192,15 @@ function describeRule(rule) {
   const metric = METRICS[rule?.metric];
   if (!metric) return '';
   let text;
+  // 只有 1 只时「不同的」多余
+  const distinct = Number(rule.count) === 1 ? '' : '不同的';
   if (rule.agg === 'days') text = `${metric.label}累计 ${rule.count} 天`;
-  else if (rule.agg === 'cats') text = `为 ${rule.count} 只不同的猫猫${metric.label}`;
-  else text = metric.desc.replace('{}', rule.count);
-  if (rule.filter?.catId) text = `${text}（限指定猫猫）`;
+  else if (rule.agg === 'cats') text = `为 ${rule.count} 只${distinct}猫猫${metric.label}`;
+  else text = metric.desc.replace('{}', rule.count).replace('不同的', distinct);
+  if (rule.filter?.catId) text = metric.catDesc || `${text}（限指定猫猫）`;
   if (rule.window) {
-    const span = rule.window.start === rule.window.end ? rule.window.start : `${rule.window.start} 至 ${rule.window.end}`;
-    text = `${span} 期间${text}`;
+    const { start, end } = rule.window;
+    text = start === end ? `${start.slice(5)} 当天${text}` : `${start.slice(5)} 至 ${end.slice(5)} ${text}`;
   }
   return text;
 }

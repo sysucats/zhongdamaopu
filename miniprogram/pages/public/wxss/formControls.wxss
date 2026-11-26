@@ -150,13 +150,6 @@
 .context-copy .field-hint {
   margin-top: 6rpx;
 }
-.readonly-tag {
-  padding: 6rpx 14rpx;
-  border-radius: var(--radius-pill);
-  background: var(--color-gray-light);
-  color: var(--color-gray-max);
-  font-size: var(--font-size-tag);
-}
 .image-upload {
   display: flex;
   flex-direction: column;

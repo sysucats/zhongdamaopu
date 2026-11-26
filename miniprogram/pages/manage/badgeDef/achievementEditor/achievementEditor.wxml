@@ -23,8 +23,6 @@
           <text wx:else class="iconfont icon-photo-up upload-icon"></text>
           <view class="upload-label">{{form.image ? '更换图片' : '上传材质 PNG'}}</view>
         </view>
-        <view class="field-hint">PNG，最大 5 MB，宽高不超过 2048 像素。</view>
-        <view class="field-hint">更换材质后，引用它的成就背面会同步更新。</view>
       </view>
 
       <view class="form-section">
@@ -71,7 +69,7 @@
       <view class="form-section">
         <view class="section-heading">
           <view class="section-title">规则</view>
-          <text class="readonly-tag" wx:if="{{ruleLocked}}">已锁定</text>
+          <text class="tag lock-tag" wx:if="{{ruleLocked}}"><text class="iconfont icon-lock"></text>已锁定</text>
         </view>
         <view class="path-row">
           <view class="path-col">
@@ -93,7 +91,7 @@
         <view class="chip-row" wx:if="{{aggOptions.length}}">
           <view class="chip {{(form.rule.agg || 'total') === item.key ? 'active' : ''}}" wx:for="{{aggOptions}}" wx:key="key" data-agg="{{item.key}}" bindtap="onAgg" disabled="{{ruleLocked}}" aria-role="button" aria-label="{{item.name}}">{{item.name}}</view>
         </view>
-        <view class="quantity-row">
+        <view class="quantity-row" wx:if="{{!fixedCount}}">
           <view class="quantity-label {{ruleLocked ? '' : 'field-required'}}">{{countLabel}}</view>
           <view class="count-field {{ruleLocked ? 'locked' : ''}}">
             <input class="count-input" type="number" maxlength="6" value="{{form.rule.count}}" disabled="{{ruleLocked}}" data-field="rule.count" bindinput="onInput" aria-label="达成数量" />
@@ -106,7 +104,6 @@
           <view class="status-row">
             <view class="status-copy">
               <view class="status-title">时间限定</view>
-              <view class="field-hint">{{form.rule.window ? '只统计这段日期内的记录，含首尾两天' : '不限时间，累计统计'}}</view>
             </view>
             <switch checked="{{form.rule.window ? true : false}}" disabled="{{ruleLocked}}" color="var(--color-green)" bindchange="onWindowToggle" aria-label="时间限定" />
           </view>
@@ -132,10 +129,9 @@
           <view class="status-row">
             <view class="status-copy">
               <view class="status-title">指定猫猫</view>
-              <view class="field-hint">{{form.rule.filter ? '只统计与这只猫相关的记录' : '不限猫猫'}}</view>
             </view>
             <view class="chip {{form.rule.filter ? 'active' : ''}}" bindtap="openCatSelect" disabled="{{ruleLocked}}" aria-role="button" aria-label="选择猫猫">{{form.rule.filter ? filterCatName || '已选择' : '选择猫猫'}}</view>
-            <text class="clear-cat" wx:if="{{form.rule.filter && !ruleLocked}}" bindtap="clearFilterCat" aria-role="button" aria-label="取消指定猫猫">取消</text>
+            <text class="iconfont icon-close clear-cat" wx:if="{{form.rule.filter && !ruleLocked}}" bindtap="clearFilterCat" aria-role="button" aria-label="取消指定猫猫"></text>
           </view>
         </view>
         <view class="field-hint rule-preview" wx:if="{{ruleDescription}}">规则：{{ruleDescription}}</view>
@@ -153,29 +149,27 @@
               <image wx:if="{{previews.frontImage}}" class="face-image" src="{{previews.frontImage}}" mode="aspectFit" />
               <text wx:else class="iconfont icon-photo-up upload-icon"></text>
             </view>
-            <view class="face-label"><text class="field-required">正面</text> · <text class="upload-link">{{form.frontImage ? '更换图片' : '上传图片'}}</text></view>
+            <view class="face-label"><text class="field-required">正面</text> · <text class="upload-link">{{form.frontImage ? '更换图片' : '上传透明 PNG'}}</text></view>
           </view>
           <view class="face-column">
             <view class="face-tile">
               <image wx:if="{{previews.backImage && !backPending}}" class="face-image" src="{{previews.backImage}}" mode="aspectFit" />
               <view class="auto-back" wx:else>保存后生成</view>
             </view>
-            <view class="face-label">背面 · 自动生成</view>
+            <view class="face-label">背面</view>
           </view>
         </view>
-        <view class="field-hint">正面使用透明 PNG，最大 5 MB，宽高不超过 2048 像素。</view>
-        <view class="field-hint" wx:if="{{backPending && form.frontImage}}">保存后自动生成背面和 3D 轮廓。</view>
       </view>
 
       <view class="form-section status-section">
         <view class="status-row">
-          <view class="status-copy">
-            <view class="status-title">上线</view>
-            <view class="field-hint">{{form.status === 'active' ? '按达成条件自动发放' : '保存为草稿，暂不展示和发放'}}</view>
-          </view>
-          <switch checked="{{form.status === 'active'}}" disabled="{{form.status === 'active' && holders > 0}}" color="var(--color-green)" bindchange="onStatusChange" aria-label="上线成就" />
+          <view class="status-copy"><view class="status-title">状态</view></view>
+          <text class="tag lock-tag" wx:if="{{holders > 0}}"><text class="iconfont icon-lock"></text>{{holders}} 人获得</text>
         </view>
-        <view class="holder-note" wx:if="{{!isNew}}">{{holders > 0 ? '已有 ' + holders + ' 人获得，不能退回草稿' : '尚无人获得'}}</view>
+        <!-- 已有人获得后不可切换的状态置灰；测试徽章删除时一并清掉测试记录（删除确认框里说明） -->
+        <view class="chip-row">
+          <view class="chip {{form.status === item.key ? 'active' : ''}}" wx:for="{{statusOptions}}" wx:key="key" data-status="{{item.key}}" bindtap="onStatusChange" disabled="{{item.disabled}}" aria-role="button" aria-label="{{item.name}}">{{item.name}}</view>
+        </view>
       </view>
 
     </block>
@@ -186,8 +180,8 @@
       <view class="save-progress progress-line" wx:if="{{saving && !deleting && generation}}">
         <view class="progress-line-fill {{generation.status === 'complete' ? 'done' : ''}}" style="width: {{generation.status === 'complete' ? 100 : (generation.total ? (generation.step + 1) * 100 / (generation.total + 1) : 8)}}%"></view>
       </view>
-      <button class="form-button danger delete-button" wx:if="{{mode === 'badge' && !isNew && holders === 0}}" bindtap="remove" loading="{{deleting}}" disabled="{{saving || uploading}}">{{deleting ? '删除中' : '删除成就'}}</button>
-      <button class="form-button primary save-button" bindtap="save" loading="{{(saving && !deleting && generation.status !== 'complete') || uploading}}" disabled="{{saving || uploading}}">{{uploading ? '图片上传中' : (saving && !deleting && generation ? generation.label : (mode === 'material' ? '保存材质' : (isNew ? (form.status === 'active' ? '保存并上线' : '保存草稿') : '保存修改')))}}</button>
+      <button class="form-button danger delete-button" wx:if="{{mode === 'badge' && !isNew && (holders === 0 || originalStatus === 'test')}}" bindtap="remove" loading="{{deleting}}" disabled="{{saving || uploading}}">{{deleting ? '删除中' : '删除成就'}}</button>
+      <button class="form-button primary save-button" bindtap="save" loading="{{(saving && !deleting && generation.status !== 'complete') || uploading}}" disabled="{{saving || uploading}}">{{uploading ? '图片上传中' : (saving && !deleting && generation ? generation.label : (mode === 'material' ? (imageChanged && materialUsage ? '保存并更新 ' + materialUsage + ' 枚背面' : '保存材质') : (isNew ? (form.status === 'active' ? '保存并上线' : (form.status === 'test' ? '保存并测试' : '保存草稿')) : '保存修改')))}}</button>
     </view>
   </view>
   <search-cat show="{{showCatSelect}}" bind:select="onCatSelect" bind:close="onCatSelectClose"></search-cat>
