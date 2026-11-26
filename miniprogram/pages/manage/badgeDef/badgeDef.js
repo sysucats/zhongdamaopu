@@ -204,6 +204,38 @@ Page({
     } else {
       wx.showToast({ title: '素材已生成', icon: 'success' });
     }
+    await this.reviewOrphanAssets();
+  },
+
+  // 生成完扫一遍 COS：列出没有任何徽章引用的旧素材，管理员确认后再删
+  async reviewOrphanAssets() {
+    const call = async (action, data) => {
+      const { result } = await app.mpServerless.function.invoke('unionOp', { unionAction: 'manageAchievementCatalog', action, data });
+      if (!result?.ok) throw new Error(result?.error || '操作失败');
+      return result;
+    };
+    try {
+      const { orphans, totalSize } = await call('scanOrphanAssets');
+      if (!orphans.length) return;
+      const names = orphans.slice(0, 5).map(item => item.key.split('/').pop());
+      const size = totalSize >= 1024 * 1024 ? `${(totalSize / 1024 / 1024).toFixed(1)} MB` : `${Math.ceil(totalSize / 1024)} KB`;
+      const confirmed = await new Promise(resolve => wx.showModal({
+        title: `发现 ${orphans.length} 个旧素材`,
+        content: `没有任何徽章在用，共 ${size}：\n${names.join('\n')}${orphans.length > 5 ? `\n…等 ${orphans.length} 个` : ''}\n\n清除后不可恢复。`,
+        confirmText: '清除',
+        success: res => resolve(res.confirm),
+        fail: () => resolve(false),
+      }));
+      if (!confirmed) return;
+      wx.showLoading({ title: '清除中', mask: true });
+      const { deleted } = await call('deleteOrphanAssets', { keys: orphans.map(item => item.key) });
+      wx.hideLoading();
+      wx.showToast({ title: `已清除 ${deleted} 个`, icon: 'success' });
+    } catch (error) {
+      wx.hideLoading();
+      console.warn('清理旧素材失败', error);
+      wx.showToast({ title: error.message || '清理旧素材失败', icon: 'none' });
+    }
   },
 
   // 全部上线：校验素材与编号后批量切 active，不齐的列出原因

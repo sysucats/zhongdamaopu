@@ -146,4 +146,99 @@ async function generateAssets(ctx, frontUrl, materialUrl, badgeKey, report = asy
   return { backImage: origin + backKey, model3dUrl: origin + modelKey };
 }
 
-module.exports = { generateAssets, renderBack, objectKey, materialTextColor, pickTextColor };
+// ===== 清理 COS 上不再使用的徽章素材 =====
+// 生成的文件名：achievement/generated/<徽章 key>_<12 位摘要>_back.png / _model-v1.json
+const GENERATED_PREFIX = 'achievement/generated/';
+const GENERATED_SUFFIX = /^[0-9a-f]{12}_(back\.png|model-v1\.json)$/;
+// 重新生成后只删 10 分钟前的旧文件，避免误删并发生成刚上传、还没写入数据库的文件
+const STALE_AGE_MS = 10 * 60 * 1000;
+
+// URL → COS 对象 key（只认当前存储桶的 achievement 目录，用于比较，不限扩展名）
+function assetKey(url, secret) {
+  try {
+    const parsed = new URL(url);
+    if (parsed.hostname !== `${secret.OSS_BUCKET}.${secret.OSS_ENDPOINT}`) return '';
+    const key = decodeURIComponent(parsed.pathname.slice(1));
+    return key.startsWith('achievement/') && !key.includes('..') ? key : '';
+  } catch (error) {
+    return '';
+  }
+}
+
+// 从列表里挑出该徽章可删的生成文件：名字严格匹配（key 为 a 时不会误中 a_b 的文件）、不在保留集合、且足够旧
+function staleGenerated(objects, badgeKey, keepKeys = [], { now = Date.now(), minAgeMs = 0 } = {}) {
+  const prefix = `${GENERATED_PREFIX}${badgeKey}_`;
+  const keep = new Set(keepKeys);
+  return objects.filter(item => item.Key.startsWith(prefix)
+    && GENERATED_SUFFIX.test(item.Key.slice(prefix.length))
+    && !keep.has(item.Key)
+    && now - Date.parse(item.LastModified) >= minAgeMs).map(item => item.Key);
+}
+
+async function listObjects(cos, common, prefix) {
+  const objects = [];
+  let marker = '';
+  for (;;) {
+    const data = await cosCall(cos, 'getBucket', { ...common, Prefix: prefix, Marker: marker, MaxKeys: 1000 });
+    objects.push(...(data.Contents || []));
+    if (data.IsTruncated !== 'true' || !data.NextMarker) return objects;
+    marker = data.NextMarker;
+  }
+}
+
+async function deleteObjects(cos, common, keys) {
+  for (let i = 0; i < keys.length; i += 1000) {
+    await cosCall(cos, 'deleteMultipleObject', { ...common, Objects: keys.slice(i, i + 1000).map(Key => ({ Key })) });
+  }
+}
+
+// 删除徽章的生成文件。keepUrls 为仍在使用的素材；stale 为 true 时只删旧文件（重新生成后用）
+async function pruneGenerated(ctx, badgeKey, keepUrls = [], { stale = false } = {}) {
+  const { cos, secret, common } = await openCos(ctx);
+  const objects = await listObjects(cos, common, `${GENERATED_PREFIX}${badgeKey}_`);
+  const keys = staleGenerated(objects, badgeKey, keepUrls.map(url => assetKey(url, secret)).filter(Boolean),
+    { minAgeMs: stale ? STALE_AGE_MS : 0 });
+  if (keys.length) await deleteObjects(cos, common, keys);
+  return keys;
+}
+
+// 删除上传的正面图（只删 achievement/fronts 下的文件）
+async function deleteFront(ctx, url) {
+  const { cos, secret, common } = await openCos(ctx);
+  const key = assetKey(url, secret);
+  if (!key.startsWith('achievement/fronts/')) return false;
+  await cosCall(cos, 'deleteObject', { ...common, Key: key });
+  return true;
+}
+
+// ===== 全量扫描孤儿素材：没有任何徽章引用的正面图、背面图、轮廓 =====
+const ORPHAN_PREFIXES = ['achievement/generated/', 'achievement/fronts/'];
+// 只算 1 天前的文件：编辑页刚上传、还没保存的正面图暂时没有引用，不能当孤儿
+const ORPHAN_AGE_MS = 24 * 60 * 60 * 1000;
+
+function orphanAssets(objects, referencedKeys, { now = Date.now(), minAgeMs = ORPHAN_AGE_MS } = {}) {
+  const referenced = new Set(referencedKeys);
+  return objects.filter(item => ORPHAN_PREFIXES.some(prefix => item.Key.startsWith(prefix) && item.Key.length > prefix.length)
+    && !item.Key.endsWith('/')
+    && !referenced.has(item.Key)
+    && now - Date.parse(item.LastModified) >= minAgeMs)
+    .map(item => ({ key: item.Key, size: Number(item.Size) || 0 }));
+}
+
+// referencedUrls：所有徽章记录里的素材地址
+async function scanOrphans(ctx, referencedUrls) {
+  const { cos, secret, common } = await openCos(ctx);
+  const lists = await Promise.all(ORPHAN_PREFIXES.map(prefix => listObjects(cos, common, prefix)));
+  const referenced = referencedUrls.map(url => assetKey(url, secret)).filter(Boolean);
+  return orphanAssets(lists.flat(), referenced);
+}
+
+async function deleteAssetKeys(ctx, keys) {
+  const { cos, common } = await openCos(ctx);
+  await deleteObjects(cos, common, keys);
+}
+
+module.exports = {
+  generateAssets, renderBack, objectKey, materialTextColor, pickTextColor,
+  pruneGenerated, deleteFront, staleGenerated, orphanAssets, scanOrphans, deleteAssetKeys,
+};

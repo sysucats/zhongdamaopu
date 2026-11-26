@@ -1,7 +1,7 @@
 // 管理员维护成就目录：材质库 achievement_material、徽章 achievement_def
 const { createInternalCtx } = require('./_helper.js');
 const isManager = require('./isManager.js');
-const { generateAssets, materialTextColor } = require('./achievementBack.js');
+const { generateAssets, materialTextColor, pruneGenerated, deleteFront, scanOrphans, deleteAssetKeys } = require('./achievementBack.js');
 const { findAll, loadDisplaySettings } = require('./achievement.js');
 const { metricsMeta, normalizeRule, sameRule } = require('./achievementRules');
 const serials = require('./achievementSerial');
@@ -65,6 +65,28 @@ async function jobs(db) {
 const serialReady = (sequences, missingSerials, key) =>
   !!sequences.get(key)?.ready && !missingSerials.some(record => record.key === key);
 
+// ===== COS 素材清理：失败只记日志，不影响保存和删除 =====
+// 重新生成后删掉该徽章不再使用的旧背面和轮廓，保留数据库当前指向的和本次生成的
+async function pruneOldAssets(ctx, key, assets) {
+  try {
+    const { result: badge } = await ctx.mpserverless.db.collection('achievement_def').findOne({ key });
+    await pruneGenerated(ctx, key, [assets.backImage, assets.model3dUrl, badge?.backImage, badge?.model3dUrl], { stale: true });
+  } catch (error) {
+    console.warn('[achievement catalog] prune assets failed', key, error?.message || error);
+  }
+}
+
+// 正面图没有其他徽章使用时才删
+async function deleteUnusedFront(ctx, url) {
+  if (!url) return;
+  try {
+    const { result: users } = await ctx.mpserverless.db.collection('achievement_def').count({ frontImage: url });
+    if (!users) await deleteFront(ctx, url);
+  } catch (error) {
+    console.warn('[achievement catalog] delete front failed', url, error?.message || error);
+  }
+}
+
 async function generateTrackedAssets(ctx, front, material, key, generationId = randomUUID(), batchReport, applyAssets) {
   const report = await beginProgress(ctx.mpserverless.db, key, generationId);
   try {
@@ -76,6 +98,7 @@ async function generateTrackedAssets(ctx, front, material, key, generationId = r
     if (batchReport) await batchReport(5, '保存素材');
     await applyAssets(assets);
     await report(6, '素材已更新', 'complete');
+    await pruneOldAssets(ctx, key, assets);
     return assets;
   } catch (error) {
     await report(0, '生成失败', 'failed', clean(error.message, 120));
@@ -288,6 +311,8 @@ async function saveBadge(ctx, input) {
   } else if (current && materialKey !== current.materialKey) {
     return { ok: false, error: '更换材质前请先上传正面 PNG' };
   } else await persist();
+  // 换了正面图：旧图没有其他徽章使用就删掉
+  if (current?.frontImage && frontChanged) await deleteUnusedFront(ctx, current.frontImage);
   return { ok: true, ...(await serials.prepare(db, key)) };
 }
 
@@ -343,15 +368,43 @@ async function deleteBadge(ctx, input) {
   const key = clean(input.key, 40);
   const current = (await db.collection('achievement_def').findOne({ key })).result;
   if (!current) return { ok: false, error: '徽章不存在' };
-  return serials.withLock(db, key, async () => {
+  const deleted = await serials.withLock(db, key, async () => {
     const { result: latest } = await db.collection('achievement_def').findOne({ key });
     if (!latest) return { ok: false, error: '徽章不存在' };
     // 测试中的徽章只发给过管理员，删除时连同测试记录一起清掉
     if (latest.status !== 'test' && await holderCount(db, key) > 0) return { ok: false, error: '已有人获得的徽章不能删除' };
     if (latest.status === 'test') await db.collection('achievement').deleteMany({ key });
     await db.collection('achievement_def').deleteOne({ _id: latest._id });
-    return { ok: true };
+    return { ok: true, frontImage: latest.frontImage };
   });
+  if (!deleted.ok) return deleted;
+  // 徽章已删：清掉它的全部生成文件，正面图没有其他徽章使用也删掉
+  try {
+    await pruneGenerated(ctx, key);
+  } catch (error) {
+    console.warn('[achievement catalog] prune assets failed', key, error?.message || error);
+  }
+  await deleteUnusedFront(ctx, deleted.frontImage);
+  return { ok: true };
+}
+
+// 孤儿素材：没有任何徽章引用、且 1 天前的正面图、背面图、轮廓。先扫描给管理员确认，再按确认的清单删除
+async function findOrphans(ctx) {
+  const badges = await findAll(ctx.mpserverless.db.collection('achievement_def'), {}, { projection: { frontImage: 1, backImage: 1, model3dUrl: 1 } });
+  return scanOrphans(ctx, badges.flatMap(badge => [badge.frontImage, badge.backImage, badge.model3dUrl]).filter(Boolean));
+}
+
+async function scanOrphanAssets(ctx) {
+  const orphans = await findOrphans(ctx);
+  return { ok: true, orphans, totalSize: orphans.reduce((sum, item) => sum + item.size, 0) };
+}
+
+// 删除前重新扫描，只删仍是孤儿的文件（期间被重新引用的跳过）
+async function deleteOrphanAssets(ctx, input) {
+  const requested = new Set((Array.isArray(input.keys) ? input.keys : []).filter(key => typeof key === 'string'));
+  const keys = (await findOrphans(ctx)).map(item => item.key).filter(key => requested.has(key));
+  if (keys.length) await deleteAssetKeys(ctx, keys);
+  return { ok: true, deleted: keys.length };
 }
 
 module.exports = async (ctx) => {
@@ -378,6 +431,8 @@ module.exports = async (ctx) => {
     if (action === 'deleteBadge') return await deleteBadge(ctx, input);
     if (action === 'prepareBadge') return await prepareBadge(ctx, input);
     if (action === 'activateAll') return await activateAll(ctx);
+    if (action === 'scanOrphanAssets') return await scanOrphanAssets(ctx);
+    if (action === 'deleteOrphanAssets') return await deleteOrphanAssets(ctx, input);
     return { ok: false, error: '未知操作' };
   } catch (error) {
     console.error('[achievement catalog]', action, error);
