@@ -218,7 +218,7 @@ page {
 }
 
 @import '/packages/weui/weui-wxss/dist/style/weui.wxss';
-@import "./pages/public/wxss/iconfont.wxss"
+@import "./pages/public/wxss/iconfont.wxss";
 
 /* tab 页底部占位：给自定义 tabBar 让出位置 */
 .tab-bar-spacer {
