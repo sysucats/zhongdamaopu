@@ -9,6 +9,7 @@ import {
 } from "../../../utils/user";
 import api from "../../../utils/cloudApi";
 import { signCosUrl } from "../../../utils/common";
+import { getAvatar, getCatItem } from "../../../utils/cat";
 
 const app = getApp();
 Page({
@@ -24,6 +25,10 @@ Page({
     photos_path: [],
     cover_path: "",
     showManager: false,
+    // 关联猫猫
+    catName: "",
+    catAvatar: "",
+    catInitial: "",
   },
 
   /**
@@ -104,6 +109,39 @@ Page({
       news: news,
       photos_path: signedPhotosPath,
       cover_path: news.coverPath,
+    });
+
+    await that.loadCatInfo(news.cat_id);
+  },
+
+  // 关联猫猫：名字 + 随机精选头像
+  async loadCatInfo(cat_id) {
+    if (!cat_id) {
+      this.setData({ catName: "", catAvatar: "", catInitial: "" });
+      return;
+    }
+    let cat = null;
+    let avatar = null;
+    try {
+      [cat, avatar] = await Promise.all([getCatItem(cat_id), getAvatar(cat_id)]);
+    } catch (err) {
+      console.warn("[loadCatInfo] - 读取关联猫猫失败:", err);
+    }
+    this.setData({
+      catName: cat ? (cat.name || "") : "",
+      catAvatar: avatar ? (avatar.photo_compressed || avatar.photo_id) : "",
+      catInitial: cat && cat.name ? String(cat.name).slice(0, 1) : "",
+    });
+  },
+
+  // 点击猫猫头像进入猫咪主页
+  clickCat() {
+    const cat_id = this.data.news && this.data.news.cat_id;
+    if (!cat_id) {
+      return;
+    }
+    wx.navigateTo({
+      url: `/pages/genealogy/detailCat/detailCat?cat_id=${cat_id}`,
     });
   },
 

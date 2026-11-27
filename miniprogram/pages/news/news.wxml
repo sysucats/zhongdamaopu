@@ -22,6 +22,11 @@
 </view>
 <view wx:for='{{newsList_show}}' wx:key="_id" class='content-card news-box' bindtap='clickNews' data-news_id='{{item._id}}'>
   <view class='news infoBox'>
+    <view class="news-cat-chip" wx:if="{{item.catName}}" catchtap="clickCatAvatar" data-cat_id="{{item.cat_id}}" hover-class="news-cat-chip-hover">
+      <image wx:if="{{item.catAvatar}}" class="news-cat-chip-avatar" mode="aspectFill" src="{{item.catAvatar}}"></image>
+      <view wx:else class="news-cat-chip-avatar news-cat-chip-empty">{{item.catInitial}}</view>
+      <text class="news-cat-chip-name">{{item.catName}}</text>
+    </view>
     <view class='news title'>{{item.title}}</view>
     <view class="news content-wrapper">
       <!-- 兼容flex-grow和多行省略 -->

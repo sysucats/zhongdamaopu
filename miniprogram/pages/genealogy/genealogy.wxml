@@ -209,8 +209,12 @@
       user="{{newsList[0].userNickname}}"
       time="{{newsList[0].ddate || ''}}"
       imagePath="{{ newsImage }}"
+      catName="{{newsList[0].catName || ''}}"
+      catAvatar="{{newsList[0].catAvatar || ''}}"
+      catInitial="{{newsList[0].catInitial || ''}}"
       bind:cancelEvent="_cancelEvent"  
-      bind:confirmEvent="_confirmEvent">
+      bind:confirmEvent="_confirmEvent"
+      bind:catTap="_catTapEvent">
     </newsModal>
 </view>
 

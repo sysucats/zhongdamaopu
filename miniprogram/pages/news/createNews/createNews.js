@@ -31,6 +31,12 @@ Page({
     cover_path: "",
     cover_pathId: "",
     uploading: false,
+    // 关联猫猫（选填）
+    cat_id: "",
+    cat_name: "",
+    cat_avatar: "",
+    cat_initial: "",
+    showCatPicker: false,
     buttons: [{
       id: 0,
       name: '领养',
@@ -298,6 +304,42 @@ Page({
     });
   },
 
+  openCatPicker() {
+    this.setData({ showCatPicker: true });
+  },
+
+  closeCatPicker() {
+    this.setData({ showCatPicker: false });
+  },
+
+  onCatSelected(e) {
+    const cat = e.detail || {};
+    if (!cat._id) {
+      return;
+    }
+    const avatar = cat.avatar || {};
+    this.setData({
+      cat_id: cat._id,
+      cat_name: cat.name || "",
+      cat_avatar: avatar.photo_compressed || avatar.photo_id || "",
+      cat_initial: cat.name ? String(cat.name).slice(0, 1) : "",
+      showCatPicker: false,
+    });
+    const picker = this.selectComponent("#newsCatPicker");
+    if (picker) {
+      picker.hide();
+    }
+  },
+
+  clearCat() {
+    this.setData({
+      cat_id: "",
+      cat_name: "",
+      cat_avatar: "",
+      cat_initial: "",
+    });
+  },
+
   async bindSubmit(e) {
     var submitData = e.detail.value;
     const that = this;
@@ -336,7 +378,8 @@ Page({
       photosPath: that.data.photos_path,
       photosPathId: that.data.photos_pathId,
       class: classBelongto,
-      setNewsModal: setNewsModal
+      setNewsModal: setNewsModal,
+      cat_id: that.data.cat_id || ""
     };
     console.log("[bindSubmit] - data: ", data);
 

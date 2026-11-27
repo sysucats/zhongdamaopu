@@ -136,3 +136,46 @@
   transform-origin: 0 0;
   transform: scaleX(0.5);
 }
+
+/* 关联猫猫标识 */
+.wx-modal-cat-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8rpx;
+  align-self: flex-start;
+  max-width: 100%;
+  padding: 4rpx 16rpx 4rpx 4rpx;
+  margin-bottom: 12rpx;
+  border-radius: var(--radius-pill);
+  background: var(--color-primary-bg);
+}
+
+.wx-modal-cat-chip-hover {
+  opacity: 0.75;
+}
+
+.wx-modal-cat-avatar {
+  width: 44rpx;
+  height: 44rpx;
+  border-radius: 50%;
+  background: var(--color-gray-normal);
+  flex-shrink: 0;
+}
+
+.wx-modal-cat-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24rpx;
+  font-weight: 600;
+  color: var(--color-text-inverse);
+  background: var(--color-primary);
+}
+
+.wx-modal-cat-name {
+  font-size: 22rpx;
+  color: var(--color-primary-text);
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}

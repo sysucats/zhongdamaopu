@@ -48,6 +48,21 @@ Component({
         type : String ,
         value : ''
       },
+      // 关联猫猫名称
+      catName :{
+        type : String ,
+        value : ''
+      },
+      // 关联猫猫头像（随机精选图）
+      catAvatar :{
+        type : String ,
+        value : ''
+      },
+      // 关联猫猫名称首字（无头像时占位）
+      catInitial :{
+        type : String ,
+        value : ''
+      },
     },
 
   
@@ -94,6 +109,10 @@ Component({
         this.hideNewsModal();
         //触发成功回调
         this.triggerEvent("confirmEvent");
+      },
+      // 点击关联猫猫头像
+      _catTap(){
+        this.triggerEvent("catTap");
       }
     }
   })

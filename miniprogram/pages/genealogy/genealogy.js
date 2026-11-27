@@ -7,6 +7,7 @@ import {
 } from "../../utils/utils";
 import {
   getAvatar,
+  getCatItem,
   getVisitedDate
 } from "../../utils/cat";
 import {
@@ -1161,10 +1162,42 @@ Page({
     }
     
     this.setData({ newsImage });
-    
+
+    // 关联猫猫（选填）
+    await this.loadNewsCat(newsList[0]);
+
     if (!this.checkNewsVisited()) {
       this.newsModal.showNewsModal();
     }
+  },
+
+  // 弹窗里的关联猫猫：名称 + 随机精选头像
+  async loadNewsCat(news) {
+    if (!news || !news.cat_id) {
+      return;
+    }
+    try {
+      const [cat, avatar] = await Promise.all([getCatItem(news.cat_id), getAvatar(news.cat_id)]);
+      if (!cat) return;
+      this.setData({
+        'newsList[0].catName': cat.name || '',
+        'newsList[0].catAvatar': avatar ? (avatar.photo_compressed || avatar.photo_id) : '',
+        'newsList[0].catInitial': cat.name ? String(cat.name).slice(0, 1) : '',
+      });
+    } catch (err) {
+      console.warn('[loadNewsCat] - 读取关联猫猫失败:', err);
+    }
+  },
+
+  // 点击弹窗内猫猫头像：关闭弹窗并进入猫咪主页
+  _catTapEvent() {
+    const news = this.data.newsList[0];
+    this.newsModal.hideNewsModal();
+    this.setNewsVisited();
+    if (!news || !news.cat_id) return;
+    wx.navigateTo({
+      url: `/pages/genealogy/detailCat/detailCat?cat_id=${news.cat_id}`,
+    });
   },
 
   _cancelEvent() {

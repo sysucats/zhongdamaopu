@@ -4,6 +4,7 @@ import {
 } from "../../../utils/user";
 import api from "../../../utils/cloudApi";
 import { signCosUrl } from "../../../utils/common";
+import { getAvatar, getCatItem } from "../../../utils/cat";
 const app = getApp();
 Page({
 
@@ -23,6 +24,12 @@ Page({
     length: 0,
     maxlength: 800,
     photos_path: [],
+    // 关联猫猫（选填）
+    cat_id: "",
+    cat_name: "",
+    cat_avatar: "",
+    cat_initial: "",
+    showCatPicker: false,
     buttons: [{
       id: 0,
       name: '领养',
@@ -113,6 +120,80 @@ Page({
       buttons: that.data.buttons,
       modalButtons: modalButtons,
     })
+
+    await that.loadCatInfo(result.cat_id);
+  },
+
+  // 读取已有公告关联的猫猫信息（名称 + 随机精选头像）
+  async loadCatInfo(cat_id) {
+    if (!cat_id) {
+      this.setData({
+        cat_id: "",
+        cat_name: "",
+        cat_avatar: "",
+        cat_initial: "",
+      });
+      return;
+    }
+    let cat = null;
+    let avatar = null;
+    try {
+      [cat, avatar] = await Promise.all([getCatItem(cat_id), getAvatar(cat_id)]);
+    } catch (err) {
+      console.warn("[loadCatInfo] - 读取关联猫猫失败:", err);
+    }
+    if (!cat) {
+      // 猫猫已删除或不存在，静默清空
+      this.setData({
+        cat_id: "",
+        cat_name: "",
+        cat_avatar: "",
+        cat_initial: "",
+      });
+      return;
+    }
+    this.setData({
+      cat_id: cat._id,
+      cat_name: cat.name || "",
+      cat_avatar: avatar ? (avatar.photo_compressed || avatar.photo_id) : "",
+      cat_initial: cat.name ? String(cat.name).slice(0, 1) : "",
+    });
+  },
+
+  openCatPicker() {
+    this.setData({ showCatPicker: true });
+  },
+
+  closeCatPicker() {
+    this.setData({ showCatPicker: false });
+  },
+
+  onCatSelected(e) {
+    const cat = e.detail || {};
+    if (!cat._id) {
+      return;
+    }
+    const avatar = cat.avatar || {};
+    this.setData({
+      cat_id: cat._id,
+      cat_name: cat.name || "",
+      cat_avatar: avatar.photo_compressed || avatar.photo_id || "",
+      cat_initial: cat.name ? String(cat.name).slice(0, 1) : "",
+      showCatPicker: false,
+    });
+    const picker = this.selectComponent("#newsCatPicker");
+    if (picker) {
+      picker.hide();
+    }
+  },
+
+  clearCat() {
+    this.setData({
+      cat_id: "",
+      cat_name: "",
+      cat_avatar: "",
+      cat_initial: "",
+    });
   },
 
   previewImg: function (event) {
@@ -209,6 +290,7 @@ Page({
       mainContent: submitData.mainContent,
       class: classBelongto,
       setNewsModal: setNewsModal,
+      cat_id: this.data.cat_id || "",
     }
 
     const resModal = await wx.showModal({
