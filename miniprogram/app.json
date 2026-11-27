@@ -63,7 +63,8 @@
         "detailCat",
         "badgeDetail/badgeDetail",
         "ratingDetail/ratingDetail",
-        "relationGraph/relationGraph"
+        "relationGraph/relationGraph",
+        "medicalDetail/medicalDetail"
       ]
     },
     {

@@ -70,6 +70,13 @@ async function uploadFile(options) {
       formData: formData,
       success(res) {
         console.log('cloud.uploadFile success', res);
+        // 4xx/5xx 也会走 success 回调（例如 STS 过期、policy 不匹配），必须校验状态码，
+        // 否则会把一个根本不存在的对象当成上传成功、写入库后图片永远 403/404
+        if (res.statusCode && (res.statusCode < 200 || res.statusCode >= 300)) {
+          console.error('cloud.uploadFile 失败', res.statusCode, res.data);
+          reject({ statusCode: res.statusCode, data: res.data, errMsg: 'uploadFile: http error' });
+          return;
+        }
         // wx.uploadFile 和 wx.cloud.uplaodFile 返回值不一样
         // TODO 生成 fileID 按wxcloud生成的是图片的地址
         const cleanKey = formData.key.startsWith("/") ? formData.key.slice(1) : formData.key;

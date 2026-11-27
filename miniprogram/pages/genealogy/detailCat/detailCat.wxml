@@ -166,7 +166,7 @@
           </view>
         </view>
 
-        <view class='item long' wx:if="{{medicalTimeline.length}}">
+        <view class='item long' wx:if="{{medicalTimeline.length}}" bindtap="toMedicalDetail">
           <view class="medical-summary">
             <view class="medical-summary-meta">
               <view class="iconfont icon-check medical-summary-check"></view>
@@ -340,24 +340,34 @@
 <!-- 医疗记录时间线弹出层 -->
 <popup show="{{showMedicalHistory}}" position="center" bind:close="hideMedicalHistory">
   <view class="modal-content-wrapper">
-    <popup-header title="{{cat.name}}的医疗记录" bind:close="hideMedicalHistory" />
+    <view class="modal-header">
+      <view class="modal-title">{{cat.name}}的医疗记录</view>
+      <view class="modal-close" bindtap="hideMedicalHistory" aria-label="关闭">
+        <text class="iconfont icon-close"></text>
+      </view>
+    </view>
     <scroll-view class="modal-body" scroll-y="1">
       <view class="medical-timeline" wx:if="{{medicalTimeline && medicalTimeline.length}}">
         <view class="timeline-item" wx:for="{{medicalTimeline}}" wx:key="_id">
           <view class="timeline-node {{index === 0 ? 'recent iconfont icon-check' : ''}}"></view>
           <view class="timeline-connector" wx:if="{{index !== medicalTimeline.length - 1}}"></view>
-          <view class="timeline-content">
+          <view class="timeline-content" bindtap="openMedicalRecord" data-id="{{item._id}}">
             <view class="timeline-meta">
               <text class="medical-type-tag {{index === 0 ? 'recent' : ''}}">{{medicalTypeName[item.type]}}</text>
               <text class="timeline-title">{{item.title}}</text>
               <text class="timeline-date">{{item.record_date_formatted}}</text>
             </view>
-            <view class="timeline-body" wx:if="{{item.hospital || item.expire_date_formatted || item.is_expired || item.next_vaccine_date_formatted || item.description}}">
+            <view class="timeline-body" wx:if="{{item.hospital || item.owner || item.expire_date_formatted || item.is_expired || item.next_vaccine_date_formatted || item.description}}">
               <view class="timeline-info" wx:if="{{item.hospital}}">{{item.type === 'vaccine' ? '接种地点' : '医院/地点'}}：{{item.hospital}}</view>
+              <view class="timeline-info" wx:if="{{item.owner}}">主导人：{{item.owner}}</view>
               <view class="timeline-info" wx:if="{{item.expire_date_formatted && !item.is_expired}}">有效期至：{{item.expire_date_formatted}}</view>
               <view class="timeline-info expired" wx:if="{{item.is_expired}}">已过期</view>
               <view class="timeline-info" wx:if="{{item.next_vaccine_date_formatted}}">{{item.type === 'deworm' ? '下次驱虫' : '下次接种'}}：{{item.next_vaccine_date_formatted}}</view>
               <view class="timeline-info" wx:if="{{item.description}}">备注：{{item.description}}</view>
+            </view>
+            <view class="timeline-foot">
+              <text class="timeline-photo-tag" wx:if="{{item.photoCount}}">{{medicalTypeName[item.type]}}照片 {{item.photoCount}} 张</text>
+              <text class="timeline-open-hint">查看详情 ›</text>
             </view>
           </view>
         </view>
