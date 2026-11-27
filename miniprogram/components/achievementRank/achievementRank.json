@@ -1,7 +1,6 @@
 {
   "component": true,
   "usingComponents": {
-    "profile-prompt": "/components/profilePrompt/profilePrompt",
-    "modifyUserInfo": "/components/modifyUserInfo/modifyUserInfo"
+    "profile-prompt": "/components/profilePrompt/profilePrompt"
   }
 }

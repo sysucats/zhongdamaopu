@@ -39,7 +39,10 @@
 <!-- 卡片布局 -->
 <view class="card-container">
   <view class="card {{item.css}}" wx:for="{{cards}}" wx:key="label" bindtap='clickbtn' data-to='{{item.path}}'>
-    <image wx:if="{{item.icon}}" class="icon" src="{{item.icon}}"></image>
+    <view wx:if="{{item.icon}}" class="icon-wrap">
+      <image class="icon" src="{{item.icon}}"></image>
+      <view wx:if="{{item.dot && nums[item.dot]}}" class="icon-dot"></view>
+    </view>
     <view class="card-text">{{item.label}}</view>
   </view>
 </view>
@@ -79,3 +82,5 @@
 
 <!-- 底tab占位 -->
 <view class="tab-bar-spacer"></view>
+
+<achievement-unlock id="achievement-unlock" />

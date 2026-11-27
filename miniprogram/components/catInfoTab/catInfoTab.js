@@ -651,7 +651,7 @@ Component({
           title: '删除确认',
           content: '确定要删除这只猫猫吗？此操作不可逆，删除后猫猫数据将不再显示！',
           confirmText: '确定删除',
-          confirmColor: '#ff3b30',
+          confirmColor: '#ff383c',
           cancelText: '取消',
           cancelColor: '#333333'
         });

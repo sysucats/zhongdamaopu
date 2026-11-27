@@ -17,7 +17,7 @@
   <view class="condition-card">
     <view class="condition-top">
       <view class="condition-title">{{achievement.desc}}</view>
-      <view class="condition-status">{{achievement.unlocked ? '已达成' : (achievement.currentCount !== null && achievement.currentCount >= achievement.threshold ? '已达条件' : '未解锁')}}</view>
+      <view class="condition-status">{{achievement.unlocked ? '已达成' : (achievement.currentCount !== null && achievement.currentCount >= achievement.threshold ? '已达条件' : (achievement.windowStateText || '未解锁'))}}</view>
     </view>
     <view class="condition-progress" wx:if="{{progress !== null}}">{{achievement.unlocked ? '完成进度' : '当前进度'}}：{{progress}}/{{achievement.threshold}} {{achievement.unit}}</view>
     <view class="condition-progress" wx:else>进度暂不可用</view>

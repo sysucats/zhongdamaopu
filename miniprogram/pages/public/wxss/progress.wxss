@@ -1,0 +1,18 @@
+/* 细进度条：.progress-line 是轨道，.progress-line-fill 是填充（宽度由页面按进度写）；完成加 .done 变绿。
+   位置由页面决定；.bare 去掉轨道底色，露出下面的分割线。 */
+.progress-line {
+  height: 4rpx;
+  overflow: hidden;
+  background: var(--color-gray-light);
+}
+.progress-line.bare {
+  background: transparent;
+}
+.progress-line-fill {
+  height: 100%;
+  background: var(--color-primary);
+  transition: width .4s ease;
+}
+.progress-line-fill.done {
+  background: var(--color-green);
+}

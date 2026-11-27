@@ -1,9 +1,11 @@
 /* pages/manage/badgeDef/badgeDef.wxss */
 @import "../adminPage.wxss";
 @import "/pages/public/wxss/formControls.wxss";
+@import "/pages/public/wxss/progress.wxss";
 .batch-actions {
   display: flex;
   gap: var(--space-md);
+  margin-top: var(--space-md);
   margin-bottom: var(--space-sm);
 }
 .batch-actions .batch-button {
@@ -47,6 +49,7 @@ page {
   font-weight: 400;
 }
 .catalog-main-heading {
+  position: relative;
   margin-top: 36rpx;
   padding-bottom: 12rpx;
   border-bottom: 1rpx solid var(--color-gray-normal);
@@ -159,6 +162,16 @@ page {
 .tile-status.is-draft {
   color: var(--color-status-pending-text);
 }
+.tile-status.is-test {
+  color: var(--color-primary);
+}
+/* 批量生成总进度：贴在标题分割线上，已完成枚数 + 当前这枚的步骤 */
+.batch-progress {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+}
 .tile-holders {
   margin-top: 4rpx;
   color: var(--color-gray-max);
@@ -227,67 +240,10 @@ page {
 }
 /* 整个控件（包括刻度行）共用展示轨道的实测坐标；原生 slider 保留无障碍操作。 */
 .thickness-control {
-  position: relative;
-  height: 44px;
+  display: block;
   margin-top: var(--space-xs);
 }
-.thickness-appearance {
-  position: absolute;
-  top: 0;
-  right: 17px;
-  bottom: 0;
-  left: 17px;
-  pointer-events: none;
-}
-.thickness-track {
-  position: absolute;
-  top: 50%;
-  left: 0;
-  right: 0;
-  height: 8px;
-  transform: translateY(-50%);
-  overflow: hidden;
-  border-radius: var(--radius-pill);
-  background: var(--color-gray);
-}
-.thickness-fill {
-  height: 100%;
-  border-radius: inherit;
-  background: var(--color-primary);
-}
-.thickness-thumb {
-  position: absolute;
-  top: 50%;
-  width: 32px;
-  height: 24px;
-  box-sizing: border-box;
-  border: 1px solid rgba(255, 255, 255, 0.9);
-  border-radius: 14px;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.86), rgba(255, 255, 255, 0.62));
-  -webkit-backdrop-filter: blur(4px) saturate(1.15);
-  backdrop-filter: blur(4px) saturate(1.15);
-  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.8), 0 1px 4px rgba(0, 0, 0, 0.12);
-  transform: translate(-50%, -50%);
-}
-.thickness-tick {
-  position: absolute;
-  top: 38px;
-  width: 3px;
-  height: 3px;
-  border-radius: 50%;
-  background: var(--color-gray-dark);
-  transform: translateX(-50%);
-}
-.thickness-slider {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 44px;
-  margin: 0;
-  opacity: 0;
-  pointer-events: none;
-}
+
 .thickness-limits {
   display: flex;
   justify-content: space-between;
@@ -304,9 +260,6 @@ page {
 }
 .thickness-actions .thickness-save {
   margin-left: auto;
-}
-.thickness-setting.is-saving .thickness-appearance {
-  opacity: 0.45;
 }
 .tile-asset-status { margin-top: 8rpx; color: var(--color-gray-max); font-size: 20rpx; line-height: 1.5; }
 .tile-asset-status.is-error, .tile-asset-error { color: var(--color-red); }

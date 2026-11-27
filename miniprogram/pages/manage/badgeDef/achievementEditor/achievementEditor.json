@@ -1,6 +1,8 @@
 {
   "usingComponents": {
-    "no-auth": "/components/noAuth/noAuth"
+    "no-auth": "/components/noAuth/noAuth",
+    "slider-control": "/components/slider/slider",
+    "search-cat": "/components/searchCat/searchCat"
   },
   "navigationBarTitleText": "用户徽章"
 }

@@ -892,7 +892,7 @@ Page({
       // 生成 polyline：红线连接所有点
       const polyline = [{
         points: formattedPoints.map(p => ({ latitude: p.latitude, longitude: p.longitude })),
-        color: '#E74C3C',
+        color: '#FF383C',
         width: 4,
         dottedLine: false,
         arrowLine: true,

@@ -1,13 +1,16 @@
 // 管理员维护成就目录：材质库 achievement_material、徽章 achievement_def
 const { createInternalCtx } = require('./_helper.js');
 const isManager = require('./isManager.js');
-const { generateAssets } = require('./achievementBack.js');
-const { METRICS, findAll, loadDisplaySettings } = require('./achievement.js');
+const { generateAssets, materialTextColor, pruneGenerated, deleteFront, scanOrphans, deleteAssetKeys } = require('./achievementBack.js');
+const { findAll, loadDisplaySettings } = require('./achievement.js');
+const { metricsMeta, normalizeRule, sameRule } = require('./achievementRules');
 const serials = require('./achievementSerial');
 const { randomUUID } = require('crypto');
 
 const KEY_PATTERN = /^[a-z][a-z0-9_-]{1,39}$/;
-const STATUSES = ['draft', 'active'];
+const COLOR_PATTERN = /^#[0-9a-f]{6}$/i;
+// test：只对超级管理员（99）展示和发放，用于在正式环境验收
+const STATUSES = ['draft', 'test', 'active'];
 
 function clean(value, max = 200) {
   return typeof value === 'string' ? value.trim().slice(0, max) : '';
@@ -15,10 +18,6 @@ function clean(value, max = 200) {
 
 function isCosUrl(url) {
   return /^https:\/\//.test(url || '');
-}
-
-function sameRule(a, b) {
-  return a?.metric === b?.metric && a?.count === b?.count;
 }
 
 async function holderCount(db, key) {
@@ -32,19 +31,60 @@ async function holderCounts(db) {
   return (result || []).reduce((map, row) => { map[row._id] = row.count; return map; }, {});
 }
 
-const progressId = key => `achievement_assets:${key}`;
+// 素材生成进度只供管理端轮询，集中存在 setting 的一条文档：jobs.<徽章 key 或 material:<材质 key>>。
+const JOB_DOC = 'achievement_job';
 const needsAssets = (badge, material) => !badge.backImage || !badge.model3dUrl || !material?.image || badge.backMaterialImage !== material.image;
 
 async function beginProgress(db, key, generationId, init = {}) {
   const collection = db.collection('setting');
   const gid = generationId || randomUUID();
-  await collection.updateOne({ _id: progressId(key) }, { $set: {
+  const field = `jobs.${key}`;
+  try {
+    await collection.updateOne({ _id: JOB_DOC }, { $setOnInsert: { jobs: {} } }, { upsert: true });
+  } catch (error) {
+    // 并发首建时另一方已插入，忽略。
+    if (!(await collection.findOne({ _id: JOB_DOC })).result) throw error;
+  }
+  await collection.updateOne({ _id: JOB_DOC }, { $set: { [field]: {
     generationId: gid, status: 'running', step: init.step || 0, total: init.total || 6,
     label: init.label || '读取素材', error: '', updated_at: new Date(),
-  } }, { upsert: true });
+  } } });
   return async (step, label, status = 'running', error = '') => {
-    await collection.updateOne({ _id: progressId(key), generationId: gid }, { $set: { step, label, status, error, updated_at: new Date() } });
+    await collection.updateOne({ _id: JOB_DOC, [`${field}.generationId`]: gid }, { $set: {
+      [`${field}.step`]: step, [`${field}.label`]: label, [`${field}.status`]: status,
+      [`${field}.error`]: error, [`${field}.updated_at`]: new Date(),
+    } });
   };
+}
+
+async function jobs(db) {
+  const { result } = await db.collection('setting').findOne({ _id: JOB_DOC });
+  return result?.jobs || {};
+}
+
+const serialReady = (sequences, missingSerials, key) =>
+  !!sequences.get(key)?.ready && !missingSerials.some(record => record.key === key);
+
+// ===== COS 素材清理：失败只记日志，不影响保存和删除 =====
+// 重新生成后删掉该徽章不再使用的旧背面和轮廓，保留数据库当前指向的和本次生成的
+async function pruneOldAssets(ctx, key, assets) {
+  try {
+    const { result: badge } = await ctx.mpserverless.db.collection('achievement_def').findOne({ key });
+    await pruneGenerated(ctx, key, [assets.backImage, assets.model3dUrl, badge?.backImage, badge?.model3dUrl], { stale: true });
+  } catch (error) {
+    console.warn('[achievement catalog] prune assets failed', key, error?.message || error);
+  }
+}
+
+// 正面图没有其他徽章使用时才删
+async function deleteUnusedFront(ctx, url) {
+  if (!url) return;
+  try {
+    const { result: users } = await ctx.mpserverless.db.collection('achievement_def').count({ frontImage: url });
+    if (!users) await deleteFront(ctx, url);
+  } catch (error) {
+    console.warn('[achievement catalog] delete front failed', url, error?.message || error);
+  }
 }
 
 async function generateTrackedAssets(ctx, front, material, key, generationId = randomUUID(), batchReport, applyAssets) {
@@ -58,6 +98,7 @@ async function generateTrackedAssets(ctx, front, material, key, generationId = r
     if (batchReport) await batchReport(5, '保存素材');
     await applyAssets(assets);
     await report(6, '素材已更新', 'complete');
+    await pruneOldAssets(ctx, key, assets);
     return assets;
   } catch (error) {
     await report(0, '生成失败', 'failed', clean(error.message, 120));
@@ -65,23 +106,58 @@ async function generateTrackedAssets(ctx, front, material, key, generationId = r
   }
 }
 
-async function list(db) {
+// 材质文字色：autoColor 始终按材质图取色并保存（后台「自动」预览用）；color 是实际生效的颜色，
+// 手选时为手选色（colorAuto=false），否则等于 autoColor。取色失败不影响保存，autoColor 为空串（前端用默认色）
+async function pickAutoColor(ctx, image) {
+  try {
+    return await materialTextColor(ctx, image);
+  } catch (error) {
+    console.warn('[achievement] material color failed', error?.message || error);
+    return '';
+  }
+}
+
+async function resolveMaterialColor(ctx, image, manualColor, knownAutoColor) {
+  const autoColor = knownAutoColor || await pickAutoColor(ctx, image);
+  if (COLOR_PATTERN.test(manualColor || '')) return { color: manualColor.toLowerCase(), colorAuto: false, autoColor };
+  return { color: autoColor, colorAuto: true, autoColor };
+}
+
+// 金银铜三种初始材质沿用原来前端的文字色，补字段时不改变现有观感
+const LEGACY_COLORS = { gold: '#e6a823', silver: '#9aa5b1', bronze: '#c88a4b' };
+
+// 旧材质缺颜色字段：打开后台时补一次（材质很少，只在缺字段时取色）
+async function backfillMaterialColors(ctx, materials) {
+  const db = ctx.mpserverless.db;
+  await Promise.all(materials.filter(item => item.autoColor === undefined && isCosUrl(item.image)).map(async item => {
+    // 已有颜色（含之前补的金银铜手选色）保持不变，只补自动色
+    const manual = item.color === undefined ? LEGACY_COLORS[item.key] : (item.colorAuto === false ? item.color : '');
+    const color = await resolveMaterialColor(ctx, item.image, manual);
+    if (!color.autoColor && !color.color) return;
+    await db.collection('achievement_material').updateOne({ _id: item._id }, { $set: color });
+    Object.assign(item, color);
+  }));
+}
+
+async function list(ctx) {
+  const db = ctx.mpserverless.db;
   const [materials, badges, counts, sequences, progress, displaySettings, missingSerials] = await Promise.all([
     findAll(db.collection('achievement_material')),
     findAll(db.collection('achievement_def')),
     holderCounts(db),
-    findAll(db.collection('setting'), { _id: { $regex: '^achievement_serial:' } }),
-    findAll(db.collection('setting'), { _id: { $regex: '^achievement_assets:' } }),
+    serials.states(db),
+    jobs(db),
     loadDisplaySettings(db),
     findAll(db.collection('achievement'), { $or: [{ serialNo: { $exists: false } }, { serialNo: null }, { serialNo: { $lte: 0 } }] }, { projection: { key: 1 } }),
   ]);
+  await backfillMaterialColors(ctx, materials);
   return {
     ok: true,
-    metrics: METRICS,
+    metrics: metricsMeta(),
     numberingRevision: serials.revision,
     displaySettings,
-    materials: materials.map(item => ({ ...item, generation: progress.find(p => p._id === progressId(`material:${item.key}`)) || null })).sort((a, b) => a.key.localeCompare(b.key)),
-    badges: badges.map(badge => ({ ...badge, needsAssets: needsAssets(badge, materials.find(m => m.key === badge.materialKey)), generation: progress.find(p => p._id === progressId(badge.key)) || null, holders: counts[badge.key] || 0, serialReady: sequences.some(seq => seq._id === serials.counterId(badge.key) && seq.ready) && !missingSerials.some(record => record.key === badge.key) })),
+    materials: materials.map(item => ({ ...item, generation: progress[`material:${item.key}`] || null })).sort((a, b) => a.key.localeCompare(b.key)),
+    badges: badges.map(badge => ({ ...badge, needsAssets: needsAssets(badge, materials.find(m => m.key === badge.materialKey)), generation: progress[badge.key] || null, holders: counts[badge.key] || 0, serialReady: serialReady(sequences, missingSerials, badge.key) })),
   };
 }
 
@@ -144,7 +220,12 @@ async function saveMaterial(ctx, input) {
   const current = (await collection.findOne({ key })).result;
   if (input.isNew && current) return { ok: false, error: '材质标识已存在' };
   if (!input.isNew && !current) return { ok: false, error: '材质不存在' };
-  const data = { key, name, image, updated_at: new Date() };
+  // 文字色：传了色值即手选，否则用自动色
+  const manualColor = clean(input.color, 7);
+  // 材质图没换就沿用已取的自动色，不重复下载
+  const knownAutoColor = current && current.image === image ? current.autoColor : '';
+  const color = await resolveMaterialColor(ctx, image, manualColor, knownAutoColor);
+  const data = { key, name, image, ...color, updated_at: new Date() };
   if (current) await collection.updateOne({ _id: current._id }, { $set: data });
   else await collection.insertOne({ ...data, created_at: new Date() });
   return { ok: true, ...(await regenerateBacks(ctx, data, input.generationId)) };
@@ -157,6 +238,14 @@ async function continueRegenerateBacks(ctx, input) {
   return { ok: true, ...(await regenerateBacks(ctx, material, input.generationId)) };
 }
 
+// 已有人获得后：上线的不能下线；测试的只能上线（测试记录保留），或删除连同测试记录一起清掉
+function statusChangeError(from, to, holders) {
+  if (!from || from === to || holders === 0) return '';
+  if (from === 'active') return '已有人获得的徽章不能下线';
+  if (from === 'test' && to !== 'active') return '已有测试记录的徽章只能上线，或删除后重建';
+  return '';
+}
+
 async function saveBadge(ctx, input) {
   const db = ctx.mpserverless.db;
   const key = clean(input.key, 40);
@@ -167,10 +256,8 @@ async function saveBadge(ctx, input) {
   if (!input.isNew && !current) return { ok: false, error: '徽章不存在' };
   const holders = current ? await holderCount(db, key) : 0;
 
-  const rule = { metric: clean(input.rule?.metric, 20), count: Number(input.rule?.count) };
-  if (!METRICS[rule.metric] || !Number.isInteger(rule.count) || rule.count < 1 || rule.count > 100000) {
-    return { ok: false, error: '请选择统计项并填写 1 以上的整数门槛' };
-  }
+  const { rule, error: ruleError } = normalizeRule(input.rule);
+  if (ruleError) return { ok: false, error: ruleError };
   if (current && (current.status === 'active' || holders > 0) && !sameRule(current.rule, rule)) {
     return { ok: false, error: '徽章上线或已有人获得后，规则不能修改' };
   }
@@ -180,9 +267,8 @@ async function saveBadge(ctx, input) {
   const sort = Number(input.sort) || 0;
   const status = STATUSES.includes(input.status) ? input.status : 'draft';
   if (!series || !name) return { ok: false, error: '请填写系列和名称' };
-  if (current?.status === 'active' && status === 'draft' && holders > 0) {
-    return { ok: false, error: '已有人获得的徽章不能退回草稿' };
-  }
+  const statusError = statusChangeError(current?.status, status, holders);
+  if (statusError) return { ok: false, error: statusError };
 
   const materialKey = clean(input.materialKey, 40);
   const material = (await db.collection('achievement_material').findOne({ key: materialKey })).result;
@@ -211,7 +297,8 @@ async function saveBadge(ctx, input) {
         if (+new Date(latest.updated_at || 0) !== +new Date(current.updated_at || 0)) throw new Error('徽章已更新，请刷新后重试');
         const holders = await holderCount(db, key);
         if ((latest.status === 'active' || holders > 0) && !sameRule(latest.rule, rule)) throw new Error('徽章上线或已有人获得后，规则不能修改');
-        if (latest.status === 'active' && status === 'draft' && holders > 0) throw new Error('已有人获得的徽章不能退回草稿');
+        const statusError = statusChangeError(latest.status, status, holders);
+        if (statusError) throw new Error(statusError);
         await collection.updateOne({ _id: latest._id }, { $set: data, $unset: { thicknessMm: '' } });
       } else await collection.insertOne({ ...data, created_at: new Date() });
     });
@@ -224,6 +311,8 @@ async function saveBadge(ctx, input) {
   } else if (current && materialKey !== current.materialKey) {
     return { ok: false, error: '更换材质前请先上传正面 PNG' };
   } else await persist();
+  // 换了正面图：旧图没有其他徽章使用就删掉
+  if (current?.frontImage && frontChanged) await deleteUnusedFront(ctx, current.frontImage);
   return { ok: true, ...(await serials.prepare(db, key)) };
 }
 
@@ -242,13 +331,13 @@ async function prepareBadge(ctx, input) {
   return { ok: true, ...(await serials.prepare(db, key)) };
 }
 
-// 批量上线：逐枚校验素材与编号，只放行齐备的草稿徽章
+// 批量上线：逐枚校验素材与编号，只放行齐备的草稿徽章；测试中的徽章需单独上线
 async function activateAll(ctx) {
   const db = ctx.mpserverless.db;
   const [badges, materials, sequences, missingSerials] = await Promise.all([
     findAll(db.collection('achievement_def')),
     findAll(db.collection('achievement_material')),
-    findAll(db.collection('setting'), { _id: { $regex: '^achievement_serial:' } }),
+    serials.states(db),
     findAll(db.collection('achievement'), { $or: [{ serialNo: { $exists: false } }, { serialNo: null }, { serialNo: { $lte: 0 } }] }, { projection: { key: 1 } }),
   ]);
   const materialByKey = new Map(materials.map(item => [item.key, item]));
@@ -256,12 +345,13 @@ async function activateAll(ctx) {
   let already = 0;
   for (const badge of badges) {
     if (badge.status === 'active') { already++; continue; }
+    if (badge.status === 'test') continue;
     const material = materialByKey.get(badge.materialKey);
     let reason = '';
     if (!isCosUrl(badge.frontImage)) reason = '正面图未上传';
     else if (!material?.image) reason = '材质图片缺失';
     else if (!badge.backImage || !badge.model3dUrl || badge.backMaterialImage !== material.image) reason = '背面或 3D 素材未更新';
-    else if (!sequences.some(seq => seq._id === serials.counterId(badge.key) && seq.ready) || missingSerials.some(row => row.key === badge.key)) reason = '历史编号未就绪';
+    else if (!serialReady(sequences, missingSerials, badge.key)) reason = '历史编号未就绪';
     if (reason) blocked.push({ key: badge.key, name: badge.name, reason });
     else ready.push(badge);
   }
@@ -278,11 +368,43 @@ async function deleteBadge(ctx, input) {
   const key = clean(input.key, 40);
   const current = (await db.collection('achievement_def').findOne({ key })).result;
   if (!current) return { ok: false, error: '徽章不存在' };
-  return serials.withLock(db, key, async () => {
-    if (await holderCount(db, key) > 0) return { ok: false, error: '已有人获得的徽章不能删除' };
-    await db.collection('achievement_def').deleteOne({ _id: current._id });
-    return { ok: true };
+  const deleted = await serials.withLock(db, key, async () => {
+    const { result: latest } = await db.collection('achievement_def').findOne({ key });
+    if (!latest) return { ok: false, error: '徽章不存在' };
+    // 测试中的徽章只发给过管理员，删除时连同测试记录一起清掉
+    if (latest.status !== 'test' && await holderCount(db, key) > 0) return { ok: false, error: '已有人获得的徽章不能删除' };
+    if (latest.status === 'test') await db.collection('achievement').deleteMany({ key });
+    await db.collection('achievement_def').deleteOne({ _id: latest._id });
+    return { ok: true, frontImage: latest.frontImage };
   });
+  if (!deleted.ok) return deleted;
+  // 徽章已删：清掉它的全部生成文件，正面图没有其他徽章使用也删掉
+  try {
+    await pruneGenerated(ctx, key);
+  } catch (error) {
+    console.warn('[achievement catalog] prune assets failed', key, error?.message || error);
+  }
+  await deleteUnusedFront(ctx, deleted.frontImage);
+  return { ok: true };
+}
+
+// 孤儿素材：没有任何徽章引用、且 1 天前的正面图、背面图、轮廓。先扫描给管理员确认，再按确认的清单删除
+async function findOrphans(ctx) {
+  const badges = await findAll(ctx.mpserverless.db.collection('achievement_def'), {}, { projection: { frontImage: 1, backImage: 1, model3dUrl: 1 } });
+  return scanOrphans(ctx, badges.flatMap(badge => [badge.frontImage, badge.backImage, badge.model3dUrl]).filter(Boolean));
+}
+
+async function scanOrphanAssets(ctx) {
+  const orphans = await findOrphans(ctx);
+  return { ok: true, orphans, totalSize: orphans.reduce((sum, item) => sum + item.size, 0) };
+}
+
+// 删除前重新扫描，只删仍是孤儿的文件（期间被重新引用的跳过）
+async function deleteOrphanAssets(ctx, input) {
+  const requested = new Set((Array.isArray(input.keys) ? input.keys : []).filter(key => typeof key === 'string'));
+  const keys = (await findOrphans(ctx)).map(item => item.key).filter(key => requested.has(key));
+  if (keys.length) await deleteAssetKeys(ctx, keys);
+  return { ok: true, deleted: keys.length };
 }
 
 module.exports = async (ctx) => {
@@ -293,7 +415,7 @@ module.exports = async (ctx) => {
   }
   const input = ctx.args?.data || {};
   try {
-    if (action === 'list') return await list(ctx.mpserverless.db);
+    if (action === 'list') return await list(ctx);
     if (action === 'saveDisplaySettings') {
       const thicknessMm = Number(input.thicknessMm);
       if (!Number.isFinite(thicknessMm) || thicknessMm < 0 || thicknessMm > 2) return { ok: false, error: '厚度需在 0～2 mm 之间' };
@@ -301,8 +423,7 @@ module.exports = async (ctx) => {
       return { ok: true, displaySettings: { thicknessMm } };
     }
     if (action === 'generationStatus') {
-      const { result } = await ctx.mpserverless.db.collection('setting').findOne({ _id: progressId(clean(input.key, 60)) });
-      return { ok: true, progress: result || null };
+      return { ok: true, progress: (await jobs(ctx.mpserverless.db))[clean(input.key, 60)] || null };
     }
     if (action === 'saveMaterial') return await saveMaterial(ctx, input);
     if (action === 'regenerateMaterialBacks') return await continueRegenerateBacks(ctx, input);
@@ -310,6 +431,8 @@ module.exports = async (ctx) => {
     if (action === 'deleteBadge') return await deleteBadge(ctx, input);
     if (action === 'prepareBadge') return await prepareBadge(ctx, input);
     if (action === 'activateAll') return await activateAll(ctx);
+    if (action === 'scanOrphanAssets') return await scanOrphanAssets(ctx);
+    if (action === 'deleteOrphanAssets') return await deleteOrphanAssets(ctx, input);
     return { ok: false, error: '未知操作' };
   } catch (error) {
     console.error('[achievement catalog]', action, error);

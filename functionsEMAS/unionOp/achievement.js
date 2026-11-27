@@ -3,30 +3,24 @@
 // 浏览记录存在 user.viewedCats（猫的 _id 数组）
 const { createHash } = require('crypto');
 const serials = require('./achievementSerial');
-const METRICS = {
-  view: { label: '浏览猫猫', name: '猫口普查', unit: '只', desc: '看过 {} 只不同的猫猫' },
-  follow: { label: '关注猫猫', name: '吸猫', unit: '只', desc: '关注 {} 只猫猫' },
-  photo: { label: '上传照片', name: '留影', unit: '张', desc: '上传 {} 张审核通过的照片' },
-  comment: { label: '发布便利贴', name: '便利贴', unit: '张', desc: '发出 {} 张审核通过的便利贴' },
-  like: { label: '点赞', name: '点赞', unit: '个', desc: '给出 {} 个点赞' },
-};
+const rules = require('./achievementRules');
+const { METRICS, findAll, metricsMeta, sameRule, windowStatus, createCounter, describeRule } = rules;
 
 const MAX_MIGRATE_CATS = 500;
 
-async function findAll(collection, query = {}, options = {}) {
-  const { result: total } = await collection.count(query);
-  const rows = [];
-  while (rows.length < total) {
-    const { result } = await collection.find(query, { ...options, skip: rows.length, limit: 100 });
-    if (!result || !result.length) break;
-    rows.push(...result);
-  }
-  return rows;
+function describe(def) {
+  return def.description || describeRule(def.rule);
 }
 
-function describe(def) {
-  const metric = METRICS[def.rule?.metric];
-  return def.description || (metric ? metric.desc.replace('{}', def.rule.count) : '');
+// 下发给前端的规则：只带已设置的可选条件
+function publicRule(rule) {
+  return {
+    metric: rule.metric,
+    count: rule.count,
+    ...(rule.window && { window: { start: rule.window.start, end: rule.window.end } }),
+    ...(rule.agg && { agg: rule.agg }),
+    ...(rule.filter?.catId && { filter: { catId: rule.filter.catId } }),
+  };
 }
 
 function publicDef(def) {
@@ -37,10 +31,13 @@ function publicDef(def) {
     name: def.name,
     description: describe(def),
     materialKey: def.materialKey,
+    materialColor: def.materialColor || '',
     frontImage: def.frontImage,
     backImage: def.backImage,
     model3dUrl: def.model3dUrl || '',
-    rule: { metric: def.rule.metric, count: def.rule.count },
+    rule: publicRule(def.rule),
+    timeStatus: windowStatus(def.rule),
+    ...(def.status === 'test' && { testing: true }),
   };
 }
 
@@ -48,67 +45,63 @@ function bySeriesAndSort(a, b) {
   return String(a.series).localeCompare(String(b.series)) || (a.sort || 0) - (b.sort || 0) || a.key.localeCompare(b.key);
 }
 
-async function loadActiveDefs(db) {
-  const defs = await findAll(db.collection('achievement_def'), { status: 'active' });
-  return defs.filter(def => METRICS[def.rule?.metric] && def.frontImage && def.backImage).sort(bySeriesAndSort);
-}
+// 测试状态的徽章只对超级管理员（99）展示和发放，用于在正式环境验收
+const TEST_VIEWER_LEVEL = 99;
+const visibleStatuses = user => Number(user?.manager) >= TEST_VIEWER_LEVEL ? ['active', 'test'] : ['active'];
 
-function uniqueCount(list) {
-  return Array.isArray(list) ? new Set(list.filter(Boolean)).size : 0;
-}
-
-async function countMetrics(db, openid, user) {
-  const count = async (name, query) => (await db.collection(name).count(query)).result || 0;
-  const [photo, comment, like] = await Promise.all([
-    count('photo', { _openid: openid, verified: true }),
-    // 累计曾通过审核的便利贴，软删除不扣减。
-    count('comment', { _openid: openid, $or: [
-      { approvedOnce: true },
-      { review_action: 'pass' },
-      { needVerify: { $ne: true }, deleted: { $ne: true }, review_action: { $ne: 'delete' } },
-    ] }),
-    count('inter', { _openid: openid, type: 10000 }),
+async function loadActiveDefs(db, user) {
+  const [defs, materials] = await Promise.all([
+    findAll(db.collection('achievement_def'), { status: { $in: visibleStatuses(user) } }),
+    findAll(db.collection('achievement_material')),
   ]);
-  return {
-    view: uniqueCount(user?.viewedCats),
-    follow: uniqueCount(user?.followCats),
-    photo, comment, like,
-  };
+  // 成就名称按材质着色：带上材质的文字色（旧材质未取色时为空，前端用默认色）
+  const colors = Object.fromEntries(materials.map(item => [item.key, item.color || '']));
+  return defs
+    .filter(def => METRICS[def.rule?.metric] && def.frontImage && def.backImage)
+    .map(def => ({ ...def, materialColor: colors[def.materialKey] || '' }))
+    .sort(bySeriesAndSort);
 }
+
+const isPlainRule = rule => !rule.window && !rule.agg && !rule.filter;
 
 async function loadDisplaySettings(db) {
   const { result } = await db.collection('setting').findOne({ _id: 'achievement_display' });
   return { thicknessMm: result?.thicknessMm ?? .6 };
 }
 
-async function sync(db, openid, user) {
-  const [defs, counts, records, displaySettings] = await Promise.all([
-    loadActiveDefs(db),
-    countMetrics(db, openid, user),
-    findAll(db.collection('achievement'), { openid }),
-    loadDisplaySettings(db),
-  ]);
+// 达标即发放：检查未获得、且时间窗口仍可发放的徽章。metric 只检查该统计项（事件触发用）
+// 新记录带 notified: false，由下次同步取出并弹解锁提示；老记录没有该字段，视为已通知
+async function award(db, openid, user, { defs, records, count, metric } = {}) {
+  defs = defs || await loadActiveDefs(db, user);
+  records = records || await findAll(db.collection('achievement'), { openid });
+  count = count || createCounter(db, openid, user);
   const owned = new Set(records.map(record => record.key));
-  const newlyUnlocked = [];
+  // 未开始或已过补发期的时间窗口不统计
+  const candidates = defs.filter(def => !owned.has(def.key) && (!metric || def.rule.metric === metric)
+    && ['open', 'grace'].includes(windowStatus(def.rule)));
+  const candidateCounts = await Promise.all(candidates.map(def => count(def.rule)));
+
+  const awarded = [];
   const failedKeys = [];
-  for (const def of defs) {
-    if (owned.has(def.key) || counts[def.rule.metric] < def.rule.count) continue;
+  for (const [index, def] of candidates.entries()) {
+    if (candidateCounts[index] < def.rule.count) continue;
     try {
       await serials.allocate(db, def.key, async serialNo => {
         const { result: current } = await db.collection('achievement_def').findOne({ key: def.key });
-        if (!current || current.status !== 'active' || current.rule.metric !== def.rule.metric
-            || current.rule.count !== def.rule.count) return;
+        if (!current || !visibleStatuses(user).includes(current.status) || !sameRule(current.rule, def.rule)) return;
         const id = 'achv_' + createHash('sha256').update(`${openid}\0${def.key}`).digest('hex').slice(0, 40);
-        const record = { _id: id, openid, _openid: openid, key: def.key, create_date: new Date(), serialNo };
+        const record = { _id: id, openid, _openid: openid, key: def.key, create_date: new Date(), serialNo, notified: false };
         try {
-          const inserted = await db.collection('achievement').insertOne(record);
+          const { result: inserted } = await db.collection('achievement').insertOne(record);
           if (!inserted?.insertedId) throw new Error('成就写入失败');
           owned.add(def.key);
           records.push(record);
-          newlyUnlocked.push(def.key);
+          awarded.push(def.key);
         } catch (error) {
           const { result: existing } = await db.collection('achievement').findOne({ openid, key: def.key });
           if (!existing) throw error;
+          // 并发请求先写入：沿用已有记录，是否提示由它的 notified 决定
+          console.warn('[achievement] insert fallback', def.key, error?.message || error);
           owned.add(def.key);
           records.push(existing);
         }
@@ -118,15 +111,59 @@ async function sync(db, openid, user) {
       failedKeys.push(def.key);
     }
   }
+  return { defs, records, candidates, candidateCounts, awarded, failedKeys };
+}
+
+// 互动写入成功后调用：只检查该统计项。失败只记日志，不影响主操作，由兜底同步补发
+async function awardMetric(db, openid, metric) {
+  if (!openid || !METRICS[metric]) return [];
+  try {
+    const { result: user } = await db.collection('user').findOne({ openid });
+    return (await award(db, openid, user, { metric })).awarded;
+  } catch (error) {
+    console.error('[achievement] event award failed', metric, openid, error);
+    return [];
+  }
+}
+
+// 取出未通知的获得记录并标记为已通知，前端据此弹解锁提示
+async function takeUnnotified(db, records) {
+  const pending = records.filter(record => record.notified === false);
+  await Promise.all(pending.map(record => db.collection('achievement')
+    .updateOne({ _id: record._id, notified: false }, { $set: { notified: true } })
+    .then(() => { record.notified = true; })
+    .catch(error => console.warn('[achievement] mark notified failed', record.key, error?.message || error))));
+  return [...new Set(pending.map(record => record.key))];
+}
+
+// 兜底同步：补发全部统计项，返回进度与待提示的解锁
+async function sync(db, openid, user) {
+  const [defs, records, displaySettings] = await Promise.all([
+    loadActiveDefs(db, user),
+    findAll(db.collection('achievement'), { openid }),
+    loadDisplaySettings(db),
+  ]);
+  const count = createCounter(db, openid, user);
+  const metricKeys = Object.keys(METRICS);
+  const [totals, result] = await Promise.all([
+    Promise.all(metricKeys.map(metric => count({ metric }))),
+    award(db, openid, user, { defs, records, count }),
+  ]);
+  // counts：各统计项的累计总数（阶梯进度用）；progress：带条件规则的当前进度
+  const counts = Object.fromEntries(metricKeys.map((metric, index) => [metric, totals[index]]));
+  const progress = {};
+  result.candidates.forEach((def, index) => { if (!isPlainRule(def.rule)) progress[def.key] = result.candidateCounts[index]; });
+  const newlyUnlocked = await takeUnnotified(db, records);
   return {
     ok: true,
-    metrics: METRICS,
+    metrics: metricsMeta(),
     displaySettings,
     defs: defs.map(publicDef),
     unlocked: records.map(record => ({ key: record.key, create_date: record.create_date, serialNo: record.serialNo || null })),
     counts,
+    progress,
     newlyUnlocked,
-    failedKeys,
+    failedKeys: result.failedKeys,
   };
 }
 
@@ -166,12 +203,12 @@ async function handler(ctx) {
   const db = ctx.mpserverless.db;
   const op = ctx.args?.op;
   try {
-    if (op === 'catalog') {
-      return { ok: true, metrics: METRICS, displaySettings: await loadDisplaySettings(db), defs: (await loadActiveDefs(db)).map(publicDef) };
-    }
     const openid = ctx.args?.openid;
+    const user = openid ? (await db.collection('user').findOne({ openid })).result : null;
+    if (op === 'catalog') {
+      return { ok: true, metrics: metricsMeta(), displaySettings: await loadDisplaySettings(db), defs: (await loadActiveDefs(db, user)).map(publicDef) };
+    }
     if (!openid) return { ok: false, error: '未登录' };
-    let user = (await db.collection('user').findOne({ openid })).result;
     if (op === 'view') {
       const viewed = await recordView(db, openid, user, ctx.args);
       return { ...(await sync(db, openid, viewed.user)), migrated: viewed.migrated };
@@ -188,5 +225,6 @@ module.exports = handler;
 module.exports.METRICS = METRICS;
 module.exports.findAll = findAll;
 module.exports.describe = describe;
+module.exports.awardMetric = awardMetric;
 
 module.exports.loadDisplaySettings = loadDisplaySettings;

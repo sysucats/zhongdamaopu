@@ -64,13 +64,24 @@ page {
   --color-black-transparent: rgba(0,0,0,0.6);
   --color-ltblack-transparent: rgba(0,0,0,0.05);
 
-  /* 删除色；dark 是按下色，不是深色模式。 */
+  /* 语义色：基础色用于填充、图标、描边；
+   * -dark 是高对比变体，用于浅底上的文字和按下态，不是深色模式。
+   */
+  /* 删除/错误 */
   --color-red: #ff383c;
   --color-red-dark: #e9152d;
-
-  /* 成功色；浅底文字用 green-dark。 */
+  /* 成功 */
   --color-green: #34c759;
   --color-green-dark: #008932;
+  /* 待处理/警示 */
+  --color-orange: #ff8d28;
+  --color-orange-dark: #c55300;
+  --color-yellow: #ffcc00;
+  --color-yellow-dark: #a16a00;
+  /* 信息/链接 */
+  --color-blue: #0088ff;
+  --color-blue-dark: #1e6ef4;
+  --color-system-gray: #8e8e93;
 
   --color-warm-text: #5D4037;
   --color-warm-sub: #8D6E63;
@@ -85,11 +96,10 @@ page {
   --color-achievement-gold: #e6a823;
   --color-achievement-locked: #d9dde3;
 
-  /* 成就奖牌渐变（铜/银/金/未解锁） */
-  --grad-achievement-bronze: linear-gradient(135deg, #e3ad74 0%, #b06f32 100%);
-  --grad-achievement-silver: linear-gradient(135deg, #cdd6e0 0%, #8795a4 100%);
-  --grad-achievement-gold: linear-gradient(135deg, #f8d87c 0%, #de9f12 100%);
-  --grad-achievement-locked: linear-gradient(135deg, #eef0f3 0%, #d9dde3 100%);
+  /* 成就浅底色（榜单票签等），配对应的成就色文字。 */
+  --color-achievement-gold-bg: #fff8e5;
+  --color-achievement-silver-bg: #eef1f5;
+  --color-achievement-bronze-bg: #f8eee3;
 
   /* 浅橙横幅渐变（领养入口等暖色 CTA）。 */
   --grad-warm-banner: linear-gradient(90deg, #fff7e6, #ffe7ba);
@@ -120,19 +130,19 @@ page {
   /* 页面主标题、主要统计数字。 */
   --font-size-page: 36rpx;
   --font-size-stat: 40rpx;
-  /* 状态标签：浅底配深字。 */
-  --color-status-pending-bg: #fff7e6;
-  --color-status-pending-text: #92400e;
-  --color-status-reviewing-bg: #e6f7ff;
-  --color-status-reviewing-text: #005a9e;
-  --color-status-success-bg: #eef9f0;
-  --color-status-success-line: #27ae60;
-  --color-status-error-bg: #fff1f0;
-  --color-status-error-line: #e74c3c;
-  /* 微信品牌绿（通过/授权态描边）。 */
+  /* 状态色：浅底配 -dark 文字或基础色描边。 */
+  --color-status-pending-bg: #fff1e5;
+  --color-status-pending-text: var(--color-orange-dark);
+  --color-status-reviewing-bg: #e0f1ff;
+  --color-status-reviewing-text: var(--color-blue-dark);
+  --color-status-success-bg: #e7f8eb;
+  --color-status-success-line: var(--color-green);
+  --color-status-error-bg: #ffe7e8;
+  --color-status-error-line: var(--color-red);
+  /* 微信品牌绿，只用于微信品牌元素；成功态用 --color-green。 */
   --color-brand-wechat: #07c160;
   /* 链接/次级操作蓝。 */
-  --color-link: #007bff;
+  --color-link: var(--color-blue);
   --shadow-hairline: 0 2rpx 8rpx rgba(0, 0, 0, 0.04);
   --shadow-card: 0 4rpx 16rpx rgba(0, 0, 0, 0.08);
   --shadow-card-strong: 0 8rpx 24rpx rgba(0, 0, 0, 0.12);
@@ -208,7 +218,7 @@ page {
 }
 
 @import '/packages/weui/weui-wxss/dist/style/weui.wxss';
-@import "./pages/public/wxss/iconfont.wxss"
+@import "./pages/public/wxss/iconfont.wxss";
 
 /* tab 页底部占位：给自定义 tabBar 让出位置 */
 .tab-bar-spacer {

@@ -1,10 +1,12 @@
 import { checkAuth } from "../../../utils/user";
 import { signCosUrl } from "../../../utils/common";
 import { levelOrderMap } from "../../../utils/badge";
-import { clearAchievementCache } from "../../../utils/achievement";
+import { clearAchievementCache, describeRule } from "../../../utils/achievement";
 import { generateUUID } from "../../../utils/utils";
 import { watchGeneration, stopGenerationWatch } from "./generationProgress";
 const app = getApp();
+
+
 Page({
 
   /**
@@ -31,6 +33,8 @@ Page({
     activating: false,
     generation: null,
     prepareSummary: '',
+    prepareIndex: 0,
+    prepareCount: 1,
   },
 
   /**
@@ -80,8 +84,11 @@ Page({
           ? `${badge.generation.label} ${badge.generation.step}/${badge.generation.total}`
           : badge.generation?.status === 'failed' ? '素材更新失败'
           : (badge.needsAssets || !badge.backImage || !badge.model3dUrl) ? '素材待更新' : '背面及 3D 已就绪',
-        thresholdText: `${badge.rule?.count || 0}${metrics[badge.rule?.metric]?.unit || ''}`,
-        statusText: `${badge.status === 'active' ? '上线' : '草稿'} · ${materialName[badge.materialKey] || '无材质'}`,
+        // 带条件的规则显示完整说明，普通累计规则只显示门槛
+        thresholdText: badge.rule?.window || badge.rule?.agg || badge.rule?.filter
+          ? describeRule(badge.rule, metrics)
+          : `${badge.rule?.count || 0}${metrics[badge.rule?.metric]?.unit || ''}`,
+        statusText: `${{ active: '上线', test: '测试' }[badge.status] || '草稿'} · ${materialName[badge.materialKey] || '无材质'}`,
         needsUpload: !/^https:\/\//.test(badge.frontImage || ''),
       })));
       badges.sort((a, b) => (a.sort || 0) - (b.sort || 0) || a.key.localeCompare(b.key));
@@ -99,7 +106,7 @@ Page({
         savedThicknessMm: result.displaySettings?.thicknessMm ?? .6,
         pendingBadges: badges.filter(badge => badge.needsAssets || !badge.model3dUrl || !badge.backImage || !badge.serialReady).map(badge => ({ key: badge.key, name: badge.name })),
         allBadges: badges.map(badge => ({ key: badge.key, name: badge.name, status: badge.status })),
-        draftCount: badges.filter(badge => badge.status !== 'active').length,
+        draftCount: badges.filter(badge => badge.status === 'draft').length,
         userSeries: seriesNames.map(name => {
           const items = badges.filter(item => item.series === name);
           const metricKeys = [...new Set([...Object.keys(metrics), ...items.map(item => item.rule?.metric)])];
@@ -108,7 +115,7 @@ Page({
             count: items.length,
             groups: metricKeys.map(metric => ({
               metric,
-              name: metrics[metric]?.label || metrics[metric]?.name || metric,
+              name: metrics[metric]?.name || metrics[metric]?.label || metric,
               items: items.filter(item => item.rule?.metric === metric)
                 .sort((a, b) => a.rule.count - b.rule.count || (a.sort || 0) - (b.sort || 0)),
             })).filter(group => group.items.length),
@@ -119,40 +126,6 @@ Page({
     } catch (error) {
       this.setData({ catalogError: error.message || '用户徽章目录读取失败' });
     }
-  },
-
-  onThicknessTouchStart(e) {
-    if (this.data.savingDisplaySettings || !e.touches?.length) return;
-    const gesture = { clientX: e.touches[0].clientX, active: true };
-    this._thicknessGesture = gesture;
-    this.createSelectorQuery().select('.thickness-appearance').boundingClientRect(rect => {
-      if (this._thicknessGesture !== gesture || !rect?.width) return;
-      gesture.rect = rect;
-      this.updateThicknessFromTouch(gesture);
-    }).exec();
-  },
-
-  onThicknessTouchMove(e) {
-    const gesture = this._thicknessGesture;
-    if (!gesture?.active || !e.touches?.length) return;
-    gesture.clientX = e.touches[0].clientX;
-    this.updateThicknessFromTouch(gesture);
-  },
-
-  onThicknessTouchEnd(e) {
-    const gesture = this._thicknessGesture;
-    if (!gesture?.active) return;
-    if (e.changedTouches?.length) gesture.clientX = e.changedTouches[0].clientX;
-    gesture.active = false;
-    this.updateThicknessFromTouch(gesture);
-  },
-
-  updateThicknessFromTouch(gesture) {
-    if (this.data.savingDisplaySettings || !gesture.rect) return;
-    const { left, width } = gesture.rect;
-    const ratio = Math.max(0, Math.min(1, (gesture.clientX - left) / width));
-    const thicknessMm = Math.round(ratio * 20) / 10;
-    if (thicknessMm !== this.data.thicknessMm) this.setData({ thicknessMm });
   },
 
   onThicknessChange(e) {
@@ -193,17 +166,17 @@ Page({
       return;
     }
     const confirmed = await new Promise(resolve => wx.showModal({
-      title: '更新徽章',
-      content: `将重新生成 ${badges.length} 枚徽章的背面图、3D 轮廓与历史编号，过程中请保持页面打开。`,
+      title: '重新生成素材',
+      content: `将重新生成 ${badges.length} 枚徽章的背面图、3D 轮廓，并补齐缺失的历史编号，过程中请保持页面打开。`,
       success: res => resolve(res.confirm),
       fail: () => resolve(false),
     }));
     if (!confirmed) return;
-    this.setData({ preparing: true, catalogError: '', prepareSummary: '', generation: { label: '开始生成' } });
+    this.setData({ preparing: true, catalogError: '', prepareSummary: '', prepareIndex: 0, prepareCount: badges.length, generation: { label: '开始生成' } });
     const failed = [];
     try {
       for (let index = 0; index < badges.length; index++) {
-        this.setData({ prepareSummary: `第 ${index + 1}/${badges.length} 枚 · ${badges[index].name}`, generation: { label: '开始生成' } });
+        this.setData({ prepareSummary: `第 ${index + 1}/${badges.length} 枚 · ${badges[index].name}`, prepareIndex: index, generation: { label: '开始生成' } });
         const generationId = generateUUID();
         watchGeneration(this, badges[index].key, generationId);
         try {
@@ -212,12 +185,12 @@ Page({
             const { result } = await app.mpServerless.function.invoke('unionOp', {
               unionAction: 'manageAchievementCatalog', action: 'prepareBadge', data: { key: badges[index].key, generationId, force: true },
             });
-            if (!result?.ok) throw new Error(result?.error || '更新失败');
+            if (!result?.ok) throw new Error(result?.error || '生成失败');
             pending = result.pending;
-            if (pending) this.setData({ generation: { label: '素材已就绪，正在整理历史编号' } });
+            if (pending) this.setData({ generation: { label: '素材已就绪，正在整理历史编号', status: 'complete' } });
           } while (pending);
         } catch (error) {
-          failed.push(`${badges[index].name}：${error.message || '更新失败'}`);
+          failed.push(`${badges[index].name}：${error.message || '生成失败'}`);
         } finally { stopGenerationWatch(this); }
       }
       clearAchievementCache();
@@ -227,9 +200,41 @@ Page({
     }
     if (failed.length) {
       this.setData({ catalogError: `${failed.length} 枚未完成：${failed.slice(0, 3).join('；')}${failed.length > 3 ? ' 等' : ''}` });
-      wx.showToast({ title: `${badges.length - failed.length} 枚已更新，${failed.length} 枚失败`, icon: 'none' });
+      wx.showToast({ title: `${badges.length - failed.length} 枚已生成，${failed.length} 枚失败`, icon: 'none' });
     } else {
-      wx.showToast({ title: '徽章已更新', icon: 'success' });
+      wx.showToast({ title: '素材已生成', icon: 'success' });
+    }
+    await this.reviewOrphanAssets();
+  },
+
+  // 生成完扫一遍 COS：列出没有任何徽章引用的旧素材，管理员确认后再删
+  async reviewOrphanAssets() {
+    const call = async (action, data) => {
+      const { result } = await app.mpServerless.function.invoke('unionOp', { unionAction: 'manageAchievementCatalog', action, data });
+      if (!result?.ok) throw new Error(result?.error || '操作失败');
+      return result;
+    };
+    try {
+      const { orphans, totalSize } = await call('scanOrphanAssets');
+      if (!orphans.length) return;
+      const names = orphans.slice(0, 5).map(item => item.key.split('/').pop());
+      const size = totalSize >= 1024 * 1024 ? `${(totalSize / 1024 / 1024).toFixed(1)} MB` : `${Math.ceil(totalSize / 1024)} KB`;
+      const confirmed = await new Promise(resolve => wx.showModal({
+        title: `发现 ${orphans.length} 个旧素材`,
+        content: `没有任何徽章在用，共 ${size}：\n${names.join('\n')}${orphans.length > 5 ? `\n…等 ${orphans.length} 个` : ''}\n\n清除后不可恢复。`,
+        confirmText: '清除',
+        success: res => resolve(res.confirm),
+        fail: () => resolve(false),
+      }));
+      if (!confirmed) return;
+      wx.showLoading({ title: '清除中', mask: true });
+      const { deleted } = await call('deleteOrphanAssets', { keys: orphans.map(item => item.key) });
+      wx.hideLoading();
+      wx.showToast({ title: `已清除 ${deleted} 个`, icon: 'success' });
+    } catch (error) {
+      wx.hideLoading();
+      console.warn('清理旧素材失败', error);
+      wx.showToast({ title: error.message || '清理旧素材失败', icon: 'none' });
     }
   },
 
@@ -256,7 +261,7 @@ Page({
         const detail = blocked.slice(0, 6).map(item => `${item.name}：${item.reason}`).join('\n');
         await new Promise(resolve => wx.showModal({
           title: `已上线 ${result.activated.length} 枚`,
-          content: `${blocked.length} 枚未满足条件：\n${detail}${blocked.length > 6 ? `\n…等 ${blocked.length} 枚` : ''}\n\n请先更新徽章再重试。`,
+          content: `${blocked.length} 枚未满足条件：\n${detail}${blocked.length > 6 ? `\n…等 ${blocked.length} 枚` : ''}\n\n请先重新生成素材再重试。`,
           showCancel: false,
           complete: resolve,
         }));

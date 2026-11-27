@@ -1,3 +1,5 @@
+const { awardMetric } = require('./achievement.js')
+
 module.exports = async (ctx) => {
   const openid = ctx.args.openid
   if (!openid || !ctx.args.updateCmd || !ctx.args.catId) {
@@ -21,6 +23,7 @@ module.exports = async (ctx) => {
         followCount: 1
       }
     });
+    await awardMetric(ctx.mpserverless.db, openid, 'follow');
   } else if (ctx.args.updateCmd == 'del') {
     await ctx.mpserverless.db.collection('user').updateOne({
       openid: openid

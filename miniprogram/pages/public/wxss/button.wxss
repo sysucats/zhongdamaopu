@@ -31,7 +31,8 @@
   color: var(--color-text-onPrimary);
 }
 
-/* 原生禁用状态和禁用类使用相同配色。 */
+/* 原生禁用状态和禁用类使用相同配色；带 button 才压得过微信自带的 button[disabled]:not([type])。 */
+button.form-button[disabled],
 .form-button[disabled],
 .form-button.is-disabled,
 .form-button.primary.is-disabled {
