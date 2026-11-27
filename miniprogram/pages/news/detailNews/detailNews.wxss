@@ -111,3 +111,64 @@ page,
   font-size: var(--font-size-section);
   text-align: center;
 }
+
+/* 关联猫猫卡片 */
+.news-cat-card {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  padding: var(--space-sm) var(--space-md);
+  margin-bottom: var(--space-md);
+  border-radius: var(--radius-md);
+  background: var(--color-primary-bg);
+  border: 2rpx solid var(--color-primary-light);
+}
+
+.news-cat-card-hover {
+  opacity: 0.8;
+}
+
+.news-cat-card-avatar {
+  width: 88rpx;
+  height: 88rpx;
+  border-radius: 50%;
+  background: var(--color-gray-normal);
+  flex-shrink: 0;
+}
+
+.news-cat-card-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 34rpx;
+  font-weight: 600;
+  color: var(--color-text-inverse);
+  background: var(--color-primary);
+}
+
+.news-cat-card-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.news-cat-card-name {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: var(--color-text-main);
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.news-cat-card-sub {
+  margin-top: var(--space-xxs);
+  font-size: 22rpx;
+  color: var(--color-text-muted);
+}
+
+.news-cat-card-arrow {
+  font-size: 36rpx;
+  line-height: 1;
+  color: var(--color-gray-mid);
+  flex-shrink: 0;
+}

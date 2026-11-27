@@ -2,10 +2,7 @@
 <view class="container" wx:if="{{auth}}">
   <!-- 搜索猫咪 -->
   <view class="search-box">
-    <view class='input-block'>
-      <image class="search-logo" mode='aspectFit' src="/pages/public/images/filter/search.png"></image>
-      <input class='search-input' placeholder='{{text_cfg.genealogy.search_tip}}' bindinput="onSearchInput" confirm-type='search' bindconfirm="searchCat"></input>
-    </view>
+    <search-bar placeholder='{{text_cfg.genealogy.search_tip}}' value='{{searchKeyword}}' bind:input='onSearchInput' bind:confirm='searchCat'></search-bar>
   </view>
 
   <!-- 选项卡切换 -->

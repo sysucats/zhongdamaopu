@@ -10,6 +10,18 @@ Page({
     text_cfg: text_cfg,
     github_link: "https://github.com/sysucats/zhongdamaopu",
     update_log: [{
+      version: "v1.20.6",
+      content: [
+        "猫友圈新增推荐关注（感谢1339068220-bit）",
+      ],
+      time: "2026/11/27"
+    }, {
+      version: "v1.20.5",
+      content: [
+        "更新首页UI（感谢xuannfx）",
+      ],
+      time: "2026/11/22"
+    }, {
       version: "v1.20.4",
       content: [
         "旧版本遗留代码清理",

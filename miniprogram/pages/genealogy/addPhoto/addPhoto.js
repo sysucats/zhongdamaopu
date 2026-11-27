@@ -39,8 +39,6 @@ Page({
     pageMetaStyle: '',
     mapPickerInitLat: 23.1026,
     mapPickerInitLng: 113.2996,
-    mapPickerLat: 23.1026,
-    mapPickerLng: 113.2996,
     mapPickerScale: 14,
     demoMode: false,
   },
@@ -166,39 +164,25 @@ Page({
     const center = location || campusCenter || config.map_center;
     const scale = campusCenter ? (campusCenter.scale || 14) : 14;
     this._mapPickerSession = (this._mapPickerSession || 0) + 1;
+    this._mapPickerCenter = { latitude: center.latitude, longitude: center.longitude };
+    this._mapPickerScale = scale;
     this.setData({
       mapPickerVisible: true,
       mapPickerConfirming: false,
       pageMetaStyle: 'overflow: hidden;',
       mapPickerInitLat: center.latitude,
       mapPickerInitLng: center.longitude,
-      mapPickerLat: center.latitude,
-      mapPickerLng: center.longitude,
       mapPickerScale: scale,
     });
   },
 
-  // 手势结束后同步中心和级别；忽略自身更新引发的事件，避免回写循环。
+  // 手势结束后只在实例上记下中心和级别，不回写地图绑定属性：
+  // 改动 map 的任一绑定属性都会让地图跳回绑定的经纬度，拖动就会被弹回去。
   onMapRegionChange(e) {
     if (e.type !== 'end' || e.causedBy === 'update') return;
     const { centerLocation, scale } = e.detail || {};
-    const session = this._mapPickerSession;
-    const update = patch => {
-      if (this.data.mapPickerVisible && this._mapPickerSession === session) this.setData(patch);
-    };
-    const mapCtx = wx.createMapContext('photoMapPicker');
-    if (centerLocation) {
-      update({ mapPickerLat: centerLocation.latitude, mapPickerLng: centerLocation.longitude });
-    } else {
-      mapCtx.getCenterLocation({
-        success: res => update({ mapPickerLat: res.latitude, mapPickerLng: res.longitude }),
-      });
-    }
-    if (scale !== undefined) {
-      update({ mapPickerScale: scale });
-    } else {
-      mapCtx.getScale({ success: res => update({ mapPickerScale: res.scale }) });
-    }
+    if (centerLocation) this._mapPickerCenter = { latitude: centerLocation.latitude, longitude: centerLocation.longitude };
+    if (scale !== undefined) this._mapPickerScale = scale;
   },
 
   async confirmMapPicker() {
@@ -229,14 +213,33 @@ Page({
     this.setData({ mapPickerVisible: false, mapPickerConfirming: false, pageMetaStyle: '' });
   },
 
+  // 缩放时把当前中心一起写回，地图不会跳回打开时的位置；读不到中心就不动，避免跳回旧位置
+  zoomMap(delta) {
+    const session = this._mapPickerSession;
+    wx.createMapContext('photoMapPicker').getCenterLocation({
+      success: res => {
+        if (!this.data.mapPickerVisible || this._mapPickerSession !== session) return;
+        const current = this._mapPickerScale || this.data.mapPickerScale;
+        const target = Math.max(3, Math.min(20, Math.round(current) + delta));
+        this._mapPickerScale = target;
+        this._mapPickerCenter = { latitude: res.latitude, longitude: res.longitude };
+        // 手势缩放不回写绑定值，目标级别可能恰好等于绑定值；值不变 setData 不会通知地图，微调一点让它生效
+        const bound = Math.abs(target - this.data.mapPickerScale) < 0.0005 ? target + 0.001 : target;
+        this.setData({
+          mapPickerInitLat: res.latitude,
+          mapPickerInitLng: res.longitude,
+          mapPickerScale: bound,
+        });
+      },
+    });
+  },
+
   zoomMapIn() {
-    const scale = Math.min(20, this.data.mapPickerScale + 1);
-    this.setData({ mapPickerScale: scale });
+    this.zoomMap(1);
   },
 
   zoomMapOut() {
-    const scale = Math.max(3, this.data.mapPickerScale - 1);
-    this.setData({ mapPickerScale: scale });
+    this.zoomMap(-1);
   },
 
   clearLocation() {

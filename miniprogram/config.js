@@ -6,7 +6,7 @@
 
 module.exports = {
   // 版本号
-  app_version: "v1.20.4",
+  app_version: "v1.20.5",
   // 小程序appid
   app_id: "wx5bd705b2bc91c73b",
   // EMAS空间ID
@@ -63,7 +63,7 @@ module.exports = {
       share_tip: "发现身边校园猫咪",
       search_tip: "搜索猫猫名字或昵称",
       filter_tip: "点此进行筛选",
-      new_photo_tip: "有新相片！",
+      new_photo_tip: "新照片",
       no_photo_tip: "暂无封面照片...",
       photo_by_tip: "Photo by ",
       photo_by_unknow_tip: "匿名猫友",

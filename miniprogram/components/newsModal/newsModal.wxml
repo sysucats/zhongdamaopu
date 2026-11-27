@@ -9,6 +9,12 @@
       <view class='wx-modal-time'>{{ time }}</view>
     </view>
 
+    <view class="wx-modal-cat-chip" wx:if="{{catName}}" catchtap="_catTap" hover-class="wx-modal-cat-chip-hover">
+      <image wx:if="{{catAvatar}}" class="wx-modal-cat-avatar" mode="aspectFill" src="{{catAvatar}}"></image>
+      <view wx:else class="wx-modal-cat-avatar wx-modal-cat-empty">{{catInitial}}</view>
+      <text class="wx-modal-cat-name">{{catName}}</text>
+    </view>
+
     <scroll-view class='wx-modal-scroll {{imagePath == "" ? "no-image" : ""}}' enable-flex='true' scroll-y='true' enable-back-to-top='true' lower-threshold='50'>
       <view class='wx-modal-content {{imagePath == "" ? "full-height" : ""}}' wx:if="{{content.length != 0}}">{{ content }}</view>
       <block wx:if="{{ imagePath != '' }}">

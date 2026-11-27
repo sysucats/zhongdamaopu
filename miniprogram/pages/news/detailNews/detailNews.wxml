@@ -15,6 +15,17 @@
             <view class='news time'>{{news.ddate}} </view>
         </view>
 
+        <!-- 关联猫猫 -->
+        <view wx:if="{{catName}}" class="news-cat-card" bindtap="clickCat" hover-class="news-cat-card-hover">
+            <image wx:if="{{catAvatar}}" class="news-cat-card-avatar" mode="aspectFill" src="{{catAvatar}}"></image>
+            <view wx:else class="news-cat-card-avatar news-cat-card-empty">{{catInitial}}</view>
+            <view class="news-cat-card-main">
+                <view class="news-cat-card-name">{{catName}}</view>
+                <view class="news-cat-card-sub">本篇公告关联的猫猫</view>
+            </view>
+            <text class="news-cat-card-arrow">›</text>
+        </view>
+
         <view class='news content'>{{news.mainContent}}</view>
 
         <!-- 文字结束，单图/多图部分 -->

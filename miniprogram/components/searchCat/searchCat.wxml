@@ -3,10 +3,7 @@
   <view class="popup-container">
     <popup-header title="选择猫猫" close-position="none" />
     <view class='search-input'>
-      <view class='input-icon'>
-        <image class="search-icon" mode='aspectFit' src="/pages/public/images/filter/search.png"></image>
-      </view>
-      <input class='input-field' placeholder='{{text_cfg.genealogy.search_tip}}' placeholder-class='placeholder' focus="{{focusSearch}}" value='{{filters_input}}' maxlength='20' confirm-type='search' bindinput='fSearchInput' bindconfirm='doSearchCat'></input>
+      <search-bar placeholder='{{text_cfg.genealogy.search_tip}}' focus="{{focusSearch}}" value='{{filters_input}}' bind:input='fSearchInput' bind:confirm='doSearchCat'></search-bar>
     </view>
     <scroll-view class="search-results" scroll-y="1">
       <view class="search-cat-item {{item._disabled ? 'disabled' : ''}}" hover-class="item-hover" wx:for="{{searchCats}}" wx:key="_id" bindtap="searchSelectCat" data-index="{{index}}">

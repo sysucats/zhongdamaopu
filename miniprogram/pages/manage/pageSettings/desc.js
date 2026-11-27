@@ -212,7 +212,7 @@ module.exports = {
     tip: "广告设置",
     "genealogy_banner": {
       type: "text",
-      tip: "首页banner广告ID",
+      tip: "首页广告ID（原生模板广告）",
       default: "your_ad_id"
     },
     "recognize_banner": {

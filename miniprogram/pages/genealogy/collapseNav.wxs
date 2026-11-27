@@ -1,0 +1,130 @@
+// 首页导航栏折叠：滚动时在渲染层直接改样式，不走 setData，跟手不卡。
+// m 由页面 js 按胶囊位置算好，单位 px：
+//   d 收起距离；eh/ch 展开/收起时搜索框高度；epl/cpl、epr/cpr 展开/收起时搜索行左、右内边距
+// 吸附：停在半收起时，按过半与否吸附到完全展开或完全收起。
+//   松手时几乎没有速度 → 立刻吸附，不等惯性；否则等惯性滚动停下再判断。
+var SETTLE_MS = 120; // 这么久没有新的滚动事件，才算停下（惯性末段事件变稀，按帧数判断会误判）
+var SNAP_TIMEOUT_MS = 400; // 吸附动画最长时间；超时未到位（被打断等）自动解锁，避免之后不再吸附
+var SLOW_V = 0.3; // px/ms，松手速度低于此值视为「放下」，立刻吸附
+var STALE_MS = 60; // 松手前这么久没滚动，说明手指已停住，速度按 0 算
+
+function clamp(v) {
+  return v < 0 ? 0 : (v > 1 ? 1 : v);
+}
+
+function now() {
+  return getDate().getTime();
+}
+
+function apply(m, p, ins, state) {
+  var h = m.eh + (m.ch - m.eh) * p;
+  var pl = m.epl + (m.cpl - m.epl) * p;
+  var pr = m.epr + (m.cpr - m.epr) * p;
+  ins.selectComponent('#search').setStyle(
+    'transform: translateY(' + (-m.d * p) + 'px); padding-left: ' + pl + 'px; padding-right: ' + pr + 'px; --search-h: ' + h + 'px;'
+  );
+
+  // 名字在前 40% 进度内淡出并略微上移
+  var tp = clamp(p / 0.4);
+  ins.selectComponent('.nav-title').setStyle('opacity: ' + (1 - tp) + '; transform: translateY(' + (-6 * tp) + 'px);');
+
+  // 完全收起后导航栏下沿加一道轻投影，和卡片分开（样式见 .nav-bar.collapsed）；只在状态变化时改 class
+  var collapsed = p >= 1;
+  if (state.collapsed !== collapsed) {
+    state.collapsed = collapsed;
+    var bar = ins.selectComponent('.nav-bar');
+    if (collapsed) bar.addClass('collapsed');
+    else bar.removeClass('collapsed');
+  }
+}
+
+// 停在半收起时，过半收起、不到一半展开；吸附动画期间加锁，避免动画自身的滚动事件再次触发吸附
+function snap(ins) {
+  var state = ins.getState();
+  var p = state.p || 0;
+  if (!(p > 0 && p < 1) || !state.m) return;
+  state.snapping = true;
+  state.snapAt = now();
+  state.snapTarget = p >= 0.5 ? state.m.d : 0;
+  ins.callMethod('snapNav', { top: state.snapTarget });
+}
+
+// 等滚动停下：每帧看一次距上次滚动事件过了多久
+function watchSettle(ins) {
+  var state = ins.getState();
+  if (state.watching) return;
+  state.watching = true;
+  var tick = function () {
+    if (state.touching || state.snapping) {
+      state.watching = false;
+      return;
+    }
+    if (now() - (state.lastScrollAt || 0) < SETTLE_MS) {
+      ins.requestAnimationFrame(tick);
+      return;
+    }
+    state.watching = false;
+    snap(ins);
+  };
+  ins.requestAnimationFrame(tick);
+}
+
+function onScroll(e, ins) {
+  var m = e.currentTarget.dataset.m;
+  if (!m || !m.d) return;
+  var state = ins.getState();
+  var y = e.detail.scrollTop;
+  var t = now();
+  // 滚动速度（px/ms），做一点平滑，松手时用来判断是「放下」还是「甩出」
+  if (state.lastScrollAt && t > state.lastScrollAt) {
+    var v = (y - state.lastY) / (t - state.lastScrollAt);
+    state.v = state.v === undefined ? v : state.v * 0.4 + v * 0.6;
+  }
+  state.m = m;
+  state.lastY = y;
+  state.lastScrollAt = t;
+  if (state.touching) state.dragged = true;
+  var p = clamp(y / m.d);
+  if (state.p !== p) {
+    state.p = p;
+    apply(m, p, ins, state);
+  }
+  if (state.snapping) {
+    // 吸附动画到位或超时后解锁
+    if (Math.abs(y - state.snapTarget) < 1 || t - state.snapAt > SNAP_TIMEOUT_MS) {
+      state.snapping = false;
+    } else {
+      return;
+    }
+  }
+  // 手指已离开时的惯性滚动：停下后再判断要不要吸附
+  if (!state.touching) watchSettle(ins);
+}
+
+function onTouchStart(e, ins) {
+  var state = ins.getState();
+  state.touching = true;
+  state.dragged = false;
+  state.v = 0;
+  // 手指重新按下就交还控制权，吸附中途作废
+  state.snapping = false;
+}
+
+function onTouchEnd(e, ins) {
+  var state = ins.getState();
+  state.touching = false;
+  // 拖动过且松手时几乎没速度：立刻吸附，省掉「停住—再动」的二段感。
+  // 只是点一下（没拖动）不立刻吸附，以免和点卡片后的定位滚动打架。
+  var v = now() - (state.lastScrollAt || 0) > STALE_MS ? 0 : (state.v || 0);
+  if (state.dragged && Math.abs(v) < SLOW_V) {
+    snap(ins);
+    return;
+  }
+  watchSettle(ins);
+}
+
+module.exports = {
+  onScroll: onScroll,
+  onTouchStart: onTouchStart,
+  onTouchEnd: onTouchEnd
+};

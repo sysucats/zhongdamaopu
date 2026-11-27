@@ -28,6 +28,7 @@ Component({
    */
   data: {
     focusSearch: false,
+    filters_input: '',
 
     text_cfg: config.text,
 
@@ -114,6 +115,8 @@ Component({
         searchCats: [],
         filters_input: ''
       })
+      // 通知父页面同步关闭状态，避免“再次打开无效”
+      this.triggerEvent("close");
     }
   }
 })

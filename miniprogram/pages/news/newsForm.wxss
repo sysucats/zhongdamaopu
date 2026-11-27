@@ -27,3 +27,88 @@
 .news-auth {
   margin-top: var(--space-md);
 }
+
+/* 关联猫猫（选填） */
+.news-cat-add {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-xs);
+  height: 96rpx;
+  border: 2rpx dashed var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-bg-subtle);
+  color: var(--color-text-muted);
+  font-size: 27rpx;
+}
+
+.news-cat-add-icon {
+  font-size: 30rpx;
+  line-height: 1;
+  color: var(--color-text-muted);
+}
+
+.news-cat-selected {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--radius-md);
+  background: var(--color-primary-bg);
+  border: 2rpx solid var(--color-primary-light);
+}
+
+.news-cat-avatar {
+  width: 88rpx;
+  height: 88rpx;
+  border-radius: 50%;
+  background: var(--color-gray-normal);
+  flex-shrink: 0;
+}
+
+.news-cat-avatar-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text-inverse);
+  font-size: 34rpx;
+  font-weight: 600;
+  background: var(--color-primary);
+}
+
+.news-cat-meta {
+  flex: 1;
+  min-width: 0;
+}
+
+.news-cat-name {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: var(--color-text-main);
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.news-cat-sub {
+  margin-top: var(--space-xxs);
+  font-size: 22rpx;
+  color: var(--color-text-muted);
+}
+
+.news-cat-clear {
+  width: 48rpx;
+  height: 48rpx;
+  line-height: 44rpx;
+  text-align: center;
+  border-radius: 50%;
+  background: var(--color-ltblack-transparent);
+  color: var(--color-text-secondary);
+  font-size: 30rpx;
+  flex-shrink: 0;
+}
+
+.news-cat-hover {
+  opacity: 0.8;
+}
+

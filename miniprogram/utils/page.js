@@ -58,11 +58,6 @@ function showTab(page) {
   page.getTabBar().setData({
     activePath: path,
   });
-
-  var tabBarHeight = wx.getStorageSync('tabBarHeight') || 80;
-  page.setData({
-    tabBarHeight: tabBarHeight
-  })
 }
 
 // 跳转到设置页，并发起提示
