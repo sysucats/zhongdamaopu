@@ -20,7 +20,7 @@ Component({
     back: String,
     size: { type: Number, value: 240 },
   },
-  data: { introPlayed: false, badgeMode: '2d', resolvedBadge: null, flipped: false, frontFailed: false },
+  data: { introPlayed: false, badgeMode: '2d', resolvedBadge: null, rendered: false, flipped: false, frontFailed: false },
   lifetimes: {
     ready() { this._live = true; this.prepare(); },
     detached() { this._live = false; this._version++; clearTimeout(this._timer); },
@@ -34,13 +34,14 @@ Component({
       this._identity = identity; this._active = active;
       const version = this._version = (this._version || 0) + 1;
       clearTimeout(this._timer);
-      this.setData({ flipped: false, frontFailed: false });
+      this.setData({ flipped: false, frontFailed: false, rendered: false });
       if (!badge) { this.setData({ resolvedBadge: null, badgeMode: '2d' }); return; }
       if (!active && this.data.resolvedBadge?.key === badge.key) {
         this.setData({ badgeMode: '2d' });
         return;
       }
-      this.setData({ badgeMode: 'loading' });
+      // 已有这枚徽章的 2D 图时直接垫着，不再闪加载圈
+      if (this.data.resolvedBadge?.key !== badge.key) this.setData({ badgeMode: 'loading' });
       const wants3d = active && (badge.unlocked || this.data.preview) && badge.model3dUrl && this._failedIdentity !== identity;
       this._timer = setTimeout(() => this.use2d(), 8000);
       const sign = url => url ? signCosUrl(url) : Promise.resolve('');
@@ -96,6 +97,7 @@ Component({
     viewerReady(e) {
       if (e.detail.key !== this.data.badge?.key) return;
       clearTimeout(this._timer);
+      this.setData({ rendered: true });
       this.triggerEvent('ready', e.detail);
     },
     introComplete(e) {

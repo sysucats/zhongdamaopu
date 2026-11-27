@@ -2,6 +2,7 @@
 import { isManagerAsync } from "../../utils/user";
 import { text as text_cfg, mpcode_img } from "../../config";
 import { showTab } from "../../utils/page";
+import { getNewBadgeCount } from "../../utils/achievement";
 
 const share_text = text_cfg.app_name + ' - ' + text_cfg.info.share_tip;
 
@@ -36,6 +37,7 @@ Page({
         icon: "/pages/public/images/info/btn/achievement.svg",
         label: "我的成就",
         path: "/pages/info/myAchievement/myAchievement",
+        dot: "numNewBadges",
       }, {
         icon: "/pages/public/images/info/btn/team.svg",
         label: "开发团队",
@@ -193,6 +195,11 @@ Page({
     this.setData({
       version: getApp().globalData.version
     });
+
+    // 新点亮的成就：「我的成就」入口加红点，不阻塞后面的统计
+    getNewBadgeCount()
+      .then(count => this.setData({ "nums.numNewBadges": count }))
+      .catch(error => console.warn('读取新成就失败', error));
 
     // 获取普通用户也能看的数据
     // 所有猫猫数量

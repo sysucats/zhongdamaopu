@@ -99,6 +99,14 @@ Page({
       this.setData({ achievementShowcaseError: true, achievementShowcaseLoading: false });
     }
   },
+  openProfileEditor() {
+    this.setData({ showProfileEditor: true });
+  },
+
+  closeProfileEditor() {
+    this.setData({ showProfileEditor: false });
+  },
+
   closeAchievementShowcase() {
     this._achievementShowcaseRequestId = (this._achievementShowcaseRequestId || 0) + 1;
     this.setData({ showAchievementShowcase: false });
