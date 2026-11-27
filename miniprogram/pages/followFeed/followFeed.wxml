@@ -102,13 +102,50 @@
   </view><!-- 留言 -->
   </block>
 
-  <!-- 没有关注 -->
-  <view class="noFollow" wx:if="{{loadnomore && (!followCats || followCats.length === 0)}}">
-    <view><text>你没有关注任何猫猫\n快到猫猫详情页去添加吧~</text></view>
-    <image class="icon" src='/pages/public/images/button/plus.svg' lazy-load="true"></image>
-    <image class="icon" src='/pages/public/images/button/follow.svg' lazy-load="true"></image>
-    <view>右下角菜单 → 关注猫猫</view>
-    <view>关注后，在本页面下拉获取近30天的动态</view>
+  <!-- 首次进入、推荐还没算出来时的占位，避免空屏 -->
+  <view class="rec-loading" wx:if="{{recommendLoading && recommendCats.length === 0}}">正在挑几只猫猫…</view>
+
+  <!-- 推荐关注：关注少于 3 只时展示，解决「新用户打开什么都没有」 -->
+  <view class="rec-section" wx:if="{{recommendCats.length > 0}}">
+    <view class="rec-head">
+      <view class="rec-title">{{followCats && followCats.length ? '再关注几只，猫友圈更热闹' : '先认识几只猫吧'}}</view>
+      <view class="rec-sub">关注后，它们的新照片和便利贴会出现在这里</view>
+    </view>
+
+    <view class="rec-grid">
+      <view class="rec-card {{item.to_star ? 'is-star' : ''}}"
+        wx:for="{{recommendCats}}"
+        wx:key="_id"
+        data-cat_id="{{item._id}}"
+        bindtap="toCat"
+        hover-class="rec-card-hover">
+        <view class="rec-card-top">
+          <image wx:if="{{item.avatar}}" class="rec-avatar" mode="aspectFill" src="{{item.avatar.photo_compressed || item.avatar.photo_id}}" lazy-load="true"></image>
+          <image wx:else class="rec-avatar" mode="aspectFill" src="/pages/public/images/info/btn/cat_head.png" lazy-load="true"></image>
+          <view class="rec-card-name">
+            <view class="rec-name">{{item.name}}</view>
+            <view class="rec-campus">{{item.campus || '未知校区'}}</view>
+          </view>
+        </view>
+        <view class="rec-reason {{item.reasonTone}}">{{item.reasonText}}</view>
+        <view class="rec-btn {{item.followed ? 'followed' : ''}}"
+          hover-class="rec-btn-hover"
+          catchtap="followFromRecommend"
+          data-catid="{{item._id}}"
+          data-index="{{index}}">{{item.followed ? '已关注' : '+ 关注'}}</view>
+      </view>
+    </view>
+
+    <view class="rec-foot">
+      <view class="rec-shuffle" bindtap="shuffleRecommend">换一批</view>
+      <view class="rec-link" bindtap="toGenealogy">去猫谱逛逛 ›</view>
+    </view>
+  </view>
+
+  <!-- 兜底：推荐没加载出来时，别让空态什么都没有 -->
+  <view class="noFollow" wx:if="{{!recommendLoading && recommendCats.length === 0 && loadnomore && !(followCats && followCats.length)}}">
+    <view><text>还没有关注猫猫</text></view>
+    <view>下拉刷新试试，或去猫谱挑几只</view>
   </view>
 
   <view class='loadnomore' wx:if='{{loadnomore && followCats.length > 0}}'>

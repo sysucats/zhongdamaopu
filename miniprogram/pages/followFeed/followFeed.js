@@ -19,6 +19,11 @@ import api from "../../utils/cloudApi";
 import { signCosUrl } from "../../utils/common.js";
 import { likeCheck, likeAdd } from "../../utils/inter";
 import { refreshAchievements } from "../../utils/achievement";
+import {
+  getRecommendedCats,
+  getMajorCampus,
+  getRelationIds,
+} from "../../utils/recommend";
 
 const app = getApp();
 
@@ -26,6 +31,12 @@ const app = getApp();
 const loadCount = 13;
 // 最多加载几天前的照片
 const maxNDaysAgo = 30;
+// 与 detailCat.js 的 max_follow_cats 保持一致
+const maxFollowCats = 30;
+// 关注少于这个数量时，顶部继续给推荐
+const recommendThreshold = 10;
+// 空态/低关注时一屏推荐几只
+const recommendCount = 6;
 
 
 // 头像渐变边框
@@ -44,17 +55,21 @@ Page({
     },
     updatingFollowCats: false,
     likingLock: false,
+    recommendLock: false,
+    followingFromRecommend: false,
   },
   data: {
     feed: [],
     loadnomore: false,
     currentCatId: null,
+    recommendCats: [],
+    recommendLoading: false,
   },
 
   /**
    * 生命周期函数--监听页面加载
    */
-  async onLoad() {
+  async onLoad(options) {
     // 标记是否需要重新加载Feed数据
     let needRefreshFeed = true;
     let needIncrementalUpdate = false;
@@ -107,6 +122,9 @@ Page({
 
     // 3. 猫咪详情需要在获取关注列表后加载
     await this.loadFollowCatsDetail();
+
+    // 3.5 关注较少时，补充「推荐关注」（不阻塞动态流加载）
+    this.loadRecommend({ force: !!(options && options.forceRecommend) });
 
     // 4. 根据情况加载Feed数据
     if (needRefreshFeed) {
@@ -167,7 +185,7 @@ Page({
     this.resetFeedData();
 
     // 重新加载所有数据
-    await this.onLoad();
+    await this.onLoad({ forceRecommend: true });
   },
 
   /**
@@ -299,6 +317,122 @@ Page({
     followCatsList.sort((a, b) => b.latestTime - a.latestTime);
     console.log('关注列表', followCatsList);
     this.setData({ followCatsList: followCatsList });
+  },
+
+  // 加载「推荐关注」：关注 < recommendThreshold 只时才展示
+  async loadRecommend(options = {}) {
+    const { followCats } = this.data;
+    if (followCats && followCats.length >= recommendThreshold) {
+      this.setData({ recommendCats: [] });
+      return [];
+    }
+    if (this.jsData.recommendLock) {
+      return [];
+    }
+
+    this.jsData.recommendLock = true;
+    if (!this.data.recommendCats.length) {
+      this.setData({ recommendLoading: true });
+    }
+
+    try {
+      const followCatsList = this.data.followCatsList || [];
+      const cats = await getRecommendedCats({
+        followedIds: followCats || [],
+        campus: getMajorCampus(followCatsList),
+        relationIds: getRelationIds(followCatsList),
+        limit: recommendCount,
+        rotate: !!options.rotate,
+        force: !!options.force,
+      });
+      // 换一批时保留已点过「关注」的卡片状态没有意义，直接整批替换
+      this.setData({ recommendCats: cats });
+      return cats;
+    } catch (err) {
+      console.error('加载推荐猫猫失败:', err);
+      this.setData({ recommendCats: [] });
+      return [];
+    } finally {
+      this.jsData.recommendLock = false;
+      this.setData({ recommendLoading: false });
+    }
+  },
+
+  // 换一批
+  shuffleRecommend() {
+    if (this.jsData.recommendLock) {
+      return;
+    }
+    this.loadRecommend({ rotate: true });
+  },
+
+  // 在推荐卡片上直接关注
+  async followFromRecommend(e) {
+    const { catid, index } = e.currentTarget.dataset;
+    if (!catid || this.jsData.followingFromRecommend) {
+      return;
+    }
+
+    const { followCats = [] } = this.data;
+    if (followCats.indexOf(catid) >= 0) {
+      return;
+    }
+    if (followCats.length >= maxFollowCats) {
+      wx.showModal({
+        title: '关注已满',
+        content: `最多关注 ${maxFollowCats} 只猫猫，请到关于页-个人中心管理已关注的猫猫。`,
+      });
+      return;
+    }
+
+    this.jsData.followingFromRecommend = true;
+    wx.showLoading({ title: '关注中...', mask: true });
+
+    try {
+      const res = await api.updateFollowCats({
+        updateCmd: "add",
+        catId: catid,
+      });
+      wx.hideLoading();
+
+      if (!res) {
+        wx.showToast({ title: '关注失败，稍后再试', icon: 'none' });
+        return;
+      }
+
+      // 卡片就地变成「已关注」，不整批重排，避免视觉跳动
+      this.setData({
+        [`recommendCats[${index}].followed`]: true,
+        followCats: followCats.concat(catid),
+      });
+
+      wx.showToast({ title: '关注成功', icon: 'success' });
+
+      // 成就：关注猫猫
+      refreshAchievements();
+
+      // 重新算顶部关注栏（含新猫头像），再拉一次动态
+      await this.loadFollowCatsDetail();
+      this.setData({ feed: [], loadnomore: false }, () => {
+        this.resetFeedData();
+      });
+
+      // 关注数到阈值后，推荐区会自动隐藏
+      if (this.data.followCats.length >= recommendThreshold) {
+        this.setData({ recommendCats: [] });
+      }
+    } catch (err) {
+      wx.hideLoading();
+      console.error('推荐关注失败:', err);
+      wx.showToast({ title: '关注失败，稍后再试', icon: 'none' });
+    } finally {
+      this.jsData.followingFromRecommend = false;
+    }
+  },
+
+  // 去猫谱逛逛
+  toGenealogy() {
+    wx.switchTab({ url: '/pages/genealogy/genealogy' });
   },
 
   async _loadData(coll, catId = null) {
