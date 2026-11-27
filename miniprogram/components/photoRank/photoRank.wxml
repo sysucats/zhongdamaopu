@@ -2,7 +2,7 @@
   <view class="content-card" wx:if="{{profileLoaded && !user}}">
     <profile-prompt context="查看我的拍照月榜排名" bind:edit="getUInfo" />
   </view>
-  <view class="content-card leaderboard-summary" wx:elif="{{user}}">
+  <view class="content-card leaderboard-summary" bindtap="toMyPhotos" wx:elif="{{user}}">
     <view class="leaderboard-summary-grid">
       <view class="leaderboard-summary-cell">
         <view class="leaderboard-summary-label">排名</view>
@@ -10,7 +10,7 @@
         <view class="leaderboard-summary-status" wx:else>未上榜</view>
       </view>
       <view class="leaderboard-summary-cell center">
-        <image class="leaderboard-summary-avatar" mode="aspectFill" src="{{user.userInfo.avatarUrl || defaultAvatarUrl}}" bindtap="getUInfo"></image>
+        <image class="leaderboard-summary-avatar" mode="aspectFill" src="{{user.userInfo.avatarUrl || defaultAvatarUrl}}"></image>
         <view class="leaderboard-summary-name">{{user.userInfo.nickName}}</view>
       </view>
       <view class="leaderboard-summary-cell">
@@ -44,4 +44,3 @@
   <view class="leaderboard-meta" wx:if="{{rankTime}}">更新于 {{rankTime}}</view>
 </view>
 
-<modifyUserInfo show="{{showEdit}}" bind:close="closeEdit"></modifyUserInfo>

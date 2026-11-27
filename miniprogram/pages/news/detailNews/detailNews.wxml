@@ -10,7 +10,7 @@
     <view class='news-box' wx:if='{{news != 0}}'>
         <view class='news title'>{{news.title}}</view>
         <view class="news row-container">
-            <view class='tag-pill news tag' wx:if="{{news.class}}">{{news.class}}</view>
+            <view class='news tag' wx:if="{{news.class}}">{{news.class}}</view>
             <view class='news user'>{{news.userNicknameLastModify?news.userNicknameLastModify:news.userNickname}} </view>
             <view class='news time'>{{news.ddate}} </view>
         </view>

@@ -6,19 +6,14 @@
 }
 
 .unlock-card {
+  /* 宽度、留白与滚动由弹窗统一给出；左右滑动切换挂在正文上 */
   position: relative;
   z-index: 1;
-  box-sizing: border-box;
-  width: 640rpx;
-  max-width: 100%;
-  max-height: 88vh;
-  overflow-y: auto;
-  overflow-x: hidden;
-  padding: 0 24rpx 32rpx;
-  border-radius: var(--radius-modal);
-  background: var(--color-surface);
   text-align: center;
-  box-shadow: var(--shadow-modal);
+}
+
+.unlock-head {
+  text-align: center;
 }
 
 .unlock-subtitle {
@@ -29,15 +24,21 @@
 
 .unlock-continue {
   width: 50%;
-  margin: 24rpx auto 0;
+  margin: 0 auto;
 }
 
 .unlock-swiper {
   overflow: hidden;
-  width: calc(100% + 48rpx);
-  margin-left: -24rpx;
-  height: 550rpx;
+  /* 轮播撑满弹窗宽度，左右滑动不被正文内边距截断 */
+  width: calc(100% + 2 * var(--space-lg));
+  margin-left: calc(-1 * var(--space-lg));
+  /* 高度贴合内容：徽章 + 名称 + 一行说明；说明较长时加高一行 */
+  height: 510rpx;
   margin-top: 12rpx;
+}
+
+.unlock-swiper.tall {
+  height: 548rpx;
 }
 
 .unlock-badge {
@@ -78,6 +79,10 @@
 }
 
 .unlock-description {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
   margin-top: 12rpx;
   color: var(--color-gray-max);
   font-size: 25rpx;

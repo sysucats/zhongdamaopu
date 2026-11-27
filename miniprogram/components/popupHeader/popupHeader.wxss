@@ -29,7 +29,8 @@
 }
 
 .align-left {
-  padding-left: var(--space-md);
+  /* 左右边距由弹窗统一给出，左对齐标题直接贴内容左沿 */
+  padding-left: 0;
 }
 
 .align-left .heading-title {

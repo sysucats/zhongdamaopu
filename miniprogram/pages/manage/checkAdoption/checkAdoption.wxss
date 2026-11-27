@@ -65,8 +65,6 @@ page {
 .log-heading { display: flex; justify-content: space-between; flex-wrap: wrap; gap: var(--space-xs); font-size: var(--font-size-caption); font-weight: 500; }
 .log-note { margin: var(--space-xs) 0; font-size: var(--font-size-caption); }
 .card-actions .reject-action { margin-right: auto; }
-.adoption-editor { padding: 0 var(--space-md); }
-.editor-body { padding: 0 0 calc(var(--space-lg) + env(safe-area-inset-bottom)); }
 .editor-body .description-input { border: 1rpx solid var(--color-gray-normal); }
 .editor-parties { display: flex; align-items: center; flex-wrap: wrap; gap: var(--space-xs); }
 .editor-parties .iconfont { color: var(--color-gray-max); font-size: 30rpx; }

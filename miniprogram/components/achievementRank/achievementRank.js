@@ -14,7 +14,6 @@ Component({
     loading: false,
     profileLoaded: false,
     hasProfile: false,
-    showEdit: false,
     myOpenid: '',
     myCount: 0,
     myRank: 0,
@@ -33,8 +32,8 @@ Component({
   },
 
   methods: {
-    editProfile() { this.setData({ showEdit: true }); },
-    closeEdit() { this.setData({ showEdit: false }); },
+    // 编辑弹窗由页面承载：swiper 内的 fixed 定位会被裁在滑动区里
+    editProfile() { this.triggerEvent('editprofile'); },
 
     async reloadData() {
       if (this.data.loading) {

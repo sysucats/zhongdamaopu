@@ -1,6 +1,7 @@
 @import "/pages/public/wxss/tag.wxss";
 @import "/pages/public/wxss/card.wxss";
 @import "/pages/public/wxss/button.wxss";
+@import "/pages/public/wxss/formControls.wxss";
 page {
   height: 100%;
   overflow: hidden;
@@ -452,12 +453,11 @@ swiper-item image {
   display: flex;
   flex-wrap: wrap;
   justify-content: flex-start;
-  box-sizing: border-box;
-  padding: 10rpx;
+  /* 行距放在行与行之间，最后一行下方只留弹窗统一的底部留白 */
+  row-gap: 50rpx;
 }
 .button {
   filter: drop-shadow(0px 12rpx 12rpx rgba(0, 0, 0, 0.15));
-  margin-bottom: 50rpx;
   width: 33.33%;
   display: flex;
   flex-direction: column;
@@ -627,41 +627,8 @@ swiper-item image {
   color: transparent;
 }
 
-/* 赠予徽章 */
-.search {
-  width: 750rpx;
-  background-color: var(--color-white-dark);
-  position: fixed;
-  bottom: 0;
-  padding: 20rpx 20rpx;
-  padding-bottom: max(20rpx, constant(safe-area-inset-bottom));
-  padding-bottom: max(20rpx, env(safe-area-inset-bottom));
-  display: block;
-
-  /* border-top: 5rpx solid var(--color-primary); */
-  border-top-left-radius: 50rpx;
-  border-top-right-radius: 50rpx;
-
-  overflow: hidden;
-  box-sizing: border-box;
-  transition:
-    height 400ms ease,
-    bottom 400ms ease;
-
-  z-index: 999;
-
-  background-color: var(--color-gray-light);
-
-  filter: drop-shadow(0px 12rpx 12rpx rgba(0, 0, 0, 0.15));
-}
-
-.search.hidden {
-  bottom: -1000rpx;
-}
-
 .user-badge-list {
   display: flex;
-  height: 380rpx;
   flex-wrap: wrap;
 }
 
@@ -720,35 +687,6 @@ swiper-item image {
 
 .badge-level-C .user-badge-item-name {
   color: var(--color-badge-C);
-}
-
-/* search按钮 */
-.search-buttons {
-  display: flex;
-  justify-content: space-evenly;
-  margin-top: 20rpx;
-}
-
-.search-btn {
-  width: 300rpx;
-  height: 42rpx;
-  line-height: 42rpx;
-  font-size: 22rpx;
-  text-align: center;
-  background-color: var(--color-surface);
-  border-radius: 10rpx;
-  border: 1rpx solid var(--color-gray-normal);
-}
-.search-btn.active {
-  background-color: var(--color-primary);
-  color: var(--color-text-onPrimary);
-}
-.search-btn.active.hover {
-  background-color: var(--color-primary-dark);
-}
-.search-btn.disabled {
-  background-color: var(--color-gray-normal);
-  color: var(--color-gray-max);
 }
 
 /* 徽章 */
@@ -914,26 +852,9 @@ one-rating-title {
   font-size: 26rpx;
 }
 
-/* 医疗时间线 */
-.modal-content-wrapper {
-  width: 80vw;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  border-radius: 40rpx;
-  overflow: hidden;
-  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.1);
-}
-
-.modal-body {
-  flex: 1;
-  margin-top: 20rpx;
-  max-height: 70vh;
-  overflow-y: auto;
-}
-
 .medical-timeline {
-  padding: 0 30rpx 20rpx 48rpx;
+  /* 时间轴节点以左侧 26rpx 为中心：最近一条的节点（半径 20rpx + 6rpx 光圈）左沿正好落在外层内边距上，不再探出 */
+  padding: 0 0 0 26rpx;
   position: relative;
 }
 
@@ -941,6 +862,9 @@ one-rating-title {
   position: relative;
   display: flex;
   margin-bottom: 20rpx;
+}
+.timeline-item:last-child {
+  margin-bottom: 0;
 }
 
 .timeline-node {
@@ -1032,3 +956,4 @@ one-rating-title {
   background: var(--grad-warm-banner);
   color: var(--color-primary-text);
 }
+

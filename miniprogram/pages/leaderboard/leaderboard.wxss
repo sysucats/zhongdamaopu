@@ -189,17 +189,6 @@ heart {
   margin: 20rpx 20rpx 20rpx 20rpx;
 }
 
-.achievement-showcase-dialog {
-  box-sizing: border-box;
-  width: 660rpx;
-  max-width: calc(100vw - 48rpx);
-  max-height: 78vh;
-  overflow-y: auto;
-  padding: 0 var(--space-md) 12rpx;
-  border-radius: var(--radius-modal);
-  background: var(--color-surface);
-}
-
 .achievement-showcase-state {
   padding: 96rpx 0;
   text-align: center;

@@ -1,6 +1,5 @@
-/* 胶囊外观；交互状态仅用于可点击选项。 */
+/* 可点选项胶囊。 */
 .chip,
-.tag-pill,
 .h-filter-item {
   display: inline-flex;
   align-items: center;
@@ -17,14 +16,6 @@
   line-height: 1.5;
 }
 .chip::after { border: none; }
-.tag-pill {
-  flex-shrink: 0;
-  max-width: 100%;
-  white-space: nowrap;
-  background: var(--color-primary-light);
-  color: var(--color-primary-text);
-  font-weight: 400;
-}
 .chip.active,
 .h-filter-item.active {
   background: var(--color-primary-light);
@@ -35,14 +26,12 @@
 .h-filter-item:active:not([disabled]) { background: var(--color-gray-normal); }
 .chip.active:active:not([disabled]),
 .h-filter-item.active:active:not([disabled]) { background: var(--color-primary); color: var(--color-text-onPrimary); }
+button.chip[disabled],
 .chip[disabled],
 .h-filter-item[disabled] { background: var(--color-gray-normal); color: var(--color-gray-max); }
 
-/* 静态分类标签：文字撑宽，不承担点击状态。 */
-.relation-tag,
-.record-type,
-.medical-type-tag,
-.tags .tag {
+/* 静态标签：只显示、不可点（分类、状态等）。默认主题浅底，加 status-* 换色调；各处语义名只管位置等差异。 */
+.tag {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -59,18 +48,6 @@
   white-space: nowrap;
 }
 
-/* 领养状态：三个入口共用。 */
-.status-tag {
-  display: inline-flex;
-  align-items: center;
-  box-sizing: border-box;
-  padding: 6rpx 14rpx;
-  border-radius: var(--radius-pill);
-  font-size: var(--font-size-tag);
-  font-weight: 400;
-  line-height: 1.5;
-  white-space: nowrap;
-}
 /* 色调底色统一走 --status-bg，拼接段也取这一份。 */
 .status-pending { --status-bg: var(--color-status-pending-bg); background: var(--status-bg); color: var(--color-status-pending-text); }
 .status-reviewing { --status-bg: var(--color-status-reviewing-bg); background: var(--status-bg); color: var(--color-status-reviewing-text); }
@@ -87,9 +64,6 @@
   gap: var(--space-xs);
 }
 .cat-status-tag {
-  flex-shrink: 0;
-  min-height: 0;
-  padding: 6rpx 14rpx;
   font-size: 22rpx;
   line-height: 1.4;
 }

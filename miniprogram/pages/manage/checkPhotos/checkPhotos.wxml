@@ -29,7 +29,7 @@
           <view class="review-subject-copy"><view class="review-name">{{item.cat.name}}</view><view class="review-location">{{item.cat.campus}} {{item.cat.area}}</view></view>
           <text class="iconfont icon-chevron-right review-chevron"></text>
         </view>
-        <text class="status-tag review-state {{item.mark === 'delete' ? 'status-rejected' : item.mark === 'transfer' ? 'status-reviewing' : item.mark === 'pass' || item.mark === 'best' ? 'status-approved' : 'status-pending'}}">{{item.mark === 'delete' ? '已标记删除' : item.mark === 'transfer' ? '已标记转移' : item.mark === 'pass' ? '已标记通过' : item.mark === 'best' ? '已标记精选' : '待标记'}}</text>
+        <text class="tag review-state {{item.mark === 'delete' ? 'status-rejected' : item.mark === 'transfer' ? 'status-reviewing' : item.mark === 'pass' || item.mark === 'best' ? 'status-approved' : 'status-pending'}}">{{item.mark === 'delete' ? '已标记删除' : item.mark === 'transfer' ? '已标记转移' : item.mark === 'pass' ? '已标记通过' : item.mark === 'best' ? '已标记精选' : '待标记'}}</text>
       </view>
       <!-- <view class="imageShadowMask"></view> -->
       <view class="info-box">
@@ -80,7 +80,7 @@
             <view class="review-subject-copy"><view class="review-name">{{item.cat_name}}</view><view class="review-location">{{item.cat_campus}} {{item.cat_area}}</view></view>
             <text class="iconfont icon-chevron-right review-chevron"></text>
           </view>
-          <text class="status-tag review-state status-approved">{{item.action_text}}</text>
+          <text class="tag review-state status-approved">{{item.action_text}}</text>
         </view>
         <view class='label user'>上传者：{{item.uploaderInfo.nickName || '未知'}}</view>
         <view class='label user'>审核人：{{item.managerInfo.nickName || '未知'}}</view>

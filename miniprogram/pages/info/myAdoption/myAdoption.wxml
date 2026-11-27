@@ -8,7 +8,7 @@
   <view class="adoption-card content-card" wx:for="{{list}}" wx:key="_id">
     <view class="card-header" bindtap="toCatDetail" data-cat_id="{{item.cat_id}}">
       <view class="cat-name">{{item.cat_name}}</view>
-      <view class="status-tag {{statusClass[item.status]}}">{{statusDesc[item.status]}}</view>
+      <view class="tag {{statusClass[item.status]}}">{{statusDesc[item.status]}}</view>
     </view>
 
     <view class="apply-time">申请时间：{{item.apply_time_formatted}}</view>

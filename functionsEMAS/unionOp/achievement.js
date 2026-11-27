@@ -37,6 +37,7 @@ function publicDef(def) {
     name: def.name,
     description: describe(def),
     materialKey: def.materialKey,
+    materialColor: def.materialColor || '',
     frontImage: def.frontImage,
     backImage: def.backImage,
     model3dUrl: def.model3dUrl || '',
@@ -49,8 +50,16 @@ function bySeriesAndSort(a, b) {
 }
 
 async function loadActiveDefs(db) {
-  const defs = await findAll(db.collection('achievement_def'), { status: 'active' });
-  return defs.filter(def => METRICS[def.rule?.metric] && def.frontImage && def.backImage).sort(bySeriesAndSort);
+  const [defs, materials] = await Promise.all([
+    findAll(db.collection('achievement_def'), { status: 'active' }),
+    findAll(db.collection('achievement_material')),
+  ]);
+  // 成就名称按材质着色：带上材质的文字色（旧材质未取色时为空，前端用默认色）
+  const colors = Object.fromEntries(materials.map(item => [item.key, item.color || '']));
+  return defs
+    .filter(def => METRICS[def.rule?.metric] && def.frontImage && def.backImage)
+    .map(def => ({ ...def, materialColor: colors[def.materialKey] || '' }))
+    .sort(bySeriesAndSort);
 }
 
 function uniqueCount(list) {
@@ -101,7 +110,7 @@ async function sync(db, openid, user) {
         const id = 'achv_' + createHash('sha256').update(`${openid}\0${def.key}`).digest('hex').slice(0, 40);
         const record = { _id: id, openid, _openid: openid, key: def.key, create_date: new Date(), serialNo };
         try {
-          const inserted = await db.collection('achievement').insertOne(record);
+          const { result: inserted } = await db.collection('achievement').insertOne(record);
           if (!inserted?.insertedId) throw new Error('成就写入失败');
           owned.add(def.key);
           records.push(record);
@@ -109,8 +118,12 @@ async function sync(db, openid, user) {
         } catch (error) {
           const { result: existing } = await db.collection('achievement').findOne({ openid, key: def.key });
           if (!existing) throw error;
+          // 编号与本次分配一致说明是本次写入，仍算新解锁；否则是并发请求先写入。
+          const mine = existing.serialNo === serialNo;
+          console.warn('[achievement] insert fallback', def.key, mine ? 'own record' : 'existing record', error?.message || error);
           owned.add(def.key);
           records.push(existing);
+          if (mine) newlyUnlocked.push(def.key);
         }
       });
     } catch (error) {

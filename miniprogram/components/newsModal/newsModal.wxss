@@ -9,11 +9,8 @@
 }
 
 .wx-modal {
-  width: 600rpx;
-  background-color: var(--color-surface);
-  border-radius: var(--radius-modal);
-  overflow: visible;
-  padding: 0 35rpx;
+  /* 宽度、留白与滚动由弹窗统一给出 */
+  padding: 15rpx 0;
 }
 
 .wx-modal-row {
@@ -50,19 +47,6 @@
   width: 540rpx;
 }
 
-.wx-modal-scroll {
-  width: auto;
-  padding: 15rpx 5rpx;
-  height: 600rpx;
-  background-color: var(--color-surface);
-}
-
-/* 无图片时减少滚动区域高度，使布局更紧凑 */
-.wx-modal-scroll.no-image {
-  height: auto;
-  max-height: 450rpx;
-}
-
 .wx-modal-class {
   margin: 0 12rpx 0 0;
 }
@@ -87,6 +71,8 @@
 }
 
 .wx-modal-footer {
+  /* 对话框式底栏铺满弹窗宽度并贴住底边：抵消底栏区域统一给出的留白 */
+  margin: calc(-1 * var(--space-md)) calc(-1 * var(--space-lg)) calc(-1 * var(--popup-pad-bottom));
   display: flex;
   align-items: center;
   position: relative;

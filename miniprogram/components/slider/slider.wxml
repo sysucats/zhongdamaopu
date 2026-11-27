@@ -1,0 +1,10 @@
+<view class="slider {{disabled ? 'is-disabled' : ''}}" catchtouchstart="onTouchStart" catchtouchmove="onTouchMove" catchtouchend="onTouchEnd" catchtouchcancel="onTouchEnd">
+  <view class="slider-appearance" aria-hidden="true">
+    <view class="slider-track" style="{{track ? 'background: ' + track : ''}}">
+      <view class="slider-fill" wx:if="{{!track}}" style="width: {{percent}}%;"></view>
+    </view>
+    <view class="slider-thumb" style="left: {{percent}}%;"></view>
+    <view class="slider-tick" wx:for="{{tickPercents}}" wx:key="*this" style="left: {{item}}%;"></view>
+  </view>
+  <slider class="slider-native" min="{{min}}" max="{{max}}" step="{{step}}" value="{{value}}" block-size="28" disabled="{{disabled}}" bindchange="onNativeChange" aria-label="{{ariaLabel}}" />
+</view>

@@ -498,12 +498,15 @@ image {
   display: inline-flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   text-align: center;
-  margin: 30rpx 0;
+  /* 每个操作是一行等高的点击行，行间距由行高统一给出；不用上下外边距（flex 里外边距不合并，会叠加） */
+  min-height: 96rpx;
 }
 
-.menu-item:first-child {
-  margin-bottom: 0;
+/* 头像一项：下方留白加分割线，与操作行分开 */
+.menu-item.menu-avatar {
+  min-height: 0;
   padding-bottom: 30rpx;
   border-bottom: 1rpx solid var(--color-gray);
 }

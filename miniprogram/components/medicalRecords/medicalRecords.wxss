@@ -78,24 +78,8 @@
   text-align: center;
   color: var(--color-gray-max);
 }
-.editor {
-  box-sizing: border-box;
-  width: 100%;
-  max-height: 78vh;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  border-radius: 28rpx 28rpx 12rpx 12rpx;
-  background: var(--color-gray-light);
-}
-.editor-body {
-  flex: 0 1 auto;
-  min-height: 0;
-  overflow-y: auto;
-}
 .editor-fields {
   box-sizing: border-box;
-  margin: var(--space-md);
 }
 
 .medical-field {

@@ -160,9 +160,9 @@
 </scroll-view>
 
 <popup show="{{showMenu}}" bind:close="closeMenu">
+  <popup-header slot="header" title="{{selectedCat.name || '猫猫操作'}}" bind:close="closeMenu" />
   <view class="menu-container">
-    <popup-header title="{{selectedCat.name || '猫猫操作'}}" align="left" bind:close="closeMenu" />
-    <view class="menu-item">
+    <view class="menu-item menu-avatar">
       <view class="cat-avatar-wrapper">
         <view class="cat-avatar">
           <image class="avatar" src="{{selectedCat.avatar.photo_compressed || selectedCat.avatar.photo_id}}" mode="aspectFill" lazy-load="true"/>

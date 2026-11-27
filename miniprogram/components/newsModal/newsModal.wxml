@@ -1,30 +1,27 @@
 <!--components/newsModal/newsModal.wxml-->
-<popup show="{{isShow}}" position="center" bind:close="_cancelEvent" class="news-popup">
-  <view class='wx-modal'>
+<popup style="--popup-background: var(--color-surface);" show="{{isShow}}" position="center" max-height="60vh" footer="{{true}}" bind:close="_cancelEvent" class="news-popup">
+  <view slot="header">
     <image class="wx-modal-catlogo" mode='heightFix' src='/pages/public/images/news/cat.png'></image>
     <popup-header title="{{title}}" close-position="none" />
     <view class="wx-modal-row">
-      <view class='tag-pill wx-modal-class' wx:if="{{newsClass}}">{{ newsClass }}</view>
+      <view class='tag wx-modal-class' wx:if="{{newsClass}}">{{ newsClass }}</view>
       <view class='wx-modal-user'>{{ user }}</view>
       <view class='wx-modal-time'>{{ time }}</view>
     </view>
-
     <view class="wx-modal-cat-chip" wx:if="{{catName}}" catchtap="_catTap" hover-class="wx-modal-cat-chip-hover">
       <image wx:if="{{catAvatar}}" class="wx-modal-cat-avatar" mode="aspectFill" src="{{catAvatar}}"></image>
       <view wx:else class="wx-modal-cat-avatar wx-modal-cat-empty">{{catInitial}}</view>
       <text class="wx-modal-cat-name">{{catName}}</text>
     </view>
-
-    <scroll-view class='wx-modal-scroll {{imagePath == "" ? "no-image" : ""}}' enable-flex='true' scroll-y='true' enable-back-to-top='true' lower-threshold='50'>
-      <view class='wx-modal-content {{imagePath == "" ? "full-height" : ""}}' wx:if="{{content.length != 0}}">{{ content }}</view>
-      <block wx:if="{{ imagePath != '' }}">
-        <image class="wx-modal-image" mode='widthFix' src='{{ imagePath }}'></image>
-      </block>
-    </scroll-view>
-
-    <view class='wx-modal-footer'>
-      <view class='wx-modal-btn' catchtap='_cancelEvent'>{{ cancelText }}</view>
-      <view class='wx-modal-btn' catchtap='_confirmEvent'>{{ confirmText }}</view>
-    </view>
+  </view>
+  <view class='wx-modal'>
+    <view class='wx-modal-content {{imagePath == "" ? "full-height" : ""}}' wx:if="{{content.length != 0}}">{{ content }}</view>
+    <block wx:if="{{ imagePath != '' }}">
+      <image class="wx-modal-image" mode='widthFix' src='{{ imagePath }}'></image>
+    </block>
+  </view>
+  <view slot="footer" class='wx-modal-footer'>
+    <view class='wx-modal-btn' catchtap='_cancelEvent'>{{ cancelText }}</view>
+    <view class='wx-modal-btn' catchtap='_confirmEvent'>{{ confirmText }}</view>
   </view>
 </popup>

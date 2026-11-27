@@ -1,7 +1,8 @@
 {
   "usingComponents": {
     "no-auth": "/components/noAuth/noAuth",
-    "achievement-badge": "/components/achievementBadge/achievementBadge"
+    "achievement-badge": "/components/achievementBadge/achievementBadge",
+    "slider-control": "/components/slider/slider"
   },
   "navigationBarTitleText": "徽章管理"
 }

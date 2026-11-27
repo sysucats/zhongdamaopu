@@ -1,23 +1,8 @@
-#search .popup-container {
-  width: 100%;
-  max-height: 80vh;
-  background-color: var(--color-surface);
-  border-radius: 20rpx 20rpx 0 0;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-}
-
-.search-results {
-  flex: 1;
-  max-height: 600rpx;
-}
-
 .search-cat-item {
   display: flex;
   align-items: center;
-  padding: 15rpx 20rpx;
-  border-bottom: 1rpx solid var(--color-gray-light);
+  padding: 15rpx 0;
+  border-bottom: 1rpx solid var(--color-gray-normal);
 }
 
 .search-cat-item.disabled {
@@ -64,3 +49,4 @@
   color: var(--color-gray-dark);
   font-size: 26rpx;
 }
+

@@ -1,4 +1,5 @@
-/* 基础按钮；compact 只切换尺寸，with-icon 只处理图文排列。 */
+/* 基础按钮；尺寸三档：默认 88（弹窗、表单主操作）/ medium 76（卡片内整行按钮）/ compact 64（卡片内行内小按钮）。
+   with-icon 只处理图文排列。 */
 .form-button {
   --form-button-height: 88rpx;
   display: block;
@@ -9,7 +10,7 @@
   border-radius: var(--radius-pill);
   background: var(--color-gray-normal);
   color: var(--color-black-light);
-  font-size: 29rpx;
+  font-size: var(--font-size-body);
   line-height: var(--form-button-height);
 }
 
@@ -31,7 +32,8 @@
   color: var(--color-text-onPrimary);
 }
 
-/* 原生禁用状态和禁用类使用相同配色。 */
+/* 原生禁用状态和禁用类使用相同配色；带 button 才压得过微信自带的 button[disabled]:not([type])。 */
+button.form-button[disabled],
 .form-button[disabled],
 .form-button.is-disabled,
 .form-button.primary.is-disabled {
@@ -48,11 +50,15 @@
   color: var(--color-red-dark);
 }
 
+.form-button.medium {
+  --form-button-height: 76rpx;
+}
+
 .form-button.compact {
   --form-button-height: 64rpx;
   width: auto;
   padding: 0 20rpx;
-  font-size: 24rpx;
+  font-size: var(--font-size-caption);
 }
 
 /* 卡片操作：图标配文字，内容撑宽。 */

@@ -24,7 +24,7 @@
   margin-left: auto;
   font-size: var(--font-size-tag);
 }
-.review-state:not(.status-tag) { color: var(--color-gray-max); }
+.review-state:not(.tag) { color: var(--color-gray-max); }
 
 /* 猫猫来源行：头像可选，状态始终靠右。 */
 .review-subject {

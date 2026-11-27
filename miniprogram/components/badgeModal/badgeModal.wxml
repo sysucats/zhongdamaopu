@@ -1,7 +1,7 @@
 <!--components/badgeModal/badgeModal.wxml-->
 <popup position="center" show="{{show}}" zindex="{{zindex}}" bind:close="hide">
+  <popup-header slot="header" title="{{title}}" bind:close="hide" />
   <view class="modal badge-level-{{level}}">
-    <popup-header title="{{title}}" bind:close="hide" />
     <image class="badge-img" src="{{img}}" mode="aspectFill"/>
     <view class="badge-name-line">
       <view class="arrow">

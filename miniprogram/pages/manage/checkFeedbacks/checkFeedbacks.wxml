@@ -15,7 +15,7 @@
         <text class="iconfont icon-chevron-right review-chevron"></text>
       </view>
       <view class="review-subject" wx:else><view class="review-name">信息反馈</view></view>
-      <text class="status-tag review-state {{checkHistory ? 'status-approved' : item.replied ? 'status-reviewing' : 'status-pending'}}">{{checkHistory ? '已处理' : item.replied ? '已回复' : '待处理'}}</text>
+      <text class="tag review-state {{checkHistory ? 'status-approved' : item.replied ? 'status-reviewing' : 'status-pending'}}">{{checkHistory ? '已处理' : item.replied ? '已回复' : '待处理'}}</text>
     </view>
     <view class="feedback-meta">
       <text>{{item.userInfo.nickName || '猫友'}}</text>

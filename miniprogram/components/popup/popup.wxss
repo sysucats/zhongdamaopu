@@ -7,13 +7,19 @@
   pointer-events: none;
 }
 
+/* 弹窗 = 标题栏 + 正文 + 底栏（可选）。
+   左右留白 --space-lg 由三段各自给出；正文是唯一滚动区且撑满弹窗宽度，滚动条在最外侧；
+   底部留白 --popup-pad-bottom 由最后一段给出（无底栏时是正文，可滑到底边）。页面内容不写贴边的上下左右边距 */
 .popup-container {
   position: fixed;
   left: 0;
   right: 0;
   z-index: 999999;
+  display: flex;
+  flex-direction: column;
   box-sizing: border-box;
   transition: all 0.3s ease;
+  --popup-pad-bottom: var(--space-lg);
   background-color: var(--popup-background, var(--color-gray-light));
   filter: drop-shadow(0px 12rpx 12rpx rgba(0, 0, 0, 0.15));
   pointer-events: auto;
@@ -23,14 +29,48 @@
   pointer-events: none;
 }
 
+.popup-header-area {
+  /* 不裁切：允许装饰元素（如新闻弹窗的小猫）伸出弹窗 */
+  position: relative;
+  flex-shrink: 0;
+  padding: 0 var(--space-lg);
+}
+
+.popup-body {
+  /* 高度 = 内容高度，上限由 JS 按「弹窗最大高度 − 标题栏 − 底栏」算出（scroll-view 需要明确上限才能滚动）。
+     JS 量出来之前，靠弹窗的 max-height 加可收缩兜底，长内容不会先撑出屏幕 */
+  flex: 0 1 auto;
+  min-height: 0;
+  /* 页面里可能有对 scroll-view 的全局背景色，这里明确透明，正文始终用弹窗底色 */
+  background-color: transparent;
+  /* 滚动内容按弹窗下方圆角裁切 */
+  overflow: hidden;
+  border-bottom-left-radius: inherit;
+  border-bottom-right-radius: inherit;
+}
+
+.popup-body-inner {
+  box-sizing: border-box;
+  padding: 0 var(--space-lg);
+}
+
+.popup-body-inner.to-bottom {
+  padding-bottom: var(--popup-pad-bottom);
+}
+
+.popup-footer-area {
+  flex-shrink: 0;
+  padding: var(--space-md) var(--space-lg) var(--popup-pad-bottom);
+}
+
 /* 底部弹出样式 */
 .popup-container.bottom {
   bottom: 0;
   width: 100%;
   border-top-right-radius: var(--radius-modal);
   border-top-left-radius: var(--radius-modal);
-  padding: 0 20rpx;
-  padding-bottom: max(20rpx, env(safe-area-inset-bottom));
+  /* 底部面板：留白取 32rpx 与安全区中较大者 */
+  --popup-pad-bottom: max(var(--space-lg), env(safe-area-inset-bottom));
   transform: translateY(100%);
 }
 
@@ -60,13 +100,13 @@
   }
 }
 
-/* 中部弹出样式 */
+/* 中部弹出样式：所有居中弹窗统一宽 620rpx（含两侧留白） */
 .popup-container.center {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%) scale(0.8);
-  width: fit-content;
-  max-height: 80vh;
+  width: 620rpx;
+  max-width: calc(100vw - 48rpx);
   border-radius: var(--radius-modal);
   opacity: 0;
 }

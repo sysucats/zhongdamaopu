@@ -1,10 +1,7 @@
 @import "/pages/public/wxss/form.wxss";
+@import "/pages/public/wxss/hFilter.wxss";
+@import "/pages/public/wxss/progress.wxss";
 
-.rule-summary {
-  color: var(--color-black-light);
-  font-size: 29rpx;
-  line-height: 1.6;
-}
 
 .face-grid {
   display: grid;
@@ -46,6 +43,86 @@
   font-size: 23rpx;
 }
 
+/* 名称文字色 */
+.color-preview {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+  margin: var(--space-sm) 0 var(--space-md);
+}
+
+.preview-name {
+  font-size: 32rpx;
+  font-weight: 600;
+}
+
+/* 同「我的成就」卡片右侧的 .achv-cur */
+.preview-pill {
+  flex-shrink: 0;
+  padding: 7rpx 20rpx;
+  border-radius: var(--radius-pill);
+  color: var(--color-gray-max);
+  background: var(--color-gray-light);
+  font-size: 22rpx;
+}
+
+.color-dot {
+  width: 22rpx;
+  height: 22rpx;
+  margin-right: 10rpx;
+  border-radius: 50%;
+  box-shadow: inset 0 0 0 1rpx rgba(0, 0, 0, 0.12);
+}
+
+.color-dot.rainbow {
+  background: conic-gradient(#f00, #ff0, #0f0, #0ff, #00f, #f0f, #f00);
+}
+
+.custom-color {
+  margin-top: var(--space-md);
+}
+
+.hsl-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+}
+
+.hsl-label {
+  flex-shrink: 0;
+  width: 64rpx;
+  color: var(--color-gray-max);
+  font-size: 24rpx;
+}
+
+.hsl-slider {
+  flex: 1;
+  min-width: 0;
+}
+
+.hex-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.hex-dot {
+  flex-shrink: 0;
+  width: 48rpx;
+  height: 48rpx;
+  margin-right: 0;
+}
+
+.hex-input {
+  flex: 1;
+  text-transform: uppercase;
+}
+
+.field-hint.warn {
+  color: var(--color-orange-dark);
+}
+
 .material-image {
   display: block;
   width: 100%;
@@ -62,4 +139,35 @@
   line-height: 1.5;
 }
 
-.generation-status { margin: var(--space-md) 0; }
+/* 保存进度：贴在底栏顶边 */
+.save-progress {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+}
+
+.save-button { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* 所属分类：系列 › 类别 并排，箭头表达层级 */
+.path-row {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--space-sm);
+}
+.path-col {
+  flex: 1;
+  min-width: 0;
+}
+.path-sep {
+  flex-shrink: 0;
+  padding-bottom: 20rpx;
+  color: var(--color-gray-max);
+  font-size: 36rpx;
+  line-height: 48rpx;
+}
+.field-picker.locked,
+.count-field.locked .count-input,
+.count-field.locked .count-unit {
+  color: var(--color-gray-max);
+}
