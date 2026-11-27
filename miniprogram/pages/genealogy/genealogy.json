@@ -1,7 +1,8 @@
 {
   "usingComponents": {
     "newsModal": "/components/newsModal/newsModal",
-    "search-bar": "/components/searchBar/searchBar"
+    "search-bar": "/components/searchBar/searchBar",
+    "mask": "/components/mask/mask"
   },
   "disableScroll": true,
   "navigationStyle": "custom",

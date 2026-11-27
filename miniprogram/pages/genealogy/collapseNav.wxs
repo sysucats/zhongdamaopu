@@ -1,12 +1,11 @@
-// 首页导航栏折叠：滚动时在渲染层直接改样式，不走 setData，跟手不卡。
+// 首页导航栏折叠：滚过阈值后，搜索栏按固定时长一次性收进导航栏；回到顶部附近再展开。
+// 不跟手，不会停在半路：动画快慢与手指速度、滚动事件疏密无关，每次都一样顺。
+// 全程在渲染层逐帧改样式，不走 setData。
 // m 由页面 js 按胶囊位置算好，单位 px：
-//   d 收起距离；eh/ch 展开/收起时搜索框高度；epl/cpl、epr/cpr 展开/收起时搜索行左、右内边距
-// 吸附：停在半收起时，按过半与否吸附到完全展开或完全收起。
-//   松手时几乎没有速度 → 立刻吸附，不等惯性；否则等惯性滚动停下再判断。
-var SETTLE_MS = 120; // 这么久没有新的滚动事件，才算停下（惯性末段事件变稀，按帧数判断会误判）
-var SNAP_TIMEOUT_MS = 400; // 吸附动画最长时间；超时未到位（被打断等）自动解锁，避免之后不再吸附
-var SLOW_V = 0.3; // px/ms，松手速度低于此值视为「放下」，立刻吸附
-var STALE_MS = 60; // 松手前这么久没滚动，说明手指已停住，速度按 0 算
+//   on/off 收起/展开阈值（scrollTop 超过 on 收起，低于 off 或触发到顶事件时展开，中间留缓冲避免来回切换）；
+//   rise 纵向行程；eh/ch 展开/收起时搜索框高度；epl/cpl、epr/cpr 展开/收起时搜索行左、右内边距；
+//   ps 轨迹参数：先收窄变矮（横向在 ps 前收完），再升进胶囊那一行，全程不碰胶囊、两端平滑起停（推导见 genealogy.js initNavMetrics）
+var DURATION = 300; // 一次完整收起 / 展开的时长（ms）；中途反向时按剩余进度折算
 
 function clamp(v) {
   return v < 0 ? 0 : (v > 1 ? 1 : v);
@@ -16,115 +15,78 @@ function now() {
   return getDate().getTime();
 }
 
-function apply(m, p, ins, state) {
-  var h = m.eh + (m.ch - m.eh) * p;
-  var pl = m.epl + (m.cpl - m.epl) * p;
-  var pr = m.epr + (m.cpr - m.epr) * p;
+// p 为收起进度（0 展开，1 收起），随时间匀速推进；起停的缓动由下面两条曲线负责
+function apply(m, p, ins) {
+  // 横向 smoothstep，在 ps 收完；纵向 4p³ − 3p⁴。两者起步、到位时速度都为 0
+  var t = p >= m.ps ? 1 : p / m.ps;
+  var qx = t * t * (3 - 2 * t);
+  var qy = p * p * p * (4 - 3 * p);
+  var h = m.eh + (m.ch - m.eh) * qx;
+  var pl = m.epl + (m.cpl - m.epl) * qx;
+  var pr = m.epr + (m.cpr - m.epr) * qx;
   ins.selectComponent('#search').setStyle(
-    'transform: translateY(' + (-m.d * p) + 'px); padding-left: ' + pl + 'px; padding-right: ' + pr + 'px; --search-h: ' + h + 'px;'
+    'transform: translateY(' + (-m.rise * qy) + 'px); padding-left: ' + pl + 'px; padding-right: ' + pr + 'px; --search-h: ' + h + 'px;'
   );
 
-  // 名字在前 40% 进度内淡出并略微上移
-  var tp = clamp(p / 0.4);
+  // 名字在搜索行升进胶囊那一行（进度 ps）之前淡出并略微上移
+  var tp = clamp(p / m.ps);
   ins.selectComponent('.nav-title').setStyle('opacity: ' + (1 - tp) + '; transform: translateY(' + (-6 * tp) + 'px);');
-
-  // 完全收起后导航栏下沿加一道轻投影，和卡片分开（样式见 .nav-bar.collapsed）；只在状态变化时改 class
-  var collapsed = p >= 1;
-  if (state.collapsed !== collapsed) {
-    state.collapsed = collapsed;
-    var bar = ins.selectComponent('.nav-bar');
-    if (collapsed) bar.addClass('collapsed');
-    else bar.removeClass('collapsed');
-  }
 }
 
-// 停在半收起时，过半收起、不到一半展开；吸附动画期间加锁，避免动画自身的滚动事件再次触发吸附
-function snap(ins) {
-  var state = ins.getState();
-  var p = state.p || 0;
-  if (!(p > 0 && p < 1) || !state.m) return;
-  state.snapping = true;
-  state.snapAt = now();
-  state.snapTarget = p >= 0.5 ? state.m.d : 0;
-  ins.callMethod('snapNav', { top: state.snapTarget });
-}
-
-// 等滚动停下：每帧看一次距上次滚动事件过了多久
-function watchSettle(ins) {
-  var state = ins.getState();
-  if (state.watching) return;
-  state.watching = true;
+// 从当前进度动画到 target；动画中途改了目标就地掉头
+function animateTo(ins, state, target) {
+  state.target = target;
+  // 告诉页面搜索栏最终收起与否：筛选卡片、点卡片后的定位据此直接算位置，不必等动画或量位置
+  ins.callMethod('onNavState', { collapsed: target === 1 });
+  // 导航栏下沿投影（样式见 .nav-bar.collapsed）随目标切换，自带 transition
+  var bar = ins.selectComponent('.nav-bar');
+  if (target === 1) bar.addClass('collapsed');
+  else bar.removeClass('collapsed');
+  if (state.animating) return;
+  state.animating = true;
+  var last = now();
   var tick = function () {
-    if (state.touching || state.snapping) {
-      state.watching = false;
-      return;
-    }
-    if (now() - (state.lastScrollAt || 0) < SETTLE_MS) {
-      ins.requestAnimationFrame(tick);
-      return;
-    }
-    state.watching = false;
-    snap(ins);
+    var t = now();
+    var step = (t - last) / DURATION;
+    last = t;
+    var p = state.p || 0;
+    p = state.target > p ? Math.min(state.target, p + step) : Math.max(state.target, p - step);
+    state.p = p;
+    apply(state.m, p, ins);
+    if (p !== state.target) ins.requestAnimationFrame(tick);
+    else state.animating = false;
   };
   ins.requestAnimationFrame(tick);
 }
 
 function onScroll(e, ins) {
   var m = e.currentTarget.dataset.m;
-  if (!m || !m.d) return;
+  if (!m || !m.rise) return;
   var state = ins.getState();
-  var y = e.detail.scrollTop;
-  var t = now();
-  // 滚动速度（px/ms），做一点平滑，松手时用来判断是「放下」还是「甩出」
-  if (state.lastScrollAt && t > state.lastScrollAt) {
-    var v = (y - state.lastY) / (t - state.lastScrollAt);
-    state.v = state.v === undefined ? v : state.v * 0.4 + v * 0.6;
-  }
   state.m = m;
-  state.lastY = y;
-  state.lastScrollAt = t;
-  if (state.touching) state.dragged = true;
-  var p = clamp(y / m.d);
-  if (state.p !== p) {
-    state.p = p;
-    apply(m, p, ins, state);
-  }
-  if (state.snapping) {
-    // 吸附动画到位或超时后解锁
-    if (Math.abs(y - state.snapTarget) < 1 || t - state.snapAt > SNAP_TIMEOUT_MS) {
-      state.snapping = false;
-    } else {
-      return;
-    }
-  }
-  // 手指已离开时的惯性滚动：停下后再判断要不要吸附
-  if (!state.touching) watchSettle(ins);
+  var y = e.detail.scrollTop;
+  if (state.target !== 1 && y > m.on) animateTo(ins, state, 1);
+  else if (state.target === 1 && y < m.off) animateTo(ins, state, 0);
 }
 
-function onTouchStart(e, ins) {
+// 到顶兜底：快速甩回顶部时最后一次滚动事件可能还停在 off 之外，靠 scroll-view 的到顶事件展开
+function onTop(e, ins) {
+  var m = e.currentTarget.dataset.m;
+  if (!m || !m.rise) return;
   var state = ins.getState();
-  state.touching = true;
-  state.dragged = false;
-  state.v = 0;
-  // 手指重新按下就交还控制权，吸附中途作废
-  state.snapping = false;
+  state.m = m;
+  if (state.target === 1) animateTo(ins, state, 0);
 }
 
-function onTouchEnd(e, ins) {
+// 列表重新加载（页面 data.navReset 的属性监听）：列表清空后回到顶部，但不一定有滚动事件，这里直接按顶部处理
+function onReset(v, old, ins) {
+  if (!old && old !== 0) return; // 首次渲染
   var state = ins.getState();
-  state.touching = false;
-  // 拖动过且松手时几乎没速度：立刻吸附，省掉「停住—再动」的二段感。
-  // 只是点一下（没拖动）不立刻吸附，以免和点卡片后的定位滚动打架。
-  var v = now() - (state.lastScrollAt || 0) > STALE_MS ? 0 : (state.v || 0);
-  if (state.dragged && Math.abs(v) < SLOW_V) {
-    snap(ins);
-    return;
-  }
-  watchSettle(ins);
+  if (state.target === 1 && state.m) animateTo(ins, state, 0);
 }
 
 module.exports = {
   onScroll: onScroll,
-  onTouchStart: onTouchStart,
-  onTouchEnd: onTouchEnd
+  onTop: onTop,
+  onReset: onReset
 };

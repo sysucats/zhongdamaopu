@@ -55,8 +55,6 @@ page {
   --color-text-inverse-secondary: rgba(255, 255, 255, 0.65);
   /* 照片底部渐隐遮罩：由深到透明，保证压在照片上的白字可读 */
   --grad-photo-overlay: linear-gradient(to top, rgba(0, 0, 0, 0.66) 0%, rgba(0, 0, 0, 0.35) 55%, rgba(0, 0, 0, 0) 100%);
-  /* 浮层背后的通用蒙层（筛选卡片等） */
-  --color-mask: rgba(0, 0, 0, 0.35);
 
   --color-black-min:#414141;
   --color-black-light: #222222;
