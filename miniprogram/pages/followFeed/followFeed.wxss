@@ -686,13 +686,13 @@ image {
 }
 
 .rec-reason.amber {
-  color: #8a5a00;
-  background: #fdf3e2;
+  color: var(--color-primary-text);
+  background: var(--color-primary-light);
 }
 
 .rec-reason.pink {
-  color: #a3415f;
-  background: #fdeef3;
+  color: var(--color-tag-pink);
+  background: var(--color-tag-pink-bg);
 }
 
 .rec-reason.gray {

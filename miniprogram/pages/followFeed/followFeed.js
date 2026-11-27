@@ -34,7 +34,7 @@ const maxNDaysAgo = 30;
 // 与 detailCat.js 的 max_follow_cats 保持一致
 const maxFollowCats = 30;
 // 关注少于这个数量时，顶部继续给推荐
-const recommendThreshold = 3;
+const recommendThreshold = 10;
 // 空态/低关注时一屏推荐几只
 const recommendCount = 6;
 

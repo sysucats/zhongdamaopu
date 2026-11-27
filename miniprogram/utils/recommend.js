@@ -8,9 +8,11 @@ const app = getApp();
 const DAY = 24 * 60 * 60 * 1000;
 // 超过一年没有新过审照片的猫视为「长期没人打理的旧档案」，不再进入推荐
 const DORMANT_DAYS = 365;
-// 池子结构变过（新增休眠过滤）时换个 key，避免旧缓存把休眠猫带回来
-const POOL_KEY = "cat-recommend-pool-v2";
+// 池子结构变过（整池补便利贴数）时换个 key，避免旧缓存里未计数的猫被复用
+const POOL_KEY = "cat-recommend-pool-v3";
 const POOL_TTL = 10 * 60 * 1000;
+// 便利贴分批查，单批 cat 数，避免一次 $in 的结果被 limit 截断
+const NOTE_BATCH = 20;
 const SHOWN_KEY = "cat-recommend-shown";
 const SHOWN_TTL = 24 * 60 * 60 * 1000;
 
@@ -99,19 +101,28 @@ async function fetchPool() {
   return Array.from(map.values());
 }
 
-// 便利贴计数：只对可能进入前 24 的猫查一次，避免全量拉取
+// 便利贴计数：整池分批并发查询，单批 limit 1000 避免截断
+// 口径与 followFeed 一致：排除已删除、待审核、带照片的评论
 async function fillNotes(cats) {
   if (!cats.length) return cats;
-  const ids = cats.map(c => c._id);
   const tally = new Map();
   try {
-    const { result } = await app.mpServerless.db.collection("comment").find(
-      { cat_id: { $in: ids }, deleted: { $ne: true } },
-      { projection: { cat_id: 1, photo_id: 1 }, limit: 1000 }
+    const batches = Array.from(
+      { length: Math.ceil(cats.length / NOTE_BATCH) },
+      (_, i) => cats.slice(i * NOTE_BATCH, (i + 1) * NOTE_BATCH).map(c => c._id)
     );
-    (result || []).forEach(c => {
-      if (!c || c.photo_id) return; // 照片评论不算便利贴
-      tally.set(c.cat_id, (tally.get(c.cat_id) || 0) + 1);
+    const results = await Promise.all(batches.map(ids =>
+      app.mpServerless.db.collection("comment").find(
+        { cat_id: { $in: ids }, deleted: { $ne: true }, needVerify: { $ne: true } },
+        { projection: { cat_id: 1, photo_id: 1 }, limit: 1000 }
+      )
+    ));
+    results.forEach(res => {
+      // EMAS 客户端查询不认 $exists，带图评论在客户端排除（同 utils/comment.js）
+      ((res && res.result) || []).forEach(c => {
+        if (!c || c.photo_id) return;
+        tally.set(c.cat_id, (tally.get(c.cat_id) || 0) + 1);
+      });
     });
   } catch (err) {
     console.warn("[recommend] 便利贴计数失败:", err);
@@ -221,7 +232,7 @@ function clearShown() {
   wx.removeStorageSync(SHOWN_KEY);
 }
 
-// 候选池缓存 10 分钟：进去一次只查 3 次 cat + 1 次 comment，
+// 候选池缓存 10 分钟：进去一次查 4 次 cat + 若干批 comment，
 // 「换一批」只是换选法，不再打库
 async function loadPool(force) {
   if (!force) {
@@ -232,14 +243,8 @@ async function loadPool(force) {
   }
 
   const pool = await fetchPool();
-  // 便利贴计数只补可能上榜的猫（按不含便利贴的分数取前 24）
-  const provisionalCtx = { campus: "", relationIds: new Set(), weights: WEIGHTS_COLD };
-  const provisional = pool
-    .map(cat => ({ cat, ...scoreOf(cat, provisionalCtx) }))
-    .sort((a, b) => b.score - a.score)
-    .slice(0, 24)
-    .map(x => x.cat);
-  await fillNotes(provisional);
+  // 整池都补便利贴数，缓存复用时「换一批」也不会出现该维度恒为 0 的猫
+  await fillNotes(pool);
 
   try {
     wx.setStorageSync(POOL_KEY, { t: Date.now(), list: pool });
@@ -351,14 +356,8 @@ function getRelationIds(followCatsList) {
   return Array.from(new Set(ids));
 }
 
-function clearRecommendCache() {
-  wx.removeStorageSync(POOL_KEY);
-  clearShown();
-}
-
 export {
   getRecommendedCats,
   getMajorCampus,
   getRelationIds,
-  clearRecommendCache,
 };
