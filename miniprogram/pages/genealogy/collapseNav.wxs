@@ -19,7 +19,12 @@ function now() {
 function apply(m, p, ins, state) {
   var h = m.eh + (m.ch - m.eh) * p;
   var pl = m.epl + (m.cpl - m.epl) * p;
-  var pr = m.epr + (m.cpr - m.epr) * p;
+  // 右侧避让要比垂直位移跑得快：搜索框升进胶囊那一行之前，右边界必须已经退到胶囊左边。
+  // hp 是「水平收缩走完」对应的收起进度（由页面按真实几何算），这里用 smoothstep 过渡，
+  // 起步柔和、收尾不硬。线性插值会让按钮在半收起时从胶囊上扫过去。
+  var pp = clamp(p / (m.hp || 0.25));
+  pp = pp * pp * (3 - 2 * pp);
+  var pr = m.epr + (m.cpr - m.epr) * pp;
   ins.selectComponent('#search').setStyle(
     'transform: translateY(' + (-m.d * p) + 'px); padding-left: ' + pl + 'px; padding-right: ' + pr + 'px; --search-h: ' + h + 'px;'
   );
@@ -28,13 +33,20 @@ function apply(m, p, ins, state) {
   var tp = clamp(p / 0.4);
   ins.selectComponent('.nav-title').setStyle('opacity: ' + (1 - tp) + '; transform: translateY(' + (-6 * tp) + 'px);');
 
-  // 完全收起后导航栏下沿加一道轻投影，和卡片分开（样式见 .nav-bar.collapsed）；只在状态变化时改 class
+  // 完全收起后：导航栏下沿加一道轻投影；搜索行切到紧凑态（隐藏拍照识猫、收紧按钮间距），
+  // 把宽度让给输入框，否则 9 个字的占位文案会被截掉。只在状态变化时改 class
   var collapsed = p >= 1;
   if (state.collapsed !== collapsed) {
     state.collapsed = collapsed;
     var bar = ins.selectComponent('.nav-bar');
-    if (collapsed) bar.addClass('collapsed');
-    else bar.removeClass('collapsed');
+    var search = ins.selectComponent('#search');
+    if (collapsed) {
+      bar.addClass('collapsed');
+      search.addClass('collapsed');
+    } else {
+      bar.removeClass('collapsed');
+      search.removeClass('collapsed');
+    }
   }
 }
 

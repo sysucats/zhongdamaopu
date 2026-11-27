@@ -23,6 +23,16 @@ const tipInterval = 24; // 提示间隔时间 hours
 const share_text = config.text.app_name + ' - ' + config.text.genealogy.share_tip;
 const app = getApp();
 
+// 首页默认排序：最近有照片的在前，人气兜底。'default' 时取页后还会打乱，保持原有的曝光公平
+const DEFAULT_SORT = { mphoto: -1, popularity: -1 };
+// 能直接交给数据库排的几档。另外两档没有可排字段，走本地算序（见 getNotesOrder / getPopOrder）：
+// 留言数没有持久化计数；热力值是 popularity 与照片数的加权和，find 的 sort 不支持表达式。
+const SORT_SPECS = {
+  mphoto: { mphoto: -1 },
+  photos: { photo_count_total: -1 },
+  create_time: { create_time: -1 },
+};
+
 Page({
   data: {
     cats: [],
@@ -38,6 +48,19 @@ Page({
     filters_input: '',
     filters_empty: true,
     filters_count: 0,
+    // 排序：sort_key 是生效项（'default' 即原来的排序），sort_pick 是面板里的待确认项
+    sort_key: 'default',
+    sort_pick: 'default',
+    sort_show: false,
+    sort_name: '默认排序',
+    sorts: [
+      { key: 'default', name: '默认排序', hint: '最近有照片的在前' },
+      { key: 'mphoto', name: '照片更新', hint: '按最近一张照片的时间' },
+      { key: 'popularity', name: '热力值', hint: '浏览数与照片数综合' },
+      { key: 'notes', name: '留言数', hint: '按便利贴数量' },
+      { key: 'photos', name: '照片数', hint: '按累计照片张数' },
+      { key: 'create_time', name: '入驻时间', hint: '按档案建立时间，新的在前' },
+    ],
     catsMax: 0,
     loading: false,
     loadnomore: false,
@@ -63,6 +86,9 @@ Page({
     catsStep: 1,
     loadingLock: 0,
     pageLoadingLock: false,
+    // 本地算序缓存（留言数 / 热力值），筛选或排序一变就由 clearOrderCache 作废
+    notesOrder: null,
+    popOrder: null,
     // 新增：待处理的scene参数
     pendingScene: null
   },
@@ -408,6 +434,8 @@ Page({
   async reloadCats() {
     this.jsData.loadingLock++;
     const nowLoadingLock = this.jsData.loadingLock;
+    // 筛选或排序变了，本地算序得到的 id 列表随之作废（留言数、热力值各自缓存了一份）
+    this.clearOrderCache();
     
     const query = await this.fGet();
     const { result: cat_count } = await app.mpServerless.db.collection('cat').count(query);
@@ -444,14 +472,27 @@ Page({
     const cats = this.data.cats;
     const step = this.jsData.catsStep;
     const query = await this.fGet();
+    const sortKey = this.data.sort_key || 'default';
     
-    let { result: new_cats } = await app.mpServerless.db.collection('cat').find(query, { 
-      sort: { mphoto: -1, popularity: -1 }, 
-      skip: cats.length, 
-      limit: step 
-    });
-    
-    new_cats = shuffle(new_cats);
+    let new_cats;
+    if (sortKey === 'notes') {
+      // 留言数没有持久化字段：先算出完整的有序 id 列表，再按页切片取回文档
+      const order = await this.getNotesOrder(query);
+      new_cats = await this.fetchCatsByIds(order.slice(cats.length, cats.length + step));
+    } else if (sortKey === 'popularity') {
+      // 热力值要与卡片上显示的数字一致（复合分），同样先算序再切片
+      const order = await this.getPopOrder(query);
+      new_cats = await this.fetchCatsByIds(order.slice(cats.length, cats.length + step));
+    } else {
+      let { result } = await app.mpServerless.db.collection('cat').find(query, { 
+        sort: SORT_SPECS[sortKey] || DEFAULT_SORT, 
+        skip: cats.length, 
+        limit: step 
+      });
+      new_cats = result || [];
+      // 只有默认排序才打乱；选了排序就得严格按序，否则用户会觉得「排序不准」
+      if (sortKey === 'default') new_cats = shuffle(new_cats);
+    }
     
     if (this.jsData.loadingLock !== nowLoadingLock) return false;
     
@@ -484,6 +525,105 @@ Page({
     });
 
     await this.loadCatsPhoto();
+  },
+
+  // 按给定的 id 顺序取回猫文档：$in 的返回顺序不保证，要按列表重排
+  async fetchCatsByIds(ids) {
+    if (!ids || !ids.length) return [];
+    const { result } = await app.mpServerless.db.collection('cat').find(
+      { _id: { $in: ids } },
+      { limit: ids.length }
+    );
+    const map = new Map();
+    (result || []).forEach(c => map.set(c._id, c));
+    return ids.map(id => map.get(id)).filter(Boolean);
+  },
+
+  // 本地算序得到的 id 列表是「某一次筛选 + 某一个排序」的快照，条件一变就必须重算
+  clearOrderCache() {
+    this.jsData.notesOrder = null;
+    this.jsData.popOrder = null;
+  },
+
+  // 取回筛选命中的全部猫（只取排序列），供本地算序用。按实际返回条数推进 skip：
+  // 不能按「不足 PAGE 就停」，服务端对 limit 的上限可能比 PAGE 更小，那样会跳着漏数据
+  async fetchAllCatsForOrder(query, projection) {
+    const PAGE = 200;
+    const cats = [];
+    let skip = 0;
+    // 上限 2000 是防御：猫量级远小于它，万一将来暴涨也不会把首页拖死
+    while (skip <= 2000) {
+      const { result } = await app.mpServerless.db.collection('cat').find(query, {
+        projection,
+        skip,
+        limit: PAGE
+      });
+      const batch = result || [];
+      cats.push(...batch);
+      if (!batch.length) break;
+      skip += batch.length;
+    }
+    return cats;
+  },
+
+  // 留言数排序：cat 上没有持久化的便利贴计数字段，只能现算一次完整顺序，分页时按 id 切片复用
+  async getNotesOrder(query) {
+    if (this.jsData.notesOrder) return this.jsData.notesOrder;
+
+    // 1) 取回所有符合筛选条件的猫（只取排序列），量大时分批
+    const cats = await this.fetchAllCatsForOrder(query, { _id: 1, mphoto: 1 });
+
+    // 2) 统计便利贴数。一批 40 只、单批上限 1000 条，足够覆盖单批留言量而不被截断
+    const db = app.mpServerless.db;
+    const tally = new Map();
+    const CHUNK = 40;
+    for (let i = 0; i < cats.length; i += CHUNK) {
+      const ids = cats.slice(i, i + CHUNK).map(c => c._id);
+      const { result } = await db.collection('comment').find(
+        { cat_id: { $in: ids }, deleted: { $ne: true } },
+        { projection: { cat_id: 1, photo_id: 1 }, limit: 1000 }
+      );
+      (result || []).forEach(c => {
+        if (!c || c.photo_id) return; // 照片评论不算便利贴
+        tally.set(c.cat_id, (tally.get(c.cat_id) || 0) + 1);
+      });
+    }
+
+    // 3) 留言多的在前，同分按最近照片时间兜底，否则同分猫的先后每次刷新都在变
+    const scored = cats.map(c => ({
+      id: c._id,
+      n: tally.get(c._id) || 0,
+      t: c.mphoto || ''
+    }));
+    scored.sort((a, b) => b.n - a.n || (a.t < b.t ? 1 : a.t > b.t ? -1 : 0));
+
+    this.jsData.notesOrder = scored.map(s => s.id);
+    return this.jsData.notesOrder;
+  },
+
+  // 热力值排序：页面显示的是 popularity + photo_count_total × photoPopWeight 的复合分
+  // （genealogy.wxml / detailCat.wxml 同一个公式）。只按 popularity 排会出现
+  // 「照片多但点击少的猫排在前面、卡片数字却更小」的错乱，所以这里必须用同一个和值。
+  // 权重来自页面设置，与展示端同源，管理员改了也不会两边不一致。
+  async getPopOrder(query) {
+    if (this.jsData.popOrder) return this.jsData.popOrder;
+    const weight = Number(this.data.photoPopWeight) || 10;
+
+    const cats = await this.fetchAllCatsForOrder(query, {
+      _id: 1, mphoto: 1, popularity: 1, photo_count_total: 1
+    });
+
+    const scored = cats.map(c => ({
+      id: c._id,
+      // 字段可能缺失或是字符串（历史数据），统一按数字处理
+      s: (Number(c.popularity) || 0) + (Number(c.photo_count_total) || 0) * weight,
+      t: c.mphoto || ''
+    }));
+    // 同分按最近照片时间兜底，否则同分猫的先后每次刷新都在变
+    scored.sort((a, b) => b.s - a.s || (a.t < b.t ? 1 : a.t > b.t ? -1 : 0));
+
+    this.jsData.popOrder = scored.map(s => s.id);
+    return this.jsData.popOrder;
   },
 
   async loadCatsPhoto() {
@@ -682,6 +822,7 @@ Page({
   },
 
   fShow: function () {
+    if (this.data.sort_show) this.setData({ sort_show: false }); // 与排序面板互斥
     this.jsData.filtersSnapshot = JSON.parse(JSON.stringify(this.data.filters));
     // 搜索栏可能已收进导航栏：卡片从「搜索栏下沿」和「导航栏下沿」中较低的那个往下 16rpx 展开
     this.createSelectorQuery().select('#search').boundingClientRect().exec(res => {
@@ -712,16 +853,27 @@ Page({
     this.jsData.navBottom = navBottom;
     const searchTop = navBottom + 24 * rpx;            // 展开：导航栏下方 24rpx
     const searchArea = searchTop + 80 * rpx + 16 * rpx; // 下方 16rpx + 校区行自带 8rpx，合起来 24rpx
+    // 收起后搜索行要整体退到胶囊左侧：最外侧那颗（筛选）离胶囊 16rpx。
+    // 注意 padding-right 推的是整行内容的右边界，两颗按钮本来就在内容里，
+    // 不能再把按钮宽度加进来 —— 加了会让按钮悬在屏幕中间，还把搜索框挤窄。
+    const cpr = win.windowWidth - capsule.left + 16 * rpx;
+    // 水平避让必须比垂直位移跑得快：搜索框一旦升进胶囊所在的那一行，
+    // 右侧就得退到胶囊左边，否则按钮会从胶囊上扫过去（半收起时最常见的重叠）。
+    // 顶边升到胶囊底边时是临界点，提前 30% 完成。
+    const dist = searchTop - capsule.top;
+    const overlapP = dist > 0 ? (searchTop - capsule.bottom) / dist : 0;
+    const hp = Math.max(0.12, Math.min(0.8, (overlapP > 0 ? overlapP : 0.3) * 0.7));
     this.setData({
       navVars: `--cap-top: ${capsule.top}px; --cap-h: ${capsule.height}px; --nav-bottom: ${navBottom}px; --search-top: ${searchTop}px; --search-area: ${searchArea}px;`,
       navM: {
-        d: searchTop - capsule.top,                       // 收起时搜索框顶边对齐胶囊顶边
+        d: dist,                                           // 收起时搜索框顶边对齐胶囊顶边
         eh: 80 * rpx,
         ch: capsule.height,
         epl: 32 * rpx,                                     // 展开：左右边距同页面边距
         epr: 32 * rpx,
         cpl: win.windowWidth - capsule.right,              // 收起：左边距与胶囊右侧留白相同，左右对称
-        cpr: win.windowWidth - capsule.left + 16 * rpx,    // 收起：筛选按钮离胶囊 16rpx
+        cpr,
+        hp,                                                // 水平收缩在第几成就走完（见 collapseNav.wxs）
       },
     });
   },
@@ -995,6 +1147,48 @@ Page({
     this.lockBtn();
     this.reloadCats();
     this.fHide();
+    this.unlockBtn();
+  },
+
+  // ---------- 排序面板：与筛选同一套动作，点蒙层放弃、点「完成」应用 ----------
+  sToggle: function () {
+    if (this.data.sort_show) this.sCancel();
+    else this.sShow();
+  },
+
+  sShow: function () {
+    if (this.data.filters_show) this.fHide(); // 两个面板互斥，避免叠在一起
+    // 与筛选卡片同一水平位置：搜索栏下沿和导航栏下沿取较低者，再往下 16rpx
+    this.createSelectorQuery().select('#search').boundingClientRect().exec(res => {
+      const rect = res && res[0];
+      const rpx = wx.getWindowInfo().windowWidth / 750;
+      const filterTop = rect ? Math.round(Math.max(rect.bottom, this.jsData.navBottom || 0) + 16 * rpx) : 0;
+      // 每次展开都从「当前生效项」起步，上次没点完成的选择不带进来
+      this.setData({ sort_show: true, sort_pick: this.data.sort_key, filterTop });
+    });
+  },
+
+  sCancel: function () {
+    this.setData({ sort_show: false });
+  },
+
+  sPick: function (e) {
+    this.setData({ sort_pick: e.currentTarget.dataset.key });
+  },
+
+  sReset: function () {
+    this.setData({ sort_pick: 'default' });
+  },
+
+  sConfirm: function () {
+    const key = this.data.sort_pick;
+    this.setData({ sort_show: false });
+    if (key === this.data.sort_key) return; // 没变就不重新拉数据，省一次全量查询
+    const picked = this.data.sorts.find(s => s.key === key);
+    this.setData({ sort_key: key, sort_name: picked ? picked.name : '默认排序' });
+    this.clearOrderCache();
+    this.lockBtn();
+    this.reloadCats();
     this.unlockBtn();
   },
   
