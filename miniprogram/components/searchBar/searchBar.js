@@ -19,6 +19,7 @@ Component({
 
   data: {
     inputValue: '',
+    refocus: false, // 点叉号清空后把焦点还给输入框
   },
 
   methods: {
@@ -28,13 +29,27 @@ Component({
       this.triggerEvent('input', { value });
     },
 
+    onFocus() {
+      this._focused = true;
+      this.triggerEvent('focus');
+    },
+
+    onBlur() {
+      this._focused = false;
+      this._blurAt = Date.now();
+      if (this.data.refocus) this.setData({ refocus: false });
+      this.triggerEvent('blur');
+    },
+
     onConfirm(e) {
       this.triggerEvent('confirm', { value: e.detail.value });
     },
 
     // 清空后先抛 input 再抛 clear，页面在 clear 里决定是否重新搜索
+    // 正在输入时点叉号：输入框会先失焦，这里把焦点还回去，清空后可以接着输入
     onClear() {
-      this.setData({ inputValue: '' });
+      const wasFocused = this._focused || Date.now() - (this._blurAt || 0) < 300;
+      this.setData({ inputValue: '', refocus: wasFocused });
       this.triggerEvent('input', { value: '' });
       this.triggerEvent('clear');
     },

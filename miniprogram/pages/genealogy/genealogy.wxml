@@ -2,7 +2,7 @@
 
 <!-- 猫猫状态标签：文案与色调统一由 catStatus.wxs 产出 -->
 <wxs src="/utils/catStatus.wxs" module="cs" />
-<!-- 上滑时把搜索栏收进胶囊那一行 -->
+<!-- 滚过阈值后把搜索栏收进胶囊那一行 -->
 <wxs src="./collapseNav.wxs" module="nav" />
 
 <!-- 根节点挂着按胶囊位置算出的尺寸变量（--nav-bottom、--search-top、--search-area） -->
@@ -13,23 +13,26 @@
   <view class='nav-title'>{{text_cfg.app_name}}</view>
 </view>
 
-<!-- 搜索栏浮在卡片列表上方，卡片滚动时从磨砂玻璃下面经过；上滑时跟手收进导航栏，停在半路自动吸附（见 collapseNav.wxs） -->
-<view id='search'>
+<!-- 搜索栏浮在卡片列表上方，卡片滚动时从磨砂玻璃下面经过；滚过阈值后收进导航栏，列表重新加载时展开（见 collapseNav.wxs） -->
+<view id='search' change:navreset='{{nav.onReset}}' navreset='{{navReset}}'>
   <!-- 胶囊搜索框：识别收进框尾，筛选为独立圆形按钮，生效时显示已筛项数 -->
-  <search-bar class='search-field' variant='glass' placeholder='{{text_cfg.genealogy.search_tip}}' value='{{filters_input}}' bind:input='fSearchInput' bind:confirm='fSearch' bind:clear='fSearchClear'>
+  <search-bar class='search-field' variant='glass' placeholder='{{text_cfg.genealogy.search_tip}}' value='{{filters_input}}' bind:focus='fSearchFocus' bind:blur='fSearchBlur' bind:input='fSearchInput' bind:confirm='fSearch' bind:clear='fSearchClear'>
     <view class='recognize-btn' bind:tap='clickRecognize' wx:if="{{showRecognize}}" aria-role="button" aria-label="拍照识别">
       <view class='iconfont icon-camera'></view>
     </view>
   </search-bar>
 
-  <view class='filter-btn {{filters_show ? "open" : (filters_count ? "active" : "")}}' bind:tap='fToggle' aria-role="button" aria-label="{{filters_count ? '筛选，已选 ' + filters_count + ' 项' : '筛选'}}">
+  <view class='filter-btn {{filters_show ? "open" : (filters_count ? "active" : "")}}' hover-class='pressed' hover-stay-time='80' bind:tap='fToggle' aria-role="button" aria-label="{{filters_count ? '筛选，已选 ' + filters_count + ' 项' : '筛选'}}">
     <view class='iconfont icon-filtering'></view>
     <view class='filter-count' wx:if="{{filters_count}}">{{filters_count}}</view>
   </view>
 </view>
 
 <!-- 筛选：从筛选按钮下方展开的卡片。点蒙层或再点筛选按钮放弃本次修改，点「完成」才应用 -->
-<view class='filter-mask {{filters_show ? "show" : ""}}' bindtap='fCancel' catchtouchmove='voidMove'></view>
+<!-- 蒙层用公共 mask 组件，外层 .mask-layer 把它压在导航栏、搜索栏、筛选卡片之下 -->
+<view class='mask-layer'>
+  <mask show='{{filters_show}}' bind:close='fCancel'></mask>
+</view>
 <view class='filter-card {{filters_show ? "show" : ""}}' style='{{filterTop ? "--filter-top: " + filterTop + "px;" : ""}}' aria-hidden="{{!filters_show}}">
   <!-- 分组标签：数字为该组已选项数 -->
   <view class='filter-tabs'>
@@ -69,7 +72,7 @@
   </view>
 </view>
 
-<scroll-view enable-flex='1' class='cards' scroll-y='true' enable-back-to-top='true' bindscrolltolower='onReachBottom' bindscroll='{{nav.onScroll}}' bindtouchstart='{{nav.onTouchStart}}' bindtouchend='{{nav.onTouchEnd}}' bindtouchcancel='{{nav.onTouchEnd}}' data-m='{{navM}}' lower-threshold='{{main_lower_threshold}}' scroll-top='{{targetScrollTop}}' scroll-with-animation='true'>
+<scroll-view enable-flex='1' class='cards' scroll-y='true' enable-back-to-top='true' bindscrolltolower='onReachBottom' bindscroll='{{nav.onScroll}}' bindscrolltoupper='{{nav.onTop}}' upper-threshold='{{navM.off}}' data-m='{{navM}}' lower-threshold='{{main_lower_threshold}}' scroll-top='{{targetScrollTop}}' scroll-with-animation='true'>
   <!-- 给浮动搜索栏让出位置 -->
   <view class='search-spacer'></view>
   <!-- 校区外显筛选 -->

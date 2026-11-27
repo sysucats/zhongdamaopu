@@ -36,7 +36,12 @@ Page({
     navVars: '',
     navM: {},
     filterTop: 0,
+    // 搜索：filters_input 是输入框里的文字，filters_search 是已生效的搜索词（查询、翻页只看它）。
+    // 按键盘搜索键才生效；没按就收起键盘，输入框恢复成已生效的搜索词
     filters_input: '',
+    filters_search: '',
+    // 每次重新加载列表时加 1，交给 collapseNav.wxs：列表回到顶部，搜索栏随之展开
+    navReset: 0,
     filters_empty: true,
     filters_count: 0,
     catsMax: 0,
@@ -421,7 +426,9 @@ Page({
     this.setData({
       cats: [],
       expandedCatIndex: -1,
+      // 列表清空后自然回到顶部（scroll-top 可能本来就是 0、不会触发滚动事件），通知搜索栏展开
       targetScrollTop: 0,
+      navReset: this.data.navReset + 1,
       catsMax: cat_count,
       loadnomore: false,
       filters_empty: Object.keys(query).length === 0,
@@ -606,7 +613,6 @@ Page({
       query.select('#card-' + index).boundingClientRect();
       query.select('.cards').scrollOffset();
       query.select('.cards').boundingClientRect();
-      query.select('#search').boundingClientRect();
       query.exec(res => {
         if (!res || !res[0] || !res[1] || !res[2]) return;
         const cardRect = res[0];        // card 相对视口的位置
@@ -614,10 +620,13 @@ Page({
         const svRect = res[2];          // scroll-view 相对视口的位置
         // card 在 scroll-view 内容流中的偏移
         const cardOffsetTop = cardRect.top - svRect.top + scrollInfo.scrollTop;
-        // 卡片停在搜索栏当前下沿往下 24rpx（搜索栏可能已收进导航栏）
+        // 卡片停在「滚到位后」顶部遮挡的下沿往下 24rpx：滚到位后搜索栏收起则遮到导航栏下沿，展开则到搜索栏下沿
         const rpxToPx = wx.getWindowInfo().windowWidth / 750;
-        const offset = 24 * rpxToPx + (res[3] ? res[3].bottom : 0);
-        const targetScrollTop = Math.max(0, cardOffsetTop - offset);
+        const { navOn, navOff, navBottom, searchBottom, navCollapsed } = this.jsData;
+        let targetScrollTop = Math.max(0, cardOffsetTop - 24 * rpxToPx - searchBottom);
+        if (targetScrollTop > navOn || (navCollapsed && targetScrollTop >= navOff)) {
+          targetScrollTop = Math.max(0, cardOffsetTop - 24 * rpxToPx - navBottom);
+        }
         this.setData({ targetScrollTop });
       });
     });
@@ -675,29 +684,25 @@ Page({
 
   // 过滤器相关函数
   voidMove: function () { },
-  
+
   // 打开时记下当前筛选，点蒙层或再点筛选按钮收起时还原，只有「完成」才应用
   fToggle: function () {
     if (this.data.filters_show) this.fCancel();
     else this.fShow();
   },
 
+  // 卡片与按钮、蒙层同一次更新出现，过渡同时开始。位置按搜索栏最终状态直接算：收起时导航栏下沿、展开时搜索栏下沿，再往下 16rpx
   fShow: function () {
     this.jsData.filtersSnapshot = JSON.parse(JSON.stringify(this.data.filters));
-    // 搜索栏可能已收进导航栏：卡片从「搜索栏下沿」和「导航栏下沿」中较低的那个往下 16rpx 展开
-    this.createSelectorQuery().select('#search').boundingClientRect().exec(res => {
-      const rect = res && res[0];
-      const rpx = wx.getWindowInfo().windowWidth / 750;
-      const filterTop = rect ? Math.round(Math.max(rect.bottom, this.jsData.navBottom || 0) + 16 * rpx) : 0;
-      this.setFilters(this.data.filters, { filters_show: true, filterTop });
-    });
+    const { navCollapsed, navBottom, searchBottom } = this.jsData;
+    const rpx = wx.getWindowInfo().windowWidth / 750;
+    const filterTop = Math.round((navCollapsed ? navBottom : searchBottom) + 16 * rpx);
+    this.setFilters(this.data.filters, { filters_show: true, filterTop });
   },
 
-  // collapseNav.wxs 在滚动停在半收起时调用：滚到完全展开（0）或完全收起（d）
-  snapNav: function ({ top }) {
-    // scroll-top 与上次相同时不会触发滚动，加一个极小偏移强制生效
-    const same = Math.abs(this.data.targetScrollTop - top) < 0.5;
-    this.setData({ targetScrollTop: same ? top + 0.1 : top });
+  // collapseNav.wxs 回报搜索栏最终是否收起
+  onNavState: function ({ collapsed }) {
+    this.jsData.navCollapsed = collapsed;
   },
 
   // 胶囊位置因机型而异，只能在 JS 里读；算好后以 CSS 变量挂到根节点，折叠参数交给 WXS
@@ -713,10 +718,29 @@ Page({
     this.jsData.navBottom = navBottom;
     const searchTop = navBottom + 24 * rpx;            // 展开：导航栏下方 24rpx
     const searchArea = searchTop + 80 * rpx + 16 * rpx; // 下方 16rpx + 校区行自带 8rpx，合起来 24rpx
+
+    // 收起轨迹（进度 p 由 collapseNav.wxs 按时间推进）：先收窄变矮，再升进胶囊那一行，全程不碰胶囊。
+    // 纵向 qy = 4p³ − 3p⁴，横向 qx = smoothstep(p / ps)，两端速度都为 0。
+    // 顶边到胶囊下沿时（纵向进度 pc）横向必须已收完，ps 取满足 qy(ps) = pc 的值，即横向能用的最长区间
+    const rise = searchTop - capsule.top; // 纵向行程：搜索框顶边升到胶囊顶边
+    const pc = Math.min(Math.max((searchTop - capsule.bottom) / rise, 0.02), 0.98);
+    let lo = 0, hi = 1;
+    for (let i = 0; i < 30; i++) {
+      const mid = (lo + hi) / 2;
+      if (4 * mid ** 3 - 3 * mid ** 4 < pc) lo = mid; else hi = mid;
+    }
+    // 阈值：展开的搜索栏离下方校区行只有 24rpx，所以滚过 20rpx（内容碰到它之前）就收起；
+    // 回到 12rpx 以内展开（中间留缓冲防抖）。快速甩回顶部可能没有滚动事件落在 off 内，由到顶事件兜底
+    const on = 20 * rpx;
+    const off = 12 * rpx;
+    Object.assign(this.jsData, { navOn: on, navOff: off, searchBottom: searchTop + 80 * rpx });
     this.setData({
       navVars: `--cap-top: ${capsule.top}px; --cap-h: ${capsule.height}px; --nav-bottom: ${navBottom}px; --search-top: ${searchTop}px; --search-area: ${searchArea}px;`,
       navM: {
-        d: searchTop - capsule.top,                       // 收起时搜索框顶边对齐胶囊顶边
+        on,                                               // scrollTop 超过它收起
+        off,                                              // scrollTop 低于它展开
+        rise,                                             // 纵向行程
+        ps: lo,                                           // 横向（宽、高、左右边距）在进度 ps 时收完
         eh: 80 * rpx,
         ch: capsule.height,
         epl: 32 * rpx,                                     // 展开：左右边距同页面边距
@@ -945,10 +969,10 @@ Page({
       }
     });
     
-    // 处理搜索输入
-    const filters_input = regReplace(this.data.filters_input);
-    if (filters_input) {
-      const searchTerms = filters_input.trim().split(' ');
+    // 处理搜索词：只用已生效的，输入框里未确认的文字不参与查询（否则翻页会混进新关键词的结果）
+    const search = regReplace(this.data.filters_search);
+    if (search) {
+      const searchTerms = search.trim().split(' ');
       const regexPattern = searchTerms.map(term => `.*${term}.*`).join('|');
       
       conditions.push({
@@ -1027,17 +1051,43 @@ Page({
     await this.fConfirm();
   },
   
+  // 搜索：输入框里的文字只有按键盘搜索键才生效。聚焦就在原地输入，没有单独的搜索模式
+  fSearchFocus: function() {
+    clearTimeout(this.jsData.searchBlurTimer); // 点叉号会短暂失焦再聚焦，不算结束输入
+    this.jsData.searchEditing = true;
+    if (this.data.filters_show) this.fCancel(); // 筛选卡片开着时去搜索，放弃筛选修改
+  },
+
+  // 收起键盘但没按搜索：输入框恢复成已生效的搜索词，避免「框里是一个词、列表是另一个结果」。
+  // 稍等一下再判断：按搜索键时失焦可能先于 confirm 到达，点叉号也会短暂失焦
+  fSearchBlur: function() {
+    clearTimeout(this.jsData.searchBlurTimer);
+    this.jsData.searchBlurTimer = setTimeout(() => {
+      if (!this.jsData.searchEditing) return;
+      this.jsData.searchEditing = false;
+      this.setData({ filters_input: this.data.filters_search });
+    }, 150);
+  },
+
   fSearchInput: function(e) {
     this.setData({ filters_input: e.detail.value });
   },
   
   fSearch: function() {
-    this.reloadCats();
+    clearTimeout(this.jsData.searchBlurTimer);
+    this.jsData.searchEditing = false;
+    const value = (this.data.filters_input || '').trim();
+    const changed = value !== this.data.filters_search;
+    this.setData({ filters_input: value, filters_search: value });
+    if (changed) this.reloadCats();
   },
   
-  fSearchClear: async function() {
-    await this.setData({ filters_input: "" });
-    this.fSearch();
+  // 叉号：输入框已由 input 事件清空。正在输入时只是改输入，不加载；
+  // 没在输入时叉号只会出现在已生效的搜索词上，这时清掉才重新加载
+  fSearchClear: function() {
+    if (this.jsData.searchEditing || !this.data.filters_search) return;
+    this.setData({ filters_search: '' });
+    this.reloadCats();
   },
   
   // 广告相关
@@ -1139,8 +1189,9 @@ Page({
   async clickBackFirstPageBtn() {
     if (this.jsData.pageLoadingLock) return false;
     this.lockBtn();
+    // 先清搜索词再重置筛选，只由 fReset 加载一次
+    this.setData({ filters_input: '', filters_search: '' });
     await this.fReset();
-    await this.fSearchClear();
     this.unlockBtn();
   },
 

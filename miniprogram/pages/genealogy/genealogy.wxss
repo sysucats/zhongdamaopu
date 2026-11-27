@@ -416,7 +416,7 @@ scroll-view {
   letter-spacing: 2rpx;
 }
 
-/* 搜索行：展开时在导航栏下方，上滑时由 collapseNav.wxs 平移、缩高、收窄到胶囊左侧 */
+/* 搜索行：展开时在导航栏下方，滚过阈值后由 collapseNav.wxs 先收窄变矮、再升进胶囊左侧 */
 #search {
   position: fixed;
   top: var(--search-top, 0);
@@ -483,6 +483,14 @@ scroll-view {
   backdrop-filter: var(--glass-blur);
   color: var(--color-black-min);
   box-sizing: border-box;
+  /* 状态切换与筛选卡片弹出同时长、同曲线；宽高由 collapseNav.wxs 逐帧写，不加过渡 */
+  transition: background-color 0.25s cubic-bezier(.3, .7, .2, 1), border-color 0.25s cubic-bezier(.3, .7, .2, 1),
+    border-width 0.25s cubic-bezier(.3, .7, .2, 1), color 0.25s cubic-bezier(.3, .7, .2, 1), transform 0.15s ease;
+}
+
+/* 按下：轻微缩小，松手回弹 */
+.filter-btn.pressed {
+  transform: scale(0.9);
 }
 
 .filter-btn .iconfont {
@@ -524,26 +532,18 @@ scroll-view {
   box-sizing: border-box;
 }
 
-/* 筛选蒙层：浅色，只用来提示「点外面收起」 */
-.filter-mask {
+/* 蒙层外层：固定定位 + z-index 自成层叠上下文，mask 组件内部的层级再大也只在 z 60 这一层里，
+   不会越过导航栏 61、搜索栏 62、筛选卡片 63。零尺寸、不挡点击，组件自身仍铺满屏幕 */
+.mask-layer {
   position: fixed;
   top: 0;
   left: 0;
-  right: 0;
-  bottom: 0;
+  width: 0;
+  height: 0;
   z-index: 60;
-  background-color: var(--color-mask);
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.25s ease;
 }
 
-.filter-mask.show {
-  opacity: 1;
-  pointer-events: auto;
-}
-
-/* 筛选卡片：从筛选按钮下方展开，左右与搜索栏对齐；蒙层 z 60，搜索栏 61，卡片 62 */
+/* 筛选卡片：从筛选按钮下方展开，左右与搜索栏对齐；蒙层 z 60，导航栏 61，搜索栏 62，卡片 63 */
 .filter-card {
   position: fixed;
   top: var(--filter-top, var(--search-area));

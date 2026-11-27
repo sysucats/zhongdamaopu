@@ -1,6 +1,6 @@
 <view class="search-bar {{variant}}">
   <view class="search-icon iconfont icon-search"></view>
-  <input class="search-input" value="{{inputValue}}" placeholder="{{placeholder}}" placeholder-class="search-placeholder" focus="{{focus}}" maxlength="{{maxlength}}" confirm-type="{{confirmType}}" bindinput="onInput" bindconfirm="onConfirm" aria-label="{{placeholder}}" />
+  <input class="search-input" value="{{inputValue}}" placeholder="{{placeholder}}" placeholder-class="search-placeholder" focus="{{focus || refocus}}" maxlength="{{maxlength}}" confirm-type="{{confirmType}}" bindinput="onInput" bindconfirm="onConfirm" bindfocus="onFocus" bindblur="onBlur" aria-label="{{placeholder}}" />
   <view class="search-clear" wx:if="{{inputValue}}" bindtap="onClear" aria-role="button" aria-label="清除">
     <view class="search-clear-dot"><view class="iconfont icon-close"></view></view>
   </view>
